@@ -126,7 +126,7 @@ class Maximum(Aggregator):
         selection = outputs[max_tuple[0]]
         return selection
 
-def test_pipeline_and_branch_using_naive_aggreg_run():
+def test_pipeline_branch_naive_aggreg_run():
     p = Pipeline('multicomponent')
     b = Branch('numbers')
     b.add_models([{'model': onestr, 'weight': 1.0},
@@ -141,7 +141,7 @@ def test_pipeline_and_branch_using_naive_aggreg_run():
     assert output[3] == 'c'
     assert output[4] == 'd'
 
-def test_pipeline_and_branch_using_meta_info_aggreg_run():
+def test_pipeline_branch_meta_info_aggreg_run():
     p = Pipeline('multicomponent')
     b = Branch('numbers')
     b.add_models([{'model': onestr, 'weight': 1.0},
@@ -155,6 +155,57 @@ def test_pipeline_and_branch_using_meta_info_aggreg_run():
     assert output[2] == '3'
     assert output[3] == 'c'
     assert output[4] == 'd'
+
+##########################################################################
+
+def run_thrice(stage, input):
+    if 'count' not in stage.iteration_vars:
+        stage.iteration_vars['count'] = 0
+    stage.iteration_vars['count'] += 1
+    if stage.iteration_vars['count'] > 3:
+        return False
+    return True
+
+def test_pipeline_with_iteration_simple():
+    p1 = Pipeline('string builder 1')
+    p1.add_models([astr, bstr, cstr, dstr])
+    p1.add_iteration_function(run_thrice)
+    output = p1.run('')
+    assert output == 'abcd' * 3
+    output = p1.run('')
+    assert output == 'abcd' * 3
+
+def run_to_length_10(stage, input):
+    return len(input) < 10
+
+def test_pipeline_with_iteration_complex():
+    p1 = Pipeline('string builder a')
+    p1.add_models([astr, astr])
+    p2 = Pipeline('string builder bc')
+    p2.add_models([bstr, cstr])
+    p2.add_iteration_function(run_to_length_10)
+    p3 = Pipeline('meta')
+    p3.add_models([p1, p2])
+    output = p3.run('')
+    assert output == 'aabcbcbcbc'
+    p3.add_iteration_function(run_thrice)
+    output = p3.run('')
+    assert output == 'aabcbcbcbcaaaa'
+
+    b = Branch('numbers')
+    b.add_models([{'model': onestr, 'weight': 1.0},
+                  {'model': twostr, 'weight': 1.0},
+                  {'model': threestr, 'weight': 1.0}])
+    getrand = Random('get random', b)
+
+    p4 = Pipeline('meta with branch')
+    p4.add_models([p3,getrand])
+    p4.add_iteration_function(run_thrice)
+    output = p4.run('')
+    assert len(output) == (10 + 4 + 1) + (7 * 2)
+    assert output[14] in '123'
+    assert output[21] in '123'
+    assert output[28] in '123'
 
 
 

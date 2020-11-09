@@ -1,15 +1,19 @@
-from stage import Stage
 
-class Pipeline(Stage):
+class Pipeline:
     """
     Sequential Module Execution
     """
 
-    def __init__(self, name):
+    def __init__(self, name, iteration_function=None):
         self.model_names = []
         self.models = []
         self.type = 'Pipeline'
         self.name = name
+        self.iteration_func = iteration_function
+        self.iteration_vars = {}
+
+    def add_iteration_function(self, iteration_function):
+        self.iteration_func = iteration_function
 
     def add_model(self, model):
         if model.name in self.model_names:
@@ -37,8 +41,14 @@ class Pipeline(Stage):
         self.models.insert(insertion_idx, target_model)
 
     def run(self, input):
-        for model in self.models:
-            input = model.run(input)
+        self.iteration_vars = {}
+        if self.iteration_func is not None:
+            while self.iteration_func(self, input):
+                for model in self.models:
+                    input = model.run(input)
+        else:
+            for model in self.models:
+                input = model.run(input)
         return input
 
     def to_display(self):

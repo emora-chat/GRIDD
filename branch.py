@@ -1,6 +1,5 @@
-from stage import Stage
 
-class Branch(Stage):
+class Branch:
     """
     Parallel Module Execution
     """
@@ -31,4 +30,4 @@ class Branch(Stage):
         return outputs
 
     def to_display(self):
-        return '{%s}'%' | '.join(self.model_names)
+        return '{%s}'%' | '.join(list(self.models.keys()))

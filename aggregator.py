@@ -13,7 +13,7 @@ class Aggregator(ABC):
     @abstractmethod
     def run(self, input):
         """
-        Runs the branch and aggregates the outputs
+        Runs the branch and aggregates the outputs, such as:
             outputs = self.branch.run(input)
             return <aggregation of outputs>
         :param input:
@@ -22,4 +22,4 @@ class Aggregator(ABC):
         pass
 
     def to_display(self):
-        return '%s -> %s'%(self.branch.to_display(), self.aggregator.name)
+        return '%s -> %s'%(self.branch.to_display(), self.name)
