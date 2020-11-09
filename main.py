@@ -1,5 +1,5 @@
 from framework import Framework
-from aggregator import Aggregator
+from components.aggregator import Aggregator
 from modules.mention_identification import BaseMentionIdentification
 from modules.node_merging import BaseNodeMerge
 from modules.inference import BaseInference

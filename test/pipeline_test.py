@@ -1,7 +1,7 @@
-import pytest, random
-from pipeline import Pipeline
-from branch import Branch
-from aggregator import Aggregator
+import random
+from components.pipeline import Pipeline
+from components.branch import Branch
+from components.aggregator import Aggregator
 from modules.module import Module
 
 class A(Module):

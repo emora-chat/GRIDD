@@ -1,5 +1,5 @@
-from pipeline import Pipeline
-from branch import Branch
+from components.pipeline import Pipeline
+from components.branch import Branch
 
 class Framework(Pipeline):
 
