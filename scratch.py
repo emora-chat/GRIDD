@@ -1,10 +1,3 @@
-# from modules.mention_identification import BaseMentionIdentification
-# from modules.node_merging import BaseNodeMerge
-# from modules.inference import BaseInference
-# from modules.response_selection import BaseResponseSelection
-# from modules.response_expansion import BaseResponseExpansion
-# from modules.response_generation import BaseResponseGeneration
-
 # default_params = {
 #     'mention_id': [BaseMentionIdentification()],
 #     'node_merge': [BaseNodeMerge()],
@@ -25,9 +18,6 @@
 #         }
 #     }
 # }
-
-# mention_mapping = [[mention_id_module.run(hypothesis) for mention_id_module in self.mention_id_modules]
-#                    for hypothesis in hypotheses]
 #
 # # todo - turn mention_mappings into exclusive-or relationship between hypotheses
 # # todo - add to dialogue_graph

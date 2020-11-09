@@ -53,4 +53,4 @@ class Pipeline:
 
     def to_display(self):
         # todo - build name recursively over all atomic models
-        return '(%s)'%' -> '.join(self.model_names)
+        return '%s(%s)'%(self.name, ' -> '.join(self.model_names))

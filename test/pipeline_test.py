@@ -78,7 +78,7 @@ def test_pipeline_extend():
 def test_pipeline_display():
     p = Pipeline('string builder')
     p.add_models([astr,cstr,dstr,bstr])
-    assert p.to_display() == '(astr -> cstr -> dstr -> bstr)'
+    assert p.to_display() == 'string builder(astr -> cstr -> dstr -> bstr)'
 
 def test_pipeline_run():
     p = Pipeline('string builder')
@@ -120,7 +120,7 @@ class Random(Aggregator):
 class Maximum(Aggregator):
     def run(self, input):
         outputs = self.branch.run(input)
-        models_by_weight = [(model_name,meta['weight'])
+        models_by_weight = [(model_name, meta['weight'])
                             for model_name, meta in self.branch.models.items()]
         max_tuple = max(models_by_weight, key=lambda x: x[1])
         selection = outputs[max_tuple[0]]

@@ -13,9 +13,10 @@ class Aggregator(ABC):
     @abstractmethod
     def run(self, input):
         """
-        Runs the branch and aggregates the outputs, such as:
+        Runs the branch and aggregates the outputs.
+        All inherited classes begin with the line:
             outputs = self.branch.run(input)
-            return <aggregation of outputs>
+        Then, execute the desired aggregation procedures.
         :param input:
         :return:
         """
