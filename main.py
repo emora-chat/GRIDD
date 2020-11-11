@@ -47,14 +47,12 @@ if __name__ == '__main__':
     dm.add_inference_aggregation(First)
 
     dm.add_mention_bridge(BaseMentionBridge('base mention bridge'))
-    dm.add_merge_bridge(BaseMergeBridge('base merge bridge', 0.2))
+    dm.add_merge_bridge(BaseMergeBridge('base merge bridge', threshold_score=0.2))
     dm.add_inference_bridge(BaseInferenceBridge('base inference bridge'))
 
     dm.add_merge_iteration(check_continue)
     dm.add_merge_inference_iteration(run_twice)
 
-    # todo - debug mention and merge
-    # todo - add merge iteration function and merge+inference iteration function
     # todo - implement inference, inference bridge, selection, expansion, generation base models
 
     dm.build_framework()
