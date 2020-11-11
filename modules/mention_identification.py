@@ -40,6 +40,8 @@ class BaseMentionIdentification(Module):
         for hypo in input:
             mentions = {}
             for i, token in enumerate(hypo['tokens']):
-                mentions[(i,i)] = self.map[self.lemmatizer.lemmatize(token.lower())]
+                struct = self.map.get(self.lemmatizer.lemmatize(token.lower()), None)
+                if struct is not None:
+                    mentions[(i,i)] = struct
             mentions_by_hypotheses.append(mentions)
         return mentions_by_hypotheses

@@ -14,8 +14,8 @@ class BaseNodeMerge(Module):
         :return: dictionary <tuple pair: float merge score>
         """
         scores = {}
-        if 'bob' in graph and 'himself' in graph:
-            scores[('bob', 'himself')] = 1.0
-        if 'sally' in graph and 'himself' in graph:
-            scores[('sally', 'himself')] = 0.1
+        if '<bob node>' in graph and '<himself node>' in graph:
+            scores[('<bob node>', '<himself node>')] = 1.0
+        if '<sally node>' in graph and '<himself node>' in graph:
+            scores[('<sally node>', '<himself node>')] = 0.1
         return scores

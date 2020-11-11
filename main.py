@@ -12,9 +12,25 @@ from modules.inference_bridge import BaseInferenceBridge
 
 class First(Aggregator):
     def run(self, input, graph):
-        outputs = self.branch.run(input)
+        outputs = self.branch.run(input, graph)
         selection = list(outputs.items())[0]
         return selection[1]
+
+def check_continue(stage, input):
+    """
+    :param stage: the Framework stage calling this function
+    :param input: True or False value indicating whether to continue
+    :return:
+    """
+    return input
+
+def run_twice(stage, input):
+    if 'count' not in stage.iteration_vars:
+        stage.iteration_vars['count'] = 0
+    stage.iteration_vars['count'] += 1
+    if stage.iteration_vars['count'] > 2:
+        return False
+    return True
 
 if __name__ == '__main__':
     dm = Framework('Emora')
@@ -31,8 +47,11 @@ if __name__ == '__main__':
     dm.add_inference_aggregation(First)
 
     dm.add_mention_bridge(BaseMentionBridge('base mention bridge'))
-    dm.add_merge_bridge(BaseMergeBridge('base merge bridge'))
+    dm.add_merge_bridge(BaseMergeBridge('base merge bridge', 0.2))
     dm.add_inference_bridge(BaseInferenceBridge('base inference bridge'))
+
+    dm.add_merge_iteration(check_continue)
+    dm.add_merge_inference_iteration(run_twice)
 
     # todo - debug mention and merge
     # todo - add merge iteration function and merge+inference iteration function

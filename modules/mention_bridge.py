@@ -15,3 +15,4 @@ class BaseMentionBridge(Module):
         for mentions_dict in input:
             for span, mention in mentions_dict.items():
                 graph[mention] = {}
+        return True
