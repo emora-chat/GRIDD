@@ -25,8 +25,8 @@ class Branch:
         for meta in metas:
             self.models[meta['model'].name] = meta
 
-    def run(self, input):
-        outputs = {model_name: meta['model'].run(input) for model_name, meta in self.models.items()}
+    def run(self, input, graph):
+        outputs = {model_name: meta['model'].run(input, graph) for model_name, meta in self.models.items()}
         return outputs
 
     def to_display(self):

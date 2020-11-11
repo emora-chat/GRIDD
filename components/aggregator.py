@@ -11,7 +11,7 @@ class Aggregator(ABC):
         self.branch = branch
 
     @abstractmethod
-    def run(self, input):
+    def run(self, input, graph):
         """
         Runs the branch and aggregates the outputs.
         All inherited classes begin with the line:

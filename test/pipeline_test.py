@@ -1,35 +1,36 @@
 import random
 from components.pipeline import Pipeline
+from components.pipeline_iterable import IterablePipeline
 from components.branch import Branch
 from components.aggregator import Aggregator
 from modules.module import Module
 
 class A(Module):
-    def run(self, input):
+    def run(self, input, graph):
         return input + 'a'
 
 class B(Module):
-    def run(self, input):
+    def run(self, input, graph):
         return input + 'b'
 
 class C(Module):
-    def run(self, input):
+    def run(self, input, graph):
         return input + 'c'
 
 class D(Module):
-    def run(self, input):
+    def run(self, input, graph):
         return input + 'd'
 
 class One(Module):
-    def run(self, input):
+    def run(self, input, graph):
         return input + '1'
 
 class Two(Module):
-    def run(self, input):
+    def run(self, input, graph):
         return input + '2'
 
 class Three(Module):
-    def run(self, input):
+    def run(self, input, graph):
         return input + '3'
 
 
@@ -83,7 +84,7 @@ def test_pipeline_display():
 def test_pipeline_run():
     p = Pipeline('string builder')
     p.add_models([astr,bstr,cstr,dstr])
-    output = p.run('')
+    output = p.run('', None)
     assert output == 'abcd'
 
 def test_two_pipelines():
@@ -93,7 +94,7 @@ def test_two_pipelines():
     p2.add_models([dstr,cstr,bstr,astr])
     p = Pipeline('mega string builder')
     p.add_models([p1,p2])
-    assert p.run('') == 'abcddcba'
+    assert p.run('', None) == 'abcddcba'
 
 ##########################################################################
 
@@ -103,7 +104,7 @@ def test_branch_run():
                   {'model': bstr, 'weight': 1.0},
                   {'model': cstr, 'weight': 1.0},
                   {'model': dstr, 'weight': 1.0}])
-    outputs = b.run('')
+    outputs = b.run('', None)
     assert outputs['astr'] == 'a'
     assert outputs['bstr'] == 'b'
     assert outputs['cstr'] == 'c'
@@ -112,14 +113,14 @@ def test_branch_run():
 ##########################################################################
 
 class Random(Aggregator):
-    def run(self, input):
-        outputs = self.branch.run(input)
+    def run(self, input, graph):
+        outputs = self.branch.run(input, graph)
         selection = random.choice(list(outputs.items()))
         return selection[1]
 
 class Maximum(Aggregator):
-    def run(self, input):
-        outputs = self.branch.run(input)
+    def run(self, input, graph):
+        outputs = self.branch.run(input, graph)
         models_by_weight = [(model_name, meta['weight'])
                             for model_name, meta in self.branch.models.items()]
         max_tuple = max(models_by_weight, key=lambda x: x[1])
@@ -134,7 +135,7 @@ def test_pipeline_branch_naive_aggreg_run():
                   {'model': threestr, 'weight': 1.0}])
     getrand = Random('get random', b)
     p.add_models([astr,bstr,getrand,cstr,dstr])
-    output = p.run('')
+    output = p.run('', None)
     assert output[0] == 'a'
     assert output[1] == 'b'
     assert output[2] in '123'
@@ -149,7 +150,7 @@ def test_pipeline_branch_meta_info_aggreg_run():
                   {'model': threestr, 'weight': 2.0}])
     getmax = Maximum('get max', b)
     p.add_models([astr,bstr,getmax,cstr,dstr])
-    output = p.run('')
+    output = p.run('', None)
     assert output[0] == 'a'
     assert output[1] == 'b'
     assert output[2] == '3'
@@ -167,12 +168,11 @@ def run_thrice(stage, input):
     return True
 
 def test_pipeline_with_iteration_simple():
-    p1 = Pipeline('string builder 1')
+    p1 = IterablePipeline('string builder 1', run_thrice)
     p1.add_models([astr, bstr, cstr, dstr])
-    p1.add_iteration_function(run_thrice)
-    output = p1.run('')
+    output = p1.run('', None)
     assert output == 'abcd' * 3
-    output = p1.run('')
+    output = p1.run('', None)
     assert output == 'abcd' * 3
 
 def run_to_length_10(stage, input):
@@ -181,15 +181,15 @@ def run_to_length_10(stage, input):
 def test_pipeline_with_iteration_complex():
     p1 = Pipeline('string builder a')
     p1.add_models([astr, astr])
-    p2 = Pipeline('string builder bc')
+    p2 = IterablePipeline('string builder bc', run_to_length_10)
     p2.add_models([bstr, cstr])
-    p2.add_iteration_function(run_to_length_10)
     p3 = Pipeline('meta')
     p3.add_models([p1, p2])
-    output = p3.run('')
+    output = p3.run('', None)
     assert output == 'aabcbcbcbc'
-    p3.add_iteration_function(run_thrice)
-    output = p3.run('')
+    p3b = IterablePipeline('meta', run_thrice)
+    p3b.add_models([p1,p2])
+    output = p3b.run('', None)
     assert output == 'aabcbcbcbcaaaa'
 
     b = Branch('numbers')
@@ -198,10 +198,9 @@ def test_pipeline_with_iteration_complex():
                   {'model': threestr, 'weight': 1.0}])
     getrand = Random('get random', b)
 
-    p4 = Pipeline('meta with branch')
-    p4.add_models([p3,getrand])
-    p4.add_iteration_function(run_thrice)
-    output = p4.run('')
+    p4 = IterablePipeline('meta with branch', run_thrice)
+    p4.add_models([p3b,getrand])
+    output = p4.run('', None)
     assert len(output) == (10 + 4 + 1) + (7 * 2)
     assert output[14] in '123'
     assert output[21] in '123'

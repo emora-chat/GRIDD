@@ -7,5 +7,5 @@ class Module(ABC):
         super().__init__()
 
     @abstractmethod
-    def run(self, input):
+    def run(self, input, graph):
         pass
