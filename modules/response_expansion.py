@@ -6,4 +6,10 @@ class BaseResponseExpansion(Module):
         super().__init__(name)
 
     def run(self, input, graph):
-        return input + ' ' + 'expansion'
+        """
+
+        :param input: ordered sequence of predicates from graph
+        :param graph: updated dialogue graph by merge-and-inference procedure
+        :return: ordered sequence of predicate trees
+        """
+        return input

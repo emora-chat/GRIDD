@@ -11,6 +11,7 @@ class BaseInferenceBridge(Module):
 
         :param input: inference output (graph of inferred additions)
         :param graph: dialogue graph updated by merge pipeline
-        :return: None
+        :return: binary indicating whether update was done
         """
         graph.update(input)
+        return True

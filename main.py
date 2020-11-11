@@ -9,6 +9,7 @@ from modules.response_generation import BaseResponseGeneration
 from modules.mention_bridge import BaseMentionBridge
 from modules.merge_bridge import BaseMergeBridge
 from modules.inference_bridge import BaseInferenceBridge
+import time
 
 class First(Aggregator):
     def run(self, input, graph):
@@ -66,6 +67,7 @@ if __name__ == '__main__':
          'token_confidence': {0: 0.90, 1: 0.90, 2: 0.80, 3: 0.8, 4: 0.80}
          }
     ]
-
+    s = time.time()
     output = dm.run(asr_hypotheses, dialogue_graph)
-    print(output)
+    elapsed = time.time() - s
+    print('[%.6f s] %s'%(elapsed, output))

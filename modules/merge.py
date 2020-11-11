@@ -9,7 +9,7 @@ class BaseNodeMerge(Module):
         """
         Calculate node merge scores for pairs of nodes
 
-        :param input: None object passed from Mention Bridge
+        :param input: binary from mention or inference bridge indicating their status
         :param graph: updated graph after Mention Bridge
         :return: dictionary <tuple pair: float merge score>
         """

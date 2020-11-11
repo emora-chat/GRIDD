@@ -1,6 +1,6 @@
 from typing import List,Dict
 from modules.module import Module
-from nltk.stem.wordnet import WordNetLemmatizer
+# from nltk.stem.wordnet import WordNetLemmatizer
 
 class BaseMentionIdentification(Module):
 
@@ -9,10 +9,10 @@ class BaseMentionIdentification(Module):
         self.map = {
             'bob': '<bob node>',
             'sally': '<sally node>',
-            'love': '<love structure>',
+            'loves': '<love structure>',
             'himself': '<himself node>'
         }
-        self.lemmatizer = WordNetLemmatizer()
+        # self.lemmatizer = WordNetLemmatizer()
 
     def run(self, input: List[Dict], graph) -> List:
         """
@@ -40,7 +40,7 @@ class BaseMentionIdentification(Module):
         for hypo in input:
             mentions = {}
             for i, token in enumerate(hypo['tokens']):
-                struct = self.map.get(self.lemmatizer.lemmatize(token.lower()), None)
+                struct = self.map.get(token.lower(), None)
                 if struct is not None:
                     mentions[(i,i)] = struct
             mentions_by_hypotheses.append(mentions)
