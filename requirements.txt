@@ -1,1 +1,2 @@
 networkx==2.5
+latk-parser==0.11.1
