@@ -4,26 +4,24 @@ from concept_graph import ConceptGraph
 class PredicateTransformer(Transformer):
 
     def __init__(self, kg):
+        super().__init__()
         self.kg = kg
-
-    def start(self, args):
-        pass
 
     def unnamed_bipredicate(self, args):
         type, subject, object = args
-        self.kg._concept_graph.add_bipredicate(type, subject, object)
+        return self.kg._concept_graph.add_bipredicate(subject, object, type)
 
     def unnamed_monopredicate(self, args):
         type, subject = args
-        self.kg._concept_graph.add_bipredicate(type, subject)
+        return self.kg._concept_graph.add_monopredicate(subject, type)
 
     def named_bipredicate(self, args):
         name, type, subject, object = args
-        self.kg._concept_graph.add_bipredicate(type, subject, object, predicate_id=name)
+        return self.kg._concept_graph.add_bipredicate(subject, object, type, predicate_id=name)
 
     def named_monopredicate(self, args):
         name, type, subject = args
-        self.kg._concept_graph.add_bipredicate(type, subject, predicate_id=name)
+        return self.kg._concept_graph.add_monopredicate(subject, type, predicate_id=name)
 
     def name(self, args):
         return str(args[0])
@@ -66,7 +64,8 @@ class KnowledgeGraph:
     def add_knowledge(self, input):
         tree = self.parser.parse(input)
         print(tree.pretty())
-        # self.predicate_transformer.transform(tree)
+        self.predicate_transformer.transform(tree)
+        test = 1
 
 
 
