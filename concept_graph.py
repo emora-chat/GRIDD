@@ -37,9 +37,6 @@ class ConceptGraph:
         return to_return
 
     def add_node(self, node):
-        """
-        Add a node.
-        """
         if self.bipredicate_graph.has(node):
             raise Exception('node already exists in bipredicates')
         self.bipredicate_graph.add(node)
@@ -48,11 +45,6 @@ class ConceptGraph:
         self.monopredicate_index[node] = set()
 
     def add_bipredicate(self, source, target, label, predicate_id=None):
-        """
-        Add a bipredicate with optional predicate_id.
-        Otherwise, predicate_id is automatically generated.
-        :return: predicate_id
-        """
         if predicate_id is None:
             predicate_id = '%s-%s-%s' % (source, target, label)
         self.bipredicate_graph.add(source, target, label)
@@ -60,11 +52,6 @@ class ConceptGraph:
         return predicate_id
 
     def add_monopredicate(self, source, label, predicate_id=None):
-        """
-        Add a monopredicate with optional predicate_id.
-        Otherwise, predicate_id is automatically generated.
-        :return: predicate_id
-        """
         if predicate_id is None:
             predicate_id = '%s-%s' % (source, label)
         if source not in self.monopredicate_index:
@@ -74,10 +61,6 @@ class ConceptGraph:
         return predicate_id
 
     def remove_node(self, node):
-        """
-        Remove node.
-        Removing a node removes all connected bipredicates and monopredicates.
-        """
         if self.bipredicate_graph.has(node):
             bipredicates = list(self.bipredicate_map.items())
             for bipredicate, id in bipredicates:
@@ -93,47 +76,18 @@ class ConceptGraph:
             del self.monopredicate_index[node]
 
     def remove_bipredicate(self, node, target, label):
-        """
-        Remove bipredicate
-        """
         id = self.bipredicate_map[(node, target, label)]
         del self.bipredicate_map[(node, target, label)]
         self.bipredicate_graph.remove(node, target, label)
         self.remove_node(id)
 
     def remove_monopredicate(self, node, label):
-        """
-        Remove monopredicate
-        """
         id = self.monopredicate_map[(node, label)]
         del self.monopredicate_map[(node, label)]
         self.monopredicate_index[node].remove(label)
         self.remove_node(id)
 
-    def subject(self, predicate_instance):
-        if predicate_instance in self.bipredicate_map.reverse():
-            return self.bipredicate_map.reverse()[predicate_instance][0]
-        elif predicate_instance in self.monopredicate_map:
-            return self.monopredicate_map.reverse()[predicate_instance][0]
-
-    def object(self, predicate_instance):
-        if predicate_instance in self.bipredicate_map.reverse():
-            return self.bipredicate_map.reverse()[predicate_instance][1]
-        elif predicate_instance in self.monopredicate_map:
-            raise Exception('predicate is a monopredicate!')
-
-    def type(self, predicate_instance):
-        if predicate_instance in self.bipredicate_map.reverse():
-            return self.bipredicate_map.reverse()[predicate_instance][2]
-        elif predicate_instance in self.monopredicate_map:
-            return self.monopredicate_map.reverse()[predicate_instance][1]
-
     def predicates(self, node, predicate_type=None):
-        """
-        Gets all predicates (bi and mono) that involve node
-
-        If predicate_type is specified, then only bipredicates are returned
-        """
         predicates = self.bipredicates(node, predicate_type)
         if predicate_type is None:
             predicates.update(self.monopredicates(node))
@@ -148,11 +102,6 @@ class ConceptGraph:
         return set([(node, label) for label in self.monopredicate_index[node]])
 
     def predicates_of_subject(self, node, predicate_type=None):
-        """
-        Gets all predicates (bi and mono) that where node is the subject
-
-        If predicate_type is specified, then only bipredicates are returned
-        """
         predicates = self.bipredicates_of_subject(node, predicate_type)
         if predicate_type is None:
             predicates.update(self.monopredicates_of_subject(node))
@@ -165,14 +114,9 @@ class ConceptGraph:
         return self.monopredicates(node)
 
     def predicates_of_object(self, node, predicate_type=None):
-        """
-        Gets all predicates where node is object
-
-        * Only bipredicates have objects
-        """
         return self.bipredicate_graph.in_edges(node, predicate_type)
 
-    def bipredicate(self, subject, type, object):
+    def bipredicate(self, subject, object, type):
         return self.bipredicate_map[(subject, object, type)]
 
     def monopredicate(self, subject, type):
@@ -184,35 +128,39 @@ class ConceptGraph:
         return nodes
 
     def subject_neighbors(self, node, predicate_type=None):
-        """
-        Get all nodes which have a subject relation in a predicate with the object node
-        :param node: the object
-        :param predicate_type:
-        :return:
-        """
         return self.bipredicate_graph.sources(node, predicate_type)
 
     def object_neighbors(self, node, predicate_type=None):
-        """
-        Get all nodes which have an object relation in a predicate with the subject node
-        :param node: the subject
-        :param predicate_type:
-        :return:
-        """
         return self.bipredicate_graph.targets(node, predicate_type)
 
-    def concepts(self):
-        """
-        Get all nodes (subject, object, predicate type, and predicate instance)
-        """
-        nodes = set()
-        for (source, target, label), predicate_inst in self.bipredicate_map.items():
-            nodes.update({source, target, label, predicate_inst})
-        nodes.update(set([predicate_inst for _, predicate_inst in self.monopredicate_map.items()]))
-        return nodes
+    def subject(self, predicate_instance):
+        if predicate_instance in self.bipredicate_map.reverse():
+            return self.bipredicate_map.reverse()[predicate_instance][0]
+        elif predicate_instance in self.monopredicate_map.reverse():
+            return self.monopredicate_map.reverse()[predicate_instance][0]
+
+    def object(self, predicate_instance):
+        if predicate_instance in self.bipredicate_map.reverse():
+            return self.bipredicate_map.reverse()[predicate_instance][1]
+        elif predicate_instance in self.monopredicate_map.reverse():
+            raise Exception('Cannot get object of a monopredicate!')
+
+    def type(self, predicate_instance):
+        if predicate_instance in self.bipredicate_map.reverse():
+            return self.bipredicate_map.reverse()[predicate_instance][2]
+        elif predicate_instance in self.monopredicate_map.reverse():
+            return self.monopredicate_map.reverse()[predicate_instance][1]
 
     def predicates_between(self, node1, node2):
         return self.bipredicate_graph.edges(node1).intersection(self.bipredicate_graph.edges(node2))
+
+    def concepts(self):
+        nodes = set()
+        for (source, target, label), predicate_inst in self.bipredicate_map.items():
+            nodes.update({source, target, label, predicate_inst})
+        for (source, label), predicate_inst in self.monopredicate_map.items():
+            nodes.update({source, label, predicate_inst})
+        return nodes
 
 if __name__ == '__main__':
     print(ConceptGraphSpec.verify(ConceptGraph))
