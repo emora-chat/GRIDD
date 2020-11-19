@@ -6,7 +6,7 @@ from structpy import specification
 class KnowledgeGraph:
     """
     Data structure for creating, editing, and querying a Knowledge Graph as part of the
-    2020-2021 dialogue approach used in the socialbot Emora.
+    GRIDD Framework.
 
     Nodes in the knowledge graph are accessed by a string identifier, which is provided
     by the user upon adding the node (although some nodes are automatically generated and
@@ -17,9 +17,9 @@ class KnowledgeGraph:
         """
         Create a `KnowledgeGraph` object.
 
-        Providing a `file_name` will load a .json file from a previous `knowledge_graph.save` operation.
+        Providing a `file_name` will load a text file from a previous `knowledge_graph.save` operation.
         """
-        knowledge_graph = KnowledgeGraph('knowledge_graph.json')
+        knowledge_graph = KnowledgeGraph('knowledge_graph.txt')
         return knowledge_graph
 
     def add_entity_type(kg, entity_type, supertypes):
@@ -29,7 +29,7 @@ class KnowledgeGraph:
         `entity_type` is the id of the added concept.
 
         `supertypes` should be a list of `entity_type`'s types (a single string can
-        be provdided in the case of a single type relationship).
+        be provided in the case of a single type relationship).
         """
         kg.add_entity_type('dog', 'canine')
 
@@ -40,11 +40,12 @@ class KnowledgeGraph:
         `predicate_type` is the id of the added concept.
 
         `supertypes` should be a list of `predicate_type`'s types (a single string can
-        be provdided in the case of a single type relationship).
+        be provided in the case of a single type relationship).
 
-        `arg0_types` represents the type(s) of the predicate's first argument.
+        `arg0_types` represents the conjunction of type(s) of the predicate's first argument.
 
-        `arg1_types` (optionally) represents the type(s) of the predicate's second argument.
+        `arg1_types` (optionally) represents the conjunction of type(s) of the predicate's
+        second argument. If arg1_types is None, then the predicate is a monopredicate.
         """
         kg.add_predicate_type('buy', ['event', 'economic_transaction'], 'person', 'purchasable')
         kg.add_predicate_type('leadership_role', 'social_role', 'agent_group', 'agent')
@@ -71,7 +72,7 @@ class KnowledgeGraph:
         `supertypes` are the type(s) of `entity_instance`.
 
         `properties` is a json-like properties dictionary satisfying all `supertypes` properties.
-        If all supertype properties are not satisfied, this method raises a `ValueError`.
+        If not all supertype properties are satisfied, this method raises a `ValueError`.
         """
         pass
 
