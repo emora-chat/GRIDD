@@ -38,13 +38,24 @@ class ConceptGraph:
 
     def add_node(self, node):
         if self.bipredicate_graph.has(node):
-            raise Exception('node already exists in bipredicates')
+            raise Exception('node %s already exists in bipredicates'%node)
         self.bipredicate_graph.add(node)
         if node in self.monopredicate_index:
-            raise Exception('node already exists in monopredicates')
+            raise Exception('node %s already exists in monopredicates'%node)
         self.monopredicate_index[node] = set()
 
+    def add_nodes(self, nodes):
+        for node in nodes:
+            self.add_node(node)
+
     def add_bipredicate(self, source, target, label, predicate_id=None):
+        concepts = self.concepts()
+        if source not in concepts:
+            raise Exception(":param 'source' error - node %s does not exist!" % source)
+        elif target not in concepts:
+            raise Exception(":param 'target' error - node %s does not exist!" % target)
+        elif label not in concepts:
+            raise Exception(":param 'label' error - node %s does not exist!" % label)
         if predicate_id is None:
             predicate_id = self.get_next_id()
         self.bipredicate_graph.add(source, target, label)
@@ -52,6 +63,11 @@ class ConceptGraph:
         return predicate_id
 
     def add_monopredicate(self, source, label, predicate_id=None):
+        concepts = self.concepts()
+        if source not in concepts:
+            raise Exception(":param 'source' error - node %s does not exist!" % source)
+        elif label not in concepts:
+            raise Exception(":param 'label' error - node %s does not exist!" % label)
         if predicate_id is None:
             predicate_id = self.get_next_id()
         if source not in self.monopredicate_index:
@@ -86,6 +102,10 @@ class ConceptGraph:
         del self.monopredicate_map[(node, label)]
         self.monopredicate_index[node].remove(label)
         self.remove_node(id)
+
+    ######################
+    ## Access Functions ##
+    ######################
 
     def predicates(self, node, predicate_type=None):
         predicates = self.bipredicates(node, predicate_type)
@@ -158,8 +178,10 @@ class ConceptGraph:
         nodes = set()
         for (source, target, label), predicate_inst in self.bipredicate_map.items():
             nodes.update({source, target, label, predicate_inst})
+        nodes.update(self.bipredicate_graph.nodes())
         for (source, label), predicate_inst in self.monopredicate_map.items():
             nodes.update({source, label, predicate_inst})
+        nodes.update(self.monopredicate_index.keys())
         return nodes
 
 if __name__ == '__main__':

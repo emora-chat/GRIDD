@@ -30,6 +30,13 @@ class ConceptGraphSpec:
         assert cg.monopredicate_index['Rob'] == set()
         assert cg.bipredicate_graph.has('Rob')
 
+    def add_nodes(cg, nodes):
+        """
+        Add a node from iterable
+        """
+        cg.add_nodes(['Stacy', 'happy'])
+        assert 'Stacy' in cg.concepts() and 'happy' in cg.concepts()
+
     def add_monopredicate(cg, source, label, predicate_id=None):
         """
         Add a monopredicate with optional predicate_id.
@@ -38,10 +45,9 @@ class ConceptGraphSpec:
         """
         cg.add_monopredicate('Stacy', 'happy') #4
         assert cg.monopredicate_index['Stacy'] == {'happy'}
-        assert not cg.bipredicate_graph.has('Stacy')
-        assert not cg.bipredicate_graph.has('happy')
         assert cg.monopredicate_map[('Stacy', 'happy')] == 4
 
+        cg.add_node('sad')
         cg.add_monopredicate('Rob', 'sad', predicate_id='sad(Rob)') #sad(Rob)
         assert cg.monopredicate_index['Rob'] == {'sad'}
         assert cg.monopredicate_map[('Rob', 'sad')] == 'sad(Rob)'
@@ -52,6 +58,7 @@ class ConceptGraphSpec:
         Otherwise, predicate_id is automatically generated.
         :return: predicate_id
         """
+        cg.add_node('hates')
         pred_id = cg.add_bipredicate('Peter', 'Mary', 'hates', predicate_id='new_id') #new_id
         assert pred_id == 'new_id'
         assert cg.bipredicate_graph.has('Peter', 'Mary', 'hates')
@@ -59,16 +66,16 @@ class ConceptGraphSpec:
         assert cg.bipredicate_map.reverse()['new_id'] == ('Peter', 'Mary', 'hates')
 
         # Adding nested predicate
-
+        cg.add_nodes(['because', 'you'])
         in2 = cg.add_bipredicate(0, 1, 'because', predicate_id='nested_pred') #nested_pred
-        in3 = cg.add_bipredicate('you', 'nested_pred', 'hate') #5
+        in3 = cg.add_bipredicate('you', 'nested_pred', 'hates') #5
 
         assert cg.subject('nested_pred') == 0
         assert cg.object('nested_pred') == 1
         assert cg.type('nested_pred') == 'because'
 
         # Adding multiple predicates between the same source and target node
-
+        cg.add_nodes(['i','smart','am','value','want'])
         cg.add_bipredicate('i', 'smart', 'am') #6
         cg.add_bipredicate('i', 'smart', 'value') #7
         cg.add_bipredicate('i', 'happy', 'am') #8
@@ -96,6 +103,7 @@ class ConceptGraphSpec:
         assert ('Mary', 'Peter', 'likes') not in cg.bipredicate_map
         assert ('Peter', 'Mary', 'hates') not in cg.bipredicate_map
 
+        cg.add_nodes(['liver','eat','reason','think'])
         cg.add_bipredicate('Rob', 'liver', 'eat', predicate_id='eat(Rob,liver)') #eat(Rob,liver)
         cg.add_bipredicate('sad(Rob)', 'eat(Rob,liver)', 'reason', predicate_id='nested_Rob') #nested_Rob
         cg.add_monopredicate('sad(Rob)', 'think') #10
@@ -120,6 +128,7 @@ class ConceptGraphSpec:
         """
         Remove monopredicate
         """
+        cg.add_node('Sally')
         cg.add_monopredicate('Sally', 'sad') #11
         assert cg.monopredicate_index['Sally'] == {'sad'}
         assert cg.monopredicate_map[('Sally', 'sad')] == 11
@@ -133,6 +142,7 @@ class ConceptGraphSpec:
 
         If predicate_type is specified, then only bipredicates are returned
         """
+        cg.add_nodes(['Mary','likes'])
         cg.add_bipredicate('John', 'Mary', 'likes') #12
         cg.add_bipredicate('Mary', 'Peter', 'likes') #13
         cg.add_bipredicate('Peter', 'John', 'likes') #14
@@ -213,6 +223,7 @@ class ConceptGraphSpec:
         """
         Get all neighboring nodes of the given node, with optional predicate type by which to filter
         """
+        cg.add_node('Beth')
         cg.add_bipredicate('Mary', 'Beth', 'hates') #18
         assert cg.neighbors('Mary') == {'John', 'Peter', 'Beth'}
         assert cg.neighbors('Mary', 'hates') == {'Beth', 'Peter'}
@@ -269,5 +280,8 @@ class ConceptGraphSpec:
         assert cg.concepts() == {'Stacy', 'happy', 4,
                                  'John', 'sad', 17,
                                  'Mary', 'Beth', 'hates', 18,
-                                 'likes', 12}
+                                 'likes', 12,
+                                  'Sarah', 'because', 'you',
+                                  'smart','am','value','want',
+                                 'liver','eat','reason','think', 'Sally'}
 
