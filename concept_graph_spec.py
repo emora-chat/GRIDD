@@ -8,10 +8,10 @@ class ConceptGraphSpec:
     """
 
     @specification.init
-    def CONCEPT_GRAPH(ConceptGraph, edges=None, nodes=None):
+    def CONCEPT_GRAPH(ConceptGraph, bipredicates=None, monopredicates=None, nodes=None):
         """
         """
-        cg = ConceptGraph([
+        cg = ConceptGraph(bipredicates=[
             ('John', 'Mary', 'likes'), #0
             ('Mary', 'Peter', 'likes'), #1
             ('Peter', 'John', 'likes'), #2
@@ -294,4 +294,15 @@ class ConceptGraphSpec:
         """
         id = cg.add_bipredicate_on_label('Stacy','liver','eat')
         assert cg.bipredicate('Stacy', 'liver', 'eat') == 'eat'
+
+    def has(cg, nodes):
+        """
+        Check whether node(s) has been added to the concept graph.
+
+        Nodes can be either string or list.
+        """
+        assert cg.has('Stacy')
+        assert cg.has('eat')
+        assert cg.has('liver')
+        assert cg.has(['Stacy', 'eat', 'liver'])
 

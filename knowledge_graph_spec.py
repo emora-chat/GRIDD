@@ -13,11 +13,13 @@ class KnowledgeGraph:
     assigned an integer ID).
     """
 
-    def KNOWLEDGE_GRAPH(KnowledgeGraph, file_name=None):
+    def KNOWLEDGE_GRAPH(KnowledgeGraph, filename=None, nodes=None):
         """
         Create a `KnowledgeGraph` object.
 
         Providing a `file_name` will load a text file from a previous `knowledge_graph.save` operation.
+
+        Providing a `nodes` list will initialize those nodes.
         """
         knowledge_graph = KnowledgeGraph('knowledge_graph.txt')
         return knowledge_graph

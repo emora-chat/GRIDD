@@ -5,9 +5,9 @@ from concept_graph_spec import ConceptGraphSpec
 
 class ConceptGraph:
 
-    def __init__(self, bipredicates=None, monopredicates=None):
+    def __init__(self, bipredicates=None, monopredicates=None, nodes=None):
         self.next_id = 0
-        self.bipredicate_graph = LabeledDigraphNX(bipredicates)
+        self.bipredicate_graph = LabeledDigraphNX(bipredicates, nodes)
 
         if bipredicates is not None:
             self.bipredicate_map = Bimap(
@@ -30,6 +30,10 @@ class ConceptGraph:
         else:
             self.monopredicate_index = Index()
             self.monopredicate_map = Bimap()
+
+        if nodes is not None:
+            for node in nodes:
+                self.monopredicate_index[node] = set()
 
     def get_next_id(self):
         to_return = self.next_id
@@ -195,6 +199,19 @@ class ConceptGraph:
             nodes.update({source, label, predicate_inst})
         nodes.update(self.monopredicate_index.keys())
         return nodes
+
+    def has(self, nodes):
+        if isinstance(nodes, str):
+            return nodes in self.concepts()
+        elif isinstance(nodes, list):
+            concepts = self.concepts()
+            for n in nodes:
+                if n not in concepts:
+                    return False
+            return True
+        else:
+            raise Exception(":param 'nodes' must be string or list")
+
 
 if __name__ == '__main__':
     print(ConceptGraphSpec.verify(ConceptGraph))

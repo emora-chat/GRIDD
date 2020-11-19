@@ -6,22 +6,107 @@ class PredicateTransformer(Transformer):
     def __init__(self, kg):
         super().__init__()
         self.kg = kg
+        self.kg_concepts = self.kg._concept_graph.concepts()
+        self.additions = ConceptGraph()
 
     def unnamed_bipredicate(self, args):
         type, subject, object = args
-        return self.kg._concept_graph.add_bipredicate(subject, object, type)
+        new_concepts = self.additions.concepts()
+
+        if subject not in self.kg_concepts and subject not in new_concepts:
+            raise Exception("subject error - node %s does not exist!" % subject)
+        elif subject not in new_concepts:
+            self.additions.add_node(subject)
+
+        if object not in self.kg_concepts and object not in new_concepts:
+            raise Exception("object error - node %s does not exist!" % object)
+        elif object not in new_concepts:
+            self.additions.add_node(object)
+
+        if type not in self.kg_concepts and type not in new_concepts:
+            raise Exception("predicate_type error - node %s does not exist!" % type)
+        elif type not in new_concepts:
+            self.additions.add_node(type)
+
+        return self.additions.add_bipredicate(subject, object, type)
 
     def unnamed_monopredicate(self, args):
         type, subject = args
-        return self.kg._concept_graph.add_monopredicate(subject, type)
+        new_concepts = self.additions.concepts()
+
+        if subject not in self.kg_concepts and subject not in new_concepts:
+            raise Exception("subject error - node %s does not exist!" % subject)
+        elif subject not in new_concepts:
+            self.additions.add_node(subject)
+
+        if type not in self.kg_concepts and type not in new_concepts:
+            raise Exception("predicate_type error - node %s does not exist!" % type)
+        elif type not in new_concepts:
+            self.additions.add_node(type)
+
+        return self.additions.add_monopredicate(subject, type)
 
     def named_bipredicate(self, args):
         name, type, subject, object = args
-        return self.kg._concept_graph.add_bipredicate(subject, object, type, predicate_id=name)
+        new_concepts = self.additions.concepts()
+
+        if subject not in self.kg_concepts and subject not in new_concepts:
+            raise Exception("subject error - node %s does not exist!" % subject)
+        elif subject not in new_concepts:
+            self.additions.add_node(subject)
+
+        if object not in self.kg_concepts and object not in new_concepts:
+            raise Exception("object error - node %s does not exist!" % object)
+        elif object not in new_concepts:
+            self.additions.add_node(object)
+
+        if type not in self.kg_concepts and type not in new_concepts:
+            raise Exception("predicate_type error - node %s does not exist!" % type)
+        elif type not in new_concepts:
+            self.additions.add_node(type)
+
+        return self.additions.add_bipredicate(subject, object, type, predicate_id=name)
 
     def named_monopredicate(self, args):
         name, type, subject = args
-        return self.kg._concept_graph.add_monopredicate(subject, type, predicate_id=name)
+        new_concepts = self.additions.concepts()
+
+        if subject not in self.kg_concepts and subject not in new_concepts:
+            raise Exception("subject error - node %s does not exist!" % subject)
+        elif subject not in new_concepts:
+            self.additions.add_node(subject)
+
+        if type not in self.kg_concepts and type not in new_concepts:
+            raise Exception("predicate_type error - node %s does not exist!" % type)
+        elif type not in new_concepts:
+            self.additions.add_node(type)
+
+        return self.additions.add_monopredicate(subject, type, predicate_id=name)
+
+    def named_instance(self, args):
+        name, type = args
+        new_concepts = self.additions.concepts()
+
+        if type not in self.kg_concepts and type not in new_concepts:
+            raise Exception("predicate_type error - node %s does not exist!" % type)
+        elif type not in new_concepts:
+            self.additions.add_node(type)
+
+        self.additions.add_bipredicate(name, type, 'type')
+        return name
+
+    def unnamed_instance(self, args):
+        type = args[0]
+        name = self.kg._concept_graph.get_next_id()
+        new_concepts = self.additions.concepts()
+
+        if type not in self.kg_concepts and type not in new_concepts:
+            raise Exception("predicate_type error - node %s does not exist!" % type)
+        elif type not in new_concepts:
+            self.additions.add_node(type)
+
+        self.additions.add_bipredicate(name, type, 'type')
+        return name
 
     def name(self, args):
         return str(args[0])
@@ -35,21 +120,13 @@ class PredicateTransformer(Transformer):
     def object(self, args):
         return str(args[0])
 
-    def named_instance(self, args):
-        name, type = args
-        self.kg._concept_graph.add_bipredicate(name, type, 'type')
-        return name
-
-    def unnamed_instance(self, args):
-        type = args[0]
-        name = self.kg._concept_graph.get_next_id()
-        self.kg._concept_graph.add_bipredicate(name, type, 'type')
-        return name
+    def start(self, args):
+        return self.additions
 
 class KnowledgeGraph:
 
-    def __init__(self, filename=None):
-        self._concept_graph = ConceptGraph()
+    def __init__(self, filename=None, nodes=None):
+        self._concept_graph = ConceptGraph(nodes=nodes)
         self._grammar = r"""
             start: (unnamed_bipredicate | named_bipredicate | unnamed_monopredicate | named_monopredicate)+
             unnamed_bipredicate: type "(" subject "," object ")"
@@ -74,15 +151,14 @@ class KnowledgeGraph:
 
     def add_knowledge(self, input):
         tree = self.parser.parse(input)
-        # print(tree.pretty())
-        self.predicate_transformer.transform(tree)
+        return self.predicate_transformer.transform(tree)
 
     def add_entity_type(self, entity_type, supertypes):
         if isinstance(supertypes, list):
             for supertype in supertypes:
-                self.kg._concept_graph.add_bipredicate(entity_type, supertype, 'type')
+                self._concept_graph.add_bipredicate(entity_type, supertype, 'type')
         elif isinstance(supertypes, str):
-            self.kg._concept_graph.add_bipredicate(entity_type, supertypes, 'type')
+            self._concept_graph.add_bipredicate(entity_type, supertypes, 'type')
         else:
             raise Exception(":param 'supertypes' must be a list or string!")
 
@@ -111,29 +187,35 @@ class KnowledgeGraph:
     # todo - if supertypes is None, just add a single unspecified node?
     def add_entity_instance(self, supertypes, properties, entity_instance=None):
         if entity_instance is None:
-            entity_instance = self.kg._concept_graph.get_next_id()
+            entity_instance = self._concept_graph.get_next_id()
         if isinstance(supertypes, list):
             for supertype in supertypes:
-                self.kg._concept_graph.add_bipredicate(entity_instance, supertype, 'type')
+                self._concept_graph.add_bipredicate(entity_instance, supertype, 'type')
         elif isinstance(supertypes, str):
-            self.kg._concept_graph.add_bipredicate(entity_instance, supertypes, 'type')
+            self._concept_graph.add_bipredicate(entity_instance, supertypes, 'type')
         else:
             raise Exception(":param 'supertypes' must be a list or string!")
         for label, value in properties.items():
-            self.kg._concept_graph.add_bipredicate(entity_instance, value, label)
+            self._concept_graph.add_bipredicate(entity_instance, value, label)
         return entity_instance
 
 if __name__ == '__main__':
 
+    # text = """
+    # test(me, you())
+    # reason(reason(hu/happy(user_2), gus/go(user_2, store1)), bus/buy(user_2, i0/icecream()))
+    # time(gus, past)
+    # time(bus, past)
+    # type(i0, chocolate)
+    # """
+
     text = """
-    test(me, you())
-    reason(reason(hu/happy(user_2), gus/go(user_2, store1)), bus/buy(user_2, i0/icecream()))
-    time(gus, past)
-    time(bus, past)
-    type(i0, chocolate)
+        go(person,store)
     """
 
-    kg = KnowledgeGraph()
-    kg.add_knowledge(text)
+    kg = KnowledgeGraph(nodes=['person','store','icecream',
+                               'go','buy','happy','reason','time','type'])
+    addition_graph = kg.add_knowledge(text)
 
+    test = 1
 
