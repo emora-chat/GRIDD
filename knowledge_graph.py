@@ -8,20 +8,27 @@ class PredicateTransformer(Transformer):
         self.kg = kg
         self.kg_concepts = self.kg._concept_graph.concepts()
         self.additions = ConceptGraph()
+        self.local_names = {}
 
     def unnamed_bipredicate(self, args):
         type, subject, object = args
         new_concepts = self.additions.concepts()
 
-        if subject not in self.kg_concepts and subject not in new_concepts:
-            raise Exception("subject error - node %s does not exist!" % subject)
-        elif subject not in new_concepts:
-            self.additions.add_node(subject)
+        if subject not in self.local_names:
+            if subject not in self.kg_concepts and subject not in new_concepts:
+                raise Exception("subject error - node %s does not exist!" % subject)
+            elif subject not in new_concepts:
+                self.additions.add_node(subject)
+        else:
+            subject = self.local_names[subject]
 
-        if object not in self.kg_concepts and object not in new_concepts:
-            raise Exception("object error - node %s does not exist!" % object)
-        elif object not in new_concepts:
-            self.additions.add_node(object)
+        if object not in self.local_names:
+            if object not in self.kg_concepts and object not in new_concepts:
+                raise Exception("object error - node %s does not exist!" % object)
+            elif object not in new_concepts:
+                self.additions.add_node(object)
+        else:
+            object = self.local_names[object]
 
         if type not in self.kg_concepts and type not in new_concepts:
             raise Exception("predicate_type error - node %s does not exist!" % type)
@@ -34,10 +41,13 @@ class PredicateTransformer(Transformer):
         type, subject = args
         new_concepts = self.additions.concepts()
 
-        if subject not in self.kg_concepts and subject not in new_concepts:
-            raise Exception("subject error - node %s does not exist!" % subject)
-        elif subject not in new_concepts:
-            self.additions.add_node(subject)
+        if subject not in self.local_names:
+            if subject not in self.kg_concepts and subject not in new_concepts:
+                raise Exception("subject error - node %s does not exist!" % subject)
+            elif subject not in new_concepts:
+                self.additions.add_node(subject)
+        else:
+            subject = self.local_names[subject]
 
         if type not in self.kg_concepts and type not in new_concepts:
             raise Exception("predicate_type error - node %s does not exist!" % type)
@@ -50,41 +60,55 @@ class PredicateTransformer(Transformer):
         name, type, subject, object = args
         new_concepts = self.additions.concepts()
 
-        if subject not in self.kg_concepts and subject not in new_concepts:
-            raise Exception("subject error - node %s does not exist!" % subject)
-        elif subject not in new_concepts:
-            self.additions.add_node(subject)
+        if subject not in self.local_names:
+            if subject not in self.kg_concepts and subject not in new_concepts:
+                raise Exception("subject error - node %s does not exist!" % subject)
+            elif subject not in new_concepts:
+                self.additions.add_node(subject)
+        else:
+            subject = self.local_names[subject]
 
-        if object not in self.kg_concepts and object not in new_concepts:
-            raise Exception("object error - node %s does not exist!" % object)
-        elif object not in new_concepts:
-            self.additions.add_node(object)
+        if object not in self.local_names:
+            if object not in self.kg_concepts and object not in new_concepts:
+                raise Exception("object error - node %s does not exist!" % object)
+            elif object not in new_concepts:
+                self.additions.add_node(object)
+        else:
+            object = self.local_names[object]
 
         if type not in self.kg_concepts and type not in new_concepts:
             raise Exception("predicate_type error - node %s does not exist!" % type)
         elif type not in new_concepts:
             self.additions.add_node(type)
 
-        return self.additions.add_bipredicate(subject, object, type, predicate_id=name)
+        id = self.additions.add_bipredicate(subject, object, type)
+        self.local_names[name] = id
+        return id
 
     def named_monopredicate(self, args):
         name, type, subject = args
         new_concepts = self.additions.concepts()
 
-        if subject not in self.kg_concepts and subject not in new_concepts:
-            raise Exception("subject error - node %s does not exist!" % subject)
-        elif subject not in new_concepts:
-            self.additions.add_node(subject)
+        if subject not in self.local_names:
+            if subject not in self.kg_concepts and subject not in new_concepts:
+                raise Exception("subject error - node %s does not exist!" % subject)
+            elif subject not in new_concepts:
+                self.additions.add_node(subject)
+        else:
+            subject = self.local_names[subject]
 
         if type not in self.kg_concepts and type not in new_concepts:
             raise Exception("predicate_type error - node %s does not exist!" % type)
         elif type not in new_concepts:
             self.additions.add_node(type)
 
-        return self.additions.add_monopredicate(subject, type, predicate_id=name)
+        id = self.additions.add_monopredicate(subject, type)
+        self.local_names[name] = id
+        return id
 
     def named_instance(self, args):
         name, type = args
+        id = self.kg._concept_graph.get_next_id()
         new_concepts = self.additions.concepts()
 
         if type not in self.kg_concepts and type not in new_concepts:
@@ -92,12 +116,14 @@ class PredicateTransformer(Transformer):
         elif type not in new_concepts:
             self.additions.add_node(type)
 
-        self.additions.add_bipredicate(name, type, 'type')
-        return name
+        self.additions.add_node(id)
+        self.additions.add_bipredicate(id, type, 'type')
+        self.local_names[name] = id
+        return id
 
     def unnamed_instance(self, args):
         type = args[0]
-        name = self.kg._concept_graph.get_next_id()
+        id = self.kg._concept_graph.get_next_id()
         new_concepts = self.additions.concepts()
 
         if type not in self.kg_concepts and type not in new_concepts:
@@ -105,8 +131,9 @@ class PredicateTransformer(Transformer):
         elif type not in new_concepts:
             self.additions.add_node(type)
 
-        self.additions.add_bipredicate(name, type, 'type')
-        return name
+        self.additions.add_node(id)
+        self.additions.add_bipredicate(id, type, 'type')
+        return id
 
     def name(self, args):
         return str(args[0])
@@ -210,7 +237,8 @@ if __name__ == '__main__':
     # """
 
     text = """
-        go(person,store)
+        gps/go(person,store)
+        reason(happy,gps)
     """
 
     kg = KnowledgeGraph(nodes=['person','store','icecream',
