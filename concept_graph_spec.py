@@ -285,3 +285,13 @@ class ConceptGraphSpec:
                                   'smart','am','value','want',
                                  'liver','eat','reason','think', 'Sally'}
 
+    def add_bipredicate_on_label(cg, source, target, label):
+        """
+        Add a bipredicate on the label node (e.g. for specifying predicate_type constraints).
+        Does not create an predicate instance for this bipredicate (the label node is the instance
+        being directly modified).
+        :return: label
+        """
+        id = cg.add_bipredicate_on_label('Stacy','liver','eat')
+        assert cg.bipredicate('Stacy', 'liver', 'eat') == 'eat'
+
