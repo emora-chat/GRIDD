@@ -12,14 +12,14 @@ class ConceptGraphSpec:
         """
         """
         cg = ConceptGraph([
-            ('John', 'Mary', 'likes'),
-            ('Mary', 'Peter', 'likes'),
-            ('Peter', 'John', 'likes'),
-            ('Peter', 'Sarah', 'likes')
+            ('John', 'Mary', 'likes'), #0
+            ('Mary', 'Peter', 'likes'), #1
+            ('Peter', 'John', 'likes'), #2
+            ('Peter', 'Sarah', 'likes') #3
         ])
 
-        assert cg.bipredicate_map[('John', 'Mary', 'likes')] == 'John-Mary-likes'
-        assert cg.bipredicate_map.reverse()['John-Mary-likes'] == ('John', 'Mary', 'likes')
+        assert cg.bipredicate_map[('John', 'Mary', 'likes')] == 0
+        assert cg.bipredicate_map.reverse()[0] == ('John', 'Mary', 'likes')
         return cg
 
     def add_node(cg, node):
@@ -36,13 +36,13 @@ class ConceptGraphSpec:
         Otherwise, predicate_id is automatically generated.
         :return: predicate_id
         """
-        cg.add_monopredicate('Stacy', 'happy')
+        cg.add_monopredicate('Stacy', 'happy') #4
         assert cg.monopredicate_index['Stacy'] == {'happy'}
         assert not cg.bipredicate_graph.has('Stacy')
         assert not cg.bipredicate_graph.has('happy')
-        assert cg.monopredicate_map[('Stacy', 'happy')] == 'Stacy-happy'
+        assert cg.monopredicate_map[('Stacy', 'happy')] == 4
 
-        cg.add_monopredicate('Rob', 'sad', 'sad(Rob)')
+        cg.add_monopredicate('Rob', 'sad', predicate_id='sad(Rob)') #sad(Rob)
         assert cg.monopredicate_index['Rob'] == {'sad'}
         assert cg.monopredicate_map[('Rob', 'sad')] == 'sad(Rob)'
 
@@ -52,7 +52,7 @@ class ConceptGraphSpec:
         Otherwise, predicate_id is automatically generated.
         :return: predicate_id
         """
-        pred_id = cg.add_bipredicate('Peter', 'Mary', 'hates', 'new_id')
+        pred_id = cg.add_bipredicate('Peter', 'Mary', 'hates', predicate_id='new_id') #new_id
         assert pred_id == 'new_id'
         assert cg.bipredicate_graph.has('Peter', 'Mary', 'hates')
         assert cg.bipredicate_map[('Peter', 'Mary', 'hates')] == 'new_id'
@@ -60,20 +60,19 @@ class ConceptGraphSpec:
 
         # Adding nested predicate
 
-        in2 = cg.add_bipredicate('John-Mary-likes', 'Mary-Peter-likes', 'because',
-                                 predicate_id='nested_pred')
-        in3 = cg.add_bipredicate('you', 'nested_pred', 'hate')
+        in2 = cg.add_bipredicate(0, 1, 'because', predicate_id='nested_pred') #nested_pred
+        in3 = cg.add_bipredicate('you', 'nested_pred', 'hate') #5
 
-        assert cg.subject('nested_pred') == 'John-Mary-likes'
-        assert cg.object('nested_pred') == 'Mary-Peter-likes'
+        assert cg.subject('nested_pred') == 0
+        assert cg.object('nested_pred') == 1
         assert cg.type('nested_pred') == 'because'
 
         # Adding multiple predicates between the same source and target node
 
-        cg.add_bipredicate('i', 'smart', 'am')
-        cg.add_bipredicate('i', 'smart', 'value')
-        cg.add_bipredicate('i', 'happy', 'am')
-        cg.add_bipredicate('i', 'happy', 'want')
+        cg.add_bipredicate('i', 'smart', 'am') #6
+        cg.add_bipredicate('i', 'smart', 'value') #7
+        cg.add_bipredicate('i', 'happy', 'am') #8
+        cg.add_bipredicate('i', 'happy', 'want') #9
 
         assert cg.bipredicate_graph.has('i', 'happy', 'am')
         assert cg.bipredicate_graph.has('i', 'happy', 'want')
@@ -97,9 +96,9 @@ class ConceptGraphSpec:
         assert ('Mary', 'Peter', 'likes') not in cg.bipredicate_map
         assert ('Peter', 'Mary', 'hates') not in cg.bipredicate_map
 
-        cg.add_bipredicate('Rob', 'liver', 'eat', 'eat(Rob,liver)')
-        cg.add_bipredicate('sad(Rob)', 'eat(Rob,liver)', 'reason', 'nested_Rob')
-        cg.add_monopredicate('sad(Rob)', 'think')
+        cg.add_bipredicate('Rob', 'liver', 'eat', predicate_id='eat(Rob,liver)') #eat(Rob,liver)
+        cg.add_bipredicate('sad(Rob)', 'eat(Rob,liver)', 'reason', predicate_id='nested_Rob') #nested_Rob
+        cg.add_monopredicate('sad(Rob)', 'think') #10
         cg.remove_node('Rob')
         assert 'Rob' not in cg.monopredicate_index
         assert ('Rob', 'sad') not in cg.monopredicate_map
@@ -121,9 +120,9 @@ class ConceptGraphSpec:
         """
         Remove monopredicate
         """
-        cg.add_monopredicate('Sally', 'sad')
+        cg.add_monopredicate('Sally', 'sad') #11
         assert cg.monopredicate_index['Sally'] == {'sad'}
-        assert cg.monopredicate_map[('Sally', 'sad')] == 'Sally-sad'
+        assert cg.monopredicate_map[('Sally', 'sad')] == 11
         cg.remove_monopredicate('Sally', 'sad')
         assert cg.monopredicate_index['Sally'] == set()
         assert ('Sally', 'sad') not in cg.monopredicate_map
@@ -134,11 +133,11 @@ class ConceptGraphSpec:
 
         If predicate_type is specified, then only bipredicates are returned
         """
-        cg.add_bipredicate('John', 'Mary', 'likes')
-        cg.add_bipredicate('Mary', 'Peter', 'likes')
-        cg.add_bipredicate('Peter', 'John', 'likes')
-        cg.add_bipredicate('Peter', 'Sarah', 'likes')
-        cg.add_bipredicate('Peter', 'Mary', 'hates')
+        cg.add_bipredicate('John', 'Mary', 'likes') #12
+        cg.add_bipredicate('Mary', 'Peter', 'likes') #13
+        cg.add_bipredicate('Peter', 'John', 'likes') #14
+        cg.add_bipredicate('Peter', 'Sarah', 'likes') #15
+        cg.add_bipredicate('Peter', 'Mary', 'hates') #16
         assert cg.predicates('Mary') == {('John', 'Mary', 'likes'),
                                          ('Mary', 'Peter', 'likes'),
                                          ('Peter', 'Mary', 'hates')}
@@ -146,7 +145,7 @@ class ConceptGraphSpec:
         assert cg.predicates('Mary', 'likes') == {('John', 'Mary', 'likes'),
                                                   ('Mary', 'Peter', 'likes')}
 
-        cg.add_monopredicate('John', 'sad')
+        cg.add_monopredicate('John', 'sad') #17
         assert cg.predicates('John') == {('John', 'Mary', 'likes'),
                                          ('Peter', 'John', 'likes'),
                                          ('John', 'sad')}
@@ -202,19 +201,19 @@ class ConceptGraphSpec:
         """
         Get the bipredicate id corresponding to the bipredicate defined by subject, object, and type
         """
-        assert cg.bipredicate('John', 'Mary', 'likes') == 'John-Mary-likes'
+        assert cg.bipredicate('John', 'Mary', 'likes') == 12
 
     def monopredicate(cg, subject, type):
         """
         Get the monopredicate id corresponding to the monopredicate defined by subject and type
         """
-        assert cg.monopredicate('John', 'sad') == 'John-sad'
+        assert cg.monopredicate('John', 'sad') == 17
 
     def neighbors(cg, node, predicate_type=None):
         """
         Get all neighboring nodes of the given node, with optional predicate type by which to filter
         """
-        cg.add_bipredicate('Mary', 'Beth', 'hates')
+        cg.add_bipredicate('Mary', 'Beth', 'hates') #18
         assert cg.neighbors('Mary') == {'John', 'Peter', 'Beth'}
         assert cg.neighbors('Mary', 'hates') == {'Beth', 'Peter'}
 
@@ -235,24 +234,24 @@ class ConceptGraphSpec:
         """
         Return the subject of the predicate
         """
-        assert cg.subject('Mary-Beth-hates') == 'Mary'
-        assert cg.subject('John-sad') == 'John'
+        assert cg.subject(18) == 'Mary'
+        assert cg.subject(17) == 'John'
 
     def object(cg, predicate_instance):
         """
         Return the object of the predicate
         """
-        assert cg.object('Mary-Beth-hates') == 'Beth'
+        assert cg.object(18) == 'Beth'
         with pytest.raises(Exception) as excinfo:
-            cg.object('John-sad')
+            cg.object(17)
         assert excinfo.value.args[0] == 'Cannot get object of a monopredicate!'
 
     def type(cg, predicate_instance):
         """
         Return the type of the predicate
         """
-        assert cg.type('Mary-Beth-hates') == 'hates'
-        assert cg.type('John-sad') == 'sad'
+        assert cg.type(18) == 'hates'
+        assert cg.type(17) == 'sad'
 
     def predicates_between(cg, node1, node2):
         """
@@ -267,8 +266,8 @@ class ConceptGraphSpec:
         """
         cg.remove_node('Peter')
         cg.remove_node('i')
-        assert cg.concepts() == {'Stacy', 'happy', 'Stacy-happy',
-                                 'John', 'sad', 'John-sad',
-                                 'Mary', 'Beth', 'hates', 'Mary-Beth-hates',
-                                 'likes', 'John-Mary-likes'}
+        assert cg.concepts() == {'Stacy', 'happy', 4,
+                                 'John', 'sad', 17,
+                                 'Mary', 'Beth', 'hates', 18,
+                                 'likes', 12}
 

@@ -11,7 +11,7 @@ class ConceptGraph:
 
         if bipredicates is not None:
             self.bipredicate_map = Bimap(
-                {pred: '-'.join(pred) for pred in bipredicates}
+                {pred: self.get_next_id() for pred in bipredicates}
             )
         else:
             self.bipredicate_map = Bimap()
@@ -25,7 +25,7 @@ class ConceptGraph:
             self.monopredicate_index = Index(mps)
 
             self.monopredicate_map = Bimap(
-                {pred: '-'.join(pred) for pred in monopredicates}
+                {pred: self.get_next_id() for pred in monopredicates}
             )
         else:
             self.monopredicate_index = Index()
@@ -46,14 +46,14 @@ class ConceptGraph:
 
     def add_bipredicate(self, source, target, label, predicate_id=None):
         if predicate_id is None:
-            predicate_id = '%s-%s-%s' % (source, target, label)
+            predicate_id = self.get_next_id()
         self.bipredicate_graph.add(source, target, label)
         self.bipredicate_map[(source, target, label)] = predicate_id
         return predicate_id
 
     def add_monopredicate(self, source, label, predicate_id=None):
         if predicate_id is None:
-            predicate_id = '%s-%s' % (source, label)
+            predicate_id = self.get_next_id()
         if source not in self.monopredicate_index:
             self.monopredicate_index[source] = set()
         self.monopredicate_index[source].add(label)
