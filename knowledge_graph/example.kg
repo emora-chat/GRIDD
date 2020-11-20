@@ -1,0 +1,13 @@
+emora=bot()
+avengers=movie()
+chris_evans=actor()
+ela/like(emora,avengers)
+reason(ela,like(emora,chris_evans))
+time(ela,now)
+time(eh/happy(emora),now)
+time(ewa/watch(emora,avengers),now)
+reason(eh,ewa);
+
+user=person()
+time(go(user,s/store()),past)
+time(go(user,s2/store()),future);

@@ -1,5 +1,4 @@
 from structpy.graph.directed.labeled.multilabeled_parallel_digraph_networkx import MultiLabeledParallelDigraphNX
-from structpy.map.bijective.bimap import Bimap
 from structpy.map.map import Map
 from structpy.map.index.index import Index
 from concept_graph_spec import ConceptGraphSpec

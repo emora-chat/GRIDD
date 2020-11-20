@@ -20,13 +20,15 @@ class KnowledgeGraph:
             WHITESPACE: (" " | "\n")+
             %ignore WHITESPACE
         """
-        self.parser = Lark(self._grammar, parser="earley")
+        self.parser = Lark(self._grammar, parser="lalr")
         self.predicate_transformer = PredicateTransformer(self)
 
         if filename is not None:
             self.add_knowledge(open(filename, 'r').read())
 
     def add_knowledge(self, input):
+        if input.endswith('.kg'):
+            input = open(input, 'r').read()
         tree = self.parser.parse(input)
         return self.predicate_transformer.transform(tree)
 
@@ -92,20 +94,24 @@ class PredicateTransformer(Transformer):
         if len(args) == 4:
             if args[0].startswith('_id_'):
                 id, type, subject, object = args
-                id = id[4:]
+                id = self._manual_id_check(id[4:])
             else:
                 name, type, subject, object = args
         elif len(args) == 3:
             type, subject, object = args
         else:
             raise Exception('bipredicate must have 3 or 4 arguments')
-        id = self._id_check(id, new_concepts)
+        if id is None:
+            id = self.kg._concept_graph._get_next_id()
+        id = self._id_duplication_check(id, new_concepts)
         subject = self._hierarchical_node_check(subject, new_concepts)
         object = self._hierarchical_node_check(object, new_concepts)
         type = self._node_check(type, new_concepts)
         id = self.addition_construction.add_bipredicate(subject, object, type, predicate_id=id)
         if name is not None:
             self.local_names[name] = id
+        if isinstance(id, int):
+            id = '_int_%d'%id
         return id
 
     def monopredicate(self, args):
@@ -114,19 +120,23 @@ class PredicateTransformer(Transformer):
         if len(args) == 3:
             if args[0].startswith('_id_'):
                 id, type, subject = args
-                id = id[4:]
+                id = self._manual_id_check(id[4:])
             else:
                 name, type, subject = args
         elif len(args) == 2:
             type, subject = args
         else:
             raise Exception('monopredicate must have 2 or 3 arguments')
-        id = self._id_check(id, new_concepts)
+        if id is None:
+            id = self.kg._concept_graph._get_next_id()
+        id = self._id_duplication_check(id, new_concepts)
         subject = self._hierarchical_node_check(subject, new_concepts)
         type = self._node_check(type, new_concepts)
         id = self.addition_construction.add_monopredicate(subject, type, predicate_id=id)
         if name is not None:
             self.local_names[name] = id
+        if isinstance(id, int):
+            id = '_int_%d'%id
         return id
 
     def instance(self, args):
@@ -135,7 +145,7 @@ class PredicateTransformer(Transformer):
         if len(args) == 2:
             if args[0].startswith('_id_'):
                 id, type = args
-                id = id[4:]
+                id = self._manual_id_check(id[4:])
             else:
                 name, type = args
         elif len(args) == 1:
@@ -144,16 +154,21 @@ class PredicateTransformer(Transformer):
             raise Exception('instance must have 1 or 2 arguments')
         if id is None:
             id = self.kg._concept_graph._get_next_id()
-        id = self._id_check(id, new_concepts)
+        id = self._id_duplication_check(id, new_concepts)
         type = self._node_check(type, new_concepts)
         label = self._node_check('type', new_concepts)
         self.addition_construction.add_node(id)
-        self.addition_construction.add_bipredicate(id, type, label)
+        self.addition_construction.add_bipredicate(id, type, label,
+                                                   predicate_id=self.kg._concept_graph._get_next_id())
         if name is not None:
             self.local_names[name] = id
+        if isinstance(id, int):
+            id = '_int_%d'%id
         return id
 
     def _hierarchical_node_check(self, node, new_concepts):
+        if node.startswith('_int_'):
+            node = int(node[5:])
         if node not in self.local_names:
             if node not in self.kg_concepts and node not in new_concepts:
                 raise Exception("error - node %s does not exist!" % node)
@@ -170,12 +185,15 @@ class PredicateTransformer(Transformer):
             self.addition_construction.add_node(type)
         return type
 
-    def _id_check(self, id, new_concepts):
-        if id is not None:
-            if id.isdigit():
-                id = int(id)
-            if id in new_concepts or id in self.kg_concepts:
-                raise Exception("predicate id %s already exists!" % id)
+    def _manual_id_check(self, id):
+        if id.isdigit():
+            raise Exception("Manually specified ids cannot be numbers/integers, "
+                            "but you are trying to add %s!" % id)
+        return id
+
+    def _id_duplication_check(self, id, new_concepts):
+        if id is not None and (id in new_concepts or id in self.kg_concepts):
+            raise Exception("predicate id %s already exists!" % id)
         return id
 
     def name(self, args):
@@ -203,33 +221,10 @@ class PredicateTransformer(Transformer):
 
 if __name__ == '__main__':
 
-    # text = """
-    # test(me, you())
-    # reason(reason(hu/happy(user_2), gus/go(user_2, store1)), bus/buy(user_2, i0/icecream()))
-    # time(gus, past)
-    # time(bus, past)
-    # type(i0, chocolate)
-    # """
-
-    text = """
-        gps/go(person,store)
-        go(person,store)
-        buy(person,store)
-        reason(happy,gps);
-        t/time(person)
-        time(person);
-    """
-
-    text = """
-        sally=person()
-        sally_happy=happy(sally)
-        reason(sally_happy,icecream)
-        rename=buy(person,store);
-    """
-
-    kg = KnowledgeGraph(nodes=['person','store','icecream',
-                               'go','buy','happy','reason','time','type'])
-    additions = kg.add_knowledge(text)
+    ontology=['type','person','bot','movie','actor','store',
+              'reason','like','happy','time','now','past','future','watch','go','expr']
+    kg = KnowledgeGraph(nodes=ontology)
+    additions = kg.add_knowledge('example.kg')
 
     test = 1
 

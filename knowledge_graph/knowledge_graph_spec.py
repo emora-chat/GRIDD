@@ -21,7 +21,7 @@ class KnowledgeGraph:
 
         Providing a `nodes` list will initialize those nodes.
         """
-        knowledge_graph = KnowledgeGraph('knowledge_graph.txt')
+        knowledge_graph = KnowledgeGraph('example.kg')
         return knowledge_graph
 
     def add_entity_type(kg, entity_type, supertypes):
