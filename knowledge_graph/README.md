@@ -23,6 +23,21 @@ when any of the following is true:
     
 An example of a KG text file can be found in `example.kg`.
 
+### Instantiation
+
+All entity and predicate types that will be used in your KG 
+text file must be added to the KG before you load your text
+file. When instantiating your KG, you can pass them in as a 
+list to the `nodes` parameter and then `add_knowledge()` as in
+the following:
+
+```
+ontology=['type','person','bot','movie','actor','store',
+      'reason','like','happy','time','now','past','future','watch','go','expr']
+kg = KnowledgeGraph(nodes=ontology)
+additions = kg.add_knowledge('example.kg')
+```
+
 ### Format
 
 A KG text file specifies `blocks` of knowledge statements 
@@ -36,13 +51,22 @@ the same `block`.
 
 `example.kg` is composed of 2 `blocks`.
 
-#### Named entities
+#### Knowledge Ids
+Each knowledge statement is given an automatically generated
+unique id when it is added to the KG. 
+This unique id is integral to the functioning of the underlying 
+data structure, but it is not easily available through the 
+text file interface, which leads to the local naming paradigm
+ described in future sections.
+
+#### Named instances
 
 Adding new named entities to the KG is an important task, 
 such as specifying people, locations, items, and more. 
 
 In the text file, named entities are specified as instances of 
-their ontological type like:
+their ontological type where their name is treated as an 
+id like`id=type()` as in:
 ```
 emora=bot()
 avengers=movie()
@@ -53,6 +77,32 @@ These named entities can then be referenced in later statements
 simply by their names (e.g. `emora`).
 
 *NOTE: Alias/synonym specification coming soon...
+
+#### Unnamed instances
+
+In many cases, you will want to add specific instances of a type
+to the KG where the instance is not a named entity. 
+For this, you should not use the `named entity` specification since
+you do not have a name to use for the id. Instead, an unnamed 
+instance is specified like `type()` as in:
+
+```
+sandwich()
+blanket()
+house()
+```
+
+It is necessary to give a local name to these unnamed instances if 
+you will be referencing them in later statements in the KG block.
+This local name is not utilized in the underlying KG data structure;
+it only exists when parsing the KG text file for linking purposes.
+
+An instance local name is specified by the prefix `name/` before 
+the instance specification as in:
+```
+s1/sandwich()
+b1/blanket()
+```
 
 #### Bipredicates
 
@@ -88,11 +138,9 @@ However, if a `bipredicate` is involved in more than relationship,
 the examples specified previously will not work because there is
 no way to reference the nested `bipredicate`. 
 
-Instead, it is necessary to give a local name to the `bipredicate` 
-which can then be referenced in later statements in the KG block.
-This local name is not utilized in the underlying KG data structure;
-it only exists when parsing the KG text file for linking purposes.
-Local names are specified as the prefix `name/` to the `bipredicate`
+Instead, you will follow the same local naming principle as for 
+unnamed instances.
+For `bipredicates`, local names are specified as the prefix `name/` to the `bipredicate`
 specification as in:
 ```
 ela/like(emora,avengers)
@@ -102,7 +150,21 @@ time(ela,now)
 
 #### Monopredicates
 
+You may also want to capture knowledge that does not follow the 
+`bipredicate` format of a relationship between a subject and 
+an object. There are many cases where there is only 1 argument
+instead. 
 
+A predicate with only 1 argument is called a `monopredicate`. 
+`Monopredicates` are specified as `type(subject)` as in:
+
+```
+happy(emora)
+run(emora)
+```
+
+`Monopredicates` have the same nesting and naming principles 
+as defined for `bipredicates`.
 
 ## API
 
