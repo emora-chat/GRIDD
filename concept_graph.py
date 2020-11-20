@@ -30,12 +30,16 @@ class ConceptGraph:
                 mps[subject].add(label)
             self.monopredicate_map = Map(mps)
 
-            self.monopredicate_instance_index = Bimap(
-                {pred: self._get_next_id() for pred in monopredicates}
-            )
+            idx = {}
+            for pred in monopredicates:
+                if pred not in idx:
+                    idx[pred] = set()
+                id = self._get_next_id()
+                idx[pred].add(id)
+            self.monopredicate_instance_index = Index(idx)
         else:
             self.monopredicate_map = Map()
-            self.monopredicate_instance_index = Bimap()
+            self.monopredicate_instance_index = Index()
 
         if nodes is not None:
             for node in nodes:
@@ -88,7 +92,7 @@ class ConceptGraph:
         if source not in self.monopredicate_map:
             self.monopredicate_map[source] = set()
         self.monopredicate_map[source].add(label)
-        self.monopredicate_instance_index[(source, label)] = predicate_id
+        self.monopredicate_instance_index[(source, label)].add(predicate_id)
         return predicate_id
 
     def add_bipredicate_on_label(self, source, target, label):
@@ -113,7 +117,7 @@ class ConceptGraph:
 
         if node in self.monopredicate_map:
             monopredicates = list(self.monopredicate_instance_index.items())
-            for monopredicate, id in monopredicates:
+            for monopredicate, ids in monopredicates:
                 if monopredicate[0] == node:
                     self.remove_monopredicate(*monopredicate)
             del self.monopredicate_map[node]
@@ -126,10 +130,11 @@ class ConceptGraph:
             self.remove_node(id)
 
     def remove_monopredicate(self, node, label):
-        id = self.monopredicate_instance_index[(node, label)]
+        ids = list(self.monopredicate_instance_index[(node, label)])
         del self.monopredicate_instance_index[(node, label)]
         self.monopredicate_map[node].remove(label)
-        self.remove_node(id)
+        for id in ids:
+            self.remove_node(id)
 
     ######################
     ## Access Functions ##
@@ -147,12 +152,14 @@ class ConceptGraph:
         return edges
 
     def monopredicates(self, node):
-        return set([(node, label) for label in self.monopredicate_map[node]])
+        monopreds = set()
+        for label in self.monopredicate_map[node]:
+            monopreds.update([(node, label)] * len(self.monopredicate_instance_index[(node, label)]))
+        return monopreds
 
     def predicates_of_subject(self, node, predicate_type=None):
         predicates = self.bipredicates_of_subject(node, predicate_type)
-        if predicate_type is None:
-            predicates.update(self.monopredicates_of_subject(node))
+        predicates.update(self.monopredicates_of_subject(node))
         return predicates
 
     def bipredicates_of_subject(self, node, predicate_type=None):
@@ -207,8 +214,8 @@ class ConceptGraph:
         for (source, target, label), predicate_insts in self.bipredicate_instance_index.items():
             nodes.update({source, target, label, *predicate_insts})
         nodes.update(self.bipredicate_graph.nodes())
-        for (source, label), predicate_inst in self.monopredicate_instance_index.items():
-            nodes.update({source, label, predicate_inst})
+        for (source, label), predicate_insts in self.monopredicate_instance_index.items():
+            nodes.update({source, label, *predicate_insts})
         nodes.update(self.monopredicate_map.keys())
         return nodes
 

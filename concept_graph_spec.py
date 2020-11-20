@@ -45,12 +45,12 @@ class ConceptGraphSpec:
         """
         cg.add_monopredicate('Stacy', 'happy') #4
         assert cg.monopredicate_map['Stacy'] == {'happy'}
-        assert cg.monopredicate_instance_index[('Stacy', 'happy')] == 4
+        assert cg.monopredicate_instance_index[('Stacy', 'happy')] == {4}
 
         cg.add_node('sad')
         cg.add_monopredicate('Rob', 'sad', predicate_id='sad(Rob)') #sad(Rob)
         assert cg.monopredicate_map['Rob'] == {'sad'}
-        assert cg.monopredicate_instance_index[('Rob', 'sad')] == 'sad(Rob)'
+        assert cg.monopredicate_instance_index[('Rob', 'sad')] == {'sad(Rob)'}
 
     def add_bipredicate(cg, source, target, label, predicate_id=None):
         """
@@ -132,7 +132,7 @@ class ConceptGraphSpec:
         cg.add_node('Sally')
         cg.add_monopredicate('Sally', 'sad') #11
         assert cg.monopredicate_map['Sally'] == {'sad'}
-        assert cg.monopredicate_instance_index[('Sally', 'sad')] == 11
+        assert cg.monopredicate_instance_index[('Sally', 'sad')] == {11}
         cg.remove_monopredicate('Sally', 'sad')
         assert cg.monopredicate_map['Sally'] == set()
         assert ('Sally', 'sad') not in cg.monopredicate_instance_index
@@ -220,7 +220,7 @@ class ConceptGraphSpec:
         """
         Get the monopredicate id corresponding to the monopredicate defined by subject and type
         """
-        assert cg.monopredicate('John', 'sad') == 17
+        assert cg.monopredicate('John', 'sad') == {17}
 
     def neighbors(cg, node, predicate_type=None):
         """
@@ -309,14 +309,28 @@ class ConceptGraphSpec:
         assert cg.has('liver')
         assert cg.has(['Stacy', 'eat', 'liver'])
 
-        ## OUT OF PLACE - Test of multiple edges with the same signature source,target,label
+        ## OUT OF PLACE - Test of multiple bipredicates with the same signature source,target,label
 
         cg.add_node('i')
-        cg.add_bipredicate('i', 'Stacy', 'hates')
-        cg.add_bipredicate('i', 'Stacy', 'hates')
+        cg.add_bipredicate('i', 'Stacy', 'hates') #19
+        cg.add_bipredicate('i', 'Stacy', 'hates') #20
         assert cg.predicates_of_subject('i', predicate_type='hates') == {('i', 'Stacy', 'hates'),
                                                                          ('i', 'Stacy', 'hates')}
         cg.remove_bipredicate('i', 'Stacy', 'hates')
         assert len(cg.predicates_of_subject('i', predicate_type='hates')) == 0
         assert ('i', 'Stacy', 'hates') not in cg.bipredicate_instance_index
+
+        ## OUT OF PLACE - Test of multiple monopredicates with the same signature source,label
+        cg.add_monopredicate('Stacy', 'happy') #21
+        assert cg.monopredicates('Stacy') == {('Stacy', 'happy'),
+                                              ('Stacy', 'happy')}
+        assert cg.predicates_of_subject('Stacy', predicate_type='happy') == {('Stacy', 'happy'),
+                                                                             ('Stacy', 'happy')}
+
+        assert cg.subject(4) == 'Stacy'
+        assert cg.type(4) == 'happy'
+        assert cg.subject(21) == 'Stacy'
+        assert cg.type(21) == 'happy'
+
+
 
