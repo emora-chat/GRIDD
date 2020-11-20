@@ -75,6 +75,8 @@ class ConceptGraph:
             raise Exception(":param 'target' error - node %s does not exist!" % target)
         elif label not in concepts:
             raise Exception(":param 'label' error - node %s does not exist!" % label)
+        if predicate_id in concepts:
+            raise Exception("predicate id %s already exists!" % predicate_id)
         if predicate_id is None:
             predicate_id = self._get_next_id()
         self.bipredicate_graph.add(source, target, label, id=predicate_id)
@@ -87,6 +89,8 @@ class ConceptGraph:
             raise Exception(":param 'source' error - node %s does not exist!" % source)
         elif label not in concepts:
             raise Exception(":param 'label' error - node %s does not exist!" % label)
+        if predicate_id in concepts:
+            raise Exception("predicate id %s already exists!" % predicate_id)
         if predicate_id is None:
             predicate_id = self._get_next_id()
         if source not in self.monopredicate_map:

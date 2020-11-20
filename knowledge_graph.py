@@ -99,6 +99,7 @@ class PredicateTransformer(Transformer):
             type, subject, object = args
         else:
             raise Exception('bipredicate must have 3 or 4 arguments')
+        id = self._id_check(id, new_concepts)
         subject = self._hierarchical_node_check(subject, new_concepts)
         object = self._hierarchical_node_check(object, new_concepts)
         type = self._node_check(type, new_concepts)
@@ -120,7 +121,7 @@ class PredicateTransformer(Transformer):
             type, subject = args
         else:
             raise Exception('monopredicate must have 2 or 3 arguments')
-
+        id = self._id_check(id, new_concepts)
         subject = self._hierarchical_node_check(subject, new_concepts)
         type = self._node_check(type, new_concepts)
         id = self.addition_construction.add_monopredicate(subject, type, predicate_id=id)
@@ -143,6 +144,7 @@ class PredicateTransformer(Transformer):
             raise Exception('instance must have 1 or 2 arguments')
         if id is None:
             id = self.kg._concept_graph._get_next_id()
+        id = self._id_check(id, new_concepts)
         type = self._node_check(type, new_concepts)
         label = self._node_check('type', new_concepts)
         self.addition_construction.add_node(id)
@@ -167,6 +169,14 @@ class PredicateTransformer(Transformer):
         elif type not in new_concepts:
             self.addition_construction.add_node(type)
         return type
+
+    def _id_check(self, id, new_concepts):
+        if id is not None:
+            if id.isdigit():
+                id = int(id)
+            if id in new_concepts or id in self.kg_concepts:
+                raise Exception("predicate id %s already exists!" % id)
+        return id
 
     def name(self, args):
         return str(args[0])
@@ -213,7 +223,8 @@ if __name__ == '__main__':
     text = """
         sally=person()
         sally_happy=happy(sally)
-        reason(sally_happy,icecream);
+        reason(sally_happy,icecream)
+        rename=buy(person,store);
     """
 
     kg = KnowledgeGraph(nodes=['person','store','icecream',
