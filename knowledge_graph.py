@@ -7,12 +7,13 @@ class PredicateTransformer(Transformer):
         super().__init__()
         self.kg = kg
         self.kg_concepts = self.kg._concept_graph.concepts()
-        self.additions = ConceptGraph()
+        self.additions = []
+        self.addition_construction = ConceptGraph()
         self.local_names = {}
 
     def bipredicate(self, args):
         name = None
-        new_concepts = self.additions.concepts()
+        new_concepts = self.addition_construction.concepts()
         if len(args) == 4:
             name, type, subject, object = args
         elif len(args) == 3:
@@ -22,14 +23,14 @@ class PredicateTransformer(Transformer):
         subject = self._check_subject(subject, new_concepts)
         object = self._check_object(object, new_concepts)
         type = self._check_type(type, new_concepts)
-        id = self.additions.add_bipredicate(subject, object, type)
+        id = self.addition_construction.add_bipredicate(subject, object, type)
         if name is not None:
             self.local_names[name] = id
         return id
 
     def monopredicate(self, args):
         name = None
-        new_concepts = self.additions.concepts()
+        new_concepts = self.addition_construction.concepts()
         if len(args) == 3:
             name, type, subject = args
         elif len(args) == 2:
@@ -39,7 +40,7 @@ class PredicateTransformer(Transformer):
 
         subject = self._check_subject(subject, new_concepts)
         type = self._check_type(type, new_concepts)
-        id = self.additions.add_monopredicate(subject, type)
+        id = self.addition_construction.add_monopredicate(subject, type)
         if name is not None:
             self.local_names[name] = id
         return id
@@ -47,7 +48,7 @@ class PredicateTransformer(Transformer):
 
     def instance(self, args):
         name = None
-        new_concepts = self.additions.concepts()
+        new_concepts = self.addition_construction.concepts()
         if len(args) == 2:
             name, type = args
         elif len(args) == 1:
@@ -56,8 +57,8 @@ class PredicateTransformer(Transformer):
             raise Exception('instance must have 1 or 2 arguments')
         id = self.kg._concept_graph._get_next_id()
         type = self._check_type(type, new_concepts)
-        self.additions.add_node(id)
-        self.additions.add_bipredicate(id, type, 'type')
+        self.addition_construction.add_node(id)
+        self.addition_construction.add_bipredicate(id, type, 'type')
         if name is not None:
             self.local_names[name] = id
         return id
@@ -67,7 +68,7 @@ class PredicateTransformer(Transformer):
             if subject not in self.kg_concepts and subject not in new_concepts:
                 raise Exception("subject error - node %s does not exist!" % subject)
             elif subject not in new_concepts:
-                self.additions.add_node(subject)
+                self.addition_construction.add_node(subject)
         else:
             subject = self.local_names[subject]
         return subject
@@ -77,7 +78,7 @@ class PredicateTransformer(Transformer):
             if object not in self.kg_concepts and object not in new_concepts:
                 raise Exception("object error - node %s does not exist!" % object)
             elif object not in new_concepts:
-                self.additions.add_node(object)
+                self.addition_construction.add_node(object)
         else:
             object = self.local_names[object]
         return object
@@ -86,7 +87,7 @@ class PredicateTransformer(Transformer):
         if type not in self.kg_concepts and type not in new_concepts:
             raise Exception("predicate_type error - node %s does not exist!" % type)
         elif type not in new_concepts:
-            self.additions.add_node(type)
+            self.addition_construction.add_node(type)
         return type
 
     def name(self, args):
@@ -101,6 +102,11 @@ class PredicateTransformer(Transformer):
     def object(self, args):
         return str(args[0])
 
+    def knowledge(self, args):
+        self.additions.append(self.addition_construction)
+        self.addition_construction = ConceptGraph()
+        self.local_names = {}
+
     def start(self, args):
         return self.additions
 
@@ -108,24 +114,9 @@ class KnowledgeGraph:
 
     def __init__(self, filename=None, nodes=None):
         self._concept_graph = ConceptGraph(nodes=nodes)
-        # self._grammar = r"""
-        #     start: (unnamed_bipredicate | named_bipredicate | unnamed_monopredicate | named_monopredicate)+
-        #     unnamed_bipredicate: type "(" subject "," object ")"
-        #     unnamed_monopredicate: type "(" subject ")"
-        #     named_bipredicate: name "/" type "(" subject "," object ")"
-        #     named_monopredicate: name "/" type "(" subject ")"
-        #     name: STRING
-        #     type: STRING
-        #     subject: STRING | (unnamed_bipredicate | named_bipredicate | unnamed_monopredicate | named_monopredicate) | (unnamed_instance | named_instance)
-        #     object: STRING | (unnamed_bipredicate | named_bipredicate | unnamed_monopredicate | named_monopredicate) | (unnamed_instance | named_instance)
-        #     unnamed_instance: type "(" ")"
-        #     named_instance: name "/"  type "(" ")"
-        #     STRING: /[a-z_A-Z0-9]/+
-        #     WHITESPACE: (" " | "\n")+
-        #     %ignore WHITESPACE
-        # """
         self._grammar = r"""
-            start: (bipredicate | monopredicate)+
+            start: knowledge+
+            knowledge: (bipredicate | monopredicate)+ ";"
             bipredicate: (name "/")? type "(" subject "," object ")"
             monopredicate: (name "/")? type "(" subject ")"
             instance: (name "/")? type "(" ")"
@@ -205,14 +196,16 @@ if __name__ == '__main__':
 
     text = """
         gps/go(person,store)
+        go(person,store)
         buy(person,store)
-        reason(happy,gps)
+        reason(happy,gps);
         t/time(person)
+        time(person);
     """
 
     kg = KnowledgeGraph(nodes=['person','store','icecream',
                                'go','buy','happy','reason','time','type'])
-    addition_graph = kg.add_knowledge(text)
+    additions = kg.add_knowledge(text)
 
     test = 1
 

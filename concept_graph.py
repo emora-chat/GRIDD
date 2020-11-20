@@ -8,7 +8,7 @@ class ConceptGraph:
 
     def __init__(self, bipredicates=None, monopredicates=None, nodes=None):
         self.next_id = 0
-        self.bipredicate_graph = MultiLabeledParallelDigraphNX(nodes)
+        self.bipredicate_graph = MultiLabeledParallelDigraphNX(nodes=nodes)
 
         if bipredicates is not None:
             idx = {}
