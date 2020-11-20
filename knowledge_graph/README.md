@@ -166,6 +166,14 @@ run(emora)
 `Monopredicates` have the same nesting and naming principles 
 as defined for `bipredicates`.
 
+#### Predicate Type 
+
+Coming soon...
+
+#### Entity Type
+
+Coming soon...
+
 ## API
 
 Coming soon...
