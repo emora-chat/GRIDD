@@ -54,7 +54,7 @@ class PredicateTransformer(Transformer):
             type = args[0]
         else:
             raise Exception('instance must have 1 or 2 arguments')
-        id = self.kg._concept_graph.get_next_id()
+        id = self.kg._concept_graph._get_next_id()
         type = self._check_type(type, new_concepts)
         self.additions.add_node(id)
         self.additions.add_bipredicate(id, type, 'type')
@@ -181,7 +181,7 @@ class KnowledgeGraph:
     # todo - if supertypes is None, just add a single unspecified node?
     def add_entity_instance(self, supertypes, properties, entity_instance=None):
         if entity_instance is None:
-            entity_instance = self._concept_graph.get_next_id()
+            entity_instance = self._concept_graph._get_next_id()
         if isinstance(supertypes, list):
             for supertype in supertypes:
                 self._concept_graph.add_bipredicate(entity_instance, supertype, 'type')

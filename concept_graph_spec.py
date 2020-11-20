@@ -18,8 +18,8 @@ class ConceptGraphSpec:
             ('Peter', 'Sarah', 'likes') #3
         ])
 
-        assert cg.bipredicate_map[('John', 'Mary', 'likes')] == 0
-        assert cg.bipredicate_map.reverse()[0] == ('John', 'Mary', 'likes')
+        assert cg.bipredicate_index[('John', 'Mary', 'likes')] == {0}
+        assert cg.bipredicate_index.reverse()[0] == ('John', 'Mary', 'likes')
         return cg
 
     def add_node(cg, node):
@@ -62,8 +62,8 @@ class ConceptGraphSpec:
         pred_id = cg.add_bipredicate('Peter', 'Mary', 'hates', predicate_id='new_id') #new_id
         assert pred_id == 'new_id'
         assert cg.bipredicate_graph.has('Peter', 'Mary', 'hates')
-        assert cg.bipredicate_map[('Peter', 'Mary', 'hates')] == 'new_id'
-        assert cg.bipredicate_map.reverse()['new_id'] == ('Peter', 'Mary', 'hates')
+        assert cg.bipredicate_index[('Peter', 'Mary', 'hates')] == {'new_id'}
+        assert cg.bipredicate_index.reverse()['new_id'] == ('Peter', 'Mary', 'hates')
 
         # Adding nested predicate
         cg.add_nodes(['because', 'you'])
@@ -99,9 +99,10 @@ class ConceptGraphSpec:
         assert not cg.bipredicate_graph.has('John', 'Mary', 'likes')
         assert not cg.bipredicate_graph.has('Mary', 'Peter', 'likes')
         assert not cg.bipredicate_graph.has('Peter', 'Mary', 'hates')
-        assert ('John', 'Mary', 'likes') not in cg.bipredicate_map
-        assert ('Mary', 'Peter', 'likes') not in cg.bipredicate_map
-        assert ('Peter', 'Mary', 'hates') not in cg.bipredicate_map
+        assert not cg.bipredicate_graph.has(0,1,'because')
+        assert ('John', 'Mary', 'likes') not in cg.bipredicate_index
+        assert ('Mary', 'Peter', 'likes') not in cg.bipredicate_index
+        assert ('Peter', 'Mary', 'hates') not in cg.bipredicate_index
 
         cg.add_nodes(['liver','eat','reason','think'])
         cg.add_bipredicate('Rob', 'liver', 'eat', predicate_id='eat(Rob,liver)') #eat(Rob,liver)
@@ -112,7 +113,7 @@ class ConceptGraphSpec:
         assert ('Rob', 'sad') not in cg.monopredicate_map
         assert ('sad(Rob)', 'think') not in cg.monopredicate_map
         assert not cg.bipredicate_graph.has('sad(Rob)', 'eat(Rob,liver)', 'reason')
-        assert 'nested_Rob' not in cg.bipredicate_map.reverse()
+        assert 'nested_Rob' not in cg.bipredicate_index.reverse()
 
     def remove_bipredicate(cg, node, target, label):
         """
@@ -122,7 +123,7 @@ class ConceptGraphSpec:
         assert cg.bipredicate_graph.has('Peter')
         assert cg.bipredicate_graph.has('John')
         assert not cg.bipredicate_graph.has('Peter', 'John', 'likes')
-        assert ('Peter', 'John', 'likes') not in cg.bipredicate_map
+        assert ('Peter', 'John', 'likes') not in cg.bipredicate_index
 
     def remove_monopredicate(cg, node, label):
         """
@@ -209,9 +210,11 @@ class ConceptGraphSpec:
 
     def bipredicate(cg, subject, object, type):
         """
-        Get the bipredicate id corresponding to the bipredicate defined by subject, object, and type
+        Get the bipredicate ids corresponding to the bipredicate defined by subject, object, and type
+
+        Returns a set of ids
         """
-        assert cg.bipredicate('John', 'Mary', 'likes') == 12
+        assert cg.bipredicate('John', 'Mary', 'likes') == {12}
 
     def monopredicate(cg, subject, type):
         """
@@ -293,7 +296,7 @@ class ConceptGraphSpec:
         :return: label
         """
         id = cg.add_bipredicate_on_label('Stacy','liver','eat')
-        assert cg.bipredicate('Stacy', 'liver', 'eat') == 'eat'
+        assert cg.bipredicate('Stacy', 'liver', 'eat') == {'eat'}
 
     def has(cg, nodes):
         """
@@ -305,4 +308,15 @@ class ConceptGraphSpec:
         assert cg.has('eat')
         assert cg.has('liver')
         assert cg.has(['Stacy', 'eat', 'liver'])
+
+        ## OUT OF PLACE - Test of multiple edges of signature source,target,label
+
+        cg.add_node('i')
+        cg.add_bipredicate('i', 'Stacy', 'hates')
+        cg.add_bipredicate('i', 'Stacy', 'hates')
+        assert cg.predicates_of_subject('i', predicate_type='hates') == {('i', 'Stacy', 'hates'),
+                                                                         ('i', 'Stacy', 'hates')}
+        cg.remove_bipredicate('i', 'Stacy', 'hates')
+        assert len(cg.predicates_of_subject('i', predicate_type='hates')) == 0
+        assert ('i', 'Stacy', 'hates') not in cg.bipredicate_index
 
