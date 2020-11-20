@@ -1,5 +1,6 @@
 from structpy.graph.directed.labeled.multilabeled_parallel_digraph_networkx import MultiLabeledParallelDigraphNX
 from structpy.map.bijective.bimap import Bimap
+from structpy.map.map import Map
 from structpy.map.index.index import Index
 from concept_graph_spec import ConceptGraphSpec
 
@@ -17,9 +18,9 @@ class ConceptGraph:
                 id = self._get_next_id()
                 idx[pred].add(id)
                 self.bipredicate_graph.add(*pred, id=id)
-            self.bipredicate_index = Index(idx)
+            self.bipredicate_instance_index = Index(idx)
         else:
-            self.bipredicate_index = Index()
+            self.bipredicate_instance_index = Index()
 
         if monopredicates is not None:
             mps = {}
@@ -27,18 +28,18 @@ class ConceptGraph:
                 if subject not in mps:
                     mps[subject] = set()
                 mps[subject].add(label)
-            self.monopredicate_index = Index(mps)
+            self.monopredicate_map = Map(mps)
 
-            self.monopredicate_map = Bimap(
+            self.monopredicate_instance_index = Bimap(
                 {pred: self._get_next_id() for pred in monopredicates}
             )
         else:
-            self.monopredicate_index = Index()
-            self.monopredicate_map = Bimap()
+            self.monopredicate_map = Map()
+            self.monopredicate_instance_index = Bimap()
 
         if nodes is not None:
             for node in nodes:
-                self.monopredicate_index[node] = set()
+                self.monopredicate_map[node] = set()
 
     def _get_next_id(self):
         to_return = self.next_id
@@ -46,17 +47,17 @@ class ConceptGraph:
         return to_return
 
     def _add_to_bipredicate_index(self, key, value):
-        if key not in self.bipredicate_index:
-            self.bipredicate_index[key] = set()
-        self.bipredicate_index[key].add(value)
+        if key not in self.bipredicate_instance_index:
+            self.bipredicate_instance_index[key] = set()
+        self.bipredicate_instance_index[key].add(value)
 
     def add_node(self, node):
         if self.bipredicate_graph.has(node):
             raise Exception('node %s already exists in bipredicates'%node)
         self.bipredicate_graph.add(node)
-        if node in self.monopredicate_index:
+        if node in self.monopredicate_map:
             raise Exception('node %s already exists in monopredicates'%node)
-        self.monopredicate_index[node] = set()
+        self.monopredicate_map[node] = set()
 
     def add_nodes(self, nodes):
         for node in nodes:
@@ -84,10 +85,10 @@ class ConceptGraph:
             raise Exception(":param 'label' error - node %s does not exist!" % label)
         if predicate_id is None:
             predicate_id = self._get_next_id()
-        if source not in self.monopredicate_index:
-            self.monopredicate_index[source] = set()
-        self.monopredicate_index[source].add(label)
-        self.monopredicate_map[(source, label)] = predicate_id
+        if source not in self.monopredicate_map:
+            self.monopredicate_map[source] = set()
+        self.monopredicate_map[source].add(label)
+        self.monopredicate_instance_index[(source, label)] = predicate_id
         return predicate_id
 
     def add_bipredicate_on_label(self, source, target, label):
@@ -104,30 +105,30 @@ class ConceptGraph:
 
     def remove_node(self, node):
         if self.bipredicate_graph.has(node):
-            bipredicates = list(self.bipredicate_index.items())
+            bipredicates = list(self.bipredicate_instance_index.items())
             for bipredicate, ids in bipredicates:
                 if bipredicate[0] == node or bipredicate[1] == node:
                     self.remove_bipredicate(*bipredicate)
             self.bipredicate_graph.remove(node)
 
-        if node in self.monopredicate_index:
-            monopredicates = list(self.monopredicate_map.items())
+        if node in self.monopredicate_map:
+            monopredicates = list(self.monopredicate_instance_index.items())
             for monopredicate, id in monopredicates:
                 if monopredicate[0] == node:
                     self.remove_monopredicate(*monopredicate)
-            del self.monopredicate_index[node]
+            del self.monopredicate_map[node]
 
     def remove_bipredicate(self, node, target, label):
-        ids = list(self.bipredicate_index[(node, target, label)])
-        del self.bipredicate_index[(node, target, label)]
+        ids = list(self.bipredicate_instance_index[(node, target, label)])
+        del self.bipredicate_instance_index[(node, target, label)]
         for id in ids:
             self.bipredicate_graph.remove(node, target, label, id=id)
             self.remove_node(id)
 
     def remove_monopredicate(self, node, label):
-        id = self.monopredicate_map[(node, label)]
-        del self.monopredicate_map[(node, label)]
-        self.monopredicate_index[node].remove(label)
+        id = self.monopredicate_instance_index[(node, label)]
+        del self.monopredicate_instance_index[(node, label)]
+        self.monopredicate_map[node].remove(label)
         self.remove_node(id)
 
     ######################
@@ -146,7 +147,7 @@ class ConceptGraph:
         return edges
 
     def monopredicates(self, node):
-        return set([(node, label) for label in self.monopredicate_index[node]])
+        return set([(node, label) for label in self.monopredicate_map[node]])
 
     def predicates_of_subject(self, node, predicate_type=None):
         predicates = self.bipredicates_of_subject(node, predicate_type)
@@ -164,10 +165,10 @@ class ConceptGraph:
         return self.bipredicate_graph.in_edges(node, predicate_type)
 
     def bipredicate(self, subject, object, type):
-        return self.bipredicate_index[(subject, object, type)]
+        return self.bipredicate_instance_index[(subject, object, type)]
 
     def monopredicate(self, subject, type):
-        return self.monopredicate_map[(subject, type)]
+        return self.monopredicate_instance_index[(subject, type)]
 
     def neighbors(self, node, predicate_type=None):
         nodes = self.bipredicate_graph.targets(node, predicate_type)
@@ -181,34 +182,34 @@ class ConceptGraph:
         return self.bipredicate_graph.targets(node, predicate_type)
 
     def subject(self, predicate_instance):
-        if predicate_instance in self.bipredicate_index.reverse():
-            return self.bipredicate_index.reverse()[predicate_instance][0]
-        elif predicate_instance in self.monopredicate_map.reverse():
-            return self.monopredicate_map.reverse()[predicate_instance][0]
+        if predicate_instance in self.bipredicate_instance_index.reverse():
+            return self.bipredicate_instance_index.reverse()[predicate_instance][0]
+        elif predicate_instance in self.monopredicate_instance_index.reverse():
+            return self.monopredicate_instance_index.reverse()[predicate_instance][0]
 
     def object(self, predicate_instance):
-        if predicate_instance in self.bipredicate_index.reverse():
-            return self.bipredicate_index.reverse()[predicate_instance][1]
-        elif predicate_instance in self.monopredicate_map.reverse():
+        if predicate_instance in self.bipredicate_instance_index.reverse():
+            return self.bipredicate_instance_index.reverse()[predicate_instance][1]
+        elif predicate_instance in self.monopredicate_instance_index.reverse():
             raise Exception('Cannot get object of a monopredicate!')
 
     def type(self, predicate_instance):
-        if predicate_instance in self.bipredicate_index.reverse():
-            return self.bipredicate_index.reverse()[predicate_instance][2]
-        elif predicate_instance in self.monopredicate_map.reverse():
-            return self.monopredicate_map.reverse()[predicate_instance][1]
+        if predicate_instance in self.bipredicate_instance_index.reverse():
+            return self.bipredicate_instance_index.reverse()[predicate_instance][2]
+        elif predicate_instance in self.monopredicate_instance_index.reverse():
+            return self.monopredicate_instance_index.reverse()[predicate_instance][1]
 
     def predicates_between(self, node1, node2):
         return self.bipredicate_graph.edges(node1).intersection(self.bipredicate_graph.edges(node2))
 
     def concepts(self):
         nodes = set()
-        for (source, target, label), predicate_insts in self.bipredicate_index.items():
+        for (source, target, label), predicate_insts in self.bipredicate_instance_index.items():
             nodes.update({source, target, label, *predicate_insts})
         nodes.update(self.bipredicate_graph.nodes())
-        for (source, label), predicate_inst in self.monopredicate_map.items():
+        for (source, label), predicate_inst in self.monopredicate_instance_index.items():
             nodes.update({source, label, predicate_inst})
-        nodes.update(self.monopredicate_index.keys())
+        nodes.update(self.monopredicate_map.keys())
         return nodes
 
     def has(self, nodes):
