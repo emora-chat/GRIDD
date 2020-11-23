@@ -17,15 +17,18 @@ An example of a KG text file can be found in `example.kg`.
 ### Instantiation
 
 The Base Knowledge Graph contains all primitive entity and predicate
-types that subsequent Knowledge Graph additions build on top of.
+types that subsequent Knowledge Graph additions build on top of, 
+specified in the `base.kg` text file.
 
-It is specified in the `base.kg` text file.
-
-When testing your additions, you must instantiate your Knowledge Graph
-first with `base.kg`.
+A new `KnowledgeGraph` object is automatically instantiated with 
+`base.kg`. You instantiate a new `KnowledgeGraph` by:
 
 ```
-kg = KnowledgeGraph('base.kg')
+kg = KnowledgeGraph()
+```
+and add new knowledge to it by:
+
+```
 additions = kg.add_knowledge('example.kg')
 ```
 
@@ -160,5 +163,9 @@ as defined for `bipredicates`.
 Coming soon...
 
 #### Entity Type
+
+Coming soon...
+
+## Cheatsheet
 
 Coming soon...

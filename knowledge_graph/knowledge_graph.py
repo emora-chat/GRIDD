@@ -28,6 +28,8 @@ class KnowledgeGraph:
         self.predicate_transformer = PredicateTransformer(self)
 
         self._concept_graph.merge(self.add_knowledge(open('base.kg', 'r').read())[0])
+        self.predicate_transformer._set_kg_concepts()
+
         if filename is not None:
             self.add_knowledge(open(filename, 'r').read())
 
@@ -61,10 +63,14 @@ class PredicateTransformer(Transformer):
     def __init__(self, kg):
         super().__init__()
         self.kg = kg
-        self.kg_concepts = self.kg._concept_graph.concepts()
+        self.kg_concepts = None
+        self._set_kg_concepts()
         self.additions = []
         self.addition_construction = ConceptGraph()
         self.local_names = {}
+
+    def _set_kg_concepts(self):
+        self.kg_concepts = self.kg._concept_graph.concepts()
 
     def bipredicate(self, args):
         name, id = None, None
@@ -190,7 +196,11 @@ class PredicateTransformer(Transformer):
         self.local_names = {}
 
     def start(self, args):
-        return self.additions
+        to_return = self.additions
+        self.additions = []
+        self.addition_construction = ConceptGraph()
+        self.local_names = {}
+        return to_return
 
 if __name__ == '__main__':
 
