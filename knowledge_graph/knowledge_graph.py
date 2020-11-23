@@ -32,63 +32,6 @@ class KnowledgeGraph:
         tree = self.parser.parse(input)
         return self.predicate_transformer.transform(tree)
 
-    def _add_supertype(self, entity_type, supertype, concepts):
-        if supertype not in concepts:
-            raise Exception('supertype %s does not exist!' % supertype)
-        self._concept_graph.add_bipredicate(entity_type, supertype, 'type')
-
-    def add_entity_type(self, entity_type, supertypes):
-        concepts = self._concept_graph.concepts()
-        if entity_type not in concepts:
-            self._concept_graph.add_node(entity_type)
-        if isinstance(supertypes, list):
-            for supertype in supertypes:
-                self._add_supertype(entity_type, supertype, concepts)
-        elif isinstance(supertypes, str):
-            self._add_supertype(entity_type, supertypes, concepts)
-        else:
-            raise Exception("supertypes must be a list or string!")
-
-    def add_predicate_type(self, predicate_type, supertypes, arg0_types, arg1_types=None):
-        self.add_entity_type(predicate_type, supertypes)
-        arg0_instance = self.add_entity_instance(arg0_types, properties=None)
-        if arg1_types is not None:
-            arg1_instance = self.add_entity_instance(arg1_types, properties=None)
-            self._concept_graph.add_bipredicate_on_label(arg0_instance, arg1_instance, predicate_type)
-        else:
-            self._concept_graph.add_monopredicate_on_label(arg0_instance, predicate_type)
-
-    # def add_property(self, type_, property_dict):
-    #     for label, value in property_dict.items():
-    #         self._concept_graph.add_bipredicate(type_, value, label)
-
-    # todo - enforce that parameter 'properties' satisfies all supertype properties (need inference)
-    # todo - if supertypes is None, just add a single unspecified node?
-    def add_entity_instance(self, supertypes, properties, entity_instance=None):
-        if entity_instance is None:
-            entity_instance = self._concept_graph._get_next_id()
-        self.add_entity_type(entity_instance, supertypes)
-        for label, value in properties.items():
-            self._concept_graph.add_bipredicate(entity_instance, value, label)
-        return entity_instance
-
-    # todo - enforce that parameter 'properties' satisfies all supertype properties (need inference)
-    # todo - if supertypes is None, just add a single unspecified node?
-    def add_predicate_instance(self, supertypes, properties):
-        subject, object = properties['arg0'], properties['arg1']
-        # more than one type for predicate instance????
-        predicate_instance = self._concept_graph.add_bipredicate(subject, object, supertypes)
-        for label, value in properties.items():
-            if label not in ['arg0','arg1']:
-                self._concept_graph.add_bipredicate(predicate_instance, value, label)
-        return predicate_instance
-
-    def add_conditions(self, type_, conditions):
-        pass
-
-    def add_implication_rule(self, conditions, properties):
-        pass
-
     def properties(self, concept):
         return self._concept_graph.predicates(concept)
 
