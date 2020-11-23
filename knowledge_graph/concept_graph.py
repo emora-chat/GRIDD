@@ -110,6 +110,16 @@ class ConceptGraph:
         self._add_to_bipredicate_index((source,target,label),label)
         return label
 
+    def add_monopredicate_on_label(self, source, label):
+        concepts = self.concepts()
+        if source not in concepts:
+            raise Exception(":param 'source' error - node %s does not exist!" % source)
+        elif label not in concepts:
+            raise Exception(":param 'label' error - node %s does not exist!" % label)
+        self.monopredicate_map[source].add(label)
+        self.monopredicate_instance_index[(source, label)].add(label)
+        return label
+
     def remove_node(self, node):
         if self.bipredicate_graph.has(node):
             bipredicates = list(self.bipredicate_instance_index.items())

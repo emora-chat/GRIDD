@@ -75,6 +75,8 @@ class KnowledgeGraph:
 
         `properties` is a json-like properties dictionary satisfying all `supertypes` properties.
         If not all supertype properties are satisfied, this method raises a `ValueError`.
+
+        Returns entity_instance
         """
         pass
 

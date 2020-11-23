@@ -32,50 +32,80 @@ class KnowledgeGraph:
         tree = self.parser.parse(input)
         return self.predicate_transformer.transform(tree)
 
-    # def add_entity_type(self, entity_type, supertypes):
-    #     if isinstance(supertypes, list):
-    #         for supertype in supertypes:
-    #             self._concept_graph.add_bipredicate(entity_type, supertype, 'type')
-    #     elif isinstance(supertypes, str):
-    #         self._concept_graph.add_bipredicate(entity_type, supertypes, 'type')
-    #     else:
-    #         raise Exception(":param 'supertypes' must be a list or string!")
-    #
-    # def add_predicate_type(self, predicate_type, supertypes, arg0_types, arg1_types=None):
-        # if isinstance(supertypes, list):
-        #     for supertype in supertypes:
-        #         self.kg._concept_graph.add_bipredicate(predicate_type, supertype, 'type')
-        # elif isinstance(supertypes, str):
-        #     self.kg._concept_graph.add_bipredicate(predicate_type, supertypes, 'type')
-        # else:
-        #     raise Exception(":param 'supertypes' must be a list or string!")
-        #
-        # arg0_instance = self.add_entity_instance(arg0_types, {})
-        # if arg1_types is not None:
-        #     arg1_instance = self.add_entity_instance(arg1_types, {})
-        #     self.kg._concept_graph.add_bipredicate(arg0_instance, arg1_instance, predicate_type)
-        # else:
-        #     arg1_instance
-    #
-    #
+    def _add_supertype(self, entity_type, supertype, concepts):
+        if supertype not in concepts:
+            raise Exception('supertype %s does not exist!' % supertype)
+        self._concept_graph.add_bipredicate(entity_type, supertype, 'type')
+
+    def add_entity_type(self, entity_type, supertypes):
+        concepts = self._concept_graph.concepts()
+        if entity_type not in concepts:
+            self._concept_graph.add_node(entity_type)
+        if isinstance(supertypes, list):
+            for supertype in supertypes:
+                self._add_supertype(entity_type, supertype, concepts)
+        elif isinstance(supertypes, str):
+            self._add_supertype(entity_type, supertypes, concepts)
+        else:
+            raise Exception("supertypes must be a list or string!")
+
+    def add_predicate_type(self, predicate_type, supertypes, arg0_types, arg1_types=None):
+        self.add_entity_type(predicate_type, supertypes)
+        arg0_instance = self.add_entity_instance(arg0_types, properties=None)
+        if arg1_types is not None:
+            arg1_instance = self.add_entity_instance(arg1_types, properties=None)
+            self._concept_graph.add_bipredicate_on_label(arg0_instance, arg1_instance, predicate_type)
+        else:
+            self._concept_graph.add_monopredicate_on_label(arg0_instance, predicate_type)
+
     # def add_property(self, type_, property_dict):
-    #     pass
-    #
-    # # todo - enforce that parameter 'properties' satisfies all supertype properties (need inference?)
-    # # todo - if supertypes is None, just add a single unspecified node?
-    # def add_entity_instance(self, supertypes, properties, entity_instance=None):
-    #     if entity_instance is None:
-    #         entity_instance = self._concept_graph._get_next_id()
-    #     if isinstance(supertypes, list):
-    #         for supertype in supertypes:
-    #             self._concept_graph.add_bipredicate(entity_instance, supertype, 'type')
-    #     elif isinstance(supertypes, str):
-    #         self._concept_graph.add_bipredicate(entity_instance, supertypes, 'type')
-    #     else:
-    #         raise Exception(":param 'supertypes' must be a list or string!")
-    #     for label, value in properties.items():
-    #         self._concept_graph.add_bipredicate(entity_instance, value, label)
-    #     return entity_instance
+    #     for label, value in property_dict.items():
+    #         self._concept_graph.add_bipredicate(type_, value, label)
+
+    # todo - enforce that parameter 'properties' satisfies all supertype properties (need inference)
+    # todo - if supertypes is None, just add a single unspecified node?
+    def add_entity_instance(self, supertypes, properties, entity_instance=None):
+        if entity_instance is None:
+            entity_instance = self._concept_graph._get_next_id()
+        self.add_entity_type(entity_instance, supertypes)
+        for label, value in properties.items():
+            self._concept_graph.add_bipredicate(entity_instance, value, label)
+        return entity_instance
+
+    # todo - enforce that parameter 'properties' satisfies all supertype properties (need inference)
+    # todo - if supertypes is None, just add a single unspecified node?
+    def add_predicate_instance(self, supertypes, properties):
+        subject, object = properties['arg0'], properties['arg1']
+        # more than one type for predicate instance????
+        predicate_instance = self._concept_graph.add_bipredicate(subject, object, supertypes)
+        for label, value in properties.items():
+            if label not in ['arg0','arg1']:
+                self._concept_graph.add_bipredicate(predicate_instance, value, label)
+        return predicate_instance
+
+    def add_conditions(self, type_, conditions):
+        pass
+
+    def add_implication_rule(self, conditions, properties):
+        pass
+
+    def properties(self, concept):
+        return self._concept_graph.predicates(concept)
+
+    def types(self, concept):
+        return self._concept_graph.predicates_of_subject(concept, predicate_type='type')
+
+    def subtypes(self, concept):
+        return self._concept_graph.predicates_of_object(concept, predicate_type='type')
+
+    def instances(self, type_):
+        pass
+
+    def implication_rules(self, type_):
+        pass
+
+    def save(self, json_filename):
+        pass
 
 
 class PredicateTransformer(Transformer):
@@ -108,11 +138,7 @@ class PredicateTransformer(Transformer):
         object = self._hierarchical_node_check(object, new_concepts)
         type = self._node_check(type, new_concepts)
         id = self.addition_construction.add_bipredicate(subject, object, type, predicate_id=id)
-        if name is not None:
-            self.local_names[name] = id
-        if isinstance(id, int):
-            id = '_int_%d'%id
-        return id
+        return self._id_handler(name, id)
 
     def monopredicate(self, args):
         name, id = None, None
@@ -133,11 +159,7 @@ class PredicateTransformer(Transformer):
         subject = self._hierarchical_node_check(subject, new_concepts)
         type = self._node_check(type, new_concepts)
         id = self.addition_construction.add_monopredicate(subject, type, predicate_id=id)
-        if name is not None:
-            self.local_names[name] = id
-        if isinstance(id, int):
-            id = '_int_%d'%id
-        return id
+        return self._id_handler(name, id)
 
     def instance(self, args):
         name, id = None, None
@@ -160,11 +182,7 @@ class PredicateTransformer(Transformer):
         self.addition_construction.add_node(id)
         self.addition_construction.add_bipredicate(id, type, label,
                                                    predicate_id=self.kg._concept_graph._get_next_id())
-        if name is not None:
-            self.local_names[name] = id
-        if isinstance(id, int):
-            id = '_int_%d'%id
-        return id
+        return self._id_handler(name, id)
 
     def _hierarchical_node_check(self, node, new_concepts):
         if node.startswith('_int_'):
@@ -180,7 +198,7 @@ class PredicateTransformer(Transformer):
 
     def _node_check(self, type, new_concepts):
         if type not in self.kg_concepts and type not in new_concepts:
-            raise Exception("predicate_type error - node %s does not exist!" % type)
+            raise Exception("error - node %s does not exist!" % type)
         elif type not in new_concepts:
             self.addition_construction.add_node(type)
         return type
@@ -194,6 +212,13 @@ class PredicateTransformer(Transformer):
     def _id_duplication_check(self, id, new_concepts):
         if id is not None and (id in new_concepts or id in self.kg_concepts):
             raise Exception("predicate id %s already exists!" % id)
+        return id
+
+    def _id_handler(self, name, id):
+        if name is not None:
+            self.local_names[name] = id
+        if isinstance(id, int):
+            id = '_int_%d'%id
         return id
 
     def name(self, args):

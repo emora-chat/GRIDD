@@ -298,6 +298,15 @@ class ConceptGraphSpec:
         id = cg.add_bipredicate_on_label('Stacy','liver','eat')
         assert cg.bipredicate('Stacy', 'liver', 'eat') == {'eat'}
 
+    def add_monopredicate_on_label(cg, source, label):
+        """
+        Add a monopredicate on the label node (e.g. for specifying predicate_type constraints).
+        Does not create an predicate instance for this monopredicate (the label node is the instance
+        being directly modified).
+        :return: label
+        """
+        pass
+
     def has(cg, nodes):
         """
         Check whether node(s) has been added to the concept graph.
