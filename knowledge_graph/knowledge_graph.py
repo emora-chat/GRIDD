@@ -4,6 +4,10 @@ from concept_graph import ConceptGraph
 class KnowledgeGraph:
 
     def __init__(self, filename=None, nodes=None):
+        if nodes is None:
+            nodes = {'predicate','entity','type'}
+        else:
+            nodes.update({'predicate','entity','type'})
         self._concept_graph = ConceptGraph(nodes=nodes)
         self._grammar = r"""
             start: knowledge+
@@ -23,6 +27,7 @@ class KnowledgeGraph:
         self.parser = Lark(self._grammar, parser="lalr")
         self.predicate_transformer = PredicateTransformer(self)
 
+        self._concept_graph.merge(self.add_knowledge(open('base.kg', 'r').read())[0])
         if filename is not None:
             self.add_knowledge(open(filename, 'r').read())
 
@@ -189,9 +194,7 @@ class PredicateTransformer(Transformer):
 
 if __name__ == '__main__':
 
-    ontology=['type','person','bot','movie','actor','store',
-              'reason','like','happy','time','now','past','future','watch','go','expr']
-    kg = KnowledgeGraph(nodes=ontology)
+    kg = KnowledgeGraph()
     additions = kg.add_knowledge('example.kg')
 
     test = 1

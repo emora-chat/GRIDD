@@ -149,6 +149,20 @@ class ConceptGraph:
         for id in ids:
             self.remove_node(id)
 
+    # todo - what if it is a predicate property (i.e. predicate on the predicate_type, not instance)?
+    def merge(self, other_graph):
+        for tuple, inst_id in other_graph.predicate_instances():
+            if len(tuple) == 3:
+                for node in tuple:
+                    if node not in self.concepts():
+                        self.add_node(node)
+                self.add_bipredicate(*tuple, predicate_id=inst_id)
+            elif len(tuple) == 2:
+                for node in tuple:
+                    if node not in self.concepts():
+                        self.add_node(node)
+                self.add_monopredicate(*tuple, predicate_id=inst_id)
+
     ######################
     ## Access Functions ##
     ######################
@@ -231,6 +245,16 @@ class ConceptGraph:
             nodes.update({source, label, *predicate_insts})
         nodes.update(self.monopredicate_map.keys())
         return nodes
+
+    def predicate_instances(self):
+        pred_inst = set()
+        for tuple, predicate_insts in self.bipredicate_instance_index.items():
+            for inst in predicate_insts:
+                pred_inst.add((tuple,inst))
+        for tuple, predicate_insts in self.monopredicate_instance_index.items():
+            for inst in predicate_insts:
+                pred_inst.add((tuple,inst))
+        return pred_inst
 
     def has(self, nodes):
         if isinstance(nodes, str):

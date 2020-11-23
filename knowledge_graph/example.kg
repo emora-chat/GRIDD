@@ -1,5 +1,10 @@
+movie=entity()
+like=predicate()
+happy=predicate()
+watch=predicate()
 emora=bot()
 avengers=movie()
+actor=person()
 chris_evans=actor()
 ela/like(emora,avengers)
 reason(ela,like(emora,chris_evans))
@@ -8,6 +13,8 @@ time(eh/happy(emora),now)
 time(ewa/watch(emora,avengers),now)
 reason(eh,ewa);
 
+go=predicate()
+store=entity()
 user=person()
 time(go(user,s/store()),past)
 time(go(user,s2/store()),future);

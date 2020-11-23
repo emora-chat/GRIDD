@@ -7,34 +7,25 @@
 This package contains the supporting data structures for building and 
 maintaining the Knowledge Graph. 
 
-There are two interfaces for adding new knowledge into the Knowledge
-Graph: text files and API.
+Currently, the knowledge that is contained within a Knowledge Graph 
+is specified through the construction of KG text files.
 
 ## KG Text Files
-
-Adding knowledge through the creation of text files is recommended 
-when any of the following is true:
-
-* Knowledge is not crawled programmatically
-* You want:
-    * High designer control
-    * To perform quick knowledge graph modifications 
-    (e.g. edge cases, bug fixes, quick tests)
     
 An example of a KG text file can be found in `example.kg`.
 
 ### Instantiation
 
-All entity and predicate types that will be used in your KG 
-text file must be added to the KG before you load your text
-file. When instantiating your KG, you can pass them in as a 
-list to the `nodes` parameter and then `add_knowledge()` as in
-the following:
+The Base Knowledge Graph contains all primitive entity and predicate
+types that subsequent Knowledge Graph additions build on top of.
+
+It is specified in the `base.kg` text file.
+
+When testing your additions, you must instantiate your Knowledge Graph
+first with `base.kg`.
 
 ```
-ontology=['type','person','bot','movie','actor','store',
-      'reason','like','happy','time','now','past','future','watch','go','expr']
-kg = KnowledgeGraph(nodes=ontology)
+kg = KnowledgeGraph('base.kg')
 additions = kg.add_knowledge('example.kg')
 ```
 
@@ -53,11 +44,9 @@ the same `block`.
 
 #### Knowledge Ids
 Each knowledge statement is given an automatically generated
-unique id when it is added to the KG. 
-This unique id is integral to the functioning of the underlying 
-data structure, but it is not easily available through the 
-text file interface, which leads to the local naming paradigm
- described in future sections.
+unique id when it is added to the KG. Except for the case
+of `named instances`, this id is not able to be manually 
+specified and is not available to the designer.
 
 #### Named instances
 
@@ -65,8 +54,8 @@ Adding new named entities to the KG is an important task,
 such as specifying people, locations, items, and more. 
 
 In the text file, named entities are specified as instances of 
-their ontological type where their name is treated as an 
-id like`id=type()` as in:
+their ontological type where their name is treated as their 
+id like `id=type()` as in:
 ```
 emora=bot()
 avengers=movie()
@@ -83,8 +72,8 @@ simply by their names (e.g. `emora`).
 In many cases, you will want to add specific instances of a type
 to the KG where the instance is not a named entity. 
 For this, you should not use the `named entity` specification since
-you do not have a name to use for the id. Instead, an unnamed 
-instance is specified like `type()` as in:
+you do not have a guaranteed unique name to use for the id. 
+Instead, an unnamed instance is specified like `type()` as in:
 
 ```
 sandwich()
@@ -171,9 +160,5 @@ as defined for `bipredicates`.
 Coming soon...
 
 #### Entity Type
-
-Coming soon...
-
-## API
 
 Coming soon...

@@ -1,0 +1,10 @@
+person=entity()
+bot=entity()
+now=entity()
+past=entity()
+future=entity()
+reason=predicate()
+time=predicate()
+expr=predicate();
+
+
