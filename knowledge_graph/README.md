@@ -10,6 +10,8 @@ maintaining the Knowledge Graph.
 Currently, the knowledge that is contained within a Knowledge Graph 
 is specified through the construction of KG text files.
 
+[KG Text File Cheatsheet](#cheatsheet)
+
 ## KG Text Files
     
 An example of a KG text file can be found in `example.kg`.
@@ -158,14 +160,81 @@ run(emora)
 `Monopredicates` have the same nesting and naming principles 
 as defined for `bipredicates`.
 
-#### Predicate Type 
-
-Coming soon...
-
-#### Entity Type
-
-Coming soon...
-
 ## Cheatsheet
 
-Coming soon...
+#### Entity Type with 1 Supertype
+
+```
+entity_type=supertype()
+```
+
+Note: This is for building the entity ontology.
+
+#### Entity Type with N>1 Supertype
+
+```
+entity_type=supertype1()
+type(subtype, supertype2)
+...
+type(subtype, supertypeN)
+```
+
+Note: This is for building the entity ontology.
+
+#### Predicate Type with Expected Arguments
+
+```
+predicate_type=supertype(subject_type(), object_type())
+```
+
+Note: This is for building the predicate ontology. It 
+influences the inference procedure, such that all 
+instances of `predicate_type` will have to have the 
+expected arguments, or else an `Error` will be raised.
+
+For example, if we want to specify that the predicate `buy`
+is an `event` and has a `person` subject and a `purchasable` object:
+
+```
+buy=event(person(), purchasable())
+```
+
+
+#### Predicate Type with Expected Arguments and Properties
+
+```
+predicate_type=supertype(subject_type(), object_type())
+property(predicate_type, property_object_type())
+```
+
+Note: This is for building the predicate ontology.
+Similar to the previous, all instances will have to have 
+the expected arguments and also expected properties, or 
+else an `Error` will be raised.
+
+#### Bipredicate
+
+```
+predicate_type(subject,object)
+```
+
+Note: Used for both the ontology and for general 
+knowledge.
+
+#### Monopredicate
+
+```
+predicate_type(subject)
+```
+
+Note: Used for both the ontology and for general 
+knowledge.
+
+#### Entity Instance
+
+```
+entity_type()
+```
+
+Note: Used for both the ontology and for general 
+knowledge.
