@@ -10,7 +10,7 @@ maintaining the Knowledge Graph.
 Currently, the knowledge that is contained within a Knowledge Graph 
 is specified through the construction of KG text files.
 
-[KG Text File Cheatsheet](#cheatsheet)
+[KG Text File Quick Reference](#quick-reference)
 
 ## KG Text Files
     
@@ -160,7 +160,7 @@ run(emora)
 `Monopredicates` have the same nesting and naming principles 
 as defined for `bipredicates`.
 
-## Cheatsheet
+## Quick Reference
 
 #### Entity Type with 1 Supertype
 
