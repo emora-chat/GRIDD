@@ -54,8 +54,6 @@ if __name__ == '__main__':
     dm.add_merge_iteration(check_continue)
     dm.add_merge_inference_iteration(run_twice)
 
-    # todo - implement inference, inference bridge, selection, expansion, generation base models
-
     dm.build_framework()
 
     dialogue_graph = {}
@@ -68,6 +66,9 @@ if __name__ == '__main__':
          }
     ]
     s = time.time()
+
+    # todo - the original input needs to be sent down the pipeline? (e.g. node merging uses it)
+
     output = dm.run(asr_hypotheses, dialogue_graph)
     elapsed = time.time() - s
     print('[%.6f s] %s'%(elapsed, output))

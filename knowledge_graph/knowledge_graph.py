@@ -1,5 +1,6 @@
 from lark import Lark, Transformer
 from concept_graph import ConceptGraph
+import time
 
 class KnowledgeGraph:
 
@@ -204,8 +205,13 @@ class PredicateTransformer(Transformer):
 
 if __name__ == '__main__':
 
+    s = time.time()
+    print('starting...')
     kg = KnowledgeGraph()
+    print('base KG loaded...')
     additions = kg.add_knowledge('example.kg')
+    print('additions loaded...')
+    print('Elapsed: %.2f sec'%(time.time()-s))
 
     test = 1
 

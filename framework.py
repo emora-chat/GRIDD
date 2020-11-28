@@ -23,7 +23,6 @@ class Framework(Pipeline):
         self.expansion_model = None
         self.generation_model = None
 
-
     def add_mention_model(self, model_dict):
         self.mention_models.add_model(model_dict)
 
