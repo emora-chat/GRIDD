@@ -9,7 +9,13 @@ from modules.response_generation import BaseResponseGeneration
 from modules.mention_bridge import BaseMentionBridge
 from modules.merge_bridge import BaseMergeBridge
 from modules.inference_bridge import BaseInferenceBridge
+
+from knowledge_graph.knowledge_graph import KnowledgeGraph
+from modules.mention_identification_lexicon import MentionsByLexicon
+from modules.merge_dp import NodeMergeDP
+
 import time
+from os.path import join
 
 class First(Aggregator):
     def run(self, input, graph):
@@ -36,8 +42,8 @@ def run_twice(stage, input):
 if __name__ == '__main__':
     dm = Framework('Emora')
 
-    dm.add_mention_model({'model': BaseMentionIdentification('base mention')})
-    dm.add_merge_model({'model': BaseNodeMerge('base merge')})
+    dm.add_mention_model({'model': MentionsByLexicon('lexicon mentions')})
+    dm.add_merge_model({'model': NodeMergeDP('dependency parse merge')})
     dm.add_inference_model({'model': BaseInference('base inference')})
     dm.add_selection_model({'model': BaseResponseSelection('base selection')})
     dm.add_expansion_model({'model': BaseResponseExpansion('base expansion')})
@@ -56,19 +62,16 @@ if __name__ == '__main__':
 
     dm.build_framework()
 
-    dialogue_graph = {}
+    dialogue_graph = KnowledgeGraph(join('knowledge_graph','kg_files','framework_test.kg'))
 
     asr_hypotheses = [
-        {'text': 'bob loves sally and himself',
+        {'text': 'i love math',
          'text_confidence': 0.87,
-         'tokens': ['bob', 'loves', 'sally', 'and', 'himself'],
-         'token_confidence': {0: 0.90, 1: 0.90, 2: 0.80, 3: 0.8, 4: 0.80}
+         'tokens': ['i', 'love', 'math'],
+         'token_confidence': {0: 0.90, 1: 0.90, 2: 0.80}
          }
     ]
     s = time.time()
-
-    # todo - the original input needs to be sent down the pipeline? (e.g. node merging uses it)
-
     output = dm.run(asr_hypotheses, dialogue_graph)
     elapsed = time.time() - s
     print('[%.6f s] %s'%(elapsed, output))

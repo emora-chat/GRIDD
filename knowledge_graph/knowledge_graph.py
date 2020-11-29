@@ -1,14 +1,16 @@
 from lark import Lark, Transformer
-from concept_graph import ConceptGraph
+from knowledge_graph.concept_graph import ConceptGraph
 import time
+from os.path import join
 
 class KnowledgeGraph:
 
     def __init__(self, filename=None, nodes=None):
+        BASE_NODES = {'object','type'}
         if nodes is None:
-            nodes = {'predicate','entity','type'}
+            nodes = BASE_NODES
         else:
-            nodes.update({'predicate','entity','type'})
+            nodes.update(BASE_NODES)
         self._concept_graph = ConceptGraph(nodes=nodes)
         self._grammar = r"""
             start: knowledge+
@@ -28,7 +30,7 @@ class KnowledgeGraph:
         self.parser = Lark(self._grammar, parser="lalr")
         self.predicate_transformer = PredicateTransformer(self)
 
-        self._concept_graph.merge(self.add_knowledge(open('base.kg', 'r').read())[0])
+        self._concept_graph.merge(self.add_knowledge(open(join('knowledge_graph','kg_files','base.kg'), 'r').read())[0])
         self.predicate_transformer._set_kg_concepts()
 
         if filename is not None:
@@ -209,7 +211,7 @@ if __name__ == '__main__':
     print('starting...')
     kg = KnowledgeGraph()
     print('base KG loaded...')
-    additions = kg.add_knowledge('example.kg')
+    additions = kg.add_knowledge(join('knowledge_graph','kg_files','example.kg'))
     print('additions loaded...')
     print('Elapsed: %.2f sec'%(time.time()-s))
 

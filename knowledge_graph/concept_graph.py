@@ -1,7 +1,7 @@
 from structpy.graph.directed.labeled.multilabeled_parallel_digraph_networkx import MultiLabeledParallelDigraphNX
 from structpy.map.map import Map
 from structpy.map.index.index import Index
-from concept_graph_spec import ConceptGraphSpec
+from knowledge_graph.concept_graph_spec import ConceptGraphSpec
 
 class ConceptGraph:
 
@@ -150,6 +150,7 @@ class ConceptGraph:
             self.remove_node(id)
 
     # todo - what if it is a predicate property (i.e. predicate on the predicate_type, not instance)?
+    # todo - don't use other_graph's ids with prefix _new_; generate new id for each addition and create mapping from other_graph id to new id to use when merging in predicates
     def merge(self, other_graph):
         for tuple, inst_id in other_graph.predicate_instances():
             if len(tuple) == 3:
