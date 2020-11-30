@@ -1,0 +1,16 @@
+entity<object>
+predicate<object>
+expression<object>
+
+person<entity>
+bot<entity>
+
+reason<predicate>
+time<predicate>
+expr<predicate>
+
+now=entity()
+past=entity()
+future=entity();
+
+

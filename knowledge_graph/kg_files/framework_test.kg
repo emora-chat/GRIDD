@@ -1,4 +1,0 @@
-user=person()
-love=predicate()
-subject=entity()
-math=subject();

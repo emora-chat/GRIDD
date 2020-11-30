@@ -1,7 +1,7 @@
 from structpy.graph.directed.labeled.multilabeled_parallel_digraph_networkx import MultiLabeledParallelDigraphNX
 from structpy.map.map import Map
 from structpy.map.index.index import Index
-from knowledge_graph.concept_graph_spec import ConceptGraphSpec
+from knowledge_base.concept_graph_spec import ConceptGraphSpec
 
 class ConceptGraph:
 
@@ -150,19 +150,22 @@ class ConceptGraph:
             self.remove_node(id)
 
     # todo - what if it is a predicate property (i.e. predicate on the predicate_type, not instance)?
-    # todo - don't use other_graph's ids with prefix _new_; generate new id for each addition and create mapping from other_graph id to new id to use when merging in predicates
-    def merge(self, other_graph):
-        for tuple, inst_id in other_graph.predicate_instances():
-            if len(tuple) == 3:
-                for node in tuple:
-                    if node not in self.concepts():
-                        self.add_node(node)
-                self.add_bipredicate(*tuple, predicate_id=inst_id)
-            elif len(tuple) == 2:
-                for node in tuple:
-                    if node not in self.concepts():
-                        self.add_node(node)
-                self.add_monopredicate(*tuple, predicate_id=inst_id)
+    # todo - for all int ids in other_graph, generate new id and create mapping from other_graph id to new id to use thereafter in merge
+    def merge(self, other_graph, replace_id=False):
+        if not replace_id:
+            for tuple, inst_id in other_graph.predicate_instances():
+                if len(tuple) == 3:
+                    for node in tuple:
+                        if node not in self.concepts():
+                            self.add_node(node)
+                    self.add_bipredicate(*tuple, predicate_id=inst_id)
+                elif len(tuple) == 2:
+                    for node in tuple:
+                        if node not in self.concepts():
+                            self.add_node(node)
+                    self.add_monopredicate(*tuple, predicate_id=inst_id)
+        else:
+            raise NotImplementedError()
 
     ######################
     ## Access Functions ##

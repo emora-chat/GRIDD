@@ -1,12 +1,13 @@
 from lark import Lark, Transformer
-from knowledge_graph.concept_graph import ConceptGraph
+from knowledge_base.concept_graph import ConceptGraph
 import time
 from os.path import join
+
+BASE_NODES = {'object', 'type', 'is_type'}
 
 class KnowledgeGraph:
 
     def __init__(self, filename=None, nodes=None):
-        BASE_NODES = {'object','type'}
         if nodes is None:
             nodes = BASE_NODES
         else:
@@ -14,15 +15,17 @@ class KnowledgeGraph:
         self._concept_graph = ConceptGraph(nodes=nodes)
         self._grammar = r"""
             start: knowledge+
-            knowledge: (bipredicate | monopredicate | instance)+ ";"
+            knowledge: (bipredicate | monopredicate | instance | ontological)+ ";"
             bipredicate: ((name "/")|(id "="))? type "(" subject "," object ")"
             monopredicate: ((name "/")|(id "="))? type "(" subject ")"
             instance: ((name "/")|(id "="))? type "(" ")"
+            ontological: id "<" (type | types) ">"
             name: STRING
             type: STRING 
+            types: type ("," type)+
             id: STRING
-            subject: STRING | bipredicate | monopredicate | instance
-            object: STRING | bipredicate | monopredicate | instance
+            subject: STRING | bipredicate | monopredicate | instance | ontological
+            object: STRING | bipredicate | monopredicate | instance | ontological
             STRING: /[a-z_A-Z0-9]/+
             WHITESPACE: (" " | "\n")+
             %ignore WHITESPACE
@@ -30,7 +33,7 @@ class KnowledgeGraph:
         self.parser = Lark(self._grammar, parser="lalr")
         self.predicate_transformer = PredicateTransformer(self)
 
-        self._concept_graph.merge(self.add_knowledge(open(join('knowledge_graph','kg_files','base.kg'), 'r').read())[0])
+        self._concept_graph.merge(self.add_knowledge(open(join('knowledge_base','kg_files','base.kg'), 'r').read())[0])
         self.predicate_transformer._set_kg_concepts()
 
         if filename is not None:
@@ -69,7 +72,7 @@ class PredicateTransformer(Transformer):
         self.kg_concepts = None
         self._set_kg_concepts()
         self.additions = []
-        self.addition_construction = ConceptGraph()
+        self.addition_construction = ConceptGraph(nodes=BASE_NODES)
         self.local_names = {}
 
     def _set_kg_concepts(self):
@@ -93,7 +96,7 @@ class PredicateTransformer(Transformer):
         id = self._id_duplication_check(id, new_concepts)
         subject = self._hierarchical_node_check(subject, new_concepts)
         object = self._hierarchical_node_check(object, new_concepts)
-        type = self._node_check(type, new_concepts)
+        type = self._is_type_check(type, new_concepts)
         id = self.addition_construction.add_bipredicate(subject, object, type, predicate_id=id)
         return self._id_handler(name, id)
 
@@ -114,7 +117,7 @@ class PredicateTransformer(Transformer):
             id = self.kg._concept_graph._get_next_id()
         id = self._id_duplication_check(id, new_concepts)
         subject = self._hierarchical_node_check(subject, new_concepts)
-        type = self._node_check(type, new_concepts)
+        type = self._is_type_check(type, new_concepts)
         id = self.addition_construction.add_monopredicate(subject, type, predicate_id=id)
         return self._id_handler(name, id)
 
@@ -134,12 +137,28 @@ class PredicateTransformer(Transformer):
         if id is None:
             id = self.kg._concept_graph._get_next_id()
         id = self._id_duplication_check(id, new_concepts)
-        type = self._node_check(type, new_concepts)
-        label = self._node_check('type', new_concepts)
+        type = self._is_type_check(type, new_concepts)
         self.addition_construction.add_node(id)
-        self.addition_construction.add_bipredicate(id, type, label,
+        self.addition_construction.add_bipredicate(id, type, 'type',
                                                    predicate_id=self.kg._concept_graph._get_next_id())
         return self._id_handler(name, id)
+
+    def ontological(self, args):
+        new_concepts = self.addition_construction.concepts()
+        id, types = args
+        if not isinstance(types, list):
+            types = [types]
+        id = self._manual_id_check(id[4:])
+        id = self._id_duplication_check(id, new_concepts)
+        self.addition_construction.add_node(id)
+        for type in types:
+            type = self._is_type_check(type, new_concepts)
+            self.addition_construction.add_bipredicate(id, type, 'type',
+                                                       predicate_id=self.kg._concept_graph._get_next_id())
+        self.addition_construction.add_monopredicate(id, 'is_type',
+                                                     predicate_id=self.kg._concept_graph._get_next_id())
+        return id
+
 
     def _hierarchical_node_check(self, node, new_concepts):
         if node.startswith('_int_'):
@@ -160,6 +179,18 @@ class PredicateTransformer(Transformer):
             self.addition_construction.add_node(type)
         return type
 
+    def _is_type_check(self, type, new_concepts):
+        if type not in self.kg_concepts and type not in new_concepts:
+            raise Exception("error - node %s does not exist!" % type)
+        elif type not in new_concepts:
+            if (type,'is_type') not in self.kg._concept_graph.monopredicates(type):
+                raise Exception('%s is not a type!'%type)
+            self.addition_construction.add_node(type)
+        elif type not in self.kg_concepts:
+            if (type,'is_type') not in self.addition_construction.monopredicates(type):
+                raise Exception('%s is not a type!'%type)
+        return type
+
     def _manual_id_check(self, id):
         if id.isdigit():
             raise Exception("Manually specified ids cannot be numbers/integers, "
@@ -168,7 +199,7 @@ class PredicateTransformer(Transformer):
 
     def _id_duplication_check(self, id, new_concepts):
         if id is not None and (id in new_concepts or id in self.kg_concepts):
-            raise Exception("predicate id %s already exists!" % id)
+            raise Exception("id %s already exists!" % id)
         return id
 
     def _id_handler(self, name, id):
@@ -184,6 +215,9 @@ class PredicateTransformer(Transformer):
     def id(self, args):
         return '_id_' + str(args[0])
 
+    def types(self, args):
+        return args
+
     def type(self, args):
         return str(args[0])
 
@@ -195,13 +229,13 @@ class PredicateTransformer(Transformer):
 
     def knowledge(self, args):
         self.additions.append(self.addition_construction)
-        self.addition_construction = ConceptGraph()
+        self.addition_construction = ConceptGraph(nodes=BASE_NODES)
         self.local_names = {}
 
     def start(self, args):
         to_return = self.additions
         self.additions = []
-        self.addition_construction = ConceptGraph()
+        self.addition_construction = ConceptGraph(nodes=BASE_NODES)
         self.local_names = {}
         return to_return
 
@@ -211,7 +245,7 @@ if __name__ == '__main__':
     print('starting...')
     kg = KnowledgeGraph()
     print('base KG loaded...')
-    additions = kg.add_knowledge(join('knowledge_graph','kg_files','example.kg'))
+    additions = kg.add_knowledge(join('knowledge_base','kg_files','example.kg'))
     print('additions loaded...')
     print('Elapsed: %.2f sec'%(time.time()-s))
 

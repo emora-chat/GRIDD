@@ -16,7 +16,7 @@ class KnowledgeGraph:
         """
         Create a `KnowledgeGraph` object.
 
-        Providing a `file_name` will load a text file from a previous `knowledge_graph.save` operation.
+        Providing a `file_name` will load a text file from a previous `knowledge_base.save` operation.
 
         Providing a `nodes` list will initialize those nodes.
         """

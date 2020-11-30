@@ -10,7 +10,7 @@ from modules.mention_bridge import BaseMentionBridge
 from modules.merge_bridge import BaseMergeBridge
 from modules.inference_bridge import BaseInferenceBridge
 
-from knowledge_graph.knowledge_graph import KnowledgeGraph
+from knowledge_base.knowledge_graph import KnowledgeGraph
 from modules.mention_identification_lexicon import MentionsByLexicon
 from modules.merge_dp import NodeMergeDP
 
@@ -62,7 +62,7 @@ if __name__ == '__main__':
 
     dm.build_framework()
 
-    dialogue_graph = KnowledgeGraph(join('knowledge_graph','kg_files','framework_test.kg'))
+    dialogue_graph = KnowledgeGraph(join('knowledge_base', 'kg_files', 'framework_test.kg'))
 
     asr_hypotheses = [
         {'text': 'i love math',
