@@ -8,6 +8,8 @@ bot<entity>
 reason<predicate>
 time<predicate>
 expr<predicate>
+type<predicate>
+is_type<predicate>
 
 now=entity()
 past=entity()

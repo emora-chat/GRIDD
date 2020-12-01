@@ -1,10 +1,10 @@
 watchable<entity>
 buyable<entity>
 movie<watchable,buyable>
-avengers=movie()
+avengers[endgame]=movie()
 
 actor<person>
-chris_evans=actor()
+chris_evans[evans,chris evans]=actor()
 
 emora=bot()
 
@@ -14,7 +14,7 @@ watch<predicate>
 
 ela/like(emora,avengers)
 reason(ela,like(emora,chris_evans))
-time(ela,now)
+test_id[test,id]=time(ela,now)
 time(eh/happy(emora),now)
 time(ewa/watch(emora,avengers),now)
 reason(eh,ewa);
