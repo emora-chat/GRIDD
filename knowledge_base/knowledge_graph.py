@@ -15,11 +15,12 @@ class KnowledgeGraph:
         self._concept_graph = ConceptGraph(nodes=nodes)
         self._grammar = r"""
             start: knowledge+
-            knowledge: (bipredicate | monopredicate | instance | ontological)+ ";"
-            bipredicate: ((name "/")|(id ("[" (alias | aliases) "]")? "="  ))? type "(" subject "," object ")"
-            monopredicate: ((name "/")|(id ("[" (alias | aliases) "]")? "="  ))? type "(" subject ")"
-            instance: ((name "/")|(id ("[" (alias | aliases) "]")? "="))? type "(" ")"
-            ontological: id ("[" (alias | aliases) "]")? "<" (type | types) ">"
+            knowledge: (bipredicate | monopredicate | instance | ontological | expression)+ ";"
+            bipredicate: ((name "/")|(id "="  ))? type "(" subject "," object ")"
+            monopredicate: ((name "/")|(id "="  ))? type "(" subject ")"
+            instance: ((name "/")|(id "="))? type "(" ")"
+            ontological: id "<" (type | types) ">"
+            expression: id "[" (alias | aliases) "]"
             name: STRING
             type: STRING 
             types: type ("," type)+
@@ -84,9 +85,9 @@ class PredicateTransformer(Transformer):
     def bipredicate(self, args):
         new_concepts = self.addition_construction.concepts()
         if len(args) > 3:
-            name, id, aliases, type, subject, object = self._arg_decoder_bipredicate(args)
+            name, id, type, subject, object = self._arg_decoder_bipredicate(args)
         elif len(args) == 3:
-            name,id,aliases = None,None,None
+            name,id = None,None
             type, subject, object = args
         else:
             raise Exception('bipredicate must have 3 - 5 arguments')
@@ -97,15 +98,14 @@ class PredicateTransformer(Transformer):
         object = self._hierarchical_node_check(object, new_concepts)
         type = self._is_type_check(type, new_concepts)
         id = self.addition_construction.add_bipredicate(subject, object, type, predicate_id=id)
-        self._add_aliases(aliases, id, new_concepts)
         return self._id_encoder(name, id)
 
     def monopredicate(self, args):
         new_concepts = self.addition_construction.concepts()
         if len(args) > 2:
-            id, name, aliases, type, subject = self._arg_decoder_monopredicate(args)
+            id, name, type, subject = self._arg_decoder_monopredicate(args)
         elif len(args) == 2:
-            name,id,aliases = None,None,None
+            name,id = None,None
             type, subject = args
         else:
             raise Exception('monopredicate must have 2 - 4 arguments')
@@ -115,15 +115,14 @@ class PredicateTransformer(Transformer):
         subject = self._hierarchical_node_check(subject, new_concepts)
         type = self._is_type_check(type, new_concepts)
         id = self.addition_construction.add_monopredicate(subject, type, predicate_id=id)
-        self._add_aliases(aliases, id, new_concepts)
         return self._id_encoder(name, id)
 
     def instance(self, args):
         new_concepts = self.addition_construction.concepts()
         if len(args) > 1:
-            id, name, aliases, type = self._arg_decoder_instance(args)
+            id, name, type = self._arg_decoder_instance(args)
         elif len(args) == 1:
-            name,id,aliases = None,None,None
+            name,id = None,None
             type = args[0]
         else:
             raise Exception('instance must have 1 or 2 arguments')
@@ -134,7 +133,6 @@ class PredicateTransformer(Transformer):
         self.addition_construction.add_node(id)
         self.addition_construction.add_bipredicate(id, type, 'type',
                                                    predicate_id=self.kg._concept_graph._get_next_id())
-        self._add_aliases(aliases, id, new_concepts)
         return self._id_encoder(name, id)
 
     def ontological(self, args):
@@ -142,8 +140,9 @@ class PredicateTransformer(Transformer):
         if len(args) == 3:
             id, aliases, types = args
         elif len(args) == 2:
-            aliases = None
             id, types = args
+        else:
+            raise Exception('ontological addition must have 2 or 3 arguments')
         if not isinstance(types, list):
             types = [types]
         id = self._manual_id_check(id[4:])
@@ -156,19 +155,18 @@ class PredicateTransformer(Transformer):
                                                        predicate_id=self.kg._concept_graph._get_next_id())
         self.addition_construction.add_monopredicate(id, 'is_type',
                                                      predicate_id=self.kg._concept_graph._get_next_id())
-        self._add_aliases(aliases, id, new_concepts)
         return id
 
-    def _add_aliases(self, aliases, node_id, new_concepts):
-        if aliases is not None:
-            if isinstance(aliases, str):
-                aliases = [aliases]
-            for alias in aliases:
-                alias_node = '"%s"'%alias
-                self.addition_construction.add_node(alias_node)
-                expression_type = self._is_type_check('expression', new_concepts)
-                self.addition_construction.add_bipredicate(alias_node, expression_type, 'type')
-                self.addition_construction.add_bipredicate(alias_node, node_id, 'expr')
+    def expression(self, args):
+        id, aliases = args
+        id = self._manual_id_check(id[4:])
+        if isinstance(aliases, str):
+            aliases = [aliases]
+        for alias in aliases:
+            alias_node = '"%s"' % alias
+            self.addition_construction.add_node(alias_node)
+            self.addition_construction.add_bipredicate(alias_node, 'expression', 'type')
+            self.addition_construction.add_bipredicate(alias_node, id, 'expr')
 
     def _hierarchical_node_check(self, node, new_concepts):
         if node.startswith('_int_'):
@@ -220,52 +218,34 @@ class PredicateTransformer(Transformer):
         return id
 
     def _arg_decoder_instance(self, args):
-        name, id, aliases, type = None, None, None, None
-        if len(args) == 3:
-            if args[0].startswith('_id_'):
-                id, aliases, type = args
-                id = self._manual_id_check(id[4:])
-            else:
-                name, aliases, type = args
-        elif len(args) == 2:
+        name, id, type = None, None, None
+        if len(args) == 2:
             if args[0].startswith('_id_'):
                 id, type = args
                 id = self._manual_id_check(id[4:])
             else:
                 name, type = args
-        return id, name, aliases, type
+        return id, name, type
 
     def _arg_decoder_monopredicate(self, args):
-        name, id, aliases, type, subject = None, None, None, None, None
-        if len(args) == 4:
-            if args[0].startswith('_id_'):
-                id, aliases, type, subject = args
-                id = self._manual_id_check(id[4:])
-            else:
-                name, aliases, type, subject = args
-        elif len(args) == 3:
+        name, id, type, subject = None, None, None, None
+        if len(args) == 3:
             if args[0].startswith('_id_'):
                 id, type, subject = args
                 id = self._manual_id_check(id[4:])
             else:
                 name, type, subject = args
-        return id, name, aliases, type, subject
+        return id, name, type, subject
 
     def _arg_decoder_bipredicate(self, args):
-        name, id, aliases, type, subject, object = None, None, None, None, None, None
-        if len(args) == 5:
-            if args[0].startswith('_id_'):
-                id, aliases, type, subject, object = args
-                id = self._manual_id_check(id[4:])
-            else:
-                name, aliases, type, subject, object = args
-        elif len(args) == 4:
+        name, id, type, subject, object = None, None, None, None, None
+        if len(args) == 4:
             if args[0].startswith('_id_'):
                 id, type, subject, object = args
                 id = self._manual_id_check(id[4:])
             else:
                 name, type, subject, object = args
-        return name, id, aliases, type, subject, object
+        return name, id, type, subject, object
 
     def name(self, args):
         return str(args[0])
