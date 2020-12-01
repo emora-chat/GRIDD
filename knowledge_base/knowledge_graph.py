@@ -139,7 +139,11 @@ class PredicateTransformer(Transformer):
 
     def ontological(self, args):
         new_concepts = self.addition_construction.concepts()
-        id, types = args
+        if len(args) == 3:
+            id, aliases, types = args
+        elif len(args) == 2:
+            aliases = None
+            id, types = args
         if not isinstance(types, list):
             types = [types]
         id = self._manual_id_check(id[4:])
@@ -152,6 +156,7 @@ class PredicateTransformer(Transformer):
                                                        predicate_id=self.kg._concept_graph._get_next_id())
         self.addition_construction.add_monopredicate(id, 'is_type',
                                                      predicate_id=self.kg._concept_graph._get_next_id())
+        self._add_aliases(aliases, id, new_concepts)
         return id
 
     def _add_aliases(self, aliases, node_id, new_concepts):

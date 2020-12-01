@@ -1,5 +1,5 @@
 watchable<entity>
-buyable<entity>
+buyable[purchasable]<entity>
 movie<watchable,buyable>
 avengers[endgame]=movie()
 
