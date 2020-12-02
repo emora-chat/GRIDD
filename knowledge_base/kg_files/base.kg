@@ -2,14 +2,19 @@ entity<object>
 predicate<object>
 expression<object>
 
+expr<predicate>
+type<predicate>
+is_type<predicate>
+time<predicate>
+pre<predicate>
+post<predicate>
+
 person<entity>
 bot<entity>
 
 reason<predicate>
-time<predicate>
-expr<predicate>
-type<predicate>
-is_type<predicate>
+like<predicate>
+sad<predicate>
 
 now=entity()
 past=entity()

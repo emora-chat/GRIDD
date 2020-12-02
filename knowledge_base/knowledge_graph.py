@@ -3,7 +3,7 @@ from knowledge_base.concept_graph import ConceptGraph
 import time
 from os.path import join
 
-BASE_NODES = {'object', 'type', 'is_type', 'expression', 'expr'}
+BASE_NODES = {'object', 'type', 'is_type', 'expression', 'expr', 'pre', 'post'}
 
 class KnowledgeGraph:
 
@@ -15,7 +15,12 @@ class KnowledgeGraph:
         self._concept_graph = ConceptGraph(nodes=nodes)
         self._grammar = r"""
             start: knowledge+
-            knowledge: (bipredicate | monopredicate | instance | ontological | expression)+ ";"
+            knowledge: ((bipredicate | monopredicate | instance | ontological | expression )+ ";") | ((anon_rule | named_rule | inference | implication) ";")
+            anon_rule: conditions "=>" conditions
+            named_rule: conditions "->" type "->" conditions
+            inference: conditions "->" type
+            implication: type "->" conditions
+            conditions: (bipredicate | monopredicate | instance)+
             bipredicate: ((name "/")|(id "="  ))? type "(" subject "," object ")"
             monopredicate: ((name "/")|(id "="  ))? type "(" subject ")"
             instance: ((name "/")|(id "="))? type "(" ")"
@@ -34,7 +39,7 @@ class KnowledgeGraph:
             WHITESPACE: (" " | "\n")+
             %ignore WHITESPACE
         """
-        self.parser = Lark(self._grammar, parser="lalr")
+        self.parser = Lark(self._grammar, parser="earley")
         self.predicate_transformer = PredicateTransformer(self)
 
         self._concept_graph.merge(self.add_knowledge(open(join('knowledge_base','kg_files','base.kg'), 'r').read())[0])
@@ -48,7 +53,7 @@ class KnowledgeGraph:
             input = open(input, 'r').read()
         tree = self.parser.parse(input)
         return self.predicate_transformer.transform(tree)
-
+"""
     def properties(self, concept):
         return self._concept_graph.predicates(concept)
 
@@ -66,7 +71,7 @@ class KnowledgeGraph:
 
     def save(self, json_filename):
         pass
-
+"""
 
 class PredicateTransformer(Transformer):
 
@@ -81,6 +86,35 @@ class PredicateTransformer(Transformer):
 
     def _set_kg_concepts(self):
         self.kg_concepts = self.kg._concept_graph.concepts()
+
+    def anon_rule(self, args):
+        pass
+
+    def named_rule(self, args):
+        pass
+
+    def inference(self, args):
+        preconditions, type = args
+        new_concepts = self.addition_construction.concepts()
+        if type not in self.kg_concepts and type not in new_concepts:
+            self.addition_construction.add_node(type)
+            self.addition_construction.add_monopredicate(type,'is_type')
+        for pre in preconditions:
+            pre = self._hierarchical_node_check(pre, new_concepts)
+            self.addition_construction.add_bipredicate(type,pre,'pre')
+
+    def implication(self, args):
+        type, postconditions = args
+        new_concepts = self.addition_construction.concepts()
+        if type not in self.kg_concepts and type not in new_concepts:
+            self.addition_construction.add_node(type)
+            self.addition_construction.add_monopredicate(type, 'is_type')
+        for post in postconditions:
+            post = self._hierarchical_node_check(post, new_concepts)
+            self.addition_construction.add_bipredicate(type, post, 'post')
+
+    def conditions(self, args):
+        return args
 
     def bipredicate(self, args):
         new_concepts = self.addition_construction.concepts()
@@ -125,7 +159,7 @@ class PredicateTransformer(Transformer):
             name,id = None,None
             type = args[0]
         else:
-            raise Exception('instance must have 1 or 2 arguments')
+            raise Exception('instance must have 1 - 2 arguments')
         if id is None:
             id = self.kg._concept_graph._get_next_id()
         id = self._id_duplication_check(id, new_concepts)
@@ -167,6 +201,7 @@ class PredicateTransformer(Transformer):
             self.addition_construction.add_node(alias_node)
             self.addition_construction.add_bipredicate(alias_node, 'expression', 'type')
             self.addition_construction.add_bipredicate(alias_node, id, 'expr')
+        return id
 
     def _hierarchical_node_check(self, node, new_concepts):
         if node.startswith('_int_'):
@@ -289,7 +324,8 @@ if __name__ == '__main__':
     print('starting...')
     kg = KnowledgeGraph()
     print('base KG loaded...')
-    additions = kg.add_knowledge(join('knowledge_base','kg_files','example.kg'))
+    # additions = kg.add_knowledge(join('knowledge_base','kg_files','example.kg'))
+    additions = kg.add_knowledge(join('knowledge_base', 'kg_files', 'inferences.kg'))
     print('additions loaded...')
     print('Elapsed: %.2f sec'%(time.time()-s))
 

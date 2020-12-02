@@ -1,0 +1,8 @@
+like(person(),z/person())
+like(person(),z)
+->
+love_triangle;
+
+love_triangle
+->
+sad(now);
