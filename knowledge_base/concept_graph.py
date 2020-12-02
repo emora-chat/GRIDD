@@ -66,7 +66,7 @@ class ConceptGraph:
         for node in nodes:
             self.add_node(node)
 
-    def add_bipredicate(self, source, target, label, predicate_id=None):
+    def add_bipredicate(self, source, target, label, predicate_id=None, merging=False):
         concepts = self.concepts()
         if source not in concepts:
             raise Exception(":param 'source' error - node %s does not exist!" % source)
@@ -74,7 +74,7 @@ class ConceptGraph:
             raise Exception(":param 'target' error - node %s does not exist!" % target)
         elif label not in concepts:
             raise Exception(":param 'label' error - node %s does not exist!" % label)
-        if predicate_id in concepts:
+        if predicate_id in concepts and not merging:
             raise Exception("predicate id %s already exists!" % predicate_id)
         if predicate_id is None:
             predicate_id = self._get_next_id()
@@ -82,13 +82,13 @@ class ConceptGraph:
         self._add_to_bipredicate_index((source,target,label),predicate_id)
         return predicate_id
 
-    def add_monopredicate(self, source, label, predicate_id=None):
+    def add_monopredicate(self, source, label, predicate_id=None, merging=False):
         concepts = self.concepts()
         if source not in concepts:
             raise Exception(":param 'source' error - node %s does not exist!" % source)
         elif label not in concepts:
             raise Exception(":param 'label' error - node %s does not exist!" % label)
-        if predicate_id in concepts:
+        if predicate_id in concepts and not merging:
             raise Exception("predicate id %s already exists!" % predicate_id)
         if predicate_id is None:
             predicate_id = self._get_next_id()
@@ -149,23 +149,26 @@ class ConceptGraph:
         for id in ids:
             self.remove_node(id)
 
-    # todo - what if it is a predicate property (i.e. predicate on the predicate_type, not instance)?
     # todo - for all int ids in other_graph, generate new id and create mapping from other_graph id to new id to use thereafter in merge
-    def merge(self, other_graph, replace_id=False):
-        if not replace_id:
-            for tuple, inst_id in other_graph.predicate_instances():
-                if len(tuple) == 3:
-                    for node in tuple:
-                        if node not in self.concepts():
-                            self.add_node(node)
-                    self.add_bipredicate(*tuple, predicate_id=inst_id)
-                elif len(tuple) == 2:
-                    for node in tuple:
-                        if node not in self.concepts():
-                            self.add_node(node)
-                    self.add_monopredicate(*tuple, predicate_id=inst_id)
-        else:
-            raise NotImplementedError()
+    def merge(self, other_graph):
+        id_map = {}
+        for tuple, inst_id in other_graph.predicate_instances():
+            for node in tuple:
+                if isinstance(node, int):
+                    if node not in id_map:
+                        id_map[node] = self._get_next_id()
+                else:
+                    id_map[node] = node
+                if id_map[node] not in self.concepts():
+                    self.add_node(id_map[node])
+            if inst_id not in id_map:
+                id_map[inst_id] = self._get_next_id()
+            if len(tuple) == 3:
+                self.add_bipredicate(id_map[tuple[0]], id_map[tuple[1]], id_map[tuple[2]],
+                                     predicate_id=id_map[inst_id], merging=True)
+            elif len(tuple) == 2:
+                self.add_monopredicate(id_map[tuple[0]], id_map[tuple[1]],
+                                       predicate_id=id_map[inst_id], merging=True)
 
     ######################
     ## Access Functions ##

@@ -37,10 +37,15 @@ class ConceptGraphSpec:
         cg.add_nodes(['Stacy', 'happy'])
         assert 'Stacy' in cg.concepts() and 'happy' in cg.concepts()
 
-    def add_monopredicate(cg, source, label, predicate_id=None):
+    def add_monopredicate(cg, source, label, predicate_id=None, merging=False):
         """
         Add a monopredicate with optional predicate_id.
         Otherwise, predicate_id is automatically generated.
+
+        If merging is false, then the predicate_id must be unique. Otherwise, the predicate_id may have
+        already been created in the merging process and we are adding the predicate signature afterwards
+        due to the merge order.
+
         :return: predicate_id
         """
         cg.add_monopredicate('Stacy', 'happy') #4
@@ -52,10 +57,15 @@ class ConceptGraphSpec:
         assert cg.monopredicate_map['Rob'] == {'sad'}
         assert cg.monopredicate_instance_index[('Rob', 'sad')] == {'sad(Rob)'}
 
-    def add_bipredicate(cg, source, target, label, predicate_id=None):
+    def add_bipredicate(cg, source, target, label, predicate_id=None, merging=False):
         """
         Add a bipredicate with optional predicate_id.
         Otherwise, predicate_id is automatically generated.
+
+        If merging is false, then the predicate_id must be unique. Otherwise, the predicate_id may have
+        already been created in the merging process and we are adding the predicate signature afterwards
+        due to the merge order.
+
         :return: predicate_id
         """
         cg.add_node('hates')
@@ -256,9 +266,7 @@ class ConceptGraphSpec:
         Return the object of the predicate
         """
         assert cg.object(18) == 'Beth'
-        with pytest.raises(Exception) as excinfo:
-            cg.object(17)
-        assert excinfo.value.args[0] == 'Cannot get object of a monopredicate!'
+        assert cg.object(17) is None
 
     def type(cg, predicate_instance):
         """
@@ -340,6 +348,58 @@ class ConceptGraphSpec:
         assert cg.type(4) == 'happy'
         assert cg.subject(21) == 'Stacy'
         assert cg.type(21) == 'happy'
+
+    def merge(self, other_graph):
+        """
+        Merge all predicates from another concept graph into this one
+
+        All predicate and entity instances with integer ids from other_graph are mapped to new integer ids
+        in current graph to avoid collisions.
+        """
+        import knowledge_base.concept_graph
+        cg2 = knowledge_base.concept_graph.ConceptGraph(nodes=['princess','fluffy','hiss','bark','friend'])
+        cg2.add_bipredicate('princess', 'fluffy', 'friend', predicate_id=12)
+
+        next_id = self.next_id
+
+        self.merge(cg2)
+
+        assert self.bipredicate_graph.has('princess', 'fluffy', 'friend')
+        assert self.bipredicate_instance_index[('princess', 'fluffy', 'friend')] == {next_id}
+        assert self.bipredicate_graph.has('John', 'Mary', 'likes')
+        assert self.bipredicate_instance_index[('John', 'Mary', 'likes')] == {12}
+
+        cg2.remove_bipredicate('princess', 'fluffy', 'friend')
+        cg2.add_monopredicate('princess', 'hiss', predicate_id=17)
+        self.merge(cg2)
+
+        assert 'hiss' in self.monopredicate_map['princess']
+        assert self.monopredicate_instance_index[('princess', 'hiss')] == {next_id+1}
+        assert 'sad' in self.monopredicate_map['John']
+        assert self.monopredicate_instance_index[('John', 'sad')] == {17}
+
+        cg2.remove_monopredicate('princess', 'hiss')
+        cg2.add_monopredicate('fluffy', 'bark', predicate_id=10)
+        self.merge(cg2)
+
+        assert 'bark' in self.monopredicate_map['fluffy']
+        assert self.monopredicate_instance_index[('fluffy', 'bark')] == {next_id+2}
+
+        cg3 = knowledge_base.concept_graph.ConceptGraph(nodes=['daisy','buster','bark','reason','friend'])
+        id1 = cg3.add_bipredicate('daisy', 'buster', 'friend')
+        id2 = cg3.add_monopredicate('buster', 'bark')
+        cg3.add_bipredicate(id1,id2,'reason')
+        self.merge(cg3)
+
+        id1 = self.bipredicate('daisy', 'buster', 'friend')
+        id2 = self.monopredicate('buster', 'bark')
+        assert len(list(id1)) == 1 and len(list(id2)) == 1
+        id1 = list(id1)[0]
+        id2 = list(id2)[0]
+        assert next_id+3 <= id1 and next_id+3 <= id2
+        id3 = self.bipredicate(id1,id2,'reason')
+        assert id3
+
 
 
 
