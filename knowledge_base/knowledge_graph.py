@@ -1,7 +1,8 @@
 from lark import Lark, Transformer
 from knowledge_base.concept_graph import ConceptGraph
-import time
+import time, sys, json
 from os.path import join
+from pyswip import Prolog
 
 BASE_NODES = {'object', 'type', 'is_type', 'expression', 'expr', 'pre', 'post', 'var'}
 
@@ -53,6 +54,44 @@ class KnowledgeGraph:
             input = open(input, 'r').read()
         tree = self.parser.parse(input)
         return self.predicate_transformer.transform(tree)
+
+    def query(self, query_graph):
+        prolog = Prolog()
+        prolog.assertz("father(michael,john)")
+        prolog.assertz("father(michael,gina)")
+        assert list(prolog.query("father(michael,X)")) == [{'X': 'john'}, {'X': 'gina'}]
+        for soln in prolog.query("father(X,Y)"):
+            print(soln["X"], "is the father of", soln["Y"])
+
+        rules = [rule.replace('.','').strip() for rule in
+                 """type(like, like).
+                    type(positive, positive).
+                    type(love, love).
+                    type(movie, movie).
+                    type(genre, genre).
+                    type(reason, reason).
+                    type(property, property).
+                    type(like, positive).
+                    type(love, like).
+                    type(love, positive).
+                    type(starwars, movie).
+                    type(avengers, movie).
+                    type(action, genre).
+                    type(comedy, genre).
+                    predinst(like(john, starwars), ljs).
+                    predinst(genre(starwars, action), gsa).
+                    predinst(reason(ljs, gsa), rlg).
+                    predinst(love(mary, avengers), lma).
+                    predinst(genre(avengers, comedy), gac). 
+                    predinst(reason(lma, gac), rlh).""".split('\n')]
+
+        for rule in rules:
+            prolog.assertz(rule)
+
+        query = "predinst(A, B), functor(A, C, _), arg(1, A, D), arg(2, A, E), type(C, like), type(E, movie), predinst(F, G), functor(F, H, _), arg(1, F, E), arg(2, F, J), type(J, genre), predinst(K, L), functor(K, M, _), arg(1, K, B), arg(2, K, G), type(M, reason)"
+        for soln in prolog.query(query):
+            print(json.dumps(soln, indent=4))
+
 """
     def properties(self, concept):
         return self._concept_graph.predicates(concept)
@@ -360,6 +399,8 @@ if __name__ == '__main__':
     additions = kg.add_knowledge(join('knowledge_base', 'kg_files', 'inferences.kg'))
     print('additions loaded...')
     print('Elapsed: %.2f sec'%(time.time()-s))
+
+    kg.query(None)
 
     test = 1
 
