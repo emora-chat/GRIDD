@@ -3,7 +3,7 @@ from knowledge_base.concept_graph import ConceptGraph
 import time
 from os.path import join
 
-BASE_NODES = {'object', 'type', 'is_type', 'expression', 'expr', 'pre', 'post', 'is_ont'}
+BASE_NODES = {'object', 'type', 'is_type', 'expression', 'expr', 'pre', 'post', 'var'}
 
 class KnowledgeGraph:
 
@@ -80,9 +80,13 @@ class PredicateTransformer(Transformer):
         self.kg = kg
         self.kg_concepts = None
         self._set_kg_concepts()
+        self._reset()
+
+    def _reset(self):
         self.additions = []
         self.addition_construction = ConceptGraph(nodes=BASE_NODES)
         self.local_names = {}
+        self.new_instances = set()
 
     def _set_kg_concepts(self):
         self.kg_concepts = self.kg._concept_graph.concepts()
@@ -95,6 +99,7 @@ class PredicateTransformer(Transformer):
         self.addition_construction.add_monopredicate(situation_id, 'is_type')
         self._add_preconditions(preconditions, situation_id, new_concepts)
         self._add_postconditions(postconditions, situation_id, new_concepts)
+        self._add_ontology_instance_tags()
 
     def named_rule(self, args):
         preconditions, type, postconditions = args
@@ -102,18 +107,21 @@ class PredicateTransformer(Transformer):
         self._add_type(type, new_concepts)
         self._add_preconditions(preconditions, type, new_concepts)
         self._add_postconditions(postconditions, type, new_concepts)
+        self._add_ontology_instance_tags()
 
     def inference(self, args):
         preconditions, type = args
         new_concepts = self.addition_construction.concepts()
         self._add_type(type, new_concepts)
         self._add_preconditions(preconditions, type, new_concepts)
+        self._add_ontology_instance_tags()
 
     def implication(self, args):
         type, postconditions = args
         new_concepts = self.addition_construction.concepts()
         self._add_type(type, new_concepts)
         self._add_postconditions(postconditions, type, new_concepts)
+        self._add_ontology_instance_tags()
 
     def bipredicate(self, args):
         new_concepts = self.addition_construction.concepts()
@@ -131,6 +139,7 @@ class PredicateTransformer(Transformer):
         object = self._hierarchical_node_check(object, new_concepts)
         type = self._is_type_check(type, new_concepts)
         id = self.addition_construction.add_bipredicate(subject, object, type, predicate_id=id)
+        self.new_instances.update({id})
         return self._id_encoder(name, id)
 
     def monopredicate(self, args):
@@ -148,6 +157,7 @@ class PredicateTransformer(Transformer):
         subject = self._hierarchical_node_check(subject, new_concepts)
         type = self._is_type_check(type, new_concepts)
         id = self.addition_construction.add_monopredicate(subject, type, predicate_id=id)
+        self.new_instances.update({id})
         return self._id_encoder(name, id)
 
     def instance(self, args):
@@ -164,8 +174,9 @@ class PredicateTransformer(Transformer):
         id = self._id_duplication_check(id, new_concepts)
         type = self._is_type_check(type, new_concepts)
         self.addition_construction.add_node(id)
-        self.addition_construction.add_bipredicate(id, type, 'type',
+        pred_id = self.addition_construction.add_bipredicate(id, type, 'type',
                                                    predicate_id=self.kg._concept_graph._get_next_id())
+        self.new_instances.update({id, pred_id})
         return self._id_encoder(name, id)
 
     def ontological(self, args):
@@ -212,8 +223,10 @@ class PredicateTransformer(Transformer):
             post = self._hierarchical_node_check(post, new_concepts)
             self.addition_construction.add_bipredicate(type, post, 'post')
 
-    def _indicate_ontology(self, node):
-        self.addition_construction.add_monopredicate(node, 'is_ont')
+    def _add_ontology_instance_tags(self):
+        for id in self.new_instances:
+            self.addition_construction.add_monopredicate(id, 'var')
+        self.new_instances = {}
 
     def _hierarchical_node_check(self, node, new_concepts):
         if node.startswith('_int_'):
@@ -330,12 +343,11 @@ class PredicateTransformer(Transformer):
         self.additions.append(self.addition_construction)
         self.addition_construction = ConceptGraph(nodes=BASE_NODES)
         self.local_names = {}
+        self.new_instances = set()
 
     def start(self, args):
         to_return = self.additions
-        self.additions = []
-        self.addition_construction = ConceptGraph(nodes=BASE_NODES)
-        self.local_names = {}
+        self._reset()
         return to_return
 
 if __name__ == '__main__':
