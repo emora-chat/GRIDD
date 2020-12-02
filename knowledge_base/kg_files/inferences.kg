@@ -6,3 +6,12 @@ love_triangle;
 love_triangle
 ->
 sad(now);
+
+like(p/person(),now)
+-> positive_mindset ->
+happy(p);
+
+like(x/person(),z/person())
+like(y/person(),z)
+=>
+enemy(x,y);

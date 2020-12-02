@@ -15,6 +15,8 @@ bot<entity>
 reason<predicate>
 like<predicate>
 sad<predicate>
+happy<predicate>
+enemy<predicate>
 
 now=entity()
 past=entity()

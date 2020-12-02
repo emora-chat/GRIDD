@@ -88,33 +88,32 @@ class PredicateTransformer(Transformer):
         self.kg_concepts = self.kg._concept_graph.concepts()
 
     def anon_rule(self, args):
-        pass
+        preconditions, postconditions = args
+        new_concepts = self.addition_construction.concepts()
+        situation_id = self.kg._concept_graph._get_next_id()
+        self.addition_construction.add_node(situation_id)
+        self.addition_construction.add_monopredicate(situation_id, 'is_type')
+        self._add_preconditions(preconditions, situation_id, new_concepts)
+        self._add_postconditions(postconditions, situation_id, new_concepts)
 
     def named_rule(self, args):
-        pass
+        preconditions, type, postconditions = args
+        new_concepts = self.addition_construction.concepts()
+        self._add_type(type, new_concepts)
+        self._add_preconditions(preconditions, type, new_concepts)
+        self._add_postconditions(postconditions, type, new_concepts)
 
     def inference(self, args):
         preconditions, type = args
         new_concepts = self.addition_construction.concepts()
-        if type not in self.kg_concepts and type not in new_concepts:
-            self.addition_construction.add_node(type)
-            self.addition_construction.add_monopredicate(type,'is_type')
-        for pre in preconditions:
-            pre = self._hierarchical_node_check(pre, new_concepts)
-            self.addition_construction.add_bipredicate(type,pre,'pre')
+        self._add_type(type, new_concepts)
+        self._add_preconditions(preconditions, type, new_concepts)
 
     def implication(self, args):
         type, postconditions = args
         new_concepts = self.addition_construction.concepts()
-        if type not in self.kg_concepts and type not in new_concepts:
-            self.addition_construction.add_node(type)
-            self.addition_construction.add_monopredicate(type, 'is_type')
-        for post in postconditions:
-            post = self._hierarchical_node_check(post, new_concepts)
-            self.addition_construction.add_bipredicate(type, post, 'post')
-
-    def conditions(self, args):
-        return args
+        self._add_type(type, new_concepts)
+        self._add_postconditions(postconditions, type, new_concepts)
 
     def bipredicate(self, args):
         new_concepts = self.addition_construction.concepts()
@@ -203,6 +202,16 @@ class PredicateTransformer(Transformer):
             self.addition_construction.add_bipredicate(alias_node, id, 'expr')
         return id
 
+    def _add_preconditions(self, preconditions, type, new_concepts):
+        for pre in preconditions:
+            pre = self._hierarchical_node_check(pre, new_concepts)
+            self.addition_construction.add_bipredicate(type,pre,'pre')
+
+    def _add_postconditions(self, postconditions, type, new_concepts):
+        for post in postconditions:
+            post = self._hierarchical_node_check(post, new_concepts)
+            self.addition_construction.add_bipredicate(type, post, 'post')
+
     def _hierarchical_node_check(self, node, new_concepts):
         if node.startswith('_int_'):
             node = int(node[5:])
@@ -233,6 +242,11 @@ class PredicateTransformer(Transformer):
             if (type,'is_type') not in self.addition_construction.monopredicates(type):
                 raise Exception('%s is not a type!'%type)
         return type
+
+    def _add_type(self, type, new_concepts):
+        if type not in self.kg_concepts and type not in new_concepts:
+            self.addition_construction.add_node(type)
+            self.addition_construction.add_monopredicate(type,'is_type')
 
     def _manual_id_check(self, id):
         if id.isdigit():
@@ -305,6 +319,9 @@ class PredicateTransformer(Transformer):
 
     def object(self, args):
         return str(args[0])
+
+    def conditions(self, args):
+        return args
 
     def knowledge(self, args):
         self.additions.append(self.addition_construction)
