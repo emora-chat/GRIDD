@@ -162,21 +162,10 @@ as defined for `bipredicates`.
 
 ## Quick Reference
 
-#### Entity Type with 1 Supertype
+#### Entity Type with N>=1 Supertype
 
 ```
-entity_type=supertype()
-```
-
-Note: This is for building the entity ontology.
-
-#### Entity Type with N>1 Supertype
-
-```
-entity_type=supertype1()
-type(subtype, supertype2)
-...
-type(subtype, supertypeN)
+entity_type<supertype1, ..., supertypeN>
 ```
 
 Note: This is for building the entity ontology.
@@ -218,23 +207,14 @@ else an `Error` will be raised.
 predicate_type(subject,object)
 ```
 
-Note: Used for both the ontology and for general 
-knowledge.
-
 #### Monopredicate
 
 ```
 predicate_type(subject)
 ```
 
-Note: Used for both the ontology and for general 
-knowledge.
-
 #### Entity Instance
 
 ```
 entity_type()
 ```
-
-Note: Used for both the ontology and for general 
-knowledge.

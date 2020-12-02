@@ -3,7 +3,7 @@ from knowledge_base.concept_graph import ConceptGraph
 import time
 from os.path import join
 
-BASE_NODES = {'object', 'type', 'is_type', 'expression', 'expr', 'pre', 'post'}
+BASE_NODES = {'object', 'type', 'is_type', 'expression', 'expr', 'pre', 'post', 'is_ont'}
 
 class KnowledgeGraph:
 
@@ -211,6 +211,9 @@ class PredicateTransformer(Transformer):
         for post in postconditions:
             post = self._hierarchical_node_check(post, new_concepts)
             self.addition_construction.add_bipredicate(type, post, 'post')
+
+    def _indicate_ontology(self, node):
+        self.addition_construction.add_monopredicate(node, 'is_ont')
 
     def _hierarchical_node_check(self, node, new_concepts):
         if node.startswith('_int_'):

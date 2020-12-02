@@ -8,6 +8,7 @@ is_type<predicate>
 time<predicate>
 pre<predicate>
 post<predicate>
+is_ont<predicate>
 
 person<entity>
 bot<entity>

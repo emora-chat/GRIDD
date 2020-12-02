@@ -228,8 +228,6 @@ class ConceptGraph:
     def object(self, predicate_instance):
         if predicate_instance in self.bipredicate_instance_index.reverse():
             return self.bipredicate_instance_index.reverse()[predicate_instance][1]
-        elif predicate_instance in self.monopredicate_instance_index.reverse():
-            raise Exception('Cannot get object of a monopredicate!')
 
     def type(self, predicate_instance):
         if predicate_instance in self.bipredicate_instance_index.reverse():
