@@ -261,6 +261,13 @@ class ConceptGraph:
                 pred_inst.add((tuple,inst))
         return pred_inst
 
+    def bipredicate_instances(self):
+        pred_inst = set()
+        for tuple, predicate_insts in self.bipredicate_instance_index.items():
+            for inst in predicate_insts:
+                pred_inst.add((tuple,inst))
+        return pred_inst
+
     def has(self, nodes):
         if isinstance(nodes, str):
             return nodes in self.concepts()
