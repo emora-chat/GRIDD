@@ -11,8 +11,6 @@ chris_evans[evans,chris evans]
 
 emora=bot()
 
-like<predicate>
-happy<predicate>
 watch<predicate>
 
 ela/like(emora,avengers)
@@ -27,3 +25,21 @@ store<entity>
 user=person()
 time(go(user,s/store()),past)
 time(go(user,s2/store()),future);
+
+like(person(),z/person())
+like(person(),z)
+->
+love_triangle;
+
+love_triangle
+->
+sad(now);
+
+like(p/person(),now)
+-> positive_mindset ->
+happy(p);
+
+like(x/person(),z/person())
+like(y/person(),z)
+=>
+enemy(x,y);
