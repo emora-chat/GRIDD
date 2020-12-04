@@ -94,11 +94,30 @@ class KnowledgeGraph:
 
     # todo - implement generate_inference_graph()
     def generate_inference_graph(self):
-        # for each situation node (e.g. node with > 0 precondition out_edges)
-        #   make a new concept graph ig
-        #   add all preconditions into ig
-        # return map of situation node: ig
-        pass
+        inferences = {}
+        for tuple, inst_id in self._concept_graph.bipredicate_instances():
+            situation_node, pre_pred_inst, type = tuple
+            if type == 'pre':
+                if situation_node not in inferences:
+                    inferences[situation_node] = ConceptGraph()
+                new_graph = inferences[situation_node]
+                components = [self._concept_graph.subject(pre_pred_inst),
+                              self._concept_graph.object(pre_pred_inst),
+                              self._concept_graph.type(pre_pred_inst)]
+                missing_args = components.count(None)
+                if missing_args < 3:
+                    for comp in components:
+                        if comp is not None and not new_graph.has(comp):
+                            new_graph.add_node(comp)
+                    if components[1] is None:  # monopredicate
+                        new_graph.add_monopredicate(components[0], components[2], predicate_id=pre_pred_inst)
+                    elif missing_args == 0: # bipredicate
+                        new_graph.add_bipredicate(*components, predicate_id=pre_pred_inst)
+                    else:
+                        raise Exception('generate_inference_graph is trying to process a predicate with impossible format!')
+                else:
+                    raise Exception('generate_inference_graph encountered a precondition that is not a predicate!')
+        return inferences
 
     def infer(self, inference_graph):
         prolog = Prolog()

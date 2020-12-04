@@ -251,14 +251,16 @@ class ConceptGraph:
         nodes.update(self.monopredicate_map.keys())
         return nodes
 
-    def predicate_instances(self):
+    def predicate_instances(self, node=None):
         pred_inst = set()
         for tuple, predicate_insts in self.bipredicate_instance_index.items():
             for inst in predicate_insts:
-                pred_inst.add((tuple,inst))
+                if node is None or (node is not None and node in tuple):
+                    pred_inst.add((tuple,inst))
         for tuple, predicate_insts in self.monopredicate_instance_index.items():
             for inst in predicate_insts:
-                pred_inst.add((tuple,inst))
+                if node is None or (node is not None and node in tuple):
+                    pred_inst.add((tuple,inst))
         return pred_inst
 
     def bipredicate_instances(self):
@@ -269,7 +271,7 @@ class ConceptGraph:
         return pred_inst
 
     def has(self, nodes):
-        if isinstance(nodes, str):
+        if isinstance(nodes, str) or isinstance(nodes, int):
             return nodes in self.concepts()
         elif isinstance(nodes, list):
             concepts = self.concepts()
@@ -278,7 +280,7 @@ class ConceptGraph:
                     return False
             return True
         else:
-            raise Exception(":param 'nodes' must be string or list")
+            raise Exception(":param 'nodes' must be int, string or list")
 
 
 if __name__ == '__main__':

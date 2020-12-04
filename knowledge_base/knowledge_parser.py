@@ -1,5 +1,6 @@
 from lark import Lark, Transformer
 from knowledge_base.concept_graph import ConceptGraph
+from structpy import I
 
 class PredicateTransformer(Transformer):
 

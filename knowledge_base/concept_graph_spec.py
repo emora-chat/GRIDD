@@ -400,7 +400,7 @@ class ConceptGraphSpec:
         id3 = self.bipredicate(id1,id2,'reason')
         assert id3
 
-    def predicate_instances(self):
+    def predicate_instances(self, node=None):
         """
         Returns list of all predicates in the form
         ((s,o,t), id) if bipredicate or ((s,t), id) if monopredicate
