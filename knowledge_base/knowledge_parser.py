@@ -1,6 +1,11 @@
 from lark import Lark, Transformer
 from knowledge_base.concept_graph import ConceptGraph
-from structpy import I
+
+class ParserStruct:
+    
+    def __init__(self, value, pred_instances):
+        self.value = value
+        self.pred_instances = pred_instances
 
 class PredicateTransformer(Transformer):
 
@@ -12,46 +17,40 @@ class PredicateTransformer(Transformer):
         self._set_kg_concepts()
         self._reset()
 
-    def _reset(self):
-        self.additions = []
-        self.addition_construction = ConceptGraph(nodes=self.base_nodes)
-        self.local_names = {}
-        self.new_instances = set()
-
-    def _set_kg_concepts(self):
-        self.kg_concepts = self.kg._concept_graph.concepts()
-
     def anon_rule(self, args):
         preconditions, postconditions = args
         new_concepts = self.addition_construction.concepts()
         situation_id = self.kg._concept_graph._get_next_id()
         self.addition_construction.add_node(situation_id)
         self.addition_construction.add_monopredicate(situation_id, 'is_type')
-        self._add_preconditions(preconditions, situation_id, new_concepts)
-        self._add_postconditions(postconditions, situation_id, new_concepts)
-        self._add_ontology_instance_tags()
+        self.add_preconditions(self._get_union_of_arg_pred_instance_sets(preconditions), situation_id, new_concepts)
+        self.add_postconditions(self._get_union_of_arg_pred_instance_sets(postconditions), situation_id, new_concepts)
+        self.add_ontology_instance_tags()
 
     def named_rule(self, args):
         preconditions, type, postconditions = args
         new_concepts = self.addition_construction.concepts()
         self._add_type(type, new_concepts)
-        self._add_preconditions(preconditions, type, new_concepts)
-        self._add_postconditions(postconditions, type, new_concepts)
-        self._add_ontology_instance_tags()
+        self.add_preconditions(self._get_union_of_arg_pred_instance_sets(preconditions), type, new_concepts)
+        self.add_postconditions(self._get_union_of_arg_pred_instance_sets(postconditions), type, new_concepts)
+        self.add_ontology_instance_tags()
 
     def inference(self, args):
         preconditions, type = args
         new_concepts = self.addition_construction.concepts()
         self._add_type(type, new_concepts)
-        self._add_preconditions(preconditions, type, new_concepts)
-        self._add_ontology_instance_tags()
+        self.add_preconditions(self._get_union_of_arg_pred_instance_sets(preconditions), type, new_concepts)
+        self.add_ontology_instance_tags()
 
     def implication(self, args):
         type, postconditions = args
         new_concepts = self.addition_construction.concepts()
         self._add_type(type, new_concepts)
-        self._add_postconditions(postconditions, type, new_concepts)
-        self._add_ontology_instance_tags()
+        self.add_postconditions(self._get_union_of_arg_pred_instance_sets(postconditions), type, new_concepts)
+        self.add_ontology_instance_tags()
+
+    def conditions(self, args):
+        return args
 
     def bipredicate(self, args):
         new_concepts = self.addition_construction.concepts()
@@ -70,7 +69,10 @@ class PredicateTransformer(Transformer):
         type = self._is_type_check(type, new_concepts)
         id = self.addition_construction.add_bipredicate(subject, object, type, predicate_id=id)
         self.new_instances.update({id})
-        return self._id_encoder(name, id)
+        arg_predicate_instances = self._get_union_of_arg_pred_instance_sets(args)
+        arg_predicate_instances.add(id)
+        to_return = ParserStruct(self._id_encoder(name, id), pred_instances=arg_predicate_instances)
+        return to_return
 
     def monopredicate(self, args):
         new_concepts = self.addition_construction.concepts()
@@ -88,7 +90,10 @@ class PredicateTransformer(Transformer):
         type = self._is_type_check(type, new_concepts)
         id = self.addition_construction.add_monopredicate(subject, type, predicate_id=id)
         self.new_instances.update({id})
-        return self._id_encoder(name, id)
+        arg_predicate_instances = self._get_union_of_arg_pred_instance_sets(args)
+        arg_predicate_instances.add(id)
+        to_return = ParserStruct(self._id_encoder(name, id), pred_instances=arg_predicate_instances)
+        return to_return
 
     def instance(self, args):
         new_concepts = self.addition_construction.concepts()
@@ -107,7 +112,10 @@ class PredicateTransformer(Transformer):
         pred_id = self.addition_construction.add_bipredicate(id, type, 'type',
                                                    predicate_id=self.kg._concept_graph._get_next_id())
         self.new_instances.update({id, pred_id})
-        return self._id_encoder(name, id)
+        arg_predicate_instances = self._get_union_of_arg_pred_instance_sets(args)
+        arg_predicate_instances.add(pred_id)
+        to_return = ParserStruct(self._id_encoder(name, id), pred_instances=arg_predicate_instances)
+        return to_return
 
     def ontological(self, args):
         new_concepts = self.addition_construction.concepts()
@@ -143,20 +151,93 @@ class PredicateTransformer(Transformer):
             self.addition_construction.add_bipredicate(alias_node, id, 'expr')
         return id
 
-    def _add_preconditions(self, preconditions, type, new_concepts):
+    def name(self, args):
+        to_return = ParserStruct(str(args[0].value), pred_instances=args[0].pred_instances)
+        return to_return
+
+    def id(self, args):
+        to_return = ParserStruct('_id_' + str(args[0].value), pred_instances=args[0].pred_instances)
+        return to_return
+
+    def _get_union_of_arg_pred_instance_sets(self, args):
+        pis = set()
+        for arg in args:
+            pis.update(arg.pred_instances)
+        return pis
+
+    def types(self, args):
+        return_arg_list = [arg.value for arg in args]
+        pis = self._get_union_of_arg_pred_instance_sets(args)
+        to_return = ParserStruct(return_arg_list, pred_instances=pis)
+        return to_return
+
+    def type(self, args):
+        to_return = ParserStruct(str(args[0].value), pred_instances=args[0].pred_instances)
+        return to_return
+
+    def aliases(self, args):
+        return_arg_list = [arg.value for arg in args]
+        pis = self._get_union_of_arg_pred_instance_sets(args)
+        to_return = ParserStruct(return_arg_list, pred_instances=pis)
+        return to_return
+
+    def alias(self, args):
+        to_return = ParserStruct(str(args[0].value), pred_instances=args[0].pred_instances)
+        return to_return
+
+    def subject(self, args):
+        to_return = ParserStruct(str(args[0].value), pred_instances=args[0].pred_instances)
+        return to_return
+
+    def object(self, args):
+        to_return = ParserStruct(str(args[0].value), pred_instances=args[0].pred_instances)
+        return to_return
+
+    def string_term(self, args):
+        to_return = ParserStruct(str(args[0]), pred_instances=set())
+        return to_return
+
+    def string_wspace_term(self, args):
+        to_return = ParserStruct(str(args[0]), pred_instances=set())
+        return to_return
+
+    def knowledge(self, args):
+        self.additions.append(self.addition_construction)
+        self.addition_construction = ConceptGraph(nodes=self.base_nodes)
+        self.local_names = {}
+        self.new_instances = set()
+
+    def start(self, args):
+        to_return = self.additions
+        self._reset()
+        return to_return
+
+    ############
+    #
+    # KG Updates
+    #
+    ############
+
+    def add_preconditions(self, preconditions, type, new_concepts):
         for pre in preconditions:
             pre = self._hierarchical_node_check(pre, new_concepts)
             self.addition_construction.add_bipredicate(type,pre,'pre')
 
-    def _add_postconditions(self, postconditions, type, new_concepts):
+    def add_postconditions(self, postconditions, type, new_concepts):
         for post in postconditions:
             post = self._hierarchical_node_check(post, new_concepts)
             self.addition_construction.add_bipredicate(type, post, 'post')
 
-    def _add_ontology_instance_tags(self):
+    def add_ontology_instance_tags(self):
         for id in self.new_instances:
             self.addition_construction.add_monopredicate(id, 'var')
         self.new_instances = {}
+
+    ############
+    #
+    # Helpers
+    #
+    ############
 
     def _hierarchical_node_check(self, node, new_concepts):
         if node.startswith('_int_'):
@@ -216,66 +297,37 @@ class PredicateTransformer(Transformer):
         name, id, type = None, None, None
         if len(args) == 2:
             if args[0].startswith('_id_'):
-                id, type = args
+                id, type = args[0].value, args[1].value
                 id = self._manual_id_check(id[4:])
             else:
-                name, type = args
+                name, type = args[0].value, args[1].value
         return id, name, type
 
     def _arg_decoder_monopredicate(self, args):
         name, id, type, subject = None, None, None, None
         if len(args) == 3:
             if args[0].startswith('_id_'):
-                id, type, subject = args
+                id, type, subject = args[0].value, args[1].value, args[2].value
                 id = self._manual_id_check(id[4:])
             else:
-                name, type, subject = args
+                name, type, subject = args[0].value, args[1].value, args[2].value
         return id, name, type, subject
 
     def _arg_decoder_bipredicate(self, args):
         name, id, type, subject, object = None, None, None, None, None
         if len(args) == 4:
             if args[0].startswith('_id_'):
-                id, type, subject, object = args
+                id, type, subject, object = args[0].value, args[1].value, args[2].value, args[3].value
                 id = self._manual_id_check(id[4:])
             else:
-                name, type, subject, object = args
+                name, type, subject, object = args[0].value, args[1].value, args[2].value, args[3].value
         return name, id, type, subject, object
 
-    def name(self, args):
-        return str(args[0])
-
-    def id(self, args):
-        return '_id_' + str(args[0])
-
-    def types(self, args):
-        return args
-
-    def type(self, args):
-        return str(args[0])
-
-    def aliases(self, args):
-        return args
-
-    def alias(self, args):
-        return str(args[0])
-
-    def subject(self, args):
-        return str(args[0])
-
-    def object(self, args):
-        return str(args[0])
-
-    def conditions(self, args):
-        return args
-
-    def knowledge(self, args):
-        self.additions.append(self.addition_construction)
+    def _reset(self):
+        self.additions = []
         self.addition_construction = ConceptGraph(nodes=self.base_nodes)
         self.local_names = {}
         self.new_instances = set()
 
-    def start(self, args):
-        to_return = self.additions
-        self._reset()
-        return to_return
+    def _set_kg_concepts(self):
+        self.kg_concepts = self.kg._concept_graph.concepts()

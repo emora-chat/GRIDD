@@ -32,15 +32,17 @@ class KnowledgeGraph:
             instance: ((name "/")|(id "="))? type "(" ")"
             ontological: id "<" (type | types) ">"
             expression: id "[" (alias | aliases) "]"
-            name: STRING
-            type: STRING 
+            name: string_term
+            type: string_term 
             types: type ("," type)+
-            alias: STRING_WSPACE
+            alias: string_wspace_term
             aliases: alias ("," alias)+
-            id: STRING
-            subject: STRING | bipredicate | monopredicate | instance | ontological
-            object: STRING | bipredicate | monopredicate | instance | ontological
+            id: string_term
+            subject: string_term | bipredicate | monopredicate | instance | ontological
+            object: string_term | bipredicate | monopredicate | instance | ontological
+            string_term: STRING
             STRING: /[a-z_A-Z0-9]/+
+            string_wspace_term: STRING_WSPACE
             STRING_WSPACE: /[a-z_A-Z0-9 ]/+
             WHITESPACE: (" " | "\n")+
             %ignore WHITESPACE

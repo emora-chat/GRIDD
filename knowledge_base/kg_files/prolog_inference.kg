@@ -1,8 +1,5 @@
-p/person()
-m/movie()
-g/genre()
-plm/like(p,m)
-mgg/is_genre(m,g)
+plm/like(p/person(),m/movie())
+mgg/is_genre(m,g/genre())
 reason(plm,mgg)
 =>
 like(p,g);
