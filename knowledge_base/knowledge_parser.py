@@ -17,37 +17,67 @@ class PredicateTransformer(Transformer):
         self._set_kg_concepts()
         self._reset()
 
+    def get_condition_instances(self, args, ontology_instances, preconditions=None, postconditions=None):
+        pre_inst, post_inst = set(), set()
+        if preconditions is not None:
+            pre_inst = self._get_union_of_arg_pred_instance_sets(preconditions)
+            contains = set()
+            for pre in pre_inst:
+                contains.update(set(self.addition_construction.signature(pre)))
+                contains.add(pre)
+            for instance_id, var_pred_id in ontology_instances.items():
+                if instance_id in contains:
+                    pre_inst.add(var_pred_id)
+        if postconditions is not None:
+            post_inst = self._get_union_of_arg_pred_instance_sets(postconditions)
+            contains = set()
+            for post in post_inst:
+                contains.update(set(self.addition_construction.signature(post)))
+                contains.add(post)
+            for instance_id, var_pred_id in ontology_instances.items():
+                if instance_id in contains:
+                    pre_inst.add(var_pred_id)
+        return pre_inst, post_inst
+
     def anon_rule(self, args):
         preconditions, postconditions = args
         new_concepts = self.addition_construction.concepts()
         situation_id = self.kg._concept_graph._get_next_id()
         self.addition_construction.add_node(situation_id)
         self.addition_construction.add_monopredicate(situation_id, 'is_type')
-        self.add_preconditions(self._get_union_of_arg_pred_instance_sets(preconditions), situation_id, new_concepts)
-        self.add_postconditions(self._get_union_of_arg_pred_instance_sets(postconditions), situation_id, new_concepts)
-        self.add_ontology_instance_tags()
+        ont_items = self.add_ontology_instance_tags()
+        new_concepts = self.addition_construction.concepts()
+        pre_inst, post_inst = self.get_condition_instances(args, ont_items, preconditions, postconditions)
+        self.add_preconditions(pre_inst, situation_id, new_concepts)
+        self.add_postconditions(post_inst, situation_id, new_concepts)
 
     def named_rule(self, args):
         preconditions, type, postconditions = args[0], args[1].value, args[2]
         new_concepts = self.addition_construction.concepts()
         self._add_type(type, new_concepts)
-        self.add_preconditions(self._get_union_of_arg_pred_instance_sets(preconditions), type, new_concepts)
-        self.add_postconditions(self._get_union_of_arg_pred_instance_sets(postconditions), type, new_concepts)
-        self.add_ontology_instance_tags()
+        ont_items = self.add_ontology_instance_tags()
+        new_concepts = self.addition_construction.concepts()
+        pre_inst, post_inst = self.get_condition_instances(args, ont_items, preconditions, postconditions)
+        self.add_preconditions(pre_inst, type, new_concepts)
+        self.add_postconditions(post_inst, type, new_concepts)
 
     def inference(self, args):
         preconditions, type = args[0], args[1].value
         new_concepts = self.addition_construction.concepts()
         self._add_type(type, new_concepts)
-        self.add_preconditions(self._get_union_of_arg_pred_instance_sets(preconditions), type, new_concepts)
-        self.add_ontology_instance_tags()
+        ont_items = self.add_ontology_instance_tags()
+        new_concepts = self.addition_construction.concepts()
+        pre_inst, post_inst = self.get_condition_instances(args, ont_items, preconditions=preconditions)
+        self.add_preconditions(pre_inst, type, new_concepts)
 
     def implication(self, args):
         type, postconditions = args[0].value, args[1]
         new_concepts = self.addition_construction.concepts()
         self._add_type(type, new_concepts)
-        self.add_postconditions(self._get_union_of_arg_pred_instance_sets(postconditions), type, new_concepts)
-        self.add_ontology_instance_tags()
+        ont_items = self.add_ontology_instance_tags()
+        new_concepts = self.addition_construction.concepts()
+        pre_inst, post_inst = self.get_condition_instances(args, ont_items, postconditions=postconditions)
+        self.add_postconditions(post_inst, type, new_concepts)
 
     def conditions(self, args):
         return args
@@ -147,8 +177,10 @@ class PredicateTransformer(Transformer):
         for alias in aliases:
             alias_node = '"%s"' % alias
             self.addition_construction.add_node(alias_node)
-            self.addition_construction.add_bipredicate(alias_node, 'expression', 'type')
-            self.addition_construction.add_bipredicate(alias_node, id, 'expr')
+            self.addition_construction.add_bipredicate(alias_node, 'expression', 'type',
+                                                       predicate_id=self.kg._concept_graph._get_next_id())
+            self.addition_construction.add_bipredicate(alias_node, id, 'expr',
+                                                       predicate_id=self.kg._concept_graph._get_next_id())
         return id
 
     def name(self, args):
@@ -221,17 +253,19 @@ class PredicateTransformer(Transformer):
     def add_preconditions(self, preconditions, type, new_concepts):
         for pre in preconditions:
             pre = self._hierarchical_node_check(pre, new_concepts)
-            self.addition_construction.add_bipredicate(type,pre,'pre')
+            self.addition_construction.add_bipredicate(type,pre,'pre',predicate_id=self.kg._concept_graph._get_next_id())
 
     def add_postconditions(self, postconditions, type, new_concepts):
         for post in postconditions:
             post = self._hierarchical_node_check(post, new_concepts)
-            self.addition_construction.add_bipredicate(type, post, 'post')
+            self.addition_construction.add_bipredicate(type, post, 'post',predicate_id=self.kg._concept_graph._get_next_id())
 
     def add_ontology_instance_tags(self):
+        ont_instances = {}
         for id in self.new_instances:
-            self.addition_construction.add_monopredicate(id, 'var')
+            ont_instances[id] = self.addition_construction.add_monopredicate(id, 'var',predicate_id=self.kg._concept_graph._get_next_id())
         self.new_instances = {}
+        return ont_instances
 
     ############
     #
@@ -273,7 +307,7 @@ class PredicateTransformer(Transformer):
     def _add_type(self, type, new_concepts):
         if type not in self.kg_concepts and type not in new_concepts:
             self.addition_construction.add_node(type)
-            self.addition_construction.add_monopredicate(type,'is_type')
+            self.addition_construction.add_monopredicate(type,'is_type',predicate_id=self.kg._concept_graph._get_next_id())
 
     def _manual_id_check(self, id):
         if id.isdigit():

@@ -154,7 +154,6 @@ class ConceptGraph:
         for id in ids:
             self.remove_node(id)
 
-    # todo - for all int ids in other_graph, generate new id and create mapping from other_graph id to new id to use thereafter in merge
     def merge(self, other_graph):
         id_map = {}
         for tuple, inst_id in other_graph.predicate_instances():
@@ -245,6 +244,12 @@ class ConceptGraph:
         elif predicate_instance in self.monopredicate_instance_index.reverse():
             return self.monopredicate_instance_index.reverse()[predicate_instance][1]
 
+    def signature(self, predicate_instance):
+        if predicate_instance in self.bipredicate_instance_index.reverse():
+            return self.bipredicate_instance_index.reverse()[predicate_instance]
+        elif predicate_instance in self.monopredicate_instance_index.reverse():
+            return self.monopredicate_instance_index.reverse()[predicate_instance]
+
     def predicates_between(self, node1, node2):
         return self.bipredicate_graph.edges(node1).intersection(self.bipredicate_graph.edges(node2))
 
@@ -326,12 +331,11 @@ class ConceptGraph:
     def infer(self, inference_graph):
         prolog = Prolog()
         kg_rules = self.to_knowledge_prolog()
-        inference_rules = inference_graph.to_query_prolog()
+        inference_query, inference_map = inference_graph.to_query_prolog()
         for rule in kg_rules:
             prolog.assertz(rule)
-        for query in inference_rules:
-            for soln in prolog.query(query):
-                print(json.dumps(soln, indent=4))
+        for soln in prolog.query(inference_query):
+            print(json.dumps(soln, indent=4))
 
     def to_knowledge_prolog(self):
         rules = []
@@ -365,7 +369,9 @@ class ConceptGraph:
                 pred_var = self._prolog_var()
                 str_repr = '%s(%s,%s)'%(pred_type,subject,object)
                 map[str_repr]=pred_var
-                for arg in [inst_id, pred_type, subject, object]:
+                if pred_type not in map:
+                    map[pred_type] = self._prolog_var()
+                for arg in [inst_id, subject, object]:
                     if arg not in map:
                         if self.monopredicate(arg, 'var'):
                             map[arg]=self._prolog_var()
@@ -377,7 +383,8 @@ class ConceptGraph:
                 arg1 = 'arg(1,%s,%s)'%(pred_var,map[subject])
                 arg2 = 'arg(2,%s,%s)'%(pred_var,map[object])
                 rules.extend([predinst,functor,t,arg1,arg2])
-        return rules, map
+        print(json.dumps(rules,indent=4))
+        return ', '.join(rules), map
 
     def _prolog_var(self):
         var = CHARS[self.idx]*self.seq
