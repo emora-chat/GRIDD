@@ -3,11 +3,9 @@ from knowledge_base.concept_graph import ConceptGraph
 from knowledge_base.knowledge_parser import PredicateTransformer
 import time, sys, json
 from os.path import join
-from pyswip import Prolog
-from structpy.map.bijective.bimap import Bimap
 
 BASE_NODES = {'object', 'type', 'is_type', 'expression', 'expr', 'pre', 'post', 'var'}
-CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
 
 class KnowledgeGraph:
 
@@ -65,126 +63,6 @@ class KnowledgeGraph:
     def merge(self, other_graph):
         self._concept_graph.merge(other_graph)
 
-    def test_prolog(self):
-        prolog = Prolog()
-        rules = [rule.replace('.','').strip() for rule in
-                 """type(like, like).
-                    type(positive, positive).
-                    type(love, love).
-                    type(movie, movie).
-                    type(genre, genre).
-                    type(reason, reason).
-                    type(property, property).
-                    type(like, positive).
-                    type(love, like).
-                    type(love, positive).
-                    type(starwars, movie).
-                    type(avengers, movie).
-                    type(action, genre).
-                    type(comedy, genre).
-                    predinst(like(john, starwars), ljs).
-                    predinst(genre(starwars, action), gsa).
-                    predinst(reason(ljs, gsa), rlg).
-                    predinst(love(mary, avengers), lma).
-                    predinst(genre(avengers, comedy), gac). 
-                    predinst(reason(lma, gac), rlh).""".split('\n')]
-        for rule in rules:
-            prolog.assertz(rule)
-        query = "predinst(A, B), functor(A, C, _), arg(1, A, D), arg(2, A, E), type(C, like), type(E, movie), predinst(F, G), functor(F, H, _), arg(1, F, E), arg(2, F, J), type(J, genre), predinst(K, L), functor(K, M, _), arg(1, K, B), arg(2, K, G), type(M, reason)"
-        for soln in prolog.query(query):
-            print(json.dumps(soln, indent=4))
-
-    # todo - implement generate_inference_graph()
-    def generate_inference_graph(self):
-        inferences = {}
-        for tuple, inst_id in self._concept_graph.bipredicate_instances():
-            situation_node, pre_pred_inst, type = tuple
-            if type == 'pre':
-                if situation_node not in inferences:
-                    inferences[situation_node] = ConceptGraph()
-                new_graph = inferences[situation_node]
-                components = [self._concept_graph.subject(pre_pred_inst),
-                              self._concept_graph.object(pre_pred_inst),
-                              self._concept_graph.type(pre_pred_inst)]
-                missing_args = components.count(None)
-                if missing_args < 3:
-                    for comp in components:
-                        if comp is not None and not new_graph.has(comp):
-                            new_graph.add_node(comp)
-                    if components[1] is None:  # monopredicate
-                        new_graph.add_monopredicate(components[0], components[2], predicate_id=pre_pred_inst)
-                    elif missing_args == 0: # bipredicate
-                        new_graph.add_bipredicate(*components, predicate_id=pre_pred_inst)
-                    else:
-                        raise Exception('generate_inference_graph is trying to process a predicate with impossible format!')
-                else:
-                    raise Exception('generate_inference_graph encountered a precondition that is not a predicate!')
-        return inferences
-
-    def infer(self, inference_graph):
-        prolog = Prolog()
-        kg_rules = self.to_kb_prolog()
-        inference_rules = inference_graph.to_query_prolog()
-        for rule in kg_rules:
-            prolog.assertz(rule)
-        for query in inference_rules:
-            for soln in prolog.query(query):
-                print(json.dumps(soln, indent=4))
-
-    def to_kb_prolog(self):
-        rules = []
-        for tuple, inst_id in self._concept_graph.predicate_instances():
-            if len(tuple) == 3: # bipredicates
-                subject, object, pred_type = tuple
-                if pred_type == 'type':
-                    if self._concept_graph.monopredicate(subject, 'is_type'): # ontology
-                        rules.append('type(%s,%s)'%(subject,subject))
-                    rules.append('type(%s,%s)'%(subject,object)) # do for all type ancestors????
-                else:
-                    rules.append('predinst(%s(%s,%s),%s)'%(pred_type,subject,object,inst_id))
-            else: #todo - monopredicates
-                pass
-        return rules
-
-    def to_query_prolog(self):
-        # contains one inference rule
-        self.idx,self.seq = 0,1
-        map = Bimap()
-        rules = []
-        for (subject, object, pred_type), inst_id in self._concept_graph.bipredicate_instances():
-            if pred_type == 'type':
-                if subject not in map:
-                    if self._concept_graph.monopredicate(subject, 'var'):
-                        map[subject] = self._prolog_var()
-                    else:
-                        map[subject] = subject
-                rules.append('type(%s,%s)'%(map[subject],object))
-            else:
-                pred_var = self._prolog_var()
-                str_repr = '%s(%s,%s)'%(pred_type,subject,object)
-                map[str_repr]=pred_var
-                for arg in [inst_id, pred_type, subject, object]:
-                    if arg not in map:
-                        if self._concept_graph.monopredicate(arg, 'var'):
-                            map[arg]=self._prolog_var()
-                        else:
-                            map[arg]=arg
-                predinst = 'predinst(%s,%s)'%(pred_var,map[inst_id])
-                functor = 'functor(%s,%s,_)'%(pred_var,map[pred_type])
-                t = 'type(%s,%s)'%(map[pred_type],pred_type)
-                arg1 = 'arg(1,%s,%s)'%(pred_var,map[subject])
-                arg2 = 'arg(2,%s,%s)'%(pred_var,map[object])
-                rules.extend([predinst,functor,t,arg1,arg2])
-        return rules, map
-
-    def _prolog_var(self):
-        var = CHARS[self.idx]*self.seq
-        self.idx += 1
-        if self.idx == 26:
-            self.seq += 1
-            self.idx = 0
-        return var
-
 """
     def properties(self, concept):
         return self._concept_graph.predicates(concept)
@@ -228,9 +106,10 @@ if __name__ == '__main__':
         ig.merge(addition)
     print('Elapsed: %.2f sec' % (time.time() - s))
 
-    inference_rule_graphs = ig.generate_inference_graph()
-    for rule_graph in inference_rule_graphs:
-        kg.infer(rule_graph)
+    inference_rule_graphs = ig._concept_graph.generate_inference_graph()
+    matches = {}
+    for situation_node, rule_graph in inference_rule_graphs.items():
+        matches[situation_node] = kg._concept_graph.infer(rule_graph)
 
     test = 1
 

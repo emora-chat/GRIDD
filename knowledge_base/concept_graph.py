@@ -3,6 +3,11 @@ from structpy.map.map import Map
 from structpy.map.index.index import Index
 from knowledge_base.concept_graph_spec import ConceptGraphSpec
 
+from pyswip import Prolog
+from structpy.map.bijective.bimap import Bimap
+CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+import json
+
 class ConceptGraph:
 
     def __init__(self, bipredicates=None, monopredicates=None, nodes=None):
@@ -171,7 +176,9 @@ class ConceptGraph:
                                        predicate_id=id_map[inst_id], merging=True)
 
     ######################
-    ## Access Functions ##
+    #
+    ## Access Functions
+    #
     ######################
 
     def predicates(self, node, predicate_type=None):
@@ -243,10 +250,12 @@ class ConceptGraph:
 
     def concepts(self):
         nodes = set()
-        for (source, target, label), predicate_insts in self.bipredicate_instance_index.items():
+        bpi = self.bipredicate_instance_index.items()
+        for (source, target, label), predicate_insts in bpi:
             nodes.update({source, target, label, *predicate_insts})
         nodes.update(self.bipredicate_graph.nodes())
-        for (source, label), predicate_insts in self.monopredicate_instance_index.items():
+        mpi = self.monopredicate_instance_index.items()
+        for (source, label), predicate_insts in mpi:
             nodes.update({source, label, *predicate_insts})
         nodes.update(self.monopredicate_map.keys())
         return nodes
@@ -281,6 +290,131 @@ class ConceptGraph:
             return True
         else:
             raise Exception(":param 'nodes' must be int, string or list")
+    
+    ######################
+    #
+    ## Inference Functions 
+    #
+    ######################
+
+    def generate_inference_graph(self):
+        inferences = {}
+        for tuple, inst_id in self.bipredicate_instances():
+            situation_node, pre_pred_inst, type = tuple
+            if type == 'pre':
+                if situation_node not in inferences:
+                    inferences[situation_node] = ConceptGraph()
+                new_graph = inferences[situation_node]
+                components = [self.subject(pre_pred_inst),
+                              self.object(pre_pred_inst),
+                              self.type(pre_pred_inst)]
+                missing_args = components.count(None)
+                if missing_args < 3:
+                    for comp in components:
+                        if comp is not None and not new_graph.has(comp):
+                            new_graph.add_node(comp)
+                    if components[1] is None:  # monopredicate
+                        new_graph.add_monopredicate(components[0], components[2], predicate_id=pre_pred_inst, merging=True)
+                    elif missing_args == 0: # bipredicate
+                        new_graph.add_bipredicate(*components, predicate_id=pre_pred_inst, merging=True)
+                    else:
+                        raise Exception('generate_inference_graph is trying to process a predicate with impossible format!')
+                else:
+                    raise Exception('generate_inference_graph encountered a precondition that is not a predicate!')
+        return inferences
+
+    def infer(self, inference_graph):
+        prolog = Prolog()
+        kg_rules = self.to_knowledge_prolog()
+        inference_rules = inference_graph.to_query_prolog()
+        for rule in kg_rules:
+            prolog.assertz(rule)
+        for query in inference_rules:
+            for soln in prolog.query(query):
+                print(json.dumps(soln, indent=4))
+
+    def to_knowledge_prolog(self):
+        rules = []
+        for tuple, inst_id in self.predicate_instances():
+            if len(tuple) == 3: # bipredicates
+                subject, object, pred_type = tuple
+                if pred_type == 'type':
+                    if self.monopredicate(subject, 'is_type'): # ontology
+                        rules.append('type(%s,%s)'%(subject,subject))
+                    rules.append('type(%s,%s)'%(subject,object)) # do for all type ancestors????
+                else:
+                    rules.append('predinst(%s(%s,%s),%s)'%(pred_type,subject,object,inst_id))
+            else: #todo - monopredicates
+                pass
+        return rules
+
+    def to_query_prolog(self):
+        # contains one inference rule
+        self.idx,self.seq = 0,1
+        map = Bimap()
+        rules = []
+        for (subject, object, pred_type), inst_id in self.bipredicate_instances():
+            if pred_type == 'type':
+                if subject not in map:
+                    if self.monopredicate(subject, 'var'):
+                        map[subject] = self._prolog_var()
+                    else:
+                        map[subject] = subject
+                rules.append('type(%s,%s)'%(map[subject],object))
+            else:
+                pred_var = self._prolog_var()
+                str_repr = '%s(%s,%s)'%(pred_type,subject,object)
+                map[str_repr]=pred_var
+                for arg in [inst_id, pred_type, subject, object]:
+                    if arg not in map:
+                        if self.monopredicate(arg, 'var'):
+                            map[arg]=self._prolog_var()
+                        else:
+                            map[arg]=arg
+                predinst = 'predinst(%s,%s)'%(pred_var,map[inst_id])
+                functor = 'functor(%s,%s,_)'%(pred_var,map[pred_type])
+                t = 'type(%s,%s)'%(map[pred_type],pred_type)
+                arg1 = 'arg(1,%s,%s)'%(pred_var,map[subject])
+                arg2 = 'arg(2,%s,%s)'%(pred_var,map[object])
+                rules.extend([predinst,functor,t,arg1,arg2])
+        return rules, map
+
+    def _prolog_var(self):
+        var = CHARS[self.idx]*self.seq
+        self.idx += 1
+        if self.idx == 26:
+            self.seq += 1
+            self.idx = 0
+        return var
+    
+    def test_prolog(self):
+        prolog = Prolog()
+        rules = [rule.replace('.','').strip() for rule in
+                 """type(like, like).
+                    type(positive, positive).
+                    type(love, love).
+                    type(movie, movie).
+                    type(genre, genre).
+                    type(reason, reason).
+                    type(property, property).
+                    type(like, positive).
+                    type(love, like).
+                    type(love, positive).
+                    type(starwars, movie).
+                    type(avengers, movie).
+                    type(action, genre).
+                    type(comedy, genre).
+                    predinst(like(john, starwars), ljs).
+                    predinst(genre(starwars, action), gsa).
+                    predinst(reason(ljs, gsa), rlg).
+                    predinst(love(mary, avengers), lma).
+                    predinst(genre(avengers, comedy), gac). 
+                    predinst(reason(lma, gac), rlh).""".split('\n')]
+        for rule in rules:
+            prolog.assertz(rule)
+        query = "predinst(A, B), functor(A, C, _), arg(1, A, D), arg(2, A, E), type(C, like), type(E, movie), predinst(F, G), functor(F, H, _), arg(1, F, E), arg(2, F, J), type(J, genre), predinst(K, L), functor(K, M, _), arg(1, K, B), arg(2, K, G), type(M, reason)"
+        for soln in prolog.query(query):
+            print(json.dumps(soln, indent=4))
 
 
 if __name__ == '__main__':

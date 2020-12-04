@@ -28,7 +28,7 @@ class PredicateTransformer(Transformer):
         self.add_ontology_instance_tags()
 
     def named_rule(self, args):
-        preconditions, type, postconditions = args
+        preconditions, type, postconditions = args[0], args[1].value, args[2]
         new_concepts = self.addition_construction.concepts()
         self._add_type(type, new_concepts)
         self.add_preconditions(self._get_union_of_arg_pred_instance_sets(preconditions), type, new_concepts)
@@ -36,14 +36,14 @@ class PredicateTransformer(Transformer):
         self.add_ontology_instance_tags()
 
     def inference(self, args):
-        preconditions, type = args
+        preconditions, type = args[0], args[1].value
         new_concepts = self.addition_construction.concepts()
         self._add_type(type, new_concepts)
         self.add_preconditions(self._get_union_of_arg_pred_instance_sets(preconditions), type, new_concepts)
         self.add_ontology_instance_tags()
 
     def implication(self, args):
-        type, postconditions = args
+        type, postconditions = args[0].value, args[1]
         new_concepts = self.addition_construction.concepts()
         self._add_type(type, new_concepts)
         self.add_postconditions(self._get_union_of_arg_pred_instance_sets(postconditions), type, new_concepts)
@@ -58,7 +58,7 @@ class PredicateTransformer(Transformer):
             name, id, type, subject, object = self._arg_decoder_bipredicate(args)
         elif len(args) == 3:
             name,id = None,None
-            type, subject, object = args
+            type, subject, object = args[0].value, args[1].value, args[2].value
         else:
             raise Exception('bipredicate must have 3 - 5 arguments')
         if id is None:
@@ -80,7 +80,7 @@ class PredicateTransformer(Transformer):
             id, name, type, subject = self._arg_decoder_monopredicate(args)
         elif len(args) == 2:
             name,id = None,None
-            type, subject = args
+            type, subject = args[0].value, args[1].value
         else:
             raise Exception('monopredicate must have 2 - 4 arguments')
         if id is None:
@@ -101,7 +101,7 @@ class PredicateTransformer(Transformer):
             id, name, type = self._arg_decoder_instance(args)
         elif len(args) == 1:
             name,id = None,None
-            type = args[0]
+            type = args[0].value
         else:
             raise Exception('instance must have 1 - 2 arguments')
         if id is None:
@@ -120,9 +120,9 @@ class PredicateTransformer(Transformer):
     def ontological(self, args):
         new_concepts = self.addition_construction.concepts()
         if len(args) == 3:
-            id, aliases, types = args
+            id, aliases, types = args[0].value, args[1].value, args[2].value
         elif len(args) == 2:
-            id, types = args
+            id, types = args[0].value, args[1].value
         else:
             raise Exception('ontological addition must have 2 or 3 arguments')
         if not isinstance(types, list):
@@ -140,7 +140,7 @@ class PredicateTransformer(Transformer):
         return id
 
     def expression(self, args):
-        id, aliases = args
+        id, aliases = args[0].value, args[1].value
         id = self._manual_id_check(id[4:])
         if isinstance(aliases, str):
             aliases = [aliases]
@@ -240,7 +240,7 @@ class PredicateTransformer(Transformer):
     ############
 
     def _hierarchical_node_check(self, node, new_concepts):
-        if node.startswith('_int_'):
+        if isinstance(node, str) and node.startswith('_int_'):
             node = int(node[5:])
         if node not in self.local_names:
             if node not in self.kg_concepts and node not in new_concepts:
@@ -296,7 +296,7 @@ class PredicateTransformer(Transformer):
     def _arg_decoder_instance(self, args):
         name, id, type = None, None, None
         if len(args) == 2:
-            if args[0].startswith('_id_'):
+            if args[0].value.startswith('_id_'):
                 id, type = args[0].value, args[1].value
                 id = self._manual_id_check(id[4:])
             else:
@@ -306,7 +306,7 @@ class PredicateTransformer(Transformer):
     def _arg_decoder_monopredicate(self, args):
         name, id, type, subject = None, None, None, None
         if len(args) == 3:
-            if args[0].startswith('_id_'):
+            if args[0].value.startswith('_id_'):
                 id, type, subject = args[0].value, args[1].value, args[2].value
                 id = self._manual_id_check(id[4:])
             else:
@@ -316,7 +316,7 @@ class PredicateTransformer(Transformer):
     def _arg_decoder_bipredicate(self, args):
         name, id, type, subject, object = None, None, None, None, None
         if len(args) == 4:
-            if args[0].startswith('_id_'):
+            if args[0].value.startswith('_id_'):
                 id, type, subject, object = args[0].value, args[1].value, args[2].value, args[3].value
                 id = self._manual_id_check(id[4:])
             else:
