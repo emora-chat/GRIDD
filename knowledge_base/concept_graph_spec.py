@@ -409,14 +409,22 @@ class ConceptGraphSpec:
 
     def bipredicate_instances(self):
         """
-        Returns list of all predicates in the form ((s,o,t), id)
+        Returns list of all bipredicates in the form ((s,o,t), id)
         """
         pass
 
     def monopredicate_instances(self):
+        """
+        Returns list of all monopredicates in the form ((s,t), id)
+        """
         pass
 
     def get_all_types(self, node, parent=None):
+        """
+        Returns a set of all ancestor types of node.
+
+        If parent is specified, only ancestors coming from the parent type are included.
+        """
         import knowledge_base.concept_graph
         cg = knowledge_base.concept_graph.ConceptGraph(nodes=['type', 'sister',
                                                                'sibling', 'family', 'relationship',
