@@ -3,8 +3,6 @@ from structpy.map.map import Map
 from structpy.map.index.index import Index
 from knowledge_base.concept_graph_spec import ConceptGraphSpec
 import sys,os
-print(os.environ['PATH'])
-print(os.environ['DYLD_FALLBACK_LIBRARY_PATH'])
 from pyswip import Prolog
 from structpy.map.bijective.bimap import Bimap
 CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -304,6 +302,18 @@ class ConceptGraph:
             return True
         else:
             raise Exception(":param 'nodes' must be int, string or list")
+
+    # todo - inefficient since it will traverse an ancestor path that it has already travelled if there is intersection
+    def get_all_types(self, node, parent=None):
+        types = set()
+        if parent is not None:
+            types.add(parent)
+            node = parent
+        for ancestor in self.object_neighbors(node, 'type'):
+            types.add(ancestor)
+            types.update(self.get_all_types(ancestor))
+        return types
+
     
     ######################
     #
@@ -361,9 +371,8 @@ class ConceptGraph:
             if len(tuple) == 3: # bipredicates
                 subject, object, pred_type = tuple
                 if pred_type == 'type':
-                    # if self.monopredicate(subject, 'is_type'): # ontology
-                    #     self_type.append('type(%s,%s)'%(subject,subject))
-                    type_rules.append('type(%s,%s)'%(subject,object)) # todo - add type for all ancestors, not just parent
+                    for t in self.get_all_types(subject, object):
+                        type_rules.append('type(%s,%s)'%(subject,t))
                 else:
                     rules.append('predinst(%s(%s,%s),%s)'%(pred_type,subject,object,inst_id))
             else:

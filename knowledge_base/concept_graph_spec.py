@@ -413,6 +413,29 @@ class ConceptGraphSpec:
         """
         pass
 
+    def monopredicate_instances(self):
+        pass
+
+    def get_all_types(self, node, parent=None):
+        import knowledge_base.concept_graph
+        cg = knowledge_base.concept_graph.ConceptGraph(nodes=['type', 'sister',
+                                                               'sibling', 'family', 'relationship',
+                                                               'female', 'person'])
+        cg.add_bipredicate('sister', 'sibling', 'type')
+        cg.add_bipredicate('sibling', 'family', 'type')
+        cg.add_bipredicate('family', 'relationship', 'type')
+        cg.add_bipredicate('sister', 'female', 'type')
+        cg.add_bipredicate('female', 'person', 'type')
+
+        found_types = cg.get_all_types('sister')
+        assert found_types == {'sibling', 'family', 'relationship', 'female', 'person'}
+
+        found_types = cg.get_all_types('sister', 'sibling')
+        assert found_types == {'sibling', 'family', 'relationship'}
+
+        found_types = cg.get_all_types('sister', 'female')
+        assert found_types == {'female', 'person'}
+
 
 
 
