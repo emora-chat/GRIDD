@@ -94,7 +94,7 @@ if __name__ == '__main__':
     kg = KnowledgeGraph()
     additions = kg.add_knowledge(join('knowledge_base', 'kg_files', 'prolog_knowledge.kg'))
     kg.merge(additions[0])
-    print('Elapsed: %.2f sec' % (time.time() - s))
+    print('Loaded knowledge graph from file in %.3f sec' % (time.time() - s))
 
     s = time.time()
     ig = KnowledgeGraph(nodes=['movie','is_genre','genre'])
@@ -104,12 +104,14 @@ if __name__ == '__main__':
     additions = ig.add_knowledge(join('knowledge_base', 'kg_files', 'prolog_inference.kg'))
     for addition in additions:
         ig.merge(addition)
-    print('Elapsed: %.2f sec' % (time.time() - s))
-
     inference_rule_graphs = ig._concept_graph.generate_inference_graph()
+    print('Loaded inference graph from file in %.3f sec' % (time.time() - s))
+
+    s = time.time()
     matches = {}
     for situation_node, rule_graph in inference_rule_graphs.items():
         matches[situation_node] = kg._concept_graph.infer(rule_graph)
+    print('Converted and ran inferences in %.3f sec' % (time.time() - s))
 
     test = 1
 

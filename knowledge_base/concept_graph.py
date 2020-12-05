@@ -2,11 +2,13 @@ from structpy.graph.directed.labeled.multilabeled_parallel_digraph_networkx impo
 from structpy.map.map import Map
 from structpy.map.index.index import Index
 from knowledge_base.concept_graph_spec import ConceptGraphSpec
-
+import sys,os
+print(os.environ['PATH'])
+print(os.environ['DYLD_FALLBACK_LIBRARY_PATH'])
 from pyswip import Prolog
 from structpy.map.bijective.bimap import Bimap
 CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-import json
+import json, time, subprocess
 
 class ConceptGraph:
 
@@ -329,28 +331,52 @@ class ConceptGraph:
         return inferences
 
     def infer(self, inference_graph):
-        prolog = Prolog()
         kg_rules = self.to_knowledge_prolog()
         inference_query, inference_map = inference_graph.to_query_prolog()
+
+        print('.\n'.join(kg_rules))
+        print(inference_query)
+        prolog = Prolog()
         for rule in kg_rules:
             prolog.assertz(rule)
-        for soln in prolog.query(inference_query):
-            print(json.dumps(soln, indent=4))
+        s = time.time()
+        print('** SOLUTIONS **')
+        solns = prolog.query(inference_query)
+        for soln in solns:
+            # print(json.dumps(soln, indent=4))
+            print(soln)
+
+        # kg = ""
+        # for line in kg_rules:
+        #     kg += "assertz(%s).\n"%line
+        # print(kg)
+        # print()
+        # print(inference_query)
+        # s = time.time()
+        # print('** SOLUTIONS **')
+        # command = '(echo "%s"; echo "%s"; echo "n") | swipl -q | grep " = "'%(kg,inference_query+'.')
+        # print(command)
+        # output = subprocess.check_output(command, shell=True, text=True)
+        # print('OUTPUT: ', output)
+
+        print('Ran inferences in %.3f'%(time.time()-s))
 
     def to_knowledge_prolog(self):
+        self_type = []
+        type_rules = []
         rules = []
         for tuple, inst_id in self.predicate_instances():
             if len(tuple) == 3: # bipredicates
                 subject, object, pred_type = tuple
                 if pred_type == 'type':
-                    if self.monopredicate(subject, 'is_type'): # ontology
-                        rules.append('type(%s,%s)'%(subject,subject))
-                    rules.append('type(%s,%s)'%(subject,object)) # do for all type ancestors????
+                    # if self.monopredicate(subject, 'is_type'): # ontology
+                    #     self_type.append('type(%s,%s)'%(subject,subject))
+                    type_rules.append('type(%s,%s)'%(subject,object)) # do for all type ancestors????
                 else:
                     rules.append('predinst(%s(%s,%s),%s)'%(pred_type,subject,object,inst_id))
             else: #todo - monopredicates
                 pass
-        return rules
+        return self_type + type_rules + rules
 
     def to_query_prolog(self):
         # contains one inference rule
@@ -379,11 +405,15 @@ class ConceptGraph:
                             map[arg]=arg
                 predinst = 'predinst(%s,%s)'%(pred_var,map[inst_id])
                 functor = 'functor(%s,%s,_)'%(pred_var,map[pred_type])
-                t = 'type(%s,%s)'%(map[pred_type],pred_type)
+                t = 'type(%s,%s)' % (map[pred_type], pred_type)
+                predinst_unspec = '(%s,%s,%s)'%(predinst,functor,t)
+                functor_spec = 'functor(%s,%s,_)' % (pred_var, pred_type)
+                predinst_spec = '(%s,%s)'%(predinst,functor_spec)
+                predinst_disj = '(%s;%s)'%(predinst_unspec,predinst_spec)
                 arg1 = 'arg(1,%s,%s)'%(pred_var,map[subject])
                 arg2 = 'arg(2,%s,%s)'%(pred_var,map[object])
-                rules.extend([predinst,functor,t,arg1,arg2])
-        print(json.dumps(rules,indent=4))
+                rules.extend([predinst_disj,arg1,arg2])
+        # print(json.dumps(rules,indent=4))
         return ', '.join(rules), map
 
     def _prolog_var(self):
@@ -393,35 +423,6 @@ class ConceptGraph:
             self.seq += 1
             self.idx = 0
         return var
-    
-    def test_prolog(self):
-        prolog = Prolog()
-        rules = [rule.replace('.','').strip() for rule in
-                 """type(like, like).
-                    type(positive, positive).
-                    type(love, love).
-                    type(movie, movie).
-                    type(genre, genre).
-                    type(reason, reason).
-                    type(property, property).
-                    type(like, positive).
-                    type(love, like).
-                    type(love, positive).
-                    type(starwars, movie).
-                    type(avengers, movie).
-                    type(action, genre).
-                    type(comedy, genre).
-                    predinst(like(john, starwars), ljs).
-                    predinst(genre(starwars, action), gsa).
-                    predinst(reason(ljs, gsa), rlg).
-                    predinst(love(mary, avengers), lma).
-                    predinst(genre(avengers, comedy), gac). 
-                    predinst(reason(lma, gac), rlh).""".split('\n')]
-        for rule in rules:
-            prolog.assertz(rule)
-        query = "predinst(A, B), functor(A, C, _), arg(1, A, D), arg(2, A, E), type(C, like), type(E, movie), predinst(F, G), functor(F, H, _), arg(1, F, E), arg(2, F, J), type(J, genre), predinst(K, L), functor(K, M, _), arg(1, K, B), arg(2, K, G), type(M, reason)"
-        for soln in prolog.query(query):
-            print(json.dumps(soln, indent=4))
 
 
 if __name__ == '__main__':
