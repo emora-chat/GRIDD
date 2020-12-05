@@ -286,6 +286,13 @@ class ConceptGraph:
                 pred_inst.add((tuple,inst))
         return pred_inst
 
+    def monopredicate_instances(self):
+        pred_inst = set()
+        for tuple, predicate_insts in self.monopredicate_instance_index.items():
+            for inst in predicate_insts:
+                pred_inst.add((tuple,inst))
+        return pred_inst
+
     def has(self, nodes):
         if isinstance(nodes, str) or isinstance(nodes, int):
             return nodes in self.concepts()
@@ -356,11 +363,14 @@ class ConceptGraph:
                 if pred_type == 'type':
                     # if self.monopredicate(subject, 'is_type'): # ontology
                     #     self_type.append('type(%s,%s)'%(subject,subject))
-                    type_rules.append('type(%s,%s)'%(subject,object)) # do for all type ancestors????
+                    type_rules.append('type(%s,%s)'%(subject,object)) # todo - add type for all ancestors, not just parent
                 else:
                     rules.append('predinst(%s(%s,%s),%s)'%(pred_type,subject,object,inst_id))
-            else: #todo - monopredicates
-                pass
+            else:
+                subject, pred_type = tuple
+                if pred_type not in ['var', 'is_type']:
+                    rules.append('predinst(%s(%s),%s)' % (pred_type, subject, inst_id))
+
         return self_type + type_rules + rules
 
     def to_query_prolog(self):
@@ -398,6 +408,28 @@ class ConceptGraph:
                 arg1 = 'arg(1,%s,%s)'%(pred_var,map[subject])
                 arg2 = 'arg(2,%s,%s)'%(pred_var,map[object])
                 rules.extend([predinst_disj,arg1,arg2])
+        for (subject, pred_type), inst_id in self.monopredicate_instances():
+            if pred_type not in ['var', 'is_type']:
+                pred_var = self._prolog_var()
+                str_repr = '%s(%s)' % (pred_type, subject)
+                map[str_repr] = pred_var
+                if pred_type not in map:
+                    map[pred_type] = self._prolog_var()
+                for arg in [inst_id, subject]:
+                    if arg not in map:
+                        if self.monopredicate(arg, 'var'):
+                            map[arg] = self._prolog_var()
+                        else:
+                            map[arg] = arg
+                predinst = 'predinst(%s,%s)' % (pred_var, map[inst_id])
+                functor = 'functor(%s,%s,_)' % (pred_var, map[pred_type])
+                t = 'type(%s,%s)' % (map[pred_type], pred_type)
+                predinst_unspec = '(%s,%s,%s)' % (predinst, functor, t)
+                functor_spec = 'functor(%s,%s,_)' % (pred_var, pred_type)
+                predinst_spec = '(%s,%s)' % (predinst, functor_spec)
+                predinst_disj = '(%s;%s)' % (predinst_unspec, predinst_spec)
+                arg1 = 'arg(1,%s,%s)' % (pred_var, map[subject])
+                rules.extend([predinst_disj, arg1, arg2])
         # print(json.dumps(rules,indent=4))
         return ', '.join(rules), map
 

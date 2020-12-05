@@ -4,6 +4,8 @@ love<like>
 movie<entity>
 genre<entity>
 is_genre<predicate>
+happy<predicate>
+ecstatic<happy>
 
 starwars=movie()
 avengers=movie()
@@ -16,8 +18,10 @@ mary=person()
 ljs/like(john,starwars)
 gsa/is_genre(starwars,action)
 reason(ljs,gsa)
+happy(john)
 
 lma/love(mary,avengers)
 gac/is_genre(avengers,comedy)
-rlh/reason(lma,gac);
+rlh/reason(lma,gac)
+ecstatic(mary);
 
