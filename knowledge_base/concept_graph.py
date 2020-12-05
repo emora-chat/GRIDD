@@ -334,8 +334,6 @@ class ConceptGraph:
         kg_rules = self.to_knowledge_prolog()
         inference_query, inference_map = inference_graph.to_query_prolog()
 
-        print('.\n'.join(kg_rules))
-        print(inference_query)
         prolog = Prolog()
         for rule in kg_rules:
             prolog.assertz(rule)
@@ -345,19 +343,6 @@ class ConceptGraph:
         for soln in solns:
             # print(json.dumps(soln, indent=4))
             print(soln)
-
-        # kg = ""
-        # for line in kg_rules:
-        #     kg += "assertz(%s).\n"%line
-        # print(kg)
-        # print()
-        # print(inference_query)
-        # s = time.time()
-        # print('** SOLUTIONS **')
-        # command = '(echo "%s"; echo "%s"; echo "n") | swipl -q | grep " = "'%(kg,inference_query+'.')
-        # print(command)
-        # output = subprocess.check_output(command, shell=True, text=True)
-        # print('OUTPUT: ', output)
 
         print('Ran inferences in %.3f'%(time.time()-s))
 
