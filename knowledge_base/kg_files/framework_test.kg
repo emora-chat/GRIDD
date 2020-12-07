@@ -1,4 +1,4 @@
-user=person()
-love=predicate<>
-subject=entity<>
-math=subject();
+love<predicate>
+subject<entity>
+math=subject()
+user=person();
