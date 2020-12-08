@@ -4,6 +4,7 @@ class Module(ABC):
 
     def __init__(self, name):
         self.name = name
+        self.framework = None
         super().__init__()
 
     @abstractmethod

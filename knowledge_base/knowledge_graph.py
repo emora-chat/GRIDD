@@ -110,6 +110,7 @@ if __name__ == '__main__':
     s = time.time()
     matches = {}
     for situation_node, rule_graph in inference_rule_graphs.items():
+        # inference variable to graph variable mapping, inference variable to graph solution
         matches[situation_node] = kg._concept_graph.infer(rule_graph)
     print('Converted and ran inferences in %.3f sec' % (time.time() - s))
 

@@ -8,6 +8,9 @@ class Framework(Pipeline):
         super().__init__(name)
         self.type = "Framework"
 
+        self.preprocessing_modules = {}
+        self.nlp_data = {}
+
         self.mention_models = Branch('mention models')
         self.mention_bridge = None
 
@@ -74,6 +77,41 @@ class Framework(Pipeline):
     def add_inference_bridge(self, inference_bridge_model):
         self.inference_bridge = inference_bridge_model
 
+    def add_model(self, model):
+        if model.name in self.model_names:
+            raise Warning('WARNING: Name %s already exists in %s' % (model.name, self.type))
+        self.model_names.append(model.name)
+        self.models.append(model)
+        model.framework = self
+
+    def add_models(self, models):
+        existing = [model.name for model in models if model.name in self.model_names]
+        for model in models:
+            model.framework = self
+        if len(existing) > 0:
+            raise Warning('WARNING: Names %s already exist in %s' % (str(existing), self.type))
+        self.model_names.extend([model.name for model in models])
+        self.models.extend(models)
+
+    def insert_model_by_position(self, model, position):
+        self.model_names.insert(position, model.name)
+        self.models.insert(position, model)
+        model.framework = self
+
+    def insert_model_after(self, source_name, target_model):
+        source_idx = self.model_names.index(source_name)
+        if source_idx == -1:
+            raise Exception('No model named %s exists in Pipeline' % source_name)
+        insertion_idx = source_idx + 1
+        self.model_names.insert(insertion_idx, target_model.name)
+        self.models.insert(insertion_idx, target_model)
+        target_model.framework = self
+
+    def add_preprocessing_module(self, name, model):
+        if name in self.preprocessing_modules:
+            raise Exception('Preprocessing module with name %s already exists!'%name)
+        self.preprocessing_modules[name] = model
+
     def build_framework(self):
         merge_pipeline = IterablePipeline('merge pipeline', self.merge_iteration)
         merge_pipeline.add_models([self.merge_models, self.merge_bridge])
@@ -84,3 +122,13 @@ class Framework(Pipeline):
                          self.selection_model,
                          self.expansion_model,
                          self.generation_model])
+
+    def run(self, input, graph):
+        self.run_preprocessing(input, graph)
+        for model in self.models:
+            input = model.run(input, graph)
+        return input
+
+    def run_preprocessing(self, input, graph):
+        for name, module in self.preprocessing_modules.items():
+            self.nlp_data[name] = module.run(input, graph)

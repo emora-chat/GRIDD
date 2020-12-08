@@ -3,7 +3,7 @@ from structpy.map.map import Map
 from structpy.map.index.index import Index
 from knowledge_base.concept_graph_spec import ConceptGraphSpec
 import sys,os
-from pyswip import Prolog
+from pyswip import Prolog, Variable
 from structpy.map.bijective.bimap import Bimap
 CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 import json, time, subprocess
@@ -348,20 +348,26 @@ class ConceptGraph:
         return inferences
 
     def infer(self, inference_graph):
+        class PyswipEncoder(json.JSONEncoder):
+            def default(self, obj):
+                if isinstance(obj, Variable):
+                    return 'PyswipVariable(%d)'%obj.handle
+                return json.JSONEncoder.default(self, obj)
+
         kg_rules = self.to_knowledge_prolog()
         inference_query, inference_map = inference_graph.to_query_prolog()
+        print(json.dumps(inference_map.reverse(), indent=4))
 
         prolog = Prolog()
         for rule in kg_rules:
             prolog.assertz(rule)
         s = time.time()
         print('** SOLUTIONS **')
-        solns = prolog.query(inference_query)
+        solns = list(prolog.query(inference_query))
         for soln in solns:
-            # print(json.dumps(soln, indent=4))
-            print(soln)
-
+            print(json.dumps(soln, indent=4, cls=PyswipEncoder))
         print('Ran inferences in %.3f'%(time.time()-s))
+        return inference_map, solns
 
     def to_knowledge_prolog(self):
         self_type = []
@@ -439,7 +445,6 @@ class ConceptGraph:
                 predinst_disj = '(%s;%s)' % (predinst_unspec, predinst_spec)
                 arg1 = 'arg(1,%s,%s)' % (pred_var, map[subject])
                 rules.extend([predinst_disj, arg1, arg2])
-        # print(json.dumps(rules,indent=4))
         return ', '.join(rules), map
 
     def _prolog_var(self):

@@ -1,6 +1,5 @@
 plm/like(p/person(),m/movie())
 mgg/is_genre(m,g/genre())
 reason(plm,mgg)
-happy(p)
 =>
 like(p,g);
