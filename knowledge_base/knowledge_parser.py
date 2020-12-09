@@ -293,6 +293,8 @@ class PredicateTransformer(Transformer):
         return type
 
     def _is_type_check(self, type, new_concepts):
+        if type in self.local_names:
+            type = self.local_names[type]
         if type not in self.kg_concepts and type not in new_concepts:
             raise Exception("error - node %s does not exist!" % type)
         elif type not in new_concepts:

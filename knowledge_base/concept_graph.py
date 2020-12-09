@@ -304,16 +304,23 @@ class ConceptGraph:
             raise Exception(":param 'nodes' must be int, string or list")
 
     # todo - inefficient since it will traverse an ancestor path that it has already travelled if there is intersection
-    def get_all_types(self, node, parent=None):
+    def get_all_types(self, node, parent=None, get_predicates=False):
         types = set()
         if parent is not None:
-            types.add(parent)
+            if not get_predicates:
+                types.add(parent)
+            else:
+                pred_id = list(self.bipredicate(node, parent, 'type'))[0]
+                types.add(((node, parent, 'type'),pred_id))
             node = parent
         for ancestor in self.object_neighbors(node, 'type'):
-            types.add(ancestor)
-            types.update(self.get_all_types(ancestor))
+            if not get_predicates:
+                types.add(ancestor)
+            else:
+                pred_id = list(self.bipredicate(node, ancestor, 'type'))[0]
+                types.add(((node, ancestor, 'type'), pred_id))
+            types.update(self.get_all_types(ancestor, get_predicates=get_predicates))
         return types
-
     
     ######################
     #

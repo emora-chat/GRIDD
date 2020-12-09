@@ -48,17 +48,19 @@ class KnowledgeGraph:
         self.parser = Lark(self._grammar, parser="earley")
         self.predicate_transformer = PredicateTransformer(self, BASE_NODES)
 
-        self._concept_graph.merge(self.add_knowledge(open(join('knowledge_base','kg_files','base.kg'), 'r').read())[0])
+        self.add_knowledge(open(join('knowledge_base','kg_files','base.kg'), 'r').read())
         self.predicate_transformer._set_kg_concepts()
 
         if filename is not None:
             self.add_knowledge(open(filename, 'r').read())
 
     def add_knowledge(self, input):
-        if input.endswith('.kg'):
+        if input.endswith('.kg') or input.endswith('.txt'):
             input = open(input, 'r').read()
         tree = self.parser.parse(input)
-        return self.predicate_transformer.transform(tree)
+        additions = self.predicate_transformer.transform(tree)
+        for addition in additions:
+            self._concept_graph.merge(addition)
 
     def merge(self, other_graph):
         self._concept_graph.merge(other_graph)
@@ -92,8 +94,7 @@ if __name__ == '__main__':
 
     s = time.time()
     kg = KnowledgeGraph()
-    additions = kg.add_knowledge(join('knowledge_base', 'kg_files', 'prolog_knowledge.kg'))
-    kg.merge(additions[0])
+    kg.add_knowledge(join('knowledge_base', 'kg_files', 'prolog_knowledge.kg'))
     print('Loaded knowledge graph from file in %.3f sec' % (time.time() - s))
 
     s = time.time()
@@ -101,9 +102,7 @@ if __name__ == '__main__':
     ig._concept_graph.add_monopredicate('movie', 'is_type')
     ig._concept_graph.add_monopredicate('genre', 'is_type')
     ig._concept_graph.add_monopredicate('is_genre', 'is_type')
-    additions = ig.add_knowledge(join('knowledge_base', 'kg_files', 'prolog_inference.kg'))
-    for addition in additions:
-        ig.merge(addition)
+    ig.add_knowledge(join('knowledge_base', 'kg_files', 'prolog_inference.kg'))
     inference_rule_graphs = ig._concept_graph.generate_inference_graph()
     print('Loaded inference graph from file in %.3f sec' % (time.time() - s))
 

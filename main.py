@@ -13,6 +13,8 @@ from modules.inference_bridge import BaseInferenceBridge
 from modules.allen_dp import AllenDP
 
 from knowledge_base.knowledge_graph import KnowledgeGraph
+from knowledge_base.working_memory import WorkingMemory
+from knowledge_base.concept_graph import ConceptGraph
 from modules.mention_identification_lexicon import MentionsByLexicon
 from modules.merge_dp import NodeMergeDP
 
@@ -66,7 +68,9 @@ if __name__ == '__main__':
 
     dm.build_framework()
 
-    dialogue_graph = KnowledgeGraph(join('knowledge_base', 'kg_files', 'framework_test.kg'))
+    kb = KnowledgeGraph(join('knowledge_base', 'kg_files', 'framework_test.kg'))
+    wm = ConceptGraph()
+    working_memory = WorkingMemory(wm=wm, kb=kb)
 
     # asr_hypotheses = [
     #     {'text': 'i love math',
@@ -93,6 +97,6 @@ if __name__ == '__main__':
     ]
 
     s = time.time()
-    output = dm.run(asr_hypotheses, dialogue_graph)
+    output = dm.run(asr_hypotheses, working_memory)
     elapsed = time.time() - s
     print('[%.6f s] %s'%(elapsed, output))

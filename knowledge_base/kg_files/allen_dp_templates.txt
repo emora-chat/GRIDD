@@ -1,0 +1,13 @@
+expr(x, X)
+expr(so, SO)
+expr(do, DO)
+
+nsubj(X/verb(), SO/pos())
+dobj(X, DO/pos())
+
+type(x, activity)
+
+=>
+pred/x(so,do)
+focus(pred)
+center(x);

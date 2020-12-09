@@ -1,3 +1,5 @@
+is_type(object)
+
 entity<object>
 predicate<object>
 expression<object>

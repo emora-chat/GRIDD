@@ -1,12 +1,22 @@
 from allennlp.predictors.predictor import Predictor
 from modules.module import Module
 from knowledge_base.concept_graph import ConceptGraph
+from knowledge_base.knowledge_graph import KnowledgeGraph
+from os.path import join
 
 class AllenDP(Module):
 
     def __init__(self, name):
         super().__init__(name)
         self.dependency_parser = Predictor.from_path("https://storage.googleapis.com/allennlp-public-models/biaffine-dependency-parser-ptb-2020.04.06.tar.gz")
+        pos_nodes = ['verb','noun','pron']
+        nodes = ['nsubj','dobj','focus','center', 'pos']
+        self.templates = KnowledgeGraph(nodes=pos_nodes + nodes)
+        for n in pos_nodes + nodes:
+            self.templates._concept_graph.add_monopredicate(n, 'is_type')
+        for n in pos_nodes:
+            self.templates._concept_graph.add_bipredicate(n, 'pos', 'type')
+        self.templates.add_knowledge(join('knowledge_base', 'kg_files', 'allen_dp_templates.txt'))
         self.dup_id = 1
 
     def add_node_from_dict(self, parent, node_dict, cg):
@@ -52,12 +62,14 @@ class AllenDP(Module):
         :return: dict<token span: concept graph>
         """
         dp_parse = {}
+        self.dup_id = 1
 
         for hypothesis in input:
             parse = self.dependency_parser.predict(
                 sentence=hypothesis['text']
             )
             cg = self.parse_to_cg(parse)
+            cg.infer(self.templates)
 
         return dp_parse
 
