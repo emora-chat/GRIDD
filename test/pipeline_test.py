@@ -6,31 +6,31 @@ from components.aggregator import Aggregator
 from modules.module import Module
 
 class A(Module):
-    def run(self, input, graph):
+    def run(self, input, working_memory):
         return input + 'a'
 
 class B(Module):
-    def run(self, input, graph):
+    def run(self, input, working_memory):
         return input + 'b'
 
 class C(Module):
-    def run(self, input, graph):
+    def run(self, input, working_memory):
         return input + 'c'
 
 class D(Module):
-    def run(self, input, graph):
+    def run(self, input, working_memory):
         return input + 'd'
 
 class One(Module):
-    def run(self, input, graph):
+    def run(self, input, working_memory):
         return input + '1'
 
 class Two(Module):
-    def run(self, input, graph):
+    def run(self, input, working_memory):
         return input + '2'
 
 class Three(Module):
-    def run(self, input, graph):
+    def run(self, input, working_memory):
         return input + '3'
 
 
@@ -113,14 +113,14 @@ def test_branch_run():
 ##########################################################################
 
 class Random(Aggregator):
-    def run(self, input, graph):
-        outputs = self.branch.run(input, graph)
+    def run(self, input, working_memory):
+        outputs = self.branch.run(input, working_memory)
         selection = random.choice(list(outputs.items()))
         return selection[1]
 
 class Maximum(Aggregator):
-    def run(self, input, graph):
-        outputs = self.branch.run(input, graph)
+    def run(self, input, working_memory):
+        outputs = self.branch.run(input, working_memory)
         models_by_weight = [(model_name, meta['weight'])
                             for model_name, meta in self.branch.models.items()]
         max_tuple = max(models_by_weight, key=lambda x: x[1])

@@ -161,13 +161,21 @@ class PredicateTransformer(Transformer):
         # id = self._id_duplication_check(id, new_concepts)
         if id is not None and id not in new_concepts:
             self.addition_construction.add_node(id)
+        new_pred_ids = set()
         for type in types:
             type = self._is_type_check(type, new_concepts)
-            self.addition_construction.add_bipredicate(id, type, 'type',
+            pi = self.addition_construction.add_bipredicate(id, type, 'type',
                                                        predicate_id=self.kg._concept_graph._get_next_id())
-        self.addition_construction.add_monopredicate(id, 'is_type',
+            new_pred_ids.add(pi)
+        mi = self.addition_construction.add_monopredicate(id, 'is_type',
                                                      predicate_id=self.kg._concept_graph._get_next_id())
-        return id
+        self.new_instances.update(new_pred_ids)
+        self.new_instances.add(mi)
+        new_pred_ids.add(mi)
+        arg_predicate_instances = self._get_union_of_arg_pred_instance_sets(args)
+        arg_predicate_instances.update(new_pred_ids)
+        to_return = ParserStruct(id, pred_instances=arg_predicate_instances)
+        return to_return
 
     def expression(self, args):
         id, aliases = args[0].value, args[1].value

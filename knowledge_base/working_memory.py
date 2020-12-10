@@ -19,7 +19,7 @@ class WorkingMemory:
         """
         Pull KB predicates into WM for specified nodes
 
-        :param nodes: set of nodes to retrieve neighbors for
+        :param nodes: iterable of nodes to retrieve neighbors for
         :param depth: integer value of retrieved neighborhood depth
         """
         visited = set()

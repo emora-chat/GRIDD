@@ -6,12 +6,12 @@ class BaseInferenceBridge(Module):
     def __init__(self, name):
         super().__init__(name)
 
-    def run(self, input, graph):
+    def run(self, input, working_memory):
         """
 
         :param input: inference output (graph of inferred additions)
         :param graph: dialogue graph updated by merge pipeline
         :return: binary indicating whether update was done
         """
-        graph.update(input)
+        working_memory.update(input)
         return True

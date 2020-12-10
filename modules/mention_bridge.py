@@ -6,7 +6,7 @@ class BaseMentionBridge(Module):
     def __init__(self, name):
         super().__init__(name)
 
-    def run(self, input: List[Dict], graph):
+    def run(self, input: List[Dict], working_memory):
         """
 
         :param input: mention output (list of dictionaries of token spans -> DSG element)
@@ -14,5 +14,5 @@ class BaseMentionBridge(Module):
         """
         for mentions_dict in input:
             for span, mention in mentions_dict.items():
-                graph[mention] = {}
+                working_memory[mention] = {}
         return True

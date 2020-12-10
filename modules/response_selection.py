@@ -5,12 +5,12 @@ class BaseResponseSelection(Module):
     def __init__(self, name):
         super().__init__(name)
 
-    def run(self, input, graph):
+    def run(self, input, working_memory):
         """
 
         :param input: binary indicating status of inference bridge
-        :param graph: updated dialogue graph by merge-and-inference procedure
+        :param working_memory: updated dialogue graph by merge-and-inference procedure
         :return: planned response as an ordered sequence of predicates from graph
         """
-        response = {'<bob node>': graph['<bob node>']}
+        response = {'<bob node>': working_memory['<bob node>']}
         return [response]

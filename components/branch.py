@@ -28,8 +28,8 @@ class Branch:
             self.models[meta['model'].name] = meta
             meta['model'].framework = self.framework
 
-    def run(self, input, graph):
-        outputs = {model_name: meta['model'].run(input, graph) for model_name, meta in self.models.items()}
+    def run(self, input, working_memory):
+        outputs = {model_name: meta['model'].run(input, working_memory) for model_name, meta in self.models.items()}
         return outputs
 
     def to_display(self):

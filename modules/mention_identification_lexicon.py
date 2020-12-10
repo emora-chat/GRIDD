@@ -32,7 +32,7 @@ class MentionsByLexicon(Module):
 
     # todo - need the inference procedure to instantiate the argument attachments of predicates???
     # todo - need aliasing for KG creation, where each alias is added to lexicon to be used in this step
-    def run(self, input: List[Dict], graph) -> List:
+    def run(self, input: List[Dict], working_memory) -> List:
         """
         Extract known concepts from input
 

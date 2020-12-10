@@ -6,7 +6,7 @@ import sys,os
 from pyswip import Prolog, Variable
 from structpy.map.bijective.bimap import Bimap
 CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-import json, time, subprocess
+import json, time, copy
 
 class ConceptGraph:
 
@@ -174,6 +174,15 @@ class ConceptGraph:
                 self.add_monopredicate(id_map[tuple[0]], id_map[tuple[1]],
                                        predicate_id=id_map[inst_id], merging=True)
 
+    def copy(self):
+        cp = ConceptGraph()
+        cp.next_id = self.next_id
+        cp.bipredicate_graph = copy.deepcopy(self.bipredicate_graph)
+        cp.bipredicate_instance_index = copy.deepcopy(self.bipredicate_instance_index)
+        cp.monopredicate_instance_index = copy.deepcopy(self.monopredicate_instance_index)
+        cp.monopredicate_map = Map(self.monopredicate_map.items())
+        return cp
+
     ######################
     #
     ## Access Functions
@@ -330,12 +339,18 @@ class ConceptGraph:
 
     def generate_inference_graph(self):
         inferences = {}
+        implications = {}
         for tuple, inst_id in self.bipredicate_instances():
             situation_node, pre_pred_inst, type = tuple
-            if type == 'pre':
-                if situation_node not in inferences:
-                    inferences[situation_node] = ConceptGraph()
-                new_graph = inferences[situation_node]
+            if type == 'pre' or type == 'post':
+                if type == 'pre':
+                    if situation_node not in inferences:
+                        inferences[situation_node] = ConceptGraph()
+                    new_graph = inferences[situation_node]
+                else:
+                    if situation_node not in implications:
+                        implications[situation_node] = ConceptGraph()
+                    new_graph = implications[situation_node]
                 components = [self.subject(pre_pred_inst),
                               self.object(pre_pred_inst),
                               self.type(pre_pred_inst)]
@@ -352,13 +367,15 @@ class ConceptGraph:
                         raise Exception('generate_inference_graph is trying to process a predicate with impossible format!')
                 else:
                     raise Exception('generate_inference_graph encountered a precondition that is not a predicate!')
-        return inferences
+        return inferences, implications
 
     def infer(self, inference_graph):
         class PyswipEncoder(json.JSONEncoder):
             def default(self, obj):
                 if isinstance(obj, Variable):
                     return 'PyswipVariable(%d)'%obj.handle
+                elif isinstance(obj, bytes):
+                    return '"%s"'%obj.decode("utf-8")
                 return json.JSONEncoder.default(self, obj)
 
         kg_rules = self.to_knowledge_prolog()
@@ -371,10 +388,11 @@ class ConceptGraph:
         s = time.time()
         print('** SOLUTIONS **')
         solns = list(prolog.query(inference_query))
-        for soln in solns:
-            print(json.dumps(soln, indent=4, cls=PyswipEncoder))
+        parsed_solns = [json.loads(json.dumps(soln, cls=PyswipEncoder)) for soln in solns]
+        for soln in parsed_solns:
+            print(json.dumps(soln, indent=4))
         print('Ran inferences in %.3f'%(time.time()-s))
-        return inference_map, solns
+        return inference_map, parsed_solns
 
     def to_knowledge_prolog(self):
         self_type = []

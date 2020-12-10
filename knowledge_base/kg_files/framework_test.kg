@@ -1,5 +1,6 @@
 vehicle<object>
 car<vehicle>
+car[car]
 animal<object>
 dog<animal>
 property<object>
@@ -8,14 +9,18 @@ red<color>
 noise<object>
 bark<noise>
 loud<object>
+house<object>
+house[house]
 
 prop<predicate>
 bought<predicate>
+bought[bought]
 have<predicate>
 sound<predicate>
 volume<predicate>
 
 i=person()
+i[i]
 bought(i,c/car())
 prop(c,red)
 have(i,d/dog())

@@ -14,7 +14,7 @@ class BaseMentionIdentification(Module):
         }
         # self.lemmatizer = WordNetLemmatizer()
 
-    def run(self, input: List[Dict], graph) -> List:
+    def run(self, input: List[Dict], working_memory) -> List:
         """
         Extract known concepts from input
 

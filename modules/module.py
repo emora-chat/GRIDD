@@ -8,5 +8,5 @@ class Module(ABC):
         super().__init__()
 
     @abstractmethod
-    def run(self, input, graph):
+    def run(self, input, working_memory):
         pass

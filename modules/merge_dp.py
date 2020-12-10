@@ -5,7 +5,7 @@ class NodeMergeDP(Module):
     def __init__(self, name):
         super().__init__(name)
 
-    def run(self, input, graph):
+    def run(self, input, working_memory):
         """
         Calculate node merge scores for pairs of nodes
 

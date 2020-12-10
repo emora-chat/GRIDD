@@ -24,7 +24,7 @@ class KnowledgeGraph:
             named_rule: conditions "->" type "->" conditions
             inference: conditions "->" type
             implication: type "->" conditions
-            conditions: (bipredicate | monopredicate | instance)+
+            conditions: (bipredicate | monopredicate | instance | ontological)+
             bipredicate: ((name "/")|(id "="  ))? type "(" subject "," object ")"
             monopredicate: ((name "/")|(id "="  ))? type "(" subject ")"
             instance: ((name "/")|(id "="))? type "(" ")"

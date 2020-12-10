@@ -22,8 +22,8 @@ import time
 from os.path import join
 
 class First(Aggregator):
-    def run(self, input, graph):
-        outputs = self.branch.run(input, graph)
+    def run(self, input, working_memory):
+        outputs = self.branch.run(input, working_memory)
         selection = list(outputs.items())[0]
         return selection[1]
 
@@ -69,7 +69,7 @@ if __name__ == '__main__':
     dm.build_framework()
 
     kb = KnowledgeGraph(join('knowledge_base', 'kg_files', 'framework_test.kg'))
-    wm = ConceptGraph()
+    wm = ConceptGraph(nodes=['is_type'])
     working_memory = WorkingMemory(wm=wm, kb=kb)
 
     # asr_hypotheses = [
@@ -80,21 +80,21 @@ if __name__ == '__main__':
     #      }
     # ]
 
-    # asr_hypotheses = [
-    #     {'text': 'i bought a house',
-    #      'text_confidence': 0.87,
-    #      'tokens': ['i', 'bought', 'a', 'house'],
-    #      'token_confidence': {0: 0.90, 1: 0.90, 2: 0.80, 3: 0.80}
-    #      }
-    # ]
-
     asr_hypotheses = [
-        {'text': 'my dog walks around my house',
+        {'text': 'i bought a house',
          'text_confidence': 0.87,
-         'tokens': ['my', 'dog', 'walks', 'around', 'my', 'house'],
-         'token_confidence': {0: 0.90, 1: 0.90, 2: 0.80, 3: 0.80, 4: 0.80, 5: 0.90}
+         'tokens': ['i', 'bought', 'a', 'house'],
+         'token_confidence': {0: 0.90, 1: 0.90, 2: 0.80, 3: 0.80}
          }
     ]
+
+    # asr_hypotheses = [
+    #     {'text': 'my dog walks around my house',
+    #      'text_confidence': 0.87,
+    #      'tokens': ['my', 'dog', 'walks', 'around', 'my', 'house'],
+    #      'token_confidence': {0: 0.90, 1: 0.90, 2: 0.80, 3: 0.80, 4: 0.80, 5: 0.90}
+    #      }
+    # ]
 
     s = time.time()
     output = dm.run(asr_hypotheses, working_memory)

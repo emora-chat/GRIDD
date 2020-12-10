@@ -1,13 +1,13 @@
-expr(x, X)
-expr(so, SO)
-expr(do, DO)
-
 nsubj(X/verb(), SO/pos())
 dobj(X, DO/pos())
 
-type(x, activity)
+expr(X, x<predicate>)
+expr(SO, so/object())
+expr(DO, do/object())
 
+var(x)
 =>
 pred/x(so,do)
 focus(pred)
-center(x);
+center(x)
+expr(X,x);

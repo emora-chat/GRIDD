@@ -7,7 +7,7 @@ class BaseMergeBridge(Module):
         super().__init__(name)
         self.threshold = threshold_score
 
-    def run(self, input: Dict, graph):
+    def run(self, input: Dict, working_memory):
         """
         Merge the highest scored node pair together in the graph
 
@@ -17,7 +17,7 @@ class BaseMergeBridge(Module):
         if len(input) > 0:
             (keeper, merger), merge_score = max(input.items(), key=lambda x: x[1])
             if merge_score > self.threshold:
-                graph[keeper].update(graph[merger])
-                del graph[merger]
+                working_memory[keeper].update(working_memory[merger])
+                del working_memory[merger]
                 return True
         return False

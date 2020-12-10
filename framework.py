@@ -123,10 +123,10 @@ class Framework(Pipeline):
                          self.expansion_model,
                          self.generation_model])
 
-    def run(self, input, graph):
-        self.run_preprocessing(input, graph)
+    def run(self, input, working_memory):
+        self.run_preprocessing(input, working_memory)
         for model in self.models:
-            input = model.run(input, graph)
+            input = model.run(input, working_memory)
         return input
 
     def run_preprocessing(self, input, graph):

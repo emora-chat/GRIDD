@@ -11,9 +11,9 @@ class IterablePipeline(Pipeline):
     def add_iteration_function(self, iteration_function):
         self.iteration_func = iteration_function
 
-    def run(self, input, graph):
+    def run(self, input, working_memory):
         self.iteration_vars = {}
         while self.iteration_func(self, input):
             for model in self.models:
-                input = model.run(input, graph)
+                input = model.run(input, working_memory)
         return input

@@ -41,9 +41,9 @@ class Pipeline:
         self.models.insert(insertion_idx, target_model)
         target_model.framework = self.framework
 
-    def run(self, input, graph):
+    def run(self, input, working_memory):
         for model in self.models:
-            input = model.run(input, graph)
+            input = model.run(input, working_memory)
         return input
 
     def to_display(self):
