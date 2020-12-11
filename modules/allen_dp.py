@@ -11,8 +11,10 @@ class AllenDP(Module):
     def __init__(self, name):
         super().__init__(name)
         self.dependency_parser = Predictor.from_path("https://storage.googleapis.com/allennlp-public-models/biaffine-dependency-parser-ptb-2020.04.06.tar.gz")
-        self.pos_nodes = ['verb','noun','pron']
-        self.nodes = ['nsubj','dobj','focus','center', 'pos']
+        # POS tag and dependency parse link CANNOT be the same (causes Prolog solution-finding problems)
+        # see det vs detpred for example
+        self.pos_nodes = ['verb','noun','pron','det','adj','adv']
+        self.nodes = ['nsubj','dobj','amod','detpred','focus','center', 'pos', 'property']
         self.templates = KnowledgeGraph(nodes=self.pos_nodes + self.nodes)
         for n in self.pos_nodes + self.nodes:
             self.templates._concept_graph.add_monopredicate(n, 'is_type')
@@ -47,9 +49,12 @@ class AllenDP(Module):
         cg.add_bipredicate(word, span_node, 'span')
 
         if parent != 'root':
-            if not cg.has(node_dict['link']):
-                cg.add_node(node_dict['link'])
-            cg.add_bipredicate(parent, word, node_dict['link'])
+            link = node_dict['link']
+            if link == 'det':
+                link = 'detpred'
+            if not cg.has(link):
+                cg.add_node(link)
+            cg.add_bipredicate(parent, word, link)
 
         if 'children' in node_dict:
             for child in node_dict['children']:
@@ -64,36 +69,54 @@ class AllenDP(Module):
             for (s,o,l), pred_id in implication.bipredicate_instances():
                 if s in var_map and 'PyswipVariable' not in solution[var_map[s]]:
                     s = solution[var_map[s]]
-                s = self._local_get(pred_map, s)
+                s = self._local_get(pred_map, s, imp_cg)
                 if o in var_map and 'PyswipVariable' not in solution[var_map[o]]:
                     o = solution[var_map[o]]
-                o = self._local_get(pred_map, o)
+                o = self._local_get(pred_map, o, imp_cg)
                 if l in var_map and 'PyswipVariable' not in solution[var_map[l]]:
                     l = solution[var_map[l]]
                 l = self._local_get(pred_map, l)
                 for item in [s, o, l]:
                     if not imp_cg.has(item):
                         imp_cg.add_node(item)
-                new_pred_id = imp_cg.add_bipredicate(s, o, l, merging=True)
-                pred_map[pred_id] = new_pred_id
+                if pred_id not in pred_map:
+                    new_pred_id = imp_cg.add_bipredicate(s, o, l, merging=True)
+                    pred_map[pred_id] = new_pred_id
+                else:
+                    new_pred_id = imp_cg.add_bipredicate(s, o, l,
+                                                         predicate_id=pred_map[pred_id],
+                                                         merging=True)
             for (s,l), pred_id in implication.monopredicate_instances():
                 if s in var_map and 'PyswipVariable' not in solution[var_map[s]]:
                     s = solution[var_map[s]]
-                s = self._local_get(pred_map, s)
+                s = self._local_get(pred_map, s, imp_cg)
                 if l in var_map and 'PyswipVariable' not in solution[var_map[l]]:
                     l = solution[var_map[l]]
                 l = self._local_get(pred_map, l)
                 for item in [s, l]:
                     if not imp_cg.has(item):
                         imp_cg.add_node(item)
-                new_pred_id = imp_cg.add_monopredicate(s, l, merging=True)
-                pred_map[pred_id] = new_pred_id
+                if pred_id not in pred_map:
+                    new_pred_id = imp_cg.add_monopredicate(s, l, merging=True)
+                    pred_map[pred_id] = new_pred_id
+                else:
+                    new_pred_id = imp_cg.add_monopredicate(s, l,
+                                                         predicate_id=pred_map[pred_id],
+                                                         merging=True)
                 if l == 'center':
                     implication_map[s] = imp_cg
         return implication_map
 
-    def _local_get(self, dict, item):
-        return dict.get(item, item)
+    def _local_get(self, dict, item, imp_cg=None):
+        to_return = dict.get(item, None)
+        if to_return is None:
+            if isinstance(item, int):
+                # New instance from implication is acting as subject or object, need to convert and store to new id
+                id = imp_cg._get_next_id()
+                dict[item] = id
+                return id
+            return item
+        return to_return
 
     def run(self, input, working_memory):
         """

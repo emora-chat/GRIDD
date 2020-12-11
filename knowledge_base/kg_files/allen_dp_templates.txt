@@ -1,13 +1,31 @@
 nsubj(X/verb(), SO/pos())
 dobj(X, DO/pos())
-
 expr(X, x<predicate>)
 expr(SO, so/object())
 expr(DO, do/object())
-
 var(x)
 =>
-pred/x(so,do)
-focus(pred)
+p/x(so,do)
+focus(p)
 center(x)
-expr(X,x);
+expr(X,p);
+
+detpred(X/noun(), Y/det())
+expr(X, x/object())
+=>
+is_type(x)
+inst/x()
+focus(inst)
+center(x)
+expr(X,inst);
+
+amod(X/noun(), Y/adj())
+expr(X, x/object())
+expr(Y, y/object())
+=>
+p/property(x,y)
+focus(p)
+center(y)
+expr(Y,p);
+
+

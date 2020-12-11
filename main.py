@@ -72,29 +72,13 @@ if __name__ == '__main__':
     wm = ConceptGraph(nodes=['is_type'])
     working_memory = WorkingMemory(wm=wm, kb=kb)
 
-    # asr_hypotheses = [
-    #     {'text': 'i love math',
-    #      'text_confidence': 0.87,
-    #      'tokens': ['i', 'love', 'math'],
-    #      'token_confidence': {0: 0.90, 1: 0.90, 2: 0.80}
-    #      }
-    # ]
-
     asr_hypotheses = [
-        {'text': 'i bought a house',
+        {'text': 'i bought a red house',
          'text_confidence': 0.87,
-         'tokens': ['i', 'bought', 'a', 'house'],
-         'token_confidence': {0: 0.90, 1: 0.90, 2: 0.80, 3: 0.80}
+         'tokens': ['i', 'bought', 'a', 'red', 'house'],
+         'token_confidence': {0: 0.90, 1: 0.90, 2: 0.80, 3: 0.80, 4: 0.80}
          }
     ]
-
-    # asr_hypotheses = [
-    #     {'text': 'my dog walks around my house',
-    #      'text_confidence': 0.87,
-    #      'tokens': ['my', 'dog', 'walks', 'around', 'my', 'house'],
-    #      'token_confidence': {0: 0.90, 1: 0.90, 2: 0.80, 3: 0.80, 4: 0.80, 5: 0.90}
-    #      }
-    # ]
 
     s = time.time()
     output = dm.run(asr_hypotheses, working_memory)

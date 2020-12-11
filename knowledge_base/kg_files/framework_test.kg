@@ -6,6 +6,7 @@ dog<animal>
 property<object>
 color<property>
 red<color>
+red[red]
 noise<object>
 bark<noise>
 loud<object>
