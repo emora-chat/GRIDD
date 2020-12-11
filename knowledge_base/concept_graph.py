@@ -366,7 +366,9 @@ class ConceptGraph:
                     else:
                         raise Exception('generate_inference_graph is trying to process a predicate with impossible format!')
                 else:
-                    raise Exception('generate_inference_graph encountered a precondition that is not a predicate!')
+                    # inst is not a predicate, it is an entity instance
+                    if not new_graph.has(pre_pred_inst):
+                        new_graph.add_node(pre_pred_inst)
         return inferences, implications
 
     def infer(self, inference_graph):
@@ -385,6 +387,7 @@ class ConceptGraph:
         prolog = Prolog()
         for rule in kg_rules:
             prolog.assertz(rule)
+        strrules = '.\n'.join(kg_rules)
         s = time.time()
         solns = list(prolog.query(inference_query))
         parsed_solns = [json.loads(json.dumps(soln, cls=PyswipEncoder)) for soln in solns]

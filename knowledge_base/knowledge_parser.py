@@ -17,26 +17,26 @@ class PredicateTransformer(Transformer):
         self._set_kg_concepts()
         self._reset()
 
-    def get_condition_instances(self, args, ontology_instances, preconditions=None, postconditions=None):
+    def get_condition_instances(self, args, preconditions=None, postconditions=None):
         pre_inst, post_inst = set(), set()
         if preconditions is not None:
             pre_inst = self._get_union_of_arg_pred_instance_sets(preconditions)
-            contains = set()
-            for pre in pre_inst:
-                contains.update(set(self.addition_construction.signature(pre)))
-                contains.add(pre)
-            for instance_id, var_pred_id in ontology_instances.items():
-                if instance_id in contains:
-                    pre_inst.add(var_pred_id)
+            # contains = set()
+            # for pre in pre_inst:
+            #     contains.update(set(self.addition_construction.signature(pre)))
+            #     contains.add(pre)
+            # for instance_id, var_pred_id in ontology_instances.items():
+            #     if instance_id in contains:
+            #         pre_inst.add(var_pred_id)
         if postconditions is not None:
             post_inst = self._get_union_of_arg_pred_instance_sets(postconditions)
-            contains = set()
-            for post in post_inst:
-                contains.update(set(self.addition_construction.signature(post)))
-                contains.add(post)
-            for instance_id, var_pred_id in ontology_instances.items():
-                if instance_id in contains:
-                    pre_inst.add(var_pred_id)
+            # contains = set()
+            # for post in post_inst:
+            #     contains.update(set(self.addition_construction.signature(post)))
+            #     contains.add(post)
+            # for instance_id, var_pred_id in ontology_instances.items():
+            #     if instance_id in contains and var_pred_id not in pre_inst:
+            #         post_inst.add(var_pred_id)
         return pre_inst, post_inst
 
     def anon_rule(self, args):
@@ -45,9 +45,8 @@ class PredicateTransformer(Transformer):
         situation_id = self.kg._concept_graph._get_next_id()
         self.addition_construction.add_node(situation_id)
         self.addition_construction.add_monopredicate(situation_id, 'is_type')
-        ont_items = self.add_ontology_instance_tags()
         new_concepts = self.addition_construction.concepts()
-        pre_inst, post_inst = self.get_condition_instances(args, ont_items, preconditions, postconditions)
+        pre_inst, post_inst = self.get_condition_instances(args, preconditions, postconditions)
         self.add_preconditions(pre_inst, situation_id, new_concepts)
         self.add_postconditions(post_inst, situation_id, new_concepts)
 
@@ -55,9 +54,8 @@ class PredicateTransformer(Transformer):
         preconditions, type, postconditions = args[0], args[1].value, args[2]
         new_concepts = self.addition_construction.concepts()
         self._add_type(type, new_concepts)
-        ont_items = self.add_ontology_instance_tags()
         new_concepts = self.addition_construction.concepts()
-        pre_inst, post_inst = self.get_condition_instances(args, ont_items, preconditions, postconditions)
+        pre_inst, post_inst = self.get_condition_instances(args, preconditions, postconditions)
         self.add_preconditions(pre_inst, type, new_concepts)
         self.add_postconditions(post_inst, type, new_concepts)
 
@@ -65,18 +63,16 @@ class PredicateTransformer(Transformer):
         preconditions, type = args[0], args[1].value
         new_concepts = self.addition_construction.concepts()
         self._add_type(type, new_concepts)
-        ont_items = self.add_ontology_instance_tags()
         new_concepts = self.addition_construction.concepts()
-        pre_inst, post_inst = self.get_condition_instances(args, ont_items, preconditions=preconditions)
+        pre_inst, post_inst = self.get_condition_instances(args, preconditions=preconditions)
         self.add_preconditions(pre_inst, type, new_concepts)
 
     def implication(self, args):
         type, postconditions = args[0].value, args[1]
         new_concepts = self.addition_construction.concepts()
         self._add_type(type, new_concepts)
-        ont_items = self.add_ontology_instance_tags()
         new_concepts = self.addition_construction.concepts()
-        pre_inst, post_inst = self.get_condition_instances(args, ont_items, postconditions=postconditions)
+        pre_inst, post_inst = self.get_condition_instances(args, postconditions=postconditions)
         self.add_postconditions(post_inst, type, new_concepts)
 
     def conditions(self, args):
@@ -98,7 +94,7 @@ class PredicateTransformer(Transformer):
         object = self._hierarchical_node_check(object, new_concepts)
         type = self._is_type_check(type, new_concepts)
         id = self.addition_construction.add_bipredicate(subject, object, type, predicate_id=id)
-        self.new_instances.update({id})
+        # self.new_instances.update({id})
         arg_predicate_instances = self._get_union_of_arg_pred_instance_sets(args)
         arg_predicate_instances.add(id)
         to_return = ParserStruct(self._id_encoder(name, id), pred_instances=arg_predicate_instances)
@@ -119,7 +115,7 @@ class PredicateTransformer(Transformer):
         subject = self._hierarchical_node_check(subject, new_concepts)
         type = self._is_type_check(type, new_concepts)
         id = self.addition_construction.add_monopredicate(subject, type, predicate_id=id)
-        self.new_instances.update({id})
+        # self.new_instances.update({id})
         arg_predicate_instances = self._get_union_of_arg_pred_instance_sets(args)
         arg_predicate_instances.add(id)
         to_return = ParserStruct(self._id_encoder(name, id), pred_instances=arg_predicate_instances)
@@ -141,9 +137,9 @@ class PredicateTransformer(Transformer):
         self.addition_construction.add_node(id)
         pred_id = self.addition_construction.add_bipredicate(id, type, 'type',
                                                    predicate_id=self.kg._concept_graph._get_next_id())
-        self.new_instances.update({id, pred_id})
+        # self.new_instances.update({id, pred_id})
         arg_predicate_instances = self._get_union_of_arg_pred_instance_sets(args)
-        arg_predicate_instances.add(pred_id)
+        arg_predicate_instances.update({id, pred_id})
         to_return = ParserStruct(self._id_encoder(name, id), pred_instances=arg_predicate_instances)
         return to_return
 
@@ -169,11 +165,12 @@ class PredicateTransformer(Transformer):
             new_pred_ids.add(pi)
         mi = self.addition_construction.add_monopredicate(id, 'is_type',
                                                      predicate_id=self.kg._concept_graph._get_next_id())
-        self.new_instances.update(new_pred_ids)
-        self.new_instances.add(mi)
+        # self.new_instances.update(new_pred_ids)
+        # self.new_instances.add(mi)
         new_pred_ids.add(mi)
         arg_predicate_instances = self._get_union_of_arg_pred_instance_sets(args)
         arg_predicate_instances.update(new_pred_ids)
+        arg_predicate_instances.add(mi)
         to_return = ParserStruct(id, pred_instances=arg_predicate_instances)
         return to_return
 
@@ -245,7 +242,7 @@ class PredicateTransformer(Transformer):
         self.additions.append(self.addition_construction)
         self.addition_construction = ConceptGraph(nodes=self.base_nodes)
         self.local_names = {}
-        self.new_instances = set()
+        # self.new_instances = set()
 
     def start(self, args):
         to_return = self.additions
@@ -262,18 +259,13 @@ class PredicateTransformer(Transformer):
         for pre in preconditions:
             pre = self._hierarchical_node_check(pre, new_concepts)
             self.addition_construction.add_bipredicate(type,pre,'pre',predicate_id=self.kg._concept_graph._get_next_id())
+            var_pred_id = self.addition_construction.add_monopredicate(pre, 'var',predicate_id=self.kg._concept_graph._get_next_id())
+            self.addition_construction.add_bipredicate(type,var_pred_id,'pre',predicate_id=self.kg._concept_graph._get_next_id())
 
     def add_postconditions(self, postconditions, type, new_concepts):
         for post in postconditions:
             post = self._hierarchical_node_check(post, new_concepts)
             self.addition_construction.add_bipredicate(type, post, 'post',predicate_id=self.kg._concept_graph._get_next_id())
-
-    def add_ontology_instance_tags(self):
-        ont_instances = {}
-        for id in self.new_instances:
-            ont_instances[id] = self.addition_construction.add_monopredicate(id, 'var',predicate_id=self.kg._concept_graph._get_next_id())
-        self.new_instances = {}
-        return ont_instances
 
     ############
     #
@@ -371,7 +363,7 @@ class PredicateTransformer(Transformer):
         self.additions = []
         self.addition_construction = ConceptGraph(nodes=self.base_nodes)
         self.local_names = {}
-        self.new_instances = set()
+        # self.new_instances = set()
 
     def _set_kg_concepts(self):
         self.kg_concepts = self.kg._concept_graph.concepts()

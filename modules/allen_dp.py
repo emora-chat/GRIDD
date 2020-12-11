@@ -2,6 +2,7 @@ from allennlp.predictors.predictor import Predictor
 from modules.module import Module
 from knowledge_base.concept_graph import ConceptGraph
 from knowledge_base.knowledge_graph import KnowledgeGraph
+import knowledge_base.knowledge_graph as kg
 from knowledge_base.working_memory import WorkingMemory
 from os.path import join
 from copy import deepcopy
@@ -14,7 +15,7 @@ class AllenDP(Module):
         # POS tag and dependency parse link CANNOT be the same (causes Prolog solution-finding problems)
         # see det vs detpred for example
         self.pos_nodes = ['verb','noun','pron','det','adj','adv']
-        self.nodes = ['nsubj','dobj','amod','detpred','focus','center', 'pos', 'property']
+        self.nodes = ['nsubj','dobj','amod','detpred','focus','center','pos','charspan']
         self.templates = KnowledgeGraph(nodes=self.pos_nodes + self.nodes)
         for n in self.pos_nodes + self.nodes:
             self.templates._concept_graph.add_monopredicate(n, 'is_type')
@@ -23,7 +24,7 @@ class AllenDP(Module):
         self.dup_id = 1
 
     def parse_to_cg(self, parse_dict):
-        cg = ConceptGraph(nodes=['type','is_type','span','pos']+self.pos_nodes)
+        cg = ConceptGraph(nodes=list(kg.BASE_NODES)+self.nodes+self.pos_nodes)
         for n in self.pos_nodes:
             cg.add_bipredicate(n, 'pos', 'type')
         self.add_node_from_dict('root', parse_dict['hierplane_tree']['root'], cg)
@@ -44,8 +45,9 @@ class AllenDP(Module):
         cg.add_bipredicate(word, pos, 'type')
 
         spans = node_dict['spans']
-        span_node = '%d,%d'%(spans[0]['start'],spans[0]['end'])
+        span_node = 'x%dx%dx'%(spans[0]['start'],spans[0]['end'])
         cg.add_node(span_node)
+        cg.add_bipredicate(span_node, 'charspan', 'type')
         cg.add_bipredicate(word, span_node, 'span')
 
         if parent != 'root':

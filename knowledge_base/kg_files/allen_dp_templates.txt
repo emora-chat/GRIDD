@@ -3,29 +3,43 @@ dobj(X, DO/pos())
 expr(X, x<predicate>)
 expr(SO, so/object())
 expr(DO, do/object())
+span(X,s1/charspan())
+span(SO,s2/charspan())
+span(DO,s3/charspan())
 var(x)
 =>
 p/x(so,do)
 focus(p)
 center(x)
-expr(X,p);
+expr(X,p)
+expr(SO,so)
+expr(DO,do)
+span(X,s1)
+span(SO,s2)
+span(DO,s3)
+;
 
 detpred(X/noun(), Y/det())
 expr(X, x/object())
+span(X,s1/charspan())
 =>
 is_type(x)
 inst/x()
 focus(inst)
 center(x)
-expr(X,inst);
+expr(X,inst)
+span(X,s1);
 
 amod(X/noun(), Y/adj())
 expr(X, x/object())
 expr(Y, y/object())
+span(X,s1/charspan())
+span(Y,s2/charspan())
 =>
 p/property(x,y)
 focus(p)
 center(y)
-expr(Y,p);
-
-
+expr(Y,p)
+expr(X,x)
+span(Y,s1)
+span(X,s2);
