@@ -28,7 +28,8 @@ inst/x()
 focus(inst)
 center(x)
 expr(X,inst)
-span(X,s1);
+span(X,s1)
+;
 
 amod(X/noun(), Y/adj())
 expr(X, x/object())
@@ -42,4 +43,5 @@ center(y)
 expr(Y,p)
 expr(X,x)
 span(Y,s1)
-span(X,s2);
+span(X,s2)
+;

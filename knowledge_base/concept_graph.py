@@ -2,10 +2,10 @@ from structpy.graph.directed.labeled.multilabeled_parallel_digraph_networkx impo
 from structpy.map.map import Map
 from structpy.map.index.index import Index
 from knowledge_base.concept_graph_spec import ConceptGraphSpec
-import sys,os
 from pyswip import Prolog, Variable
 from structpy.map.bijective.bimap import Bimap
 CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+from collections import defaultdict
 import json, time, copy
 
 class ConceptGraph:
@@ -340,6 +340,7 @@ class ConceptGraph:
     def generate_inference_graph(self):
         inferences = {}
         implications = {}
+        infer_pred_inst = defaultdict(set)
         for tuple, inst_id in self.bipredicate_instances():
             situation_node, pre_pred_inst, type = tuple
             if type == 'pre' or type == 'post':
@@ -361,6 +362,8 @@ class ConceptGraph:
                             new_graph.add_node(comp)
                     if components[1] is None:  # monopredicate
                         new_graph.add_monopredicate(components[0], components[2], predicate_id=pre_pred_inst, merging=True)
+                        if components[2] == 'var' and type == 'pre':
+                            infer_pred_inst[situation_node].add((components[0],pre_pred_inst))
                     elif missing_args == 0: # bipredicate
                         new_graph.add_bipredicate(*components, predicate_id=pre_pred_inst, merging=True)
                     else:
@@ -369,6 +372,15 @@ class ConceptGraph:
                     # inst is not a predicate, it is an entity instance
                     if not new_graph.has(pre_pred_inst):
                         new_graph.add_node(pre_pred_inst)
+
+        for situation_node, vars in infer_pred_inst.items():
+            implication_graph = implications[situation_node]
+            if not implication_graph.has('var'):
+                implication_graph.add_node('var')
+            for subject, pred_inst in vars:
+                if implication_graph.has(subject):
+                    implication_graph.add_monopredicate(subject, 'var', predicate_id=pred_inst, merging=True)
+
         return inferences, implications
 
     def infer(self, inference_graph):

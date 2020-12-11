@@ -259,7 +259,7 @@ class PredicateTransformer(Transformer):
         for pre in preconditions:
             pre = self._hierarchical_node_check(pre, new_concepts)
             self.addition_construction.add_bipredicate(type,pre,'pre',predicate_id=self.kg._concept_graph._get_next_id())
-            var_pred_id = self.addition_construction.add_monopredicate(pre, 'var',predicate_id=self.kg._concept_graph._get_next_id())
+            var_pred_id = self.addition_construction.add_monopredicate(pre,'var',predicate_id=self.kg._concept_graph._get_next_id())
             self.addition_construction.add_bipredicate(type,var_pred_id,'pre',predicate_id=self.kg._concept_graph._get_next_id())
 
     def add_postconditions(self, postconditions, type, new_concepts):
