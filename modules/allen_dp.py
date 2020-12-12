@@ -105,8 +105,17 @@ class AllenDP(Module):
                     new_pred_id = imp_cg.add_monopredicate(s, l,
                                                          predicate_id=pred_map[pred_id],
                                                          merging=True)
-                if l == 'center':
-                    implication_map[s] = imp_cg
+                if l == 'focus':
+                    focus = s
+
+            expr_nodes = list(imp_cg.subject_neighbors(focus, 'expr'))
+            assert len(expr_nodes) == 1
+            expr_node = expr_nodes[0]
+            span_nodes = list(imp_cg.object_neighbors(expr_node, 'span'))
+            assert len(span_nodes) == 1
+            span_node = span_nodes[0].split('x')
+            implication_map[span_node] = imp_cg
+
         return implication_map
 
     def _local_get(self, dict, item, imp_cg=None):
@@ -128,7 +137,7 @@ class AllenDP(Module):
         :param working_memory: DSG from last turn
         :return: dict<token span: concept graph>
         """
-        dp_parse = {}
+        dp_parse = [] # list of dicts (one for each hypothesis)
         self.dup_id = 1
 
         for hypothesis in input:
@@ -146,6 +155,7 @@ class AllenDP(Module):
                 transformation = self.transformation_graphs[situation_node]
                 implication_maps = self.get_implication_maps(matches, transformation)
                 template_implications.update(implication_maps)
+            dp_parse.append(template_implications)
         return dp_parse
 
 if __name__ == '__main__':

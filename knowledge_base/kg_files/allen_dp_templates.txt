@@ -42,6 +42,6 @@ focus(p)
 center(y)
 expr(Y,p)
 expr(X,x)
-span(Y,s1)
-span(X,s2)
+span(X,s1)
+span(Y,s2)
 ;
