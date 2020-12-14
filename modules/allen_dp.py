@@ -4,8 +4,22 @@ from knowledge_base.concept_graph import ConceptGraph
 from knowledge_base.knowledge_graph import KnowledgeGraph
 import knowledge_base.knowledge_graph as kg
 from knowledge_base.working_memory import WorkingMemory
+from structpy.map.bijective.bimap import Bimap
 from os.path import join
 from copy import deepcopy
+
+class CharSpan:
+
+    def __init__(self, token, start, end):
+        self.token = token
+        self.start = start
+        self.end = end
+
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        return '%s(%d,%d)'%(self.token, self.start, self.end)
 
 class AllenDP(Module):
 
@@ -15,7 +29,7 @@ class AllenDP(Module):
         # POS tag and dependency parse link CANNOT be the same (causes Prolog solution-finding problems)
         # see det vs detpred for example
         self.pos_nodes = ['verb','noun','pron','det','adj','adv']
-        self.nodes = ['nsubj','dobj','amod','detpred','focus','center','pos','charspan']
+        self.nodes = ['nsubj','dobj','amod','detpred','focus','center','pos']
         self.templates = KnowledgeGraph(nodes=self.pos_nodes + self.nodes)
         for n in self.pos_nodes + self.nodes:
             self.templates._concept_graph.add_monopredicate(n, 'is_type')
@@ -25,6 +39,7 @@ class AllenDP(Module):
 
     def parse_to_cg(self, parse_dict):
         cg = ConceptGraph(nodes=list(kg.BASE_NODES)+self.nodes+self.pos_nodes)
+        cg.spans = Bimap()
         for n in self.pos_nodes:
             cg.add_bipredicate(n, 'pos', 'type')
         self.add_node_from_dict('root', parse_dict['hierplane_tree']['root'], cg)
@@ -36,7 +51,7 @@ class AllenDP(Module):
             print(node_dict['attributes'])
         word, pos = node_dict['word'], node_dict['attributes'][0].lower()
         word = '"%s"'%word
-        if not cg.has(word):
+        if not cg.has(word): # todo - what if there is more than one mention of the same word
             cg.add_node(word)
 
         if not cg.has(pos):
@@ -45,10 +60,11 @@ class AllenDP(Module):
         cg.add_bipredicate(word, pos, 'type')
 
         spans = node_dict['spans']
-        span_node = 'x%dx%dx'%(spans[0]['start'],spans[0]['end'])
-        cg.add_node(span_node)
-        cg.add_bipredicate(span_node, 'charspan', 'type')
-        cg.add_bipredicate(word, span_node, 'span')
+        if len(spans) > 1:
+            print('WARNING! dp element %s has more than one span'%word)
+            print(spans)
+        charspan = CharSpan(word,spans[0]['start'],spans[0]['end'])
+        cg.spans[word] = charspan
 
         if parent != 'root':
             link = node_dict['link']
@@ -62,7 +78,7 @@ class AllenDP(Module):
             for child in node_dict['children']:
                 self.add_node_from_dict(word, child, cg)
 
-    def get_implication_maps(self, inference_match, implication):
+    def get_implication_maps(self, inference_match, implication, spans_map):
         var_map, match = inference_match
         implication_map = {}
         for solution in match:
@@ -111,10 +127,8 @@ class AllenDP(Module):
             expr_nodes = list(imp_cg.subject_neighbors(focus, 'expr'))
             assert len(expr_nodes) == 1
             expr_node = expr_nodes[0]
-            span_nodes = list(imp_cg.object_neighbors(expr_node, 'span'))
-            assert len(span_nodes) == 1
-            span_node = span_nodes[0].split('x')
-            implication_map[span_node] = imp_cg
+            span = spans_map[expr_node]
+            implication_map[span] = imp_cg
 
         return implication_map
 
@@ -153,7 +167,7 @@ class AllenDP(Module):
             for situation_node, template in self.template_graphs.items():
                 matches = wm_copy.graph.infer(template)
                 transformation = self.transformation_graphs[situation_node]
-                implication_maps = self.get_implication_maps(matches, transformation)
+                implication_maps = self.get_implication_maps(matches, transformation, cg.spans)
                 template_implications.update(implication_maps)
             dp_parse.append(template_implications)
         return dp_parse

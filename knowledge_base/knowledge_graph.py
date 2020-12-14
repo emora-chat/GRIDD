@@ -5,7 +5,7 @@ import time, sys, json
 from os.path import join
 
 BASE_NODES = {'object', 'type', 'is_type', 'expression', 'expr', 'pre', 'post', 'var',
-              'property', 'span'}
+              'property'}
 
 
 class KnowledgeGraph:
