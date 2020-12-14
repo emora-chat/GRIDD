@@ -6,7 +6,6 @@ import knowledge_base.knowledge_graph as kg
 from knowledge_base.working_memory import WorkingMemory
 from structpy.map.bijective.bimap import Bimap
 from os.path import join
-from copy import deepcopy
 
 class CharSpan:
 
@@ -38,6 +37,10 @@ class AllenDP(Module):
         self.dup_id = 1
 
     def parse_to_cg(self, parse_dict):
+        """
+        Given the AllenAI Dependency Parse hierplane dict, transform it into a concept graph
+        :return dependency parse cg
+        """
         cg = ConceptGraph(nodes=list(kg.BASE_NODES)+self.nodes+self.pos_nodes)
         cg.spans = Bimap()
         for n in self.pos_nodes:
@@ -46,6 +49,12 @@ class AllenDP(Module):
         return cg
 
     def add_node_from_dict(self, parent, node_dict, cg):
+        """
+        Recurvisely add dependency parse links into the concept graph being generated
+        :param parent: the parent node of the current focal word
+        :param node_dict: the subtree dictionary of the dependency parse corresponding to the focal word
+        :param cg: the concept graph being created
+        """
         if len(node_dict['attributes']) > 1:
             print('WARNING! dp element %s has more than one attribute'%node_dict['word'])
             print(node_dict['attributes'])
@@ -79,6 +88,13 @@ class AllenDP(Module):
                 self.add_node_from_dict(word, child, cg)
 
     def get_implication_maps(self, inference_match, implication, spans_map):
+        """
+        Instantiate postcondition graphs from the identified precondition solution mappings
+        :param inference_match: the precondition variable mapping and their matches from the dependency parse cg
+        :param implication: the postcondition template graph
+        :param spans_map: mapping of span to expression node
+        :return: dict<span: instantiated postcondition graph>
+        """
         var_map, match = inference_match
         implication_map = {}
         for solution in match:
@@ -101,9 +117,9 @@ class AllenDP(Module):
                     new_pred_id = imp_cg.add_bipredicate(s, o, l, merging=True)
                     pred_map[pred_id] = new_pred_id
                 else:
-                    new_pred_id = imp_cg.add_bipredicate(s, o, l,
-                                                         predicate_id=pred_map[pred_id],
-                                                         merging=True)
+                    imp_cg.add_bipredicate(s, o, l,
+                                             predicate_id=pred_map[pred_id],
+                                             merging=True)
             for (s,l), pred_id in implication.monopredicate_instances():
                 if s in var_map and 'PyswipVariable' not in solution[var_map[s]]:
                     s = solution[var_map[s]]
@@ -118,9 +134,9 @@ class AllenDP(Module):
                     new_pred_id = imp_cg.add_monopredicate(s, l, merging=True)
                     pred_map[pred_id] = new_pred_id
                 else:
-                    new_pred_id = imp_cg.add_monopredicate(s, l,
-                                                         predicate_id=pred_map[pred_id],
-                                                         merging=True)
+                    imp_cg.add_monopredicate(s, l,
+                                             predicate_id=pred_map[pred_id],
+                                             merging=True)
                 if l == 'focus':
                     focus = s
 
@@ -133,6 +149,13 @@ class AllenDP(Module):
         return implication_map
 
     def _local_get(self, dict, item, imp_cg=None):
+        """
+        Retrieves new id of node from dict if node has already been processed
+        :param dict: mapping of postcondition nodes to their instantiated counterparts
+        :param item: the postcondition node
+        :param imp_cg: the concept graph being generated
+        :return: the new id of the node
+        """
         to_return = dict.get(item, None)
         if to_return is None:
             if isinstance(item, int):
