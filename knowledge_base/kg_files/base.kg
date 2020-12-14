@@ -3,6 +3,7 @@ is_type(object)
 entity<object>
 predicate<object>
 expression<object>
+unknown<object>
 
 expr<predicate>
 type<predicate>

@@ -24,6 +24,8 @@ class WorkingMemory:
         """
         visited = set()
         frontier = [(x, 0) for x in nodes]
+
+        # pull non-type predicates
         while len(frontier) > 0:
             item = frontier.pop(0)
             if item[0] not in visited:
@@ -35,25 +37,24 @@ class WorkingMemory:
                     node, tuple, depth = item
                     visited.add(node)
                     self._add_tuple_nodes(tuple)
-                    if len(tuple) == 3 and tuple[2] == 'type':
-                        # for type bipredicate, do not pull connections
-                        # only pull type ancestry
-                        ancestry = self.knowledge_base._concept_graph.get_all_types(tuple[0], get_predicates=True)
-                        for tuple, pred_id in ancestry:
-                            self._add_tuple_nodes(tuple)
-                            if not self.graph.has(pred_id):
-                                self.graph.add_bipredicate(*tuple, predicate_id=pred_id)
-                                is_type_inst = list(self.knowledge_base._concept_graph.monopredicate(tuple[1], 'is_type'))[0]
-                                if not self.graph.has(is_type_inst):
-                                    self.graph.add_monopredicate(tuple[1], 'is_type', predicate_id=is_type_inst)
-                    else:
-                        if len(tuple) == 3:
-                            self.graph.add_bipredicate(*tuple, predicate_id=node)
-                        elif len(tuple) == 2:
-                            self.graph.add_monopredicate(*tuple, predicate_id=node)
-                        self._update_frontier(frontier, list(tuple)+[node], depth, max_depth)
+                    if len(tuple) == 3 and tuple[2] != 'type':
+                        self.graph.add_bipredicate(*tuple, predicate_id=node)
+                    elif len(tuple) == 2:
+                        self.graph.add_monopredicate(*tuple, predicate_id=node)
+                    self._update_frontier(frontier, list(tuple)+[node], depth, max_depth)
                 else:
                     raise Exception('Unexpected element %s in frontier of pull()'%str(item))
+
+        # pull type ancestry of all nodes
+        for node in self.graph.concepts():
+            ancestry = self.knowledge_base._concept_graph.get_all_types(node, get_predicates=True)
+            for tuple, pred_id in ancestry:
+                self._add_tuple_nodes(tuple)
+                if not self.graph.has(pred_id):
+                    self.graph.add_bipredicate(*tuple, predicate_id=pred_id)
+                    is_type_inst = list(self.knowledge_base._concept_graph.monopredicate(tuple[1], 'is_type'))[0]
+                    if not self.graph.has(is_type_inst):
+                        self.graph.add_monopredicate(tuple[1], 'is_type', predicate_id=is_type_inst)
 
     def _update_frontier(self, frontier, nodes, depth, max_depth):
         if depth < max_depth:
