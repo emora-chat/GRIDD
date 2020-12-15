@@ -131,6 +131,16 @@ class AllenDP(Module):
         for n in new_nodes:
             template_graph.add_monopredicate(n, 'var')
 
+    def get_variable_assignments(self, var_matches):
+        var_map, matches = var_matches
+        solutions = []
+        for match in matches:
+            variable_assignments = {}
+            for key,value in var_map.items():
+                variable_assignments[key] = match[value]
+            solutions.append(variable_assignments)
+        return solutions
+
     def run(self, input, working_memory):
         """
         Get dependency parse of input
@@ -154,7 +164,7 @@ class AllenDP(Module):
             for situation_node, template in self.template_graphs.items():
                 matches = wm_cg.graph.infer(template)
                 transformation = self.transformation_graphs[situation_node]
-                implication_maps = self.get_implication_maps(matches, transformation, cg.spans)
+                implication_maps = self.get_variable_assignments(matches)
                 template_implications.update(implication_maps)
             dp_parse.append(template_implications)
         return dp_parse

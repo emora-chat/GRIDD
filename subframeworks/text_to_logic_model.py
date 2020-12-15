@@ -4,8 +4,9 @@ from abc import ABC, abstractmethod
 
 class TextToLogicModel(ABC):
 
-    def __init__(self, knowledge_base, *template_file_names):
+    def __init__(self, knowledge_base, model, *template_file_names):
         self.knowledge_base = knowledge_base
+        self.model = model
         self.rules = []
         for fn in template_file_names:
             with open(fn) as f:
@@ -15,7 +16,7 @@ class TextToLogicModel(ABC):
     def text_to_graph(self, turns, knowledge_base):
         """
         turns: list of strings representing dialogue turns.
-        return: ConceptGraph represenation of the text's surface form.
+        return: ConceptGraph representation of the text's surface form.
                 For example, a graph of the dependency parse of the last turn.
         """
         pass
