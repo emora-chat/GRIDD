@@ -375,23 +375,21 @@ class ConceptGraph:
         return inference_map, parsed_solns
 
     def to_knowledge_prolog(self):
-        self_type = []
-        type_rules = []
-        rules = []
+        type_rules = set()
+        rules = set()
         for tuple, inst_id in self.predicate_instances():
             if len(tuple) == 3: # bipredicates
                 subject, object, pred_type = tuple
                 if pred_type == 'type':
                     for t in self.get_all_types(subject, object):
-                        type_rules.append('type(%s,%s)'%(subject,t))
+                        type_rules.add('type(%s,%s)'%(subject,t))
                 else:
-                    rules.append('predinst(%s(%s,%s),%s)'%(pred_type,subject,object,inst_id))
+                    rules.add('predinst(%s(%s,%s),%s)'%(pred_type,subject,object,inst_id))
             else:
                 subject, pred_type = tuple
                 if pred_type not in ['var', 'is_type']:
-                    rules.append('predinst(%s(%s),%s)' % (pred_type, subject, inst_id))
-
-        return self_type + type_rules + rules
+                    rules.add('predinst(%s(%s),%s)' % (pred_type, subject, inst_id))
+        return type_rules.union(rules)
 
     def to_query_prolog(self):
         # contains one inference rule
