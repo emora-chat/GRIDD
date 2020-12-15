@@ -28,13 +28,13 @@ class AllenDP(Module):
         # POS tag and dependency parse link CANNOT be the same (causes Prolog solution-finding problems)
         # see det vs detpred for example
         self.pos_nodes = ['verb','noun','pron','det','adj','adv']
-        self.nodes = ['nsubj','dobj','amod','detpred','focus','center','pos','pos_type',
-                      'exprof']
-        self.templates = KnowledgeGraph(nodes=self.pos_nodes + self.nodes)
+        self.nodes = ['nsubj','dobj','amod','detpred','focus','center','pos','exprof','ltype']
+        self.templates = KnowledgeGraph(nodes=self.pos_nodes + self.nodes, loading_kb=False)
         for n in self.pos_nodes + self.nodes:
             self.templates._concept_graph.add_monopredicate(n, 'is_type')
         self.templates.add_knowledge(join('knowledge_base', 'kg_files', 'allen_dp_templates.txt'))
         self.template_graphs, self.transformation_graphs = self.templates._concept_graph.generate_inference_graph()
+        self.inference_reference_expansion()
         self.dup_id = 1
 
     def parse_to_cg(self, parse_dict):
@@ -77,7 +77,7 @@ class AllenDP(Module):
         if not cg.has(expression):
             cg.add_node(expression)
         cg.add_bipredicate(span_node, expression, 'exprof') # todo - (QOL) automate the expression links
-        cg.add_bipredicate(span_node, pos, 'pos_type')
+        cg.add_bipredicate(span_node, pos, 'type')
 
         if parent != 'root':
             link = node_dict['link']
@@ -92,13 +92,44 @@ class AllenDP(Module):
                 self.add_node_from_dict(span_node, child, cg)
 
     def get_unknown_references(self, parse_cg):
-        for span_node,span_object in parse_cg.spans:
+        for span_node,span_object in parse_cg.spans.items():
             expression = '"%s"'%span_object.string
             references = parse_cg.object_neighbors(expression, 'expr')
             if len(references) == 0:
                 unk_node = parse_cg.add_node(parse_cg._get_next_id())
                 parse_cg.add_bipredicate(unk_node, 'unknown', 'type')
                 parse_cg.add_bipredicate(expression, unk_node, 'expr')
+
+    def inference_reference_expansion(self):
+        """
+        x -t-> y ==> x -exprof-> a -expr-> b -t-> y if x has TYPE_PREDICATE
+                 ==> x -exprof-> a -expr-> b        if x does not have TYPE_PREDICATE
+        :return:
+        """
+        for situation_node, template_graph in self.template_graphs.items():
+            for concept in template_graph.concepts():
+                if template_graph.type(concept) is None and \
+                len(template_graph.monopredicate(concept, 'var')) > 0:
+                    # found variable entity instance
+                    found_supertype = False
+                    for supertype in template_graph.object_neighbors(concept, 'ltype'):
+                        found_supertype = True
+                        self._expand_references(template_graph, concept, supertype)
+                    if not found_supertype:
+                        self._expand_references(template_graph, concept)
+
+    def _expand_references(self, template_graph, concept, supertype=None):
+        expression_var = template_graph._get_next_id()
+        exprof = template_graph.add_bipredicate(concept, expression_var, 'exprof')
+        concept_var = template_graph._get_next_id()
+        expr = template_graph.add_bipredicate(expression_var, concept_var, 'expr')
+        new_nodes = [expression_var, exprof, concept_var, expr]
+        if supertype is not None:
+            concept_type = template_graph.add_bipredicate(concept_var, supertype, 'type')
+            template_graph.remove_bipredicate(concept, supertype, 'ltype')
+            new_nodes.append(concept_type)
+        for n in new_nodes:
+            template_graph.add_monopredicate(n, 'var')
 
     def run(self, input, working_memory):
         """
@@ -129,6 +160,16 @@ class AllenDP(Module):
         return dp_parse
 
 if __name__ == '__main__':
-    merge = AllenDP('dp merge')
-    sentence = "I love math"
-    output = merge.run(sentence, {})
+    kb = KnowledgeGraph(join('knowledge_base', 'kg_files', 'framework_test.kg'))
+    wm = ConceptGraph(nodes=['is_type'])
+    working_memory = WorkingMemory(wm=wm, kb=kb)
+
+    asr_hypotheses = [
+        {'text': 'i bought a red house',
+         'text_confidence': 0.87,
+         'tokens': ['i', 'bought', 'a', 'red', 'house'],
+         'token_confidence': {0: 0.90, 1: 0.90, 2: 0.80, 3: 0.80, 4: 0.80}
+         }
+    ]
+
+    output = AllenDP('allendp').run(asr_hypotheses, working_memory)

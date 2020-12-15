@@ -10,7 +10,7 @@ BASE_NODES = {'object', 'type', 'is_type', 'expression', 'expr', 'pre', 'post', 
 
 class KnowledgeGraph:
 
-    def __init__(self, filename=None, nodes=None):
+    def __init__(self, filename=None, nodes=None, loading_kb=True):
         if nodes is None:
             nodes = BASE_NODES
         else:
@@ -47,7 +47,7 @@ class KnowledgeGraph:
             %ignore WHITESPACE
         """
         self.parser = Lark(self._grammar, parser="earley")
-        self.predicate_transformer = PredicateTransformer(self, BASE_NODES)
+        self.predicate_transformer = PredicateTransformer(self, BASE_NODES, loading_kb)
 
         self.add_knowledge(open(join('knowledge_base','kg_files','base.kg'), 'r').read())
         self.predicate_transformer._set_kg_concepts()

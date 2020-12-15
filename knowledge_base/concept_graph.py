@@ -60,11 +60,7 @@ class ConceptGraph:
         self.bipredicate_instance_index[key].add(value)
 
     def add_node(self, node):
-        if self.bipredicate_graph.has(node):
-            raise Exception('node %s already exists in bipredicates'%node)
         self.bipredicate_graph.add(node)
-        if node in self.monopredicate_map:
-            raise Exception('node %s already exists in monopredicates'%node)
         self.monopredicate_map[node] = set()
         return node
 
@@ -72,30 +68,14 @@ class ConceptGraph:
         for node in nodes:
             self.add_node(node)
 
-    def add_bipredicate(self, source, target, label, predicate_id=None, merging=False):
-        concepts = self.concepts()
-        if source not in concepts:
-            raise Exception(":param 'source' error - node %s does not exist!" % source)
-        elif target not in concepts:
-            raise Exception(":param 'target' error - node %s does not exist!" % target)
-        elif label not in concepts:
-            raise Exception(":param 'label' error - node %s does not exist!" % label)
-        if predicate_id in concepts and not merging:
-            raise Exception("predicate id %s already exists!" % predicate_id)
+    def add_bipredicate(self, source, target, label, predicate_id=None):
         if predicate_id is None:
             predicate_id = self._get_next_id()
         self.bipredicate_graph.add(source, target, label, id=predicate_id)
         self._add_to_bipredicate_index((source,target,label),predicate_id)
         return predicate_id
 
-    def add_monopredicate(self, source, label, predicate_id=None, merging=False):
-        concepts = self.concepts()
-        if source not in concepts:
-            raise Exception(":param 'source' error - node %s does not exist!" % source)
-        elif label not in concepts:
-            raise Exception(":param 'label' error - node %s does not exist!" % label)
-        if predicate_id in concepts and not merging:
-            raise Exception("predicate id %s already exists!" % predicate_id)
+    def add_monopredicate(self, source, label, predicate_id=None):
         if predicate_id is None:
             predicate_id = self._get_next_id()
         if source not in self.monopredicate_map:
@@ -103,28 +83,6 @@ class ConceptGraph:
         self.monopredicate_map[source].add(label)
         self.monopredicate_instance_index[(source, label)].add(predicate_id)
         return predicate_id
-
-    def add_bipredicate_on_label(self, source, target, label):
-        concepts = self.concepts()
-        if source not in concepts:
-            raise Exception(":param 'source' error - node %s does not exist!" % source)
-        elif target not in concepts:
-            raise Exception(":param 'target' error - node %s does not exist!" % target)
-        elif label not in concepts:
-            raise Exception(":param 'label' error - node %s does not exist!" % label)
-        self.bipredicate_graph.add(source, target, label, id=label)
-        self._add_to_bipredicate_index((source,target,label),label)
-        return label
-
-    def add_monopredicate_on_label(self, source, label):
-        concepts = self.concepts()
-        if source not in concepts:
-            raise Exception(":param 'source' error - node %s does not exist!" % source)
-        elif label not in concepts:
-            raise Exception(":param 'label' error - node %s does not exist!" % label)
-        self.monopredicate_map[source].add(label)
-        self.monopredicate_instance_index[(source, label)].add(label)
-        return label
 
     def remove_node(self, node):
         if self.bipredicate_graph.has(node):
@@ -170,10 +128,10 @@ class ConceptGraph:
                 id_map[inst_id] = self._get_next_id()
             if len(tuple) == 3:
                 self.add_bipredicate(id_map[tuple[0]], id_map[tuple[1]], id_map[tuple[2]],
-                                     predicate_id=id_map[inst_id], merging=True)
+                                     predicate_id=id_map[inst_id])
             elif len(tuple) == 2:
                 self.add_monopredicate(id_map[tuple[0]], id_map[tuple[1]],
-                                       predicate_id=id_map[inst_id], merging=True)
+                                       predicate_id=id_map[inst_id])
 
     def copy(self):
         cp = ConceptGraph()
@@ -349,10 +307,12 @@ class ConceptGraph:
                 if type == 'pre':
                     if situation_node not in inferences:
                         inferences[situation_node] = ConceptGraph()
+                        inferences[situation_node].next_id = self.next_id
                     new_graph = inferences[situation_node]
                 else:
                     if situation_node not in implications:
                         implications[situation_node] = ConceptGraph()
+                        implications[situation_node].next_id = self.next_id
                     new_graph = implications[situation_node]
                 components = [self.subject(pre_pred_inst),
                               self.object(pre_pred_inst),
@@ -363,11 +323,11 @@ class ConceptGraph:
                         if comp is not None and not new_graph.has(comp):
                             new_graph.add_node(comp)
                     if components[1] is None:  # monopredicate
-                        new_graph.add_monopredicate(components[0], components[2], predicate_id=pre_pred_inst, merging=True)
+                        new_graph.add_monopredicate(components[0], components[2], predicate_id=pre_pred_inst)
                         if components[2] == 'var' and type == 'pre':
                             infer_pred_inst[situation_node].add((components[0],pre_pred_inst))
                     elif missing_args == 0: # bipredicate
-                        new_graph.add_bipredicate(*components, predicate_id=pre_pred_inst, merging=True)
+                        new_graph.add_bipredicate(*components, predicate_id=pre_pred_inst)
                     else:
                         raise Exception('generate_inference_graph is trying to process a predicate with impossible format!')
                 else:
@@ -381,7 +341,7 @@ class ConceptGraph:
                 implication_graph.add_node('var')
             for subject, pred_inst in vars:
                 if implication_graph.has(subject):
-                    implication_graph.add_monopredicate(subject, 'var', predicate_id=pred_inst, merging=True)
+                    implication_graph.add_monopredicate(subject, 'var', predicate_id=pred_inst)
 
         return inferences, implications
 

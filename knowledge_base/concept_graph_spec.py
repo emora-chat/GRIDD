@@ -296,24 +296,24 @@ class ConceptGraphSpec:
                                   'smart','am','value','want',
                                  'liver','eat','reason','think', 'Sally'}
 
-    def add_bipredicate_on_label(cg, source, target, label):
-        """
-        Add a bipredicate on the label node (e.g. for specifying predicate_type constraints).
-        Does not create an predicate instance for this bipredicate (the label node is the instance
-        being directly modified).
-        :return: label
-        """
-        id = cg.add_bipredicate_on_label('Stacy','liver','eat')
-        assert cg.bipredicate('Stacy', 'liver', 'eat') == {'eat'}
-
-    def add_monopredicate_on_label(cg, source, label):
-        """
-        Add a monopredicate on the label node (e.g. for specifying predicate_type constraints).
-        Does not create an predicate instance for this monopredicate (the label node is the instance
-        being directly modified).
-        :return: label
-        """
-        pass
+    # def add_bipredicate_on_label(cg, source, target, label):
+    #     """
+    #     Add a bipredicate on the label node (e.g. for specifying predicate_type constraints).
+    #     Does not create an predicate instance for this bipredicate (the label node is the instance
+    #     being directly modified).
+    #     :return: label
+    #     """
+    #     id = cg.add_bipredicate_on_label('Stacy','liver','eat')
+    #     assert cg.bipredicate('Stacy', 'liver', 'eat') == {'eat'}
+    #
+    # def add_monopredicate_on_label(cg, source, label):
+    #     """
+    #     Add a monopredicate on the label node (e.g. for specifying predicate_type constraints).
+    #     Does not create an predicate instance for this monopredicate (the label node is the instance
+    #     being directly modified).
+    #     :return: label
+    #     """
+    #     pass
 
     def has(cg, nodes):
         """
