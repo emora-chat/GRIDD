@@ -104,7 +104,7 @@ if __name__ == '__main__':
     ig._concept_graph.add_monopredicate('genre', 'is_type')
     ig._concept_graph.add_monopredicate('is_genre', 'is_type')
     ig.add_knowledge(join('knowledge_base', 'kg_files', 'prolog_inference.kg'))
-    inference_rule_graphs, implication_graphs = ig._concept_graph.generate_inference_graph()
+    inference_rule_graphs, implication_graphs = ig._concept_graph.generate_inference_graphs()
     print('Loaded inference graph from file in %.3f sec' % (time.time() - s))
 
     s = time.time()

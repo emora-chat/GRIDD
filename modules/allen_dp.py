@@ -29,13 +29,12 @@ class AllenDP(Module):
         # see det vs detpred for example
         self.pos_nodes = ['verb','noun','pron','det','adj','adv']
         self.nodes = ['nsubj','dobj','amod','detpred','focus','center','pos','exprof','ltype']
-        self.templates = KnowledgeGraph(nodes=self.pos_nodes + self.nodes, loading_kb=False)
+        self.templates = KnowledgeGraph(loading_kb=False)
         for n in self.pos_nodes + self.nodes:
             self.templates._concept_graph.add_monopredicate(n, 'is_type')
         self.templates.add_knowledge(join('knowledge_base', 'kg_files', 'allen_dp_templates.txt'))
-        self.template_graphs, self.transformation_graphs = self.templates._concept_graph.generate_inference_graph()
+        self.template_graphs, self.transformation_graphs = self.templates._concept_graph.generate_inference_graphs()
         self.inference_reference_expansion()
-        self.dup_id = 1
 
     def parse_to_cg(self, parse_dict):
         """
@@ -44,8 +43,6 @@ class AllenDP(Module):
         """
         cg = ConceptGraph(nodes=list(kg.BASE_NODES)+self.nodes+self.pos_nodes)
         cg.spans = Bimap()
-        for n in self.pos_nodes:
-            cg.add_bipredicate(n, 'pos', 'type')
         self.add_node_from_dict('root', parse_dict['hierplane_tree']['root'], cg)
         return cg
 
@@ -64,6 +61,7 @@ class AllenDP(Module):
         if not cg.has(pos):
             cg.add_node(pos)
             cg.add_monopredicate(pos, 'is_type')
+            cg.add_bipredicate(pos, 'pos', 'type')
 
         span_node = cg.add_node(cg._get_next_id())
         spans = node_dict['spans']
@@ -150,19 +148,18 @@ class AllenDP(Module):
         :return: dict<token span: concept graph>
         """
         dp_parse = [] # list of dicts (one for each hypothesis)
-        self.dup_id = 1
 
         for hypothesis in input:
             parse = self.dependency_parser.predict(
                 sentence=hypothesis['text']
             )
             cg = self.parse_to_cg(parse)
-            wm_cg = WorkingMemory(wm=cg, kb=working_memory.knowledge_base)
-            wm_cg.pull(nodes=['"%s"'%span_obj.string for span_node,span_obj in cg.spans.items()], max_depth=1)
+            cg.pull(nodes=['"%s"'%span_obj.string for span_node,span_obj in cg.spans.items()],
+                       kb=working_memory.knowledge_base, max_depth=1)
             self.get_unknown_references(cg)
             template_implications = {}
             for situation_node, template in self.template_graphs.items():
-                matches = wm_cg.graph.infer(template)
+                matches = cg.infer(template)
                 transformation = self.transformation_graphs[situation_node]
                 implication_maps = self.get_variable_assignments(matches)
                 template_implications.update(implication_maps)

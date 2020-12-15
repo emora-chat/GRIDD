@@ -290,14 +290,78 @@ class ConceptGraph:
                     types.add(((node, ancestor, 'type'), pred_id))
                 types.update(self.get_all_types(ancestor, get_predicates=get_predicates))
         return types
-    
+
+    ######################
+    #
+    ## Pulling
+    #
+    ######################
+
+    def pull(self, nodes, kb, max_depth):
+        """
+        Pull KB predicates into WM for specified nodes
+
+        :param nodes: iterable of nodes to retrieve neighbors for
+        :param depth: integer value of retrieved neighborhood depth
+        """
+        visited = set()
+        frontier = [(x, 0) for x in nodes]
+
+        # pull non-type predicates
+        while len(frontier) > 0:
+            item = frontier.pop(0)
+            if item[0] not in visited:
+                if len(item) == 2:
+                    node, depth = item
+                    visited.add(node)
+                    self._update_frontier(frontier, [node], kb, depth, max_depth)
+                elif len(item) == 3:
+                    node, tuple, depth = item
+                    visited.add(node)
+                    self._add_tuple_nodes(tuple)
+                    if len(tuple) == 3 and tuple[2] != 'type':
+                        self.add_bipredicate(*tuple, predicate_id=node)
+                    elif len(tuple) == 2:
+                        self.add_monopredicate(*tuple, predicate_id=node)
+                    self._update_frontier(frontier, list(tuple)+[node], kb, depth, max_depth)
+                else:
+                    raise Exception('Unexpected element %s in frontier of pull()'%str(item))
+
+        # pull type ancestry of all nodes
+        for node in self.concepts():
+            ancestry = kb._concept_graph.get_all_types(node, get_predicates=True)
+            for tuple, pred_id in ancestry:
+                self._add_tuple_nodes(tuple)
+                if not self.has(pred_id):
+                    self.add_bipredicate(*tuple, predicate_id=pred_id)
+                    is_type_inst = list(kb._concept_graph.monopredicate(tuple[1], 'is_type'))[0]
+                    if not self.has(is_type_inst):
+                        self.add_monopredicate(tuple[1], 'is_type', predicate_id=is_type_inst)
+
+    def _update_frontier(self, frontier, nodes, kb, depth, max_depth):
+        if depth < max_depth:
+            for n in nodes:
+                connections = kb._concept_graph.predicate_instances(n)
+                frontier.extend([(connection[1], connection[0], depth + 1)
+                                 for connection in connections])
+
+    def _add_tuple_nodes(self, tuple):
+        for t in tuple:
+            if not self.has(t):
+                self.add_node(t)
+
     ######################
     #
     ## Inference Functions 
     #
     ######################
 
-    def generate_inference_graph(self):
+    def generate_inference_graphs(self):
+        class TransformationRule:
+            def __init__(self, pre, post):
+                self.precondition = pre
+                self.postcondition = post
+
         inferences = {}
         implications = {}
         infer_pred_inst = defaultdict(set)
@@ -343,7 +407,10 @@ class ConceptGraph:
                 if implication_graph.has(subject):
                     implication_graph.add_monopredicate(subject, 'var', predicate_id=pred_inst)
 
-        return inferences, implications
+        rules = []
+        for situation_node in inferences:
+            rules.append(TransformationRule(inferences[situation_node], implications[situation_node]))
+        return rules
 
     def infer(self, inference_graph):
         class PyswipEncoder(json.JSONEncoder):
