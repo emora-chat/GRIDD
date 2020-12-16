@@ -58,12 +58,12 @@ class AllenAIToLogic(TextToLogicModel):
         span_node = cg.add_node(cg._get_next_id())
         spans = node_dict['spans']
         if len(spans) > 1:
-            print('WARNING! dp element %s has more than one span'%expression)
+            print('WARNING! dp element %s has more than one span' % expression)
             print(spans)
         charspan = CharSpan(expression,spans[0]['start'],spans[0]['end'])
         cg.spans[span_node] = charspan
 
-        expression = '"%s"'%expression
+        expression = '"%s"' % expression
         if not cg.has(expression):
             cg.add_node(expression)
         cg.add_bipredicate(span_node, expression, 'exprof') # todo - (QOL) automate the expression links

@@ -1,5 +1,8 @@
 
 from abc import ABC, abstractmethod
+from collections import defaultdict
+from GRIDD.knowledge_base.concept_graph import ConceptGraph
+
 
 class TextToLogicModel(ABC):
 
@@ -34,7 +37,7 @@ class TextToLogicModel(ABC):
         """
         Pull expressions from KB into the expression graph.
         """
-        egraph.pull(nodes=['"%s"'%span_obj.string for span_node, span_obj in egraph.spans.items()], 
+        egraph.pull(nodes=['"%s"'%span_obj.string for span_node, span_obj in egraph.spans.items()],
                     kb=kgraph, max_depth=1)
 
     def _unknown_expression_pull(self, egraph):
@@ -99,18 +102,92 @@ class TextToLogicModel(ABC):
 
     def _get_mentions(self, assignments):
         """
-        Produce (mention span, mention graph) pairs.
+        Produce dict<mention span: mention graph>.
 
         assignments: dict<rule: list<assignments>>
         """
-        pass
+        mentions = defaultdict(list)
+        for rule, solutions in assignments.items():
+            pre, post = rule.precondition, rule.postcondition
+            ((sig, center_pred),) = post.predicate_instances('center')
+            center_var = post.subject(center_pred)
+            for solution in solutions:
+                center = solution[center_var]
+                (expression,) = pre.object_neighbors(center, 'exprof')
+                (concept,) = pre.object_neighbors(expression, 'expr')
+                m = {}
+                cg = ConceptGraph()
+                cg.next_id = post.next_id
+                for node in post.concepts():
+                    if node in solution and node in [center,expression,concept]:
+                        m[node] = solution[node]
+                    else:
+                        m[node] = cg._get_next_id()
+                for (subject, object, typ), inst in post.bipredicate_instances():
+                    cg.add_bipredicate(m[subject], m[object], m[typ], m[inst])
+                for (subject, typ), inst in post.monopredicate_instances():
+                    cg.add_monopredicate(m[subject], m[typ], m[inst])
+                mentions[center].append(cg)
+        return mentions
 
-    def _get_merges(self, assignmens):
+    def _get_merges(self, assignments):
         """
-        Produce (mention span, mention graph) pairs.
+        Produce scored pairs of (mention span, path).
 
         assignments: dict<rule: list<assignments>>
         """
-        pass
+        merges = defaultdict(list)
+        for rule, solutions in assignments.items():
+            pre, post = rule.precondition, rule.postcondition
+            ((sig, focus_pred),) = post.predicate_instances('focus')
+            focus_var = post.subject(focus_pred)
+            for solution in solutions:
+                focus = solution[focus_var]
+                if post.type(focus) is not None:
+                    # focus is a predicate instance, need to consider its subj/obj/type
+                    if post.subject(focus) in solution:
+                        pair = 0 # todo - LEFT OFF HERE!!!!!!!!!!
+                        merges[rule].append(pair)
+                    if post.object(focus) in solution:
+                        pass
+                    if post.type(focus) in solution:
+                        pass
+                for (_,o,t) in post.bipredicates_of_subject(focus):
+                    if o in solution:
+                        pass
+                    if t in solution:
+                        pass
+                    for inst in post.bipredicate(focus,o,t):
+                        if inst in solution:
+                            pass
+                for (_,t) in post.monopredicates_of_subject(focus):
+                    if t in solution:
+                        pass
+                    for inst in post.bipredicate(focus,t):
+                        if inst in solution:
+                            pass
+                for (s,_,t) in post.bipredicates_of_object(focus):
+                    if s in solution:
+                        pass
+                    if t in solution:
+                        pass
+                    for inst in post.bipredicate(s,focus,t):
+                        if inst in solution:
+                            pass
+                for tuple, inst in post.get_instances_of_type(focus):
+                    # get all predicates that use focus as type, if applicable
+                    if len(tuple) == 3:
+                        s,o,_ = tuple
+                        if s in solution:
+                            pass
+                        if o in solution:
+                            pass
+                    elif len(tuple) == 2:
+                        s,_ = tuple
+                        if s in solution:
+                            pass
+
+
+        return merges
 
 

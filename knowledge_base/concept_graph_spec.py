@@ -1,6 +1,5 @@
 
 from structpy import specification
-import pytest
 
 @specification
 class ConceptGraphSpec:

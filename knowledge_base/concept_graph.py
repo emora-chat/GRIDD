@@ -291,6 +291,21 @@ class ConceptGraph:
                 types.update(self.get_all_types(ancestor, get_predicates=get_predicates))
         return types
 
+    def get_instances_of_type(self, type):
+        pred_inst = set()
+        is_bipredicate_type=False
+        for tuple, predicate_insts in self.bipredicate_instance_index.items():
+            for inst in predicate_insts:
+                if tuple[2] == type:
+                    is_bipredicate_type=True
+                    pred_inst.add((tuple,inst))
+        if not is_bipredicate_type:
+            for tuple, predicate_insts in self.monopredicate_instance_index.items():
+                for inst in predicate_insts:
+                    if tuple[1] == type:
+                        pred_inst.add((tuple,inst))
+        return pred_inst
+
     ######################
     #
     ## Pulling
@@ -352,7 +367,7 @@ class ConceptGraph:
 
     ######################
     #
-    ## Inference Functions 
+    ## Inference Functions
     #
     ######################
 
