@@ -1,7 +1,7 @@
 
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from GRIDD.knowledge_base.concept_graph import ConceptGraph
+from knowledge_base.concept_graph import ConceptGraph
 
 
 class TextToLogicModel(ABC):
@@ -112,17 +112,20 @@ class TextToLogicModel(ABC):
             ((sig, center_pred),) = post.predicate_instances('center')
             center_var = post.subject(center_pred)
             for solution in solutions:
+                (expression_var,) = pre.object_neighbors(center_var, 'exprof')
+                (concept_var,) = pre.object_neighbors(expression_var, 'expr')
                 center = solution[center_var]
-                (expression,) = pre.object_neighbors(center, 'exprof')
-                (concept,) = pre.object_neighbors(expression, 'expr')
                 m = {}
                 cg = ConceptGraph()
                 cg.next_id = post.next_id
                 for node in post.concepts():
-                    if node in solution and node in [center,expression,concept]:
-                        m[node] = solution[node]
+                    if node in solution:
+                        if node in [center_var,expression_var,concept_var]:
+                            m[node] = solution[node]
+                        else:
+                            m[node] = cg._get_next_id()
                     else:
-                        m[node] = cg._get_next_id()
+                        m[node] = node
                 for (subject, object, typ), inst in post.bipredicate_instances():
                     cg.add_bipredicate(m[subject], m[object], m[typ], m[inst])
                 for (subject, typ), inst in post.monopredicate_instances():
@@ -140,54 +143,67 @@ class TextToLogicModel(ABC):
         for rule, solutions in assignments.items():
             pre, post = rule.precondition, rule.postcondition
             ((sig, focus_pred),) = post.predicate_instances('focus')
-            focus_var = post.subject(focus_pred)
+            ((sig, center_pred),) = post.predicate_instances('center')
+            focus = post.subject(focus_pred)
+            center = post.subject(center_pred)
             for solution in solutions:
-                focus = solution[focus_var]
+                focus = solution.get(focus, focus)
+                center = solution.get(center, center)
                 if post.type(focus) is not None:
                     # focus is a predicate instance, need to consider its subj/obj/type
                     if post.subject(focus) in solution:
-                        pair = 0 # todo - LEFT OFF HERE!!!!!!!!!!
+                        pair = ((center,'subject'),
+                                (solution[post.subject(focus)],'self'))
                         merges[rule].append(pair)
                     if post.object(focus) in solution:
-                        pass
-                    if post.type(focus) in solution:
-                        pass
-                for (_,o,t) in post.bipredicates_of_subject(focus):
-                    if o in solution:
-                        pass
-                    if t in solution:
-                        pass
-                    for inst in post.bipredicate(focus,o,t):
-                        if inst in solution:
-                            pass
-                for (_,t) in post.monopredicates_of_subject(focus):
-                    if t in solution:
-                        pass
-                    for inst in post.bipredicate(focus,t):
-                        if inst in solution:
-                            pass
-                for (s,_,t) in post.bipredicates_of_object(focus):
-                    if s in solution:
-                        pass
-                    if t in solution:
-                        pass
-                    for inst in post.bipredicate(s,focus,t):
-                        if inst in solution:
-                            pass
-                for tuple, inst in post.get_instances_of_type(focus):
-                    # get all predicates that use focus as type, if applicable
-                    if len(tuple) == 3:
-                        s,o,_ = tuple
-                        if s in solution:
-                            pass
-                        if o in solution:
-                            pass
-                    elif len(tuple) == 2:
-                        s,_ = tuple
-                        if s in solution:
-                            pass
-
+                        pair = ((center, 'object'),
+                                (solution[post.object(focus)], 'self'))
+                        merges[rule].append(pair)
+                    if post.type(focus) in solution and solution[post.type(focus)] != center:
+                        pair = ((center, 'type'),
+                                (solution[post.type(focus)], 'self'))
+                        merges[rule].append(pair)
+                # for (_,o,t) in post.bipredicates_of_subject(focus):
+                #     if o in solution:
+                #         pass
+                #     if t in solution:
+                #         pass
+                #     for inst in post.bipredicate(focus,o,t):
+                #         if inst in solution:
+                #             pass
+                # for (_,t) in post.monopredicates_of_subject(focus):
+                #     if t in solution:
+                #         pass
+                #     for inst in post.bipredicate(focus,t):
+                #         if inst in solution:
+                #             pass
+                # for (s,_,t) in post.bipredicates_of_object(focus):
+                #     if s in solution:
+                #         pass
+                #     if t in solution:
+                #         pass
+                #     for inst in post.bipredicate(s,focus,t):
+                #         if inst in solution:
+                #             pass
+                # for tuple, inst in post.get_instances_of_type(focus):
+                #     # get all predicates that use focus as type, if applicable
+                #     if len(tuple) == 3:
+                #         s,o,_ = tuple
+                #         if s in solution:
+                #             pass
+                #         if o in solution:
+                #             pass
+                #     elif len(tuple) == 2:
+                #         s,_ = tuple
+                #         if s in solution:
+                #             pass
 
         return merges
+
+    def display_mentions(self, mentions):
+        pass
+
+    def display_merges(self, merges):
+        pass
 
 

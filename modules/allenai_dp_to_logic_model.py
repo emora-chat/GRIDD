@@ -103,4 +103,5 @@ if __name__ == '__main__':
     dependency_parser = Predictor.from_path(
         "https://storage.googleapis.com/allennlp-public-models/biaffine-dependency-parser-ptb-2020.04.06.tar.gz")
     template_file = join('knowledge_base', 'kg_files', 'allen_dp_templates.txt')
-    output = AllenAIToLogic(kb, dependency_parser, template_base, template_file).translate(turns)
+    mentions,merges = AllenAIToLogic(kb, dependency_parser, template_base, template_file).translate(turns)
+    test = 1
