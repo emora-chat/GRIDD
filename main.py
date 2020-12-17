@@ -17,7 +17,7 @@ from os.path import join
 from knowledge_base.knowledge_graph import KnowledgeGraph
 from knowledge_base.working_memory import WorkingMemory
 from knowledge_base.concept_graph import ConceptGraph
-from modules.mention_identification_lexicon import MentionsByLexicon
+from modules.mention_identification_allendp import MentionsAllenDP
 from modules.merge_dp import NodeMergeDP
 
 import time
@@ -61,8 +61,8 @@ if __name__ == '__main__':
                                 AllenAIToLogic("allen dp", kb, dependency_parser,
                                                template_base, template_file))
 
-    dm.add_mention_model({'model': MentionsByLexicon('lexicon mentions')})
-    dm.add_merge_model({'model': NodeMergeDP('dependency parse merge')})
+    dm.add_mention_model({'model': MentionsAllenDP('allen dp mentions')})
+    dm.add_merge_model({'model': NodeMergeDP('allen dp merge')})
     dm.add_inference_model({'model': BaseInference('base inference')})
     dm.add_selection_model({'model': BaseResponseSelection('base selection')})
     dm.add_expansion_model({'model': BaseResponseExpansion('base expansion')})
