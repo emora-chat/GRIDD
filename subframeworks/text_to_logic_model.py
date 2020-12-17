@@ -2,12 +2,14 @@
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from knowledge_base.concept_graph import ConceptGraph
+from modules.module import Module
 
 DEBUG=True
 
-class TextToLogicModel(ABC):
+class TextToLogicModel(Module):
 
-    def __init__(self, knowledge_base, model, template_base, *template_file_names):
+    def __init__(self, name, knowledge_base, model, template_base, *template_file_names):
+        super().__init__(name)
         self.knowledge_base = knowledge_base
         self.model = model
         self.templates = template_base
@@ -38,6 +40,15 @@ class TextToLogicModel(ABC):
             self.display_mentions(mentions, egraph)
             self.display_merges(merges, egraph)
         return mentions, merges
+
+    def run(self, input, working_memory):
+        """
+        :param input: asr hypotheses
+        :param working_memory: current working memory
+        :return:
+        """
+        turns = [hypo['text'] for hypo in input]
+        return self.translate(turns)
 
     def _expression_pull(self, egraph, kgraph):
         """
@@ -252,6 +263,4 @@ class TextToLogicModel(ABC):
                 concept1 = self._get_concept_of_span(span1, egraph)
                 concept2 = self._get_concept_of_span(span2, egraph)
                 print("\t(%s,%s)\t<=> (%s,%s)"%(concept1,pos1,concept2,pos2))
-        test = 1
-
 

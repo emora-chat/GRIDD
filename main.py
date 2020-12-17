@@ -10,7 +10,9 @@ from modules.mention_bridge import BaseMentionBridge
 from modules.merge_bridge import BaseMergeBridge
 from modules.inference_bridge import BaseInferenceBridge
 
-from modules.allen_dp import AllenDP
+from modules.allenai_dp_to_logic_model import AllenAIToLogic, POS_NODES, NODES
+from allennlp.predictors.predictor import Predictor
+from os.path import join
 
 from knowledge_base.knowledge_graph import KnowledgeGraph
 from knowledge_base.working_memory import WorkingMemory
@@ -46,7 +48,18 @@ def run_twice(stage, input):
 if __name__ == '__main__':
     dm = Framework('Emora')
 
-    dm.add_preprocessing_module('dependency parse', AllenDP('AllenAI dependency parser'))
+    kb = KnowledgeGraph(join('knowledge_base', 'kg_files', 'framework_test.kg'))
+
+    template_base = KnowledgeGraph(nodes=POS_NODES + NODES, loading_kb=False)
+    for n in POS_NODES + NODES:
+        template_base._concept_graph.add_monopredicate(n, 'is_type')
+    dependency_parser = Predictor.from_path(
+        "https://storage.googleapis.com/allennlp-public-models/biaffine-dependency-parser-ptb-2020.04.06.tar.gz")
+    template_file = join('knowledge_base', 'kg_files', 'allen_dp_templates.txt')
+
+    dm.add_preprocessing_module('dependency parse',
+                                AllenAIToLogic("allen dp", kb, dependency_parser,
+                                               template_base, template_file))
 
     dm.add_mention_model({'model': MentionsByLexicon('lexicon mentions')})
     dm.add_merge_model({'model': NodeMergeDP('dependency parse merge')})
@@ -68,7 +81,6 @@ if __name__ == '__main__':
 
     dm.build_framework()
 
-    kb = KnowledgeGraph(join('knowledge_base', 'kg_files', 'framework_test.kg'))
     wm = ConceptGraph(nodes=['is_type'])
     working_memory = WorkingMemory(wm=wm, kb=kb)
 
