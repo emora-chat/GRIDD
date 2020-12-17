@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from knowledge_base.concept_graph import ConceptGraph
 
+DEBUG=True
 
 class TextToLogicModel(ABC):
 
@@ -31,7 +32,12 @@ class TextToLogicModel(ABC):
         self._expression_pull(egraph, self.knowledge_base)
         self._unknown_expression_pull(egraph)
         rule_assignments = self._inference(egraph)
-        return self._get_mentions(rule_assignments), self._get_merges(rule_assignments)
+        mentions = self._get_mentions(rule_assignments)
+        merges = self._get_merges(rule_assignments)
+        if DEBUG:
+            self.display_mentions(mentions, egraph)
+            self.display_merges(merges, egraph)
+        return mentions, merges
 
     def _expression_pull(self, egraph, kgraph):
         """
@@ -151,11 +157,11 @@ class TextToLogicModel(ABC):
                 center = solution.get(center, center)
                 if post.type(focus) is not None:
                     # focus is a predicate instance, need to consider its subj/obj/type
-                    if post.subject(focus) in solution:
+                    if post.subject(focus) in solution and solution[post.subject(focus)] != center:
                         pair = ((center,'subject'),
                                 (solution[post.subject(focus)],'self'))
                         merges[rule].append(pair)
-                    if post.object(focus) in solution:
+                    if post.object(focus) in solution and solution[post.object(focus)] != center:
                         pair = ((center, 'object'),
                                 (solution[post.object(focus)], 'self'))
                         merges[rule].append(pair)
@@ -200,10 +206,52 @@ class TextToLogicModel(ABC):
 
         return merges
 
-    def display_mentions(self, mentions):
-        pass
+    def display_mentions(self, mentions, egraph):
+        """
+        Display the mentions with their concepts instead of spans
+        """
+        print()
+        for span, mention_graphs in mentions.items():
+            print('%s MENTIONS:: '%self._get_expression_of_span(span, egraph))
+            for graph in mention_graphs:
+                for (s,o,t), inst in graph.bipredicate_instances():
+                    subj = self._get_concept_of_span(s,egraph)
+                    obj = self._get_concept_of_span(o, egraph)
+                    typ = self._get_concept_of_span(t, egraph)
+                    print('\t[%d]\t-> %s(%s,%s)'%(inst,typ,subj,obj))
+                for (s,t), inst in graph.monopredicate_instances():
+                    if t != 'var':
+                        subj = self._get_concept_of_span(s,egraph)
+                        typ = self._get_concept_of_span(t, egraph)
+                        print('\t[%d]\t-> %s(%s)'%(inst,typ,subj))
+            print()
 
-    def display_merges(self, merges):
-        pass
+    def _get_concept_of_span(self, span, egraph):
+        expression = self._get_expression_of_span(span, egraph)
+        if expression is not None:
+            (concept_var,) = egraph.object_neighbors(expression, 'expr')
+            if len(egraph.bipredicate(concept_var,'unknown','type')) > 0:
+                return '_unk_'
+            return concept_var
+        return span
+
+    def _get_expression_of_span(self, span, egraph):
+        expressions = egraph.object_neighbors(span, 'exprof')
+        if len(expressions) == 1:
+            return expressions.pop()
+        return None
+
+    def display_merges(self, merges, egraph):
+        """
+        Display the merges with their concepts instead of spans
+        """
+        print()
+        print("MERGES:: ")
+        for rule, merge_pairs in merges.items():
+            for (span1, pos1), (span2, pos2) in merge_pairs:
+                concept1 = self._get_concept_of_span(span1, egraph)
+                concept2 = self._get_concept_of_span(span2, egraph)
+                print("\t(%s,%s)\t<=> (%s,%s)"%(concept1,pos1,concept2,pos2))
+        test = 1
 
 

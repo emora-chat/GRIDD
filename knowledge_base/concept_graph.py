@@ -438,7 +438,7 @@ class ConceptGraph:
 
         kg_rules = self.to_knowledge_prolog()
         inference_query, inference_map = inference_graph.to_query_prolog()
-        print(json.dumps(inference_map.reverse(), indent=4))
+        # print(json.dumps(inference_map.reverse(), indent=4))
 
         prolog = Prolog()
         for rule in kg_rules:
@@ -447,13 +447,13 @@ class ConceptGraph:
         s = time.time()
         solns = list(prolog.query(inference_query))
         parsed_solns = [json.loads(json.dumps(soln, cls=PyswipEncoder)) for soln in solns]
-        print('Num solutions: %d'%len(parsed_solns))
+        # print('Num solutions: %d'%len(parsed_solns))
         for rule in kg_rules:
             prolog.retract(rule)
         # print('** SOLUTIONS **')
         # for soln in parsed_solns:
         #     print(json.dumps(soln, indent=4))
-        print('Ran inferences in %.3f'%(time.time()-s))
+        # print('Ran inferences in %.3f'%(time.time()-s))
         return inference_map, parsed_solns
 
     def to_knowledge_prolog(self):
