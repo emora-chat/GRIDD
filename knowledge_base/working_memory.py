@@ -1,19 +1,14 @@
 from knowledge_base.knowledge_graph import KnowledgeGraph
 from knowledge_base.concept_graph import ConceptGraph
 from os.path import join
+from collections import defaultdict
 
 class WorkingMemory:
 
     def __init__(self, wm, kb):
         self.knowledge_base = kb
         self.graph = wm
-        self.wm_id = 0
-        self.wm_tag = 'convo0_'
-
-    def get_next_id(self):
-        id = self.wm_tag + str(self.wm_id)
-        self.wm_id += 1
-        return id
+        self.span_map = defaultdict(dict)
 
 
 if __name__ == '__main__':

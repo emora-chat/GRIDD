@@ -8,7 +8,8 @@ class BaseMentionBridge(Module):
 
     def run(self, input: Dict, working_memory):
         """
-
+        Merge mention graphs into working_memory and generate span node with span object where span node is connected to focus of mention graph.
+        Map span object to span node in WM.span_map.
         :param input: mention output (dictionary of token spans -> [DSG element])
         :return: None
         """

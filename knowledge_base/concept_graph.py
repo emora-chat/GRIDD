@@ -133,6 +133,7 @@ class ConceptGraph:
             elif len(tuple) == 2:
                 self.add_monopredicate(id_map[tuple[0]], id_map[tuple[1]],
                                        predicate_id=id_map[inst_id])
+        return id_map
 
     def copy(self):
         cp = ConceptGraph(self.prefix)
