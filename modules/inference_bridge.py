@@ -13,5 +13,7 @@ class BaseInferenceBridge(Module):
         :param graph: dialogue graph updated by merge pipeline
         :return: binary indicating whether update was done
         """
-        working_memory.update(input)
-        return True
+        # working_memory.update(input)
+        # return True
+        print('You have reached the end of the implemented Pipeline. It currently only performs NLU and inferences.')
+        exit()

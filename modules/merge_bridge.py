@@ -14,10 +14,24 @@ class BaseMergeBridge(Module):
         :param input: merge output (dictionary of node pairs -> merge scores)
         :return: binary value indicating whether a merge occurred
         """
+        print("\nMERGING::")
         if len(input) > 0:
-            (keeper, merger), merge_score = max(input.items(), key=lambda x: x[1])
-            if merge_score > self.threshold:
-                working_memory[keeper].update(working_memory[merger])
-                del working_memory[merger]
-                return True
+            for (spanobj1, pos1), (spanobj2, pos2) in input:
+                span1 = working_memory.span_map[spanobj1]
+                span2 = working_memory.span_map[spanobj2]
+                print('\tConsidering spans (%s,%s):: '%(span1,span2))
+                (concept1,) = working_memory.graph.object_neighbors(span1, 'exprof')
+                concept1 = self._follow_path(concept1, pos1, working_memory)
+                (concept2,) = working_memory.graph.object_neighbors(span2, 'exprof')
+                concept2 = self._follow_path(concept2, pos2, working_memory)
+                print('\tConsidering concepts (%s,%s):: '%(concept1,concept2))
+                working_memory.graph.merge_node(concept1, concept2)
+                test = 1
         return False
+
+    def _follow_path(self, concept, pos, working_memory):
+        if pos == 'subject':
+            return working_memory.graph.subject(concept)
+        elif pos == 'object':
+            return working_memory.graph.object(concept)
+        return concept

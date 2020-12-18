@@ -158,7 +158,7 @@ class TextToLogicModel(Module):
 
         assignments: dict<rule: list<assignments>>
         """
-        merges = defaultdict(list)
+        merges = []
         for rule, solutions in assignments.items():
             pre, post = rule.precondition, rule.postcondition
             ((sig, focus_pred),) = post.predicate_instances('focus')
@@ -173,15 +173,15 @@ class TextToLogicModel(Module):
                     if post.subject(focus) in solution and solution[post.subject(focus)] != center:
                         pair = ((self._lookup_span(egraph, center),'subject'),
                                 (self._lookup_span(egraph, solution[post.subject(focus)]),'self'))
-                        merges[rule].append(pair)
+                        merges.append(pair)
                     if post.object(focus) in solution and solution[post.object(focus)] != center:
                         pair = ((self._lookup_span(egraph, center), 'object'),
                                 (self._lookup_span(egraph, solution[post.object(focus)]), 'self'))
-                        merges[rule].append(pair)
+                        merges.append(pair)
                     if post.type(focus) in solution and solution[post.type(focus)] != center:
                         pair = ((self._lookup_span(egraph, center), 'type'),
                                 (self._lookup_span(egraph, solution[post.type(focus)]), 'self'))
-                        merges[rule].append(pair)
+                        merges.append(pair)
                 # for (_,o,t) in post.bipredicates_of_subject(focus):
                 #     if o in solution:
                 #         pass
@@ -228,7 +228,7 @@ class TextToLogicModel(Module):
         """
         print()
         for span, mention_graph in mentions.items():
-            print('%s MENTIONS:: '%span)
+            print('%s MENTION GRAPH:: '%span)
             for (s,o,t), inst in mention_graph.bipredicate_instances():
                 subj = self._get_concept_of_span(s,egraph)
                 obj = self._get_concept_of_span(o, egraph)
@@ -262,9 +262,8 @@ class TextToLogicModel(Module):
         """
         print()
         print("MERGES:: ")
-        for rule, merge_pairs in merges.items():
-            for (span1, pos1), (span2, pos2) in merge_pairs:
-                concept1 = self._get_concept_of_span(span1, egraph)
-                concept2 = self._get_concept_of_span(span2, egraph)
-                print("\t(%s,%s)\t<=> (%s,%s)"%(concept1,pos1,concept2,pos2))
+        for (span1, pos1), (span2, pos2) in merges:
+            concept1 = self._get_concept_of_span(span1, egraph)
+            concept2 = self._get_concept_of_span(span2, egraph)
+            print("\t(%s,%s)\t<=> (%s,%s)"%(concept1,pos1,concept2,pos2))
 

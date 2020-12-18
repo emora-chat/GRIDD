@@ -17,8 +17,10 @@ from os.path import join
 from knowledge_base.knowledge_graph import KnowledgeGraph
 from knowledge_base.working_memory import WorkingMemory
 from knowledge_base.concept_graph import ConceptGraph
+
 from modules.mention_identification_allendp import MentionsAllenDP
 from modules.merge_dp import NodeMergeDP
+from modules.inference_prolog import PrologInference
 
 import time
 from os.path import join
@@ -53,8 +55,7 @@ if __name__ == '__main__':
     template_base = KnowledgeGraph('temp_', nodes=POS_NODES + NODES, loading_kb=False)
     for n in POS_NODES + NODES:
         template_base._concept_graph.add_monopredicate(n, 'is_type')
-    dependency_parser = Predictor.from_path(
-        "https://storage.googleapis.com/allennlp-public-models/biaffine-dependency-parser-ptb-2020.04.06.tar.gz")
+    dependency_parser = Predictor.from_path("https://storage.googleapis.com/allennlp-public-models/biaffine-dependency-parser-ptb-2020.04.06.tar.gz")
     template_file = join('knowledge_base', 'kg_files', 'allen_dp_templates.txt')
 
     dm.add_preprocessing_module('dependency parse',
@@ -63,7 +64,8 @@ if __name__ == '__main__':
 
     dm.add_mention_model({'model': MentionsAllenDP('allen dp mentions')})
     dm.add_merge_model({'model': NodeMergeDP('allen dp merge')})
-    dm.add_inference_model({'model': BaseInference('base inference')})
+    dm.add_inference_model({'model': PrologInference('prolog inference',
+                                                     [join('knowledge_base', 'kg_files', 'test_inferences.txt')])})
     dm.add_selection_model({'model': BaseResponseSelection('base selection')})
     dm.add_expansion_model({'model': BaseResponseExpansion('base expansion')})
     dm.add_generation_model({'model': BaseResponseGeneration('base generation')})
@@ -72,8 +74,9 @@ if __name__ == '__main__':
     dm.add_merge_aggregation(First)
     dm.add_inference_aggregation(First)
 
-    dm.add_mention_bridge(BaseMentionBridge('base mention bridge'))
-    dm.add_merge_bridge(BaseMergeBridge('base merge bridge', threshold_score=0.2))
+    dm.add_mention_bridge(BaseMentionBridge('mention bridge'))
+    dm.add_merge_bridge(BaseMergeBridge('merge bridge',
+                                        threshold_score=0.2))
     dm.add_inference_bridge(BaseInferenceBridge('base inference bridge'))
 
     dm.add_merge_iteration(check_continue)
@@ -94,7 +97,6 @@ if __name__ == '__main__':
 
     s = time.time()
     print('UTTER: ', asr_hypotheses[0]['text'])
-    print()
     output = dm.run(asr_hypotheses, working_memory)
     elapsed = time.time() - s
     print('[%.6f s] %s'%(elapsed, output))

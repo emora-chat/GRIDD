@@ -306,10 +306,10 @@ class PredicateTransformer(Transformer):
     def _is_type_check(self, type, new_concepts):
         if type in self.local_names:
             type = self.local_names[type]
-        if type not in self.kg_concepts and type not in new_concepts:
+        if self.loading_kb and type not in self.kg_concepts and type not in new_concepts:
             raise Exception("error - node %s does not exist!" % type)
         elif type not in new_concepts:
-            if (type,'is_type') not in self.kg._concept_graph.monopredicates(type):
+            if self.loading_kb and (type,'is_type') not in self.kg._concept_graph.monopredicates(type):
                 raise Exception('%s is not a type!'%type)
             self.add_node(type)
         elif type not in self.kg_concepts:

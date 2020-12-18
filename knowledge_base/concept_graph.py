@@ -100,19 +100,46 @@ class ConceptGraph:
                     self.remove_monopredicate(*monopredicate)
             del self.monopredicate_map[node]
 
-    def remove_bipredicate(self, node, target, label):
+    def remove_bipredicate(self, node, target, label, id=None):
         ids = list(self.bipredicate_instance_index[(node, target, label)])
-        del self.bipredicate_instance_index[(node, target, label)]
+        if id is not None:
+            # remove only the specified instance with signature (node, target, label)
+            ids = [id]
+            if len(self.bipredicate_instance_index[(node, target, label)]) == 1:
+                del self.bipredicate_instance_index[(node, target, label)]
+        else:
+            # remove all instances with signature
+            del self.bipredicate_instance_index[(node, target, label)]
         for id in ids:
             self.bipredicate_graph.remove(node, target, label, id=id)
             self.remove_node(id)
 
-    def remove_monopredicate(self, node, label):
+    def remove_monopredicate(self, node, label, id=None):
         ids = list(self.monopredicate_instance_index[(node, label)])
-        del self.monopredicate_instance_index[(node, label)]
-        self.monopredicate_map[node].remove(label)
+        if id is not None:
+            ids = [id]
+            if len(self.monopredicate_instance_index[(node, label)]) == 1:
+                del self.monopredicate_instance_index[(node, label)]
+                self.monopredicate_map[node].remove(label)
+        else:
+            del self.monopredicate_instance_index[(node, label)]
+            self.monopredicate_map[node].remove(label)
         for id in ids:
             self.remove_node(id)
+
+    def detach_bipredicate(self, node, target, label, id):
+        if len(self.bipredicate_instance_index[(node, target, label)]) == 1:
+            del self.bipredicate_instance_index[(node, target, label)]
+        else:
+            self.bipredicate_instance_index[(node,target,label)].remove(id)
+        self.bipredicate_graph.remove(node, target, label, id=id)
+
+    def detach_monopredicate(self, node, label, id=None):
+        if len(self.monopredicate_instance_index[(node, label)]) == 1:
+            del self.monopredicate_instance_index[(node, label)]
+            self.monopredicate_map[node].remove(label)
+        else:
+            self.monopredicate_instance_index[(node,label)].remove(id)
 
     def merge(self, other_graph):
         id_map = {}
@@ -134,6 +161,28 @@ class ConceptGraph:
                 self.add_monopredicate(id_map[tuple[0]], id_map[tuple[1]],
                                        predicate_id=id_map[inst_id])
         return id_map
+
+    def merge_node(self, keep, merge):
+        if keep.startswith(self.prefix):
+            temp = keep
+            keep = merge
+            merge = temp
+        print('\tReplacing: %s -> %s' % (merge,keep))
+        for tuple, inst in self.predicate_instances(merge):
+            if len(tuple) == 3:
+                self.detach_bipredicate(*tuple, id=inst)
+                if tuple[0] == merge:
+                    self.add_bipredicate(keep, tuple[1], tuple[2], predicate_id=inst)
+                    print('\t\tReplaced: %s(%s,%s) -> %s(%s,%s)' % (tuple[2],tuple[0],tuple[1],tuple[2],keep,tuple[1]))
+                elif tuple[1] == merge:
+                    self.add_bipredicate(tuple[0], keep, tuple[2], predicate_id=inst)
+                    print('\t\tReplaced: %s(%s,%s) -> %s(%s,%s)' % (tuple[2],tuple[0],tuple[1],tuple[2],tuple[0],keep))
+            elif len(tuple) == 2:
+                self.detach_monopredicate(*tuple, id=inst)
+                self.add_monopredicate(keep, tuple[1], predicate_id=inst)
+                print('\t\tReplaced: %s(%s) -> %s(%s)' % (tuple[1], tuple[0], tuple[1], keep))
+        self.remove_node(merge)
+        print()
 
     def copy(self):
         cp = ConceptGraph(self.prefix)
@@ -345,7 +394,11 @@ class ConceptGraph:
                     raise Exception('Unexpected element %s in frontier of pull()'%str(item))
 
         # pull type ancestry of all nodes
-        for node in self.concepts():
+        self.pull_types(self.concepts(), kb)
+
+    def pull_types(self, nodes, kb):
+        # pull type ancestry of nodes
+        for node in nodes:
             ancestry = kb._concept_graph.get_all_types(node, get_predicates=True)
             for tuple, pred_id in ancestry:
                 self._add_tuple_nodes(tuple)

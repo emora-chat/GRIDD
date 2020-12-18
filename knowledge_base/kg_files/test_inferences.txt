@@ -1,0 +1,5 @@
+bought(X/person(),Y/house())
+=>
+happy(X)
+;
+

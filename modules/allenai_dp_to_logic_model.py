@@ -6,7 +6,11 @@ import knowledge_base.knowledge_graph as kg
 from knowledge_base.working_memory import WorkingMemory
 
 from allennlp.predictors.predictor import Predictor
+import os
 from os.path import join
+
+import logging
+logging.basicConfig(level=os.environ.get("LOGLEVEL","ERROR"))
 
 POS_NODES = ['verb', 'noun', 'pron', 'det', 'adj', 'adv']
 NODES = ['nsubj', 'dobj', 'amod', 'detpred', 'focus', 'center', 'pos', 'exprof', 'ltype']

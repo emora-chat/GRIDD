@@ -21,3 +21,9 @@ p/property(X,Y)
 focus(p)
 center(Y)
 ;
+
+X/pron()
+=>
+focus(X)
+center(X)
+;

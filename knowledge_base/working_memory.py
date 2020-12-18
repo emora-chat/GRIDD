@@ -8,7 +8,7 @@ class WorkingMemory:
     def __init__(self, wm, kb):
         self.knowledge_base = kb
         self.graph = wm
-        self.span_map = defaultdict(dict)
+        self.span_map = {}
 
 
 if __name__ == '__main__':
