@@ -133,6 +133,8 @@ class Framework(Pipeline):
         self.run_preprocessing(input, working_memory)
         for model in self.models:
             input = model.run(input, working_memory)
+            if input == '__EXIT__':
+                return input
         return input
 
     def run_preprocessing(self, input, graph):

@@ -16,4 +16,4 @@ class BaseInferenceBridge(Module):
         # working_memory.update(input)
         # return True
         print('You have reached the end of the implemented Pipeline. It currently only performs NLU and inferences.')
-        exit()
+        return '__EXIT__'

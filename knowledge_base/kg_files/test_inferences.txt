@@ -1,5 +1,6 @@
 bought(X/person(),Y/house())
 =>
-happy(X)
+h/happy(X)
+focus(h)
 ;
 

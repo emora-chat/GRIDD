@@ -33,8 +33,9 @@ class PrologInference(Module):
                     print('\t%s(%s,%s) [%s]' % (self._sol_lkup(sol, typ), self._sol_lkup(sol, subject),
                                               self._sol_lkup(sol, object), self._sol_lkup(sol, inst)))
                 for (subject, typ), inst in rule.postcondition.monopredicate_instances():
-                    print('\t%s(%s) [%s]' % (self._sol_lkup(sol, typ), self._sol_lkup(sol, subject),
-                                           self._sol_lkup(sol, inst)))
+                    if typ != 'var':
+                        print('\t%s(%s) [%s]' % (self._sol_lkup(sol, typ), self._sol_lkup(sol, subject),
+                                               self._sol_lkup(sol, inst)))
                 print()
 
     def _sol_lkup(self, solution, key):

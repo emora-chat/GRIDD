@@ -26,7 +26,6 @@ class BaseMergeBridge(Module):
                 concept2 = self._follow_path(concept2, pos2, working_memory)
                 print('\tConsidering concepts (%s,%s):: '%(concept1,concept2))
                 working_memory.graph.merge_node(concept1, concept2)
-                test = 1
         return False
 
     def _follow_path(self, concept, pos, working_memory):
