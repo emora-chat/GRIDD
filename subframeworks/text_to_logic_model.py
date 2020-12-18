@@ -125,7 +125,7 @@ class TextToLogicModel(Module):
 
         assignments: dict<rule: list<assignments>>
         """
-        mentions = defaultdict(list)
+        mentions = {}
         for rule, solutions in assignments.items():
             pre, post = rule.precondition, rule.postcondition
             ((sig, center_pred),) = post.predicate_instances('center')
@@ -149,7 +149,7 @@ class TextToLogicModel(Module):
                     cg.add_bipredicate(m[subject], m[object], m[typ], m[inst])
                 for (subject, typ), inst in post.monopredicate_instances():
                     cg.add_monopredicate(m[subject], m[typ], m[inst])
-                mentions[self._lookup_span(egraph, center)].append(cg)
+                mentions[self._lookup_span(egraph, center)] = cg
         return mentions
 
     def _get_merges(self, assignments, egraph):
@@ -227,19 +227,18 @@ class TextToLogicModel(Module):
         Display the mentions with their concepts instead of spans
         """
         print()
-        for span, mention_graphs in mentions.items():
+        for span, mention_graph in mentions.items():
             print('%s MENTIONS:: '%span)
-            for graph in mention_graphs:
-                for (s,o,t), inst in graph.bipredicate_instances():
+            for (s,o,t), inst in mention_graph.bipredicate_instances():
+                subj = self._get_concept_of_span(s,egraph)
+                obj = self._get_concept_of_span(o, egraph)
+                typ = self._get_concept_of_span(t, egraph)
+                print('\t[%s]\t-> %s(%s,%s)'%(inst,typ,subj,obj))
+            for (s,t), inst in mention_graph.monopredicate_instances():
+                if t != 'var':
                     subj = self._get_concept_of_span(s,egraph)
-                    obj = self._get_concept_of_span(o, egraph)
                     typ = self._get_concept_of_span(t, egraph)
-                    print('\t[%s]\t-> %s(%s,%s)'%(inst,typ,subj,obj))
-                for (s,t), inst in graph.monopredicate_instances():
-                    if t != 'var':
-                        subj = self._get_concept_of_span(s,egraph)
-                        typ = self._get_concept_of_span(t, egraph)
-                        print('\t[%s]\t-> %s(%s)'%(inst,typ,subj))
+                    print('\t[%s]\t-> %s(%s)'%(inst,typ,subj))
             print()
 
     def _get_concept_of_span(self, span, egraph):

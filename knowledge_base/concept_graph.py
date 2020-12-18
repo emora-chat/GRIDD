@@ -225,11 +225,11 @@ class ConceptGraph:
 
     def concepts(self):
         nodes = set()
-        bpi = self.bipredicate_instance_index.items()
+        bpi = [x for x in self.bipredicate_instance_index.items() if x[0] != 'codomain'] # todo - this is just a hot fix for a pycharm debugging error where 'codomain' gets added to the index if the index if expanded while debugging
         for (source, target, label), predicate_insts in bpi:
             nodes.update({source, target, label, *predicate_insts})
         nodes.update(self.bipredicate_graph.nodes())
-        mpi = self.monopredicate_instance_index.items()
+        mpi = [x for x in self.monopredicate_instance_index.items() if x[0] != 'codomain']
         for (source, label), predicate_insts in mpi:
             nodes.update({source, label, *predicate_insts})
         nodes.update(self.monopredicate_map.keys())

@@ -93,6 +93,8 @@ if __name__ == '__main__':
     ]
 
     s = time.time()
+    print('UTTER: ', asr_hypotheses[0]['text'])
+    print()
     output = dm.run(asr_hypotheses, working_memory)
     elapsed = time.time() - s
     print('[%.6f s] %s'%(elapsed, output))
