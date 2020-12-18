@@ -48,9 +48,9 @@ def run_twice(stage, input):
 if __name__ == '__main__':
     dm = Framework('Emora')
 
-    kb = KnowledgeGraph(join('knowledge_base', 'kg_files', 'framework_test.kg'))
+    kb = KnowledgeGraph(filename=join('knowledge_base', 'kg_files', 'framework_test.kg'))
 
-    template_base = KnowledgeGraph(nodes=POS_NODES + NODES, loading_kb=False)
+    template_base = KnowledgeGraph('temp_', nodes=POS_NODES + NODES, loading_kb=False)
     for n in POS_NODES + NODES:
         template_base._concept_graph.add_monopredicate(n, 'is_type')
     dependency_parser = Predictor.from_path(
@@ -81,7 +81,7 @@ if __name__ == '__main__':
 
     dm.build_framework()
 
-    wm = ConceptGraph(nodes=['is_type'])
+    wm = ConceptGraph('wm_', nodes=['is_type'])
     working_memory = WorkingMemory(wm=wm, kb=kb)
 
     asr_hypotheses = [

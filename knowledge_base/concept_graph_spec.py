@@ -10,7 +10,7 @@ class ConceptGraphSpec:
     def CONCEPT_GRAPH(ConceptGraph, bipredicates=None, monopredicates=None, nodes=None):
         """
         """
-        cg = ConceptGraph(bipredicates=[
+        cg = ConceptGraph('cg_', bipredicates=[
             ('John', 'Mary', 'likes'), #0
             ('Mary', 'Peter', 'likes'), #1
             ('Peter', 'John', 'likes'), #2

@@ -10,8 +10,9 @@ import json, time, copy
 
 class ConceptGraph:
 
-    def __init__(self, bipredicates=None, monopredicates=None, nodes=None):
+    def __init__(self, prefix='cg_', bipredicates=None, monopredicates=None, nodes=None):
         self.next_id = 0
+        self.prefix = prefix
         self.bipredicate_graph = MultiLabeledParallelDigraphNX(nodes=nodes)
 
         if bipredicates is not None:
@@ -52,7 +53,7 @@ class ConceptGraph:
     def _get_next_id(self):
         to_return = self.next_id
         self.next_id += 1
-        return to_return
+        return self.prefix + str(to_return)
 
     def _add_to_bipredicate_index(self, key, value):
         if key not in self.bipredicate_instance_index:
@@ -117,7 +118,7 @@ class ConceptGraph:
         id_map = {}
         for tuple, inst_id in other_graph.predicate_instances():
             for node in tuple:
-                if isinstance(node, int):
+                if node.startswith(other_graph.prefix):
                     if node not in id_map:
                         id_map[node] = self._get_next_id()
                 else:
@@ -134,7 +135,7 @@ class ConceptGraph:
                                        predicate_id=id_map[inst_id])
 
     def copy(self):
-        cp = ConceptGraph()
+        cp = ConceptGraph(self.prefix)
         cp.next_id = self.next_id
         cp.bipredicate_graph = copy.deepcopy(self.bipredicate_graph)
         cp.bipredicate_instance_index = copy.deepcopy(self.bipredicate_instance_index)
@@ -371,7 +372,7 @@ class ConceptGraph:
     #
     ######################
 
-    def generate_inference_graphs(self):
+    def generate_inference_graphs(self, prefix='def_'):
         class TransformationRule:
             def __init__(self, pre, post):
                 self.precondition = pre
@@ -385,12 +386,12 @@ class ConceptGraph:
             if type == 'pre' or type == 'post':
                 if type == 'pre':
                     if situation_node not in inferences:
-                        inferences[situation_node] = ConceptGraph()
+                        inferences[situation_node] = ConceptGraph(prefix)
                         inferences[situation_node].next_id = self.next_id
                     new_graph = inferences[situation_node]
                 else:
                     if situation_node not in implications:
-                        implications[situation_node] = ConceptGraph()
+                        implications[situation_node] = ConceptGraph(prefix)
                         implications[situation_node].next_id = self.next_id
                     new_graph = implications[situation_node]
                 components = [self.subject(pre_pred_inst),

@@ -5,7 +5,6 @@ from knowledge_base.knowledge_graph import KnowledgeGraph
 import knowledge_base.knowledge_graph as kg
 from knowledge_base.working_memory import WorkingMemory
 
-from structpy.map.bijective.bimap import Bimap
 from allennlp.predictors.predictor import Predictor
 from os.path import join
 
@@ -33,8 +32,7 @@ class AllenAIToLogic(TextToLogicModel):
         :return dependency parse cg
         """
         parse_dict = self.model.predict(turns[-1])
-        cg = ConceptGraph(nodes=list(kg.BASE_NODES) + NODES)
-        cg.spans = Bimap()
+        cg = ConceptGraph('parse_', nodes=list(kg.BASE_NODES) + NODES)
         self.add_node_from_dict('root', parse_dict['hierplane_tree']['root'], cg)
         return cg
 
@@ -61,7 +59,7 @@ class AllenAIToLogic(TextToLogicModel):
             print('WARNING! dp element %s has more than one span' % expression)
             print(spans)
         charspan = CharSpan(expression,spans[0]['start'],spans[0]['end'])
-        cg.spans[span_node] = charspan
+        self.span_map[cg][span_node] = charspan
 
         expression = '"%s"' % expression
         if not cg.has(expression):
@@ -84,7 +82,7 @@ class AllenAIToLogic(TextToLogicModel):
 
 if __name__ == '__main__':
     kb = KnowledgeGraph(join('knowledge_base', 'kg_files', 'framework_test.kg'))
-    wm = ConceptGraph(nodes=['is_type'])
+    wm = ConceptGraph('wm_', nodes=['is_type'])
     working_memory = WorkingMemory(wm=wm, kb=kb)
 
     asr_hypotheses = [

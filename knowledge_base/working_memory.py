@@ -18,8 +18,8 @@ class WorkingMemory:
 
 if __name__ == '__main__':
     kb = KnowledgeGraph(join('knowledge_base', 'kg_files', 'framework_test.kg'))
-    wm = ConceptGraph(nodes=['is_type'])
+    wm = ConceptGraph('wm_', nodes=['is_type'])
     working_memory = WorkingMemory(wm=wm, kb=kb)
     wm.add_node('i')
-    working_memory.pull(nodes={'i'}, max_depth=2)
+    wm.pull(nodes={'i'}, max_depth=2, kb=kb)
     test = 1

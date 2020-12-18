@@ -29,9 +29,4 @@ class MentionsAllenDP(Module):
                 ...
             ]
         """
-        mentions = {}
-        mention_graphs, _ = self.framework.nlp_data['dependency parse']
-        for span, mention_cgs in mention_graphs.items():
-            for mention_cg in mention_cgs:
-                pass
-        return mentions
+        return self.framework.nlp_data['dependency parse'][0]

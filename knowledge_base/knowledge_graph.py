@@ -10,14 +10,14 @@ BASE_NODES = {'object', 'type', 'is_type', 'expression', 'expr', 'pre', 'post', 
 
 class KnowledgeGraph:
 
-    def __init__(self, filename=None, nodes=None, loading_kb=True):
+    def __init__(self, prefix='kb_', filename=None, nodes=None, loading_kb=True):
         if nodes is None:
             nodes = BASE_NODES
         else:
             if isinstance(nodes, list):
                 nodes = set(nodes)
             nodes.update(BASE_NODES)
-        self._concept_graph = ConceptGraph(nodes=nodes)
+        self._concept_graph = ConceptGraph(prefix, nodes=nodes)
         self._grammar = r"""
             start: knowledge+
             knowledge: ((bipredicate | monopredicate | instance | ontological | expression )+ ";") | ((anon_rule | named_rule | inference | implication) ";")
