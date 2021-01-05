@@ -1,10 +1,12 @@
 
 from structpy import specification
-import pytest
+
 
 @specification
 class ConceptGraphSpec:
     """
+    Data structure allowing definition of logic predicates, organized in graph form for
+    fast and flexible access patterns.
     """
 
     @specification.init
@@ -12,10 +14,10 @@ class ConceptGraphSpec:
         """
         """
         cg = ConceptGraph(bipredicates=[
-            ('John', 'Mary', 'likes'), #0
-            ('Mary', 'Peter', 'likes'), #1
-            ('Peter', 'John', 'likes'), #2
-            ('Peter', 'Sarah', 'likes') #3
+            ('John', 'Mary', 'likes'),
+            ('Mary', 'Peter', 'likes'),
+            ('Peter', 'John', 'likes'),
+            ('Peter', 'Sarah', 'likes')
         ])
 
         assert cg.bipredicate_instance_index[('John', 'Mary', 'likes')] == {0}
@@ -32,7 +34,7 @@ class ConceptGraphSpec:
 
     def add_nodes(cg, nodes):
         """
-        Add a node from iterable
+        Add a node from iterable.
         """
         cg.add_nodes(['Stacy', 'happy'])
         assert 'Stacy' in cg.concepts() and 'happy' in cg.concepts()
@@ -351,7 +353,7 @@ class ConceptGraphSpec:
 
     def merge(self, other_graph):
         """
-        Merge all predicates from another concept graph into this one
+        Merge all predicates from another concept graph into this one.
 
         All predicate and entity instances with integer ids from other_graph are mapped to new integer ids
         in current graph to avoid collisions.
