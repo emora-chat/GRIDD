@@ -10,171 +10,209 @@ import json, time, copy
 
 class ConceptGraph:
 
-    def __init__(self, bipredicates=None, monopredicates=None, nodes=None):
-        self.next_id = 0
-        self.bipredicate_graph = MultiLabeledParallelDigraphNX(nodes=nodes)
-
-        if bipredicates is not None:
-            idx = {}
-            for pred in bipredicates:
-                if pred not in idx:
-                    idx[pred] = set()
-                id = self._get_next_id()
-                idx[pred].add(id)
-                self.bipredicate_graph.add(*pred, id=id)
-            self.bipredicate_instance_index = Index(idx)
-        else:
-            self.bipredicate_instance_index = Index()
-
-        if monopredicates is not None:
-            mps = {}
-            for subject, label in monopredicates:
-                if subject not in mps:
-                    mps[subject] = set()
-                mps[subject].add(label)
-            self.monopredicate_map = Map(mps)
-
-            idx = {}
-            for pred in monopredicates:
-                if pred not in idx:
-                    idx[pred] = set()
-                id = self._get_next_id()
-                idx[pred].add(id)
-            self.monopredicate_instance_index = Index(idx)
-        else:
-            self.monopredicate_map = Map()
-            self.monopredicate_instance_index = Index()
-
-        if nodes is not None:
-            for node in nodes:
-                self.monopredicate_map[node] = set()
+    def __init__(self, predicates=None, concepts=None, namespace=None):
+        self._namespace = namespace
+        self._next_id = 0
+        self._bipredicates_graph = MultiLabeledParallelDigraphNX()
+        self._bipredicate_instances = Index()
+        self._monopredicates_map = Map()
+        self._monopredicate_instances = Index()
+        if concepts is not None:
+            for concept in concepts:
+                self.add(concept)
+        if predicates is not None:
+            for predicate in predicates:
+                self.add(*predicate)
 
     def _get_next_id(self):
-        to_return = self.next_id
-        self.next_id += 1
-        return to_return
+        if self._namespace is not None:
+            next_id = self._namespace + '_' + str(self._next_id)
+            while self.has(next_id):
+                self._next_id += 1
+                next_id = self._namespace + '_' + str(self._next_id)
+        else:
+            next_id = str(self._next_id)
+            while self.has(next_id):
+                self._next_id += 1
+                next_id = str(self._next_id)
+        self._next_id += 1
+        return next_id
 
-    def _add_to_bipredicate_index(self, key, value):
-        if key not in self.bipredicate_instance_index:
-            self.bipredicate_instance_index[key] = set()
-        self.bipredicate_instance_index[key].add(value)
+    def add(self, concept, predicate_type=None, object=None, predicate_id=None):
+        self._bipredicates_graph.add(concept)
+        if predicate_type is None:  # Add concept
+            return concept
+        elif object is None:        # Add monopredicate
+            if predicate_id is None:
+                predicate_id = self._get_next_id()
+            elif self.has(predicate_id=predicate_id):
+                raise ValueError("Predicate id '%s' already exists!" % str(predicate_id))
+            self._monopredicates_map[concept].add(predicate_type)
+            self._monopredicate_instances[(concept, predicate_type)].add(predicate_id)
+            return predicate_id
+        else:                       # Add bipredicate
+            if predicate_id is None:
+                predicate_id = self._get_next_id()
+            elif self.has(predicate_id=predicate_id):
+                raise ValueError("Predicate id '%s' already exists!" % str(predicate_id))
+            self._bipredicates_graph.add(concept, object, predicate_type, edge_id=predicate_id)
+            self._bipredicate_instances[(concept, predicate_type, object)].add(predicate_id)
+            return predicate_id
 
-    def add_node(self, node):
-        if self.bipredicate_graph.has(node):
-            raise Exception('node %s already exists in bipredicates'%node)
-        self.bipredicate_graph.add(node)
-        if node in self.monopredicate_map:
-            raise Exception('node %s already exists in monopredicates'%node)
-        self.monopredicate_map[node] = set()
+    def remove(self, concept=None, predicate_type=None, object=None, predicate_id=None):
+        if predicate_id is not None:        # Remove predicate by id
+            pass
+        elif predicate_type is not None:    # Remove predicates by type and signature
+            pass
+        elif object is not None:            # Remove predicates between subject and object
+            pass
+        else:                               # Remove concept
+            pass
 
-    def add_nodes(self, nodes):
-        for node in nodes:
-            self.add_node(node)
+    def has(self, concept=None, predicate_type=None, object=None, predicate_id=None):
+        if predicate_id is not None:                                    # Check predicate by id
+            if predicate_id in self._bipredicate_instances.reverse():
+                s, t, o, _ = self.predicate(predicate_id)
+                if concept is not None and concept != s:
+                    return False
+                if predicate_type is not None and predicate_type != t:
+                    return False
+                if object is not None and object != o:
+                    return False
+                return True
+            elif predicate_id in self._monopredicate_instances.reverse():
+                if object is not None:
+                    return False
+                s, t, _, _ = self.predicate(predicate_id)
+                if concept is not None and concept != s:
+                    return False
+                if predicate_type is not None and predicate_type != t:
+                    return False
+                return True
+            else:
+                return False
+        elif predicate_type is not None:                                # Check predicate by signature
+            if object is not None:
+                return self._bipredicates_graph.has(concept, object, predicate_type)
+            else:
+                return concept in self._monopredicates_map \
+                       and predicate_type in self._monopredicates_map[concept]
+        elif object is not None:                                        # Check concept link
+            return self._bipredicates_graph.has(concept, object)
+        else:                                                           # Check concept existence
+            return self._bipredicates_graph.has(concept)
 
-    def add_bipredicate(self, source, target, label, predicate_id=None, merging=False):
-        concepts = self.concepts()
-        if source not in concepts:
-            raise Exception(":param 'source' error - node %s does not exist!" % source)
-        elif target not in concepts:
-            raise Exception(":param 'target' error - node %s does not exist!" % target)
-        elif label not in concepts:
-            raise Exception(":param 'label' error - node %s does not exist!" % label)
-        if predicate_id in concepts and not merging:
-            raise Exception("predicate id %s already exists!" % predicate_id)
-        if predicate_id is None:
-            predicate_id = self._get_next_id()
-        self.bipredicate_graph.add(source, target, label, id=predicate_id)
-        self._add_to_bipredicate_index((source,target,label),predicate_id)
-        return predicate_id
 
-    def add_monopredicate(self, source, label, predicate_id=None, merging=False):
-        concepts = self.concepts()
-        if source not in concepts:
-            raise Exception(":param 'source' error - node %s does not exist!" % source)
-        elif label not in concepts:
-            raise Exception(":param 'label' error - node %s does not exist!" % label)
-        if predicate_id in concepts and not merging:
-            raise Exception("predicate id %s already exists!" % predicate_id)
-        if predicate_id is None:
-            predicate_id = self._get_next_id()
-        if source not in self.monopredicate_map:
-            self.monopredicate_map[source] = set()
-        self.monopredicate_map[source].add(label)
-        self.monopredicate_instance_index[(source, label)].add(predicate_id)
-        return predicate_id
+    def subject(self, predicate_id):
+        if predicate_id in self._bipredicate_instances.reverse():
+            return self._bipredicate_instances.reverse()[predicate_id][0]
+        if predicate_id in self._monopredicate_instances.reverse():
+            return self._monopredicate_instances.reverse()[predicate_id][0]
+        raise KeyError("Predicate id %s does not exist!" % str(predicate_id))
 
-    def add_bipredicate_on_label(self, source, target, label):
-        concepts = self.concepts()
-        if source not in concepts:
-            raise Exception(":param 'source' error - node %s does not exist!" % source)
-        elif target not in concepts:
-            raise Exception(":param 'target' error - node %s does not exist!" % target)
-        elif label not in concepts:
-            raise Exception(":param 'label' error - node %s does not exist!" % label)
-        self.bipredicate_graph.add(source, target, label, id=label)
-        self._add_to_bipredicate_index((source,target,label),label)
-        return label
+    def object(self, predicate_id):
+        if predicate_id in self._bipredicate_instances.reverse():
+            return self._bipredicate_instances.reverse()[predicate_id][2]
+        if predicate_id in self._monopredicate_instances.reverse():
+            return None
+        raise KeyError("Predicate id %s does not exist!" % str(predicate_id))
 
-    def add_monopredicate_on_label(self, source, label):
-        concepts = self.concepts()
-        if source not in concepts:
-            raise Exception(":param 'source' error - node %s does not exist!" % source)
-        elif label not in concepts:
-            raise Exception(":param 'label' error - node %s does not exist!" % label)
-        self.monopredicate_map[source].add(label)
-        self.monopredicate_instance_index[(source, label)].add(label)
-        return label
+    def type(self, predicate_id):
+        if predicate_id in self._bipredicate_instances.reverse():
+            return self._bipredicate_instances.reverse()[predicate_id][1]
+        if predicate_id in self._monopredicate_instances.reverse():
+            return self._monopredicate_instances.reverse()[predicate_id][1]
+        raise KeyError("Predicate id %s does not exist!" % str(predicate_id))
 
-    def remove_node(self, node):
-        if self.bipredicate_graph.has(node):
-            bipredicates = list(self.bipredicate_instance_index.items())
-            for bipredicate, ids in bipredicates:
-                if bipredicate[0] == node or bipredicate[1] == node:
-                    self.remove_bipredicate(*bipredicate)
-            self.bipredicate_graph.remove(node)
+    def predicate(self, predicate_id):
+        if predicate_id in self._bipredicate_instances.reverse():
+            return (*self._bipredicate_instances.reverse()[predicate_id], predicate_id)
+        if predicate_id in self._monopredicate_instances.reverse():
+            return (*self._monopredicate_instances.reverse()[predicate_id], None, predicate_id)
+        raise KeyError("Predicate id %s does not exist!" % str(predicate_id))
 
-        if node in self.monopredicate_map:
-            monopredicates = list(self.monopredicate_instance_index.items())
-            for monopredicate, ids in monopredicates:
-                if monopredicate[0] == node:
-                    self.remove_monopredicate(*monopredicate)
-            del self.monopredicate_map[node]
+    def predicates(self, subject=None, predicate_type=None, object=None):
+        if subject is not None:
+            if predicate_type is not None:
+                if object is not None:      # Predicates by (subject, type, object)
+                    sig = (subject, predicate_type, object)
+                    if sig in self._bipredicate_instances:
+                        return [(*sig, id) for id in self._bipredicate_instances[sig]]
+                else:                       # Predicates by (subject, type)
+                    sig = (subject, predicate_type)
+                    if sig in self._monopredicate_instances:
+                        monos = [(*sig, id) for id in self._monopredicate_instances[sig]]
+                    else:
+                        monos = []
+                    if self._bipredicates_graph.has(subject, label=predicate_type):
+                        es = self._bipredicates_graph.out_edges(subject, predicate_type)
+                        bis = [(s, l, t, self._bipredicate_instances[s, l, t]) for s, t, l in es]
+                    else:
+                        bis = []
+                    return monos + bis
+            else:
+                if object is not None:      # Predicates by (subject, object)
+                    if self._bipredicates_graph.has(subject, object):
+                        es = self._bipredicates_graph.edges(subject, object)
+                        return [(s, l, t, self._bipredicate_instances[s, l, t]) for s, t, l in es]
+                else:                       # Predicates by (subject)
+                    if self._bipredicates_graph.has(subject):
+                        es = self._bipredicates_graph.out_edges(subject)
+                        bis = [(s, l, t, self._bipredicate_instances[s, l, t]) for s, t, l in es]
+                    else:
+                        bis = []
+                    if subject in self._monopredicates_map:
+                        ms = self._monopredicates_map[subject]
+                        monos = [(subject, m, None, self._monopredicate_instances[subject, m]) for m in ms]
+                    else:
+                        monos = []
+                    return monos + bis
+        else:
+            if predicate_type is not None:
+                if object is not None:      # Predicates by (type, object)
+                    if self._bipredicates_graph.has(label=predicate_type, target=object):
+                        es = self._bipredicates_graph.in_edges(object, predicate_type)
+                        return [(s, l, t, self._bipredicate_instances[s, l, t]) for s, t, l in es]
+                else:                       # Predicates by (type)
+                    es = self._bipredicates_graph.edges(label=predicate_type)
+                    bis = [(s, l, t, self._bipredicate_instances[s, l, t]) for s, t, l in es]
+                    if predicate_type in self._monopredicates_map.reverse():
+                        ss = self._monopredicates_map.reverse()[predicate_type]
+                        monos = [(s, predicate_type, None, self._monopredicate_instances[s, predicate_type]) for s in ss]
+                        return monos + bis
+                    else:
+                        return bis
+            else:
+                if object is not None:      # Predicates by (object)
+                    if self._bipredicates_graph.has(object):
+                        es = self._bipredicates_graph.in_edges(object)
+                        return [(s, l, t, self._bipredicate_instances[s, l, t]) for s, t, l in es]
+                else:                       # All predicates
+                    bis = [(*sig, id) for sig, id in self._bipredicate_instances.items()]
+                    monos = [(*sig, None, id) for sig, id in self._monopredicate_instances.items()]
+                    return monos + bis
+        return []
 
-    def remove_bipredicate(self, node, target, label):
-        ids = list(self.bipredicate_instance_index[(node, target, label)])
-        del self.bipredicate_instance_index[(node, target, label)]
-        for id in ids:
-            self.bipredicate_graph.remove(node, target, label, id=id)
-            self.remove_node(id)
+    def subjects(self, concept):
+        pass
 
-    def remove_monopredicate(self, node, label):
-        ids = list(self.monopredicate_instance_index[(node, label)])
-        del self.monopredicate_instance_index[(node, label)]
-        self.monopredicate_map[node].remove(label)
-        for id in ids:
-            self.remove_node(id)
+    def objects(self, concept):
+        pass
 
-    def merge(self, other_graph):
-        id_map = {}
-        for tuple, inst_id in other_graph.predicate_instances():
-            for node in tuple:
-                if isinstance(node, int):
-                    if node not in id_map:
-                        id_map[node] = self._get_next_id()
-                else:
-                    id_map[node] = node
-                if id_map[node] not in self.concepts():
-                    self.add_node(id_map[node])
-            if inst_id not in id_map:
-                id_map[inst_id] = self._get_next_id()
-            if len(tuple) == 3:
-                self.add_bipredicate(id_map[tuple[0]], id_map[tuple[1]], id_map[tuple[2]],
-                                     predicate_id=id_map[inst_id], merging=True)
-            elif len(tuple) == 2:
-                self.add_monopredicate(id_map[tuple[0]], id_map[tuple[1]],
-                                       predicate_id=id_map[inst_id], merging=True)
+    def related(self, concept):
+        pass
+
+    def merge(self, concept_a, concept_b):
+        pass
+
+    def concatenate(self, concept_graph):
+        pass
 
     def copy(self):
+        pass
+
+    def copy(self):
+        """     FOR REFERENCE   """
         cp = ConceptGraph()
         cp.next_id = self.next_id
         cp.bipredicate_graph = copy.deepcopy(self.bipredicate_graph)
@@ -182,321 +220,6 @@ class ConceptGraph:
         cp.monopredicate_instance_index = copy.deepcopy(self.monopredicate_instance_index)
         cp.monopredicate_map = Map(self.monopredicate_map.items())
         return cp
-
-    ######################
-    #
-    ## Access Functions
-    #
-    ######################
-
-    def predicates(self, node, predicate_type=None):
-        predicates = self.bipredicates(node, predicate_type)
-        if predicate_type is None:
-            predicates.update(self.monopredicates(node))
-        return predicates
-
-    def bipredicates(self, node, predicate_type=None):
-        edges = self.bipredicate_graph.out_edges(node, predicate_type)
-        edges.update(self.bipredicate_graph.in_edges(node, predicate_type))
-        return edges
-
-    def monopredicates(self, node):
-        monopreds = set()
-        for label in self.monopredicate_map[node]:
-            monopreds.update([(node, label)] * len(self.monopredicate_instance_index[(node, label)]))
-        return monopreds
-
-    def predicates_of_subject(self, node, predicate_type=None):
-        predicates = self.bipredicates_of_subject(node, predicate_type)
-        predicates.update(self.monopredicates_of_subject(node))
-        return predicates
-
-    def bipredicates_of_subject(self, node, predicate_type=None):
-        return self.bipredicate_graph.out_edges(node, predicate_type)
-
-    def monopredicates_of_subject(self, node):
-        return self.monopredicates(node)
-
-    def predicates_of_object(self, node, predicate_type=None):
-        return self.bipredicate_graph.in_edges(node, predicate_type)
-
-    def bipredicate(self, subject, object, type):
-        return self.bipredicate_instance_index[(subject, object, type)]
-
-    def monopredicate(self, subject, type):
-        return self.monopredicate_instance_index[(subject, type)]
-
-    def neighbors(self, node, predicate_type=None):
-        nodes = self.bipredicate_graph.targets(node, predicate_type)
-        nodes.update(self.bipredicate_graph.sources(node, predicate_type))
-        return nodes
-
-    def subject_neighbors(self, node, predicate_type=None):
-        return self.bipredicate_graph.sources(node, predicate_type)
-
-    def object_neighbors(self, node, predicate_type=None):
-        return self.bipredicate_graph.targets(node, predicate_type)
-
-    def subject(self, predicate_instance):
-        if predicate_instance in self.bipredicate_instance_index.reverse():
-            return self.bipredicate_instance_index.reverse()[predicate_instance][0]
-        elif predicate_instance in self.monopredicate_instance_index.reverse():
-            return self.monopredicate_instance_index.reverse()[predicate_instance][0]
-
-    def object(self, predicate_instance):
-        if predicate_instance in self.bipredicate_instance_index.reverse():
-            return self.bipredicate_instance_index.reverse()[predicate_instance][1]
-
-    def type(self, predicate_instance):
-        if predicate_instance in self.bipredicate_instance_index.reverse():
-            return self.bipredicate_instance_index.reverse()[predicate_instance][2]
-        elif predicate_instance in self.monopredicate_instance_index.reverse():
-            return self.monopredicate_instance_index.reverse()[predicate_instance][1]
-
-    def signature(self, predicate_instance):
-        if predicate_instance in self.bipredicate_instance_index.reverse():
-            return self.bipredicate_instance_index.reverse()[predicate_instance]
-        elif predicate_instance in self.monopredicate_instance_index.reverse():
-            return self.monopredicate_instance_index.reverse()[predicate_instance]
-
-    def predicates_between(self, node1, node2):
-        return self.bipredicate_graph.edges(node1).intersection(self.bipredicate_graph.edges(node2))
-
-    def concepts(self):
-        nodes = set()
-        bpi = self.bipredicate_instance_index.items()
-        for (source, target, label), predicate_insts in bpi:
-            nodes.update({source, target, label, *predicate_insts})
-        nodes.update(self.bipredicate_graph.nodes())
-        mpi = self.monopredicate_instance_index.items()
-        for (source, label), predicate_insts in mpi:
-            nodes.update({source, label, *predicate_insts})
-        nodes.update(self.monopredicate_map.keys())
-        return nodes
-
-    def predicate_instances(self, node=None):
-        pred_inst = set()
-        for tuple, predicate_insts in self.bipredicate_instance_index.items():
-            for inst in predicate_insts:
-                if node is None or (node is not None and node in tuple):
-                    pred_inst.add((tuple,inst))
-        for tuple, predicate_insts in self.monopredicate_instance_index.items():
-            for inst in predicate_insts:
-                if node is None or (node is not None and node in tuple):
-                    pred_inst.add((tuple,inst))
-        return pred_inst
-
-    def bipredicate_instances(self):
-        pred_inst = set()
-        for tuple, predicate_insts in self.bipredicate_instance_index.items():
-            for inst in predicate_insts:
-                pred_inst.add((tuple,inst))
-        return pred_inst
-
-    def monopredicate_instances(self):
-        pred_inst = set()
-        for tuple, predicate_insts in self.monopredicate_instance_index.items():
-            for inst in predicate_insts:
-                pred_inst.add((tuple,inst))
-        return pred_inst
-
-    def has(self, nodes):
-        if isinstance(nodes, str) or isinstance(nodes, int):
-            return nodes in self.concepts()
-        elif isinstance(nodes, list):
-            concepts = self.concepts()
-            for n in nodes:
-                if n not in concepts:
-                    return False
-            return True
-        else:
-            raise Exception(":param 'nodes' must be int, string or list")
-
-    # todo - inefficient since it will traverse an ancestor path that it has already travelled if there is intersection
-    def get_all_types(self, node, parent=None, get_predicates=False):
-        types = set()
-        if parent is not None:
-            if not get_predicates:
-                types.add(parent)
-            else:
-                pred_id = list(self.bipredicate(node, parent, 'type'))[0]
-                types.add(((node, parent, 'type'),pred_id))
-            node = parent
-        for ancestor in self.object_neighbors(node, 'type'):
-            if not get_predicates:
-                types.add(ancestor)
-            else:
-                pred_id = list(self.bipredicate(node, ancestor, 'type'))[0]
-                types.add(((node, ancestor, 'type'), pred_id))
-            types.update(self.get_all_types(ancestor, get_predicates=get_predicates))
-        return types
-    
-    ######################
-    #
-    ## Inference Functions 
-    #
-    ######################
-
-    def generate_inference_graph(self):
-        inferences = {}
-        implications = {}
-        infer_pred_inst = defaultdict(set)
-        for tuple, inst_id in self.bipredicate_instances():
-            situation_node, pre_pred_inst, type = tuple
-            if type == 'pre' or type == 'post':
-                if type == 'pre':
-                    if situation_node not in inferences:
-                        inferences[situation_node] = ConceptGraph()
-                    new_graph = inferences[situation_node]
-                else:
-                    if situation_node not in implications:
-                        implications[situation_node] = ConceptGraph()
-                    new_graph = implications[situation_node]
-                components = [self.subject(pre_pred_inst),
-                              self.object(pre_pred_inst),
-                              self.type(pre_pred_inst)]
-                missing_args = components.count(None)
-                if missing_args < 3:
-                    for comp in components:
-                        if comp is not None and not new_graph.has(comp):
-                            new_graph.add_node(comp)
-                    if components[1] is None:  # monopredicate
-                        new_graph.add_monopredicate(components[0], components[2], predicate_id=pre_pred_inst, merging=True)
-                        if components[2] == 'var' and type == 'pre':
-                            infer_pred_inst[situation_node].add((components[0],pre_pred_inst))
-                    elif missing_args == 0: # bipredicate
-                        new_graph.add_bipredicate(*components, predicate_id=pre_pred_inst, merging=True)
-                    else:
-                        raise Exception('generate_inference_graph is trying to process a predicate with impossible format!')
-                else:
-                    # inst is not a predicate, it is an entity instance
-                    if not new_graph.has(pre_pred_inst):
-                        new_graph.add_node(pre_pred_inst)
-
-        for situation_node, vars in infer_pred_inst.items():
-            implication_graph = implications[situation_node]
-            if not implication_graph.has('var'):
-                implication_graph.add_node('var')
-            for subject, pred_inst in vars:
-                if implication_graph.has(subject):
-                    implication_graph.add_monopredicate(subject, 'var', predicate_id=pred_inst, merging=True)
-
-        return inferences, implications
-
-    def infer(self, inference_graph):
-        class PyswipEncoder(json.JSONEncoder):
-            def default(self, obj):
-                if isinstance(obj, Variable):
-                    return 'PyswipVariable(%d)'%obj.handle
-                elif isinstance(obj, bytes):
-                    return '"%s"'%obj.decode("utf-8")
-                return json.JSONEncoder.default(self, obj)
-
-        kg_rules = self.to_knowledge_prolog()
-        inference_query, inference_map = inference_graph.to_query_prolog()
-        print(json.dumps(inference_map.reverse(), indent=4))
-
-        prolog = Prolog()
-        for rule in kg_rules:
-            prolog.assertz(rule)
-        strrules = '.\n'.join(kg_rules)
-        s = time.time()
-        solns = list(prolog.query(inference_query))
-        parsed_solns = [json.loads(json.dumps(soln, cls=PyswipEncoder)) for soln in solns]
-        print('Num solutions: %d'%len(parsed_solns))
-        for rule in kg_rules:
-            prolog.retract(rule)
-        # print('** SOLUTIONS **')
-        # for soln in parsed_solns:
-        #     print(json.dumps(soln, indent=4))
-        print('Ran inferences in %.3f'%(time.time()-s))
-        return inference_map, parsed_solns
-
-    def to_knowledge_prolog(self):
-        self_type = []
-        type_rules = []
-        rules = []
-        for tuple, inst_id in self.predicate_instances():
-            if len(tuple) == 3: # bipredicates
-                subject, object, pred_type = tuple
-                if pred_type == 'type':
-                    for t in self.get_all_types(subject, object):
-                        type_rules.append('type(%s,%s)'%(subject,t))
-                else:
-                    rules.append('predinst(%s(%s,%s),%s)'%(pred_type,subject,object,inst_id))
-            else:
-                subject, pred_type = tuple
-                if pred_type not in ['var', 'is_type']:
-                    rules.append('predinst(%s(%s),%s)' % (pred_type, subject, inst_id))
-
-        return self_type + type_rules + rules
-
-    def to_query_prolog(self):
-        # contains one inference rule
-        self.idx,self.seq = 0,1
-        map = Bimap()
-        rules = []
-        for (subject, object, pred_type), inst_id in self.bipredicate_instances():
-            if pred_type == 'type':
-                if subject not in map:
-                    if self.monopredicate(subject, 'var'):
-                        map[subject] = self._prolog_var()
-                    else:
-                        map[subject] = subject
-                rules.append('type(%s,%s)'%(map[subject],object))
-            else:
-                pred_var = self._prolog_var()
-                str_repr = '%s(%s,%s)'%(pred_type,subject,object)
-                map[str_repr]=pred_var
-                if pred_type not in map:
-                    map[pred_type] = self._prolog_var()
-                for arg in [inst_id, subject, object]:
-                    if arg not in map:
-                        if self.monopredicate(arg, 'var'):
-                            map[arg]=self._prolog_var()
-                        else:
-                            map[arg]=arg
-                predinst = 'predinst(%s,%s)'%(pred_var,map[inst_id])
-                functor = 'functor(%s,%s,_)'%(pred_var,map[pred_type])
-                t = 'type(%s,%s)' % (map[pred_type], pred_type)
-                predinst_unspec = '(%s,%s,%s)'%(predinst,functor,t)
-                functor_spec = 'functor(%s,%s,_)' % (pred_var, pred_type)
-                predinst_spec = '(%s,%s)'%(predinst,functor_spec)
-                predinst_disj = '(%s;%s)'%(predinst_unspec,predinst_spec)
-                arg1 = 'arg(1,%s,%s)'%(pred_var,map[subject])
-                arg2 = 'arg(2,%s,%s)'%(pred_var,map[object])
-                rules.extend([predinst_disj,arg1,arg2])
-        for (subject, pred_type), inst_id in self.monopredicate_instances():
-            if pred_type not in ['var', 'is_type']:
-                pred_var = self._prolog_var()
-                str_repr = '%s(%s)' % (pred_type, subject)
-                map[str_repr] = pred_var
-                if pred_type not in map:
-                    map[pred_type] = self._prolog_var()
-                for arg in [inst_id, subject]:
-                    if arg not in map:
-                        if self.monopredicate(arg, 'var'):
-                            map[arg] = self._prolog_var()
-                        else:
-                            map[arg] = arg
-                predinst = 'predinst(%s,%s)' % (pred_var, map[inst_id])
-                functor = 'functor(%s,%s,_)' % (pred_var, map[pred_type])
-                t = 'type(%s,%s)' % (map[pred_type], pred_type)
-                predinst_unspec = '(%s,%s,%s)' % (predinst, functor, t)
-                functor_spec = 'functor(%s,%s,_)' % (pred_var, pred_type)
-                predinst_spec = '(%s,%s)' % (predinst, functor_spec)
-                predinst_disj = '(%s;%s)' % (predinst_unspec, predinst_spec)
-                arg1 = 'arg(1,%s,%s)' % (pred_var, map[subject])
-                rules.extend([predinst_disj, arg1, arg2])
-        return ', '.join(rules), map
-
-    def _prolog_var(self):
-        var = CHARS[self.idx]*self.seq
-        self.idx += 1
-        if self.idx == 26:
-            self.seq += 1
-            self.idx = 0
-        return var
 
 
 if __name__ == '__main__':

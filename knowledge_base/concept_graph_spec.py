@@ -20,7 +20,8 @@ class ConceptGraphSpec:
             ('Mary', 'dislikes', 'Peter'),
             ('Peter', 'likes', 'John', 'pjl_1'),
             ('Peter', 'likes', 'Sarah'),
-            ('Peter', 'happy')
+            ('Peter', 'happy'),
+            ('Jack', 'happy')
         ], namespace='x')
         return concept_graph
 
@@ -29,7 +30,7 @@ class ConceptGraphSpec:
         Check membership of a concept, predicate instance, or predicate signature.
         """
         assert concept_graph.has('Mary')
-        assert concept_graph.has('Mary', 'likes')
+        assert not concept_graph.has('Mary', 'likes')
         assert concept_graph.has('Peter', 'happy')
         assert not concept_graph.has('Peter', 'happy', 'John')
         assert concept_graph.has('John', 'likes', 'Mary')
@@ -38,6 +39,7 @@ class ConceptGraphSpec:
         assert concept_graph.has(predicate_id='pjl_1')
         assert concept_graph.has('Peter', predicate_id='pjl_1')
         assert concept_graph.has('Mary', object='Peter')
+        assert concept_graph.has('Jack')
 
     def subject(concept_graph, predicate_id):
         """
