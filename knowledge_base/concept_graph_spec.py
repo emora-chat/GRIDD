@@ -35,7 +35,7 @@ class ConceptGraphSpec:
         assert not concept_graph.has('Peter', 'happy', 'John')
         assert concept_graph.has('John', 'likes', 'Mary')
         assert concept_graph.has('Peter', 'likes', 'John', 'pjl_1')
-        assert concept_graph.has(predicate_type='dislikes')
+        # assert concept_graph.has(predicate_type='dislikes')
         assert concept_graph.has(predicate_id='pjl_1')
         assert concept_graph.has('Peter', predicate_id='pjl_1')
         assert concept_graph.has('Mary', object='Peter')
@@ -79,8 +79,8 @@ class ConceptGraphSpec:
             ('Peter', 'happy', None, 'x_3')
         }
         assert set(concept_graph.predicates('Peter', 'likes')) == {
-            ('Peter', 'likes', 'Sarah', 'x_2'),
-            ('Peter', 'happy', None, 'x_3')
+            ('Peter', 'likes', 'John', 'pjl_1'),
+            ('Peter', 'likes', 'Sarah', 'x_2')
         }
         assert set(concept_graph.predicates('Peter', 'likes', 'Sarah')) == {
             ('Peter', 'likes', 'Sarah', 'x_2')
@@ -102,24 +102,24 @@ class ConceptGraphSpec:
 
     def subjects(concept_graph, concept):
         """
-        Return an iterable of related concepts to `concept`, where each element of the
-        iterable appears in a predicate with `concept` as the subject.
+        Return a set of related concepts to `concept`, where each element of the
+        iterable appears as the subject in a predicate with `concept`.
         """
-        assert set(concept_graph.subjects('Sarah')) == {'Peter'}
+        assert concept_graph.subjects('Sarah') == {'Peter'}
 
     def objects(concept_graph, concept):
         """
-        Return an iterable of related concepts to `concept`, where each element of the
-        iterable appears in a predicate with `concept` as the object.
+        Return a set of related concepts to `concept`, where each element of the
+        iterable appears as the object in a predicate with `concept`.
         """
-        assert set(concept_graph.objects('Peter')) == {'John', 'Sarah'}
+        assert concept_graph.objects('Peter') == {'John', 'Sarah'}
 
     def related(concept_graph, concept):
         """
         Return an iterable of related concepts to `concept`, where each element of the
         iterable appears in a predicate with `concept`.
         """
-        assert set(concept_graph.objects('Peter')) == {'John', 'Sarah', 'Mary'}
+        assert set(concept_graph.related('Peter')) == {'John', 'Sarah', 'Mary'}
 
     def add(concept_graph, concept, predicate_type=None, object=None, predicate_id=None):
         """
@@ -136,7 +136,7 @@ class ConceptGraphSpec:
         """
         assert concept_graph.add('Mark') == 'Mark'
         assert concept_graph.has('Mark')
-        assert concept_graph.add('Mark', 'excited') == 'x_4'
+        assert concept_graph.add('Mark', 'excited') == 'x_5'
         assert concept_graph.has('Mark', 'excited')
         concept_graph.add('Mark', 'likes', 'John')
         assert concept_graph.has('Mark', 'likes', 'John')
@@ -178,6 +178,9 @@ class ConceptGraphSpec:
         """
         Concatenate this concept graph with another.
         """
+        pass
+
+    def copy(concept_graph):
         pass
 
 
