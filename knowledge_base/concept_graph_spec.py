@@ -178,9 +178,37 @@ class ConceptGraphSpec:
         """
         Concatenate this concept graph with another.
         """
-        pass
+        import knowledge_base.concept_graph
+        cg1 = knowledge_base.concept_graph.ConceptGraph(concepts=['princess', 'hiss'],
+                                                        namespace='1')
+        cg1.add('princess', 'hiss')
+
+        cg2 = knowledge_base.concept_graph.ConceptGraph(concepts=['fluffy', 'bark', 'princess', 'friend'],
+                                                        namespace='2')
+        fb = cg2.add('fluffy', 'bark')
+        cg2.add('princess', 'fluffy', 'friend')
+        cg2.add(fb, 'volume', 'loud')
+
+        assert not cg1.has('fluffy')
+        assert not cg2.has('hiss')
+
+        cg1.concatenate(cg2)
+
+        assert cg1.has('fluffy', 'bark')
+        assert cg1.has('princess', 'fluffy', 'friend')
+        assert cg1.has('princess', 'hiss')
+        assert cg1.predicate('1_1') in [('fluffy','bark',None,'1_1'),
+                                        ('princess','fluffy','friend','1_1')]
+        fb_merge = cg1.predicates('fluffy', 'bark', None)[0][3]
+        assert cg1.has(fb_merge, 'volume', 'loud')
 
     def copy(concept_graph):
+        pass
+
+    def save(concept_graph, json_filepath):
+        pass
+
+    def load(self, json_filepath):
         pass
 
 

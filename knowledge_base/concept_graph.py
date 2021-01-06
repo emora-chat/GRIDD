@@ -61,13 +61,27 @@ class ConceptGraph:
 
     def remove(self, concept=None, predicate_type=None, object=None, predicate_id=None):
         if predicate_id is not None:        # Remove predicate by id
-            pass
+            concept, predicate_type, object, predicate_id = self.predicate(predicate_id)
+            if object is not None:
+                self._bipredicates_graph.remove(concept, object, predicate_type, predicate_id)
+                self._bipredicate_instances[(concept, predicate_type, object)].remove(predicate_id)
+            else:
+                self._monopredicate_instances[(concept, predicate_type)].remove(predicate_id)
+                if len(self._monopredicate_instances[(concept, predicate_type)]) == 0:
+                    self._monopredicates_map[concept].remove(predicate_type)
+            self.remove(concept=predicate_id)
         elif predicate_type is not None:    # Remove predicates by type and signature
-            pass
+            for s, t, o, i in self.predicates(concept, predicate_type, object):
+                self.remove(predicate_id=i)
         elif object is not None:            # Remove predicates between subject and object
-            pass
+            for s, t, o, i in self.predicates(subject=concept, object=object):
+                self.remove(predicate_id=i)
         else:                               # Remove concept
-            pass
+            for s, t, o, i in self.predicates(subject=concept) + self.predicates(object=concept):
+                self.remove(predicate_id=i)
+            if self._bipredicates_graph.has(concept):
+                self._bipredicates_graph.remove(concept)
+            del self._monopredicates_map[concept]
 
     def has(self, concept=None, predicate_type=None, object=None, predicate_id=None):
         if predicate_id is not None:                                    # Check predicate by id
@@ -141,7 +155,7 @@ class ConceptGraph:
                 else:                       # Predicates by (subject, type)
                     sig = (subject, predicate_type)
                     if sig in self._monopredicate_instances:
-                        monos = [(*sig, id) for id in self._monopredicate_instances[sig]]
+                        monos = [(*sig, None, id) for id in self._monopredicate_instances[sig]]
                     else:
                         monos = []
                     if self._bipredicates_graph.has(subject, label=predicate_type):
@@ -187,8 +201,8 @@ class ConceptGraph:
                         es = self._bipredicates_graph.in_edges(object)
                         return [(s, l, t, i) for s, t, l, i in es]
                 else:                       # All predicates
-                    bis = [(*sig, id) for sig, id in self._bipredicate_instances.items()]
-                    monos = [(*sig, None, id) for sig, id in self._monopredicate_instances.items()]
+                    bis = [(*sig, i) for sig, id in self._bipredicate_instances.items() for i in id]
+                    monos = [(*sig, None, i) for sig, id in self._monopredicate_instances.items() for i in id]
                     return monos + bis
         return []
 
@@ -229,11 +243,11 @@ class ConceptGraph:
 
     def concatenate(self, concept_graph):
         id_map = {}
-        for s, t, o, i in self.predicates():
+        for s, t, o, i in concept_graph.predicates():
             s = self._map(s, concept_graph, id_map)
-            t = self._map(s, concept_graph, id_map)
-            o = self._map(s, concept_graph, id_map)
-            i = self._map(s, concept_graph, id_map)
+            t = self._map(t, concept_graph, id_map)
+            o = self._map(o, concept_graph, id_map)
+            i = self._map(i, concept_graph, id_map)
             self.add(s, t, o, i)
 
     def _map(self, other_concept, other_graph, id_map):
