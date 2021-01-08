@@ -1,5 +1,6 @@
 
 from structpy import specification
+import os, json
 
 
 @specification
@@ -174,12 +175,6 @@ class ConceptGraphSpec:
         assert concept_graph.has('Peter', 'likes', 'pjl_1')
         assert concept_graph.has('Peter', 'likes', 'John', 'pjl_1')
 
-    def save(concept_graph, json_filepath):
-        pass
-
-    def load(concept_graph, json_filepath):
-        pass
-
     @specification.init
     def concatenate(ConceptGraph, conceptgraph):
         """
@@ -237,6 +232,53 @@ class ConceptGraphSpec:
         for i in range(4):
             assert not namespace_cg.has(predicate_id='1_%d'%i)
             assert namespace_cg.has(predicate_id='new_%d'%i)
+
+    def save(concept_graph, json_filepath):
+        path = os.path.join('knowledge_base','checkpoints','save_test.json')
+        concept_graph.save(path)
+
+        with open(path, 'r') as f:
+            d = json.load(f)
+        lines = d['predicates']
+
+        assert d['namespace'] == '1'
+        assert len(lines) == 4
+        assert 'princess,hiss,None,1_0' in lines
+        assert 'fluffy,bark,None,1_1' in lines
+        assert 'princess,fluffy,friend,1_2' in lines
+        assert '1_1,volume,loud,1_3' in lines
+
+    @specification.init
+    def load(ConceptGraph, json_filepath):
+        cg1 = ConceptGraph(concepts=['princess', 'hiss'], namespace='1')
+        a = cg1.add('princess', 'hiss')
+        cg1.add(a, 'volume', 'loud')
+        cg1_file = os.path.join('knowledge_base','checkpoints','load_test_cg1.json')
+        cg1.save(cg1_file)
+
+        cg2 = ConceptGraph(concepts=['fluffy', 'bark', 'princess', 'friend'], namespace='2')
+        cg2.add('fluffy', 'bark')
+        cg2.add('princess', 'fluffy', 'friend')
+        cg2_file = os.path.join('knowledge_base', 'checkpoints', 'load_test_cg2.json')
+        cg2.save(cg2_file)
+
+        cg3 = ConceptGraph(namespace='1')
+        cg3.load(cg1_file)
+
+        assert cg3.has('princess', 'hiss')
+        assert cg3.predicate(a) == ('princess', 'hiss', None, a)
+
+        cg3.load(cg2_file)
+
+        assert cg3.has('fluffy', 'bark')
+        assert cg3.has('princess', 'fluffy', 'friend')
+        assert cg3.predicates('princess', 'fluffy', 'friend')[0][3].startswith("1")
+
+        b = cg3.add('fluffy', 'princess', 'friend')
+        assert b == '1_4'
+
+
+
 
 
 

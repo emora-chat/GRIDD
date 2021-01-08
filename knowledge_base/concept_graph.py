@@ -45,7 +45,7 @@ class ConceptGraph:
         elif object is None:        # Add monopredicate
             if predicate_id is None:
                 predicate_id = self._get_next_id()
-            elif self.has(predicate_id=predicate_id):
+            elif self.has(predicate_id=predicate_id): #todo - check signature
                 raise ValueError("Predicate id '%s' already exists!" % str(predicate_id))
             self._monopredicates_map[concept].add(predicate_type)
             self._monopredicate_instances[(concept, predicate_type)].add(predicate_id)
@@ -53,7 +53,7 @@ class ConceptGraph:
         else:                       # Add bipredicate
             if predicate_id is None:
                 predicate_id = self._get_next_id()
-            elif self.has(predicate_id=predicate_id):
+            elif self.has(predicate_id=predicate_id): #todo - check signature
                 raise ValueError("Predicate id '%s' already exists!" % str(predicate_id))
             self._bipredicates_graph.add(concept, object, predicate_type, edge_id=predicate_id)
             self._bipredicate_instances[(concept, predicate_type, object)].add(predicate_id)
@@ -244,36 +244,67 @@ class ConceptGraph:
     def concatenate(self, concept_graph):
         id_map = {}
         for s, t, o, i in concept_graph.predicates():
-            s = _map(self, s, concept_graph, id_map)
-            t = _map(self, t, concept_graph, id_map)
-            o = _map(self, o, concept_graph, id_map)
-            i = _map(self, i, concept_graph, id_map)
+            s = _map(self, s, concept_graph._namespace, id_map)
+            t = _map(self, t, concept_graph._namespace, id_map)
+            o = _map(self, o, concept_graph._namespace, id_map)
+            i = _map(self, i, concept_graph._namespace, id_map)
             self.add(s, t, o, i)
 
     def copy(self, namespace=None):
         if namespace is None:
             namespace = self._namespace
         cp = ConceptGraph(namespace=namespace)
-        namespace_map = {}
-        for s, t, o, i in self.predicates():
-            if namespace != self._namespace:
-                s = _map(cp, s, self, namespace_map)
-                t = _map(cp, t, self, namespace_map)
-                o = _map(cp, o, self, namespace_map)
-                i = _map(cp, i, self, namespace_map)
-            cp.add(s, t, o, i)
+        if namespace != self._namespace:
+            namespace_map = {}
+            for s, t, o, i in self.predicates():
+                s = _map(cp, s, self._namespace, namespace_map)
+                t = _map(cp, t, self._namespace, namespace_map)
+                o = _map(cp, o, self._namespace, namespace_map)
+                i = _map(cp, i, self._namespace, namespace_map)
+                cp.add(s, t, o, i)
+        else:
+            for s, t, o, i in self.predicates():
+                cp.add(s, t, o, i)
+        cp._next_id = self._next_id
         return cp
 
     def save(self, json_filepath):
-        pass
+        d = {
+            'namespace': self._namespace,
+            'next_id': self._next_id,
+            'predicates': []
+        }
+        for s, t, o, i in self.predicates():
+            d['predicates'].append('%s,%s,%s,%s'%(s, t, o, i))
+        with open(json_filepath, 'w') as f:
+            json.dump(d, f, indent=2)
 
     def load(self, json_filepath):
-        pass
+        with open(json_filepath, 'r') as f:
+            d = json.load(f)
+        if d['namespace'] != self._namespace:
+            namespace_map = {}
+            for line in d['predicates']:
+                s, t, o, i = line.split(',')
+                if o == 'None':
+                    o = None
+                s = _map(self, s, d['namespace'], namespace_map)
+                t = _map(self, t, d['namespace'], namespace_map)
+                o = _map(self, o, d['namespace'], namespace_map)
+                i = _map(self, i, d['namespace'], namespace_map)
+                self.add(s, t, o ,i)
+        else:
+            for line in d['predicates']:
+                s, t, o, i = line.split(',')
+                if o == 'None':
+                    o = None
+                self.add(s, t, o, i)
+            self._next_id = d['next_id']
 
-def _map(current_graph, other_concept, other_graph, id_map):
+def _map(current_graph, other_concept, other_namespace, id_map):
     if other_concept is None:
         return None
-    if other_concept.startswith(other_graph._namespace):
+    if other_concept.startswith(other_namespace):
         if other_concept not in id_map:
             id_map[other_concept] = current_graph._get_next_id()
     else:
