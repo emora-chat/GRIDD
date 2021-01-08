@@ -1,0 +1,29 @@
+nsubj(X/verb(), SO/pos())
+dobj(X, DO/pos())
+=>
+is_type(X)
+p/X(SO,DO)
+focus(p)
+center(X)
+;
+
+detpred(X/noun(), Y/det())
+=>
+is_type(X)
+focus(X())
+center(X)
+;
+
+amod(X/noun(), Y/adj())
+ltype(Y,color)
+=>
+p/property(X,Y)
+focus(p)
+center(Y)
+;
+
+X/pron()
+=>
+focus(X)
+center(X)
+;

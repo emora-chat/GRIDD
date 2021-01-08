@@ -13,9 +13,7 @@ class NodeMergeDP(Module):
         :param graph: updated graph after Mention Bridge
         :return: dictionary <tuple pair: float merge score>
         """
-        scores = {}
-
-        return scores
+        return self.framework.nlp_data['dependency parse'][1]
 
 if __name__ == '__main__':
     merge = NodeMergeDP('dp merge')

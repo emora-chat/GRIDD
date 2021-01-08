@@ -16,4 +16,6 @@ class IterablePipeline(Pipeline):
         while self.iteration_func(self, input):
             for model in self.models:
                 input = model.run(input, working_memory)
+                if input == '__EXIT__':
+                    return input
         return input

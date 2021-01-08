@@ -1,5 +1,5 @@
 from lark import Lark, Transformer
-from knowledge_base.concept_graph import ConceptGraph
+from data_structures.concept_graph import ConceptGraph
 
 class ParserStruct:
     
@@ -54,44 +54,30 @@ class KnowledgeParser:
 
 class PredicateTransformer(Transformer):
 
-    def __init__(self, kg, base_nodes):
+    def __init__(self, kg, base_nodes, loading_kb=True):
         super().__init__()
         self.kg = kg
         self.base_nodes = base_nodes
+        self.loading_kb = loading_kb
         self.kg_concepts = None
         self._set_kg_concepts()
         self._reset()
 
-    def get_condition_instances(self, args, preconditions=None, postconditions=None):
+    def get_condition_instances(self, preconditions=None, postconditions=None):
         pre_inst, post_inst = set(), set()
         if preconditions is not None:
             pre_inst = self._get_union_of_arg_pred_instance_sets(preconditions)
-            # contains = set()
-            # for pre in pre_inst:
-            #     contains.update(set(self.addition_construction.signature(pre)))
-            #     contains.add(pre)
-            # for instance_id, var_pred_id in ontology_instances.items():
-            #     if instance_id in contains:
-            #         pre_inst.add(var_pred_id)
         if postconditions is not None:
             post_inst = self._get_union_of_arg_pred_instance_sets(postconditions)
-            # contains = set()
-            # for post in post_inst:
-            #     contains.update(set(self.addition_construction.signature(post)))
-            #     contains.add(post)
-            # for instance_id, var_pred_id in ontology_instances.items():
-            #     if instance_id in contains and var_pred_id not in pre_inst:
-            #         post_inst.add(var_pred_id)
         return pre_inst, post_inst
 
     def anon_rule(self, args):
         preconditions, postconditions = args
+        situation_id = self.addition_construction._get_next_id()
+        self.add_node(situation_id)
+        self.add_monopredicate(situation_id, 'is_type')
         new_concepts = self.addition_construction.concepts()
-        situation_id = self.kg._concept_graph._get_next_id()
-        self.addition_construction.add_node(situation_id)
-        self.addition_construction.add_monopredicate(situation_id, 'is_type')
-        new_concepts = self.addition_construction.concepts()
-        pre_inst, post_inst = self.get_condition_instances(args, preconditions, postconditions)
+        pre_inst, post_inst = self.get_condition_instances(preconditions, postconditions)
         self.add_preconditions(pre_inst, situation_id, new_concepts)
         self.add_postconditions(post_inst, situation_id, new_concepts)
 
@@ -100,7 +86,7 @@ class PredicateTransformer(Transformer):
         new_concepts = self.addition_construction.concepts()
         self._add_type(type, new_concepts)
         new_concepts = self.addition_construction.concepts()
-        pre_inst, post_inst = self.get_condition_instances(args, preconditions, postconditions)
+        pre_inst, post_inst = self.get_condition_instances(preconditions, postconditions)
         self.add_preconditions(pre_inst, type, new_concepts)
         self.add_postconditions(post_inst, type, new_concepts)
 
@@ -109,7 +95,7 @@ class PredicateTransformer(Transformer):
         new_concepts = self.addition_construction.concepts()
         self._add_type(type, new_concepts)
         new_concepts = self.addition_construction.concepts()
-        pre_inst, post_inst = self.get_condition_instances(args, preconditions=preconditions)
+        pre_inst, post_inst = self.get_condition_instances(preconditions=preconditions)
         self.add_preconditions(pre_inst, type, new_concepts)
 
     def implication(self, args):
@@ -117,7 +103,7 @@ class PredicateTransformer(Transformer):
         new_concepts = self.addition_construction.concepts()
         self._add_type(type, new_concepts)
         new_concepts = self.addition_construction.concepts()
-        pre_inst, post_inst = self.get_condition_instances(args, postconditions=postconditions)
+        pre_inst, post_inst = self.get_condition_instances(postconditions=postconditions)
         self.add_postconditions(post_inst, type, new_concepts)
 
     def conditions(self, args):
@@ -133,13 +119,12 @@ class PredicateTransformer(Transformer):
         else:
             raise Exception('bipredicate must have 3 - 5 arguments')
         if id is None:
-            id = self.kg._concept_graph._get_next_id()
+            id = self.addition_construction._get_next_id()
         id = self._id_duplication_check(id, new_concepts)
         subject = self._hierarchical_node_check(subject, new_concepts)
         object = self._hierarchical_node_check(object, new_concepts)
         type = self._is_type_check(type, new_concepts)
-        id = self.addition_construction.add_bipredicate(subject, object, type, predicate_id=id)
-        # self.new_instances.update({id})
+        id = self.add_bipredicate(subject, object, type, predicate_id=id)
         arg_predicate_instances = self._get_union_of_arg_pred_instance_sets(args)
         arg_predicate_instances.add(id)
         to_return = ParserStruct(self._id_encoder(name, id), pred_instances=arg_predicate_instances)
@@ -155,12 +140,11 @@ class PredicateTransformer(Transformer):
         else:
             raise Exception('monopredicate must have 2 - 4 arguments')
         if id is None:
-            id = self.kg._concept_graph._get_next_id()
+            id = self.addition_construction._get_next_id()
         id = self._id_duplication_check(id, new_concepts)
         subject = self._hierarchical_node_check(subject, new_concepts)
         type = self._is_type_check(type, new_concepts)
-        id = self.addition_construction.add_monopredicate(subject, type, predicate_id=id)
-        # self.new_instances.update({id})
+        id = self.add_monopredicate(subject, type, predicate_id=id)
         arg_predicate_instances = self._get_union_of_arg_pred_instance_sets(args)
         arg_predicate_instances.add(id)
         to_return = ParserStruct(self._id_encoder(name, id), pred_instances=arg_predicate_instances)
@@ -176,13 +160,11 @@ class PredicateTransformer(Transformer):
         else:
             raise Exception('instance must have 1 - 2 arguments')
         if id is None:
-            id = self.kg._concept_graph._get_next_id()
+            id = self.addition_construction._get_next_id()
         id = self._id_duplication_check(id, new_concepts)
         type = self._is_type_check(type, new_concepts)
-        self.addition_construction.add_node(id)
-        pred_id = self.addition_construction.add_bipredicate(id, type, 'type',
-                                                   predicate_id=self.kg._concept_graph._get_next_id())
-        # self.new_instances.update({id, pred_id})
+        self.add_node(id)
+        pred_id = self.add_bipredicate(id, type, 'type', predicate_id=self.addition_construction._get_next_id())
         arg_predicate_instances = self._get_union_of_arg_pred_instance_sets(args)
         arg_predicate_instances.update({id, pred_id})
         to_return = ParserStruct(self._id_encoder(name, id), pred_instances=arg_predicate_instances)
@@ -199,19 +181,14 @@ class PredicateTransformer(Transformer):
         if not isinstance(types, list):
             types = [types]
         id = self._manual_id_check(id[4:])
-        # id = self._id_duplication_check(id, new_concepts)
         if id is not None and id not in new_concepts:
-            self.addition_construction.add_node(id)
+            self.add_node(id)
         new_pred_ids = set()
         for type in types:
             type = self._is_type_check(type, new_concepts)
-            pi = self.addition_construction.add_bipredicate(id, type, 'type',
-                                                       predicate_id=self.kg._concept_graph._get_next_id())
+            pi = self.add_bipredicate(id, type, 'type', predicate_id=self.addition_construction._get_next_id())
             new_pred_ids.add(pi)
-        mi = self.addition_construction.add_monopredicate(id, 'is_type',
-                                                     predicate_id=self.kg._concept_graph._get_next_id())
-        # self.new_instances.update(new_pred_ids)
-        # self.new_instances.add(mi)
+        mi = self.add_monopredicate(id, 'is_type', predicate_id=self.addition_construction._get_next_id())
         new_pred_ids.add(mi)
         arg_predicate_instances = self._get_union_of_arg_pred_instance_sets(args)
         arg_predicate_instances.update(new_pred_ids)
@@ -226,11 +203,9 @@ class PredicateTransformer(Transformer):
             aliases = [aliases]
         for alias in aliases:
             alias_node = '"%s"' % alias
-            self.addition_construction.add_node(alias_node)
-            self.addition_construction.add_bipredicate(alias_node, 'expression', 'type',
-                                                       predicate_id=self.kg._concept_graph._get_next_id())
-            self.addition_construction.add_bipredicate(alias_node, id, 'expr',
-                                                       predicate_id=self.kg._concept_graph._get_next_id())
+            self.add_node(alias_node)
+            self.add_bipredicate(alias_node, 'expression', 'type', predicate_id=self.addition_construction._get_next_id())
+            self.add_bipredicate(alias_node, id, 'expr', predicate_id=self.addition_construction._get_next_id())
         return id
 
     def name(self, args):
@@ -285,9 +260,8 @@ class PredicateTransformer(Transformer):
 
     def knowledge(self, args):
         self.additions.append(self.addition_construction)
-        self.addition_construction = ConceptGraph(nodes=self.base_nodes)
+        self.addition_construction = ConceptGraph('add_', nodes=self.base_nodes)
         self.local_names = {}
-        # self.new_instances = set()
 
     def start(self, args):
         to_return = self.additions
@@ -303,14 +277,51 @@ class PredicateTransformer(Transformer):
     def add_preconditions(self, preconditions, type, new_concepts):
         for pre in preconditions:
             pre = self._hierarchical_node_check(pre, new_concepts)
-            self.addition_construction.add_bipredicate(type,pre,'pre',predicate_id=self.kg._concept_graph._get_next_id())
-            var_pred_id = self.addition_construction.add_monopredicate(pre,'var',predicate_id=self.kg._concept_graph._get_next_id())
-            self.addition_construction.add_bipredicate(type,var_pred_id,'pre',predicate_id=self.kg._concept_graph._get_next_id())
+            self.add_bipredicate(type,pre,'pre',predicate_id=self.addition_construction._get_next_id())
+            var_pred_id = self.add_monopredicate(pre,'var',predicate_id=self.addition_construction._get_next_id())
+            self.add_bipredicate(type,var_pred_id,'pre',predicate_id=self.addition_construction._get_next_id())
 
     def add_postconditions(self, postconditions, type, new_concepts):
         for post in postconditions:
             post = self._hierarchical_node_check(post, new_concepts)
-            self.addition_construction.add_bipredicate(type, post, 'post',predicate_id=self.kg._concept_graph._get_next_id())
+            self.add_bipredicate(type, post, 'post',predicate_id=self.addition_construction._get_next_id())
+
+    ############
+    #
+    # Addition Wrappers
+    #
+    ############
+
+    def add_bipredicate(self, subject, object, type, predicate_id=None):
+        if self.loading_kb:
+            concepts = self.addition_construction.concepts()
+            if subject not in concepts:
+                raise Exception(":param 'source' error - node %s does not exist!" % subject)
+            elif object not in concepts:
+                raise Exception(":param 'target' error - node %s does not exist!" % object)
+            elif type not in concepts:
+                raise Exception(":param 'label' error - node %s does not exist!" % type)
+            if predicate_id in concepts:
+                raise Exception("predicate id %s already exists!" % predicate_id)
+        return self.addition_construction.add_bipredicate(subject, object, type, predicate_id=predicate_id)
+
+    def add_monopredicate(self, subject, type, predicate_id=None):
+        if self.loading_kb:
+            concepts = self.addition_construction.concepts()
+            if subject not in concepts:
+                raise Exception(":param 'source' error - node %s does not exist!" % subject)
+            elif type not in concepts:
+                raise Exception(":param 'label' error - node %s does not exist!" % type)
+            if predicate_id in concepts:
+                raise Exception("predicate id %s already exists!" % predicate_id)
+        return self.addition_construction.add_monopredicate(subject, type, predicate_id=predicate_id)
+
+    def add_node(self, node):
+        if self.addition_construction.bipredicate_graph.has(node):
+            raise Exception('node %s already exists in bipredicates'%node)
+        if node in self.addition_construction.monopredicate_map:
+            raise Exception('node %s already exists in monopredicates'%node)
+        self.addition_construction.add_node(node)
 
     ############
     #
@@ -322,30 +333,30 @@ class PredicateTransformer(Transformer):
         if isinstance(node, str) and node.startswith('_int_'):
             node = int(node[5:])
         if node not in self.local_names:
-            if node not in self.kg_concepts and node not in new_concepts:
+            if self.loading_kb and node not in self.kg_concepts and node not in new_concepts:
                 raise Exception("error - node %s does not exist!" % node)
             elif node not in new_concepts:
-                self.addition_construction.add_node(node)
+                self.add_node(node)
         else:
             node = self.local_names[node]
         return node
 
     def _node_check(self, type, new_concepts):
-        if type not in self.kg_concepts and type not in new_concepts:
+        if self.loading_kb and type not in self.kg_concepts and type not in new_concepts:
             raise Exception("error - node %s does not exist!" % type)
         elif type not in new_concepts:
-            self.addition_construction.add_node(type)
+            self.add_node(type)
         return type
 
     def _is_type_check(self, type, new_concepts):
         if type in self.local_names:
             type = self.local_names[type]
-        if type not in self.kg_concepts and type not in new_concepts:
+        if self.loading_kb and type not in self.kg_concepts and type not in new_concepts:
             raise Exception("error - node %s does not exist!" % type)
         elif type not in new_concepts:
-            if (type,'is_type') not in self.kg._concept_graph.monopredicates(type):
+            if self.loading_kb and (type,'is_type') not in self.kg._concept_graph.monopredicates(type):
                 raise Exception('%s is not a type!'%type)
-            self.addition_construction.add_node(type)
+            self.add_node(type)
         elif type not in self.kg_concepts:
             if (type,'is_type') not in self.addition_construction.monopredicates(type):
                 raise Exception('%s is not a type!'%type)
@@ -353,8 +364,8 @@ class PredicateTransformer(Transformer):
 
     def _add_type(self, type, new_concepts):
         if type not in self.kg_concepts and type not in new_concepts:
-            self.addition_construction.add_node(type)
-            self.addition_construction.add_monopredicate(type,'is_type',predicate_id=self.kg._concept_graph._get_next_id())
+            self.add_node(type)
+            self.add_monopredicate(type,'is_type',predicate_id=self.addition_construction._get_next_id())
 
     def _manual_id_check(self, id):
         if id.isdigit():
@@ -406,9 +417,8 @@ class PredicateTransformer(Transformer):
 
     def _reset(self):
         self.additions = []
-        self.addition_construction = ConceptGraph(nodes=self.base_nodes)
+        self.addition_construction = ConceptGraph('add_', nodes=self.base_nodes)
         self.local_names = {}
-        # self.new_instances = set()
 
     def _set_kg_concepts(self):
         self.kg_concepts = self.kg._concept_graph.concepts()

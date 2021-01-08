@@ -1,0 +1,6 @@
+bought(X/person(),Y/house())
+=>
+h/happy(X)
+focus(h)
+;
+

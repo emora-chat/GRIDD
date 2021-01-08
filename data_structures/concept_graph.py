@@ -1,7 +1,7 @@
 from structpy.graph.directed.labeled.multilabeled_parallel_digraph_networkx import MultiLabeledParallelDigraphNX
 from structpy.map.map import Map
 from structpy.map.index.index import Index
-from knowledge_base.concept_graph_spec import ConceptGraphSpec
+from data_structures.concept_graph_spec import ConceptGraphSpec
 from pyswip import Prolog, Variable
 from structpy.map.bijective.bimap import Bimap
 CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'

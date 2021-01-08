@@ -12,13 +12,16 @@ class Framework(Pipeline):
         self.nlp_data = {}
 
         self.mention_models = Branch('mention models')
+        self.mention_models.framework = self
         self.mention_bridge = None
 
         self.merge_models = Branch('merge models')
+        self.merge_models.framework = self
         self.merge_bridge = None
         self.merge_iteration = None
 
         self.inference_models = Branch('inference models')
+        self.inference_models.framework = self
         self.inference_bridge = None
         self.merge_inference_iteration = None
 
@@ -111,11 +114,14 @@ class Framework(Pipeline):
         if name in self.preprocessing_modules:
             raise Exception('Preprocessing module with name %s already exists!'%name)
         self.preprocessing_modules[name] = model
+        model.framework = self
 
     def build_framework(self):
         merge_pipeline = IterablePipeline('merge pipeline', self.merge_iteration)
+        merge_pipeline.framework = self
         merge_pipeline.add_models([self.merge_models, self.merge_bridge])
         merge_and_infer_pipeline = IterablePipeline('merge and infer pipeline', self.merge_inference_iteration)
+        merge_and_infer_pipeline.framework = self
         merge_and_infer_pipeline.add_models([merge_pipeline, self.inference_models, self.inference_bridge])
         self.add_models([self.mention_models, self.mention_bridge,
                          merge_and_infer_pipeline,
@@ -127,6 +133,8 @@ class Framework(Pipeline):
         self.run_preprocessing(input, working_memory)
         for model in self.models:
             input = model.run(input, working_memory)
+            if input == '__EXIT__':
+                return input
         return input
 
     def run_preprocessing(self, input, graph):

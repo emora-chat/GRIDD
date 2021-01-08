@@ -10,13 +10,17 @@ from modules.mention_bridge import BaseMentionBridge
 from modules.merge_bridge import BaseMergeBridge
 from modules.inference_bridge import BaseInferenceBridge
 
-from modules.allen_dp import AllenDP
+from modules.allenai_dp_to_logic_model import AllenAIToLogic, POS_NODES, NODES
+from allennlp.predictors.predictor import Predictor
+from os.path import join
 
-from knowledge_base.knowledge_graph import KnowledgeBase
-from knowledge_base.working_memory import WorkingMemory
-from knowledge_base.concept_graph import ConceptGraph
-from modules.mention_identification_lexicon import MentionsByLexicon
+from data_structures.knowledge_graph import KnowledgeBase
+from data_structures.working_memory import WorkingMemory
+from data_structures.concept_graph import ConceptGraph
+
+from modules.mention_identification_allendp import MentionsAllenDP
 from modules.merge_dp import NodeMergeDP
+from modules.inference_prolog import PrologInference
 
 import time
 from os.path import join
@@ -46,11 +50,22 @@ def run_twice(stage, input):
 if __name__ == '__main__':
     dm = Framework('Emora')
 
-    dm.add_preprocessing_module('dependency parse', AllenDP('AllenAI dependency parser'))
+    kb = KnowledgeGraph(filename=join('data_structures', 'kg_files', 'framework_test.kg'))
 
-    dm.add_mention_model({'model': MentionsByLexicon('lexicon mentions')})
-    dm.add_merge_model({'model': NodeMergeDP('dependency parse merge')})
-    dm.add_inference_model({'model': BaseInference('base inference')})
+    template_base = KnowledgeGraph('temp_', nodes=POS_NODES + NODES, loading_kb=False)
+    for n in POS_NODES + NODES:
+        template_base._concept_graph.add_monopredicate(n, 'is_type')
+    dependency_parser = Predictor.from_path("https://storage.googleapis.com/allennlp-public-models/biaffine-dependency-parser-ptb-2020.04.06.tar.gz")
+    template_file = join('data_structures', 'kg_files', 'allen_dp_templates.txt')
+
+    dm.add_preprocessing_module('dependency parse',
+                                AllenAIToLogic("allen dp", kb, dependency_parser,
+                                               template_base, template_file))
+
+    dm.add_mention_model({'model': MentionsAllenDP('allen dp mentions')})
+    dm.add_merge_model({'model': NodeMergeDP('allen dp merge')})
+    dm.add_inference_model({'model': PrologInference('prolog inference',
+                                                     [join('data_structures', 'kg_files', 'test_inferences.txt')])})
     dm.add_selection_model({'model': BaseResponseSelection('base selection')})
     dm.add_expansion_model({'model': BaseResponseExpansion('base expansion')})
     dm.add_generation_model({'model': BaseResponseGeneration('base generation')})
@@ -59,8 +74,9 @@ if __name__ == '__main__':
     dm.add_merge_aggregation(First)
     dm.add_inference_aggregation(First)
 
-    dm.add_mention_bridge(BaseMentionBridge('base mention bridge'))
-    dm.add_merge_bridge(BaseMergeBridge('base merge bridge', threshold_score=0.2))
+    dm.add_mention_bridge(BaseMentionBridge('mention bridge'))
+    dm.add_merge_bridge(BaseMergeBridge('merge bridge',
+                                        threshold_score=0.2))
     dm.add_inference_bridge(BaseInferenceBridge('base inference bridge'))
 
     dm.add_merge_iteration(check_continue)
@@ -68,8 +84,7 @@ if __name__ == '__main__':
 
     dm.build_framework()
 
-    kb = KnowledgeBase(join('knowledge_base', 'kg_files', 'framework_test.kg'))
-    wm = ConceptGraph(nodes=['is_type'])
+    wm = ConceptGraph('wm_', nodes=['is_type'])
     working_memory = WorkingMemory(wm=wm, kb=kb)
 
     asr_hypotheses = [
@@ -81,6 +96,7 @@ if __name__ == '__main__':
     ]
 
     s = time.time()
+    print('UTTER: ', asr_hypotheses[0]['text'])
     output = dm.run(asr_hypotheses, working_memory)
     elapsed = time.time() - s
     print('[%.6f s] %s'%(elapsed, output))

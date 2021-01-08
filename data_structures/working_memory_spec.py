@@ -1,7 +1,7 @@
 
 from structpy import specification
 
-from knowledge_base.concept_graph_spec import ConceptGraphSpec
+from data_structures.concept_graph_spec import ConceptGraphSpec
 
 
 @specification
@@ -20,14 +20,14 @@ class WorkingMemorySpec:
 
     def pull_ontology(working_memory):
         """
-        Add all concepts from the `.knowledge_base` that are super-types of concepts
+        Add all concepts from the `.data_structures` that are super-types of concepts
         in working memory.
         """
         pass
 
     def pull_rules(working_memory):
         """
-        Add all concepts from the `.knowledge_base` that are part of some implication
+        Add all concepts from the `.data_structures` that are part of some implication
         rule that may be satisfied by the predicates currently in working memory.
         """
         pass

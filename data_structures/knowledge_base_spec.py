@@ -1,7 +1,7 @@
 
 from structpy import specification
 
-from knowledge_base.concept_graph_spec import ConceptGraphSpec
+from data_structures.concept_graph_spec import ConceptGraphSpec
 
 
 @specification
@@ -20,7 +20,7 @@ class KnowledgeBaseSpec:
         """
         Create a `KnowledgeBase` object.
 
-        Providing `filenames` will load a text file from a previous `knowledge_base.save` operation.
+        Providing `filenames` will load a text file from a previous `data_structures.save` operation.
         """
         knowledge_base = KnowledgeBase('example.kg')
         return knowledge_base

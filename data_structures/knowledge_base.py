@@ -1,7 +1,7 @@
 from lark import Lark, Transformer
-from knowledge_base.concept_graph import ConceptGraph
-from knowledge_base.knowledge_base_spec import KnowledgeBaseSpec
-from knowledge_base.knowledge_parser import KnowledgeParser
+from data_structures.concept_graph import ConceptGraph
+from data_structures.knowledge_base_spec import KnowledgeBaseSpec
+from data_structures.knowledge_parser import KnowledgeParser
 import time, sys, json
 from os.path import join
 
@@ -13,7 +13,7 @@ class KnowledgeBase:
     def __init__(self, *filenames):
         self._concept_graph = ConceptGraph(concepts=BASE_NODES)
         self._knowledge_parser = KnowledgeParser(self, BASE_NODES)
-        self.load(open(join('knowledge_base','kg_files','base.kg'), 'r').read())
+        self.load(open(join('data_structures','kg_files','base.kg'), 'r').read())
         self._knowledge_parser.initialize()
         for filename in filenames:
             self.load(open(filename, 'r').read())
