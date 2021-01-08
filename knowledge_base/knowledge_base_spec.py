@@ -5,7 +5,7 @@ from knowledge_base.concept_graph_spec import ConceptGraphSpec
 
 
 @specification
-class KnowledgeBase:
+class KnowledgeBaseSpec:
     """
     Data structure for creating, editing, and querying a Knowledge Graph as part of the
     GRIDD Framework.
@@ -22,7 +22,7 @@ class KnowledgeBase:
 
         Providing `filenames` will load a text file from a previous `knowledge_base.save` operation.
         """
-        knowledge_base = KnowledgeBase('example1.kg')
+        knowledge_base = KnowledgeBase('example.kg')
         return knowledge_base
 
     def load(knowledge_base, *filenames_or_logicstrings):

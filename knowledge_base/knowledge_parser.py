@@ -7,6 +7,51 @@ class ParserStruct:
         self.value = value
         self.pred_instances = pred_instances
 
+class KnowledgeParser:
+
+    _grammar = r"""
+                start: knowledge+
+                knowledge: ((bipredicate | monopredicate | instance | ontological | expression )+ ";") | ((anon_rule | named_rule | inference | implication) ";")
+                anon_rule: conditions "=>" conditions
+                named_rule: conditions "->" type "->" conditions
+                inference: conditions "->" type
+                implication: type "->" conditions
+                conditions: (bipredicate | monopredicate | instance | ontological)+
+                bipredicate: ((name "/")|(id "="  ))? type "(" subject "," object ")"
+                monopredicate: ((name "/")|(id "="  ))? type "(" subject ")"
+                instance: ((name "/")|(id "="))? type "(" ")"
+                ontological: id "<" (type | types) ">"
+                expression: id "[" (alias | aliases) "]"
+                name: string_term
+                type: string_term 
+                types: type ("," type)+
+                alias: string_wspace_term
+                aliases: alias ("," alias)+
+                id: string_term
+                subject: string_term | bipredicate | monopredicate | instance | ontological
+                object: string_term | bipredicate | monopredicate | instance | ontological
+                string_term: STRING
+                STRING: /[a-z_A-Z0-9]/+
+                string_wspace_term: STRING_WSPACE
+                STRING_WSPACE: /[a-z_A-Z0-9 ]/+
+                WHITESPACE: (" " | "\n")+
+                %ignore WHITESPACE
+            """
+    _parser = Lark(_grammar, parser="earley")
+
+    def __init__(self, base_nodes, kg):
+        self._predicate_transformer = PredicateTransformer(kg, base_nodes)
+
+    def initialize(self):
+        self._predicate_transformer._set_kg_concepts()
+
+    def parse(self, input):
+        return KnowledgeParser._parser.parse(input)
+
+    def transform(self, tree):
+        return self._predicate_transformer.transform(tree)
+
+
 class PredicateTransformer(Transformer):
 
     def __init__(self, kg, base_nodes):

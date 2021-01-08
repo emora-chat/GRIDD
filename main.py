@@ -12,7 +12,7 @@ from modules.inference_bridge import BaseInferenceBridge
 
 from modules.allen_dp import AllenDP
 
-from knowledge_base.knowledge_graph import KnowledgeGraph
+from knowledge_base.knowledge_graph import KnowledgeBase
 from knowledge_base.working_memory import WorkingMemory
 from knowledge_base.concept_graph import ConceptGraph
 from modules.mention_identification_lexicon import MentionsByLexicon
@@ -68,7 +68,7 @@ if __name__ == '__main__':
 
     dm.build_framework()
 
-    kb = KnowledgeGraph(join('knowledge_base', 'kg_files', 'framework_test.kg'))
+    kb = KnowledgeBase(join('knowledge_base', 'kg_files', 'framework_test.kg'))
     wm = ConceptGraph(nodes=['is_type'])
     working_memory = WorkingMemory(wm=wm, kb=kb)
 

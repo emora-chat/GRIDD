@@ -1,7 +1,7 @@
 from allennlp.predictors.predictor import Predictor
 from modules.module import Module
 from knowledge_base.concept_graph import ConceptGraph
-from knowledge_base.knowledge_graph import KnowledgeGraph
+from knowledge_base.knowledge_graph import KnowledgeBase
 import knowledge_base.knowledge_graph as kg
 from knowledge_base.working_memory import WorkingMemory
 from structpy.map.bijective.bimap import Bimap
@@ -30,7 +30,7 @@ class AllenDP(Module):
         # see det vs detpred for example
         self.pos_nodes = ['verb','noun','pron','det','adj','adv']
         self.nodes = ['nsubj','dobj','amod','detpred','focus','center','pos']
-        self.templates = KnowledgeGraph(nodes=self.pos_nodes + self.nodes)
+        self.templates = KnowledgeBase(nodes=self.pos_nodes + self.nodes)
         for n in self.pos_nodes + self.nodes:
             self.templates._concept_graph.add_monopredicate(n, 'is_type')
         self.templates.add_knowledge(join('knowledge_base', 'kg_files', 'allen_dp_templates.txt'))
