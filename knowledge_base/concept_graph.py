@@ -244,39 +244,45 @@ class ConceptGraph:
     def concatenate(self, concept_graph):
         id_map = {}
         for s, t, o, i in concept_graph.predicates():
-            s = self._map(s, concept_graph, id_map)
-            t = self._map(t, concept_graph, id_map)
-            o = self._map(o, concept_graph, id_map)
-            i = self._map(i, concept_graph, id_map)
+            s = _map(self, s, concept_graph, id_map)
+            t = _map(self, t, concept_graph, id_map)
+            o = _map(self, o, concept_graph, id_map)
+            i = _map(self, i, concept_graph, id_map)
             self.add(s, t, o, i)
 
-    def _map(self, other_concept, other_graph, id_map):
-        if other_concept is None:
-            return None
-        if other_concept.startswith(other_graph._namespace):
-            if other_concept not in id_map:
-                id_map[other_concept] = self._get_next_id()
-        else:
-            id_map[other_concept] = other_concept
-
-        mapped_concept = id_map[other_concept]
-        if not self.has(mapped_concept):
-            self.add(mapped_concept)
-        return mapped_concept
-
-    def copy(self):
-        pass
-
-    def copy(self):
-        """     FOR REFERENCE   """
-        cp = ConceptGraph()
-        cp.next_id = self.next_id
-        cp.bipredicate_graph = copy.deepcopy(self.bipredicate_graph)
-        cp.bipredicate_instance_index = copy.deepcopy(self.bipredicate_instance_index)
-        cp.monopredicate_instance_index = copy.deepcopy(self.monopredicate_instance_index)
-        cp.monopredicate_map = Map(self.monopredicate_map.items())
+    def copy(self, namespace=None):
+        if namespace is None:
+            namespace = self._namespace
+        cp = ConceptGraph(namespace=namespace)
+        namespace_map = {}
+        for s, t, o, i in self.predicates():
+            if namespace != self._namespace:
+                s = _map(cp, s, self, namespace_map)
+                t = _map(cp, t, self, namespace_map)
+                o = _map(cp, o, self, namespace_map)
+                i = _map(cp, i, self, namespace_map)
+            cp.add(s, t, o, i)
         return cp
 
+    def save(self, json_filepath):
+        pass
+
+    def load(self, json_filepath):
+        pass
+
+def _map(current_graph, other_concept, other_graph, id_map):
+    if other_concept is None:
+        return None
+    if other_concept.startswith(other_graph._namespace):
+        if other_concept not in id_map:
+            id_map[other_concept] = current_graph._get_next_id()
+    else:
+        id_map[other_concept] = other_concept
+
+    mapped_concept = id_map[other_concept]
+    if not current_graph.has(mapped_concept):
+        current_graph.add(mapped_concept)
+    return mapped_concept
 
 if __name__ == '__main__':
     print(ConceptGraphSpec.verify(ConceptGraph))

@@ -174,17 +174,21 @@ class ConceptGraphSpec:
         assert concept_graph.has('Peter', 'likes', 'pjl_1')
         assert concept_graph.has('Peter', 'likes', 'John', 'pjl_1')
 
-    def concatenate(concept_graph, conceptgraph):
+    def save(concept_graph, json_filepath):
+        pass
+
+    def load(concept_graph, json_filepath):
+        pass
+
+    @specification.init
+    def concatenate(ConceptGraph, conceptgraph):
         """
         Concatenate this concept graph with another.
         """
-        import knowledge_base.concept_graph
-        cg1 = knowledge_base.concept_graph.ConceptGraph(concepts=['princess', 'hiss'],
-                                                        namespace='1')
+        cg1 = ConceptGraph(concepts=['princess', 'hiss'], namespace='1')
         cg1.add('princess', 'hiss')
 
-        cg2 = knowledge_base.concept_graph.ConceptGraph(concepts=['fluffy', 'bark', 'princess', 'friend'],
-                                                        namespace='2')
+        cg2 = ConceptGraph(concepts=['fluffy', 'bark', 'princess', 'friend'], namespace='2')
         fb = cg2.add('fluffy', 'bark')
         cg2.add('princess', 'fluffy', 'friend')
         cg2.add(fb, 'volume', 'loud')
@@ -197,19 +201,42 @@ class ConceptGraphSpec:
         assert cg1.has('fluffy', 'bark')
         assert cg1.has('princess', 'fluffy', 'friend')
         assert cg1.has('princess', 'hiss')
-        assert cg1.predicate('1_1') in [('fluffy','bark',None,'1_1'),
-                                        ('princess','fluffy','friend','1_1')]
+        assert cg1.predicate('1_1') in [('fluffy', 'bark', None, '1_1'),
+                                        ('princess', 'fluffy', 'friend', '1_1')]
         fb_merge = cg1.predicates('fluffy', 'bark', None)[0][3]
         assert cg1.has(fb_merge, 'volume', 'loud')
 
-    def copy(concept_graph):
-        pass
+        return cg1
 
-    def save(concept_graph, json_filepath):
-        pass
+    def copy(concept_graph, namespace=None):
+        """
+        Construct a copy of the current concept graph.
 
-    def load(self, json_filepath):
-        pass
+        All concept ids are maintained, unless a new namespace is specified.
+
+        If a new namespace is specified, it replaces the original namespace concept ids.
+        """
+        new_cg = concept_graph.copy()
+
+        assert new_cg.has('fluffy', 'bark')
+        assert new_cg.has('princess', 'fluffy', 'friend')
+        assert new_cg.has('princess', 'hiss')
+        assert new_cg.predicate('1_0') == concept_graph.predicate('1_0')
+        assert new_cg.predicate('1_1') == concept_graph.predicate('1_1')
+        assert new_cg.predicate('1_2') == concept_graph.predicate('1_2')
+        assert new_cg.predicate('1_3') == concept_graph.predicate('1_3')
+        assert new_cg.predicates() == concept_graph.predicates()
+
+        final_pred_subj = concept_graph.predicates('fluffy', 'bark', None)[0][3]
+        assert new_cg.has(final_pred_subj, 'volume', 'loud')
+
+        namespace_cg = concept_graph.copy(namespace="new")
+        assert namespace_cg.predicates('fluffy', 'bark', None)[0][3].startswith("new")
+        assert namespace_cg.predicates('princess', 'fluffy', 'friend')[0][3].startswith("new")
+        assert namespace_cg.predicates('princess', 'hiss', None)[0][3].startswith("new")
+        for i in range(4):
+            assert not namespace_cg.has(predicate_id='1_%d'%i)
+            assert namespace_cg.has(predicate_id='new_%d'%i)
 
 
 
