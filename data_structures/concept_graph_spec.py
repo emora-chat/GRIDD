@@ -122,6 +122,20 @@ class ConceptGraphSpec:
         """
         assert set(concept_graph.related('Peter')) == {'John', 'Sarah', 'Mary'}
 
+    @specification.init
+    def CONCEPT_GRAPH_MUTATORS(ConceptGraph, predicates=None, concepts=None, namespace=None):
+        """
+        """
+        concept_graph = ConceptGraph(predicates=[
+            ('John', 'likes', 'Mary'),
+            ('Mary', 'dislikes', 'Peter'),
+            ('Peter', 'likes', 'John', 'pjl_1'),
+            ('Peter', 'likes', 'Sarah'),
+            ('Peter', 'happy'),
+            ('Jack', 'happy')
+        ], namespace='x')
+        return concept_graph
+
     def add(concept_graph, concept, predicate_type=None, object=None, predicate_id=None):
         """
         Add a concept or predicate to the ConceptGraph.
@@ -276,6 +290,14 @@ class ConceptGraphSpec:
 
         b = cg3.add('fluffy', 'princess', 'friend')
         assert b == '1_4'
+        return cg3
+
+    def concepts(concept_graph):
+        """
+        Get all nodes in the concept graph
+        """
+        assert concept_graph.concepts() == {'fluffy','bark','princess','hiss','volume','loud','friend',
+                                            '1_0', '1_1', '1_2', '1_3', '1_4'}
 
 
 

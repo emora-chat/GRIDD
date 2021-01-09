@@ -1,6 +1,6 @@
 
 from structpy import specification
-
+from os.path import join
 from data_structures.concept_graph_spec import ConceptGraphSpec
 
 
@@ -15,34 +15,44 @@ class KnowledgeBaseSpec:
     assigned a string ID).
     """
 
-    @specification.satisfies(ConceptGraphSpec.CONCEPT_GRAPH)
-    def KNOWLEDGE_BASE(KnowledgeBase, *filenames):
+    @specification.init
+    def KNOWLEDGE_BASE(KnowledgeBase, filenames, namespace='KB'):
         """
         Create a `KnowledgeBase` object.
 
         Providing `filenames` will load a text file from a previous `data_structures.save` operation.
         """
-        knowledge_base = KnowledgeBase('example.kg')
+        knowledge_base = KnowledgeBase()
         return knowledge_base
 
-    def load(knowledge_base, *filenames_or_logicstrings):
+    def load(knowledge_base, filenames_or_logicstrings):
         """
 
         """
-        knowledge_base.load('example2.kg')
-        knowledge_base.load('')
+        knowledge_base.load(join('data_structures','kg_files','example.kg'))
+
+        assert knowledge_base.has('avengers', 'type', 'movie')
+        assert knowledge_base.has('"endgame"', 'expr', 'avengers')
+        assert knowledge_base.has('emora', 'like', 'avengers')
+        ela = knowledge_base.predicates('emora', 'like', 'avengers')[0][3]
+        elc = knowledge_base.predicates('emora', 'like', 'chris_evans')[0][3]
+        assert knowledge_base.has(ela, 'reason', elc)
+        assert knowledge_base.has(ela, 'time', 'now')
+        sn = knowledge_base.predicates('now', 'sad', None)[0][3]
+        assert knowledge_base.has('love_triangle', 'post', sn)
 
     def subtypes(knowledge_base, concept):
         """
         Return the set of all subtypes of the provided concept (by id).
         """
-        pass
+        assert knowledge_base.subtypes('buyable') == {'movie', 'avengers'}
 
     def supertypes(knowledge_base, concept):
         """
         Return the set of all supertypes of the provided concept (by id).
         """
-        pass
+        assert knowledge_base.supertypes('avengers') == {'movie', 'watchable', 'buyable', 'entity', 'object'}
+
 
 
 

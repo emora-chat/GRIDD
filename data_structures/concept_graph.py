@@ -49,6 +49,8 @@ class ConceptGraph:
                 raise ValueError("Predicate id '%s' already exists!" % str(predicate_id))
             self._monopredicates_map[concept].add(predicate_type)
             self._monopredicate_instances[(concept, predicate_type)].add(predicate_id)
+            self._bipredicates_graph.add(predicate_type)
+            self._bipredicates_graph.add(predicate_id)
             return predicate_id
         else:                       # Add bipredicate
             if predicate_id is None:
@@ -57,6 +59,8 @@ class ConceptGraph:
                 raise ValueError("Predicate id '%s' already exists!" % str(predicate_id))
             self._bipredicates_graph.add(concept, object, predicate_type, edge_id=predicate_id)
             self._bipredicate_instances[(concept, predicate_type, object)].add(predicate_id)
+            self._bipredicates_graph.add(predicate_type)
+            self._bipredicates_graph.add(predicate_id)
             return predicate_id
 
     def remove(self, concept=None, predicate_type=None, object=None, predicate_id=None):
@@ -116,6 +120,8 @@ class ConceptGraph:
         else:                                                           # Check concept existence
             return self._bipredicates_graph.has(concept)
 
+    def concepts(self):
+        return self._bipredicates_graph.nodes()
 
     def subject(self, predicate_id):
         if predicate_id in self._bipredicate_instances.reverse():

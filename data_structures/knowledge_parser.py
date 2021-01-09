@@ -39,7 +39,7 @@ class KnowledgeParser:
             """
     _parser = Lark(_grammar, parser="earley")
 
-    def __init__(self, base_nodes, kg):
+    def __init__(self, kg, base_nodes):
         self._predicate_transformer = PredicateTransformer(kg, base_nodes)
 
     def initialize(self):
@@ -260,7 +260,7 @@ class PredicateTransformer(Transformer):
 
     def knowledge(self, args):
         self.additions.append(self.addition_construction)
-        self.addition_construction = ConceptGraph('add_', nodes=self.base_nodes)
+        self.addition_construction = ConceptGraph(concepts=self.base_nodes, namespace='add')
         self.local_names = {}
 
     def start(self, args):
@@ -303,7 +303,7 @@ class PredicateTransformer(Transformer):
                 raise Exception(":param 'label' error - node %s does not exist!" % type)
             if predicate_id in concepts:
                 raise Exception("predicate id %s already exists!" % predicate_id)
-        return self.addition_construction.add_bipredicate(subject, object, type, predicate_id=predicate_id)
+        return self.addition_construction.add(subject, type, object, predicate_id=predicate_id)
 
     def add_monopredicate(self, subject, type, predicate_id=None):
         if self.loading_kb:
@@ -314,14 +314,14 @@ class PredicateTransformer(Transformer):
                 raise Exception(":param 'label' error - node %s does not exist!" % type)
             if predicate_id in concepts:
                 raise Exception("predicate id %s already exists!" % predicate_id)
-        return self.addition_construction.add_monopredicate(subject, type, predicate_id=predicate_id)
+        return self.addition_construction.add(subject, type, predicate_id=predicate_id)
 
     def add_node(self, node):
-        if self.addition_construction.bipredicate_graph.has(node):
+        if self.addition_construction._bipredicates_graph.has(node):
             raise Exception('node %s already exists in bipredicates'%node)
-        if node in self.addition_construction.monopredicate_map:
+        if node in self.addition_construction._monopredicates_map:
             raise Exception('node %s already exists in monopredicates'%node)
-        self.addition_construction.add_node(node)
+        self.addition_construction.add(node)
 
     ############
     #
@@ -354,11 +354,11 @@ class PredicateTransformer(Transformer):
         if self.loading_kb and type not in self.kg_concepts and type not in new_concepts:
             raise Exception("error - node %s does not exist!" % type)
         elif type not in new_concepts:
-            if self.loading_kb and (type,'is_type') not in self.kg._concept_graph.monopredicates(type):
+            if self.loading_kb and not self.kg._concept_graph.has(type, 'is_type'):
                 raise Exception('%s is not a type!'%type)
             self.add_node(type)
         elif type not in self.kg_concepts:
-            if (type,'is_type') not in self.addition_construction.monopredicates(type):
+            if not self.addition_construction.has(type, 'is_type'):
                 raise Exception('%s is not a type!'%type)
         return type
 
@@ -417,7 +417,7 @@ class PredicateTransformer(Transformer):
 
     def _reset(self):
         self.additions = []
-        self.addition_construction = ConceptGraph('add_', nodes=self.base_nodes)
+        self.addition_construction = ConceptGraph(concepts=self.base_nodes, namespace='add')
         self.local_names = {}
 
     def _set_kg_concepts(self):
