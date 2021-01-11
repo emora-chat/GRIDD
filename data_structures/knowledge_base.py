@@ -10,13 +10,11 @@ BASE_NODES = {'object', 'type', 'is_type', 'expression', 'expr', 'pre', 'post', 
 
 class KnowledgeBase:
 
-    def __init__(self, *filenames, namespace='KB'):
+    def __init__(self, *filenames_or_logicstrings, namespace='KB'):
         self._concept_graph = ConceptGraph(concepts=BASE_NODES, namespace=namespace)
         self._knowledge_parser = KnowledgeParser(self, BASE_NODES)
         self.load(join('data_structures','kg_files','base.kg'))
-        self._knowledge_parser.initialize()
-        for filename in filenames:
-            self.load(filename)
+        self.load(*filenames_or_logicstrings)
 
     def load(self, *filenames_or_logicstrings):
         for input in filenames_or_logicstrings:
@@ -35,6 +33,9 @@ class KnowledgeBase:
             subtypes.update(self.subtypes(subtype))
         return subtypes
 
+    # todo - efficiency check
+    #  if multiple paths to same ancestor,
+    #  it will pull ancestor's ancestor-chain multiple times
     def supertypes(self, concept):
         types = set()
         for predicate in self._concept_graph.predicates(subject=concept, predicate_type='type'):

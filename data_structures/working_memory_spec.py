@@ -2,6 +2,7 @@
 from structpy import specification
 
 from data_structures.concept_graph_spec import ConceptGraphSpec
+from data_structures.knowledge_base import KnowledgeBase
 
 
 @specification
@@ -12,22 +13,44 @@ class WorkingMemorySpec:
     """
 
     @specification.satisfies(ConceptGraphSpec)
-    def WORKING_MEMORY(WorkingMemory, knowledge_base, *filenames_or_logicstrings):
+    def WORKING_MEMORY(WorkingMemory, knowledge_base, filenames_or_logicstrings):
         """
 
         """
-        pass
+        kb = '''
+        animal<entity>
+        dog<animal>
+        chase<predicate>
+        bark<predicate>
+        fido=dog()
+        ;
+        '''
+        KB = KnowledgeBase(kb)
+        return WorkingMemory(KB)
+
+    def load(working_memory, filenames_or_logicstrings):
+        """
+
+        """
+        wm = '''       
+        fluffy=dog()
+        chase(fido,fluffy)
+        ;
+        '''
+        working_memory.load(wm)
+        assert working_memory.has('fido')
+        assert working_memory.has('fido','chase','fluffy')
 
     def pull_ontology(working_memory):
         """
-        Add all concepts from the `.data_structures` that are super-types of concepts
+        Add all concepts from the `.knowledge_base` that are super-types of concepts
         in working memory.
         """
         pass
 
     def pull_rules(working_memory):
         """
-        Add all concepts from the `.data_structures` that are part of some implication
+        Add all concepts from the `.knowledge_base` that are part of some implication
         rule that may be satisfied by the predicates currently in working memory.
         """
         pass
@@ -46,29 +69,7 @@ class WorkingMemorySpec:
         """
         pass
 
-    def prune(working_memory, remaining=0, score_function=None):
-        """
-        Remove concepts from working memory one by one, in order of `score_function(concept)`
-        until `remaining` or less concepts remain in working memory.
-
-        Calling prune with no arguments will clear the working memory.
-        """
-        pass
-
-    def load(working_memory, *filenames_or_logicstrings):
-        """
-
-        """
-        working_memory.load('example2.kg')
-        working_memory.load('')
-
-    def rules(working_memory):
-        """
-        Find all rules in working memory and return as a list of `(type_id_str, ConceptGraph)` tuples.
-        """
-        pass
-
-    def implications(working_memory, *types_or_rules):
+    def inferences(working_memory, types_or_rules):
         """
         Check and return all specified implications on predicates in working memory.
 
@@ -80,38 +81,41 @@ class WorkingMemorySpec:
 
         Providing `str` representing a logic string will use rule(s) from that logic string.
         """
+        all_dogs_bark = '''
+        type(x/dog(), dog) 
+        -> all_dogs_bark ->
+        bark(x)
+        ;
+        '''
+        solutions = working_memory.inferences(all_dogs_bark)
+        assert len(solutions) == 1
+        solution_value = solutions['all_dogs_bark'][0].values()
+        assert len(solution_value) == 1
+        assert 'fluffy' in solution_value
+
+    def implications(working_memory, types_or_rules):
+        all_dogs_bark = '''
+        type(x/dog(), dog) 
+        -> all_dogs_bark ->
+        bark(x)
+        ;
+        '''
+        implications = working_memory.implications(all_dogs_bark)
+        assert len(implications) == 1
+        (implied,) = implications
+        assert implied.has('fluffy','bark')
+
+    def prune(working_memory, remaining=0, score_function=None):
+        """
+        Remove concepts from working memory one by one, in order of `score_function(concept)`
+        until `remaining` or less concepts remain in working memory.
+
+        Calling prune with no arguments will clear the working memory.
+        """
         pass
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    def rules(working_memory):
+        """
+        Find all rules in working memory and return as a list of `(type_id_str, ConceptGraph)` tuples.
+        """
+        pass
