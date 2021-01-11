@@ -160,6 +160,43 @@ run(emora)
 `Monopredicates` have the same nesting and naming principles 
 as defined for `bipredicates`.
 
+
+### Anonymous Implication Rules
+
+Some knowledge you want to specify in the knowledge base is inferential instead of assertive.
+In other words, specifying knowledge such as predicates or entities asserts what is true, but
+some knowledge is concerned with deriving new truths from existing knowledge instead of asserting
+facts directly. 
+
+Implication rules take the form `precondition -> postcondition` and are used to generate new
+knowledge from existing knowledge in a parameterized way. The rules can then be applied to a set
+of knowledge to check for satisfactions: ways in which the rule applies to the knowledge set
+to imply new facts. These rules are similar to prolog rules using the `:-` syntax.
+
+Implication rules are written as `blocks`, in the form
+
+```
+precondition
+->
+postcondition;
+```
+
+where both the `precondition` and `postcondition` can be an arbitrary collection of statements,
+including bipredicates, monopredicates, and entity declarations. The only ways the `precondition`
+and `postcondition` differ from normal statements are:
+
+1. All instances initialized in the precondition are considered `variables` and do not "count" as
+actual entities.
+
+2. The poscondition can reference `variables` defined in the precondition without declaring them
+in the postcondition body.
+
+A rule can be applied to a set of facts if there is some assignment of each `variable` in the
+precondition to a concept in the fact set such that every predicate in the `precondition` holds
+true within the fact set. For each full assignment of `variables` to concept `values` (known as
+a solution), the implication rule asserts that the `postcondition` body holds true.
+
+
 ## Quick Reference
 
 #### Entity Type with N>=1 Supertype
