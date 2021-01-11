@@ -20,10 +20,11 @@ class KnowledgeBase:
         for input in filenames_or_logicstrings:
             if input.endswith('.kg'):
                 input = open(input, 'r').read()
-            tree = self._knowledge_parser.parse(input)
-            additions = self._knowledge_parser.transform(tree)
-            for addition in additions:
-                self._concept_graph.concatenate(addition)
+            if len(input.strip()) > 0:
+                tree = self._knowledge_parser.parse(input)
+                additions = self._knowledge_parser.transform(tree)
+                for addition in additions:
+                    self._concept_graph.concatenate(addition)
 
     def subtypes(self, concept):
         subtypes = set()

@@ -1,0 +1,6 @@
+animal<entity>
+dog<animal>
+chase<predicate>
+bark<predicate>
+scared<predicate>
+;

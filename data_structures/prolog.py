@@ -109,11 +109,11 @@ def infer(knowledge_graph, inference_rules):
     solutions = {}
     for rule_id, rule in inference_rules.items():
         inference_query, inference_map = to_query_prolog(rule.precondition)
-        print(json.dumps(inference_map.reverse(), indent=4))
+        # print(json.dumps(inference_map.reverse(), indent=4))
         s = time.time()
         solns = list(prolog.query(inference_query))
         parsed_solns = [json.loads(json.dumps(soln, cls=PyswipEncoder)) for soln in solns]
-        print('Num solutions: %d'%len(parsed_solns))
+        # print('Num solutions: %d'%len(parsed_solns))
         # print('** SOLUTIONS **')
         # for soln in parsed_solns:
         #     print(json.dumps(soln, indent=4))
@@ -123,7 +123,7 @@ def infer(knowledge_graph, inference_rules):
             for key, value in inference_map.items():
                 variable_assignments[key] = match[value]
             solutions[rule].append(variable_assignments)
-        print('Ran inference (rule %s) in %.3f'%(str(rule_id), time.time()-s))
+        # print('Ran inference (rule %s) in %.3f'%(str(rule_id), time.time()-s))
 
     for rule in kg_rules:
         prolog.retract(rule)

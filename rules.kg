@@ -1,0 +1,9 @@
+x/dog()
+-> all_dogs_bark ->
+bark(x)
+;
+
+chase(x/dog(), y/dog())
+=>
+scared(y)
+;

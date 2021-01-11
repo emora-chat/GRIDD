@@ -82,7 +82,7 @@ class WorkingMemorySpec:
         Providing `str` representing a logic string will use rule(s) from that logic string.
         """
         all_dogs_bark = '''
-        type(x/dog(), dog) 
+        x/dog()
         -> all_dogs_bark ->
         bark(x)
         ;
@@ -95,7 +95,7 @@ class WorkingMemorySpec:
 
     def implications(working_memory, types_or_rules):
         all_dogs_bark = '''
-        type(x/dog(), dog) 
+        x/dog()
         -> all_dogs_bark ->
         bark(x)
         ;

@@ -8,11 +8,6 @@ from utilities import identification_string, CHARS
 
 class WorkingMemory(ConceptGraph):
 
-    # def __init__(self, wm, kb):
-    #     self.knowledge_base = kb
-    #     self.graph = wm
-    #     self.span_map = {}
-
     def __init__(self, knowledge_base, *filenames_or_logicstrings):
         self.knowlege_base = knowledge_base
         super().__init__(namespace='WM')
@@ -22,10 +17,11 @@ class WorkingMemory(ConceptGraph):
         for input in filenames_or_logicstrings:
             if input.endswith('.kg'):
                 input = open(input, 'r').read()
-            tree = self.knowlege_base._knowledge_parser.parse(input)
-            additions = self.knowlege_base._knowledge_parser.transform(tree)
-            for addition in additions:
-                self.concatenate(addition)
+            if len(input.strip()) > 0:
+                tree = self.knowlege_base._knowledge_parser.parse(input)
+                additions = self.knowlege_base._knowledge_parser.transform(tree)
+                for addition in additions:
+                    self.concatenate(addition)
 
     def pull_ontology(self):
         for node in self.concepts():
@@ -76,18 +72,5 @@ class WorkingMemory(ConceptGraph):
 
 
 
-
-
-
-
-
-
-
 if __name__ == '__main__':
     print(WorkingMemorySpec.verify(WorkingMemory))
-    # kb = KnowledgeBase(join('data_structures', 'kg_files', 'framework_test.kg'))
-    # wm = ConceptGraph('wm_', nodes=['is_type'])
-    # working_memory = WorkingMemory(wm=wm, kb=kb)
-    # wm.add_node('i')
-    # wm.pull(nodes={'i'}, max_depth=2, kb=kb)
-    # test = 1

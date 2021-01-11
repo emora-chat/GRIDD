@@ -177,7 +177,7 @@ Implication rules are written as `blocks`, in the form
 
 ```
 precondition
-->
+=>
 postcondition;
 ```
 
