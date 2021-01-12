@@ -27,13 +27,17 @@ if __name__ == '__main__':
 
     logic_string = input('>>> ')
     while logic_string != 'q':
+        if not logic_string.strip().endswith(';'):
+            logic_string += ';'
         wm = WorkingMemory(kb, logic_string)
         cgs = wm.implications('rules.kg')
         for cg in cgs:
             for s, t, o, i in cg.predicates():
+                if t == 'var':
+                    continue
                 if o is not None:
-                    print('%s(%s, %s) [%s]'%(t,s,o,i))
+                    print('%s:  %s(%s, %s)'%(i,t,s,o,))
                 else:
-                    print('%s(%s) [%s]' % (t, s, i))
+                    print('%s:  %s(%s)' % (i,t,s))
             print()
         logic_string = input('>>> ')

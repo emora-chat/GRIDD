@@ -23,6 +23,8 @@ class WorkingMemorySpec:
         chase<predicate>
         bark<predicate>
         fido=dog()
+        victor=animal()
+        chase(victor, fido)
         ;
         '''
         KB = KnowledgeBase(kb)
@@ -46,7 +48,10 @@ class WorkingMemorySpec:
         Add all concepts from the `.knowledge_base` that are super-types of concepts
         in working memory.
         """
-        pass
+        working_memory.pull_ontology()
+        assert working_memory.has('fido', 'type', 'dog')
+        assert working_memory.has('dog', 'type', 'animal')
+        assert working_memory.has('animal', 'type', 'entity')
 
     def pull_rules(working_memory):
         """
@@ -67,7 +72,9 @@ class WorkingMemorySpec:
         into working memory. If `concepts` is `None`, the neighborhoods of each concept
         in working memory are pulled.
         """
-        pass
+        assert not working_memory.has('victor', 'chase', 'fido')
+        working_memory.pull()
+        assert working_memory.has('victor', 'chase', 'fido')
 
     def inferences(working_memory, types_or_rules):
         """
@@ -101,9 +108,7 @@ class WorkingMemorySpec:
         ;
         '''
         implications = working_memory.implications(all_dogs_bark)
-        assert len(implications) == 1
-        (implied,) = implications
-        assert implied.has('fluffy','bark')
+        assert len(implications) == 2
 
     def prune(working_memory, remaining=0, score_function=None):
         """
