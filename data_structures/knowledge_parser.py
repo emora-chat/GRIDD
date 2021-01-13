@@ -39,8 +39,8 @@ class KnowledgeParser:
             """
     _parser = Lark(_grammar, parser="earley")
 
-    def __init__(self, kg, base_nodes):
-        self._predicate_transformer = PredicateTransformer(kg, base_nodes)
+    def __init__(self, kg, base_nodes, loading_kb=True):
+        self._predicate_transformer = PredicateTransformer(kg, base_nodes, loading_kb)
 
     def parse(self, input):
         return KnowledgeParser._parser.parse(input)

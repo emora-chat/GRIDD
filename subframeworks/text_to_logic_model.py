@@ -2,6 +2,9 @@
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from data_structures.concept_graph import ConceptGraph
+from data_structures.knowledge_parser import KnowledgeParser
+from data_structures.working_memory import WorkingMemory
+import data_structures.prolog as pl
 from modules.module import Module
 from structpy.map.bijective.bimap import Bimap
 
@@ -9,39 +12,68 @@ DEBUG=True
 
 class TextToLogicModel(Module):
 
-    def __init__(self, name, knowledge_base, model, template_base, *template_file_names):
+    def __init__(self, name, knowledge_base, model, template_starter_predicates, *template_file_names):
         super().__init__(name)
         self.knowledge_base = knowledge_base
         self.model = model
-        self.templates = template_base
-        for fn in template_file_names:
-            with open(fn, 'r') as f:
-                self.templates.add_knowledge(f.read())
-        self.rules = self.templates._concept_graph.generate_inference_graphs(self.templates._concept_graph.prefix)
-        for rule in self.rules:
+        self.templates = ConceptGraph(predicates=template_starter_predicates)
+        self._template_parser = KnowledgeParser(kg=self.templates, base_nodes=self.templates.concepts(), loading_kb=False)
+        self.load_templates(*template_file_names)
+        self.rules = pl.generate_inference_graphs(self.templates)
+        for rule_id, rule in self.rules.items():
             self._reference_expansion(rule.precondition)
         self.span_map = defaultdict(dict)
 
+    def load_templates(self, *filenames_or_logicstrings):
+        for input in filenames_or_logicstrings:
+            if input.endswith('.kg'):
+                input = open(input, 'r').read()
+            if len(input.strip()) > 0:
+                tree = self._template_parser.parse(input)
+                additions = self._template_parser.transform(tree)
+                for addition in additions:
+                    self.templates.concatenate(addition)
+
+    def _reference_expansion(self, pregraph):
+        """
+        Expand vars in precondition to include expression and reference links.
+
+        Vars are expressions of some canonical expression which refers to some concept.
+
+        If var has a logical supertype (denoted by 'ltype' predicate), add a type predicate
+        between referred concept and the supertype.
+        """
+        for concept in pregraph.concepts():
+            if pregraph.has(concept, 'var') and not pregraph.has(predicate_id=concept):
+                # found variable entity instance
+                found_supertype = False
+                for supertype in pregraph.objects(concept, 'ltype'):
+                    found_supertype = True
+                    self._expand_references(pregraph, concept, supertype)
+                if not found_supertype:
+                    self._expand_references(pregraph, concept)
+
+    def _expand_references(self, pregraph, concept, supertype=None):
+        expression_var = pregraph._get_next_id()
+        exprof = pregraph.add(concept, 'exprof', expression_var)
+        concept_var = pregraph._get_next_id()
+        expr = pregraph.add(expression_var, 'expr', concept_var)
+        new_nodes = [expression_var, exprof, concept_var, expr]
+        if supertype is not None:
+            concept_type = pregraph.add(concept_var, 'type', supertype)
+            pregraph.remove(concept, 'ltype', supertype)
+            new_nodes.append(concept_type)
+        for n in new_nodes:
+            pregraph.add(n, 'var')
+
     @abstractmethod
-    def text_to_graph(self, turns, knowledge_base):
+    def text_to_graph(self, turns):
         """
         turns: list of strings representing dialogue turns.
         return: ConceptGraph representation of the text's surface form.
                 For example, a graph of the dependency parse of the last turn.
         """
         pass
-
-    def translate(self, turns):
-        egraph = self.text_to_graph(turns, self.knowledge_base)
-        self._expression_pull(egraph, self.knowledge_base)
-        self._unknown_expression_pull(egraph)
-        rule_assignments = self._inference(egraph)
-        mentions = self._get_mentions(rule_assignments, egraph)
-        merges = self._get_merges(rule_assignments, egraph)
-        if DEBUG:
-            self.display_mentions(mentions, egraph)
-            self.display_merges(merges, egraph)
-        return mentions, merges
 
     def run(self, input, working_memory):
         """
@@ -52,74 +84,44 @@ class TextToLogicModel(Module):
         turns = [hypo['text'] for hypo in input]
         return self.translate(turns)
 
-    def _expression_pull(self, egraph, kgraph):
-        """
-        Pull expressions from KB into the expression graph.
-        """
-        egraph.pull(nodes=['"%s"'%span_obj.string for span_node, span_obj in self.span_map[egraph].items()],
-                    kb=kgraph, max_depth=1)
+    def translate(self, turns):
+        ewm = self.text_to_graph(turns)
+        self._expression_pull(ewm)
+        self._unknown_expression_identification(ewm)
+        rule_assignments = self._inference(ewm)
+        mentions = self._get_mentions(rule_assignments, ewm)
+        merges = self._get_merges(rule_assignments, ewm)
+        if DEBUG:
+            self.display_mentions(mentions, ewm)
+            self.display_merges(merges, ewm)
+        return mentions, merges
 
-    def _unknown_expression_pull(self, egraph):
+    def _expression_pull(self, ewm):
+        """
+        Pull expressions from KB into the expression working_memory
+        """
+        ewm.pull(order=1, concepts=['"%s"'%span_obj.string for span_node, span_obj in self.span_map[ewm].items()])
+
+    def _unknown_expression_identification(self, ewm):
         """
         Create "UNK" expression nodes for all nodes with no expr references.
         """
-        for span_node, span_object in self.span_map[egraph].items():
+        for span_node, span_object in self.span_map[ewm].items():
             expression = '"%s"' % span_object.string
-            references = egraph.object_neighbors(expression, 'expr')
+            references = ewm.objects(expression, 'expr')
             if len(references) == 0:
-                unk_node = egraph.add_node(egraph._get_next_id())
-                egraph.add_bipredicate(unk_node, 'unknown', 'type')
-                egraph.add_bipredicate(expression, unk_node, 'expr')
+                unk_node = ewm.add(ewm._get_next_id())
+                ewm.add(unk_node, 'type', 'unknown')
+                ewm.add(expression, 'expr', unk_node)
 
-    def _reference_expansion(self, pregraph):
+    def _inference(self, ewm):
         """
-        Expand vars in precondition to include expression and reference links.
+        Apply the template rules to the current expression working_memory
+        and get the variable assignments of the solutions
         """
-        for concept in pregraph.concepts():
-            if pregraph.type(concept) is None and len(pregraph.monopredicate(concept, 'var')) > 0:
-                # found variable entity instance
-                found_supertype = False
-                for supertype in pregraph.object_neighbors(concept, 'ltype'):
-                    found_supertype = True
-                    self._expand_references(pregraph, concept, supertype)
-                if not found_supertype:
-                    self._expand_references(pregraph, concept)
+        return pl.infer(ewm, self.rules)
 
-    def _expand_references(self, template_graph, concept, supertype=None):
-        expression_var = template_graph._get_next_id()
-        exprof = template_graph.add_bipredicate(concept, expression_var, 'exprof')
-        concept_var = template_graph._get_next_id()
-        expr = template_graph.add_bipredicate(expression_var, concept_var, 'expr')
-        new_nodes = [expression_var, exprof, concept_var, expr]
-        if supertype is not None:
-            concept_type = template_graph.add_bipredicate(concept_var, supertype, 'type')
-            template_graph.remove_bipredicate(concept, supertype, 'ltype')
-            new_nodes.append(concept_type)
-        for n in new_nodes:
-            template_graph.add_monopredicate(n, 'var')
-
-    def _inference(self, egraph):
-        """
-        Apply the specified rules to the current egraph and get the variable assignments of the solutions
-        """
-        rule_assignments = {}
-        for rule in self.rules:
-            matches = egraph.infer(rule.precondition)
-            var_assignments = self._get_variable_assignments(matches)
-            rule_assignments[rule] = var_assignments
-        return rule_assignments
-
-    def _get_variable_assignments(self, var_matches):
-        var_map, matches = var_matches
-        solutions = []
-        for match in matches:
-            variable_assignments = {}
-            for key, value in var_map.items():
-                variable_assignments[key] = match[value]
-            solutions.append(variable_assignments)
-        return solutions
-
-    def _get_mentions(self, assignments, egraph):
+    def _get_mentions(self, assignments, ewm):
         """
         Produce dict<mention span: mention graph>.
 
@@ -128,31 +130,31 @@ class TextToLogicModel(Module):
         mentions = {}
         for rule, solutions in assignments.items():
             pre, post = rule.precondition, rule.postcondition
-            ((sig, center_pred),) = post.predicate_instances('center')
-            center_var = post.subject(center_pred)
+            ((center_var,t,o,i),) = post.predicates(predicate_type='center')
             for solution in solutions:
-                (expression_var,) = pre.object_neighbors(center_var, 'exprof')
-                (concept_var,) = pre.object_neighbors(expression_var, 'expr')
+                (expression_var,) = pre.objects(center_var, 'exprof')
+                (concept_var,) = pre.objects(expression_var, 'expr')
                 center = solution[center_var]
                 m = {}
-                cg = ConceptGraph(self.templates._concept_graph.prefix)
-                cg.next_id = post.next_id
+                cg = ConceptGraph(namespace=self.templates._namespace)
+                cg._next_id = post._next_id
                 for node in post.concepts():
                     if node in solution:
                         if node in [center_var,expression_var,concept_var]:
-                            m[node] = self._get_concept_of_span(solution[node], egraph)
+                            m[node] = self._get_concept_of_span(solution[node], ewm)
                         else:
                             m[node] = cg._get_next_id()
                     else:
                         m[node] = node
-                for (subject, object, typ), inst in post.bipredicate_instances():
-                    cg.add_bipredicate(m[subject], m[object], m[typ], m[inst])
-                for (subject, typ), inst in post.monopredicate_instances():
-                    cg.add_monopredicate(m[subject], m[typ], m[inst])
-                mentions[self._lookup_span(egraph, center)] = cg
+                for subject, typ, object, inst in post.predicates():
+                    if object is not None:
+                        cg.add(m[subject], m[typ], m[object], predicate_id=m[inst])
+                    else:
+                        cg.add(m[subject], m[typ], predicate_id=m[inst])
+                mentions[self._lookup_span(ewm, center)] = cg
         return mentions
 
-    def _get_merges(self, assignments, egraph):
+    def _get_merges(self, assignments, ewm):
         """
         Produce scored pairs of (mention span, path).
 
@@ -161,26 +163,24 @@ class TextToLogicModel(Module):
         merges = []
         for rule, solutions in assignments.items():
             pre, post = rule.precondition, rule.postcondition
-            ((sig, focus_pred),) = post.predicate_instances('focus')
-            ((sig, center_pred),) = post.predicate_instances('center')
-            focus = post.subject(focus_pred)
-            center = post.subject(center_pred)
+            ((focus,t,o,i),) = post.predicates(predicate_type='focus')
+            ((center,t,o,i),) = post.predicates(predicate_type='center')
             for solution in solutions:
                 focus = solution.get(focus, focus)
                 center = solution.get(center, center)
-                if post.type(focus) is not None:
+                if post.has(predicate_id=focus):
                     # focus is a predicate instance, need to consider its subj/obj/type
                     if post.subject(focus) in solution and solution[post.subject(focus)] != center:
-                        pair = ((self._lookup_span(egraph, center),'subject'),
-                                (self._lookup_span(egraph, solution[post.subject(focus)]),'self'))
+                        pair = ((self._lookup_span(ewm, center),'subject'),
+                                (self._lookup_span(ewm, solution[post.subject(focus)]),'self'))
                         merges.append(pair)
                     if post.object(focus) in solution and solution[post.object(focus)] != center:
-                        pair = ((self._lookup_span(egraph, center), 'object'),
-                                (self._lookup_span(egraph, solution[post.object(focus)]), 'self'))
+                        pair = ((self._lookup_span(ewm, center), 'object'),
+                                (self._lookup_span(ewm, solution[post.object(focus)]), 'self'))
                         merges.append(pair)
                     if post.type(focus) in solution and solution[post.type(focus)] != center:
-                        pair = ((self._lookup_span(egraph, center), 'type'),
-                                (self._lookup_span(egraph, solution[post.type(focus)]), 'self'))
+                        pair = ((self._lookup_span(ewm, center), 'type'),
+                                (self._lookup_span(ewm, solution[post.type(focus)]), 'self'))
                         merges.append(pair)
                 # for (_,o,t) in post.bipredicates_of_subject(focus):
                 #     if o in solution:
@@ -222,48 +222,49 @@ class TextToLogicModel(Module):
     def _lookup_span(self, cg, span_node):
         return self.span_map[cg][span_node]
 
-    def display_mentions(self, mentions, egraph):
+    def display_mentions(self, mentions, ewm):
         """
         Display the mentions with their concepts instead of spans
         """
         print()
         for span, mention_graph in mentions.items():
             print('%s MENTION GRAPH:: '%span)
-            for (s,o,t), inst in mention_graph.bipredicate_instances():
-                subj = self._get_concept_of_span(s,egraph)
-                obj = self._get_concept_of_span(o, egraph)
-                typ = self._get_concept_of_span(t, egraph)
-                print('\t[%s]\t-> %s(%s,%s)'%(inst,typ,subj,obj))
-            for (s,t), inst in mention_graph.monopredicate_instances():
-                if t != 'var':
-                    subj = self._get_concept_of_span(s,egraph)
-                    typ = self._get_concept_of_span(t, egraph)
-                    print('\t[%s]\t-> %s(%s)'%(inst,typ,subj))
+            for s,t,o,inst in mention_graph.predicates():
+                if o is not None:
+                    subj = self._get_concept_of_span(s,ewm)
+                    obj = self._get_concept_of_span(o, ewm)
+                    typ = self._get_concept_of_span(t, ewm)
+                    print('\t[%s]\t-> %s(%s,%s)'%(inst,typ,subj,obj))
+                else:
+                    if t != 'var':
+                        subj = self._get_concept_of_span(s, ewm)
+                        typ = self._get_concept_of_span(t, ewm)
+                        print('\t[%s]\t-> %s(%s)' % (inst, typ, subj))
             print()
 
-    def _get_concept_of_span(self, span, egraph):
-        expression = self._get_expression_of_span(span, egraph)
+    def _get_concept_of_span(self, span, ewm):
+        expression = self._get_expression_of_span(span, ewm)
         if expression is not None:
-            (concept_var,) = egraph.object_neighbors(expression, 'expr')
-            if len(egraph.bipredicate(concept_var,'unknown','type')) > 0:
+            (concept_var,) = ewm.objects(expression, 'expr')
+            if ewm.has(concept_var,'type','unknown'):
                 return '_unk_'
             return concept_var
         return span
 
-    def _get_expression_of_span(self, span, egraph):
-        expressions = egraph.object_neighbors(span, 'exprof')
+    def _get_expression_of_span(self, span, ewm):
+        expressions = ewm.objects(span, 'exprof')
         if len(expressions) == 1:
             return expressions.pop()
         return None
 
-    def display_merges(self, merges, egraph):
+    def display_merges(self, merges, ewm):
         """
         Display the merges with their concepts instead of spans
         """
         print()
         print("MERGES:: ")
         for (span1, pos1), (span2, pos2) in merges:
-            concept1 = self._get_concept_of_span(span1, egraph)
-            concept2 = self._get_concept_of_span(span2, egraph)
+            concept1 = self._get_concept_of_span(span1, ewm)
+            concept2 = self._get_concept_of_span(span2, ewm)
             print("\t(%s,%s)\t<=> (%s,%s)"%(concept1,pos1,concept2,pos2))
 

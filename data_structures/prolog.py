@@ -35,7 +35,7 @@ def generate_inference_graphs(cg):
     infer_pred_inst = defaultdict(set)
     for situation_node, type, pre_pred_inst, inst_id in cg.predicates(predicate_type='pre'):
         if situation_node not in inferences:
-            inferences[situation_node] = ConceptGraph()
+            inferences[situation_node] = ConceptGraph(namespace='pre')
         rule_graph = inferences[situation_node]
         _add_rule_to_graph(cg, rule_graph, pre_pred_inst)
         if cg.has(predicate_id=pre_pred_inst) and cg.type(pre_pred_inst) == 'var':
@@ -43,7 +43,7 @@ def generate_inference_graphs(cg):
 
     for situation_node, type, post_pred_inst, inst_id in cg.predicates(predicate_type='post'):
         if situation_node not in implications:
-            implications[situation_node] = ConceptGraph()
+            implications[situation_node] = ConceptGraph(namespace='post')
         rule_graph = implications[situation_node]
         _add_rule_to_graph(cg, rule_graph, post_pred_inst)
 
@@ -108,6 +108,7 @@ def infer(knowledge_graph, inference_rules):
 
     solutions = {}
     for rule_id, rule in inference_rules.items():
+        # print('rule %s'%str(rule_id))
         inference_query, inference_map = to_query_prolog(rule.precondition)
         # print(json.dumps(inference_map.reverse(), indent=4))
         s = time.time()
@@ -152,6 +153,7 @@ def to_knowledge_prolog(cg):
 
     one_non_ont_predicate = False
     for s, t, o, i in tmp.predicates():
+        # s,t,o,i = _lower(s,t,o,i)
         if o is not None:   # bipredicate
             if t == 'type':
                 type_rules.append('type(%s,%s)' % (s, o))
@@ -166,6 +168,12 @@ def to_knowledge_prolog(cg):
         rules.append('predinst(xtestx(xax, xbx), xnx)')
     return type_rules + rules
 
+def _lower(*strings):
+    for string in strings:
+        if string is not None:
+            yield string.lower()
+        else:
+            yield None
 
 def to_query_prolog(cg):
     """
@@ -177,6 +185,7 @@ def to_query_prolog(cg):
     map = Bimap()
     rules = []
     for subject, pred_type, object, inst_id in cg.predicates():
+        # subject, pred_type, object, inst_id = _lower(subject, pred_type, object, inst_id)
         if object is not None:              # bipredicate
             if pred_type == 'type':
                 if subject not in map:

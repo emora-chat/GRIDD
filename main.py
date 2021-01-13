@@ -56,7 +56,7 @@ if __name__ == '__main__':
     for n in POS_NODES + NODES:
         template_base._concept_graph.add_monopredicate(n, 'is_type')
     dependency_parser = Predictor.from_path("https://storage.googleapis.com/allennlp-public-models/biaffine-dependency-parser-ptb-2020.04.06.tar.gz")
-    template_file = join('data_structures', 'kg_files', 'allen_dp_templates.txt')
+    template_file = join('data_structures', 'kg_files', 'allen_dp_templates.kg')
 
     dm.add_preprocessing_module('dependency parse',
                                 AllenAIToLogic("allen dp", kb, dependency_parser,
@@ -65,7 +65,7 @@ if __name__ == '__main__':
     dm.add_mention_model({'model': MentionsAllenDP('allen dp mentions')})
     dm.add_merge_model({'model': NodeMergeDP('allen dp merge')})
     dm.add_inference_model({'model': PrologInference('prolog inference',
-                                                     [join('data_structures', 'kg_files', 'test_inferences.txt')])})
+                                                     [join('data_structures', 'kg_files', 'test_inferences.kg')])})
     dm.add_selection_model({'model': BaseResponseSelection('base selection')})
     dm.add_expansion_model({'model': BaseResponseExpansion('base expansion')})
     dm.add_generation_model({'model': BaseResponseGeneration('base generation')})

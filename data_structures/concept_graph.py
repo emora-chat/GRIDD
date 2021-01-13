@@ -11,7 +11,9 @@ import json, time, copy
 class ConceptGraph:
 
     def __init__(self, predicates=None, concepts=None, namespace=None):
-        self._namespace = namespace
+        if namespace is None:
+            namespace = 'def'
+        self._namespace = namespace.lower()
         self._next_id = 0
         self._bipredicates_graph = MultiLabeledParallelDigraphNX()
         self._bipredicate_instances = Index()
@@ -218,16 +220,17 @@ class ConceptGraph:
                     return monos + bis
         return []
 
-    def subjects(self, concept):
-        return set([predicate[0] for predicate in self.predicates(object=concept)])
+    def subjects(self, concept, type=None):
+        return set([predicate[0] for predicate in self.predicates(predicate_type=type,
+                                                                  object=concept)])
 
-    def objects(self, concept):
-        return set([predicate[2] for predicate in self.predicates(subject=concept)
+    def objects(self, concept, type=None):
+        return set([predicate[2] for predicate in self.predicates(subject=concept,predicate_type=type)
                     if predicate[2] is not None])
 
-    def related(self, concept):
-        neighbors = self.subjects(concept)
-        neighbors.update(self.objects(concept))
+    def related(self, concept, type=None):
+        neighbors = self.subjects(concept, type)
+        neighbors.update(self.objects(concept, type))
         return neighbors
 
     def merge(self, concept_a, concept_b):
