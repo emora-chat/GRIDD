@@ -30,6 +30,7 @@ if __name__ == '__main__':
         if not logic_string.strip().endswith(';'):
             logic_string += ';'
         wm = WorkingMemory(kb, logic_string)
+        wm.pull(2)
         cgs = wm.implications('rules.kg')
         for cg in cgs:
             for s, t, o, i in cg.predicates():

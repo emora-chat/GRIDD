@@ -6,8 +6,10 @@ from itertools import chain
 
 class WorkingMemory(ConceptGraph):
 
+    EXCLUDE_ON_PULL = {'type'}
+
     def __init__(self, knowledge_base, *filenames_or_logicstrings):
-        self.knowlege_base = knowledge_base
+        self.knowledge_base = knowledge_base
         super().__init__(namespace='WM')
         self.load(*filenames_or_logicstrings)
 
@@ -16,8 +18,8 @@ class WorkingMemory(ConceptGraph):
             if input.endswith('.kg'):
                 input = open(input, 'r').read()
             if len(input.strip()) > 0:
-                tree = self.knowlege_base._knowledge_parser.parse(input)
-                additions = self.knowlege_base._knowledge_parser.transform(tree)
+                tree = self.knowledge_base._knowledge_parser.parse(input)
+                additions = self.knowledge_base._knowledge_parser.transform(tree)
                 for addition in additions:
                     self.concatenate(addition)
 
@@ -26,7 +28,7 @@ class WorkingMemory(ConceptGraph):
         visited = set()
         stack = list(self.concepts())
         for e in stack:
-            for e, tr, t, id in self.knowlege_base.predicates(e, predicate_type='type'):
+            for e, tr, t, id in self.knowledge_base.predicates(e, predicate_type='type'):
                 to_pull.add((e, tr, t, id))
                 if t not in visited:
                     stack.append(t)
@@ -41,15 +43,18 @@ class WorkingMemory(ConceptGraph):
         for i in range(order, 0, -1):
             to_pull = set()
             for puller in pull_set:
-                related = set(self.knowlege_base.predicates(puller)) \
-                          | set(self.knowlege_base.predicates(object=puller))
+                related = set(self.knowledge_base.predicates(puller)) \
+                          | set(self.knowledge_base.predicates(object=puller))
+                for pred_type in WorkingMemory.EXCLUDE_ON_PULL:
+                    related -= set(self.knowledge_base.predicates(puller, pred_type)) \
+                            - set(self.knowledge_base.predicates(predicate_type=pred_type, object=puller))
                 for rel in related | {puller}:
-                    if self.knowlege_base.has(predicate_id=rel):
-                        related.add(self.predicate(rel))
+                    if self.knowledge_base.has(predicate_id=rel):
+                        related.add(self.knowledge_base.predicate(rel))
                 to_pull |= related
             covered |= pull_set
             pulling |= to_pull
-            pull_set = set(chain(*to_pull)) - covered
+            pull_set = set(chain(*to_pull)) - covered - {None}
         cg = ConceptGraph(predicates=pulling)
         self.concatenate(cg)
         self.pull_ontology()
@@ -65,8 +70,8 @@ class WorkingMemory(ConceptGraph):
                 input = identifier
                 if input.endswith('.kg'):  # file
                     input = open(input, 'r').read()
-                tree = self.knowlege_base._knowledge_parser.parse(input)
-                additions = self.knowlege_base._knowledge_parser.transform(tree)
+                tree = self.knowledge_base._knowledge_parser.parse(input)
+                additions = self.knowledge_base._knowledge_parser.transform(tree)
                 cg = ConceptGraph(namespace=identification_string(next, CHARS))
                 next += 1
                 for addition in additions:

@@ -9,4 +9,6 @@ study<predicate>
 attend<predicate>
 school<entity>
 question<object>
+
+fido=dog()
 ;
