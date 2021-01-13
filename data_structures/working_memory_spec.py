@@ -116,6 +116,6 @@ class WorkingMemorySpec:
 
     def rules(working_memory):
         """
-        Find all rules in working memory and return as a list of `(type_id_str, ConceptGraph)` tuples.
+        Find all rules in working memory and return as a dict of type_node_id to TransformationRule object.
         """
         pass

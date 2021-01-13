@@ -70,6 +70,9 @@ class WorkingMemory(ConceptGraph):
                 imps.append(cg)
         return imps
 
+    def rules(self):
+        return pl.generate_inference_graphs(self)
+
 
 
 if __name__ == '__main__':

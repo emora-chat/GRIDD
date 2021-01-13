@@ -31,9 +31,10 @@ if __name__ == '__main__':
         cgs = wm.implications('rules.kg')
         for cg in cgs:
             for s, t, o, i in cg.predicates():
-                if o is not None:
-                    print('%s(%s, %s) [%s]'%(t,s,o,i))
-                else:
-                    print('%s(%s) [%s]' % (t, s, i))
+                if t not in ['var', 'is_type']:
+                    if o is not None:
+                        print('%s(%s, %s) [%s]'%(t,s,o,i))
+                    else:
+                        print('%s(%s) [%s]' % (t, s, i))
             print()
         logic_string = input('>>> ')
