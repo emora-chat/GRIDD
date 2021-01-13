@@ -18,8 +18,6 @@ def generate_file(name):
             f.write('\n')
 
 if __name__ == '__main__':
-    # fido=dog() fluffy=dog() chase(fido,fluffy);
-
     generate_file('kb.kg')
     generate_file('rules.kg')
 
