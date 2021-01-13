@@ -7,3 +7,10 @@ chase(x/dog(), y/dog())
 =>
 scared(y)
 ;
+
+x/student()
+=>
+study(x, q/question())
+attend(x, school())
+;
+

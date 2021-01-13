@@ -110,6 +110,7 @@ class WorkingMemorySpec:
         implications = working_memory.implications(all_dogs_bark)
         assert len(implications) == 2
 
+    #todo - prune function of WorkingMemory
     def prune(working_memory, remaining=0, score_function=None):
         """
         Remove concepts from working memory one by one, in order of `score_function(concept)`
@@ -121,6 +122,17 @@ class WorkingMemorySpec:
 
     def rules(working_memory):
         """
-        Find all rules in working memory and return as a list of `(type_id_str, ConceptGraph)` tuples.
+        Find all rules in working memory and return as a dict of type_node_id to TransformationRule object.
         """
-        pass
+        rule = '''       
+        test_dog=dog()
+        -> all_dogs_bark ->
+        bark(test_dog)
+        ;
+        '''
+        working_memory.load(rule)
+        rules = working_memory.rules()
+        assert len(rules) == 1
+        assert 'all_dogs_bark' in rules
+        assert rules['all_dogs_bark'].precondition.has('test_dog', 'type', 'dog')
+        assert rules['all_dogs_bark'].postcondition.has('test_dog', 'bark')

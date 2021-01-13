@@ -18,8 +18,6 @@ def generate_file(name):
             f.write('\n')
 
 if __name__ == '__main__':
-    # fido=dog() fluffy=dog() chase(fido,fluffy);
-
     generate_file('kb.kg')
     generate_file('rules.kg')
 
@@ -30,14 +28,14 @@ if __name__ == '__main__':
         if not logic_string.strip().endswith(';'):
             logic_string += ';'
         wm = WorkingMemory(kb, logic_string)
+        wm.pull(2)
         cgs = wm.implications('rules.kg')
         for cg in cgs:
             for s, t, o, i in cg.predicates():
-                if t == 'var':
-                    continue
-                if o is not None:
-                    print('%s:  %s(%s, %s)'%(i,t,s,o,))
-                else:
-                    print('%s:  %s(%s)' % (i,t,s))
+                if t not in ['var', 'is_type']:
+                    if o is not None:
+                        print('%s(%s, %s) [%s]'%(t,s,o,i))
+                    else:
+                        print('%s(%s) [%s]' % (t, s, i))
             print()
         logic_string = input('>>> ')

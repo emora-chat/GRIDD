@@ -3,4 +3,12 @@ dog<animal>
 chase<predicate>
 bark<predicate>
 scared<predicate>
+
+student<person>
+study<predicate>
+attend<predicate>
+school<entity>
+question<object>
+
+fido=dog()
 ;

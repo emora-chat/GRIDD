@@ -149,15 +149,21 @@ def to_knowledge_prolog(cg):
                 if o not in visited:
                     visited.add(o)
                     stack.append(o)
+
+    one_non_ont_predicate = False
     for s, t, o, i in tmp.predicates():
         if o is not None:   # bipredicate
             if t == 'type':
                 type_rules.append('type(%s,%s)' % (s, o))
             else:
                 rules.append('predinst(%s(%s,%s),%s)' % (t, s, o, i))
+                one_non_ont_predicate = True
         else:               # monopredicate
             if t not in ['var', 'is_type']:
                 rules.append('predinst(%s(%s),%s)' % (t, s, i))
+                one_non_ont_predicate = True
+    if not one_non_ont_predicate: # if there is no predinst in knowledge prolog, a prolog query using predinst causes error to be thrown (predinst is not defined)
+        rules.append('predinst(xtestx(xax, xbx), xnx)')
     return type_rules + rules
 
 
