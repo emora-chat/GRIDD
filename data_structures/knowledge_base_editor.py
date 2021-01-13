@@ -27,6 +27,8 @@ if __name__ == '__main__':
 
     logic_string = input('>>> ')
     while logic_string != 'q':
+        if not logic_string.strip().endswith(';'):
+            logic_string += ';'
         wm = WorkingMemory(kb, logic_string)
         cgs = wm.implications('rules.kg')
         for cg in cgs:

@@ -46,7 +46,10 @@ class ConceptGraph:
             if predicate_id is None:
                 predicate_id = self._get_next_id()
             elif self.has(predicate_id=predicate_id): #todo - check signature
-                raise ValueError("Predicate id '%s' already exists!" % str(predicate_id))
+                if self.predicate(predicate_id) != (concept, predicate_type, object, predicate_id):
+                    raise ValueError("Predicate id '%s' already exists!" % str(predicate_id))
+                else:
+                    return predicate_id
             self._monopredicates_map[concept].add(predicate_type)
             self._monopredicate_instances[(concept, predicate_type)].add(predicate_id)
             self._bipredicates_graph.add(predicate_type)
@@ -56,7 +59,10 @@ class ConceptGraph:
             if predicate_id is None:
                 predicate_id = self._get_next_id()
             elif self.has(predicate_id=predicate_id): #todo - check signature
-                raise ValueError("Predicate id '%s' already exists!" % str(predicate_id))
+                if self.predicate(predicate_id) != (concept, predicate_type, object, predicate_id):
+                    raise ValueError("Predicate id '%s' already exists!" % str(predicate_id))
+                else:
+                    return predicate_id
             self._bipredicates_graph.add(concept, object, predicate_type, edge_id=predicate_id)
             self._bipredicate_instances[(concept, predicate_type, object)].add(predicate_id)
             self._bipredicates_graph.add(predicate_type)
@@ -310,7 +316,9 @@ class ConceptGraph:
 def _map(current_graph, other_concept, other_namespace, id_map):
     if other_concept is None:
         return None
-    if other_concept.startswith(other_namespace):
+    if other_namespace is None:
+        return other_concept
+    if other_concept.startswith(other_namespace + '_'):
         if other_concept not in id_map:
             id_map[other_concept] = current_graph._get_next_id()
     else:

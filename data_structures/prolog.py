@@ -133,11 +133,23 @@ def infer(knowledge_graph, inference_rules):
 
 def to_knowledge_prolog(cg):
     """
-    Convert cg to knowledge rules for Prolog
+    Convert cg to knowledge rules for Prolog.
     """
     type_rules = []
     rules = []
-    for s, t, o, i in cg.predicates():
+    tmp = ConceptGraph(predicates=cg.predicates())
+    for concept in tmp.concepts():
+        visited = set()
+        stack = [concept]
+        while stack:
+            s = stack.pop()
+            for s, t, o, i in tmp.predicates(s, predicate_type='type'):
+                if not tmp.has(concept, t, o):
+                    tmp.add(concept, t, o)
+                if o not in visited:
+                    visited.add(o)
+                    stack.append(o)
+    for s, t, o, i in tmp.predicates():
         if o is not None:   # bipredicate
             if t == 'type':
                 type_rules.append('type(%s,%s)' % (s, o))

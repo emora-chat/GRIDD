@@ -1,10 +1,8 @@
-from data_structures.knowledge_base import KnowledgeBase
 from data_structures.concept_graph import ConceptGraph
 from data_structures.working_memory_spec import WorkingMemorySpec
-from os.path import join
-from collections import defaultdict
 import data_structures.prolog as pl
 from utilities import identification_string, CHARS
+from itertools import chain
 
 class WorkingMemory(ConceptGraph):
 
@@ -24,11 +22,37 @@ class WorkingMemory(ConceptGraph):
                     self.concatenate(addition)
 
     def pull_ontology(self):
-        for node in self.concepts():
-            supertypes = self.knowlege_base.supertypes(node)
-            for supertype in supertypes:
-                if not self.has(node, 'type', supertype):
-                    self.add(node, 'type', supertype)
+        to_pull = set()
+        visited = set()
+        stack = list(self.concepts())
+        for e in stack:
+            for e, tr, t, id in self.knowlege_base.predicates(e, predicate_type='type'):
+                to_pull.add((e, tr, t, id))
+                if t not in visited:
+                    stack.append(t)
+                    visited.add(t)
+        for item in to_pull:
+            self.add(*item)
+
+    def pull(self, order=1, concepts=None):
+        pulling = set()
+        covered = set()
+        pull_set = set(self.concepts()) if concepts is None else set(self.concepts()) & concepts
+        for i in range(order, 0, -1):
+            to_pull = set()
+            for puller in pull_set:
+                related = set(self.knowlege_base.predicates(puller)) \
+                          | set(self.knowlege_base.predicates(object=puller))
+                for rel in related | {puller}:
+                    if self.knowlege_base.has(predicate_id=rel):
+                        related.add(self.predicate(rel))
+                to_pull |= related
+            covered |= pull_set
+            pulling |= to_pull
+            pull_set = set(chain(*to_pull)) - covered
+        cg = ConceptGraph(predicates=pulling)
+        self.concatenate(cg)
+        self.pull_ontology()
 
     def inferences(self, *types_or_rules):
         next = 0
