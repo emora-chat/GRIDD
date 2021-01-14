@@ -19,6 +19,7 @@ bought[bought]
 have<predicate>
 sound<predicate>
 volume<predicate>
+is_color<predicate>
 
 i=person()
 i[i]

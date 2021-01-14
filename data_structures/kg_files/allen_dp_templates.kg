@@ -17,13 +17,20 @@ center(X)
 amod(X/noun(), Y/adj())
 ltype(Y,color)
 -> color_mod_rule ->
-p/property(X,Y)
+p/is_color(X,Y)
 focus(p)
 center(Y)
 ;
 
 X/pron()
--> pronoun_rule ->
+=>
 focus(X)
 center(X)
+;
+
+amod(X/noun(), Y/adj())
+-> general_mod_rule ->
+p/property(X,Y)
+focus(p)
+center(Y)
 ;

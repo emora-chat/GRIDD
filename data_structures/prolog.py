@@ -22,7 +22,7 @@ class TransformationRule:
         else:
             return self.concept_id == other.concept_id
 
-def generate_inference_graphs(cg):
+def generate_inference_graphs(cg, ordered_rule_ids=None):
     """
     Identifies the inference rules and their corresponding implications in the given
     concept graph `cg`.
@@ -33,6 +33,12 @@ def generate_inference_graphs(cg):
     inferences = {}
     implications = {}
     infer_pred_inst = defaultdict(set)
+
+    if ordered_rule_ids is not None:
+        for situation_node in ordered_rule_ids:
+            inferences[situation_node] = ConceptGraph(namespace='pre')
+            implications[situation_node] = ConceptGraph(namespace='post')
+
     for situation_node, type, pre_pred_inst, inst_id in cg.predicates(predicate_type='pre'):
         if situation_node not in inferences:
             inferences[situation_node] = ConceptGraph(namespace='pre')

@@ -18,13 +18,14 @@ class TextToLogicModel(Module):
         self.model = model
         self.templates = ConceptGraph(predicates=template_starter_predicates)
         self._template_parser = KnowledgeParser(kg=self.templates, base_nodes=self.templates.concepts(), loading_kb=False)
-        self.load_templates(*template_file_names)
-        self.rules = pl.generate_inference_graphs(self.templates)
+        ordered_rule_ids = self.load_templates(*template_file_names)
+        self.rules = pl.generate_inference_graphs(self.templates, ordered_rule_ids)
         for rule_id, rule in self.rules.items():
             self._reference_expansion(rule.precondition)
         self.span_map = defaultdict(dict)
 
     def load_templates(self, *filenames_or_logicstrings):
+        ordered_rule_ids = []
         for input in filenames_or_logicstrings:
             if input.endswith('.kg'):
                 input = open(input, 'r').read()
@@ -32,7 +33,10 @@ class TextToLogicModel(Module):
                 tree = self._template_parser.parse(input)
                 additions = self._template_parser.transform(tree)
                 for addition in additions:
-                    self.templates.concatenate(addition)
+                    id_map = self.templates.concatenate(addition)
+                    s = addition.predicates(predicate_type='post')[0][0]
+                    ordered_rule_ids.append(id_map.get(s,s))
+        return ordered_rule_ids
 
     def _reference_expansion(self, pregraph):
         """
@@ -121,12 +125,17 @@ class TextToLogicModel(Module):
         """
         return pl.infer(ewm, self.rules)
 
+        # Parse templates are priority-ordered, such that the highest-priority matching template
+        # for a specific center is kept and all other templates with the same center are discarded.
+        # Affects _get_mentions() and _get_merges()!
+
     def _get_mentions(self, assignments, ewm):
         """
         Produce dict<mention span: mention graph>.
 
         assignments: dict<rule: list<assignments>>
         """
+        centers_handled = set()
         mentions = {}
         for rule, solutions in assignments.items():
             pre, post = rule.precondition, rule.postcondition
@@ -135,23 +144,25 @@ class TextToLogicModel(Module):
                 (expression_var,) = pre.objects(center_var, 'exprof')
                 (concept_var,) = pre.objects(expression_var, 'expr')
                 center = solution[center_var]
-                m = {}
-                cg = ConceptGraph(namespace=self.templates._namespace)
-                cg._next_id = post._next_id
-                for node in post.concepts():
-                    if node in solution:
-                        if node in [center_var,expression_var,concept_var]:
-                            m[node] = self._get_concept_of_span(solution[node], ewm)
+                if center not in centers_handled:
+                    centers_handled.add(center)
+                    m = {}
+                    cg = ConceptGraph(namespace=self.templates._namespace)
+                    cg._next_id = post._next_id
+                    for node in post.concepts():
+                        if node in solution:
+                            if node in [center_var,expression_var,concept_var]:
+                                m[node] = self._get_concept_of_span(solution[node], ewm)
+                            else:
+                                m[node] = cg._get_next_id()
                         else:
-                            m[node] = cg._get_next_id()
-                    else:
-                        m[node] = node
-                for subject, typ, object, inst in post.predicates():
-                    if object is not None:
-                        cg.add(m[subject], m[typ], m[object], predicate_id=m[inst])
-                    else:
-                        cg.add(m[subject], m[typ], predicate_id=m[inst])
-                mentions[self._lookup_span(ewm, center)] = cg
+                            m[node] = node
+                    for subject, typ, object, inst in post.predicates():
+                        if object is not None:
+                            cg.add(m[subject], m[typ], m[object], predicate_id=m[inst])
+                        else:
+                            cg.add(m[subject], m[typ], predicate_id=m[inst])
+                    mentions[self._lookup_span(ewm, center)] = cg
         return mentions
 
     def _get_merges(self, assignments, ewm):
@@ -160,6 +171,7 @@ class TextToLogicModel(Module):
 
         assignments: dict<rule: list<assignments>>
         """
+        centers_handled = set()
         merges = []
         for rule, solutions in assignments.items():
             pre, post = rule.precondition, rule.postcondition
@@ -168,54 +180,56 @@ class TextToLogicModel(Module):
             for solution in solutions:
                 focus = solution.get(focus, focus)
                 center = solution.get(center, center)
-                if post.has(predicate_id=focus):
-                    # focus is a predicate instance, need to consider its subj/obj/type
-                    if post.subject(focus) in solution and solution[post.subject(focus)] != center:
-                        pair = ((self._lookup_span(ewm, center),'subject'),
-                                (self._lookup_span(ewm, solution[post.subject(focus)]),'self'))
-                        merges.append(pair)
-                    if post.object(focus) in solution and solution[post.object(focus)] != center:
-                        pair = ((self._lookup_span(ewm, center), 'object'),
-                                (self._lookup_span(ewm, solution[post.object(focus)]), 'self'))
-                        merges.append(pair)
-                    if post.type(focus) in solution and solution[post.type(focus)] != center:
-                        pair = ((self._lookup_span(ewm, center), 'type'),
-                                (self._lookup_span(ewm, solution[post.type(focus)]), 'self'))
-                        merges.append(pair)
-                # for (_,o,t) in post.bipredicates_of_subject(focus):
-                #     if o in solution:
-                #         pass
-                #     if t in solution:
-                #         pass
-                #     for inst in post.bipredicate(focus,o,t):
-                #         if inst in solution:
-                #             pass
-                # for (_,t) in post.monopredicates_of_subject(focus):
-                #     if t in solution:
-                #         pass
-                #     for inst in post.bipredicate(focus,t):
-                #         if inst in solution:
-                #             pass
-                # for (s,_,t) in post.bipredicates_of_object(focus):
-                #     if s in solution:
-                #         pass
-                #     if t in solution:
-                #         pass
-                #     for inst in post.bipredicate(s,focus,t):
-                #         if inst in solution:
-                #             pass
-                # for tuple, inst in post.get_instances_of_type(focus):
-                #     # get all predicates that use focus as type, if applicable
-                #     if len(tuple) == 3:
-                #         s,o,_ = tuple
-                #         if s in solution:
-                #             pass
-                #         if o in solution:
-                #             pass
-                #     elif len(tuple) == 2:
-                #         s,_ = tuple
-                #         if s in solution:
-                #             pass
+                if center not in centers_handled:
+                    centers_handled.add(center)
+                    if post.has(predicate_id=focus):
+                        # focus is a predicate instance, need to consider its subj/obj/type
+                        if post.subject(focus) in solution and solution[post.subject(focus)] != center:
+                            pair = ((self._lookup_span(ewm, center),'subject'),
+                                    (self._lookup_span(ewm, solution[post.subject(focus)]),'self'))
+                            merges.append(pair)
+                        if post.object(focus) in solution and solution[post.object(focus)] != center:
+                            pair = ((self._lookup_span(ewm, center), 'object'),
+                                    (self._lookup_span(ewm, solution[post.object(focus)]), 'self'))
+                            merges.append(pair)
+                        if post.type(focus) in solution and solution[post.type(focus)] != center:
+                            pair = ((self._lookup_span(ewm, center), 'type'),
+                                    (self._lookup_span(ewm, solution[post.type(focus)]), 'self'))
+                            merges.append(pair)
+                    # for (_,o,t) in post.bipredicates_of_subject(focus):
+                    #     if o in solution:
+                    #         pass
+                    #     if t in solution:
+                    #         pass
+                    #     for inst in post.bipredicate(focus,o,t):
+                    #         if inst in solution:
+                    #             pass
+                    # for (_,t) in post.monopredicates_of_subject(focus):
+                    #     if t in solution:
+                    #         pass
+                    #     for inst in post.bipredicate(focus,t):
+                    #         if inst in solution:
+                    #             pass
+                    # for (s,_,t) in post.bipredicates_of_object(focus):
+                    #     if s in solution:
+                    #         pass
+                    #     if t in solution:
+                    #         pass
+                    #     for inst in post.bipredicate(s,focus,t):
+                    #         if inst in solution:
+                    #             pass
+                    # for tuple, inst in post.get_instances_of_type(focus):
+                    #     # get all predicates that use focus as type, if applicable
+                    #     if len(tuple) == 3:
+                    #         s,o,_ = tuple
+                    #         if s in solution:
+                    #             pass
+                    #         if o in solution:
+                    #             pass
+                    #     elif len(tuple) == 2:
+                    #         s,_ = tuple
+                    #         if s in solution:
+                    #             pass
 
         return merges
 

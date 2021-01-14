@@ -260,14 +260,23 @@ class ConceptGraph:
             if len(self._bipredicate_instances[(subject, predicate_type, object)]) == 0:
                 del self._bipredicate_instances[(subject, predicate_type, object)]
 
-    def concatenate(self, concept_graph):
+    def concatenate(self, concept_graph, predicate_exclusions=None):
         id_map = {}
-        for s, t, o, i in concept_graph.predicates():
-            s = _map(self, s, concept_graph._namespace, id_map)
-            t = _map(self, t, concept_graph._namespace, id_map)
-            o = _map(self, o, concept_graph._namespace, id_map)
-            i = _map(self, i, concept_graph._namespace, id_map)
-            self.add(s, t, o, i)
+        if predicate_exclusions is not None:
+            for s, t, o, i in concept_graph.predicates():
+                if t not in predicate_exclusions:
+                    s = _map(self, s, concept_graph._namespace, id_map)
+                    t = _map(self, t, concept_graph._namespace, id_map)
+                    o = _map(self, o, concept_graph._namespace, id_map)
+                    i = _map(self, i, concept_graph._namespace, id_map)
+                    self.add(s, t, o, i)
+        else:
+            for s, t, o, i in concept_graph.predicates():
+                s = _map(self, s, concept_graph._namespace, id_map)
+                t = _map(self, t, concept_graph._namespace, id_map)
+                o = _map(self, o, concept_graph._namespace, id_map)
+                i = _map(self, i, concept_graph._namespace, id_map)
+                self.add(s, t, o, i)
         return id_map
 
     def copy(self, namespace=None):

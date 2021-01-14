@@ -196,7 +196,7 @@ class ConceptGraphSpec:
         assert concept_graph.has('Peter', 'likes', 'John', 'pjl_1')
 
     @specification.init
-    def concatenate(ConceptGraph, conceptgraph):
+    def concatenate(ConceptGraph, conceptgraph, predicate_exclusions=None):
         """
         Concatenate this concept graph with another.
         """

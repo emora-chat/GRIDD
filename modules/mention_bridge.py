@@ -17,7 +17,7 @@ class BaseMentionBridge(Module):
         span_map = self.framework.nlp_data['dependency parse'][2]
         for span_obj, mention_graph in input.items():
             ((focus,t,o,i,),) = mention_graph.predicates(predicate_type='focus')
-            mapped_ids = working_memory.concatenate(mention_graph)
+            mapped_ids = working_memory.concatenate(mention_graph, predicate_exclusions={'focus','center'})
             new_concepts.update(mapped_ids.values())
             span_node = working_memory._get_next_id()
             working_memory.add(span_node, 'exprof', mapped_ids[focus])
