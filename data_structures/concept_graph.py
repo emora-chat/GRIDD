@@ -236,6 +236,10 @@ class ConceptGraph:
     def merge(self, concept_a, concept_b):
         if self.has(predicate_id=concept_a) and self.has(predicate_id=concept_b):
             raise ValueError("Cannot merge two predicate instances!")
+        if concept_a.startswith(self._namespace) and not concept_b.startswith(self._namespace):
+            tmp = concept_a
+            concept_a = concept_b
+            concept_b = tmp
         for s, t, o, i in self.predicates(subject=concept_b):
             self._detach(s, t, o, i)
             self.add(concept_a, t, o, i)

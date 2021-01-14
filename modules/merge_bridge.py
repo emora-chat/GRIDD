@@ -20,12 +20,12 @@ class BaseMergeBridge(Module):
             for (spanobj1, pos1), (spanobj2, pos2) in input:
                 span1 = span_map[spanobj1]
                 span2 = span_map[spanobj2]
-                print('\tConsidering spans (%s,%s):: '%(span1,span2))
+                print('\tConsidering spans (%s,%s)'%(span1,span2))
                 (concept1,) = working_memory.objects(span1, 'exprof')
                 concept1 = self._follow_path(concept1, pos1, working_memory)
                 (concept2,) = working_memory.objects(span2, 'exprof')
                 concept2 = self._follow_path(concept2, pos2, working_memory)
-                print('\tConsidering concepts (%s,%s):: '%(concept1,concept2))
+                print('\tConsidering concepts (%s,%s)'%(concept1,concept2))
                 working_memory.merge(concept1, concept2)
         return False
 

@@ -187,7 +187,7 @@ class ConceptGraphSpec:
     def merge(concept_graph, concept_a, concept_b):
         """
         Merge two concepts together in the concept graph (`concept_a`'s id represents
-        both concepts after the merge).
+        both concepts after the merge unless `concept_a`'s id contains the namespace whereas `concept_b`'s does not).
 
         If both concepts are a predicate instance, ValueError is raised.
         """
