@@ -22,7 +22,8 @@ class ConceptGraphSpec:
             ('Peter', 'likes', 'John', 'pjl_1'),
             ('Peter', 'likes', 'Sarah'),
             ('Peter', 'happy'),
-            ('Jack', 'happy')
+            ('Jack', 'happy'),
+            ('Peter', 'dislikes', 'Mary')
         ], namespace='x')
         return concept_graph
 
@@ -77,7 +78,8 @@ class ConceptGraphSpec:
         assert set(concept_graph.predicates('Peter')) == {
             ('Peter', 'likes', 'John', 'pjl_1'),
             ('Peter', 'likes', 'Sarah', 'x_2'),
-            ('Peter', 'happy', None, 'x_3')
+            ('Peter', 'happy', None, 'x_3'),
+            ('Peter', 'dislikes', 'Mary', 'x_5')
         }
         assert set(concept_graph.predicates('Peter', 'likes')) == {
             ('Peter', 'likes', 'John', 'pjl_1'),
@@ -101,21 +103,25 @@ class ConceptGraphSpec:
             ('Peter', 'likes', 'Sarah', 'x_2')
         }
 
-    def subjects(concept_graph, concept):
+    def subjects(concept_graph, concept, type=None):
         """
         Return a set of related concepts to `concept`, where each element of the
         iterable appears as the subject in a predicate with `concept`.
         """
         assert concept_graph.subjects('Sarah') == {'Peter'}
+        assert concept_graph.subjects('Mary', 'likes') == {'John'}
+        assert concept_graph.subjects('Mary', 'dislikes') == {'Peter'}
 
-    def objects(concept_graph, concept):
+    def objects(concept_graph, concept, type=None):
         """
         Return a set of related concepts to `concept`, where each element of the
         iterable appears as the object in a predicate with `concept`.
         """
-        assert concept_graph.objects('Peter') == {'John', 'Sarah'}
+        assert concept_graph.objects('Peter') == {'John', 'Sarah', 'Mary'}
+        assert concept_graph.objects('Peter', 'likes') == {'John', 'Sarah'}
+        assert concept_graph.objects('Peter', 'dislikes') == {'Mary'}
 
-    def related(concept_graph, concept):
+    def related(concept_graph, concept, type=None):
         """
         Return an iterable of related concepts to `concept`, where each element of the
         iterable appears in a predicate with `concept`.
@@ -181,7 +187,7 @@ class ConceptGraphSpec:
     def merge(concept_graph, concept_a, concept_b):
         """
         Merge two concepts together in the concept graph (`concept_a`'s id represents
-        both concepts after the merge).
+        both concepts after the merge unless `concept_a`'s id contains the namespace whereas `concept_b`'s does not).
 
         If both concepts are a predicate instance, ValueError is raised.
         """
@@ -190,7 +196,7 @@ class ConceptGraphSpec:
         assert concept_graph.has('Peter', 'likes', 'John', 'pjl_1')
 
     @specification.init
-    def concatenate(ConceptGraph, conceptgraph):
+    def concatenate(ConceptGraph, conceptgraph, predicate_exclusions=None):
         """
         Concatenate this concept graph with another.
         """

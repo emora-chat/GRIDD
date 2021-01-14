@@ -1,8 +1,8 @@
 from subframeworks.text_to_logic_model import TextToLogicModel
 
 from data_structures.concept_graph import ConceptGraph
-from data_structures.knowledge_graph import KnowledgeGraph
-import knowledge_base.knowledge_graph as kg
+from data_structures.knowledge_base import KnowledgeBase
+import data_structures.knowledge_base as knowledge_base_file
 from data_structures.working_memory import WorkingMemory
 
 from allennlp.predictors.predictor import Predictor
@@ -30,15 +30,17 @@ class CharSpan:
 
 class AllenAIToLogic(TextToLogicModel):
 
-    def text_to_graph(self, turns, knowledge_base):
+    def text_to_graph(self, turns):
         """
         Given the AllenAI Dependency Parse hierplane dict, transform it into a concept graph
         :return dependency parse cg
         """
         parse_dict = self.model.predict(turns[-1])
-        cg = ConceptGraph('parse_', nodes=list(kg.BASE_NODES) + NODES)
-        self.add_node_from_dict('root', parse_dict['hierplane_tree']['root'], cg)
-        return cg
+        cg = ConceptGraph(concepts=list(knowledge_base_file.BASE_NODES) + NODES)
+        ewm = WorkingMemory(self.knowledge_base)
+        ewm.concatenate(cg)
+        self.add_node_from_dict('root', parse_dict['hierplane_tree']['root'], ewm)
+        return ewm
 
     def add_node_from_dict(self, parent, node_dict, cg):
         """
@@ -53,11 +55,11 @@ class AllenAIToLogic(TextToLogicModel):
 
         expression, pos = node_dict['word'], node_dict['attributes'][0].lower()
         if not cg.has(pos):
-            cg.add_node(pos)
-            cg.add_monopredicate(pos, 'is_type')
-            cg.add_bipredicate(pos, 'pos', 'type')
+            cg.add(pos)
+            cg.add(pos, 'is_type')
+            cg.add(pos, 'type', 'pos')
 
-        span_node = cg.add_node(cg._get_next_id())
+        span_node = cg.add(cg._get_next_id())
         spans = node_dict['spans']
         if len(spans) > 1:
             print('WARNING! dp element %s has more than one span' % expression)
@@ -67,17 +69,17 @@ class AllenAIToLogic(TextToLogicModel):
 
         expression = '"%s"' % expression
         if not cg.has(expression):
-            cg.add_node(expression)
-        cg.add_bipredicate(span_node, expression, 'exprof') # todo - (QOL) automate the expression links
-        cg.add_bipredicate(span_node, pos, 'type')
+            cg.add(expression)
+        cg.add(span_node, 'exprof', expression) # todo - (QOL) automate the expression links
+        cg.add(span_node, 'type', pos)
 
         if parent != 'root':
             link = node_dict['link']
             if link == 'det':
                 link = 'detpred'
             if not cg.has(link):
-                cg.add_node(link)
-            cg.add_bipredicate(parent, span_node, link)
+                cg.add(link)
+            cg.add(parent, link, span_node)
 
         if 'children' in node_dict:
             for child in node_dict['children']:
@@ -85,29 +87,22 @@ class AllenAIToLogic(TextToLogicModel):
 
 
 if __name__ == '__main__':
-    kb = KnowledgeGraph(join('data_structures', 'kg_files', 'framework_test.kg'))
-    wm = ConceptGraph('wm_', nodes=['is_type'])
-    working_memory = WorkingMemory(wm=wm, kb=kb)
+    kb = KnowledgeBase(join('data_structures', 'kg_files', 'framework_test.kg'))
 
     asr_hypotheses = [
-        {'text': 'i lost a red house',
+        {'text': 'i bought a red house',
          'text_confidence': 0.87,
-         'tokens': ['i', 'lost', 'a', 'red', 'house'],
+         'tokens': ['i', 'bought', 'a', 'red', 'house'],
          'token_confidence': {0: 0.90, 1: 0.90, 2: 0.80, 3: 0.80, 4: 0.80}
          }
     ]
     turns = [hypo['text'] for hypo in asr_hypotheses]
-    print('TURNS: ', turns)
-    print()
-
-    template_base = KnowledgeGraph(nodes=POS_NODES + NODES, loading_kb=False)
-    for n in POS_NODES + NODES:
-        template_base._concept_graph.add_monopredicate(n, 'is_type')
+    print('TURNS: %s \n'%turns)
 
     dependency_parser = Predictor.from_path(
         "https://storage.googleapis.com/allennlp-public-models/biaffine-dependency-parser-ptb-2020.04.06.tar.gz")
-    template_file = join('data_structures', 'kg_files', 'allen_dp_templates.txt')
-    ttl = AllenAIToLogic("allen dp", kb, dependency_parser,
-                         template_base, template_file)
+    template_starter_predicates = [(n, 'is_type') for n in POS_NODES + NODES]
+    template_file = join('data_structures', 'kg_files', 'allen_dp_templates.kg')
+    ttl = AllenAIToLogic("allen dp", kb, dependency_parser, template_starter_predicates, template_file)
     mentions,merges = ttl.translate(turns)
     test = 1

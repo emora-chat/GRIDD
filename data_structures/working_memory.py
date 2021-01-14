@@ -23,20 +23,23 @@ class WorkingMemory(ConceptGraph):
                 for addition in additions:
                     self.concatenate(addition)
 
-    def pull_ontology(self):
+    def pull_ontology(self, concepts=None):
         to_pull = set()
         visited = set()
-        stack = list(self.concepts())
+        stack = list(self.concepts()) if concepts is None else list(self.concepts() & set(concepts))
         for e in stack:
             for e, tr, t, id in self.knowledge_base.predicates(e, predicate_type='type'):
-                to_pull.add((e, tr, t, id))
-                if t not in visited:
-                    stack.append(t)
-                    visited.add(t)
+                if e != 'type' and t != 'type':
+                    to_pull.add((e, tr, t, id))
+                    if t not in visited:
+                        stack.append(t)
+                        visited.add(t)
         for item in to_pull:
             self.add(*item)
 
     def pull(self, order=1, concepts=None):
+        if isinstance(concepts, list):
+            concepts = set(concepts)
         pulling = set()
         covered = set()
         pull_set = set(self.concepts()) if concepts is None else set(self.concepts()) & concepts

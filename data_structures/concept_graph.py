@@ -11,7 +11,9 @@ import json, time, copy
 class ConceptGraph:
 
     def __init__(self, predicates=None, concepts=None, namespace=None):
-        self._namespace = namespace
+        if namespace is None:
+            namespace = 'def'
+        self._namespace = namespace.lower()
         self._next_id = 0
         self._bipredicates_graph = MultiLabeledParallelDigraphNX()
         self._bipredicate_instances = Index()
@@ -218,21 +220,26 @@ class ConceptGraph:
                     return monos + bis
         return []
 
-    def subjects(self, concept):
-        return set([predicate[0] for predicate in self.predicates(object=concept)])
+    def subjects(self, concept, type=None):
+        return set([predicate[0] for predicate in self.predicates(predicate_type=type,
+                                                                  object=concept)])
 
-    def objects(self, concept):
-        return set([predicate[2] for predicate in self.predicates(subject=concept)
+    def objects(self, concept, type=None):
+        return set([predicate[2] for predicate in self.predicates(subject=concept,predicate_type=type)
                     if predicate[2] is not None])
 
-    def related(self, concept):
-        neighbors = self.subjects(concept)
-        neighbors.update(self.objects(concept))
+    def related(self, concept, type=None):
+        neighbors = self.subjects(concept, type)
+        neighbors.update(self.objects(concept, type))
         return neighbors
 
     def merge(self, concept_a, concept_b):
         if self.has(predicate_id=concept_a) and self.has(predicate_id=concept_b):
             raise ValueError("Cannot merge two predicate instances!")
+        if concept_a.startswith(self._namespace) and not concept_b.startswith(self._namespace):
+            tmp = concept_a
+            concept_a = concept_b
+            concept_b = tmp
         for s, t, o, i in self.predicates(subject=concept_b):
             self._detach(s, t, o, i)
             self.add(concept_a, t, o, i)
@@ -253,14 +260,24 @@ class ConceptGraph:
             if len(self._bipredicate_instances[(subject, predicate_type, object)]) == 0:
                 del self._bipredicate_instances[(subject, predicate_type, object)]
 
-    def concatenate(self, concept_graph):
+    def concatenate(self, concept_graph, predicate_exclusions=None):
         id_map = {}
-        for s, t, o, i in concept_graph.predicates():
-            s = _map(self, s, concept_graph._namespace, id_map)
-            t = _map(self, t, concept_graph._namespace, id_map)
-            o = _map(self, o, concept_graph._namespace, id_map)
-            i = _map(self, i, concept_graph._namespace, id_map)
-            self.add(s, t, o, i)
+        if predicate_exclusions is not None:
+            for s, t, o, i in concept_graph.predicates():
+                if t not in predicate_exclusions:
+                    s = _map(self, s, concept_graph._namespace, id_map)
+                    t = _map(self, t, concept_graph._namespace, id_map)
+                    o = _map(self, o, concept_graph._namespace, id_map)
+                    i = _map(self, i, concept_graph._namespace, id_map)
+                    self.add(s, t, o, i)
+        else:
+            for s, t, o, i in concept_graph.predicates():
+                s = _map(self, s, concept_graph._namespace, id_map)
+                t = _map(self, t, concept_graph._namespace, id_map)
+                o = _map(self, o, concept_graph._namespace, id_map)
+                i = _map(self, i, concept_graph._namespace, id_map)
+                self.add(s, t, o, i)
+        return id_map
 
     def copy(self, namespace=None):
         if namespace is None:
