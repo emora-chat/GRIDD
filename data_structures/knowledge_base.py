@@ -5,7 +5,7 @@ from data_structures.knowledge_parser import KnowledgeParser
 import time, sys, json
 from os.path import join
 
-BASE_NODES = {'object', 'type', 'is_type', 'expression', 'expr', 'pre', 'post', 'var', 'property'}
+BASE_NODES = {'object', 'type', 'is_type', 'expression', 'expr', 'pre', 'post', 'var', 'property', 'focus'}
 
 
 class KnowledgeBase:

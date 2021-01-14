@@ -264,6 +264,7 @@ class ConceptGraph:
             o = _map(self, o, concept_graph._namespace, id_map)
             i = _map(self, i, concept_graph._namespace, id_map)
             self.add(s, t, o, i)
+        return id_map
 
     def copy(self, namespace=None):
         if namespace is None:

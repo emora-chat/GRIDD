@@ -8,7 +8,7 @@ import data_structures.prolog as pl
 from modules.module import Module
 from structpy.map.bijective.bimap import Bimap
 
-DEBUG=True
+DEBUG=False
 
 class TextToLogicModel(Module):
 
@@ -82,7 +82,7 @@ class TextToLogicModel(Module):
         :return:
         """
         turns = [hypo['text'] for hypo in input]
-        return self.translate(turns)
+        return (*self.translate(turns), self.span_map)
 
     def translate(self, turns):
         ewm = self.text_to_graph(turns)

@@ -14,7 +14,7 @@ from modules.allenai_dp_to_logic_model import AllenAIToLogic, POS_NODES, NODES
 from allennlp.predictors.predictor import Predictor
 from os.path import join
 
-from data_structures.knowledge_graph import KnowledgeBase
+from data_structures.knowledge_base import KnowledgeBase
 from data_structures.working_memory import WorkingMemory
 from data_structures.concept_graph import ConceptGraph
 
@@ -48,19 +48,15 @@ def run_twice(stage, input):
     return True
 
 if __name__ == '__main__':
+    print('Building dialogue pipeline...')
     dm = Framework('Emora')
 
-    kb = KnowledgeGraph(filename=join('data_structures', 'kg_files', 'framework_test.kg'))
+    kb = KnowledgeBase(join('data_structures', 'kg_files', 'framework_test.kg'))
 
-    template_base = KnowledgeGraph('temp_', nodes=POS_NODES + NODES, loading_kb=False)
-    for n in POS_NODES + NODES:
-        template_base._concept_graph.add_monopredicate(n, 'is_type')
     dependency_parser = Predictor.from_path("https://storage.googleapis.com/allennlp-public-models/biaffine-dependency-parser-ptb-2020.04.06.tar.gz")
+    template_starter_predicates = [(n, 'is_type') for n in POS_NODES + NODES]
     template_file = join('data_structures', 'kg_files', 'allen_dp_templates.kg')
-
-    dm.add_preprocessing_module('dependency parse',
-                                AllenAIToLogic("allen dp", kb, dependency_parser,
-                                               template_base, template_file))
+    dm.add_preprocessing_module('dependency parse', AllenAIToLogic("allen dp", kb, dependency_parser, template_starter_predicates, template_file))
 
     dm.add_mention_model({'model': MentionsAllenDP('allen dp mentions')})
     dm.add_merge_model({'model': NodeMergeDP('allen dp merge')})
@@ -83,9 +79,9 @@ if __name__ == '__main__':
     dm.add_merge_inference_iteration(run_twice)
 
     dm.build_framework()
+    print('Built!\n')
 
-    wm = ConceptGraph('wm_', nodes=['is_type'])
-    working_memory = WorkingMemory(wm=wm, kb=kb)
+    working_memory = WorkingMemory(kb)
 
     asr_hypotheses = [
         {'text': 'i bought a red house',

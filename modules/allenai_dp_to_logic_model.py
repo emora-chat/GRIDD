@@ -96,13 +96,6 @@ if __name__ == '__main__':
          'token_confidence': {0: 0.90, 1: 0.90, 2: 0.80, 3: 0.80, 4: 0.80}
          }
     ]
-    # asr_hypotheses = [
-    #     {'text': 'a house',
-    #      'text_confidence': 0.87,
-    #      'tokens': ['a', 'house'],
-    #      'token_confidence': {0: 0.90, 1: 0.90}
-    #      }
-    # ]
     turns = [hypo['text'] for hypo in asr_hypotheses]
     print('TURNS: %s \n'%turns)
 
