@@ -330,6 +330,41 @@ class ConceptGraph:
                 self.add(s, t, o, i)
             self._next_id = d['next_id']
 
+    def pretty_print(self):
+        name_counter = defaultdict(int)
+        id_map = {}
+        print_string = ""
+        for s,t,o,i in self.predicates():
+            id_map[t] = t
+            concepts = [s, o] if o is not None else [s]
+            for concept in concepts:
+                if concept not in id_map:
+                    if concept.startswith(self._namespace):
+                        types = self.predicates(concept, 'type')
+                        if len(types) > 0:
+                            ctype = types[0][2]
+                            name_counter[ctype] += 1
+                            id_map[concept] = '%s_%d'%(ctype, name_counter[ctype])
+                        else:
+                            id_map[concept] = concept
+                    else:
+                        id_map[concept] = concept
+            if o is not None:
+                pname = id_map[s][0] + id_map[t][0] + id_map[o][0]
+            else:
+                pname = id_map[s][0] + id_map[t][0]
+            name_counter[pname] += 1
+            if name_counter[pname] == 1:
+                id_map[i] = pname
+            else:
+                id_map[i] = '%s_%d'%(pname, name_counter[pname])
+            if o is not None:
+                print_string += '%s/%s(%s,%s)\n' % (id_map[i], id_map[t], id_map[s], id_map[o])
+            else:
+                print_string += '%s/%s(%s)\n' % (id_map[i], id_map[t], id_map[s])
+        return print_string.strip()
+
+
 def _map(current_graph, other_concept, other_namespace, id_map):
     if other_concept is None:
         return None

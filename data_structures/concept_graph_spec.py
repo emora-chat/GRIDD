@@ -205,7 +205,7 @@ class ConceptGraphSpec:
 
         cg2 = ConceptGraph(concepts=['fluffy', 'bark', 'princess', 'friend'], namespace='2')
         fb = cg2.add('fluffy', 'bark')
-        cg2.add('princess', 'fluffy', 'friend')
+        cg2.add('princess', 'friend', 'fluffy')
         cg2.add(fb, 'volume', 'loud')
 
         assert not cg1.has('fluffy')
@@ -214,10 +214,10 @@ class ConceptGraphSpec:
         cg1.concatenate(cg2)
 
         assert cg1.has('fluffy', 'bark')
-        assert cg1.has('princess', 'fluffy', 'friend')
+        assert cg1.has('princess' , 'friend', 'fluffy')
         assert cg1.has('princess', 'hiss')
         assert cg1.predicate('1_1') in [('fluffy', 'bark', None, '1_1'),
-                                        ('princess', 'fluffy', 'friend', '1_1')]
+                                        ('princess' , 'friend', 'fluffy', '1_1')]
         fb_merge = cg1.predicates('fluffy', 'bark', None)[0][3]
         assert cg1.has(fb_merge, 'volume', 'loud')
 
@@ -234,7 +234,7 @@ class ConceptGraphSpec:
         new_cg = concept_graph.copy()
 
         assert new_cg.has('fluffy', 'bark')
-        assert new_cg.has('princess', 'fluffy', 'friend')
+        assert new_cg.has('princess' , 'friend', 'fluffy')
         assert new_cg.has('princess', 'hiss')
         assert new_cg.predicate('1_0') == concept_graph.predicate('1_0')
         assert new_cg.predicate('1_1') == concept_graph.predicate('1_1')
@@ -247,7 +247,7 @@ class ConceptGraphSpec:
 
         namespace_cg = concept_graph.copy(namespace="new")
         assert namespace_cg.predicates('fluffy', 'bark', None)[0][3].startswith("new")
-        assert namespace_cg.predicates('princess', 'fluffy', 'friend')[0][3].startswith("new")
+        assert namespace_cg.predicates('princess' , 'friend', 'fluffy')[0][3].startswith("new")
         assert namespace_cg.predicates('princess', 'hiss', None)[0][3].startswith("new")
         for i in range(4):
             assert not namespace_cg.has(predicate_id='1_%d'%i)
@@ -265,7 +265,7 @@ class ConceptGraphSpec:
         assert len(lines) == 4
         assert 'princess,hiss,None,1_0' in lines
         assert 'fluffy,bark,None,1_1' in lines
-        assert 'princess,fluffy,friend,1_2' in lines
+        assert 'princess,friend,fluffy,1_2' in lines
         assert '1_1,volume,loud,1_3' in lines
 
     @specification.init
@@ -278,7 +278,7 @@ class ConceptGraphSpec:
 
         cg2 = ConceptGraph(concepts=['fluffy', 'bark', 'princess', 'friend'], namespace='2')
         cg2.add('fluffy', 'bark')
-        cg2.add('princess', 'fluffy', 'friend')
+        cg2.add('princess', 'friend', 'fluffy')
         cg2_file = os.path.join('data_structures', 'checkpoints', 'load_test_cg2.json')
         cg2.save(cg2_file)
 
@@ -291,10 +291,10 @@ class ConceptGraphSpec:
         cg3.load(cg2_file)
 
         assert cg3.has('fluffy', 'bark')
-        assert cg3.has('princess', 'fluffy', 'friend')
-        assert cg3.predicates('princess', 'fluffy', 'friend')[0][3].startswith("1")
+        assert cg3.has('princess', 'friend', 'fluffy')
+        assert cg3.predicates('princess', 'friend', 'fluffy')[0][3].startswith("1")
 
-        b = cg3.add('fluffy', 'princess', 'friend')
+        b = cg3.add('fluffy', 'friend', 'princess')
         assert b == '1_4'
         return cg3
 
@@ -304,6 +304,34 @@ class ConceptGraphSpec:
         """
         assert concept_graph.concepts() == {'fluffy','bark','princess','hiss','volume','loud','friend',
                                             '1_0', '1_1', '1_2', '1_3', '1_4'}
+
+    def pretty_print(concept_graph):
+        """
+        Prints the predicates of concept_graph in a human-readable format,
+        defined by the knowledge base text file format.
+        """
+        concept_graph.add('dog', 'type', 'entity')
+        concept_graph.add(concept_graph._get_next_id(), 'type', 'dog')
+        concept_graph.add(concept_graph._get_next_id(), 'type', 'dog')
+        concept_graph.add('polly', 'type', 'dog')
+
+        pi = concept_graph.add('polly','hiss')
+        concept_graph.add(pi, 'volume', 'loud')
+
+        print_collection = set(concept_graph.pretty_print().split('\n'))
+        assert print_collection == {
+            'ph/hiss(princess)',
+            'pvl/volume(ph,loud)',
+            'fb/bark(fluffy)',
+            'pff/friend(princess,fluffy)',
+            'ffp/friend(fluffy,princess)',
+            'dte/type(dog,entity)',
+            'ptd/type(polly,dog)',
+            'dtd/type(dog_1,dog)',
+            'dtd_2/type(dog_2,dog)',
+            'ph_2/hiss(polly)',
+            'pvl_2/volume(ph_2,loud)'
+        }
 
 
 
