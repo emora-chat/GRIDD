@@ -3,7 +3,7 @@ x/dog()
 bark(x)
 ;
 
-chase(x/dog(), y/dog())
+chase(x/dog(), y/entity())
 =>
 scared(y)
 ;
