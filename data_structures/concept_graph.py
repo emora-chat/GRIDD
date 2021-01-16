@@ -333,7 +333,9 @@ class ConceptGraph:
     def pretty_print(self):
         name_counter = defaultdict(int)
         id_map = {}
-        print_string = ""
+        type_string = ""
+        bi_string = ""
+        mono_string = ""
         for s,t,o,i in self.predicates():
             id_map[t] = t
             concepts = [s, o] if o is not None else [s]
@@ -359,10 +361,15 @@ class ConceptGraph:
             else:
                 id_map[i] = '%s_%d'%(pname, name_counter[pname])
             if o is not None:
-                print_string += '%s/%s(%s,%s)\n' % (id_map[i], id_map[t], id_map[s], id_map[o])
+                add = '%s/%s(%s,%s)\n' % (id_map[i], id_map[t], id_map[s], id_map[o])
+                if id_map[t] == 'type':
+                    type_string += add
+                else:
+                    bi_string += add
             else:
-                print_string += '%s/%s(%s)\n' % (id_map[i], id_map[t], id_map[s])
-        return print_string.strip()
+                mono_string += '%s/%s(%s)\n' % (id_map[i], id_map[t], id_map[s])
+        full_string = type_string + '\n' + mono_string + '\n' + bi_string
+        return full_string.strip()
 
 
 def _map(current_graph, other_concept, other_namespace, id_map):

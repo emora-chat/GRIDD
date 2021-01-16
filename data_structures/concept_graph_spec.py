@@ -320,6 +320,7 @@ class ConceptGraphSpec:
 
         print_collection = set(concept_graph.pretty_print().split('\n'))
         assert print_collection == {
+            '',
             'ph/hiss(princess)',
             'pvl/volume(ph,loud)',
             'fb/bark(fluffy)',
