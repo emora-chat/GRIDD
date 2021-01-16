@@ -10,6 +10,19 @@ from structpy.map.bijective.bimap import Bimap
 
 DEBUG=False
 
+class Span:
+
+    def __init__(self, string, start, end):
+        self.string = string
+        self.start = start
+        self.end = end
+
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        return '%s(%d,%d)'%(self.string, self.start, self.end)
+
 class TextToLogicModel(Module):
 
     def __init__(self, name, knowledge_base, model, template_starter_predicates, *template_file_names):

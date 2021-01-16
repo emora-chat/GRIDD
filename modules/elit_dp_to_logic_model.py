@@ -1,4 +1,4 @@
-from subframeworks.text_to_logic_model import TextToLogicModel
+from subframeworks.text_to_logic_model import TextToLogicModel, Span
 
 from data_structures.concept_graph import ConceptGraph
 from data_structures.knowledge_base import KnowledgeBase
@@ -38,41 +38,60 @@ class ElitDPToLogic(TextToLogicModel):
         Given the ELIT Dependency Parse attachment list, transform it into a concept graph
         :return dependency parse cg
         """
-        parse_dict = self.model.parse([turns[-1]], models=['tok', 'ner', 'srl', 'dep'])
+        parse_dict = self.model.parse([turns[-1]], models=['tok', 'pos', 'ner', 'srl', 'dep'])
         cg = ConceptGraph(concepts=list(knowledge_base_file.BASE_NODES) + NODES)
         ewm = WorkingMemory(self.knowledge_base)
         ewm.concatenate(cg)
-        self.convert(parse_dict["dep"][0], parse_dict["tok"][0], ewm)
+        self.convert(parse_dict["dep"][0], parse_dict["tok"][0], parse_dict["pos"][0], ewm)
         return ewm
 
-    def convert(self, dependencies, tokens, cg):
+    # todo - verify that POS tags and DP labels are disjoint
+    def convert(self, dependencies, tokens, pos_tags, cg):
         """
-        Add dependency parse links into the concept graph being generated
+        Add dependency parse links into the expression concept graph
         :param dependencies: list of dependency relations
         :param tokens: list of tokens
+        :param pos_tags: list of part of speech tags
         :param cg: the concept graph being created
         """
-        pass
+        token_to_span_node = {}
+        for token_idx in range(len(tokens)):
+            expression = tokens[token_idx]
+            pos = pos_tags[token_idx].lower()
+            if not cg.has(pos):
+                cg.add(pos, 'type', 'pos')
+            span_node = cg.add(cg._get_next_id())
+            self.span_map[cg][span_node] = Span(expression, token_idx, token_idx+1)
+            token_to_span_node[token_idx] = span_node
+            expression = '"%s"' % expression
+            cg.add(span_node, 'exprof', expression)
+            cg.add(span_node, 'type', pos)
 
-
+        for token_idx, (head_idx, label) in enumerate(dependencies):
+            if head_idx != -1:
+                source = token_to_span_node[head_idx]
+                target = token_to_span_node[token_idx]
+                cg.add(source, label, target)
 
 if __name__ == '__main__':
     kb = KnowledgeBase(join('data_structures', 'kg_files', 'framework_test.kg'))
-
-    asr_hypotheses = [
-        {'text': 'i bought a house',
-         'text_confidence': 0.87,
-         'tokens': ['i', 'bought', 'a', 'house'],
-         'token_confidence': {0: 0.90, 1: 0.90, 2: 0.80, 3: 0.80}
-         }
-    ]
-    turns = [hypo['text'] for hypo in asr_hypotheses]
-    print('TURNS: %s \n'%turns)
-
     from elit.client import Client
     elit_model = Client('http://0.0.0.0:8000')
     template_starter_predicates = [(n, 'is_type') for n in POS_NODES + NODES]
     template_file = join('data_structures', 'kg_files', 'elit_dp_templates.kg')
     ttl = ElitDPToLogic("elit dp", kb, elit_model, template_starter_predicates, template_file)
-    mentions,merges = ttl.translate(turns)
+
+    sentence = input('Sentence: ')
+    while sentence != 'q':
+        mentions,merges = ttl.translate([sentence])
+        for mention, cg in mentions.items():
+            print('#'*30)
+            print(mention)
+            print('#' * 30)
+            print(cg.pretty_print())
+        print()
+        for merge in merges:
+            print(merge)
+        print()
+        sentence = input('Sentence: ')
     test = 1

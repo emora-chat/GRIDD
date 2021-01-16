@@ -1,0 +1,28 @@
+nsbj(X/pos(), Y/pos())
+obj(X, Z/pos())
+-> dobj_verb ->
+is_type(X)
+p/X(Y,Z)
+focus(p)
+center(X)
+;
+
+det(X/pos(), Y/dt())
+-> determiner ->
+is_type(X)
+focus(X())
+center(X)
+;
+
+attr(X/pos(), Y/pos())
+-> general_attribute ->
+p/property(X,Y)
+focus(p)
+center(Y)
+;
+
+X/prp()
+-> concept ->
+focus(X)
+center(X)
+;

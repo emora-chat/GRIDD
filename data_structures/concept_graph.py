@@ -333,43 +333,57 @@ class ConceptGraph:
     def pretty_print(self):
         name_counter = defaultdict(int)
         id_map = {}
+        visited = set()
         type_string = ""
         bi_string = ""
         mono_string = ""
-        for s,t,o,i in self.predicates():
+        for sig in self.predicates():
+            type_string, bi_string, mono_string = self._get_representation(sig, id_map, name_counter, visited,
+                                                                           type_string, bi_string, mono_string)
+        full_string = type_string + '\n' + mono_string + '\n' + bi_string
+        return full_string.strip()
+
+    def _get_representation(self, predicate_signature, id_map, name_counter, visited, type_string, bi_string, mono_string):
+        if predicate_signature not in visited:
+            s, t, o, i = predicate_signature
             id_map[t] = t
             concepts = [s, o] if o is not None else [s]
             for concept in concepts:
                 if concept not in id_map:
                     if concept.startswith(self._namespace):
-                        types = self.predicates(concept, 'type')
-                        if len(types) > 0:
-                            ctype = types[0][2]
-                            name_counter[ctype] += 1
-                            id_map[concept] = '%s_%d'%(ctype, name_counter[ctype])
+                        if self.has(predicate_id=concept):
+                            type_string, bi_string, mono_string = self._get_representation(self.predicate(concept),
+                                                                                           id_map, name_counter, visited,
+                                                                                           type_string, bi_string, mono_string)
                         else:
-                            id_map[concept] = concept
+                            types = self.predicates(concept, 'type')
+                            if len(types) > 0:
+                                ctype = types[0][2]
+                                name_counter[ctype] += 1
+                                id_map[concept] = '%s_%d' % (ctype, name_counter[ctype])
+                            else:
+                                id_map[concept] = concept
                     else:
                         id_map[concept] = concept
             if o is not None:
-                pname = id_map[s][0] + id_map[t][0] + id_map[o][0]
+                pname = id_map[s].replace('_', '')[0] + id_map[t].replace('_', '')[0] + id_map[o].replace('_', '')[0]
             else:
-                pname = id_map[s][0] + id_map[t][0]
+                pname = id_map[s].replace('_', '')[0] + id_map[t].replace('_', '')[0]
             name_counter[pname] += 1
             if name_counter[pname] == 1:
                 id_map[i] = pname
             else:
-                id_map[i] = '%s_%d'%(pname, name_counter[pname])
+                id_map[i] = '%s_%d' % (pname, name_counter[pname])
             if o is not None:
-                add = '%s/%s(%s,%s)\n' % (id_map[i], id_map[t], id_map[s], id_map[o])
+                to_add = '%s/%s(%s,%s)\n' % (id_map[i], id_map[t], id_map[s], id_map[o])
                 if id_map[t] == 'type':
-                    type_string += add
+                    type_string += to_add
                 else:
-                    bi_string += add
+                    bi_string += to_add
             else:
                 mono_string += '%s/%s(%s)\n' % (id_map[i], id_map[t], id_map[s])
-        full_string = type_string + '\n' + mono_string + '\n' + bi_string
-        return full_string.strip()
+            visited.add(predicate_signature)
+        return type_string, bi_string, mono_string
 
 
 def _map(current_graph, other_concept, other_namespace, id_map):
