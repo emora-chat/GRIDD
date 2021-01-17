@@ -1,8 +1,21 @@
 nsbj(X/pos(), Y/pos())
 obj(X, Z/pos())
--> dobj_verb ->
+type(X, past_tense)
+-> dobj_past_verb ->
 is_type(X)
 p/X(Y,Z)
+time(p, past)
+focus(p)
+center(X)
+;
+
+nsbj(X/pos(), Y/pos())
+obj(X, Z/pos())
+type(X, present_tense)
+-> dobj_pres_verb ->
+is_type(X)
+p/X(Y,Z)
+time(p, now)
 focus(p)
 center(X)
 ;

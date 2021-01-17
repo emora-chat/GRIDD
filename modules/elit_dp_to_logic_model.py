@@ -13,8 +13,9 @@ logging.basicConfig(level=os.environ.get("LOGLEVEL","ERROR"))
 
 # https://emorynlp.github.io/ddr/doc/pages/overview.html
 
-POS_NODES = ['verb', 'noun', 'pron', 'det', 'adj', 'adv']
-NODES = ['nsubj', 'dobj', 'amod', 'detpred', 'focus', 'center', 'pos', 'exprof', 'ltype']
+PAST_VB_NODES = ['vbd','vbn']
+PRES_VB_NODES = ['vbp', 'vbg', 'vbz']
+NODES = ['focus', 'center', 'pos', 'exprof', 'type', 'ltype']
 
 class CharSpan:
 
@@ -59,7 +60,7 @@ class ElitDPToLogic(TextToLogicModel):
             expression = tokens[token_idx]
             pos = pos_tags[token_idx].lower()
             if not cg.has(pos):
-                cg.add(pos, 'type', 'pos')
+                self.add_pos_type(cg, pos)
             span_node = cg.add(cg._get_next_id())
             self.span_map[cg][span_node] = Span(expression, token_idx, token_idx+1)
             token_to_span_node[token_idx] = span_node
@@ -73,11 +74,20 @@ class ElitDPToLogic(TextToLogicModel):
                 target = token_to_span_node[token_idx]
                 cg.add(source, label, target)
 
+    def add_pos_type(self, cg, pos):
+        cg.add(pos, 'type', 'pos')
+        if pos in PAST_VB_NODES:
+            cg.add(pos, 'type', 'past_tense')
+        if pos in PRES_VB_NODES:
+            cg.add(pos, 'type', 'present_tense')
+
 if __name__ == '__main__':
     kb = KnowledgeBase(join('data_structures', 'kg_files', 'framework_test.kg'))
     from elit.client import Client
     elit_model = Client('http://0.0.0.0:8000')
-    template_starter_predicates = [(n, 'is_type') for n in POS_NODES + NODES]
+    template_starter_predicates = [(n, 'is_type') for n in NODES] #+ \
+                                  # [(n, 'type', 'past_tense') for n in PAST_VB_NODES] + \
+                                  # [(n, 'type', 'present_tense') for n in PRES_VB_NODES]
     template_file = join('data_structures', 'kg_files', 'elit_dp_templates.kg')
     ttl = ElitDPToLogic("elit dp", kb, elit_model, template_starter_predicates, template_file)
 

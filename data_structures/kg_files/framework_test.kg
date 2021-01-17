@@ -14,8 +14,8 @@ house<object>
 house[house]
 
 prop<predicate>
-bought<predicate>
-bought[bought]
+buy<predicate>
+buy[buy,buying,buys,bought,purchase,purchased,purchases,purchasing]
 have<predicate>
 sound<predicate>
 volume<predicate>
@@ -23,9 +23,4 @@ is_color<predicate>
 
 i=person()
 i[i]
-bought(i,c/car())
-prop(c,red)
-have(i,d/dog())
-prop(d,red)
-sound(d,bark)
-volume(bark,loud);
+;
