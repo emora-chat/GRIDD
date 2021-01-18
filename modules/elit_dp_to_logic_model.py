@@ -13,24 +13,13 @@ logging.basicConfig(level=os.environ.get("LOGLEVEL","ERROR"))
 
 # https://emorynlp.github.io/ddr/doc/pages/overview.html
 
-PAST_VB_NODES = ['vbd','vbn']
-PRES_VB_NODES = ['vbp', 'vbg', 'vbz']
+PAST_VB = ['vbd', 'vbn']
+PRES_VB = ['vbp', 'vbg', 'vbz']
+ADJ = ['jj', 'jjr', 'jjs']
+NOUN = ['nn', 'nns', 'nnp', 'nnps']
+PRONOUN = ['prp', 'prpds']
+ADV = ['rb', 'rbr', 'rbs']
 NODES = ['focus', 'center', 'pos', 'exprof', 'type', 'ltype']
-
-class CharSpan:
-
-    def __init__(self, string, start, end):
-        self.string = string
-        self.start = start
-        self.end = end
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return '%s(%d,%d)'%(self.string, self.start, self.end)
-
-
 
 class ElitDPToLogic(TextToLogicModel):
 
@@ -43,6 +32,23 @@ class ElitDPToLogic(TextToLogicModel):
         cg = ConceptGraph(concepts=list(knowledge_base_file.BASE_NODES) + NODES)
         ewm = WorkingMemory(self.knowledge_base)
         ewm.concatenate(cg)
+        for n in ['past_tense', 'present_tense']:
+            ewm.add(n, 'type', 'verb')
+        for n in ['verb', 'noun', 'adj', 'pron', 'adv']:
+            ewm.add(n, 'type', 'pos')
+        ewm.add('pron', 'type', 'noun')
+        for n in PAST_VB:
+            ewm.add(n, 'type', 'past_tense')
+        for n in PRES_VB:
+            ewm.add(n, 'type', 'present_tense')
+        for n in ADJ:
+            ewm.add(n, 'type', 'adj')
+        for n in NOUN:
+            ewm.add(n, 'type', 'noun')
+        for n in PRONOUN:
+            ewm.add(n, 'type', 'pron')
+        for n in ADV:
+            ewm.add(n, 'type', 'adv')
         self.convert(parse_dict["dep"][0], parse_dict["tok"][0], parse_dict["pos"][0], ewm)
         return ewm
 
@@ -55,12 +61,16 @@ class ElitDPToLogic(TextToLogicModel):
         :param pos_tags: list of part of speech tags
         :param cg: the concept graph being created
         """
+        print(tokens)
+        print(pos_tags)
+        print(dependencies)
+        print()
         token_to_span_node = {}
         for token_idx in range(len(tokens)):
             expression = tokens[token_idx]
-            pos = pos_tags[token_idx].lower()
+            pos = pos_tags[token_idx].lower().replace('$','ds')
             if not cg.has(pos):
-                self.add_pos_type(cg, pos)
+                cg.add(pos, 'type', 'pos')
             span_node = cg.add(cg._get_next_id())
             self.span_map[cg][span_node] = Span(expression, token_idx, token_idx+1)
             token_to_span_node[token_idx] = span_node
@@ -74,20 +84,12 @@ class ElitDPToLogic(TextToLogicModel):
                 target = token_to_span_node[token_idx]
                 cg.add(source, label, target)
 
-    def add_pos_type(self, cg, pos):
-        cg.add(pos, 'type', 'pos')
-        if pos in PAST_VB_NODES:
-            cg.add(pos, 'type', 'past_tense')
-        if pos in PRES_VB_NODES:
-            cg.add(pos, 'type', 'present_tense')
 
 if __name__ == '__main__':
     kb = KnowledgeBase(join('data_structures', 'kg_files', 'framework_test.kg'))
     from elit.client import Client
     elit_model = Client('http://0.0.0.0:8000')
-    template_starter_predicates = [(n, 'is_type') for n in NODES] #+ \
-                                  # [(n, 'type', 'past_tense') for n in PAST_VB_NODES] + \
-                                  # [(n, 'type', 'present_tense') for n in PRES_VB_NODES]
+    template_starter_predicates = [(n, 'is_type') for n in NODES]
     template_file = join('data_structures', 'kg_files', 'elit_dp_templates.kg')
     ttl = ElitDPToLogic("elit dp", kb, elit_model, template_starter_predicates, template_file)
 

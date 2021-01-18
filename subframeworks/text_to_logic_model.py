@@ -128,7 +128,13 @@ class TextToLogicModel(Module):
             references = ewm.objects(expression, 'expr')
             if len(references) == 0:
                 unk_node = ewm.add(ewm._get_next_id())
-                ewm.add(unk_node, 'type', 'unknown')
+                types = ewm.supertypes(span_node)
+                pos_type = 'other'
+                for n in ['verb', 'noun', 'pron', 'adj', 'adv']:
+                    if n in types:
+                        pos_type = n
+                        break
+                ewm.add(unk_node, 'type', 'unknown_%s'%pos_type)
                 ewm.add(expression, 'expr', unk_node)
 
     def _inference(self, ewm):
@@ -273,8 +279,12 @@ class TextToLogicModel(Module):
         expression = self._get_expression_of_span(span, ewm)
         if expression is not None:
             (concept_var,) = ewm.objects(expression, 'expr')
-            if ewm.has(concept_var,'type','unknown'):
-                return '_unk_'
+            unknown_type = None
+            for n in ['verb', 'noun', 'pron', 'adj', 'adv', 'other']:
+                if ewm.has(concept_var,'type','unknown_%s' % n):
+                    unknown_type = n
+            if unknown_type is not None:
+                return 'unk_%s'%unknown_type
             return concept_var
         return span
 

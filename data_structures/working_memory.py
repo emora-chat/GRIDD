@@ -102,6 +102,17 @@ class WorkingMemory(ConceptGraph):
                 imps.append(cg)
         return imps
 
+    # todo - efficiency check
+    #  if multiple paths to same ancestor,
+    #  it will pull ancestor's ancestor-chain multiple times
+    def supertypes(self, concept):
+        types = set()
+        for predicate in self.predicates(subject=concept, predicate_type='type'):
+            supertype = predicate[2]
+            types.add(supertype)
+            types.update(self.supertypes(supertype))
+        return types
+
     def rules(self):
         return pl.generate_inference_graphs(self)
 
