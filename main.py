@@ -10,15 +10,15 @@ from modules.mention_bridge import BaseMentionBridge
 from modules.merge_bridge import BaseMergeBridge
 from modules.inference_bridge import BaseInferenceBridge
 
-from modules.allenai_dp_to_logic_model import AllenAIToLogic, POS_NODES, NODES
-from allennlp.predictors.predictor import Predictor
 from os.path import join
 
 from data_structures.knowledge_base import KnowledgeBase
 from data_structures.working_memory import WorkingMemory
 from data_structures.concept_graph import ConceptGraph
 
-from modules.mention_identification_allendp import MentionsAllenDP
+from elit.client import Client
+from modules.elit_dp_to_logic_model import ElitDPToLogic, NODES
+from modules.mention_identification_dp import MentionsDP
 from modules.merge_dp import NodeMergeDP
 from modules.inference_prolog import PrologInference
 
@@ -47,21 +47,22 @@ def run_twice(stage, input):
         return False
     return True
 
-if __name__ == '__main__':
-    print('Building dialogue pipeline...')
+def build_dm(kb, debug=True):
+    if debug:
+        print('Building dialogue pipeline...')
     dm = Framework('Emora')
 
-    kb = KnowledgeBase(join('data_structures', 'kg_files', 'framework_test.kg'))
+    elit_model = Client('http://0.0.0.0:8000')
+    template_starter_predicates = [(n, 'is_type') for n in NODES]
+    template_file = join('data_structures', 'kg_files', 'elit_dp_templates.kg')
+    elit_dp = ElitDPToLogic("elit dp", kb, elit_model, template_starter_predicates, template_file)
+    dm.add_preprocessing_module('dependency parse', elit_dp)
 
-    dependency_parser = Predictor.from_path("https://storage.googleapis.com/allennlp-public-models/biaffine-dependency-parser-ptb-2020.04.06.tar.gz")
-    template_starter_predicates = [(n, 'is_type') for n in POS_NODES + NODES]
-    template_file = join('data_structures', 'kg_files', 'allen_dp_templates.kg')
-    dm.add_preprocessing_module('dependency parse', AllenAIToLogic("allen dp", kb, dependency_parser, template_starter_predicates, template_file))
-
-    dm.add_mention_model({'model': MentionsAllenDP('allen dp mentions')})
-    dm.add_merge_model({'model': NodeMergeDP('allen dp merge')})
+    dm.add_mention_model({'model': MentionsDP('dp mentions')})
+    dm.add_merge_model({'model': NodeMergeDP('dp merge')})
     dm.add_inference_model({'model': PrologInference('prolog inference',
                                                      [join('data_structures', 'kg_files', 'test_inferences.kg')])})
+    # dm.add_inference_model({'model': BaseInference('base inference')})
     dm.add_selection_model({'model': BaseResponseSelection('base selection')})
     dm.add_expansion_model({'model': BaseResponseExpansion('base expansion')})
     dm.add_generation_model({'model': BaseResponseGeneration('base generation')})
@@ -79,8 +80,15 @@ if __name__ == '__main__':
     dm.add_merge_inference_iteration(run_twice)
 
     dm.build_framework()
-    print('Built!\n')
 
+    if debug:
+        print('Built!\n')
+
+    return dm
+
+if __name__ == '__main__':
+    kb = KnowledgeBase(join('data_structures', 'kg_files', 'framework_test.kg'))
+    dm = build_dm(kb)
     working_memory = WorkingMemory(kb)
 
     asr_hypotheses = [

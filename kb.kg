@@ -11,4 +11,15 @@ school<entity>
 question<object>
 
 fido=dog()
+
+user=person()
+user[i,me]
+emora=bot()
+emora[you]
+
+house<object>
+house[house]
+
+buy<predicate>
+buy[buy,buying,buys,bought,purchase,purchased,purchases,purchasing]
 ;

@@ -2,7 +2,7 @@ from typing import List,Dict
 from modules.module import Module
 from data_structures.concept_graph import ConceptGraph
 
-class MentionsAllenDP(Module):
+class MentionsDP(Module):
 
     def __init__(self, name):
         super().__init__(name)
