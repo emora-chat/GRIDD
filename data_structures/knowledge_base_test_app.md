@@ -83,3 +83,32 @@ type(a_44, school) [a_45]
 type(a_41, question) [a_42]
 study(beth, a_41) [a_43]
 ```
+
+## Installation
+Python version: 
+
+`Python3.7`
+
+(1) Follow installation instructions at [pyswip](https://github.com/yuce/pyswip/blob/master/INSTALL.md) 
+to install the latest version of SWI-Prolog.
+
+* Note 1: For MacOS installation, for Step 3 (exporting executables), the given example paths 
+may not be correct for your computer. To determine your `PATH` update, find where the `SWI-Prolog` executable file is located.
+To determine your `DYLD_FALLBACK_LIBRARY_PATH` update, find where the `libswipl.dylib` file is located.
+For our development machine, we used the following export commands:
+```
+export PATH=$PATH:/Applications/SWI-Prolog.app/Contents/MacOS
+export DYLD_FALLBACK_LIBRARY_PATH=/Applications/SWI-Prolog.app/Contents/Frameworks
+```
+
+<!--- * Note 2: For MacOS installation, add the two export commands to the end of the file: `~/.bash_profile`.
+When you open a new terminal, the changes you made to your `bash_profile` will take effect.--->
+
+* Note 2: For MacOS, update the `PATH` variable of your `environment variables` execution configuration to contain the location identified in Note 1.
+And add the `DYLD_FALLBACK_LIBRARY_PATH` variable from Note 1 to your `environment variables` script execution configuration as well. If you are 
+using Pycharm, you can do this through the `Edit Configurations...` option of your script execution.
+
+(2) Install required dependencies:
+
+`pip install -r GRIDD/requirements.txt`
+    
