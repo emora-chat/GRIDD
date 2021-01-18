@@ -4,9 +4,9 @@
 **The knowledge base test app is an iteractive console app for testing knowledge base
 predicates and implication rules.**
 
-1. **Run** `knowledge_base_test_app.py` (working directory=`GRIDD` folder)
+1. **Run** `GRIDD/data_structures/knowledge_base_test_app.py` (working directory=`GRIDD` folder)
 
-2. **Edit** files `kb.kg` and `rules.kg`:
+2. **Edit** files `GRIDD/kb.kg` and `GRIDD/rules.kg`:
 
     - `kb.kg` defines predicates in the knowledge base
     - `rules.kg` defines rules to apply to input predicates
@@ -90,7 +90,7 @@ Python version:
 `Python3.7`
 
 (1) Follow installation instructions at [pyswip](https://github.com/yuce/pyswip/blob/master/INSTALL.md) 
-to install the latest version of SWI-Prolog.
+to install the latest stable version of SWI-Prolog.
 
 * Note 1: For MacOS installation, for Step 3 (exporting executables), the given example paths 
 may not be correct for your computer. To determine your `PATH` update, find where the `SWI-Prolog` executable file is located.
