@@ -1,4 +1,4 @@
-from subframeworks.text_to_logic_model import TextToLogicModel
+from subframeworks.text_to_logic_model import TextToLogicModel, Span
 
 from data_structures.concept_graph import ConceptGraph
 from data_structures.knowledge_base import KnowledgeBase
@@ -15,18 +15,7 @@ logging.basicConfig(level=os.environ.get("LOGLEVEL","ERROR"))
 POS_NODES = ['verb', 'noun', 'pron', 'det', 'adj', 'adv']
 NODES = ['nsubj', 'dobj', 'amod', 'detpred', 'focus', 'center', 'pos', 'exprof', 'ltype']
 
-class CharSpan:
 
-    def __init__(self, string, start, end):
-        self.string = string
-        self.start = start
-        self.end = end
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return '%s(%d,%d)'%(self.string, self.start, self.end)
 
 class AllenAIToLogic(TextToLogicModel):
 
@@ -64,7 +53,7 @@ class AllenAIToLogic(TextToLogicModel):
         if len(spans) > 1:
             print('WARNING! dp element %s has more than one span' % expression)
             print(spans)
-        charspan = CharSpan(expression,spans[0]['start'],spans[0]['end'])
+        charspan = Span(expression,spans[0]['start'],spans[0]['end'])
         self.span_map[cg][span_node] = charspan
 
         expression = '"%s"' % expression

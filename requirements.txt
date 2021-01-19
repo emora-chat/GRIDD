@@ -1,5 +1,2 @@
-networkx==2.5
-latk-parser==0.11.1
+lark-parser==0.11.1
 pyswip==0.2.10
-allennlp==1.0.0
-allennlp-models==1.0.0

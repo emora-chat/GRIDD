@@ -28,12 +28,7 @@ class BaseMergeBridge(Module):
                 # print('\tConsidering concepts (%s,%s)'%(concept1,concept2))
                 working_memory.merge(concept1, concept2)
         print("\nWM AFTER MERGES::")
-        for s,t,o,i in working_memory.predicates():
-            if o is not None:
-                print('\t[%s]\t-> %s(%s,%s)'%(i,t,s,o))
-            else:
-                if t not in ['var','is_type']:
-                    print('\t[%s]\t-> %s(%s)'%(i,t,s))
+        print(working_memory.pretty_print())
         print()
 
         return False

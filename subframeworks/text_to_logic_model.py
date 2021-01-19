@@ -10,6 +10,19 @@ from structpy.map.bijective.bimap import Bimap
 
 DEBUG=False
 
+class Span:
+
+    def __init__(self, string, start, end):
+        self.string = string
+        self.start = start
+        self.end = end
+
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        return '%s(%d,%d)'%(self.string, self.start, self.end)
+
 class TextToLogicModel(Module):
 
     def __init__(self, name, knowledge_base, model, template_starter_predicates, *template_file_names):
@@ -115,7 +128,13 @@ class TextToLogicModel(Module):
             references = ewm.objects(expression, 'expr')
             if len(references) == 0:
                 unk_node = ewm.add(ewm._get_next_id())
-                ewm.add(unk_node, 'type', 'unknown')
+                types = ewm.supertypes(span_node)
+                pos_type = 'other'
+                for n in ['verb', 'noun', 'pron', 'adj', 'adv']:
+                    if n in types:
+                        pos_type = n
+                        break
+                ewm.add(unk_node, 'type', 'unknown_%s'%pos_type)
                 ewm.add(expression, 'expr', unk_node)
 
     def _inference(self, ewm):
@@ -260,8 +279,12 @@ class TextToLogicModel(Module):
         expression = self._get_expression_of_span(span, ewm)
         if expression is not None:
             (concept_var,) = ewm.objects(expression, 'expr')
-            if ewm.has(concept_var,'type','unknown'):
-                return '_unk_'
+            unknown_type = None
+            for n in ['verb', 'noun', 'pron', 'adj', 'adv', 'other']:
+                if ewm.has(concept_var,'type','unknown_%s' % n):
+                    unknown_type = n
+            if unknown_type is not None:
+                return 'unk_%s'%unknown_type
             return concept_var
         return span
 

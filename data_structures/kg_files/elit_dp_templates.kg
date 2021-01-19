@@ -1,0 +1,51 @@
+nsbj(X/verb(), Y/pos())
+obj(X, Z/pos())
+type(X, past_tense)
+-> dobj_past_verb ->
+is_type(X)
+p/X(Y,Z)
+time(p, past)
+focus(p)
+center(X)
+;
+
+nsbj(X/verb(), Y/pos())
+obj(X, Z/pos())
+type(X, present_tense)
+-> dobj_pres_verb ->
+is_type(X)
+p/X(Y,Z)
+time(p, now)
+focus(p)
+center(X)
+;
+
+nsbj(X/verb(), Y/pos())
+type(X, past_tense)
+-> no_obj_past_verb ->
+is_type(X)
+p/X(Y)
+time(p, past)
+focus(p)
+center(X)
+;
+
+det(X/pos(), Y/dt())
+-> determiner ->
+is_type(X)
+focus(X())
+center(X)
+;
+
+attr(X/pos(), Y/pos())
+-> general_attribute ->
+p/property(X,Y)
+focus(p)
+center(Y)
+;
+
+X/noun()
+-> concept ->
+focus(X)
+center(X)
+;
