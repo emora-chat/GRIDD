@@ -1,6 +1,5 @@
-nsbj(X/verb(), Y/pos())
+nsbj(X/past_tense(), Y/pos())
 obj(X, Z/pos())
-type(X, past_tense)
 -> dobj_past_verb ->
 is_type(X)
 p/X(Y,Z)
@@ -9,9 +8,8 @@ focus(p)
 center(X)
 ;
 
-nsbj(X/verb(), Y/pos())
+nsbj(X/present_tense(), Y/pos())
 obj(X, Z/pos())
-type(X, present_tense)
 -> dobj_pres_verb ->
 is_type(X)
 p/X(Y,Z)
@@ -20,12 +18,33 @@ focus(p)
 center(X)
 ;
 
-nsbj(X/verb(), Y/pos())
-type(X, past_tense)
+nsbj(X/past_tense(), Y/pos())
 -> no_obj_past_verb ->
 is_type(X)
 p/X(Y)
 time(p, past)
+focus(p)
+center(X)
+;
+
+nsbj(X/noun(), Y/pos())
+obj(X, Z/pos())
+lv(X, U/past_tense())
+-> light_verb_past ->
+is_type(X)
+p/X(Y,Z)
+time(p, past)
+focus(p)
+center(X)
+;
+
+nsbj(X/noun(), Y/pos())
+obj(X, Z/pos())
+lv(X, U/present_tense())
+-> light_verb_present ->
+is_type(X)
+p/X(Y,Z)
+time(p, present)
 focus(p)
 center(X)
 ;

@@ -23,7 +23,7 @@ class Span:
     def __str__(self):
         return '%s(%d,%d)'%(self.string, self.start, self.end)
 
-class TextToLogicModel(Module):
+class ParsingModel(Module):
 
     def __init__(self, name, knowledge_base, model, template_starter_predicates, *template_file_names):
         super().__init__(name)

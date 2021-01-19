@@ -1,4 +1,4 @@
-from subframeworks.text_to_logic_model import TextToLogicModel, Span
+from modules.parsing_model import ParsingModel, Span
 
 from data_structures.concept_graph import ConceptGraph
 from data_structures.knowledge_base import KnowledgeBase
@@ -21,7 +21,7 @@ PRONOUN = ['prp', 'prpds']
 ADV = ['rb', 'rbr', 'rbs']
 NODES = ['focus', 'center', 'pos', 'exprof', 'type', 'ltype']
 
-class ElitDPToLogic(TextToLogicModel):
+class ElitDPToLogic(ParsingModel):
 
     def text_to_graph(self, turns):
         """

@@ -18,9 +18,8 @@ from data_structures.concept_graph import ConceptGraph
 
 from elit.client import Client
 from modules.elit_dp_to_logic_model import ElitDPToLogic, NODES
-from modules.mention_identification_dp import MentionsDP
-from modules.merge_dp import NodeMergeDP
-from modules.inference_prolog import PrologInference
+from modules.merge_syntax import MergeSyntax
+from modules.inference_rule_based import InferenceRuleBased
 
 import time
 from os.path import join
@@ -59,9 +58,9 @@ def build_dm(kb, debug=True):
     dm.add_preprocessing_module('dependency parse', elit_dp)
 
     dm.add_mention_model({'model': MentionsDP('dp mentions')})
-    dm.add_merge_model({'model': NodeMergeDP('dp merge')})
-    dm.add_inference_model({'model': PrologInference('prolog inference',
-                                                     [join('data_structures', 'kg_files', 'test_inferences.kg')])})
+    dm.add_merge_model({'model': MergeSyntax('dp merge')})
+    dm.add_inference_model({'model': InferenceRuleBased('prolog inference',
+                                                        [join('data_structures', 'kg_files', 'test_inferences.kg')])})
     # dm.add_inference_model({'model': BaseInference('base inference')})
     dm.add_selection_model({'model': BaseResponseSelection('base selection')})
     dm.add_expansion_model({'model': BaseResponseExpansion('base expansion')})

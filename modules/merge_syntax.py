@@ -1,6 +1,6 @@
 from modules.module import Module
 
-class NodeMergeDP(Module):
+class MergeSyntax(Module):
 
     def __init__(self, name):
         super().__init__(name)
@@ -16,6 +16,6 @@ class NodeMergeDP(Module):
         return self.framework.nlp_data['dependency parse'][1]
 
 if __name__ == '__main__':
-    merge = NodeMergeDP('dp merge')
+    merge = MergeSyntax('dp merge')
     sentence = "I love math"
     output = merge.run(sentence, {})

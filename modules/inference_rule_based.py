@@ -1,7 +1,7 @@
 from modules.module import Module
 from data_structures.knowledge_base import KnowledgeBase
 
-class PrologInference(Module):
+class InferenceRuleBased(Module):
 
     def __init__(self, name, infer_files):
         super().__init__(name)
