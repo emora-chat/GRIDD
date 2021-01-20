@@ -3,10 +3,7 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from data_structures.concept_graph import ConceptGraph
 from data_structures.knowledge_parser import KnowledgeParser
-from data_structures.working_memory import WorkingMemory
 import data_structures.prolog as pl
-from modules.module import Module
-from structpy.map.bijective.bimap import Bimap
 
 DEBUG=False
 
@@ -23,12 +20,10 @@ class Span:
     def __str__(self):
         return '%s(%d,%d)'%(self.string, self.start, self.end)
 
-class TextToLogic(Module):
+class TextToLogic:
 
-    def __init__(self, name, knowledge_base, model, template_starter_predicates, *template_file_names):
-        super().__init__(name)
+    def __init__(self, knowledge_base, template_starter_predicates, *template_file_names):
         self.knowledge_base = knowledge_base
-        self.model = model
         self.templates = ConceptGraph(predicates=template_starter_predicates)
         self._template_parser = KnowledgeParser(kg=self.templates, base_nodes=self.templates.concepts(), loading_kb=False)
         ordered_rule_ids = self.load_templates(*template_file_names)
@@ -84,25 +79,21 @@ class TextToLogic(Module):
             pregraph.add(n, 'var')
 
     @abstractmethod
-    def text_to_graph(self, turns):
+    def text_to_graph(self, *args):
         """
-        turns: list of strings representing dialogue turns.
         return: ConceptGraph representation of the text's surface form.
                 For example, a graph of the dependency parse of the last turn.
         """
         pass
 
-    def run(self, input, working_memory):
+    def __call__(self, *args, **kwargs):
         """
-        :param input: asr hypotheses
-        :param working_memory: current working memory
-        :return:
+        Run the text to logic algorithm using *args as input to translate()
         """
-        turns = [hypo['text'] for hypo in input]
-        return (*self.translate(turns), self.span_map)
+        return (*self.translate(*args), self.span_map)
 
-    def translate(self, turns):
-        ewm = self.text_to_graph(turns)
+    def translate(self, *args):
+        ewm = self.text_to_graph(*args)
         self._expression_pull(ewm)
         self._unknown_expression_identification(ewm)
         rule_assignments = self._inference(ewm)

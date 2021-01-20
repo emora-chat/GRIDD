@@ -1,4 +1,3 @@
-
 import json, time
 from collections import defaultdict
 from pyswip import Prolog, Variable
@@ -22,13 +21,12 @@ class TransformationRule:
         else:
             return self.concept_id == other.concept_id
 
+
 def generate_inference_graphs(cg, ordered_rule_ids=None):
     """
     Identifies the inference rules and their corresponding implications in the given
     concept graph `cg`.
-
-    Returns
-        dict<rule_id: TransformationRule object>
+    :returns dict<rule_id: TransformationRule object>
     """
     inferences = {}
     implications = {}
@@ -95,8 +93,7 @@ def infer(knowledge_graph, inference_rules):
     """
     Get variable assignments of solutions from applying each query graph from the
     `inference rules` dict on the `knowledge_graph`
-
-    Returns dict<rule_id: list of solutions (variable assignments)>
+    :returns dict<rule_id: list of solutions (variable assignments)>
     """
     class PyswipEncoder(json.JSONEncoder):
         def default(self, obj):
@@ -110,27 +107,18 @@ def infer(knowledge_graph, inference_rules):
     prolog = Prolog()
     for rule in kg_rules:
         prolog.assertz(rule)
-    # strrules = '.\n'.join(kg_rules)
 
     solutions = {}
     for rule_id, rule in inference_rules.items():
-        # print('rule %s'%str(rule_id))
         inference_query, inference_map = to_query_prolog(rule.precondition)
-        # print(json.dumps(inference_map.reverse(), indent=4))
-        s = time.time()
         solns = list(prolog.query(inference_query))
         parsed_solns = [json.loads(json.dumps(soln, cls=PyswipEncoder)) for soln in solns]
-        # print('Num solutions: %d'%len(parsed_solns))
-        # print('** SOLUTIONS **')
-        # for soln in parsed_solns:
-        #     print(json.dumps(soln, indent=4))
         solutions[rule] = []
         for match in parsed_solns:
             variable_assignments = {}
             for key, value in inference_map.items():
                 variable_assignments[key] = match[value]
             solutions[rule].append(variable_assignments)
-        # print('Ran inference (rule %s) in %.3f'%(str(rule_id), time.time()-s))
 
     for rule in kg_rules:
         prolog.retract(rule)
@@ -159,7 +147,6 @@ def to_knowledge_prolog(cg):
 
     one_non_ont_predicate = False
     for s, t, o, i in tmp.predicates():
-        # s,t,o,i = _lower(s,t,o,i)
         if o is not None:   # bipredicate
             if t == 'type':
                 type_rules.append('type(%s,%s)' % (s, o))
@@ -174,29 +161,22 @@ def to_knowledge_prolog(cg):
         rules.append('predinst(xtestx(xax, xbx), xnx)')
     return type_rules + rules
 
-def _lower(*strings):
-    for string in strings:
-        if string is not None:
-            yield string.lower()
-        else:
-            yield None
 
 def to_query_prolog(cg):
     """
-    Convert cg to query rules for Prolog.
-
-    `cg` contains one inference rule specification.
+    Convert cg to query rules for Prolog, where `cg` contains one inference rule specification.
     """
     next = 0
     map = Bimap()
+    vars = set()
     rules = []
     for subject, pred_type, object, inst_id in cg.predicates():
-        # subject, pred_type, object, inst_id = _lower(subject, pred_type, object, inst_id)
         if object is not None:              # bipredicate
             if pred_type == 'type':
                 if subject not in map:
                     if cg.has(subject, 'var'):
                         map[subject] = identification_string(next, chars=CHARS)
+                        vars.add(subject)
                         next += 1
                     else:
                         map[subject] = subject
@@ -208,11 +188,13 @@ def to_query_prolog(cg):
                 map[str_repr] = pred_var
                 if pred_type not in map:
                     map[pred_type] = identification_string(next, chars=CHARS)
+                    vars.add(pred_type)
                     next += 1
                 for arg in [inst_id, subject, object]:
                     if arg not in map:
                         if cg.has(arg, 'var'):
                             map[arg] = identification_string(next, chars=CHARS)
+                            vars.add(arg)
                             next += 1
                         else:
                             map[arg] = arg
@@ -234,11 +216,13 @@ def to_query_prolog(cg):
                 map[str_repr] = pred_var
                 if pred_type not in map:
                     map[pred_type] = identification_string(next, chars=CHARS)
+                    vars.add(pred_type)
                     next += 1
                 for arg in [inst_id, subject]:
                     if arg not in map:
                         if cg.has(arg, 'var'):
                             map[arg] = identification_string(next, chars=CHARS)
+                            vars.add(arg)
                             next += 1
                         else:
                             map[arg] = arg
@@ -251,5 +235,5 @@ def to_query_prolog(cg):
                 predinst_disj = '(%s;%s)' % (predinst_unspec, predinst_spec)
                 arg1 = 'arg(1,%s,%s)' % (pred_var, map[subject])
                 rules.extend([predinst_disj, arg1])
-    return ', '.join(rules), map
+    return ', '.join(rules), {var: map[var] for var in vars}
 

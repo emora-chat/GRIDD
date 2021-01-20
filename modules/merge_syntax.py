@@ -1,21 +1,30 @@
-from modules.module import Module
 
-class MergeSyntax(Module):
+class MergeSyntax:
 
-    def __init__(self, name):
-        super().__init__(name)
-
-    def run(self, input, working_memory):
+    def __call__(self, *args, **kwargs):
         """
-        Calculate node merge scores for pairs of nodes
+        Calculate node merge scores for pairs of nodes in working_memory
+        based on dependency parse merge outputs
 
-        :param input: binary from mention or inference bridge indicating their status
-        :param graph: updated graph after Mention Bridge
-        :return: dictionary <tuple pair: float merge score>
+        args[0] - span merge scores based on dependency parse
+        args[1] - span dict
+        args[2] - working memory
         """
-        return self.framework.nlp_data['dependency parse'][1]
+        span_merges, span_dict, working_memory = args
+        node_merges = []
+        for (spanobj1, pos1), (spanobj2, pos2) in span_merges:
+            span1 = span_dict[spanobj1]
+            span2 = span_dict[spanobj2]
+            (concept1,) = working_memory.objects(span1, 'exprof')
+            concept1 = self._follow_path(concept1, pos1, working_memory)
+            (concept2,) = working_memory.objects(span2, 'exprof')
+            concept2 = self._follow_path(concept2, pos2, working_memory)
+            node_merges.append((concept1,concept2))
+        return node_merges
 
-if __name__ == '__main__':
-    merge = MergeSyntax('dp merge')
-    sentence = "I love math"
-    output = merge.run(sentence, {})
+    def _follow_path(self, concept, pos, working_memory):
+        if pos == 'subject':
+            return working_memory.subject(concept)
+        elif pos == 'object':
+            return working_memory.object(concept)
+        return concept

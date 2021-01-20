@@ -90,9 +90,15 @@ class Pipeline:
             {k: (set(v) if hasattr(v, '__iter__') else {v}) for k, v in tags.items()}
         for stage in self._stages:
             if stage in self._tags:
-                self._tags[stage].add(stage.fn.__name__)
+                if hasattr(stage.fn, __name__):
+                    self._tags[stage].add(stage.fn.__name__)
+                else:
+                    self._tags[stage].add(type(stage.fn).__name__)
             else:
-                self._tags[stage] = {stage.fn.__name__}
+                if hasattr(stage.fn, __name__):
+                    self._tags[stage] = {stage.fn.__name__}
+                else:
+                    self._tags[stage] = {type(stage.fn).__name__}
 
     def __call__(self, *args, **kwargs):
         inputs = {n for n in self._graph.nodes() if len(self._graph.in_edges(n)) == 0}

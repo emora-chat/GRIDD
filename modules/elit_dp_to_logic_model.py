@@ -23,12 +23,13 @@ NODES = ['focus', 'center', 'pos', 'exprof', 'type', 'ltype']
 
 class ElitDPToLogic(TextToLogic):
 
-    def text_to_graph(self, turns):
+    def text_to_graph(self, *args):
         """
-        Given the ELIT Dependency Parse attachment list, transform it into a concept graph
+        Transform the ELIT Dependency Parse attachment list into a concept graph,
+        supported with the token and pos tag lists
+        args[0,1,2] - tok, pos, dp
         :return dependency parse cg
         """
-        parse_dict = self.model.parse([turns[-1]], models=['tok', 'pos', 'ner', 'srl', 'dep'])
         cg = ConceptGraph(concepts=list(knowledge_base_file.BASE_NODES) + NODES)
         ewm = WorkingMemory(self.knowledge_base)
         ewm.concatenate(cg)
@@ -49,11 +50,11 @@ class ElitDPToLogic(TextToLogic):
             ewm.add(n, 'type', 'pron')
         for n in ADV:
             ewm.add(n, 'type', 'adv')
-        self.convert(parse_dict["dep"][0], parse_dict["tok"][0], parse_dict["pos"][0], ewm)
+        self.convert(*args, ewm)
         return ewm
 
     # todo - verify that POS tags and DP labels are disjoint
-    def convert(self, dependencies, tokens, pos_tags, cg):
+    def convert(self, tokens, pos_tags, dependencies, cg):
         """
         Add dependency parse links into the expression concept graph
         :param dependencies: list of dependency relations
@@ -87,11 +88,9 @@ class ElitDPToLogic(TextToLogic):
 
 if __name__ == '__main__':
     kb = KnowledgeBase(join('data_structures', 'kg_files', 'framework_test.kg'))
-    from elit.client import Client
-    elit_model = Client('http://0.0.0.0:8000')
     template_starter_predicates = [(n, 'is_type') for n in NODES]
     template_file = join('data_structures', 'kg_files', 'elit_dp_templates.kg')
-    ttl = ElitDPToLogic("elit dp", kb, elit_model, template_starter_predicates, template_file)
+    ttl = ElitDPToLogic("elit dp", kb, template_starter_predicates, template_file)
 
     sentence = input('Sentence: ')
     while sentence != 'q':

@@ -1,19 +1,11 @@
-from typing import List, Dict
-from modules.module import Module
 
-class BaseInferenceBridge(Module):
+class InferenceBridge:
 
-    def __init__(self, name):
-        super().__init__(name)
-
-    def run(self, input, working_memory):
+    def __call__(self, *args, **kwargs):
         """
-
-        :param input: inference output (graph of inferred additions)
-        :param graph: dialogue graph updated by merge pipeline
-        :return: binary indicating whether update was done
+        Add implications to working memory
+        args[0] - list of implication cgs
+        args[1] - working memory
         """
-        # working_memory.update(input)
-        # return True
         print('You have reached the end of the implemented Pipeline. It currently only performs NLU and inferences.')
         return '__EXIT__'

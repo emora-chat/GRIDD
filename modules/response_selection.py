@@ -1,9 +1,5 @@
-from modules.module import Module
 
-class BaseResponseSelection(Module):
-
-    def __init__(self, name):
-        super().__init__(name)
+class BaseResponseSelection:
 
     def run(self, input, working_memory):
         """

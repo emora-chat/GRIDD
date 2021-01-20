@@ -1,19 +1,15 @@
-from modules.module import Module
-from data_structures.knowledge_base import KnowledgeBase
 
-class InferenceRuleBased(Module):
+class InferenceRuleBased:
 
-    def __init__(self, name, infer_files):
-        super().__init__(name)
+    def __init__(self, infer_files):
         self.inference_files = infer_files
 
-    def run(self, input, working_memory):
+    def __call__(self, *args, **kwargs):
         """
-
-        :param input: None object from merge pipeline
-        :param working_memory: dialogue graph updated by merge pipeline
-        :return: list of implication graphs
+        Gather implications of applying inference rules to working memory
+        args[0] - working memory
         """
+        working_memory = args[0]
         implications = working_memory.implications(*self.inference_files)
         self.display_implications(implications)
         return implications
@@ -21,10 +17,5 @@ class InferenceRuleBased(Module):
     def display_implications(self, implications):
         print("\nINFERENCES::")
         for cg in implications:
-            for s, t, o, i in cg.predicates():
-                if t not in ['var', 'is_type']:
-                    if o is not None:
-                        print('%s(%s, %s) [%s]'%(t,s,o,i))
-                    else:
-                        print('%s(%s) [%s]' % (t, s, i))
+            print(cg.pretty_print())
             print()

@@ -1,9 +1,5 @@
-from modules.module import Module
 
-class BaseResponseExpansion(Module):
-
-    def __init__(self, name):
-        super().__init__(name)
+class BaseResponseExpansion:
 
     def run(self, input, working_memory):
         """

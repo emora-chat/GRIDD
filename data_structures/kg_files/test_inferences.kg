@@ -1,4 +1,5 @@
-bought(X/person(),Y/house())
+p/buy(X/person(),Y/house())
+time(p,past)
 =>
 h/happy(X)
 focus(h)
