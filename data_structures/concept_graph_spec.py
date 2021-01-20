@@ -305,7 +305,7 @@ class ConceptGraphSpec:
         assert concept_graph.concepts() == {'fluffy','bark','princess','hiss','volume','loud','friend',
                                             '1_0', '1_1', '1_2', '1_3', '1_4'}
 
-    def pretty_print(concept_graph):
+    def pretty_print(concept_graph, predicate_exclusions=None):
         """
         Prints the predicates of concept_graph in a human-readable format,
         defined by the knowledge base text file format.
@@ -326,6 +326,20 @@ class ConceptGraphSpec:
             'fb/bark(fluffy)',
             'pff/friend(princess,fluffy)',
             'ffp/friend(fluffy,princess)',
+            'dte/type(dog,entity)',
+            'ptd/type(polly,dog)',
+            'dtd/type(dog_1,dog)',
+            'dtd_2/type(dog_2,dog)',
+            'ph_2/hiss(polly)',
+            'pvl_2/volume(ph_2,loud)'
+        }
+
+        print_collection = set(concept_graph.pretty_print(predicate_exclusions={'friend'}).split('\n'))
+        assert print_collection == {
+            '',
+            'ph/hiss(princess)',
+            'pvl/volume(ph,loud)',
+            'fb/bark(fluffy)',
             'dte/type(dog,entity)',
             'ptd/type(polly,dog)',
             'dtd/type(dog_1,dog)',
