@@ -86,6 +86,7 @@ class WorkingMemory(ConceptGraph):
         solutions_dict = pl.infer(self, rules_to_run)
         return solutions_dict
 
+    # todo - move core logic to prolog.py
     def implications(self, *types_or_rules):
         imps = []
         solutions_dict = self.inferences(*types_or_rules)
