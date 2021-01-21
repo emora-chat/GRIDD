@@ -1,15 +1,4 @@
-nsbj(X/past_tense(),Y/pos())
-exprof(X,A/expression())
-expr(A,go)
-comp(X, Z/vbg())
--> go_plus_ing_past ->
-is_type(Z)
-p/Z(Y)
-time(p,past)
-focus(p)
-center(Z)
-markcover(X)
-;
+
 
 nsbj(X/past_tense(), Y/pos())
 obj(X, Z/pos())
@@ -60,6 +49,15 @@ p/X(Y,Z)
 time(p, present)
 focus(p)
 center(X)
+;
+
+ppmod(X/pos(), Y/pos())
+case(Y, Z/pos())
+-> preposition_phrase ->
+is_type(Z)
+p/Z(X,Y)
+focus(p)
+center(Z)
 ;
 
 det(X/pos(), Y/dt())

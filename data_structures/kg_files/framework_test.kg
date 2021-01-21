@@ -21,8 +21,15 @@ yellow[yellow]
 orange<color>
 orange[orange]
 
+in<predicate>
+in[in]
+to<predicate>
+to[to]
+
 house<object>
 house[house]
+georgia<object>
+georgia[georgia]
 
 buy<predicate>
 buy[buy,buying,buys,bought,purchase,purchased,purchases,purchasing]

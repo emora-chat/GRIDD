@@ -91,6 +91,7 @@ class ParseToLogic:
         """
         Run the text to logic algorithm using *args as input to translate()
         """
+        self.span_map = {}
         return (*self.translate(*args), self.span_map)
 
     def translate(self, *args):
