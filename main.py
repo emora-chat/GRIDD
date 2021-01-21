@@ -5,6 +5,7 @@ from data_structures.knowledge_base import KnowledgeBase
 from data_structures.working_memory import WorkingMemory
 
 from data_structures.pipeline import Pipeline
+from modules.sentence_casing import SentenceCaser
 from modules.elit_models import ElitModels
 from modules.elit_dp_to_logic_model import ElitDPToLogic, NODES
 from modules.merge_syntax import MergeSyntax
@@ -30,8 +31,11 @@ def build_dm_pipeline(kb):
 
     inference_bridge = Pipeline.component(InferenceBridge())
 
+    sentence_caser = Pipeline.component(SentenceCaser())
+
     return Pipeline(
-        ('utter', 'wm') > elit_models > ('tok', 'pos', 'dp'),
+        ('utter', 'wm') > sentence_caser > ('cased_utter'),
+        ('cased_utter') > elit_models > ('tok', 'pos', 'dp'),
         ('tok', 'pos', 'dp') > elit_dp > ('dp_mentions', 'dp_merges', 'span_dict'),
         ('dp_mentions', 'span_dict', 'wm') > mention_bridge > ('wm_span_dict', 'wm_after_mentions'),
         ('dp_merges', 'wm_span_dict', 'wm_after_mentions') > merge_dp > ('node_merges'),

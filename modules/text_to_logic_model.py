@@ -20,7 +20,7 @@ class Span:
     def __str__(self):
         return '%s(%d,%d)'%(self.string, self.start, self.end)
 
-class TextToLogic:
+class ParseToLogic:
 
     def __init__(self, knowledge_base, template_starter_predicates, *template_file_names):
         self.knowledge_base = knowledge_base

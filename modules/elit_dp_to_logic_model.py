@@ -1,4 +1,4 @@
-from modules.text_to_logic_model import TextToLogic, Span
+from modules.text_to_logic_model import ParseToLogic, Span
 
 from data_structures.concept_graph import ConceptGraph
 from data_structures.knowledge_base import KnowledgeBase
@@ -21,7 +21,7 @@ PRONOUN = ['prp', 'prpds']
 ADV = ['rb', 'rbr', 'rbs']
 NODES = ['focus', 'center', 'pos', 'exprof', 'type', 'ltype']
 
-class ElitDPToLogic(TextToLogic):
+class ElitDPToLogic(ParseToLogic):
 
     def text_to_graph(self, *args):
         """
@@ -62,10 +62,6 @@ class ElitDPToLogic(TextToLogic):
         :param pos_tags: list of part of speech tags
         :param cg: the concept graph being created
         """
-        print(tokens)
-        print(pos_tags)
-        print(dependencies)
-        print()
         token_to_span_node = {}
         for token_idx in range(len(tokens)):
             expression = tokens[token_idx]

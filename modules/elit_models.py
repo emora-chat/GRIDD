@@ -13,4 +13,8 @@ class ElitModels:
         returns (list of tokens, list of pos tags, list of dependency parse connections
         """
         parse_dict = self.model.parse([args[0]], models=['tok', 'pos', 'ner', 'srl', 'dep'])
-        return parse_dict["tok"][0], parse_dict["pos"][0], parse_dict["dep"][0]
+        print(parse_dict["tok"][0])
+        print(parse_dict["pos"][0])
+        print(parse_dict["dep"][0])
+        print()
+        return [tok.lower() for tok in parse_dict["tok"][0]], parse_dict["pos"][0], parse_dict["dep"][0]
