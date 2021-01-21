@@ -30,7 +30,7 @@ class ParseToLogic:
         self.rules = pl.generate_inference_graphs(self.templates, ordered_rule_ids)
         for rule_id, rule in self.rules.items():
             self._reference_expansion(rule.precondition)
-        self.span_map = defaultdict(dict)
+        self.span_map = {}
 
     def load_templates(self, *filenames_or_logicstrings):
         ordered_rule_ids = []
@@ -56,8 +56,9 @@ class ParseToLogic:
         between referred concept and the supertype.
         """
         for concept in pregraph.concepts():
-            if pregraph.has(concept, 'var') and not pregraph.has(predicate_id=concept):
-                # found variable entity instance
+            if pregraph.has(concept, 'var') and not pregraph.has(predicate_id=concept) \
+                and len(pregraph.predicates(concept, 'exprof')) == 0 and len(pregraph.predicates(concept, 'expr')) == 0:
+                # found variable entity instance that does not already have expression defined as part of rule
                 found_supertype = False
                 for supertype in pregraph.objects(concept, 'ltype'):
                     found_supertype = True
@@ -108,13 +109,13 @@ class ParseToLogic:
         """
         Pull expressions from KB into the expression working_memory
         """
-        ewm.pull(order=1, concepts=['"%s"'%span_obj.string for span_node, span_obj in self.span_map[ewm].items()])
+        ewm.pull(order=1, concepts=['"%s"'%span_obj.string for span_node, span_obj in self.span_map.items()])
 
     def _unknown_expression_identification(self, ewm):
         """
         Create "UNK" expression nodes for all nodes with no expr references.
         """
-        for span_node, span_object in self.span_map[ewm].items():
+        for span_node, span_object in self.span_map.items():
             expression = '"%s"' % span_object.string
             references = ewm.objects(expression, 'expr')
             if len(references) == 0:
@@ -145,7 +146,7 @@ class ParseToLogic:
 
         assignments: dict<rule: list<assignments>>
         """
-        centers_handled = set()
+        centers_handled = set() # `markcover` predicates also used here
         mentions = {}
         for rule, solutions in assignments.items():
             pre, post = rule.precondition, rule.postcondition
@@ -244,7 +245,7 @@ class ParseToLogic:
         return merges
 
     def _lookup_span(self, cg, span_node):
-        return self.span_map[cg][span_node]
+        return self.span_map[span_node]
 
     def display_mentions(self, mentions, ewm):
         """

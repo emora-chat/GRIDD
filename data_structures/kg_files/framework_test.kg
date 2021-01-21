@@ -26,6 +26,15 @@ house[house]
 
 buy<predicate>
 buy[buy,buying,buys,bought,purchase,purchased,purchases,purchasing]
+walk<predicate>
+walk[walk,walked,walks,walking]
+call<predicate>
+call[call,called,calls,calling]
+shop<predicate>
+shop[shop,shopped,shops,shopping]
+
+go<predicate>
+go[go,went,going]
 
 user=person()
 user[i,me]

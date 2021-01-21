@@ -77,6 +77,8 @@ class ConceptGraph:
             if object is not None:
                 self._bipredicates_graph.remove(concept, object, predicate_type, predicate_id)
                 self._bipredicate_instances[(concept, predicate_type, object)].remove(predicate_id)
+                if len(self._bipredicate_instances[(concept, predicate_type, object)]) == 0:
+                    del self._bipredicate_instances[(concept, predicate_type, object)]
             else:
                 self._monopredicate_instances[(concept, predicate_type)].remove(predicate_id)
                 if len(self._monopredicate_instances[(concept, predicate_type)]) == 0:

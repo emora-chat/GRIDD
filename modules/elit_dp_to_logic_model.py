@@ -69,7 +69,7 @@ class ElitDPToLogic(ParseToLogic):
             if not cg.has(pos):
                 cg.add(pos, 'type', 'pos')
             span_node = cg.add(cg._get_next_id())
-            self.span_map[cg][span_node] = Span(expression, token_idx, token_idx+1)
+            self.span_map[span_node] = Span(expression, token_idx, token_idx+1)
             token_to_span_node[token_idx] = span_node
             expression = '"%s"' % expression
             cg.add(span_node, 'exprof', expression)
