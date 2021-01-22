@@ -8,7 +8,7 @@ class SentenceCaser:
         self.load_model()
 
     def load_model(self):
-        f = zipfile.ZipFile(os.path.join('modules','english_distributions.obj.zip'), 'r').open('distributions.obj')
+        f = zipfile.ZipFile(os.path.join('GRIDD', 'resources' ,'english_distributions.obj.zip'), 'r').open('distributions.obj')
         self.uniDist = cPickle.load(f)
         self.backwardBiDist = cPickle.load(f)
         self.forwardBiDist = cPickle.load(f)

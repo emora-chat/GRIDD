@@ -4,12 +4,12 @@
 **The knowledge base test app is an iteractive console app for testing knowledge base
 predicates and implication rules.**
 
-1. **Run** `GRIDD/data_structures/knowledge_base_test_app.py` (working directory=`GRIDD` folder)
+1. **Run** `GRIDD/scripts/knowledge_base_test_app.py` (working directory= folder _containing_ `GRIDD` folder)
 
-2. **Edit** files `GRIDD/kb.kg` and `GRIDD/rules.kg`:
+2. **Edit** files `gridd_files/kb/kb.kg` and `gridd_files/rules/rules.kg` (generated when running script for the first time):
 
-    - `kb.kg` defines predicates in the knowledge base
-    - `rules.kg` defines rules to apply to input predicates
+    - `kb.kg` and other files in the `kb` folder define predicates in the knowledge base
+    - `rules.kg` and other files in the `rules` folder define rules to apply to input predicates
     
 3. **Interact** by inputting logic strings into the console prompt.
 

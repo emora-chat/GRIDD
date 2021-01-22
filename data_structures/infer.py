@@ -6,10 +6,19 @@ from structpy.map.bijective.bimap import Bimap
 from data_structures.concept_graph import ConceptGraph
 
 
-class TransformationRule:
-    def __init__(self, pre, post, concept_id):
+class ImplicationRule:
+    """
+    Data structure for packaging precondition and postcondition ConceptGraphs
+    to represent an implication rule.
+    """
+
+    def __init__(self, pre, post=None, concept_id=None):
         self.precondition = pre
+        if post is None:
+            post = ConceptGraph()
         self.postcondition = post
+        if concept_id is None:
+            concept_id = id(self)
         self.concept_id = concept_id
 
     def __hash__(self):
@@ -20,74 +29,6 @@ class TransformationRule:
             return self.concept_id == other
         else:
             return self.concept_id == other.concept_id
-
-
-def generate_inference_graphs(cg, ordered_rule_ids=None):
-    """
-    Identifies the inference rules and their corresponding implications in the given
-    concept graph `cg`.
-    :returns dict<rule_id: TransformationRule object>
-    """
-    inferences = {}
-    implications = {}
-    infer_pred_inst = defaultdict(set)
-
-    if ordered_rule_ids is not None:
-        for situation_node in ordered_rule_ids:
-            inferences[situation_node] = ConceptGraph(namespace='pre')
-            implications[situation_node] = ConceptGraph(namespace='post')
-
-    for situation_node, type, pre_pred_inst, inst_id in cg.predicates(predicate_type='pre'):
-        if situation_node not in inferences:
-            inferences[situation_node] = ConceptGraph(namespace='pre')
-        rule_graph = inferences[situation_node]
-        _add_rule_to_graph(cg, rule_graph, pre_pred_inst)
-        if cg.has(predicate_id=pre_pred_inst) and cg.type(pre_pred_inst) == 'var':
-            infer_pred_inst[situation_node].add((cg.subject(pre_pred_inst), pre_pred_inst))
-
-    for situation_node, type, post_pred_inst, inst_id in cg.predicates(predicate_type='post'):
-        if situation_node not in implications:
-            implications[situation_node] = ConceptGraph(namespace='post')
-        rule_graph = implications[situation_node]
-        _add_rule_to_graph(cg, rule_graph, post_pred_inst)
-
-    for situation_node, vars in infer_pred_inst.items():
-        implication_graph = implications[situation_node]
-        if not implication_graph.has('var'):
-            implication_graph.add('var')
-        for subject, pred_inst in vars:
-            if implication_graph.has(subject):
-                implication_graph.add(subject, 'var', predicate_id=pred_inst)
-
-    rules = {}
-    for situation_node in inferences:
-        rules[situation_node] = TransformationRule(inferences[situation_node], implications[situation_node], situation_node)
-    return rules
-
-
-def _add_rule_to_graph(cg, rule_graph, rule_instance_id):
-    """
-    Helper function of generate_inference_graphs() that adds rules to the `rule_graph`
-    which is either a graph of inferences or a graph of implications for a given rule
-    """
-    if cg.has(predicate_id=rule_instance_id):
-        components = [cg.subject(rule_instance_id),
-                      cg.object(rule_instance_id),
-                      cg.type(rule_instance_id)]
-        for comp in components:
-            if comp is not None and not rule_graph.has(comp):
-                rule_graph.add(comp)
-        if components[1] is None:   # monopredicate
-            rule_graph.add(components[0], components[2], predicate_id=rule_instance_id)
-        elif components[0] is not None and components[1] is not None and components[2] is not None:     # bipredicate
-            rule_graph.add(components[0], components[2], components[1], predicate_id=rule_instance_id)
-        else:
-            raise Exception('generate_inference_graph is trying to process a predicate with impossible format!')
-    else:
-        # inst is not a predicate, it is an entity instance
-        if not rule_graph.has(rule_instance_id):
-            rule_graph.add(rule_instance_id)
-
 
 def infer(knowledge_graph, inference_rules):
     """
@@ -124,6 +65,73 @@ def infer(knowledge_graph, inference_rules):
         prolog.retract(rule)
 
     return solutions
+
+
+def generate_inference_graphs(cg, ordered_rule_ids=None):
+    """
+    Identifies the inference rules and their corresponding implications in the given
+    concept graph `cg`.
+    :returns dict<rule_id: ImplicationRule object>
+    """
+    inferences = {}
+    implications = {}
+    infer_pred_inst = defaultdict(set)
+
+    if ordered_rule_ids is not None:
+        for situation_node in ordered_rule_ids:
+            inferences[situation_node] = ConceptGraph(namespace='pre')
+            implications[situation_node] = ConceptGraph(namespace='post')
+
+    for situation_node, type, pre_pred_inst, inst_id in cg.predicates(predicate_type='pre'):
+        if situation_node not in inferences:
+            inferences[situation_node] = ConceptGraph(namespace='pre')
+        rule_graph = inferences[situation_node]
+        _add_rule_to_graph(cg, rule_graph, pre_pred_inst)
+        if cg.has(predicate_id=pre_pred_inst) and cg.type(pre_pred_inst) == 'var':
+            infer_pred_inst[situation_node].add((cg.subject(pre_pred_inst), pre_pred_inst))
+
+    for situation_node, type, post_pred_inst, inst_id in cg.predicates(predicate_type='post'):
+        if situation_node not in implications:
+            implications[situation_node] = ConceptGraph(namespace='post')
+        rule_graph = implications[situation_node]
+        _add_rule_to_graph(cg, rule_graph, post_pred_inst)
+
+    for situation_node, vars in infer_pred_inst.items():
+        implication_graph = implications[situation_node]
+        if not implication_graph.has('var'):
+            implication_graph.add('var')
+        for subject, pred_inst in vars:
+            if implication_graph.has(subject):
+                implication_graph.add(subject, 'var', predicate_id=pred_inst)
+
+    rules = {}
+    for situation_node in inferences:
+        rules[situation_node] = ImplicationRule(inferences[situation_node], implications[situation_node], situation_node)
+    return rules
+
+
+def _add_rule_to_graph(cg, rule_graph, rule_instance_id):
+    """
+    Helper function of generate_inference_graphs() that adds rules to the `rule_graph`
+    which is either a graph of inferences or a graph of implications for a given rule
+    """
+    if cg.has(predicate_id=rule_instance_id):
+        components = [cg.subject(rule_instance_id),
+                      cg.object(rule_instance_id),
+                      cg.type(rule_instance_id)]
+        for comp in components:
+            if comp is not None and not rule_graph.has(comp):
+                rule_graph.add(comp)
+        if components[1] is None:   # monopredicate
+            rule_graph.add(components[0], components[2], predicate_id=rule_instance_id)
+        elif components[0] is not None and components[1] is not None and components[2] is not None:     # bipredicate
+            rule_graph.add(components[0], components[2], components[1], predicate_id=rule_instance_id)
+        else:
+            raise Exception('generate_inference_graph is trying to process a predicate with impossible format!')
+    else:
+        # inst is not a predicate, it is an entity instance
+        if not rule_graph.has(rule_instance_id):
+            rule_graph.add(rule_instance_id)
 
 
 def to_knowledge_prolog(cg):

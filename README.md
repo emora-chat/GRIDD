@@ -4,7 +4,7 @@ The Graph Reasoning for Inference Driven Dialogue (GRIDD) Framework provides an 
 for building dialogue management pipelines that use a Dialogue Semantic Graph (DSG) for 
 utterance understanding and decision-making.
 
-![](doc/img/gridd_diagram.svg)
+![](docs/img/gridd_diagram.svg)
 
 The general dialogue management pipeline available within the Framework 
 is shown in Figure 1 (above).  

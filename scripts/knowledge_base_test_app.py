@@ -2,19 +2,27 @@
 from data_structures.knowledge_base import KnowledgeBase
 from data_structures.working_memory import WorkingMemory
 import os
-
-def generate_file(name):
-    if not os.path.exists(name):
-        with open(name, 'w') as f:
-            f.write('\n')
-
+from os.path import join
+from utilities import collect
 
 
 if __name__ == '__main__':
-    generate_file('kb.kg')
-    generate_file('rules.kg')
+    if not os.path.exists('gridd_files'):
+        os.mkdir('gridd_files')
+    if not os.path.exists(join('gridd_files', 'kb_test')):
+        os.mkdir(join('gridd_files', 'kb_test'))
+    rules = join('gridd_files', 'kb_test', 'rules')
+    if not os.path.exists(rules):
+        os.mkdir(rules)
+        with open(join(rules, 'rules.kg'), 'w') as f:
+            f.write('\n')
+    kb = join('gridd_files', 'kb_test', 'kb')
+    if not os.path.exists(kb):
+        os.mkdir(kb)
+        with open(join(kb, 'kb.kg'), 'w') as f:
+            f.write('\n')
 
-    kb = KnowledgeBase('kb.kg')
+    kb = KnowledgeBase(kb)
 
     mode = 'logic'
     if mode == 'logic':
@@ -24,20 +32,21 @@ if __name__ == '__main__':
                 logic_string += ';'
             wm = WorkingMemory(kb, logic_string)
             wm.pull(2)
-            cgs = wm.implications('rules.kg')
+            rules = collect(join('gridd_files', 'kb_test', 'rules'), extension='.kg')
+            cgs = wm.implications(*rules)
             for cg in cgs:
                 print(cg.pretty_print())
                 print()
             logic_string = input('>>> ')
     elif mode == 'lang':
-        from main import build_dm
-        dm = build_dm(kb, debug=False)
+        from chatbot import Chatbot
+        chatbot = Chatbot(kb)
 
         lang_string = input('>>> ')
         while lang_string != 'q':
             wm = WorkingMemory(kb)
             wm.pull(2)
-            dm.run([{'text': lang_string}], wm)
+            chatbot.run([{'text': lang_string}], wm)
             cgs = wm.implications('rules.kg')
             for cg in cgs:
                 print(cg.pretty_print())
