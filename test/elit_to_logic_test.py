@@ -202,6 +202,45 @@ def test_prepositional_phrases(elitmodels, elit_to_logic):
     assert ((to_sp, 'subject'), (walked_sp, 'self')) in merges
     assert ((to_sp, 'object'), (house_sp, 'self')) in merges
 
+
+
+def test_comp(elitmodels, elit_to_logic):
+    """ Tests constructions with comp attachments where comp structure misses nsbj and obj """
+    sentence = 'I like to walk'
+    tok, pos, dp = elitmodels(sentence)
+    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
+
+    assert len(mentions) == 3
+    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
+    (like_sp,) = [span for span in span_dict.values() if span.string == 'like']
+    (walk_sp,) = [span for span in span_dict.values() if span.string == 'walk']
+
+    i_mg = mentions[i_sp]
+    assert i_mg.has('user', 'center')
+    assert i_mg.has('user', 'focus')
+
+    like_mg = mentions[like_sp]
+    like_preds = like_mg.predicates(predicate_type='like')
+    assert len(like_preds) == 1
+    ((s, t, o, i),) = like_preds
+    assert o is not None
+    assert like_mg.has(i, 'focus')
+    assert like_mg.has(i, 'time', 'present')
+    assert like_mg.has('like', 'center')
+    
+    walk_mg = mentions[walk_sp]
+    walk_preds = walk_mg.predicates(predicate_type='walk')
+    assert len(walk_preds) == 1
+    ((s, t, o, i),) = walk_preds
+    assert o is None
+    assert walk_mg.has(i, 'focus')
+    assert walk_mg.has('walk', 'center')
+
+    assert len(merges) == 3
+    assert ((like_sp, 'subject'), (i_sp, 'self')) in merges
+    assert ((like_sp, 'object'), (walk_sp, 'self')) in merges
+    assert ((walk_sp, 'subject'), (i_sp, 'self')) in merges
+
 # def test_go_plus_ing(elitmodels, elit_to_logic):
 #     """ Tests constructions of subj-go-ing_verb """
 #     sentence = 'I went shopping'

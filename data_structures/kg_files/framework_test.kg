@@ -39,6 +39,8 @@ call<predicate>
 call[call,called,calls,calling]
 shop<predicate>
 shop[shop,shopped,shops,shopping]
+like<predicate>
+like[like,liked,likes,liking]
 
 go<predicate>
 go[go,went,going]
