@@ -19,7 +19,10 @@ ADJ = ['jj', 'jjr', 'jjs']
 NOUN = ['nn', 'nns', 'nnp', 'nnps']
 PRONOUN = ['prp', 'prpds']
 ADV = ['rb', 'rbr', 'rbs']
-NODES = ['focus', 'center', 'pos', 'exprof', 'type', 'ltype']
+REF_DET = ['the', 'those', 'these', 'that', 'this']
+INST_DET = ['a', 'an']
+NODES = ['focus', 'center', 'pos', 'exprof', 'type', 'ltype',
+         'nsbj', 'obj', 'comp', 'lv', 'ppmod', 'det', 'attr']
 
 class ElitDPToLogic(ParseToLogic):
 

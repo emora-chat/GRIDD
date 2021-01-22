@@ -21,6 +21,24 @@ yellow[yellow]
 orange<color>
 orange[orange]
 
+inst_det<object>
+a<inst_det>
+a[a]
+an<inst_det>
+an[an]
+
+ref_det<object>
+the<ref_det>
+the[the]
+those<ref_det>
+those[those]
+these<ref_det>
+these[these]
+that<ref_det>
+that[that]
+this<ref_det>
+this[this]
+
 in<predicate>
 in[in]
 to<predicate>
@@ -30,6 +48,8 @@ house<object>
 house[house]
 georgia<object>
 georgia[georgia]
+clothing<object>
+clothing[clothing,clothes]
 
 buy<predicate>
 buy[buy,buying,buys,bought,purchase,purchased,purchases,purchasing]
@@ -43,7 +63,7 @@ like<predicate>
 like[like,liked,likes,liking]
 
 go<predicate>
-go[go,went,going]
+go[go,went,goes,going]
 
 user=person()
 user[i,me]

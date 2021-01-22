@@ -10,9 +10,9 @@ def elitmodels():
 
 @pytest.fixture
 def elit_to_logic():
-    kb = KnowledgeBase(join('data_structures', 'kg_files', 'framework_test.kg'))
+    kb = KnowledgeBase(join('GRIDD', 'resources', 'kg_files', 'framework_test.kg'))
     template_starter_predicates = [(n, 'is_type') for n in NODES]
-    template_file = join('data_structures', 'kg_files', 'elit_dp_templates.kg')
+    template_file = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
     return ElitDPToLogic(kb, template_starter_predicates, template_file)
 
 def test_svdo_simple(elitmodels, elit_to_logic):
@@ -241,31 +241,179 @@ def test_comp(elitmodels, elit_to_logic):
     assert ((like_sp, 'object'), (walk_sp, 'self')) in merges
     assert ((walk_sp, 'subject'), (i_sp, 'self')) in merges
 
-# def test_go_plus_ing(elitmodels, elit_to_logic):
-#     """ Tests constructions of subj-go-ing_verb """
-#     sentence = 'I went shopping'
-#     tok, pos, dp = elitmodels(sentence)
-#     mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
-# 
-#     assert len(mentions) == 2
-#     (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
-#     (shopping_sp,) = [span for span in span_dict.values() if span.string == 'shopping']
-# 
-#     i_mg = mentions[i_sp]
-#     assert i_mg.has('user', 'center')
-#     assert i_mg.has('user', 'focus')
-# 
-#     shopping_mg = mentions[shopping_sp]
-#     shopping_preds = shopping_mg.predicates(predicate_type='shop')
-#     assert len(shopping_preds) == 1
-#     ((s, t, o, i),) = shopping_preds
-#     assert o is None
-#     assert shopping_mg.has(i, 'focus')
-#     assert shopping_mg.has(i, 'time', 'past')
-#     assert shopping_mg.has('shopping', 'center')
-# 
-#     assert len(merges) == 1
-#     assert ((shopping_sp, 'subject'), (i_sp, 'self')) in merges
+
+def test_inner_comp_with_obj(elitmodels, elit_to_logic):
+    """ Tests constructions with comp attachments where comp structure has obj but no nsbj """
+    sentence = 'I like to buy clothes'
+    tok, pos, dp = elitmodels(sentence)
+    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
+
+    assert len(mentions) == 4
+    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
+    (like_sp,) = [span for span in span_dict.values() if span.string == 'like']
+    (buy_sp,) = [span for span in span_dict.values() if span.string == 'buy']
+    (clothes_sp,) = [span for span in span_dict.values() if span.string == 'clothes']
+
+    i_mg = mentions[i_sp]
+    assert i_mg.has('user', 'center')
+    assert i_mg.has('user', 'focus')
+
+    like_mg = mentions[like_sp]
+    like_preds = like_mg.predicates(predicate_type='like')
+    assert len(like_preds) == 1
+    ((s, t, o, i),) = like_preds
+    assert o is not None
+    assert like_mg.has(i, 'focus')
+    assert like_mg.has(i, 'time', 'present')
+    assert like_mg.has('like', 'center')
+
+    buy_mg = mentions[buy_sp]
+    buy_preds = buy_mg.predicates(predicate_type='buy')
+    assert len(buy_preds) == 1
+    ((s, t, o, i),) = buy_preds
+    assert o is not None
+    assert buy_mg.has(i, 'focus')
+    assert buy_mg.has('buy', 'center')
+
+    clothes_mg = mentions[clothes_sp]
+    assert clothes_mg.has('clothing', 'center')
+    assert clothes_mg.has('clothing', 'focus')
+
+    assert len(merges) == 4
+    assert ((like_sp, 'subject'), (i_sp, 'self')) in merges
+    assert ((like_sp, 'object'), (buy_sp, 'self')) in merges
+    assert ((buy_sp, 'subject'), (i_sp, 'self')) in merges
+    assert ((buy_sp, 'object'), (clothes_sp, 'self')) in merges
+
+def test_inner_comp_with_nsbj(elitmodels, elit_to_logic):
+    """ Tests constructions with comp attachments where comp structure has nsbj but no obj """
+    sentence = 'I like when you walk'
+    tok, pos, dp = elitmodels(sentence)
+    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
+
+    assert len(mentions) == 4
+    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
+    (you_sp,) = [span for span in span_dict.values() if span.string == 'you']
+    (like_sp,) = [span for span in span_dict.values() if span.string == 'like']
+    (walk_sp,) = [span for span in span_dict.values() if span.string == 'walk']
+
+    i_mg = mentions[i_sp]
+    assert i_mg.has('user', 'center')
+    assert i_mg.has('user', 'focus')
+
+    like_mg = mentions[like_sp]
+    like_preds = like_mg.predicates(predicate_type='like')
+    assert len(like_preds) == 1
+    ((s, t, o, i),) = like_preds
+    assert o is not None
+    assert like_mg.has(i, 'focus')
+    assert like_mg.has(i, 'time', 'present')
+    assert like_mg.has('like', 'center')
+
+    walk_mg = mentions[walk_sp]
+    walk_preds = walk_mg.predicates(predicate_type='walk')
+    assert len(walk_preds) == 1
+    ((s, t, o, i),) = walk_preds
+    assert o is None
+    assert walk_mg.has(i, 'focus')
+    assert walk_mg.has('walk', 'center')
+
+    you_mg = mentions[you_sp]
+    assert you_mg.has('emora', 'center')
+    assert you_mg.has('emora', 'focus')
+
+    assert len(merges) == 3
+    assert ((like_sp, 'subject'), (i_sp, 'self')) in merges
+    assert ((like_sp, 'object'), (walk_sp, 'self')) in merges
+    assert ((walk_sp, 'subject'), (you_sp, 'self')) in merges
+
+def test_inner_comp_with_nsbj_obj(elitmodels, elit_to_logic):
+    """ Tests constructions with comp attachments where comp structure has both nsbj and obj """
+    sentence = 'I like when you buy clothes'
+    tok, pos, dp = elitmodels(sentence)
+    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
+
+    assert len(mentions) == 5
+    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
+    (like_sp,) = [span for span in span_dict.values() if span.string == 'like']
+    (you_sp,) = [span for span in span_dict.values() if span.string == 'you']
+    (buy_sp,) = [span for span in span_dict.values() if span.string == 'buy']
+    (clothes_sp,) = [span for span in span_dict.values() if span.string == 'clothes']
+
+    i_mg = mentions[i_sp]
+    assert i_mg.has('user', 'center')
+    assert i_mg.has('user', 'focus')
+
+    you_mg = mentions[you_sp]
+    assert you_mg.has('emora', 'center')
+    assert you_mg.has('emora', 'focus')
+
+    like_mg = mentions[like_sp]
+    like_preds = like_mg.predicates(predicate_type='like')
+    assert len(like_preds) == 1
+    ((s, t, o, i),) = like_preds
+    assert o is not None
+    assert like_mg.has(i, 'focus')
+    assert like_mg.has(i, 'time', 'present')
+    assert like_mg.has('like', 'center')
+
+    buy_mg = mentions[buy_sp]
+    buy_preds = buy_mg.predicates(predicate_type='buy')
+    assert len(buy_preds) == 1
+    ((s, t, o, i),) = buy_preds
+    assert o is not None
+    assert buy_mg.has(i, 'focus')
+    assert buy_mg.has('buy', 'center')
+
+    # todo - clothes should be instantiated!
+    clothes_mg = mentions[clothes_sp]
+    assert clothes_mg.has('clothing', 'center')
+    assert clothes_mg.has('clothing', 'focus')
+
+    assert len(merges) == 4
+    assert ((like_sp, 'subject'), (i_sp, 'self')) in merges
+    assert ((like_sp, 'object'), (buy_sp, 'self')) in merges
+    assert ((buy_sp, 'subject'), (you_sp, 'self')) in merges
+    assert ((buy_sp, 'object'), (clothes_sp, 'self')) in merges
+
+def test_ref_det(elitmodels, elit_to_logic):
+    """ Tests constructions with referential determiners """
+    sentence = 'I like the house'
+    tok, pos, dp = elitmodels(sentence)
+    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
+
+    assert len(mentions) == 3
+    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
+    (like_sp,) = [span for span in span_dict.values() if span.string == 'like']
+    (house_sp,) = [span for span in span_dict.values() if span.string == 'house']
+
+    house_mg = mentions[house_sp]
+    house_insts = house_mg.predicates(predicate_type='type', object='house')
+    assert len(house_insts) == 1
+    ((s,t,o,i),) = house_insts
+    assert house_mg.has(s, 'focus')
+    assert house_mg.has('house', 'center')
+    assert house_mg.has(s, 'referential')
+
+
+def test_inst_det(elitmodels, elit_to_logic):
+    """ Tests constructions with instantiative determiners """
+    sentence = 'I like a house'
+    tok, pos, dp = elitmodels(sentence)
+    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
+
+    assert len(mentions) == 3
+    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
+    (like_sp,) = [span for span in span_dict.values() if span.string == 'like']
+    (house_sp,) = [span for span in span_dict.values() if span.string == 'house']
+
+    house_mg = mentions[house_sp]
+    house_insts = house_mg.predicates(predicate_type='type', object='house')
+    assert len(house_insts) == 1
+    ((s, t, o, i),) = house_insts
+    assert house_mg.has(s, 'focus')
+    assert house_mg.has('house', 'center')
+    assert house_mg.has(s, 'instantiative')
 
 
 

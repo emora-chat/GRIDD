@@ -62,6 +62,37 @@ center(X)
 
 nsbj(X/verb(), Y/pos())
 comp(X, Z/pos())
+nsbj(Z, B/pos())
+obj(Z, A/pos())
+-> inner_comp_with_nsbj_obj_verb ->
+is_type(Z)
+p/Z(B,A)
+focus(p)
+center(Z)
+;
+
+nsbj(X/verb(), Y/pos())
+comp(X, Z/pos())
+nsbj(Z, A/pos())
+-> inner_comp_with_nsbj_verb ->
+is_type(Z)
+p/Z(A)
+focus(p)
+center(Z)
+;
+
+nsbj(X/verb(), Y/pos())
+comp(X, Z/pos())
+obj(Z, A/pos())
+-> inner_comp_with_obj_verb ->
+is_type(Z)
+p/Z(Y,A)
+focus(p)
+center(Z)
+;
+
+nsbj(X/verb(), Y/pos())
+comp(X, Z/pos())
 -> inner_comp_verb ->
 is_type(Z)
 p/Z(Y)
@@ -88,6 +119,24 @@ center(Z)
 ;
 
 det(X/pos(), Y/dt())
+ltype(Y, ref_det)
+-> ref_determiner ->
+is_type(X)
+focus(inst/X())
+center(X)
+referential(inst)
+;
+
+det(X/pos(), Y/dt())
+ltype(Y, inst_det)
+-> inst_determiner ->
+is_type(X)
+focus(inst/X())
+center(X)
+instantiative(inst)
+;
+
+det(X/pos(), Y/dt())
 -> determiner ->
 is_type(X)
 focus(X())
@@ -96,6 +145,14 @@ center(X)
 
 attr(X/pos(), Y/pos())
 -> general_attribute ->
+p/property(X,Y)
+focus(p)
+center(Y)
+;
+
+
+poss(X/pos(), Y/prpds())
+-> possessive_pronoun ->
 p/property(X,Y)
 focus(p)
 center(Y)
