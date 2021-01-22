@@ -39,7 +39,7 @@ repository, such that `structpy/` becomes a directory inside of the GRIDD direct
 (3) Download required files:
 
 * Download [SentenceCasing data](https://github.com/nreimers/truecaser/releases/download/v1.0/english_distributions.obj.zip)
-into the `GRIDD/modules` directory.
+into the `GRIDD/resources` directory.
 
 
 
