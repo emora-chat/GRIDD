@@ -248,6 +248,13 @@ class ConceptGraph:
         for s, t, o, i in self.predicates(object=concept_b):
             self._detach(s, t, o, i)
             self.add(s, t, concept_a, i)
+        if self.has(predicate_id=concept_b):
+            s, t, o, i = self.predicate(concept_b)
+            if o is not None:
+                self._bipredicate_instances[(s,t,o)].add(concept_a)
+            else:
+                self._monopredicate_instances[(s,t)].add(concept_a)
+            self._detach(s, t, o, i)
         self.remove(concept_b)
 
     def _detach(self, subject, predicate_type, object, predicate_id):
