@@ -115,3 +115,7 @@ using Pycharm, you can do this through the `Edit Configurations...` option of yo
 (3) Clone [structpy repository](https://github.com/jdfinch/structpy) into your clone of the `GRIDD` 
 repository, such that `structpy/` becomes a directory inside of the GRIDD directory.
     
+    
+### Running Scripts
+
+All scripts/apps in GRIDD assume the working directory is the top-level GRIDD folder.
