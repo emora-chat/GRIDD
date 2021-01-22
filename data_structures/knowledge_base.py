@@ -1,8 +1,7 @@
-from lark import Lark, Transformer
 from data_structures.concept_graph import ConceptGraph
 from data_structures.knowledge_base_spec import KnowledgeBaseSpec
 from data_structures.knowledge_parser import KnowledgeParser
-import time, sys, json
+from utilities import collect
 from os.path import join
 
 BASE_NODES = {'object', 'type', 'is_type', 'expression', 'expr', 'pre', 'post', 'var', 'property', 'focus'}
@@ -13,18 +12,20 @@ class KnowledgeBase:
     def __init__(self, *filenames_or_logicstrings, namespace='KB'):
         self._concept_graph = ConceptGraph(concepts=BASE_NODES, namespace=namespace)
         self._knowledge_parser = KnowledgeParser(self, BASE_NODES)
-        self.load(join('data_structures','kg_files','base.kg'))
+        self.load(join('GRIDD', 'resources', 'kg_files', 'base.kg'))
         self.load(*filenames_or_logicstrings)
 
     def load(self, *filenames_or_logicstrings):
-        for input in filenames_or_logicstrings:
-            if input.endswith('.kg'):
-                input = open(input, 'r').read()
-            if len(input.strip()) > 0:
-                tree = self._knowledge_parser.parse(input)
-                additions = self._knowledge_parser.transform(tree)
-                for addition in additions:
-                    self._concept_graph.concatenate(addition)
+        strings_or_kbs = collect(*filenames_or_logicstrings, extension='.kg')
+        for input in strings_or_kbs:
+            if isinstance(input, str):
+                if len(input.strip()) > 0:
+                    tree = self._knowledge_parser.parse(input)
+                    additions = self._knowledge_parser.transform(tree)
+                    for addition in additions:
+                        self._concept_graph.concatenate(addition)
+            elif isinstance(input, KnowledgeBase):
+                self._concept_graph.concatenate(input)
 
     def subtypes(self, concept):
         subtypes = set()

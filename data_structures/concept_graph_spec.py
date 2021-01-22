@@ -1,6 +1,9 @@
 
 from structpy import specification
-import os, json
+import json
+from os.path import join
+
+checkpoints = join('GRIDD', 'resources', 'checkpoints')
 
 
 @specification
@@ -254,7 +257,7 @@ class ConceptGraphSpec:
             assert namespace_cg.has(predicate_id='new_%d'%i)
 
     def save(concept_graph, json_filepath):
-        path = os.path.join('data_structures','checkpoints','save_test.json')
+        path = join(checkpoints, 'save_test.json')
         concept_graph.save(path)
 
         with open(path, 'r') as f:
@@ -273,13 +276,13 @@ class ConceptGraphSpec:
         cg1 = ConceptGraph(concepts=['princess', 'hiss'], namespace='1')
         a = cg1.add('princess', 'hiss')
         cg1.add(a, 'volume', 'loud')
-        cg1_file = os.path.join('data_structures','checkpoints','load_test_cg1.json')
+        cg1_file = join(checkpoints, 'load_test_cg1.json')
         cg1.save(cg1_file)
 
         cg2 = ConceptGraph(concepts=['fluffy', 'bark', 'princess', 'friend'], namespace='2')
         cg2.add('fluffy', 'bark')
         cg2.add('princess', 'friend', 'fluffy')
-        cg2_file = os.path.join('data_structures', 'checkpoints', 'load_test_cg2.json')
+        cg2_file = join(checkpoints, 'load_test_cg2.json')
         cg2.save(cg2_file)
 
         cg3 = ConceptGraph(namespace='1')

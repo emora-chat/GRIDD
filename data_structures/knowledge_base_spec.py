@@ -1,7 +1,6 @@
 
 from structpy import specification
 from os.path import join
-from data_structures.concept_graph_spec import ConceptGraphSpec
 
 
 @specification
@@ -27,9 +26,9 @@ class KnowledgeBaseSpec:
 
     def load(knowledge_base, filenames_or_logicstrings):
         """
-
+        Load knowledge from files, folders of .kb files, logic strings, or KnowledgeBase objects.
         """
-        knowledge_base.load(join('data_structures','kg_files','example.kg'))
+        knowledge_base.load(join('GRIDD', 'resources', 'kg_files', 'example.kg'))
 
         assert knowledge_base.has('avengers', 'type', 'movie')
         assert knowledge_base.has('"endgame"', 'expr', 'avengers')

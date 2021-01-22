@@ -122,7 +122,7 @@ class WorkingMemorySpec:
 
     def rules(working_memory):
         """
-        Find all rules in working memory and return as a dict of type_node_id to TransformationRule object.
+        Find all rules in working memory and return as a dict of type_node_id to ImplicationRule object.
         """
         rule = '''       
         test_dog=dog()

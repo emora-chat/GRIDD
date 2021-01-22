@@ -1,6 +1,6 @@
 from data_structures.concept_graph import ConceptGraph
 from data_structures.working_memory_spec import WorkingMemorySpec
-import data_structures.prolog as pl
+import data_structures.infer as pl
 from utilities import identification_string, CHARS
 from itertools import chain
 
@@ -86,7 +86,7 @@ class WorkingMemory(ConceptGraph):
         solutions_dict = pl.infer(self, rules_to_run)
         return solutions_dict
 
-    # todo - move core logic to prolog.py
+    # todo - move core logic to infer.py
     def implications(self, *types_or_rules):
         imps = []
         solutions_dict = self.inferences(*types_or_rules)

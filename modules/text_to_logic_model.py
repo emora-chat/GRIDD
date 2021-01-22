@@ -1,9 +1,9 @@
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from collections import defaultdict
 from data_structures.concept_graph import ConceptGraph
 from data_structures.knowledge_parser import KnowledgeParser
-import data_structures.prolog as pl
+import data_structures.infer as pl
 
 DEBUG=False
 

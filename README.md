@@ -4,7 +4,7 @@ The Graph Reasoning for Inference Driven Dialogue (GRIDD) Framework provides an 
 for building dialogue management pipelines that use a Dialogue Semantic Graph (DSG) for 
 utterance understanding and decision-making.
 
-![](doc/img/gridd_diagram.svg)
+![](docs/img/gridd_diagram.svg)
 
 The general dialogue management pipeline available within the Framework 
 is shown in Figure 1 (above).  
@@ -39,7 +39,7 @@ repository, such that `structpy/` becomes a directory inside of the GRIDD direct
 (3) Download required files:
 
 * Download [SentenceCasing data](https://github.com/nreimers/truecaser/releases/download/v1.0/english_distributions.obj.zip)
-into the `GRIDD/modules` directory.
+into the `GRIDD/resources` directory.
 
 
 
