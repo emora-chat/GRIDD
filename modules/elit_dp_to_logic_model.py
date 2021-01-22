@@ -40,7 +40,7 @@ class ElitDPToLogic(ParseToLogic):
             ewm.add(n, 'type', 'verb')
         for n in ['verb', 'noun', 'adj', 'pron', 'adv']:
             ewm.add(n, 'type', 'pos')
-        ewm.add('pron', 'type', 'noun')
+        ewm.add('prp', 'type', 'noun')
         for n in PAST_VB:
             ewm.add(n, 'type', 'past_tense')
         for n in PRES_VB:

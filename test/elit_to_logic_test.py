@@ -395,6 +395,10 @@ def test_ref_det(elitmodels, elit_to_logic):
     assert house_mg.has('house', 'center')
     assert house_mg.has(s, 'referential')
 
+    assert len(merges) == 2
+    assert ((like_sp, 'subject'), (i_sp, 'self')) in merges
+    assert ((like_sp, 'object'), (house_sp, 'self')) in merges
+
 
 def test_inst_det(elitmodels, elit_to_logic):
     """ Tests constructions with instantiative determiners """
@@ -414,6 +418,111 @@ def test_inst_det(elitmodels, elit_to_logic):
     assert house_mg.has(s, 'focus')
     assert house_mg.has('house', 'center')
     assert house_mg.has(s, 'instantiative')
+
+    assert len(merges) == 2
+    assert ((like_sp, 'subject'), (i_sp, 'self')) in merges
+    assert ((like_sp, 'object'), (house_sp, 'self')) in merges
+
+def test_poss_pron(elitmodels, elit_to_logic):
+    """ Tests constructions with possessives (pronouns and nouns) """
+    sentence = 'I like my house'
+    tok, pos, dp = elitmodels(sentence)
+    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
+
+    assert len(mentions) == 4
+    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
+    (like_sp,) = [span for span in span_dict.values() if span.string == 'like']
+    (my_sp,) = [span for span in span_dict.values() if span.string == 'my']
+    (house_sp,) = [span for span in span_dict.values() if span.string == 'house']
+
+    my_mg = mentions[my_sp]
+    my_insts = my_mg.predicates(predicate_type='possess')
+    assert len(my_insts) == 1
+    ((s, t, o, i),) = my_insts
+    assert o is not None
+    assert s == 'user'
+    assert my_mg.has(i, 'focus')
+    assert my_mg.has('user', 'center')
+
+    house_mg = mentions[house_sp]
+    house_insts = house_mg.predicates(predicate_type='type', object='house')
+    assert len(house_insts) == 1
+    ((s, t, o, i),) = house_insts
+    assert house_mg.has(s, 'focus')
+    assert house_mg.has('house', 'center')
+    possess_insts = house_mg.predicates(predicate_type='possess', object=s)
+    assert len(possess_insts) == 0
+
+    assert len(merges) == 3
+    assert ((like_sp, 'subject'), (i_sp, 'self')) in merges
+    assert ((like_sp, 'object'), (house_sp, 'self')) in merges
+    assert ((my_sp, 'object'), (house_sp, 'self')) in merges
+
+    sentence = "I like John's house"
+    tok, pos, dp = elitmodels(sentence)
+    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
+
+    assert len(mentions) == 4
+    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
+    (like_sp,) = [span for span in span_dict.values() if span.string == 'like']
+    (john_sp,) = [span for span in span_dict.values() if span.string == 'john']
+    (house_sp,) = [span for span in span_dict.values() if span.string == 'house']
+
+    john_mg = mentions[john_sp]
+    john_insts = john_mg.predicates(predicate_type='possess')
+    assert len(john_insts) == 1
+    ((s, t, o, i),) = john_insts
+    assert o is not None
+    assert s == 'john'
+    assert john_mg.has(i, 'focus')
+    assert john_mg.has('john', 'center')
+
+    house_mg = mentions[house_sp]
+    house_insts = house_mg.predicates(predicate_type='type', object='house')
+    assert len(house_insts) == 1
+    ((s, t, o, i),) = house_insts
+    assert house_mg.has(s, 'focus')
+    assert house_mg.has('house', 'center')
+    possess_insts = house_mg.predicates(predicate_type='possess', object=s)
+    assert len(possess_insts) == 0
+    
+    assert len(merges) == 3
+    assert ((like_sp, 'subject'), (i_sp, 'self')) in merges
+    assert ((like_sp, 'object'), (house_sp, 'self')) in merges
+    assert ((john_sp, 'object'), (house_sp, 'self')) in merges
+
+    sentence = "I like Johns house"
+    tok, pos, dp = elitmodels(sentence)
+    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
+
+    assert len(mentions) == 4
+    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
+    (like_sp,) = [span for span in span_dict.values() if span.string == 'like']
+    (john_sp,) = [span for span in span_dict.values() if span.string == 'johns']
+    (house_sp,) = [span for span in span_dict.values() if span.string == 'house']
+
+    john_mg = mentions[john_sp]
+    john_insts = john_mg.predicates(predicate_type='possess')
+    assert len(john_insts) == 1
+    ((s, t, o, i),) = john_insts
+    assert o is not None
+    assert s == 'john'
+    assert john_mg.has(i, 'focus')
+    assert john_mg.has('john', 'center')
+
+    house_mg = mentions[house_sp]
+    house_insts = house_mg.predicates(predicate_type='type', object='house')
+    assert len(house_insts) == 1
+    ((s, t, o, i),) = house_insts
+    assert house_mg.has(s, 'focus')
+    assert house_mg.has('house', 'center')
+    possess_insts = house_mg.predicates(predicate_type='possess', object=s)
+    assert len(possess_insts) == 0
+
+    assert len(merges) == 3
+    assert ((like_sp, 'subject'), (i_sp, 'self')) in merges
+    assert ((like_sp, 'object'), (house_sp, 'self')) in merges
+    assert ((john_sp, 'object'), (house_sp, 'self')) in merges
 
 
 

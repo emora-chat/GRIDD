@@ -150,10 +150,17 @@ focus(p)
 center(Y)
 ;
 
+poss(X/pos(), Y/pos())
+-> obj_of_possessive ->
+is_type(X)
+focus(X())
+center(X)
+;
 
-poss(X/pos(), Y/prpds())
--> possessive_pronoun ->
-p/property(X,Y)
+poss(X/pos(), Y/pos())
+-> agent_of_possessive ->
+is_type(X)
+p/possess(Y, X)
 focus(p)
 center(Y)
 ;
