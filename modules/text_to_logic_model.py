@@ -20,6 +20,11 @@ class Span:
     def __str__(self):
         return '%s(%d,%d)'%(self.string, self.start, self.end)
 
+"""
+Notes:
+    predicate_types in post cannot match predicate_types in pre
+"""
+
 class ParseToLogic:
 
     def __init__(self, knowledge_base, template_starter_predicates, *template_file_names):
@@ -174,7 +179,7 @@ class ParseToLogic:
                             cg.add(m[subject], m[typ], m[object], predicate_id=m[inst])
                         else:
                             cg.add(m[subject], m[typ], predicate_id=m[inst])
-                    mentions[self._lookup_span(ewm, center)] = cg
+                    mentions[self._lookup_span(center)] = cg
         return mentions
 
     def _get_merges(self, assignments, ewm):
@@ -197,16 +202,16 @@ class ParseToLogic:
                     if post.has(predicate_id=focus):
                         # focus is a predicate instance, need to consider its subj/obj/type
                         if post.subject(focus) in solution and solution[post.subject(focus)] != center:
-                            pair = ((self._lookup_span(ewm, center),'subject'),
-                                    (self._lookup_span(ewm, solution[post.subject(focus)]),'self'))
+                            pair = ((self._lookup_span(center),'subject'),
+                                    (self._lookup_span(solution[post.subject(focus)]),'self'))
                             merges.append(pair)
                         if post.object(focus) in solution and solution[post.object(focus)] != center:
-                            pair = ((self._lookup_span(ewm, center), 'object'),
-                                    (self._lookup_span(ewm, solution[post.object(focus)]), 'self'))
+                            pair = ((self._lookup_span(center), 'object'),
+                                    (self._lookup_span(solution[post.object(focus)]), 'self'))
                             merges.append(pair)
                         if post.type(focus) in solution and solution[post.type(focus)] != center:
-                            pair = ((self._lookup_span(ewm, center), 'type'),
-                                    (self._lookup_span(ewm, solution[post.type(focus)]), 'self'))
+                            pair = ((self._lookup_span(center), 'type'),
+                                    (self._lookup_span(solution[post.type(focus)]), 'self'))
                             merges.append(pair)
                     # for (_,o,t) in post.bipredicates_of_subject(focus):
                     #     if o in solution:
@@ -245,7 +250,7 @@ class ParseToLogic:
 
         return merges
 
-    def _lookup_span(self, cg, span_node):
+    def _lookup_span(self, span_node):
         return self.span_map[span_node]
 
     def display_mentions(self, mentions, ewm):

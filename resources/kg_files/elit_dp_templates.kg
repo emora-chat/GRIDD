@@ -159,8 +159,21 @@ center(X)
 
 poss(X/pos(), Y/pos())
 -> agent_of_possessive ->
-is_type(X)
 p/possess(Y, X)
+focus(p)
+center(Y)
+;
+
+adv(X/pos(), Y/pos())
+-> adv ->
+p/qualifier(X, Y)
+focus(p)
+center(Y)
+;
+
+com(X/pos(), Y/pos())
+-> compound_concept ->
+p/compound(Y, X)
 focus(p)
 center(Y)
 ;

@@ -523,7 +523,58 @@ def test_poss_pron(elitmodels, elit_to_logic):
     assert ((like_sp, 'subject'), (i_sp, 'self')) in merges
     assert ((like_sp, 'object'), (house_sp, 'self')) in merges
     assert ((john_sp, 'object'), (house_sp, 'self')) in merges
+    
+def test_compound(elitmodels, elit_to_logic):
+    """ Tests constructions with compound attachments """
+    sentence = 'I like New York'
+    tok, pos, dp = elitmodels(sentence)
+    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
 
+    assert len(mentions) == 4
+    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
+    (like_sp,) = [span for span in span_dict.values() if span.string == 'like']
+    (new_sp,) = [span for span in span_dict.values() if span.string == 'new']
+    (york_sp,) = [span for span in span_dict.values() if span.string == 'york']
+
+    new_mg = mentions[new_sp]
+    new_insts = new_mg.predicates(predicate_type='compound')
+    assert len(new_insts) == 1
+    ((s, t, o, i),) = new_insts
+    assert o is not None
+    assert new_mg.has(i, 'focus')
+    assert new_mg.has('new', 'center')
+
+    york_mg = mentions[york_sp]
+    assert york_mg.has('york', 'focus')
+    assert york_mg.has('york', 'center')
+
+    assert len(merges) == 3
+    assert ((like_sp, 'subject'), (i_sp, 'self')) in merges
+    assert ((like_sp, 'object'), (york_sp, 'self')) in merges
+    assert ((new_sp, 'object'), (york_sp, 'self')) in merges
+
+def test_adv(elitmodels, elit_to_logic):
+    """ Tests constructions with adverb attachments """
+    sentence = 'I walked quickly'
+    tok, pos, dp = elitmodels(sentence)
+    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
+
+    assert len(mentions) == 3
+    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
+    (walked_sp,) = [span for span in span_dict.values() if span.string == 'walked']
+    (quickly_sp,) = [span for span in span_dict.values() if span.string == 'quickly']
+
+    quickly_mg = mentions[quickly_sp]
+    quick_insts = quickly_mg.predicates(predicate_type='qualifier')
+    assert len(quick_insts) == 1
+    ((s, t, o, i),) = quick_insts
+    assert o is not None
+    assert quickly_mg.has(i, 'focus')
+    assert quickly_mg.has('quick', 'center')
+
+    assert len(merges) == 2
+    assert ((walked_sp, 'subject'), (i_sp, 'self')) in merges
+    assert ((quickly_sp, 'subject'), (walked_sp, 'self')) in merges
 
 
 

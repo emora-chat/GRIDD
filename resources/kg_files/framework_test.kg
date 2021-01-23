@@ -50,6 +50,12 @@ georgia<object>
 georgia[georgia]
 clothing<object>
 clothing[clothing,clothes]
+new<object>
+new[new]
+york<object>
+york[york]
+quick<object>
+quick[quick,quickly]
 
 buy<predicate>
 buy[buy,buying,buys,bought,purchase,purchased,purchases,purchasing]

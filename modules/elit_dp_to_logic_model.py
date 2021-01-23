@@ -22,7 +22,7 @@ ADV = ['rb', 'rbr', 'rbs']
 REF_DET = ['the', 'those', 'these', 'that', 'this']
 INST_DET = ['a', 'an']
 NODES = ['focus', 'center', 'pos', 'exprof', 'type', 'ltype',
-         'nsbj', 'obj', 'comp', 'lv', 'ppmod', 'det', 'attr']
+         'nsbj', 'obj', 'comp', 'lv', 'ppmod', 'det', 'attr', 'compound', 'adv']
 
 class ElitDPToLogic(ParseToLogic):
 
