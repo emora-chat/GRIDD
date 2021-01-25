@@ -4,7 +4,7 @@ expl	- no logical form necessary, purely syntactical sugar
 cc      - no logical form necessary, purely syntactical sugar
 case	- no logical form necessary, purely syntactical sugar
 mark	- no logical form necessary, purely syntactical sugar
-
+meta    - not relevant?
 
 Handled
 -----------
@@ -54,5 +54,19 @@ advcl
 
 
 disc
-meta
 prn
+
+
+***
+
+(1) First sarah went to the store then she bought a banana
+    -> Need sentence segmentation
+
+[[2, "adv"], [2, "nsbj"], [8, "comp"], [5, "case"], [5, "det"],
+[2, "ppmod"], [8, "adv"], [8, "nsbj"], [-1, "root"], [10, "det"],
+[8, "obj"]]
+
+(2) Mary said goodbye to you
+    -> Not `disc` but hello is?
+
+[[1, "nsbj"], [-1, "root"], [1, "obj"], [4, "case"], [1, "ppmod"]]

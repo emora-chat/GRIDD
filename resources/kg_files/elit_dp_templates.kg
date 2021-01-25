@@ -442,6 +442,13 @@ focus(p2)
 center(Y)
 ;
 
+prn(X/pos(), Y/pos())
+-> parenthetical ->
+p/parenthical(X, Y)
+focus(p)
+center(Y)
+;
+
 dep(X/pos(), Y/pos())
 -> unknown_relation ->
 p/unk_relation(X, Y)
