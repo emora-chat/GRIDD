@@ -434,6 +434,21 @@ focus(p)
 center(Y)
 ;
 
+voc(X/pos(), Y/pos())
+-> vocalization ->
+p1/addressee(Y)
+p2/relay_info(p, X)
+focus(p2)
+center(Y)
+;
+
+dep(X/pos(), Y/pos())
+-> unknown_relation ->
+p/unk_relation(X, Y)
+focus(p)
+center(Y)
+;
+
 X/noun()
 -> concept ->
 focus(X)

@@ -2,6 +2,9 @@ Not necessary
 -----------
 expl	- no logical form necessary, purely syntactical sugar
 cc      - no logical form necessary, purely syntactical sugar
+case	- no logical form necessary, purely syntactical sugar
+mark	- no logical form necessary, purely syntactical sugar
+
 
 Handled
 -----------
@@ -25,11 +28,15 @@ num
 appo
 neg
 advnp
+dep
+
 
 Handled but weird
 -----------
 conj
 com
+prt
+voc
 
 
 Not handled
@@ -41,11 +48,11 @@ relcl
 r-*
 advcl
 
-prt
-case
-mark
-dep
-voc
+
+
+
+
+
 disc
 meta
 prn
