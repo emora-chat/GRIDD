@@ -21,8 +21,12 @@ PRONOUN = ['prp', 'prpds']
 ADV = ['rb', 'rbr', 'rbs']
 REF_DET = ['the', 'those', 'these', 'that', 'this']
 INST_DET = ['a', 'an']
-NODES = ['focus', 'center', 'pos', 'exprof', 'type', 'ltype',
-         'nsbj', 'obj', 'comp', 'lv', 'ppmod', 'det', 'attr', 'compound', 'adv']
+
+NODES = ['focus', 'center', 'pos', 'exprof', 'type', 'ltype']
+DP_LABELS = [x.strip()
+             for x in open(join('GRIDD', 'resources', 'elit_dp_labels.txt'), 'r').readlines()
+             if len(x.strip()) > 0]
+
 
 class ElitDPToLogic(ParseToLogic):
 

@@ -1,6 +1,6 @@
 import pytest
 from modules.elit_models import ElitModels
-from modules.elit_dp_to_logic_model import ElitDPToLogic, NODES
+from modules.elit_dp_to_logic_model import ElitDPToLogic, NODES, DP_LABELS
 from data_structures.knowledge_base import KnowledgeBase
 from os.path import join
 
@@ -11,7 +11,7 @@ def elitmodels():
 @pytest.fixture
 def elit_to_logic():
     kb = KnowledgeBase(join('GRIDD', 'resources', 'kg_files', 'framework_test.kg'))
-    template_starter_predicates = [(n, 'is_type') for n in NODES]
+    template_starter_predicates = [(n, 'is_type') for n in NODES+DP_LABELS]
     template_file = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
     return ElitDPToLogic(kb, template_starter_predicates, template_file)
 

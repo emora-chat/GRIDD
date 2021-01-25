@@ -289,6 +289,13 @@ center(X)
 instantiative(inst)
 ;
 
+dat(X/pos(), Y/pos())
+-> indirect_obj ->
+p/indirect_obj(X, Y)
+focus(p)
+center(Y)
+;
+
 det(X/pos(), Y/dt())
 -> determiner ->
 is_type(X)

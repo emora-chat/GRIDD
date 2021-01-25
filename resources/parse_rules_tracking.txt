@@ -1,0 +1,44 @@
+Not necessary
+-----------
+expl	- no logical form necessary, purely syntactical sugar
+
+
+Handled
+-----------
+nsbj
+csbj
+obj
+comp
+lv
+det
+attr
+adv
+poss
+com
+ppmod
+dat
+
+Not handled
+-----------
+aux
+cop
+modal
+raise
+conj
+cc
+num
+appo
+acl
+relcl
+neg
+advcl
+advnp
+prt
+case
+mark
+dep
+voc
+disc
+meta
+prn
+r-*

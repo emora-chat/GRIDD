@@ -8,7 +8,7 @@ from data_structures.working_memory import WorkingMemory
 
 from data_structures.pipeline import Pipeline
 from modules.elit_models import ElitModels
-from modules.elit_dp_to_logic_model import ElitDPToLogic, NODES
+from modules.elit_dp_to_logic_model import ElitDPToLogic, NODES, DP_LABELS
 from modules.merge_syntax import MergeSyntax
 from modules.inference_rule_based import InferenceRuleBased
 from modules.mention_bridge import MentionBridge
@@ -31,7 +31,7 @@ class Chatbot:
         self.working_memory = WorkingMemory(self.knowledge_base)
 
         elit_models = Pipeline.component(ElitModels())
-        template_starter_predicates = [(n, 'is_type') for n in NODES]
+        template_starter_predicates = [(n, 'is_type') for n in NODES+DP_LABELS]
         template_file = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
         elit_dp = Pipeline.component(ElitDPToLogic(self.knowledge_base, template_starter_predicates, template_file))
         mention_bridge = Pipeline.component(MentionBridge())
