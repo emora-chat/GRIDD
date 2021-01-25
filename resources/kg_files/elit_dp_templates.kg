@@ -385,6 +385,13 @@ focus(p)
 center(Y)
 ;
 
+neg(X/pos(), Y/pos())
+-> negation ->
+p/negate(X, Y)
+focus(p)
+center(Y)
+;
+
 appo(X/pos(), Y/pos())
 -> appositive ->
 p/appositive(X, Y)

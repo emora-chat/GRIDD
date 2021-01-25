@@ -22,6 +22,8 @@ dat
 cop
 raise
 num
+appo
+
 
 Handled but weird
 -----------
@@ -33,12 +35,11 @@ Not handled
 -----------
 aux
 modal
-
-
-
-appo
 acl
 relcl
+r-*
+
+
 neg
 advcl
 advnp
@@ -50,4 +51,3 @@ voc
 disc
 meta
 prn
-r-*
