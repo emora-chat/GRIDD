@@ -302,6 +302,8 @@ focus(p)
 center(X)
 ;
 
+
+
 ppmod(X/pos(), Y/pos())
 case(Y, Z/pos())
 -> preposition_phrase ->
@@ -346,6 +348,13 @@ center(X)
 attr(X/pos(), Y/pos())
 -> general_attribute ->
 p/property(X,Y)
+focus(p)
+center(Y)
+;
+
+acl(X/pos(), Y/pos())
+-> acl ->
+p/property(X, Y)
 focus(p)
 center(Y)
 ;

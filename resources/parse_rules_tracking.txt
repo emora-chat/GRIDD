@@ -31,7 +31,12 @@ dep
 raise
 aux
 modal
-
+    Aux, modal, and raise all do similar things????
+    why is
+    i should study -> modal should
+    but
+    i ought to study -> raise ought
+acl
 
 Handled but weird
 -----------
@@ -47,9 +52,10 @@ advcl
 
 Not handled
 -----------
-acl
 relcl
 r-*
+    need rules to many current constructions that
+    handle if relcl and r-* are present too
 disc
 
 
@@ -68,14 +74,7 @@ disc
 
 [[1, "nsbj"], [-1, "root"], [1, "obj"], [4, "case"], [1, "ppmod"]]
 
-(3) Aux, modal, and raise all do similar things????
-
-    why is
-    i should study -> modal should
-    but
-    i ought to study -> raise ought
-
-(4)
+(3)
 
 I like when you have vacuumed the house
 
