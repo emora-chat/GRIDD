@@ -23,7 +23,8 @@ cop
 raise
 num
 appo
-
+neg
+advnp
 
 Handled but weird
 -----------
@@ -38,11 +39,8 @@ modal
 acl
 relcl
 r-*
-
-
-neg
 advcl
-advnp
+
 prt
 case
 mark

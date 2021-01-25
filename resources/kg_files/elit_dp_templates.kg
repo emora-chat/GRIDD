@@ -371,6 +371,20 @@ focus(p)
 center(Y)
 ;
 
+advnp(X/pos(), Y/pos())
+-> advnp ->
+p/qualifier(X, Y)
+focus(p)
+center(Y)
+;
+
+prt(X/pos(), Y/pos())
+-> verb_particle ->
+p/particle(X, Y)
+focus(p)
+center(Y)
+;
+
 conj(X/pos(), Y/pos())
 -> conjunct ->
 p/conjunct(X, Y)
