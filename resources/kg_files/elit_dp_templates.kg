@@ -1,6 +1,16 @@
 nsbj(X/past_tense(), Y/pos())
 obj(X, Z/pos())
--> dobj_past_verb ->
+-> nsbj_dobj_past_verb ->
+is_type(X)
+p/X(Y,Z)
+time(p, past)
+focus(p)
+center(X)
+;
+
+csbj(X/past_tense(), Y/pos())
+obj(X, Z/pos())
+-> csbj_dobj_past_verb ->
 is_type(X)
 p/X(Y,Z)
 time(p, past)
@@ -10,7 +20,17 @@ center(X)
 
 nsbj(X/present_tense(), Y/pos())
 obj(X, Z/pos())
--> dobj_pres_verb ->
+-> nsbj_dobj_pres_verb ->
+is_type(X)
+p/X(Y,Z)
+time(p, now)
+focus(p)
+center(X)
+;
+
+csbj(X/present_tense(), Y/pos())
+obj(X, Z/pos())
+-> csbj_dobj_pres_verb ->
 is_type(X)
 p/X(Y,Z)
 time(p, now)
@@ -21,7 +41,18 @@ center(X)
 nsbj(X/noun(), Y/pos())
 obj(X, Z/pos())
 lv(X, U/past_tense())
--> light_verb_past ->
+-> nsbj_light_verb_past ->
+is_type(X)
+p/X(Y,Z)
+time(p, past)
+focus(p)
+center(X)
+;
+
+csbj(X/noun(), Y/pos())
+obj(X, Z/pos())
+lv(X, U/past_tense())
+-> csbj_light_verb_past ->
 is_type(X)
 p/X(Y,Z)
 time(p, past)
@@ -32,7 +63,18 @@ center(X)
 nsbj(X/noun(), Y/pos())
 obj(X, Z/pos())
 lv(X, U/present_tense())
--> light_verb_present ->
+-> nsbj_light_verb_present ->
+is_type(X)
+p/X(Y,Z)
+time(p, present)
+focus(p)
+center(X)
+;
+
+csbj(X/noun(), Y/pos())
+obj(X, Z/pos())
+lv(X, U/present_tense())
+-> csbj_light_verb_present ->
 is_type(X)
 p/X(Y,Z)
 time(p, present)
@@ -42,7 +84,17 @@ center(X)
 
 nsbj(X/past_tense(), Y/pos())
 comp(X, Z/pos())
--> outer_comp_verb_past ->
+-> nsbj_outer_comp_verb_past ->
+is_type(X)
+p/X(Y,Z)
+time(p,past)
+focus(p)
+center(X)
+;
+
+csbj(X/past_tense(), Y/pos())
+comp(X, Z/pos())
+-> csbj_outer_comp_verb_past ->
 is_type(X)
 p/X(Y,Z)
 time(p,past)
@@ -52,7 +104,17 @@ center(X)
 
 nsbj(X/present_tense(), Y/pos())
 comp(X, Z/pos())
--> outer_comp_verb_present ->
+-> nsbj_outer_comp_verb_present ->
+is_type(X)
+p/X(Y,Z)
+time(p,present)
+focus(p)
+center(X)
+;
+
+csbj(X/present_tense(), Y/pos())
+comp(X, Z/pos())
+-> csbj_outer_comp_verb_present ->
 is_type(X)
 p/X(Y,Z)
 time(p,present)
@@ -64,7 +126,40 @@ nsbj(X/verb(), Y/pos())
 comp(X, Z/pos())
 nsbj(Z, B/pos())
 obj(Z, A/pos())
--> inner_comp_with_nsbj_obj_verb ->
+-> nsbj_nsbj_inner_comp_with_obj_verb ->
+is_type(Z)
+p/Z(B,A)
+focus(p)
+center(Z)
+;
+
+nsbj(X/verb(), Y/pos())
+comp(X, Z/pos())
+csbj(Z, B/pos())
+obj(Z, A/pos())
+-> nsbj_csbj_inner_comp_with_obj_verb ->
+is_type(Z)
+p/Z(B,A)
+focus(p)
+center(Z)
+;
+
+csbj(X/verb(), Y/pos())
+comp(X, Z/pos())
+nsbj(Z, B/pos())
+obj(Z, A/pos())
+-> csbj_nsbj_inner_comp_with_obj_verb ->
+is_type(Z)
+p/Z(B,A)
+focus(p)
+center(Z)
+;
+
+csbj(X/verb(), Y/pos())
+comp(X, Z/pos())
+csbj(Z, B/pos())
+obj(Z, A/pos())
+-> csbj_csbj_inner_comp_with_obj_verb ->
 is_type(Z)
 p/Z(B,A)
 focus(p)
@@ -74,7 +169,37 @@ center(Z)
 nsbj(X/verb(), Y/pos())
 comp(X, Z/pos())
 nsbj(Z, A/pos())
--> inner_comp_with_nsbj_verb ->
+-> nsbj_nsbj_inner_comp_verb ->
+is_type(Z)
+p/Z(A)
+focus(p)
+center(Z)
+;
+
+csbj(X/verb(), Y/pos())
+comp(X, Z/pos())
+nsbj(Z, A/pos())
+-> csbj_nsbj_inner_comp_verb ->
+is_type(Z)
+p/Z(A)
+focus(p)
+center(Z)
+;
+
+nsbj(X/verb(), Y/pos())
+comp(X, Z/pos())
+csbj(Z, A/pos())
+-> nsbj_csbj_inner_comp_verb ->
+is_type(Z)
+p/Z(A)
+focus(p)
+center(Z)
+;
+
+csbj(X/verb(), Y/pos())
+comp(X, Z/pos())
+csbj(Z, A/pos())
+-> csbj_csbj_inner_comp_verb ->
 is_type(Z)
 p/Z(A)
 focus(p)
@@ -84,7 +209,17 @@ center(Z)
 nsbj(X/verb(), Y/pos())
 comp(X, Z/pos())
 obj(Z, A/pos())
--> inner_comp_with_obj_verb ->
+-> nsbj_inner_comp_with_obj_verb ->
+is_type(Z)
+p/Z(Y,A)
+focus(p)
+center(Z)
+;
+
+csbj(X/verb(), Y/pos())
+comp(X, Z/pos())
+obj(Z, A/pos())
+-> csbj_inner_comp_with_obj_verb ->
 is_type(Z)
 p/Z(Y,A)
 focus(p)
@@ -93,7 +228,16 @@ center(Z)
 
 nsbj(X/verb(), Y/pos())
 comp(X, Z/pos())
--> inner_comp_verb ->
+-> nsbj_inner_comp_verb ->
+is_type(Z)
+p/Z(Y)
+focus(p)
+center(Z)
+;
+
+csbj(X/verb(), Y/pos())
+comp(X, Z/pos())
+-> csbj_inner_comp_verb ->
 is_type(Z)
 p/Z(Y)
 focus(p)
@@ -101,7 +245,16 @@ center(Z)
 ;
 
 nsbj(X/past_tense(), Y/pos())
--> no_obj_past_verb ->
+-> nsbj_no_obj_past_verb ->
+is_type(X)
+p/X(Y)
+time(p, past)
+focus(p)
+center(X)
+;
+
+csbj(X/past_tense(), Y/pos())
+-> csbj_no_obj_past_verb ->
 is_type(X)
 p/X(Y)
 time(p, past)

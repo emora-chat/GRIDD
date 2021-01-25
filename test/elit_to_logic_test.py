@@ -576,6 +576,19 @@ def test_adv(elitmodels, elit_to_logic):
     assert ((walked_sp, 'subject'), (i_sp, 'self')) in merges
     assert ((quickly_sp, 'subject'), (walked_sp, 'self')) in merges
 
+def test_csbj(elitmodels, elit_to_logic):
+    """ Tests constructions with csbj """
+    assert False
+    sentence = 'placeholder'
+    tok, pos, dp = elitmodels(sentence)
+    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
+
+    assert len(mentions) == 3
+    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
+    (walked_sp,) = [span for span in span_dict.values() if span.string == 'walked']
+    (quickly_sp,) = [span for span in span_dict.values() if span.string == 'quickly']
+
+
 
 
 
