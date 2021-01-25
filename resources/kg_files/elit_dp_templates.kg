@@ -4,7 +4,7 @@ nsbj(X, Z/pos())
 is_type(Y)
 p/Y(Z,X)
 focus(p)
-center(X)
+center(Y)
 time(p,present)
 ;
 
@@ -14,7 +14,7 @@ csbj(X, Z/pos())
 is_type(Y)
 p/Y(Z,X)
 focus(p)
-center(X)
+center(Y)
 time(p,present)
 ;
 
@@ -24,7 +24,7 @@ nsbj(X, Z/pos())
 is_type(Y)
 p/Y(Z,X)
 focus(p)
-center(X)
+center(Y)
 time(p,past)
 ;
 
@@ -34,7 +34,7 @@ csbj(X, Z/pos())
 is_type(Y)
 p/Y(Z,X)
 focus(p)
-center(X)
+center(Y)
 time(p,past)
 ;
 
@@ -373,6 +373,13 @@ center(Y)
 
 advnp(X/pos(), Y/pos())
 -> advnp ->
+p/qualifier(X, Y)
+focus(p)
+center(Y)
+;
+
+advcl(X/pos(), Y/pos())
+-> advcl ->
 p/qualifier(X, Y)
 focus(p)
 center(Y)
