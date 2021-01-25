@@ -371,6 +371,13 @@ focus(p)
 center(Y)
 ;
 
+conj(X/pos(), Y/pos())
+-> conjunct ->
+p/conjunct(X, Y)
+focus(p)
+center(Y)
+;
+
 raise(X/pos(), Y/pos())
 -> raise_verb ->
 p/mode(X, Y)

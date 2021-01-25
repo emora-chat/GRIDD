@@ -1,7 +1,7 @@
 Not necessary
 -----------
 expl	- no logical form necessary, purely syntactical sugar
-
+cc      - no logical form necessary, purely syntactical sugar
 
 Handled
 -----------
@@ -13,7 +13,6 @@ det
 attr
 adv
 poss
-com
 ppmod
 
 Untested
@@ -24,14 +23,18 @@ cop
 raise
 
 
+Handled but weird
+-----------
+conj
+com
+
+
 Not handled
 -----------
 aux
 modal
 
 
-conj
-cc
 num
 appo
 acl
