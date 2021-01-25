@@ -339,7 +339,7 @@ class ConceptGraph:
                 self.add(s, t, o, i)
             self._next_id = d['next_id']
 
-    def pretty_print(self, predicate_exclusions=None):
+    def pretty_print(self, exclusions=None):
         name_counter = defaultdict(int)
         id_map = {}
         visited = set()
@@ -349,15 +349,15 @@ class ConceptGraph:
         for sig in self.predicates():
             type_string, bi_string, mono_string = self._get_representation(sig, id_map, name_counter, visited,
                                                                            type_string, bi_string, mono_string,
-                                                                           predicate_exclusions)
+                                                                           exclusions)
         full_string = type_string + '\n' + mono_string + '\n' + bi_string
         return full_string.strip()
 
     def _get_representation(self, predicate_signature, id_map, name_counter, visited,
-                            type_string, bi_string, mono_string, predicate_exclusions):
+                            type_string, bi_string, mono_string, exclusions):
         if predicate_signature not in visited:
             s, t, o, i = predicate_signature
-            if predicate_exclusions is None or t not in predicate_exclusions:
+            if exclusions is None or (t not in exclusions and s not in exclusions and o not in exclusions):
                 id_map[t] = t
                 concepts = [s, o] if o is not None else [s]
                 for concept in concepts:
@@ -367,7 +367,7 @@ class ConceptGraph:
                                 type_string, bi_string, mono_string = self._get_representation(self.predicate(concept),
                                                                                                id_map, name_counter, visited,
                                                                                                type_string, bi_string, mono_string,
-                                                                                               predicate_exclusions)
+                                                                                               exclusions)
                             else:
                                 types = self.predicates(concept, 'type')
                                 if len(types) > 0:
@@ -398,7 +398,6 @@ class ConceptGraph:
                 visited.add(predicate_signature)
         return type_string, bi_string, mono_string
 
-
 def _map(current_graph, other_concept, other_namespace, id_map):
     if other_concept is None:
         return None
@@ -417,4 +416,7 @@ def _map(current_graph, other_concept, other_namespace, id_map):
 
 if __name__ == '__main__':
     print(ConceptGraphSpec.verify(ConceptGraph))
+
+
+
 

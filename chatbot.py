@@ -50,7 +50,15 @@ class Chatbot:
             ('dp_merges', 'wm_span_dict', 'wm_after_mentions') > merge_dp > ('node_merges'),
             ('node_merges', 'wm_after_mentions') > merge_bridge > ('wm_after_merges'),
             ('wm_after_merges') > inference_rulebased > ('implications'),
-            ('implications', 'wm_after_merges') > inference_bridge > ('wm_after_inference')
+            ('implications', 'wm_after_merges') > inference_bridge > ('wm_after_inference'),
+            tags ={
+                sentence_caser: ['sentence_caser'],
+                elit_models: ['elit_models'],
+                elit_dp: ['elit_dp'],
+                mention_bridge: ['mention_bridge'],
+                merge_dp: ['merge_dp'],
+                merge_bridge: ['merge_bridge']
+            }
         )
 
     def chat(self):

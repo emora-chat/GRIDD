@@ -19,5 +19,7 @@ class MentionBridge:
             working_memory.add(span_node, 'exprof', mapped_ids[focus])
             working_memory.add(span_node, 'type', 'span')
             span_dict[span_obj] = span_node
+            span_dict[span_node] = span_obj
         working_memory.pull_ontology(new_concepts)
+        working_memory.update_spans(span_dict)
         return span_dict, working_memory

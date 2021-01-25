@@ -41,7 +41,11 @@ class Pipeline:
                 return self
 
         def __str__(self):
-            return 'Comp<{}>'.format(self.fn.__name__)
+            if hasattr(self.fn, __name__):
+                name = {self.fn.__name__}
+            else:
+                name = {type(self.fn).__name__}
+            return 'Comp<{}>'.format(name)
 
         def __repr__(self):
             return str(self)

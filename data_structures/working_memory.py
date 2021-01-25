@@ -3,6 +3,8 @@ from data_structures.working_memory_spec import WorkingMemorySpec
 import data_structures.infer as pl
 from utilities import identification_string, CHARS
 from itertools import chain
+import networkx as nx
+import matplotlib.pyplot as plt
 
 class WorkingMemory(ConceptGraph):
 
@@ -10,6 +12,7 @@ class WorkingMemory(ConceptGraph):
 
     def __init__(self, knowledge_base, *filenames_or_logicstrings):
         self.knowledge_base = knowledge_base
+        self.span_dict = {}
         super().__init__(namespace='WM')
         self.load(*filenames_or_logicstrings)
 
@@ -117,7 +120,51 @@ class WorkingMemory(ConceptGraph):
     def rules(self):
         return pl.generate_inference_graphs(self)
 
+    def update_spans(self, span_dict):
+        self.span_dict.update(span_dict)
+
+    def display_graph(self, exclusions=None):
+        G = nx.Graph() #todo - directed graph
+        edge_labels = {}
+
+        for s, t, o, i in self.predicates():
+            if exclusions is None or (t not in exclusions and s not in exclusions and o not in exclusions):
+                if t in {'type', 'time'}:
+                    edge_labels[(s, o)] = t
+                elif t == 'exprof':
+                    edge_labels[(self.span_dict[s], o)] = t
+                elif t in {'instantiative', 'referential'}:
+                    edge_labels[(s, t)] = ''
+                else:
+                    edge_labels[(i, s)] = 's'
+                    if o is not None:
+                        edge_labels[(i, o)] = 'o'
+                    edge_labels[(i, t)] = 't'
+
+        G.add_edges_from(edge_labels.keys())
+        pos = nx.fruchterman_reingold_layout(G)
+        # pos = nx.planar_layout(G)
+        plt.figure()
+        nx.draw(G, pos, edge_color='black', font_size=7,
+                node_size=300, node_color='pink', alpha=0.8,
+                labels={node:node for node in G.nodes()})
+        nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels,
+                                     font_size=7, font_color='red')
+        plt.show()
+
 
 
 if __name__ == '__main__':
     print(WorkingMemorySpec.verify(WorkingMemory))
+
+    cg1 = ConceptGraph(concepts=['princess', 'hiss', 'fluffy', 'bark', 'friend'], namespace='1')
+    a = cg1.add('princess', 'hiss')
+    cg1.add(a, 'volume', 'loud')
+    cg1.add('fluffy', 'bark')
+    cg1.add('princess', 'friend', 'fluffy')
+    cg1.add('fluffy', 'friend', 'princess')
+
+    from data_structures.knowledge_base import KnowledgeBase
+    wm = WorkingMemory(KnowledgeBase())
+    wm.concatenate(cg1)
+    wm.display_graph()
