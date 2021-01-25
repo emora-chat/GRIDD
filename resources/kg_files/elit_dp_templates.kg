@@ -420,7 +420,7 @@ focus(p)
 center(Y)
 ;
 
-obj(X/pos, Y/pos())
+obj(X/pos(), Y/pos())
 -> floating_obj ->
 p/obj(X,Y)
 center(Y)

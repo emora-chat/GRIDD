@@ -37,6 +37,7 @@ conj
 com
 prt
 voc
+prn
 
 
 Not handled
@@ -47,14 +48,8 @@ acl
 relcl
 r-*
 advcl
-
-
-
-
-
-
 disc
-prn
+
 
 
 ***
