@@ -436,9 +436,8 @@ center(Y)
 
 voc(X/pos(), Y/pos())
 -> vocalization ->
-p1/addressee(Y)
-p2/relay_info(p, X)
-focus(p2)
+p/relay_info(X, Y)
+focus(p)
 center(Y)
 ;
 
