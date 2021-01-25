@@ -485,6 +485,33 @@ focus(p)
 center(Y)
 ;
 
+disc(X/pos(), Y/pos())
+exprof(Y, E/expression())
+expr(E, affirmative)
+-> affirmative_disc ->
+p/affirm(user, X)
+focus(p)
+center(Y)
+;
+
+disc(X/pos(), Y/pos())
+exprof(Y, E/expression())
+expr(E, rejective)
+-> rejective_disc ->
+p/reject(user, X)
+focus(p)
+center(Y)
+;
+
+disc(X/pos(), Y/pos())
+exprof(Y, E/expression())
+expr(E, acknowledge)
+-> acknowledge_disc ->
+p/acknowledge(user, X)
+focus(p)
+center(Y)
+;
+
 X/noun()
 -> concept ->
 focus(X)
