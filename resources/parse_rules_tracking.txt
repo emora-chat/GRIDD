@@ -23,12 +23,14 @@ Untested
 csbj
 dat
 cop
-raise
 num
 appo
 neg
 advnp
 dep
+raise
+aux
+modal
 
 
 Handled but weird
@@ -45,12 +47,9 @@ advcl
 
 Not handled
 -----------
-aux
-modal
 acl
 relcl
 r-*
-
 disc
 
 
@@ -68,3 +67,19 @@ disc
     -> Not `disc` but hello is?
 
 [[1, "nsbj"], [-1, "root"], [1, "obj"], [4, "case"], [1, "ppmod"]]
+
+(3) Aux, modal, and raise all do similar things????
+
+    why is
+    i should study -> modal should
+    but
+    i ought to study -> raise ought
+
+(4)
+
+I like when you have vacuumed the house
+
+    ["PRP", "VBP",
+    "WRB", "PRP", "VBP", "VBN", "DT", "NN"]
+    [1, "nsbj"], [-1, "root"],
+    [5, "adv"], [5, "nsbj"], [5, "aux"], [1, "comp"], [7, "det"], [5, "obj"]

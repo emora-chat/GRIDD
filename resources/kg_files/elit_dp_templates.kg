@@ -427,6 +427,20 @@ focus(p)
 center(Y)
 ;
 
+aux(X/pos(), Y/pos())
+-> aux ->
+p/mode(X, Y)
+focus(p)
+center(Y)
+;
+
+modal(X/pos(), Y/pos())
+-> modal ->
+p/mode(X, Y)
+focus(p)
+center(Y)
+;
+
 obj(X/pos(), Y/pos())
 -> floating_obj ->
 p/obj(X,Y)
