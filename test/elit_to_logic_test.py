@@ -202,8 +202,6 @@ def test_prepositional_phrases(elitmodels, elit_to_logic):
     assert ((to_sp, 'subject'), (walked_sp, 'self')) in merges
     assert ((to_sp, 'object'), (house_sp, 'self')) in merges
 
-
-
 def test_comp(elitmodels, elit_to_logic):
     """ Tests constructions with comp attachments where comp structure misses nsbj and obj """
     sentence = 'I like to walk'

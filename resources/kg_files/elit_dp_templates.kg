@@ -1,3 +1,43 @@
+cop(X/pos(), Y/present_tense())
+nsbj(X, Z/pos())
+-> nsbj_copula_present ->
+is_type(Y)
+p/Y(Z,X)
+focus(p)
+center(X)
+time(p,present)
+;
+
+cop(X/pos(), Y/present_tense())
+csbj(X, Z/pos())
+-> csbj_copula_present ->
+is_type(Y)
+p/Y(Z,X)
+focus(p)
+center(X)
+time(p,present)
+;
+
+cop(X/pos(), Y/past_tense())
+nsbj(X, Z/pos())
+-> nsbj_copula_past ->
+is_type(Y)
+p/Y(Z,X)
+focus(p)
+center(X)
+time(p,past)
+;
+
+cop(X/pos(), Y/past_tense())
+csbj(X, Z/pos())
+-> csbj_copula_past ->
+is_type(Y)
+p/Y(Z,X)
+focus(p)
+center(X)
+time(p,past)
+;
+
 nsbj(X/past_tense(), Y/pos())
 obj(X, Z/pos())
 -> nsbj_dobj_past_verb ->
@@ -329,6 +369,13 @@ adv(X/pos(), Y/pos())
 p/qualifier(X, Y)
 focus(p)
 center(Y)
+;
+
+obj(X/pos, Y/pos())
+-> floating_obj ->
+p/obj(X,Y)
+center(Y)
+focus(p)
 ;
 
 com(X/pos(), Y/pos())
