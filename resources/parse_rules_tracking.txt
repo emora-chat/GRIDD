@@ -6,7 +6,6 @@ expl	- no logical form necessary, purely syntactical sugar
 Handled
 -----------
 nsbj
-csbj
 obj
 comp
 lv
@@ -16,15 +15,21 @@ adv
 poss
 com
 ppmod
+
+Untested
+-----------
+csbj
 dat
+cop
+raise
+
 
 Not handled
 -----------
 aux
-
-cop
 modal
-raise
+
+
 conj
 cc
 num

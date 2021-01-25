@@ -371,6 +371,13 @@ focus(p)
 center(Y)
 ;
 
+raise(X/pos(), Y/pos())
+-> raise_verb ->
+p/mode(X, Y)
+focus(p)
+center(Y)
+;
+
 obj(X/pos, Y/pos())
 -> floating_obj ->
 p/obj(X,Y)
