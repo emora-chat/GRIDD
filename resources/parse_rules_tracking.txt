@@ -82,3 +82,12 @@ I like when you have vacuumed the house
     "WRB", "PRP", "VBP", "VBN", "DT", "NN"]
     [1, "nsbj"], [-1, "root"],
     [5, "adv"], [5, "nsbj"], [5, "aux"], [1, "comp"], [7, "det"], [5, "obj"]
+
+(4) Not sure why we had this one???
+
+obj(X/pos(), Y/pos())
+-> floating_obj ->
+p/obj(X,Y)
+center(Y)
+focus(p)
+;

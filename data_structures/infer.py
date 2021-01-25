@@ -30,6 +30,12 @@ class ImplicationRule:
         else:
             return self.concept_id == other.concept_id
 
+    def __str__(self):
+        return self.concept_id
+
+    def __repr__(self):
+        return str(self)
+
 def infer(knowledge_graph, inference_rules):
     """
     Get variable assignments of solutions from applying each query graph from the

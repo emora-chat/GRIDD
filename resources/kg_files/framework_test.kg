@@ -39,12 +39,12 @@ that[that]
 this<ref_det>
 this[this]
 
-affirmative<object>
+affirmative<predicate>
 affirmative[yes,yeah,yea,sure,yep,yup]
-rejective<object>
+rejective<predicate>
 rejective[no,nope,nah]
-acknowledge<object>
-acknowledge[ok,okay]
+acknowledgement<predicate>
+acknowledgement[ok,okay]
 
 in<predicate>
 in[in]

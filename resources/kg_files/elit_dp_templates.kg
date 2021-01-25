@@ -450,13 +450,6 @@ focus(p)
 center(Y)
 ;
 
-obj(X/pos(), Y/pos())
--> floating_obj ->
-p/obj(X,Y)
-center(Y)
-focus(p)
-;
-
 com(X/pos(), Y/pos())
 -> compound_concept ->
 p/compound(Y, X)
@@ -505,7 +498,7 @@ center(Y)
 
 disc(X/pos(), Y/pos())
 exprof(Y, E/expression())
-expr(E, acknowledge)
+expr(E, acknowledgement)
 -> acknowledge_disc ->
 p/acknowledge(user, X)
 focus(p)
