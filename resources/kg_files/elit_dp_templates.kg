@@ -378,6 +378,13 @@ focus(p)
 center(Y)
 ;
 
+num(X/pos(), Y/pos())
+-> numeric ->
+p/numeric(X, Y)
+focus(p)
+center(Y)
+;
+
 raise(X/pos(), Y/pos())
 -> raise_verb ->
 p/mode(X, Y)
