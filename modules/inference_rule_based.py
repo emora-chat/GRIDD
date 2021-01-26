@@ -18,4 +18,4 @@ class InferenceRuleBased:
         print("\nINFERENCES::")
         for cg in implications:
             print(cg.pretty_print())
-            print()
+            print('*')

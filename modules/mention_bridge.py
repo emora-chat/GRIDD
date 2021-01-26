@@ -16,7 +16,7 @@ class MentionBridge:
             mapped_ids = working_memory.concatenate(mention_graph, predicate_exclusions={'focus','center'})
             new_concepts.update(mapped_ids.values())
             span_node = working_memory._get_next_id()
-            working_memory.add(span_node, 'exprof', mapped_ids[focus])
+            working_memory.add(span_node, 'exprof', mapped_ids.get(focus,focus))
             working_memory.add(span_node, 'type', 'span')
             span_dict[span_obj] = span_node
             span_dict[span_node] = span_obj

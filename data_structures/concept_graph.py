@@ -286,6 +286,16 @@ class ConceptGraph:
                 o = _map(self, o, concept_graph._namespace, id_map)
                 i = _map(self, i, concept_graph._namespace, id_map)
                 self.add(s, t, o, i)
+        for concept in concept_graph.concepts():
+            if concept not in id_map:
+                if predicate_exclusions is None:
+                    concept = _map(self, concept, concept_graph._namespace, id_map)
+                    self.add(concept)
+                else:
+                    if concept not in predicate_exclusions:
+                        if not concept_graph.has(predicate_id=concept) or concept_graph.type(concept) not in predicate_exclusions:
+                            concept = _map(self, concept, concept_graph._namespace, id_map)
+                            self.add(concept)
         return id_map
 
     def copy(self, namespace=None):
