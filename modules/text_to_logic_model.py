@@ -164,7 +164,7 @@ class ParseToLogic:
                 if center not in centers_handled:
                     centers_handled.add(center)
                     m = {}
-                    cg = ConceptGraph(namespace=self.templates._namespace)
+                    cg = ConceptGraph(namespace=post._namespace)
                     cg._next_id = post._next_id
                     for node in post.concepts():
                         if node in solution:

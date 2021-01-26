@@ -1,40 +1,10 @@
 import json, time
-from collections import defaultdict
 from pyswip import Prolog, Variable
 from utilities import identification_string, CHARS
 from structpy.map.bijective.bimap import Bimap
 from data_structures.concept_graph import ConceptGraph
-
-
-class ImplicationRule:
-    """
-    Data structure for packaging precondition and postcondition ConceptGraphs
-    to represent an implication rule.
-    """
-
-    def __init__(self, pre, post=None, concept_id=None):
-        self.precondition = pre
-        if post is None:
-            post = ConceptGraph()
-        self.postcondition = post
-        if concept_id is None:
-            concept_id = id(self)
-        self.concept_id = concept_id
-
-    def __hash__(self):
-        return hash(self.concept_id)
-
-    def __eq__(self, other):
-        if isinstance(other, str):
-            return self.concept_id == other
-        else:
-            return self.concept_id == other.concept_id
-
-    def __str__(self):
-        return self.concept_id
-
-    def __repr__(self):
-        return str(self)
+from data_structures.implication_rule import ImplicationRule
+import utilities as util
 
 def infer(knowledge_graph, inference_rules):
 
@@ -71,42 +41,33 @@ def infer(knowledge_graph, inference_rules):
 
 def generate_inference_graphs(cg, ordered_rule_ids=None):
     """
-    Identifies the inference rules and their corresponding implications in the given
+    Extracts the inference rules and their corresponding implications in the given
     concept graph `cg`.
 
     If the list of ordered_rule_ids is given,
     then the rules are formed in the specified order to ensure they are matched in priority order.
 
-
-
-
     :returns dict<rule_id: ImplicationRule object>
     """
     inferences, implications = {}, {}
-    variable_predicate_instances = defaultdict(set)
+    id_maps = {}
 
     if ordered_rule_ids is not None:
         for situation_node in ordered_rule_ids:
             inferences[situation_node] = ConceptGraph(namespace='pre', concepts=['var'])
             implications[situation_node] = ConceptGraph(namespace='post', concepts=['var'])
+            id_maps[situation_node] = {}
 
     for situation_node, _, constraint, _ in cg.predicates(predicate_type='pre'):
         if situation_node not in inferences:
             inferences[situation_node] = ConceptGraph(namespace='pre', concepts=['var'])
-        _transfer_concept(cg, inferences[situation_node], constraint)
-        # if cg.has(predicate_id=constraint) and cg.type(constraint) == 'var':
-        #     variable_predicate_instances[situation_node].add((cg.subject(constraint), constraint))
+            id_maps[situation_node] = {}
+        _transfer_concept(cg, inferences[situation_node], constraint, id_maps[situation_node])
 
     for situation_node, _, implication, _ in cg.predicates(predicate_type='post'):
         if situation_node not in implications:
-            implications[situation_node] = ConceptGraph(namespace='post', concepts=['var'])
-        _transfer_concept(cg, implications[situation_node], implication)
-    #
-    # for situation_node, vars in variable_predicate_instances.items():
-    #     implication_graph = implications[situation_node]
-    #     for subject, pred_inst in vars:
-    #         if implication_graph.has(subject):
-    #             implication_graph.add(subject, 'var', predicate_id=pred_inst)
+            implications[situation_node] = ConceptGraph(namespace='post')
+        _transfer_concept(cg, implications[situation_node], implication, id_maps[situation_node])
 
     rules = {}
     for situation_node in inferences:
@@ -114,19 +75,20 @@ def generate_inference_graphs(cg, ordered_rule_ids=None):
     return rules
 
 
-def _transfer_concept(cg, new_graph, concept_id):
+def _transfer_concept(cg, new_graph, concept_id, id_map):
     """
     Adds the concept `concept_id` from `cg` to `new_graph`
     """
     if cg.has(predicate_id=concept_id): # predicate instance
         components = [cg.subject(concept_id), cg.type(concept_id), cg.object(concept_id)]
+        mapped_components = []
         for comp in components:
-            if comp is not None and not new_graph.has(comp):
-                new_graph.add(comp)
-        new_graph.add(*components, predicate_id=concept_id)
+            if comp is not None:
+                comp = util.map(new_graph, comp, cg._namespace, id_map)
+            mapped_components.append(comp)
+        new_graph.add(*mapped_components, predicate_id=util.map(new_graph, concept_id, cg._namespace, id_map))
     else: # entity instance
-        if not new_graph.has(concept_id):
-            new_graph.add(concept_id)
+        util.map(new_graph, concept_id, cg._namespace, id_map)
 
 
 def to_knowledge_prolog(cg):
@@ -135,6 +97,8 @@ def to_knowledge_prolog(cg):
     """
     type_rules = []
     rules = []
+
+    # Flatten ontology in `tmp` copy of cg
     tmp = ConceptGraph(predicates=cg.predicates())
     for concept in tmp.concepts():
         visited = set()
@@ -157,7 +121,7 @@ def to_knowledge_prolog(cg):
                 rules.append('predinst(%s(%s,%s),%s)' % (t, s, o, i))
                 one_non_ont_predicate = True
         else:               # monopredicate
-            if t not in ['var', 'is_type']:
+            if t not in {'var', 'is_type'}:
                 rules.append('predinst(%s(%s),%s)' % (t, s, i))
                 one_non_ont_predicate = True
     if not one_non_ont_predicate: # if there is no predinst in knowledge prolog, a prolog query using predinst causes error to be thrown (predinst is not defined)

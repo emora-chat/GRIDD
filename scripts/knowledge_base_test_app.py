@@ -26,17 +26,19 @@ if __name__ == '__main__':
 
     mode = 'logic'
     if mode == 'logic':
+        wm = WorkingMemory(kb)
         logic_string = input('>>> ')
         while logic_string != 'q':
             if not logic_string.strip().endswith(';'):
                 logic_string += ';'
-            wm = WorkingMemory(kb, logic_string)
+            wm.load(logic_string)
             wm.pull(2)
             rules = collect(join('gridd_files', 'kb_test', 'rules'), extension='.kg')
             cgs = wm.implications(*rules)
             for cg in cgs:
                 print(cg.pretty_print())
                 print()
+                wm.concatenate(cg)
             logic_string = input('>>> ')
     elif mode == 'lang':
         from chatbot import Chatbot

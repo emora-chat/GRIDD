@@ -2,11 +2,10 @@ from structpy.graph.directed.labeled.multilabeled_parallel_digraph_networkx impo
 from structpy.map.map import Map
 from structpy.map.index.index import Index
 from data_structures.concept_graph_spec import ConceptGraphSpec
-from pyswip import Prolog, Variable
-from structpy.map.bijective.bimap import Bimap
 CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 from collections import defaultdict
-import json, time, copy
+import json
+import utilities as util
 
 class ConceptGraph:
 
@@ -274,27 +273,27 @@ class ConceptGraph:
         if predicate_exclusions is not None:
             for s, t, o, i in concept_graph.predicates():
                 if t not in predicate_exclusions:
-                    s = _map(self, s, concept_graph._namespace, id_map)
-                    t = _map(self, t, concept_graph._namespace, id_map)
-                    o = _map(self, o, concept_graph._namespace, id_map)
-                    i = _map(self, i, concept_graph._namespace, id_map)
+                    s = util.map(self, s, concept_graph._namespace, id_map)
+                    t = util.map(self, t, concept_graph._namespace, id_map)
+                    o = util.map(self, o, concept_graph._namespace, id_map)
+                    i = util.map(self, i, concept_graph._namespace, id_map)
                     self.add(s, t, o, i)
         else:
             for s, t, o, i in concept_graph.predicates():
-                s = _map(self, s, concept_graph._namespace, id_map)
-                t = _map(self, t, concept_graph._namespace, id_map)
-                o = _map(self, o, concept_graph._namespace, id_map)
-                i = _map(self, i, concept_graph._namespace, id_map)
+                s = util.map(self, s, concept_graph._namespace, id_map)
+                t = util.map(self, t, concept_graph._namespace, id_map)
+                o = util.map(self, o, concept_graph._namespace, id_map)
+                i = util.map(self, i, concept_graph._namespace, id_map)
                 self.add(s, t, o, i)
         for concept in concept_graph.concepts():
             if concept not in id_map:
                 if predicate_exclusions is None:
-                    concept = _map(self, concept, concept_graph._namespace, id_map)
+                    concept = util.map(self, concept, concept_graph._namespace, id_map)
                     self.add(concept)
                 else:
                     if concept not in predicate_exclusions:
                         if not concept_graph.has(predicate_id=concept) or concept_graph.type(concept) not in predicate_exclusions:
-                            concept = _map(self, concept, concept_graph._namespace, id_map)
+                            concept = util.map(self, concept, concept_graph._namespace, id_map)
                             self.add(concept)
         return id_map
 
@@ -305,10 +304,10 @@ class ConceptGraph:
         if namespace != self._namespace:
             namespace_map = {}
             for s, t, o, i in self.predicates():
-                s = _map(cp, s, self._namespace, namespace_map)
-                t = _map(cp, t, self._namespace, namespace_map)
-                o = _map(cp, o, self._namespace, namespace_map)
-                i = _map(cp, i, self._namespace, namespace_map)
+                s = util.map(cp, s, self._namespace, namespace_map)
+                t = util.map(cp, t, self._namespace, namespace_map)
+                o = util.map(cp, o, self._namespace, namespace_map)
+                i = util.map(cp, i, self._namespace, namespace_map)
                 cp.add(s, t, o, i)
         else:
             for s, t, o, i in self.predicates():
@@ -336,10 +335,10 @@ class ConceptGraph:
                 s, t, o, i = line.split(',')
                 if o == 'None':
                     o = None
-                s = _map(self, s, d['namespace'], namespace_map)
-                t = _map(self, t, d['namespace'], namespace_map)
-                o = _map(self, o, d['namespace'], namespace_map)
-                i = _map(self, i, d['namespace'], namespace_map)
+                s = util.map(self, s, d['namespace'], namespace_map)
+                t = util.map(self, t, d['namespace'], namespace_map)
+                o = util.map(self, o, d['namespace'], namespace_map)
+                i = util.map(self, i, d['namespace'], namespace_map)
                 self.add(s, t, o ,i)
         else:
             for line in d['predicates']:
@@ -408,21 +407,7 @@ class ConceptGraph:
                 visited.add(predicate_signature)
         return type_string, bi_string, mono_string
 
-def _map(current_graph, other_concept, other_namespace, id_map):
-    if other_concept is None:
-        return None
-    if other_namespace is None:
-        return other_concept
-    if other_concept.startswith(other_namespace + '_'):
-        if other_concept not in id_map:
-            id_map[other_concept] = current_graph._get_next_id()
-    else:
-        id_map[other_concept] = other_concept
 
-    mapped_concept = id_map[other_concept]
-    if not current_graph.has(mapped_concept):
-        current_graph.add(mapped_concept)
-    return mapped_concept
 
 if __name__ == '__main__':
     print(ConceptGraphSpec.verify(ConceptGraph))

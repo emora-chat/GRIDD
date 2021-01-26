@@ -96,7 +96,7 @@ class WorkingMemory(ConceptGraph):
         for rule, solutions in solutions_dict.items():
             post_graph = rule.postcondition
             for solution in solutions:
-                cg = ConceptGraph(namespace='IMP')
+                cg = ConceptGraph(namespace=post_graph._namespace)
                 for s, t, o, i in post_graph.predicates():
                     s = solution.get(s, s)
                     t = solution.get(t, t)

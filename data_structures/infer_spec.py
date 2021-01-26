@@ -1,6 +1,6 @@
 from structpy import specification
 from data_structures.knowledge_base import KnowledgeBase
-from data_structures.infer import ImplicationRule
+from data_structures.implication_rule import ImplicationRule
 
 @specification
 class InferSpec:

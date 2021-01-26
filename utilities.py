@@ -46,6 +46,22 @@ def collect(*files_folders_or_strings, extension=None, directory=None):
             collected.append(ffs)
     return collected
 
+def map(current_graph, other_concept, other_namespace, id_map):
+    if other_concept is None:
+        return None
+    if other_namespace is None:
+        return other_concept
+    if other_concept.startswith(other_namespace + '_'):
+        if other_concept not in id_map:
+            id_map[other_concept] = current_graph._get_next_id()
+    else:
+        id_map[other_concept] = other_concept
+
+    mapped_concept = id_map[other_concept]
+    if not current_graph.has(mapped_concept):
+        current_graph.add(mapped_concept)
+    return mapped_concept
+
 if __name__ == '__main__':
     for i in range(1000):
         print(identification_string(i, 'abcde'), end='  ')
