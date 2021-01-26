@@ -93,3 +93,6 @@ emora[you,your]
 john=person()
 john[john,johns]
 ;
+
+question<predicate>
+location<entity>;

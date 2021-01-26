@@ -22,5 +22,5 @@ class MergeBridge:
         print("<< Working Memory after NLU >>")
         print(working_memory.pretty_print(exclusions={'var','is_type','object','entity','predicate','span'}))
         print()
-        working_memory.display_graph(exclusions={'var','is_type','object','entity','predicate','span','exprof','time'})
+        # working_memory.display_graph(exclusions={'var','is_type','object','entity','predicate','span','exprof','time'})
         return working_memory
