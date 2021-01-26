@@ -50,6 +50,14 @@ in<predicate>
 in[in]
 to<predicate>
 to[to]
+for<predicate>
+for[for]
+when<predicate>
+when[when]
+where<predicate>
+where[where]
+of<predicate>
+of[of]
 
 house<object>
 house[house]

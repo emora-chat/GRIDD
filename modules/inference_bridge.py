@@ -7,5 +7,5 @@ class InferenceBridge:
         args[0] - list of implication cgs
         args[1] - working memory
         """
-        print('You have reached the end of the implemented Pipeline. It currently only performs NLU and inferences.')
-        return '__EXIT__'
+        print('You have reached the end of the implemented Pipeline.')
+        return '__EXIT__\n'

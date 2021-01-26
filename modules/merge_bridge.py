@@ -1,3 +1,4 @@
+from collections import defaultdict
 
 class MergeBridge:
 
@@ -11,11 +12,15 @@ class MergeBridge:
         args[1] - working memory
         """
         node_merges, working_memory = args
-        for concept1, concept2 in node_merges:
-            working_memory.merge(concept1, concept2)
+        merge_map = {}
 
-        print("\nWM AFTER MERGES::")
+        for concept1, concept2 in node_merges:
+            working_memory.merge(merge_map.get(concept1, concept1),
+                                 merge_map.get(concept2, concept2))
+            merge_map[concept2] = concept1
+
+        print("<< Working Memory after NLU >>")
         print(working_memory.pretty_print(exclusions={'var','is_type','object','entity','predicate','span'}))
         print()
-        working_memory.display_graph(exclusions={'var','is_type','object','entity','predicate','span'})
+        working_memory.display_graph(exclusions={'var','is_type','object','entity','predicate','span','exprof','time'})
         return working_memory

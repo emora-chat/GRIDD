@@ -15,7 +15,7 @@ class InferenceRuleBased:
         return implications
 
     def display_implications(self, implications):
-        print("\nINFERENCES::")
+        print("<< Inferences >>")
         for cg in implications:
             print(cg.pretty_print())
             print('*'*20 + '\n')
