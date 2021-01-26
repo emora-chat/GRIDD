@@ -6,7 +6,7 @@ from data_structures.concept_graph import ConceptGraph
 from data_structures.implication_rule import ImplicationRule
 import utilities as util
 
-def infer(knowledge_graph, inference_rules):
+def infer(concept_graph, inference_rules):
 
     class PyswipEncoder(json.JSONEncoder):
         def default(self, obj):
@@ -16,7 +16,7 @@ def infer(knowledge_graph, inference_rules):
                 return '"%s"'%obj.decode("utf-8")
             return json.JSONEncoder.default(self, obj)
 
-    kg_rules = to_knowledge_prolog(knowledge_graph)
+    kg_rules = to_knowledge_prolog(concept_graph)
     prolog = Prolog()
     for rule in kg_rules:
         prolog.assertz(rule)
