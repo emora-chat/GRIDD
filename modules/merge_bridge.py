@@ -15,13 +15,7 @@ class MergeBridge:
             working_memory.merge(concept1, concept2)
 
         print("\nWM AFTER MERGES::")
-        print(working_memory.pretty_print(exclusions={'var','is_type',
-                                                      'object','entity','predicate',
-                                                      'span'}))
+        print(working_memory.pretty_print(exclusions={'var','is_type','object','entity','predicate','span'}))
         print()
-
-        working_memory.display_graph(exclusions={'var','is_type',
-                                                      'object','entity','predicate',
-                                                      'span'})
-
+        working_memory.display_graph(exclusions={'var','is_type','object','entity','predicate','span'})
         return working_memory

@@ -40,7 +40,6 @@ class WorkingMemory(ConceptGraph):
         for item in to_pull:
             self.add(*item)
 
-    #todo - may be pulling too much?
     def pull(self, order=1, concepts=None):
         if isinstance(concepts, list):
             concepts = set(concepts)
@@ -125,7 +124,7 @@ class WorkingMemory(ConceptGraph):
         self.span_dict.update(span_dict)
 
     def display_graph(self, exclusions=None):
-        G = nx.Graph() #todo - directed graph
+        G = nx.DiGraph()
         edge_labels = {}
 
         for s, t, o, i in self.predicates():
@@ -143,8 +142,8 @@ class WorkingMemory(ConceptGraph):
                     edge_labels[(i, t)] = 't'
 
         G.add_edges_from(edge_labels.keys())
-        pos = nx.fruchterman_reingold_layout(G)
-        # pos = nx.planar_layout(G)
+        pos = nx.spring_layout(G, iterations=500,
+                               k=10)
         plt.figure()
         nx.draw(G, pos, edge_color='black', font_size=7,
                 node_size=300, node_color='pink', alpha=0.8,

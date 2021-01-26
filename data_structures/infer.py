@@ -132,6 +132,11 @@ def to_knowledge_prolog(cg):
 def to_query_prolog(cg):
     """
     Convert cg to query rules for Prolog, where `cg` contains one inference rule specification.
+
+    :return
+        - string prolog query representation of cg
+        - dict<cg variable node id: prolog variable string>
+
     """
     next = 0
     map = Bimap()
