@@ -40,6 +40,7 @@ class WorkingMemory(ConceptGraph):
         for item in to_pull:
             self.add(*item)
 
+    #todo - may be pulling too much?
     def pull(self, order=1, concepts=None):
         if isinstance(concepts, list):
             concepts = set(concepts)
@@ -52,8 +53,8 @@ class WorkingMemory(ConceptGraph):
                 related = set(self.knowledge_base.predicates(puller)) \
                           | set(self.knowledge_base.predicates(object=puller))
                 for pred_type in WorkingMemory.EXCLUDE_ON_PULL:
-                    related -= set(self.knowledge_base.predicates(puller, pred_type)) \
-                            - set(self.knowledge_base.predicates(predicate_type=pred_type, object=puller))
+                    related -= set(self.knowledge_base.predicates(puller, pred_type))
+                    related -= set(self.knowledge_base.predicates(predicate_type=pred_type, object=puller))
                 for rel in related | {puller}:
                     if self.knowledge_base.has(predicate_id=rel):
                         related.add(self.knowledge_base.predicate(rel))

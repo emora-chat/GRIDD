@@ -20,4 +20,8 @@ class MergeBridge:
                                                       'span'}))
         print()
 
+        working_memory.display_graph(exclusions={'var','is_type',
+                                                      'object','entity','predicate',
+                                                      'span'})
+
         return working_memory
