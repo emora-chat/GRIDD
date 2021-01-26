@@ -27,6 +27,7 @@ if __name__ == '__main__':
     mode = 'logic'
     if mode == 'logic':
         wm = WorkingMemory(kb)
+        wm.knowledge_base._knowledge_parser._predicate_transformer.loading_kb = False
         logic_string = input('>>> ')
         while logic_string != 'q':
             if not logic_string.strip().endswith(';'):
@@ -37,7 +38,7 @@ if __name__ == '__main__':
             cgs = wm.implications(*rules)
             for cg in cgs:
                 print(cg.pretty_print())
-                print()
+                print('*'*20)
                 wm.concatenate(cg)
             logic_string = input('>>> ')
     elif mode == 'lang':
@@ -52,7 +53,7 @@ if __name__ == '__main__':
             cgs = wm.implications('rules.kg')
             for cg in cgs:
                 print(cg.pretty_print())
-                print()
+                print('*'*20)
             lang_string = input('>>> ')
 
 
