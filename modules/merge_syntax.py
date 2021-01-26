@@ -1,7 +1,7 @@
 
 class MergeSyntax:
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, span_merges, span_dict, working_memory):
         """
         Calculate node merge scores for pairs of nodes in working_memory
         based on dependency parse merge outputs
@@ -10,7 +10,6 @@ class MergeSyntax:
         args[1] - span dict
         args[2] - working memory
         """
-        span_merges, span_dict, working_memory = args
         node_merges = []
         for (spanobj1, pos1), (spanobj2, pos2) in span_merges:
             span1 = span_dict[spanobj1]

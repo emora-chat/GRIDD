@@ -136,3 +136,9 @@ class WorkingMemorySpec:
         assert 'all_dogs_bark' in rules
         assert rules['all_dogs_bark'].precondition.has('test_dog', 'type', 'dog')
         assert rules['all_dogs_bark'].postcondition.has('test_dog', 'bark')
+
+    def supertypes(working_memory):
+        """
+        # TODO
+        """
+        pass

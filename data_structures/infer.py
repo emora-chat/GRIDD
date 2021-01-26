@@ -138,6 +138,7 @@ def to_knowledge_prolog(cg):
     """
     Convert cg to knowledge rules for Prolog.
     """
+    # todo: type collection should use WorkingMemory.supertypes()
     type_rules = []
     rules = []
     tmp = ConceptGraph(predicates=cg.predicates())
