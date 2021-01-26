@@ -337,7 +337,7 @@ class ConceptGraphSpec:
             'pvl_2/volume(ph_2,loud)'
         }
 
-        print_collection = set(concept_graph.pretty_print(predicate_exclusions={'friend'}).split('\n'))
+        print_collection = set(concept_graph.pretty_print(exclusions={'friend'}).split('\n'))
         assert print_collection == {
             '',
             'ph/hiss(princess)',
