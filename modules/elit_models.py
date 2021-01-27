@@ -14,9 +14,9 @@ class ElitModels:
         """
         parse_dict = self.model.parse([args[0]], models=['tok', 'pos', 'ner', 'srl', 'dep'])
         print()
-        # print(parse_dict["tok"][0])
-        # print(parse_dict["pos"][0])
-        print('<< ELIT Dependency Parser >> ')
+        print('<< ELIT Models >> ')
+        print(parse_dict["tok"][0])
+        print(parse_dict["pos"][0])
         print(parse_dict["dep"][0])
         print()
         return [tok.lower() for tok in parse_dict["tok"][0]], parse_dict["pos"][0], parse_dict["dep"][0]
