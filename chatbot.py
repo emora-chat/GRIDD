@@ -11,7 +11,7 @@ from data_structures.working_memory import WorkingMemory
 from data_structures.pipeline import Pipeline
 from modules.elit_models import ElitModels
 from modules.elit_dp_to_logic_model import ElitDPToLogic, NODES, DP_LABELS
-from modules.merge_syntax import MergeSyntax
+from modules.merge_span_to_merge_concept import MergeSpanToMergeConcept
 from modules.inference_rule_based import InferenceRuleBased
 from modules.mention_bridge import MentionBridge
 from modules.merge_bridge import MergeBridge
@@ -37,7 +37,7 @@ class Chatbot:
         template_file = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
         elit_dp = Pipeline.component(ElitDPToLogic(self.knowledge_base, template_starter_predicates, template_file))
         mention_bridge = Pipeline.component(MentionBridge())
-        merge_dp = Pipeline.component(MergeSyntax())
+        merge_dp = Pipeline.component(MergeSpanToMergeConcept())
         merge_bridge = Pipeline.component(MergeBridge(threshold_score=0.2))
         inference_rulebased = Pipeline.component(
             InferenceRuleBased([join('GRIDD', 'resources', 'kg_files', 'test_inferences.kg')]))

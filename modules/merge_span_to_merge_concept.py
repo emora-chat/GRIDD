@@ -1,5 +1,8 @@
 
-class MergeSyntax:
+from GRIDD.modules.merge_span_to_merge_concept_spec import MergeSpanToMergeConceptSpec
+
+
+class MergeSpanToMergeConcept:
 
     def __call__(self, *args, **kwargs):
         """
@@ -30,3 +33,7 @@ class MergeSyntax:
         elif pos == 'object':
             return working_memory.object(concept)
         return concept
+
+
+if __name__ == '__main__':
+    print(MergeSpanToMergeConceptSpec.verify(MergeSpanToMergeConcept))
