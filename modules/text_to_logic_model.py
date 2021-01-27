@@ -35,7 +35,7 @@ class ParseToLogic:
         self.rules = pl.generate_inference_graphs(self.templates, ordered_rule_ids)
         for rule_id, rule in self.rules.items():
             self._reference_expansion(rule.precondition)
-        self.span_map = {}
+        self.spans= []
 
     def load_templates(self, *filenames_or_logicstrings):
         ordered_rule_ids = []
@@ -96,8 +96,8 @@ class ParseToLogic:
         """
         Run the text to logic algorithm using *args as input to translate()
         """
-        self.span_map = {}
-        return (*self.translate(*args), self.span_map)
+        self.spans = []
+        return self.translate(*args)
 
     def translate(self, *args):
         ewm = self.text_to_graph(*args)
@@ -115,14 +115,14 @@ class ParseToLogic:
         """
         Pull expressions from KB into the expression working_memory
         """
-        ewm.pull(order=1, concepts=['"%s"'%span_obj.string for span_node, span_obj in self.span_map.items()])
+        ewm.pull(order=1, concepts=['"%s"'%span_node.string for span_node in self.spans])
 
     def _unknown_expression_identification(self, ewm):
         """
         Create "UNK" expression nodes for all nodes with no expr references.
         """
-        for span_node, span_object in self.span_map.items():
-            expression = '"%s"' % span_object.string
+        for span_node in self.spans:
+            expression = '"%s"' % span_node.string
             references = ewm.objects(expression, 'expr')
             if len(references) == 0:
                 unk_node = ewm.add(ewm._get_next_id())
@@ -179,7 +179,7 @@ class ParseToLogic:
                             cg.add(m[subject], m[typ], m[object], predicate_id=m[inst])
                         else:
                             cg.add(m[subject], m[typ], predicate_id=m[inst])
-                    mentions[self._lookup_span(center)] = cg
+                    mentions[center] = cg
         return mentions
 
     def _get_merges(self, assignments, ewm):
@@ -202,16 +202,16 @@ class ParseToLogic:
                     if post.has(predicate_id=focus):
                         # focus is a predicate instance, need to consider its subj/obj/type
                         if post.subject(focus) in solution and solution[post.subject(focus)] != center:
-                            pair = ((self._lookup_span(center),'subject'),
-                                    (self._lookup_span(solution[post.subject(focus)]),'self'))
+                            pair = ((center,'subject'),
+                                    (solution[post.subject(focus)],'self'))
                             merges.append(pair)
                         if post.object(focus) in solution and solution[post.object(focus)] != center:
-                            pair = ((self._lookup_span(center), 'object'),
-                                    (self._lookup_span(solution[post.object(focus)]), 'self'))
+                            pair = ((center, 'object'),
+                                    (solution[post.object(focus)], 'self'))
                             merges.append(pair)
                         if post.type(focus) in solution and solution[post.type(focus)] != center:
-                            pair = ((self._lookup_span(center), 'type'),
-                                    (self._lookup_span(solution[post.type(focus)]), 'self'))
+                            pair = ((center, 'type'),
+                                    (solution[post.type(focus)], 'self'))
                             merges.append(pair)
                     # for (_,o,t) in post.bipredicates_of_subject(focus):
                     #     if o in solution:
@@ -249,9 +249,6 @@ class ParseToLogic:
                     #             pass
 
         return merges
-
-    def _lookup_span(self, span_node):
-        return self.span_map[span_node]
 
     def display_mentions(self, mentions, ewm):
         """

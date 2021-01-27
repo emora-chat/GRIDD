@@ -16,7 +16,8 @@ def infer(knowledge_graph, inference_rules):
                 return '"%s"'%obj.decode("utf-8")
             return json.JSONEncoder.default(self, obj)
 
-    kg_rules = to_knowledge_prolog(knowledge_graph)
+    kg_rules, non_string_node_mapping = to_knowledge_prolog(knowledge_graph)
+    non_string_node_mapping = {v:k for k,v in non_string_node_mapping.items()}
     prolog = Prolog()
     for rule in kg_rules:
         prolog.assertz(rule)
@@ -30,7 +31,8 @@ def infer(knowledge_graph, inference_rules):
         for match in parsed_solns:
             variable_assignments = {}
             for key, value in inference_map.items():
-                variable_assignments[key] = match[value]
+                solution_node = non_string_node_mapping.get(match[value], match[value])
+                variable_assignments[key] = solution_node
             solutions[rule].append(variable_assignments)
 
     for rule in kg_rules:
@@ -97,6 +99,7 @@ def to_knowledge_prolog(cg):
     """
     type_rules = []
     rules = []
+    non_string_node_mapping = {}
 
     # Flatten ontology in `tmp` copy of cg
     tmp = ConceptGraph(predicates=cg.predicates())
@@ -113,7 +116,8 @@ def to_knowledge_prolog(cg):
                     stack.append(o)
 
     one_non_ont_predicate = False
-    for s, t, o, i in tmp.predicates():
+    for item in tmp.predicates():
+        s, t, o, i = _non_string_map(item, non_string_node_mapping)
         if o is not None:   # bipredicate
             if t == 'type':
                 type_rules.append('type(%s,%s)' % (s, o))
@@ -126,8 +130,19 @@ def to_knowledge_prolog(cg):
                 one_non_ont_predicate = True
     if not one_non_ont_predicate: # if there is no predinst in knowledge prolog, a prolog query using predinst causes error to be thrown (predinst is not defined)
         rules.append('predinst(xtestx(xax, xbx), xnx)')
-    return type_rules + rules
+    return type_rules + rules, non_string_node_mapping
 
+def _non_string_map(item, non_string_node_mapping):
+    for e in item:
+        if e not in non_string_node_mapping:
+            if not isinstance(e, str):
+                e_id = identification_string(len(non_string_node_mapping), chars=CHARS.lower())
+                non_string_node_mapping[e] = e_id
+                yield e_id
+            else:
+                yield e
+        else:
+            yield non_string_node_mapping[e]
 
 def to_query_prolog(cg):
     """
