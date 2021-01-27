@@ -1,41 +1,13 @@
 import json, time
-from collections import defaultdict
 from pyswip import Prolog, Variable
 from utilities import identification_string, CHARS
 from structpy.map.bijective.bimap import Bimap
 from data_structures.concept_graph import ConceptGraph
-
-
-class ImplicationRule:
-    """
-    Data structure for packaging precondition and postcondition ConceptGraphs
-    to represent an implication rule.
-    """
-
-    def __init__(self, pre, post=None, concept_id=None):
-        self.precondition = pre
-        if post is None:
-            post = ConceptGraph()
-        self.postcondition = post
-        if concept_id is None:
-            concept_id = id(self)
-        self.concept_id = concept_id
-
-    def __hash__(self):
-        return hash(self.concept_id)
-
-    def __eq__(self, other):
-        if isinstance(other, str):
-            return self.concept_id == other
-        else:
-            return self.concept_id == other.concept_id
+from data_structures.implication_rule import ImplicationRule
+import utilities as util
 
 def infer(knowledge_graph, inference_rules):
-    """
-    Get variable assignments of solutions from applying each query graph from the
-    `inference rules` dict on the `knowledge_graph`
-    :returns dict<rule_id: list of solutions (variable assignments)>
-    """
+
     class PyswipEncoder(json.JSONEncoder):
         def default(self, obj):
             if isinstance(obj, Variable):
@@ -44,7 +16,8 @@ def infer(knowledge_graph, inference_rules):
                 return '"%s"'%obj.decode("utf-8")
             return json.JSONEncoder.default(self, obj)
 
-    kg_rules = to_knowledge_prolog(knowledge_graph)
+    kg_rules, non_string_node_mapping = to_knowledge_prolog(knowledge_graph)
+    non_string_node_mapping = {v:k for k,v in non_string_node_mapping.items()}
     prolog = Prolog()
     for rule in kg_rules:
         prolog.assertz(rule)
@@ -58,7 +31,8 @@ def infer(knowledge_graph, inference_rules):
         for match in parsed_solns:
             variable_assignments = {}
             for key, value in inference_map.items():
-                variable_assignments[key] = match[value]
+                solution_node = non_string_node_mapping.get(match[value], match[value])
+                variable_assignments[key] = solution_node
             solutions[rule].append(variable_assignments)
 
     for rule in kg_rules:
@@ -69,40 +43,33 @@ def infer(knowledge_graph, inference_rules):
 
 def generate_inference_graphs(cg, ordered_rule_ids=None):
     """
-    Identifies the inference rules and their corresponding implications in the given
+    Extracts the inference rules and their corresponding implications in the given
     concept graph `cg`.
+
+    If the list of ordered_rule_ids is given,
+    then the rules are formed in the specified order to ensure they are matched in priority order.
+
     :returns dict<rule_id: ImplicationRule object>
     """
-    inferences = {}
-    implications = {}
-    infer_pred_inst = defaultdict(set)
+    inferences, implications = {}, {}
+    id_maps = {}
 
     if ordered_rule_ids is not None:
         for situation_node in ordered_rule_ids:
-            inferences[situation_node] = ConceptGraph(namespace='pre')
-            implications[situation_node] = ConceptGraph(namespace='post')
+            inferences[situation_node] = ConceptGraph(namespace='pre', concepts=['var'])
+            implications[situation_node] = ConceptGraph(namespace='post', concepts=['var'])
+            id_maps[situation_node] = {}
 
-    for situation_node, type, pre_pred_inst, inst_id in cg.predicates(predicate_type='pre'):
+    for situation_node, _, constraint, _ in cg.predicates(predicate_type='pre'):
         if situation_node not in inferences:
-            inferences[situation_node] = ConceptGraph(namespace='pre')
-        rule_graph = inferences[situation_node]
-        _add_rule_to_graph(cg, rule_graph, pre_pred_inst)
-        if cg.has(predicate_id=pre_pred_inst) and cg.type(pre_pred_inst) == 'var':
-            infer_pred_inst[situation_node].add((cg.subject(pre_pred_inst), pre_pred_inst))
+            inferences[situation_node] = ConceptGraph(namespace='pre', concepts=['var'])
+            id_maps[situation_node] = {}
+        _transfer_concept(cg, inferences[situation_node], constraint, id_maps[situation_node])
 
-    for situation_node, type, post_pred_inst, inst_id in cg.predicates(predicate_type='post'):
+    for situation_node, _, implication, _ in cg.predicates(predicate_type='post'):
         if situation_node not in implications:
             implications[situation_node] = ConceptGraph(namespace='post')
-        rule_graph = implications[situation_node]
-        _add_rule_to_graph(cg, rule_graph, post_pred_inst)
-
-    for situation_node, vars in infer_pred_inst.items():
-        implication_graph = implications[situation_node]
-        if not implication_graph.has('var'):
-            implication_graph.add('var')
-        for subject, pred_inst in vars:
-            if implication_graph.has(subject):
-                implication_graph.add(subject, 'var', predicate_id=pred_inst)
+        _transfer_concept(cg, implications[situation_node], implication, id_maps[situation_node])
 
     rules = {}
     for situation_node in inferences:
@@ -110,28 +77,20 @@ def generate_inference_graphs(cg, ordered_rule_ids=None):
     return rules
 
 
-def _add_rule_to_graph(cg, rule_graph, rule_instance_id):
+def _transfer_concept(cg, new_graph, concept_id, id_map):
     """
-    Helper function of generate_inference_graphs() that adds rules to the `rule_graph`
-    which is either a graph of inferences or a graph of implications for a given rule
+    Adds the concept `concept_id` from `cg` to `new_graph`
     """
-    if cg.has(predicate_id=rule_instance_id):
-        components = [cg.subject(rule_instance_id),
-                      cg.object(rule_instance_id),
-                      cg.type(rule_instance_id)]
+    if cg.has(predicate_id=concept_id): # predicate instance
+        components = [cg.subject(concept_id), cg.type(concept_id), cg.object(concept_id)]
+        mapped_components = []
         for comp in components:
-            if comp is not None and not rule_graph.has(comp):
-                rule_graph.add(comp)
-        if components[1] is None:   # monopredicate
-            rule_graph.add(components[0], components[2], predicate_id=rule_instance_id)
-        elif components[0] is not None and components[1] is not None and components[2] is not None:     # bipredicate
-            rule_graph.add(components[0], components[2], components[1], predicate_id=rule_instance_id)
-        else:
-            raise Exception('generate_inference_graph is trying to process a predicate with impossible format!')
-    else:
-        # inst is not a predicate, it is an entity instance
-        if not rule_graph.has(rule_instance_id):
-            rule_graph.add(rule_instance_id)
+            if comp is not None:
+                comp = util.map(new_graph, comp, cg._namespace, id_map)
+            mapped_components.append(comp)
+        new_graph.add(*mapped_components, predicate_id=util.map(new_graph, concept_id, cg._namespace, id_map))
+    else: # entity instance
+        util.map(new_graph, concept_id, cg._namespace, id_map)
 
 
 def to_knowledge_prolog(cg):
@@ -141,6 +100,9 @@ def to_knowledge_prolog(cg):
     # todo: type collection should use WorkingMemory.supertypes()
     type_rules = []
     rules = []
+    non_string_node_mapping = {}
+
+    # Flatten ontology in `tmp` copy of cg
     tmp = ConceptGraph(predicates=cg.predicates())
     for concept in tmp.concepts():
         visited = set()
@@ -155,7 +117,8 @@ def to_knowledge_prolog(cg):
                     stack.append(o)
 
     one_non_ont_predicate = False
-    for s, t, o, i in tmp.predicates():
+    for item in tmp.predicates():
+        s, t, o, i = _non_string_map(item, non_string_node_mapping)
         if o is not None:   # bipredicate
             if t == 'type':
                 type_rules.append('type(%s,%s)' % (s, o))
@@ -163,17 +126,33 @@ def to_knowledge_prolog(cg):
                 rules.append('predinst(%s(%s,%s),%s)' % (t, s, o, i))
                 one_non_ont_predicate = True
         else:               # monopredicate
-            if t not in ['var', 'is_type']:
+            if t not in {'var', 'is_type'}:
                 rules.append('predinst(%s(%s),%s)' % (t, s, i))
                 one_non_ont_predicate = True
     if not one_non_ont_predicate: # if there is no predinst in knowledge prolog, a prolog query using predinst causes error to be thrown (predinst is not defined)
         rules.append('predinst(xtestx(xax, xbx), xnx)')
-    return type_rules + rules
+    return type_rules + rules, non_string_node_mapping
 
+def _non_string_map(item, non_string_node_mapping):
+    for e in item:
+        if e not in non_string_node_mapping:
+            if not isinstance(e, str):
+                e_id = identification_string(len(non_string_node_mapping), chars=CHARS.lower())
+                non_string_node_mapping[e] = e_id
+                yield e_id
+            else:
+                yield e
+        else:
+            yield non_string_node_mapping[e]
 
 def to_query_prolog(cg):
     """
     Convert cg to query rules for Prolog, where `cg` contains one inference rule specification.
+
+    :return
+        - string prolog query representation of cg
+        - dict<cg variable node id: prolog variable string>
+
     """
     next = 0
     map = Bimap()

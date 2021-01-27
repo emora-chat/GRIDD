@@ -2,12 +2,10 @@ from structpy.graph.directed.labeled.multilabeled_parallel_digraph_networkx impo
 from structpy.map.map import Map
 from structpy.map.index.index import Index
 from data_structures.concept_graph_spec import ConceptGraphSpec
-from pyswip import Prolog, Variable
-from structpy.map.bijective.bimap import Bimap
-import utilities as util
 CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 from collections import defaultdict
-import json, time, copy
+import json
+import utilities as util
 
 class ConceptGraph:
 
@@ -257,6 +255,7 @@ class ConceptGraph:
                 self._monopredicate_instances[(s,t)].add(concept_a)
             self._detach(s, t, o, i)
         self.remove(concept_b)
+        return concept_a
 
     def _detach(self, subject, predicate_type, object, predicate_id):
         if object is None:  # monopredicate
@@ -287,6 +286,16 @@ class ConceptGraph:
                 o = util.map(self, o, concept_graph._namespace, id_map)
                 i = util.map(self, i, concept_graph._namespace, id_map)
                 self.add(s, t, o, i)
+        for concept in concept_graph.concepts():
+            if concept not in id_map:
+                if predicate_exclusions is None:
+                    concept = util.map(self, concept, concept_graph._namespace, id_map)
+                    self.add(concept)
+                else:
+                    if concept not in predicate_exclusions:
+                        if not concept_graph.has(predicate_id=concept) or concept_graph.type(concept) not in predicate_exclusions:
+                            concept = util.map(self, concept, concept_graph._namespace, id_map)
+                            self.add(concept)
         return id_map
 
     def copy(self, namespace=None):
@@ -340,7 +349,7 @@ class ConceptGraph:
                 self.add(s, t, o, i)
             self._next_id = d['next_id']
 
-    def pretty_print(self, predicate_exclusions=None):
+    def pretty_print(self, exclusions=None):
         name_counter = defaultdict(int)
         id_map = {}
         visited = set()
@@ -350,15 +359,15 @@ class ConceptGraph:
         for sig in self.predicates():
             type_string, bi_string, mono_string = self._get_representation(sig, id_map, name_counter, visited,
                                                                            type_string, bi_string, mono_string,
-                                                                           predicate_exclusions)
+                                                                           exclusions)
         full_string = type_string + '\n' + mono_string + '\n' + bi_string
         return full_string.strip()
 
     def _get_representation(self, predicate_signature, id_map, name_counter, visited,
-                            type_string, bi_string, mono_string, predicate_exclusions):
+                            type_string, bi_string, mono_string, exclusions):
         if predicate_signature not in visited:
             s, t, o, i = predicate_signature
-            if predicate_exclusions is None or t not in predicate_exclusions:
+            if exclusions is None or (t not in exclusions and s not in exclusions and o not in exclusions):
                 id_map[t] = t
                 concepts = [s, o] if o is not None else [s]
                 for concept in concepts:
@@ -368,7 +377,7 @@ class ConceptGraph:
                                 type_string, bi_string, mono_string = self._get_representation(self.predicate(concept),
                                                                                                id_map, name_counter, visited,
                                                                                                type_string, bi_string, mono_string,
-                                                                                               predicate_exclusions)
+                                                                                               exclusions)
                             else:
                                 types = self.predicates(concept, 'type')
                                 if len(types) > 0:
@@ -401,7 +410,9 @@ class ConceptGraph:
 
 
 
-
 if __name__ == '__main__':
     print(ConceptGraphSpec.verify(ConceptGraph))
+
+
+
 

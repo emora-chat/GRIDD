@@ -1,6 +1,6 @@
 import pytest
 from modules.elit_models import ElitModels
-from modules.elit_dp_to_logic_model import ElitDPToLogic, NODES
+from modules.elit_dp_to_logic_model import ElitDPToLogic, NODES, DP_LABELS
 from data_structures.knowledge_base import KnowledgeBase
 from os.path import join
 
@@ -11,7 +11,7 @@ def elitmodels():
 @pytest.fixture
 def elit_to_logic():
     kb = KnowledgeBase(join('GRIDD', 'resources', 'kg_files', 'framework_test.kg'))
-    template_starter_predicates = [(n, 'is_type') for n in NODES]
+    template_starter_predicates = [(n, 'is_type') for n in NODES+DP_LABELS]
     template_file = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
     return ElitDPToLogic(kb, template_starter_predicates, template_file)
 
@@ -201,8 +201,6 @@ def test_prepositional_phrases(elitmodels, elit_to_logic):
     assert ((walked_sp, 'subject'), (i_sp, 'self')) in merges
     assert ((to_sp, 'subject'), (walked_sp, 'self')) in merges
     assert ((to_sp, 'object'), (house_sp, 'self')) in merges
-
-
 
 def test_comp(elitmodels, elit_to_logic):
     """ Tests constructions with comp attachments where comp structure misses nsbj and obj """
@@ -575,6 +573,19 @@ def test_adv(elitmodels, elit_to_logic):
     assert len(merges) == 2
     assert ((walked_sp, 'subject'), (i_sp, 'self')) in merges
     assert ((quickly_sp, 'subject'), (walked_sp, 'self')) in merges
+
+def test_csbj(elitmodels, elit_to_logic):
+    """ Tests constructions with csbj """
+    assert False
+    sentence = 'placeholder'
+    tok, pos, dp = elitmodels(sentence)
+    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
+
+    assert len(mentions) == 3
+    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
+    (walked_sp,) = [span for span in span_dict.values() if span.string == 'walked']
+    (quickly_sp,) = [span for span in span_dict.values() if span.string == 'quickly']
+
 
 
 

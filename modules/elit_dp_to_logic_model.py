@@ -14,15 +14,19 @@ logging.basicConfig(level=os.environ.get("LOGLEVEL","ERROR"))
 # https://emorynlp.github.io/ddr/doc/pages/overview.html
 
 PAST_VB = ['vbd', 'vbn']
-PRES_VB = ['vbp', 'vbg', 'vbz']
+PRES_VB = ['vbp', 'vbz']
 ADJ = ['jj', 'jjr', 'jjs']
 NOUN = ['nn', 'nns', 'nnp', 'nnps']
 PRONOUN = ['prp', 'prpds']
 ADV = ['rb', 'rbr', 'rbs']
 REF_DET = ['the', 'those', 'these', 'that', 'this']
 INST_DET = ['a', 'an']
-NODES = ['focus', 'center', 'pos', 'exprof', 'type', 'ltype',
-         'nsbj', 'obj', 'comp', 'lv', 'ppmod', 'det', 'attr', 'compound', 'adv']
+
+NODES = ['focus', 'center', 'pos', 'exprof', 'type', 'ltype']
+DP_LABELS = [x.strip()
+             for x in open(join('GRIDD', 'resources', 'elit_dp_labels.txt'), 'r').readlines()
+             if len(x.strip()) > 0]
+
 
 class ElitDPToLogic(ParseToLogic):
 
@@ -71,8 +75,9 @@ class ElitDPToLogic(ParseToLogic):
             pos = pos_tags[token_idx].lower().replace('$','ds')
             if not cg.has(pos):
                 cg.add(pos, 'type', 'pos')
-            span_node = cg.add(cg._get_next_id())
-            self.span_map[span_node] = Span(expression, token_idx, token_idx+1)
+            span_node = Span(expression, token_idx, token_idx+1) #todo - add sentence id
+            self.spans.append(span_node)
+            cg.add(span_node)
             token_to_span_node[token_idx] = span_node
             expression = '"%s"' % expression
             cg.add(span_node, 'exprof', expression)

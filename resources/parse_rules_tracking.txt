@@ -1,0 +1,104 @@
+Not necessary
+-----------
+expl	- no logical form necessary, purely syntactical sugar
+cc      - no logical form necessary, purely syntactical sugar
+case	- no logical form necessary, purely syntactical sugar
+mark	- no logical form necessary, purely syntactical sugar
+meta    - not relevant?
+
+Handled
+-----------
+nsbj
+obj
+comp
+lv
+det
+attr
+adv
+poss
+ppmod
+
+Untested
+-----------
+csbj
+dat
+cop
+num
+appo
+neg
+advnp
+dep
+raise
+modal
+    modal and raise all do similar things????
+    why is
+    i should study -> modal should
+    but
+    i ought to study -> raise ought
+acl
+
+Handled but weird
+-----------
+conj
+com
+prt
+voc
+prn
+advcl
+    -> have general advcl but drops "if" information bc "if" is mark
+        so maybe need to have another rule for advcl + mark for this?
+disc
+    -> only handled when disc is to yes,no,ok
+
+Not handled
+-----------
+relcl
+r-*
+    need rules to many current constructions that
+    handle if relcl and r-* are present too
+
+
+TO DO
+---------
+aux
+    use aux to determine time aspect for certain verb pos not currently handled, not as mode predicate!!
+
+vbp verb on its own means mode = habitual!!!
+
+one of the comp rules is redundant, it can be handled with just the plain nsubj verb rules!!!
+
+need to have question handling
+    -> insert relative ordering between spans (?) and check if aux/modal/raise come before subject
+
+
+***
+
+(1) First sarah went to the store then she bought a banana
+    -> Need sentence segmentation
+
+[[2, "adv"], [2, "nsbj"], [8, "comp"], [5, "case"], [5, "det"],
+[2, "ppmod"], [8, "adv"], [8, "nsbj"], [-1, "root"], [10, "det"],
+[8, "obj"]]
+
+(2) Mary said goodbye to you
+    -> Not `disc` but hello is?
+
+[[1, "nsbj"], [-1, "root"], [1, "obj"], [4, "case"], [1, "ppmod"]]
+
+(3)
+
+I like when you have vacuumed the house
+
+    ["PRP", "VBP",
+    "WRB", "PRP", "VBP", "VBN", "DT", "NN"]
+    [1, "nsbj"], [-1, "root"],
+    [5, "adv"], [5, "nsbj"], [5, "aux"], [1, "comp"], [7, "det"], [5, "obj"]
+
+(4) Not sure why we had this one???
+
+obj(X/pos(), Y/pos())
+-> floating_obj ->
+p/obj(X,Y)
+center(Y)
+focus(p)
+;

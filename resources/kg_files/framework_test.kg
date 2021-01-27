@@ -39,10 +39,25 @@ that[that]
 this<ref_det>
 this[this]
 
+affirmative<predicate>
+affirmative[yes,yeah,yea,sure,yep,yup]
+rejective<predicate>
+rejective[no,nope,nah]
+acknowledgement<predicate>
+acknowledgement[ok,okay]
+
 in<predicate>
 in[in]
 to<predicate>
 to[to]
+for<predicate>
+for[for]
+when<predicate>
+when[when]
+where<predicate>
+where[where]
+of<predicate>
+of[of]
 
 house<object>
 house[house]
@@ -78,3 +93,6 @@ emora[you,your]
 john=person()
 john[john,johns]
 ;
+
+question<predicate>
+location<entity>;

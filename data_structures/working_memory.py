@@ -4,7 +4,9 @@ import data_structures.infer as pl
 from utilities import identification_string, CHARS
 from itertools import chain
 from collections import deque
-import utilities as util
+import networkx as nx
+import matplotlib.pyplot as plt
+
 
 class WorkingMemory(ConceptGraph):
 
@@ -12,6 +14,7 @@ class WorkingMemory(ConceptGraph):
 
     def __init__(self, knowledge_base, *filenames_or_logicstrings):
         self.knowledge_base = knowledge_base
+        self.span_dict = {}
         super().__init__(namespace='WM')
         self.load(*filenames_or_logicstrings)
 
@@ -51,8 +54,8 @@ class WorkingMemory(ConceptGraph):
                 related = set(self.knowledge_base.predicates(puller)) \
                           | set(self.knowledge_base.predicates(object=puller))
                 for pred_type in WorkingMemory.EXCLUDE_ON_PULL:
-                    related -= set(self.knowledge_base.predicates(puller, pred_type)) \
-                            - set(self.knowledge_base.predicates(predicate_type=pred_type, object=puller))
+                    related -= set(self.knowledge_base.predicates(puller, pred_type))
+                    related -= set(self.knowledge_base.predicates(predicate_type=pred_type, object=puller))
                 for rel in related | {puller}:
                     if self.knowledge_base.has(predicate_id=rel):
                         related.add(self.knowledge_base.predicate(rel))
@@ -89,24 +92,19 @@ class WorkingMemory(ConceptGraph):
         return solutions_dict
 
     # todo - move core logic to infer.py
-    def implications(self, *types_or_rules, solutions=None):
+    def implications(self, *types_or_rules):
         imps = []
-        if solutions is not None:
-            solutions_dict = {**solutions, **self.inferences(*types_or_rules)}
-        else:
-            solutions_dict = self.inferences(*types_or_rules)
+        solutions_dict = self.inferences(*types_or_rules)
         for rule, solutions in solutions_dict.items():
             post_graph = rule.postcondition
             for solution in solutions:
-                id_map = {}
-                cg = ConceptGraph(namespace='IMP')
+                cg = ConceptGraph(namespace=post_graph._namespace)
                 for s, t, o, i in post_graph.predicates():
-                    if t != 'var':
-                        s = util.map(cg, solution.get(s, s), post_graph._namespace, id_map)
-                        t = util.map(cg, solution.get(t, t), post_graph._namespace, id_map)
-                        o = util.map(cg, solution.get(o, o), post_graph._namespace, id_map)
-                        i = util.map(cg, solution.get(i, i), post_graph._namespace, id_map)
-                        cg.add(s, t, o, i)
+                    s = solution.get(s, s)
+                    t = solution.get(t, t)
+                    o = solution.get(o, o)
+                    i = solution.get(i, i)
+                    cg.add(s, t, o, i)
                 imps.append(cg)
         return imps
 
@@ -212,7 +210,50 @@ class WorkingMemory(ConceptGraph):
         else:
             return concept[0] == '"' and concept[-1] == '"'     # Expression node
 
+    def update_spans(self, span_dict):
+        self.span_dict.update(span_dict)
+
+    def display_graph(self, exclusions=None):
+        G = nx.DiGraph()
+        edge_labels = {}
+
+        for s, t, o, i in self.predicates():
+            if exclusions is None or (t not in exclusions and s not in exclusions and o not in exclusions):
+                if t in {'type', 'time'}:
+                    edge_labels[(s, o)] = t
+                elif t == 'exprof':
+                    edge_labels[(self.span_dict[s], o)] = t
+                elif t in {'instantiative', 'referential'}:
+                    edge_labels[(s, t)] = ''
+                else:
+                    edge_labels[(i, s)] = 's'
+                    if o is not None:
+                        edge_labels[(i, o)] = 'o'
+                    edge_labels[(i, t)] = 't'
+
+        G.add_edges_from(edge_labels.keys())
+        pos = nx.spring_layout(G, iterations=500,
+                               k=10)
+        plt.figure()
+        nx.draw(G, pos, edge_color='black', font_size=7,
+                node_size=300, node_color='pink', alpha=0.8,
+                labels={node:node for node in G.nodes()})
+        nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels,
+                                     font_size=7, font_color='red')
+        plt.show()
 
 
 if __name__ == '__main__':
     print(WorkingMemorySpec.verify(WorkingMemory))
+
+    cg1 = ConceptGraph(concepts=['princess', 'hiss', 'fluffy', 'bark', 'friend'], namespace='1')
+    a = cg1.add('princess', 'hiss')
+    cg1.add(a, 'volume', 'loud')
+    cg1.add('fluffy', 'bark')
+    cg1.add('princess', 'friend', 'fluffy')
+    cg1.add('fluffy', 'friend', 'princess')
+
+    from data_structures.knowledge_base import KnowledgeBase
+    wm = WorkingMemory(KnowledgeBase())
+    wm.concatenate(cg1)
+    #wm.display_graph()
