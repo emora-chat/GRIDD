@@ -302,8 +302,6 @@ focus(p)
 center(X)
 ;
 
-
-
 ppmod(X/pos(), Y/pos())
 case(Y, Z/pos())
 -> preposition_phrase ->

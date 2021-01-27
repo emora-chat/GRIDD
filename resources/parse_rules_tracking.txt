@@ -29,9 +29,8 @@ neg
 advnp
 dep
 raise
-aux
 modal
-    Aux, modal, and raise all do similar things????
+    modal and raise all do similar things????
     why is
     i should study -> modal should
     but
@@ -58,6 +57,8 @@ r-*
     need rules to many current constructions that
     handle if relcl and r-* are present too
 
+aux
+    use aux to determine time aspect!!
 
 
 ***
