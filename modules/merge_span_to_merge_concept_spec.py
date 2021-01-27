@@ -20,14 +20,21 @@ class MergeSpanToMergeConceptSpec:
         args[1] - span dict
         args[2] - working memory
         """
-        wm = ConceptGraph(
+        working_memory = ConceptGraph(
             predicates=[
-                ('X', 'likes', 'Y'),
-                ('')
+                ('X', 'likes', 'Y', 'xly'),
+                ('"likes"', 'exprof', 'xly'),
+                ('"user"', 'exprof', 'user'),
+                ('"avengers"', 'exprof', 'avengers')
             ]
         )
 
-        merges = [
-
+        span_merges = [
+            (('"user"', 'center'), ('"likes"', 'subject')),
+            (('"avengers"', 'center'), ('"likes"', 'object'))
         ]
+
+        concept_merges = mstmc(span_merges, working_memory)
+
+        assert set(concept_merges) == {('user', 'X'), ('avengers', 'Y')}
 
