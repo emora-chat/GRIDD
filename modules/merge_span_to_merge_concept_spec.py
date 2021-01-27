@@ -16,7 +16,7 @@ class MergeSpanToMergeConceptSpec:
         Calculate node merge scores for pairs of nodes in working_memory
         based on dependency parse merge outputs
 
-        args[0] - span merge scores based on dependency parse
+        args[0] - span merges based on dependency parse
         args[1] - span dict
         args[2] - working memory
         """
