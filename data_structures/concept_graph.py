@@ -255,6 +255,7 @@ class ConceptGraph:
                 self._monopredicate_instances[(s,t)].add(concept_a)
             self._detach(s, t, o, i)
         self.remove(concept_b)
+        return concept_a
 
     def _detach(self, subject, predicate_type, object, predicate_id):
         if object is None:  # monopredicate

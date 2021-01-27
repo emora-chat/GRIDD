@@ -1,5 +1,7 @@
 QUICK_LOCAL_TESTING = True
 
+import warnings
+warnings.filterwarnings('ignore')
 import time
 from os.path import join
 

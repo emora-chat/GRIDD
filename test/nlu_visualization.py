@@ -11,8 +11,7 @@ if __name__ == '__main__':
     utterance = input('>>> ')
     while utterance != 'q':
         working_memory = nlu(utterance, chatbot.working_memory)
-        # working_memory.display_graph(exclusions={'var', 'is_type',
-        #                                                  'object','entity','predicate',
-        #                                                  'span'})
+        # print(working_memory.pretty_print(exclusions={'var', 'is_type', 'object', 'entity', 'predicate', 'span', 'exprof'}))
+        # working_memory.display_graph(exclusions={'var','is_type','object','entity','predicate','span','exprof','time'})
         chatbot.working_memory = WorkingMemory(chatbot.knowledge_base)
         utterance = input('>>> ')

@@ -29,9 +29,8 @@ neg
 advnp
 dep
 raise
-aux
 modal
-    Aux, modal, and raise all do similar things????
+    modal and raise all do similar things????
     why is
     i should study -> modal should
     but
@@ -58,6 +57,18 @@ r-*
     need rules to many current constructions that
     handle if relcl and r-* are present too
 
+
+TO DO
+---------
+aux
+    use aux to determine time aspect for certain verb pos not currently handled, not as mode predicate!!
+
+vbp verb on its own means mode = habitual!!!
+
+one of the comp rules is redundant, it can be handled with just the plain nsubj verb rules!!!
+
+need to have question handling
+    -> insert relative ordering between spans (?) and check if aux/modal/raise come before subject
 
 
 ***

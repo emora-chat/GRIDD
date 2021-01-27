@@ -10,6 +10,11 @@ class MentionBridge:
         args[2] - working memory
         """
         mentions, span_dict, working_memory = args
+        print()
+        print('<< Mentions Identified >>')
+        for span_obj in mentions:
+            print('%s(%d,%d)'%(span_obj.string, span_obj.start, span_obj.end))
+        print()
         new_concepts = set()
         for span_obj, mention_graph in mentions.items():
             ((focus,t,o,i,),) = mention_graph.predicates(predicate_type='focus')
