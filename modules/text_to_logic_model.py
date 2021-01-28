@@ -193,11 +193,11 @@ class ParseToLogic:
         merges = []
         for rule, solutions in assignments.items():
             pre, post = rule[0], rule[1]
-            ((focus,t,o,i),) = post.predicates(predicate_type='focus')
-            ((center,t,o,i),) = post.predicates(predicate_type='center')
+            ((focus_var,t,o,i),) = post.predicates(predicate_type='focus')
+            ((center_var,t,o,i),) = post.predicates(predicate_type='center')
             for solution in solutions:
-                focus = solution.get(focus, focus)
-                center = solution.get(center, center)
+                focus = solution.get(focus_var, focus_var)
+                center = solution.get(center_var, center_var)
                 if center not in centers_handled:
                     centers_handled.add(center)
                     if post.has(predicate_id=focus):

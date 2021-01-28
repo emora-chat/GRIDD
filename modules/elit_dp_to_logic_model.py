@@ -14,7 +14,7 @@ logging.basicConfig(level=os.environ.get("LOGLEVEL","ERROR"))
 # https://emorynlp.github.io/ddr/doc/pages/overview.html
 
 PAST_VB = ['vbd', 'vbn']
-PRES_VB = ['vbp', 'vbz']
+PRES_VB = ['vbp', 'vbz', 'vbg', 'vb']
 ADJ = ['jj', 'jjr', 'jjs']
 NOUN = ['nn', 'nns', 'nnp', 'nnps']
 PRONOUN = ['prp', 'prpds']

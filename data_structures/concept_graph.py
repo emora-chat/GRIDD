@@ -408,6 +408,12 @@ class ConceptGraph:
                 visited.add(predicate_signature)
         return type_string, bi_string, mono_string
 
+    def __str__(self):
+        return 'CG<%s>' % (str(id(self))[:5])
+
+    def __repr__(self):
+        return str(self)
+
 
 
 if __name__ == '__main__':

@@ -302,6 +302,24 @@ focus(p)
 center(X)
 ;
 
+nsbj(X/present_tense(), Y/pos())
+-> nsbj_no_obj_present_verb ->
+is_type(X)
+p/X(Y)
+time(p, present)
+focus(p)
+center(X)
+;
+
+csbj(X/present_tense(), Y/pos())
+-> csbj_no_obj_present_verb ->
+is_type(X)
+p/X(Y)
+time(p, present)
+focus(p)
+center(X)
+;
+
 ppmod(X/pos(), Y/pos())
 case(Y, Z/pos())
 -> preposition_phrase ->
