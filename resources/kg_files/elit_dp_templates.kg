@@ -519,6 +519,14 @@ focus(p)
 center(Y)
 ;
 
+exprof(Y/interj(), E/expression())
+expr(E, affirmative)
+-> affirmative_interj ->
+p/affirm(user, object())
+focus(p)
+center(Y)
+;
+
 disc(X/pos(), Y/pos())
 exprof(Y, E/expression())
 expr(E, rejective)
@@ -528,11 +536,27 @@ focus(p)
 center(Y)
 ;
 
+exprof(Y/interj(), E/expression())
+expr(E, rejective)
+-> rejective_interj ->
+p/reject(user, object())
+focus(p)
+center(Y)
+;
+
 disc(X/pos(), Y/pos())
 exprof(Y, E/expression())
 expr(E, acknowledgement)
 -> acknowledge_disc ->
 p/acknowledge(user, X)
+focus(p)
+center(Y)
+;
+
+exprof(Y/interj(), E/expression())
+expr(E, acknowledgement)
+-> acknowledge_interj ->
+p/acknowledge(user, object())
 focus(p)
 center(Y)
 ;

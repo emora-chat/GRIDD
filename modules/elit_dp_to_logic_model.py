@@ -22,6 +22,7 @@ ADV = ['rb', 'rbr', 'rbs']
 REF_DET = ['the', 'those', 'these', 'that', 'this']
 INST_DET = ['a', 'an']
 QUEST = ['wdt', 'wp', 'wpds', 'wrb']
+INTERJ = ['uh']
 
 NODES = ['focus', 'center', 'pos', 'exprof', 'type', 'ltype']
 DP_LABELS = [x.strip()
@@ -42,7 +43,7 @@ class ElitDPToLogic(ParseToLogic):
         ewm = WorkingMemory(self.knowledge_base)
         ewm.concatenate(cg)
 
-        for n in ['verb', 'noun', 'adj', 'pron', 'adv', 'question_word']:
+        for n in ['verb', 'noun', 'adj', 'pron', 'adv', 'question_word', 'interj']:
             ewm.add(n, 'type', 'pos')
 
         ewm.add('prp', 'type', 'noun')
@@ -62,6 +63,8 @@ class ElitDPToLogic(ParseToLogic):
             ewm.add(n, 'type', 'adv')
         for n in QUEST:
             ewm.add(n, 'type', 'question_word')
+        for n in INTERJ:
+            ewm.add(n, 'type', 'interj')
         self.convert(*args, ewm)
         return ewm
 

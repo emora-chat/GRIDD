@@ -120,11 +120,13 @@ the homework that was hard
 
 
 -------------
-Sentences
+Sentences to check
 -------------
 the homework that was assigned
 what book are you reading
-
+did you buy a house
+I did buy a house
+I cant buy a house
 
 
 
