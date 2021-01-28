@@ -94,7 +94,7 @@ study(beth, a_41) [a_43]
 to install the latest stable version of SWI-Prolog.
 
     * Note: For MacOS, you must update your `PATH` and `DYLD_FALLBACK_LIBRARY_PATH` 
-    environment variables to contain the SWI-Prolog file locations when executing `chatbot.py`. 
+    environment variables to contain the SWI-Prolog file locations when executing the test script. 
     The pyswip installation instructions provide example updated variables, however they 
     may not be correct for your computer. 
     To determine your `PATH` update, find where the `SWI-Prolog` executable file is located.
