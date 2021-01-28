@@ -114,8 +114,8 @@ to install the latest stable version of SWI-Prolog.
 * (b) Execute `pip install -r GRIDD/requirements.txt`
 
 
-(2) Clone the [structpy repository](https://github.com/jdfinch/structpy) into the **parent** directory 
-of your cloned GRIDD directory 
+(2) Clone the [structpy repository](https://github.com/jdfinch/structpy). 
+Put the inner `structpy` directory into the **parent** directory of your cloned GRIDD directory 
 (i.e. it should be on the same directory level as GRIDD, **not** contained within GRIDD).
 
     
