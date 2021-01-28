@@ -4,7 +4,7 @@
 **The knowledge base test app is an iteractive console app for testing knowledge base
 predicates and implication rules.**
 
-1. **Run** `GRIDD/scripts/knowledge_base_test_app.py` (working directory= folder _containing_ `GRIDD` folder)
+1. **Run** `GRIDD/scripts/knowledge_base_test_app.py` (working directory = folder _containing_ `GRIDD` folder)
 
 2. **Edit** files `gridd_files/kb/kb.kg` and `gridd_files/rules/rules.kg` (generated when running script for the first time):
 
@@ -85,36 +85,39 @@ study(beth, a_41) [a_43]
 ```
 
 ## Installation
-Python version: 
 
-`Python3.7`
+(0) Required `Python >= 3.7`
 
-(1) Follow installation instructions at [pyswip](https://github.com/yuce/pyswip/blob/master/INSTALL.md) 
+(1) Install required dependencies:
+
+* (a) Follow installation instructions at [pyswip](https://github.com/yuce/pyswip/blob/master/INSTALL.md) 
 to install the latest stable version of SWI-Prolog.
 
-* Note 1: For MacOS installation, for Step 3 (exporting executables), the given example paths 
-may not be correct for your computer. To determine your `PATH` update, find where the `SWI-Prolog` executable file is located.
-To determine your `DYLD_FALLBACK_LIBRARY_PATH` update, find where the `libswipl.dylib` file is located.
-For our development machine, we used the following export commands:
-```
-export PATH=$PATH:/Applications/SWI-Prolog.app/Contents/MacOS
-export DYLD_FALLBACK_LIBRARY_PATH=/Applications/SWI-Prolog.app/Contents/Frameworks
-```
+    * Note: For MacOS, you must update your `PATH` and `DYLD_FALLBACK_LIBRARY_PATH` 
+    environment variables to contain the SWI-Prolog file locations when executing `chatbot.py`. 
+    The pyswip installation instructions provide example updated variables, however they 
+    may not be correct for your computer. 
+    To determine your `PATH` update, find where the `SWI-Prolog` executable file is located.
+    To determine your `DYLD_FALLBACK_LIBRARY_PATH` update, find where the `libswipl.dylib` file is located.
+    For our development machine, the appropriate locations were the following:
 
-<!--- * Note 2: For MacOS installation, add the two export commands to the end of the file: `~/.bash_profile`.
-When you open a new terminal, the changes you made to your `bash_profile` will take effect.--->
+        PATH += `/Applications/SWI-Prolog.app/Contents/MacOS`
 
-* Note 2: For MacOS, update the `PATH` variable of your `environment variables` execution configuration to contain the location identified in Note 1.
-And add the `DYLD_FALLBACK_LIBRARY_PATH` variable from Note 1 to your `environment variables` script execution configuration as well. If you are 
-using Pycharm, you can do this through the `Edit Configurations...` option of your script execution.
+        DYLD_FALLBACK_LIBRARY_PATH = `/Applications/SWI-Prolog.app/Contents/Frameworks`
+        
+        If executing the script in the terminal, do the appropriate export commands for updating 
+        PATH and DYLD_FALLBACK_LIBRARY_PATH.
+        
+        If executing the script in an IDE (e.g. Pycharm), modify the environment variables of 
+        your execution configuration to appropriately update PATH and DYLD_FALLBACK_LIBRARY_PATH.
 
-(2) Install required dependencies:
+* (b) Execute `pip install -r GRIDD/requirements.txt`
 
-`pip install -r GRIDD/requirements.txt`
 
-(3) Clone [structpy repository](https://github.com/jdfinch/structpy) into your clone of the `GRIDD` 
-repository, such that `structpy/` becomes a directory inside of the GRIDD directory.
-    
+(2) Clone the [structpy repository](https://github.com/jdfinch/structpy) into the **parent** directory 
+of your cloned GRIDD directory 
+(i.e. it should be on the same directory level as GRIDD, **not** contained within GRIDD).
+
     
 ### Running Scripts
 

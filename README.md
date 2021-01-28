@@ -11,7 +11,7 @@ is shown in Figure 1 (above).
 
 ## Setup
 
-Python version: `Python3.7`
+(0) Required `Python >= 3.7`
 
 (1) Install required dependencies:
 
@@ -19,7 +19,7 @@ Python version: `Python3.7`
 to install the latest stable version of SWI-Prolog.
 
     * Note: For MacOS, you must update your `PATH` and `DYLD_FALLBACK_LIBRARY_PATH` 
-    environment variables to contain the SWI-Prolog file locations when executing `main.py`. 
+    environment variables to contain the SWI-Prolog file locations when executing `chatbot.py`. 
     The pyswip installation instructions provide example updated variables, however they 
     may not be correct for your computer. 
     To determine your `PATH` update, find where the `SWI-Prolog` executable file is located.
@@ -33,13 +33,16 @@ to install the latest stable version of SWI-Prolog.
 * (b) Execute `pip install -r GRIDD/requirements.txt`
 
 
-(2) Clone [structpy repository](https://github.com/jdfinch/structpy) into your clone of the `GRIDD` 
-repository, such that `structpy/` becomes a directory inside of the GRIDD directory.
+(2) Clone the [structpy repository](https://github.com/jdfinch/structpy) into the parent directory 
+of your cloned GRIDD directory.
 
 (3) Download required files:
 
-* Download [SentenceCasing data](https://github.com/nreimers/truecaser/releases/download/v1.0/english_distributions.obj.zip)
+* [SentenceCasing data](https://github.com/nreimers/truecaser/releases/download/v1.0/english_distributions.obj.zip)
 into the `GRIDD/resources` directory.
+
+(4) Install the ELIT package and execute `elit serve` in a terminal. 
+`elit serve` will run in the background.
 
 
 
