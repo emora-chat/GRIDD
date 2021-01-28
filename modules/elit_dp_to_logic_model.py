@@ -1,4 +1,5 @@
-from modules.text_to_logic_model import ParseToLogic, Span
+from data_structures.span import Span
+from modules.text_to_logic_model import ParseToLogic
 
 from data_structures.concept_graph import ConceptGraph
 from data_structures.knowledge_base import KnowledgeBase

@@ -31,6 +31,7 @@ class Chatbot:
     def __init__(self, *knowledge_base):
         self.knowledge_base = KnowledgeBase(*knowledge_base)
         self.working_memory = WorkingMemory(self.knowledge_base)
+        self.auxiliary_state = {}
 
         elit_models = Pipeline.component(ElitModels())
         template_starter_predicates = [(n, 'is_type') for n in NODES+DP_LABELS]
@@ -46,7 +47,7 @@ class Chatbot:
 
         self.pipeline = Pipeline(
             ('utter', 'wm') > sentence_caser > ('cased_utter'),
-            ('cased_utter') > elit_models > ('tok', 'pos', 'dp'),
+            ('cased_utter') > elit_models > ('tok', 'pos', 'dp', 'cr'),
             ('tok', 'pos', 'dp') > elit_dp > ('dp_mentions', 'dp_merges'),
             ('dp_mentions', 'wm') > mention_bridge > ('wm_after_mentions'),
             ('dp_merges', 'wm_after_mentions') > merge_dp > ('node_merges'),
@@ -71,6 +72,12 @@ class Chatbot:
             elapsed = time.time() - s
             print('[%.6f s] %s' % (elapsed, output))
             utterance = input('User: ')
+
+    def save(self):
+        pass
+
+    def load(self, dialogue_state):
+        pass
 
 
 if __name__ == '__main__':
