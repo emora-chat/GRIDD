@@ -21,6 +21,7 @@ PRONOUN = ['prp', 'prpds']
 ADV = ['rb', 'rbr', 'rbs']
 REF_DET = ['the', 'those', 'these', 'that', 'this']
 INST_DET = ['a', 'an']
+QUEST = ['wdt', 'wp', 'wpds', 'wrb']
 
 NODES = ['focus', 'center', 'pos', 'exprof', 'type', 'ltype']
 DP_LABELS = [x.strip()
@@ -40,11 +41,13 @@ class ElitDPToLogic(ParseToLogic):
         cg = ConceptGraph(concepts=list(knowledge_base_file.BASE_NODES) + NODES)
         ewm = WorkingMemory(self.knowledge_base)
         ewm.concatenate(cg)
+
+        for n in ['verb', 'noun', 'adj', 'pron', 'adv', 'question_word']:
+            ewm.add(n, 'type', 'pos')
+
+        ewm.add('prp', 'type', 'noun')
         for n in ['past_tense', 'present_tense']:
             ewm.add(n, 'type', 'verb')
-        for n in ['verb', 'noun', 'adj', 'pron', 'adv']:
-            ewm.add(n, 'type', 'pos')
-        ewm.add('prp', 'type', 'noun')
         for n in PAST_VB:
             ewm.add(n, 'type', 'past_tense')
         for n in PRES_VB:
@@ -57,6 +60,8 @@ class ElitDPToLogic(ParseToLogic):
             ewm.add(n, 'type', 'pron')
         for n in ADV:
             ewm.add(n, 'type', 'adv')
+        for n in QUEST:
+            ewm.add(n, 'type', 'question_word')
         self.convert(*args, ewm)
         return ewm
 

@@ -329,6 +329,13 @@ focus(p)
 center(Z)
 ;
 
+relcl(X/pos(), Y/pos())
+-> relative_clause ->
+p/qualifier(X, Y)
+focus(p)
+center(Y)
+;
+
 det(X/pos(), Y/dt())
 ltype(Y, ref_det)
 -> ref_determiner ->
@@ -347,11 +354,13 @@ center(X)
 instantiative(inst)
 ;
 
-dat(X/pos(), Y/pos())
--> indirect_obj ->
-p/indirect_obj(X, Y)
-focus(p)
-center(Y)
+det(X/pos(), Y/wdt())
+-> wh_determiner ->
+is_type(X)
+x/X()
+question(x)
+focus(x)
+center(X)
 ;
 
 det(X/pos(), Y/dt())
@@ -359,6 +368,13 @@ det(X/pos(), Y/dt())
 is_type(X)
 focus(X())
 center(X)
+;
+
+dat(X/pos(), Y/pos())
+-> indirect_obj ->
+p/indirect_obj(X, Y)
+focus(p)
+center(Y)
 ;
 
 attr(X/pos(), Y/pos())
@@ -524,5 +540,12 @@ center(Y)
 X/noun()
 -> concept ->
 focus(X)
+center(X)
+;
+
+X/question_word()
+-> question_word ->
+question(q/object())
+focus(q)
 center(X)
 ;

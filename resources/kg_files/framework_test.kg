@@ -52,12 +52,22 @@ to<predicate>
 to[to]
 for<predicate>
 for[for]
+of<predicate>
+of[of]
+
 when<predicate>
 when[when]
 where<predicate>
 where[where]
-of<predicate>
-of[of]
+why<predicate>
+why[why]
+how<predicate>
+how[how]
+
+what<entity>
+what[what]
+who<entity>
+who[who]
 
 house<object>
 house[house]
@@ -71,6 +81,8 @@ york<object>
 york[york]
 quick<object>
 quick[quick,quickly]
+name<object>
+name[name]
 
 buy<predicate>
 buy[buy,buying,buys,bought,purchase,purchased,purchases,purchasing]
@@ -83,6 +95,10 @@ shop[shop,shopped,shops,shopping]
 like<predicate>
 like[like,liked,likes,liking]
 
+is<predicate>
+is[be,are,is,were,was]
+do<predicate>
+do[do,does,did]
 go<predicate>
 go[go,went,goes,going]
 

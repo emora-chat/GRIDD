@@ -50,7 +50,7 @@ advcl
 disc
     -> only handled when disc is to yes,no,ok
 
-Not handled
+Not handled!
 -----------
 relcl
 r-*
@@ -65,8 +65,10 @@ aux
 
 vbp verb on its own means mode = habitual!!!
 
-need to have question handling
-    -> insert relative ordering between spans (?) and check if aux/modal/raise come before subject
+need to have better question handling
+    -> insert relative ordering between spans (?) and check
+        if aux/modal/raise come before subject
+        if question word comes before aux/modal/raise
 
 
 ***
@@ -100,3 +102,30 @@ p/obj(X,Y)
 center(Y)
 focus(p)
 ;
+
+(5) shouldn't it be r-obj?
+
+['the', 'homework', 'that', 'was', 'assigned']
+['DT', 'NN', 'WDT', 'VBD', 'VBN']
+[[1, 'det'], [-1, 'root'], [4, 'obj'], [4, 'aux'], [1, 'relcl']]
+
+(6) shouldn't `that` be the same POS?
+
+the homework that was assigned
+["DT", "NN", "WDT", "VBD", "VBN"]
+
+the homework that was hard
+["DT", "NN", "DT", "VBD", "JJ"]
+
+
+
+-------------
+Sentences
+-------------
+the homework that was assigned
+what book are you reading
+
+
+
+
+
