@@ -65,8 +65,6 @@ aux
 
 vbp verb on its own means mode = habitual!!!
 
-one of the comp rules is redundant, it can be handled with just the plain nsubj verb rules!!!
-
 need to have question handling
     -> insert relative ordering between spans (?) and check if aux/modal/raise come before subject
 
