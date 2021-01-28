@@ -34,7 +34,9 @@ if __name__ == '__main__':
                 logic_string += ';'
             wm.load(logic_string)
             wm.pull(2)
-            rules = collect(join('gridd_files', 'kb_test', 'rules'), extension='.kg')
+            rules = [join('gridd_files', 'kb_test', 'rules', file)
+                     for file in os.listdir(join('gridd_files', 'kb_test', 'rules'))
+                     if file.endswith('.kg')]
             cgs = wm.implications(*rules)
             for cg in cgs:
                 print(cg.pretty_print())
@@ -42,7 +44,7 @@ if __name__ == '__main__':
                 wm.concatenate(cg)
             logic_string = input('>>> ')
     elif mode == 'lang':
-        from chatbot import Chatbot
+        from GRIDD.chatbot import Chatbot
         chatbot = Chatbot(kb)
 
         lang_string = input('>>> ')
