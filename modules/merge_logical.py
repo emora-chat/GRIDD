@@ -1,5 +1,5 @@
 
-from data_structures.infer import infer, ImplicationRule
+from data_structures.inference_engine import infer, ImplicationRule
 
 
 class MergeLogical:

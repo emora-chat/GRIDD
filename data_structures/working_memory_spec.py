@@ -96,9 +96,16 @@ class WorkingMemorySpec:
         '''
         solutions = working_memory.inferences(all_dogs_bark)
         assert len(solutions) == 1
-        solution_value = solutions['all_dogs_bark'][0].values()
-        assert len(solution_value) == 1
-        assert 'fluffy' in solution_value
+        for rule, solutions in solutions.items():
+            to_check = ['fluffy', 'fido']
+            for solution in solutions:
+                if 'fluffy' in solution.values():
+                    to_check.remove('fluffy')
+                elif 'fido' in solution.values():
+                    to_check.remove('fido')
+                else:
+                    assert False
+            assert len(to_check) == 0
 
     def implications(working_memory, types_or_rules):
         all_dogs_bark = '''
@@ -133,6 +140,6 @@ class WorkingMemorySpec:
         working_memory.load(rule)
         rules = working_memory.rules()
         assert len(rules) == 1
-        assert 'all_dogs_bark' in rules
-        assert rules['all_dogs_bark'].precondition.has('test_dog', 'type', 'dog')
-        assert rules['all_dogs_bark'].postcondition.has('test_dog', 'bark')
+        rule = rules[0]
+        assert rule[0].has('test_dog', 'type', 'dog')
+        assert rule[1].has('test_dog', 'bark')

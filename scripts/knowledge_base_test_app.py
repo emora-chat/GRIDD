@@ -27,7 +27,7 @@ if __name__ == '__main__':
     mode = 'logic'
     if mode == 'logic':
         wm = WorkingMemory(kb)
-        wm.knowledge_base._knowledge_parser._predicate_transformer.loading_kb = False
+        wm.knowledge_base._knowledge_parser._predicate_transformer.ensure_kb_compatible = False
         logic_string = input('>>> ')
         while logic_string != 'q':
             if not logic_string.strip().endswith(';'):

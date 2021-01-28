@@ -95,4 +95,5 @@ john[john,johns]
 ;
 
 question<predicate>
-location<entity>;
+location<entity>
+locate<predicate>;

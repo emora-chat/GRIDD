@@ -9,9 +9,9 @@ BASE_NODES = {'object', 'type', 'is_type', 'expression', 'expr', 'pre', 'post', 
 
 class KnowledgeBase:
 
-    def __init__(self, *filenames_or_logicstrings, namespace='KB'):
+    def __init__(self, *filenames_or_logicstrings, namespace='KB', ensure_kb_compatible=True):
         self._concept_graph = ConceptGraph(concepts=BASE_NODES, namespace=namespace)
-        self._knowledge_parser = KnowledgeParser(self, BASE_NODES)
+        self._knowledge_parser = KnowledgeParser(self, BASE_NODES, ensure_kb_compatible=ensure_kb_compatible)
         self.load(join('GRIDD', 'resources', 'kg_files', 'base.kg'))
         self.load(*filenames_or_logicstrings)
 

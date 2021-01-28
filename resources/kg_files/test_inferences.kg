@@ -1,9 +1,8 @@
 p/buy(X/person(),Y/house())
 time(p,past)
 =>
-location(Y, l/location())
+locate(Y, l/location())
 question(l)
 h/happy(X)
-focus(h)
 ;
 

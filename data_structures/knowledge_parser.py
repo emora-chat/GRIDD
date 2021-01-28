@@ -39,8 +39,8 @@ class KnowledgeParser:
             """
     _parser = Lark(_grammar, parser="earley")
 
-    def __init__(self, kg, base_nodes, loading_kb=True):
-        self._predicate_transformer = PredicateTransformer(kg, base_nodes, loading_kb)
+    def __init__(self, kg, base_nodes, ensure_kb_compatible=True):
+        self._predicate_transformer = PredicateTransformer(kg, base_nodes, ensure_kb_compatible)
 
     def parse(self, input):
         return KnowledgeParser._parser.parse(input)
@@ -51,11 +51,11 @@ class KnowledgeParser:
 
 class PredicateTransformer(Transformer):
 
-    def __init__(self, kg, base_nodes, loading_kb=True):
+    def __init__(self, kg, base_nodes, ensure_kb_compatible=True):
         super().__init__()
         self.kg = kg
         self.base_nodes = base_nodes
-        self.loading_kb = loading_kb
+        self.ensure_kb_compatible = ensure_kb_compatible
         self._reset()
 
     def get_condition_instances(self, preconditions=None, postconditions=None):
@@ -288,7 +288,7 @@ class PredicateTransformer(Transformer):
     ############
 
     def add_bipredicate(self, subject, object, type, predicate_id=None):
-        if self.loading_kb:
+        if self.ensure_kb_compatible:
             concepts = self.addition_construction.concepts()
             if subject not in concepts:
                 raise Exception(":param 'source' error - node %s does not exist!" % subject)
@@ -301,7 +301,7 @@ class PredicateTransformer(Transformer):
         return self.addition_construction.add(subject, type, object, predicate_id=predicate_id)
 
     def add_monopredicate(self, subject, type, predicate_id=None):
-        if self.loading_kb:
+        if self.ensure_kb_compatible:
             concepts = self.addition_construction.concepts()
             if subject not in concepts:
                 raise Exception(":param 'source' error - node %s does not exist!" % subject)
@@ -328,7 +328,7 @@ class PredicateTransformer(Transformer):
         if isinstance(node, str) and node.startswith('_int_'):
             node = int(node[5:])
         if node not in self.local_names:
-            if self.loading_kb and not self.kg.has(node) and node not in new_concepts:
+            if self.ensure_kb_compatible and not self.kg.has(node) and node not in new_concepts:
                 raise Exception("error - node %s does not exist!" % node)
             elif node not in new_concepts:
                 self.add_node(node)
@@ -337,7 +337,7 @@ class PredicateTransformer(Transformer):
         return node
 
     def _node_check(self, type, new_concepts):
-        if self.loading_kb and not self.kg.has(type) and type not in new_concepts:
+        if self.ensure_kb_compatible and not self.kg.has(type) and type not in new_concepts:
             raise Exception("error - node %s does not exist!" % type)
         elif type not in new_concepts:
             self.add_node(type)
@@ -346,19 +346,19 @@ class PredicateTransformer(Transformer):
     def _is_type_check(self, type, new_concepts):
         if type in self.local_names:
             type = self.local_names[type]
-        if self.loading_kb and not self.kg.has(type) and type not in new_concepts:
+        if self.ensure_kb_compatible and not self.kg.has(type) and type not in new_concepts:
             raise Exception("error - node %s does not exist!" % type)
         elif type not in new_concepts:
-            if self.loading_kb and not self.kg._concept_graph.has(type, 'is_type'):
+            if self.ensure_kb_compatible and not self.kg._concept_graph.has(type, 'is_type'):
                 raise Exception('%s is not a type!'%type)
             self.add_node(type)
-        elif not self.kg.has(type):
+        elif self.ensure_kb_compatible and not self.kg.has(type):
             if not self.addition_construction.has(type, 'is_type'):
                 raise Exception('%s is not a type!'%type)
         return type
 
     def _add_type(self, type, new_concepts):
-        if not self.kg.has(type) and type not in new_concepts:
+        if self.ensure_kb_compatible and (not self.kg.has(type) and type not in new_concepts):
             self.add_node(type)
             self.add_monopredicate(type,'is_type',predicate_id=self.addition_construction._get_next_id())
 
@@ -369,7 +369,7 @@ class PredicateTransformer(Transformer):
         return id
 
     def _id_duplication_check(self, id, new_concepts):
-        if id is not None and (id in new_concepts or self.kg.has(id)):
+        if id is not None and (id in new_concepts or (self.ensure_kb_compatible and self.kg.has(id))):
             raise Exception("id %s already exists!" % id)
         return id
 

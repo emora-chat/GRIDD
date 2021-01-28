@@ -3,14 +3,66 @@ from pyswip import Prolog, Variable
 from utilities import identification_string, CHARS
 from structpy.map.bijective.bimap import Bimap
 from data_structures.concept_graph import ConceptGraph
-from data_structures.implication_rule import ImplicationRule
+from data_structures.inference_engine_spec import InferenceEngineSpec
+from data_structures.knowledge_parser import KnowledgeParser
 import utilities as util
 
 
 class InferenceEngine:
 
-    def run(self, concept_graph, *inference_rules, ordered_rule_ids):
-        pass
+    def __init__(self):
+        self.logic_parser = KnowledgeParser(None, None, ensure_kb_compatible=False)
+
+    def run(self, concept_graph, *inference_rules, ordered_rule_ids=None):
+
+        kg_statements, non_string_node_mapping = to_knowledge_prolog(concept_graph,
+                                                                     predicate_exclusions={'pre', 'post'})
+        non_string_node_mapping = {v: k for k, v in non_string_node_mapping.items()}
+
+        prolog = Prolog()
+        for statement in kg_statements:
+            prolog.assertz(statement)
+
+        if len(inference_rules) == 0:
+            all_rules = self.generate_rules_from_graph(concept_graph, with_names=True)
+        else:
+            concept_graph_rules = None
+            all_rules = []
+            for rule in inference_rules:
+                if isinstance(rule, tuple): # tuple of concept graphs
+                    all_rules.append(rule)
+                elif concept_graph.has(rule): # rule concept id
+                    if concept_graph_rules is None:
+                        concept_graph_rules = {rule_tuple[2]: rule_tuple
+                                               for rule_tuple in self.generate_rules_from_graph(concept_graph,
+                                                                                          with_names=True)}
+                    all_rules.append(concept_graph_rules[rule])
+                elif isinstance(rule, str): # logic string of SINGLE rule
+                    rule_tuple = self.generate_rules_from_graph(self.load(rule), with_names=True)
+                    assert len(rule_tuple) == 1
+                    all_rules.append(rule_tuple[0])
+
+        if ordered_rule_ids is not None:
+            assert all([True if len(rule) == 3 else False for rule in all_rules])
+            all_rules = [rule for rule_id in ordered_rule_ids for rule in all_rules if rule[2] == rule_id]
+
+        solutions = {}
+        for rule in all_rules:
+            inference_query, inference_map = to_query_prolog(rule[0])
+            solns = list(prolog.query(inference_query))
+            parsed_solns = [json.loads(json.dumps(soln, cls=PyswipEncoder)) for soln in solns]
+            solutions[rule] = []
+            for match in parsed_solns:
+                variable_assignments = {}
+                for key, value in inference_map.items():
+                    solution_node = non_string_node_mapping.get(match[value], match[value])
+                    variable_assignments[key] = solution_node
+                solutions[rule].append(variable_assignments)
+
+        for statement in kg_statements:
+            prolog.retract(statement)
+
+        return solutions
 
     def generate_rules_from_graph(self, concept_graph, with_names=False):
         inferences, implications = {}, {}
@@ -48,47 +100,31 @@ class InferenceEngine:
         else:  # entity instance
             util.map(new_graph, concept_id, cg._namespace, id_map)
 
-def infer(concept_graph, inference_rules):
+    def load(self, logic_string):
+        if len(logic_string.strip()) > 0:
+            cg = ConceptGraph()
+            tree = self.logic_parser.parse(logic_string)
+            additions = self.logic_parser.transform(tree)
+            for addition in additions:
+                cg.concatenate(addition)
+            return cg
+        return None
 
-    class PyswipEncoder(json.JSONEncoder):
-        def default(self, obj):
-            if isinstance(obj, Variable):
-                return 'PyswipVariable(%d)'%obj.handle
-            elif isinstance(obj, bytes):
-                return '"%s"'%obj.decode("utf-8")
-            return json.JSONEncoder.default(self, obj)
+class PyswipEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Variable):
+            return 'PyswipVariable(%d)' % obj.handle
+        elif isinstance(obj, bytes):
+            return '"%s"' % obj.decode("utf-8")
+        return json.JSONEncoder.default(self, obj)
 
-    kg_rules = to_knowledge_prolog(concept_graph)
-    prolog = Prolog()
-    for rule in kg_rules:
-        prolog.assertz(rule)
-
-    solutions = {}
-    for rule_id, rule in inference_rules.items():
-        inference_query, inference_map = to_query_prolog(rule.precondition)
-        solns = list(prolog.query(inference_query))
-        parsed_solns = [json.loads(json.dumps(soln, cls=PyswipEncoder)) for soln in solns]
-        solutions[rule] = []
-        for match in parsed_solns:
-            variable_assignments = {}
-            for key, value in inference_map.items():
-                variable_assignments[key] = match[value]
-            solutions[rule].append(variable_assignments)
-
-    for rule in kg_rules:
-        prolog.retract(rule)
-
-    return solutions
-
-
-
-
-def to_knowledge_prolog(cg):
+def to_knowledge_prolog(cg, predicate_exclusions=None):
     """
     Convert cg to knowledge rules for Prolog.
     """
     type_rules = []
     rules = []
+    non_string_node_mapping = {}
 
     # Flatten ontology in `tmp` copy of cg
     tmp = ConceptGraph(predicates=cg.predicates())
@@ -105,21 +141,41 @@ def to_knowledge_prolog(cg):
                     stack.append(o)
 
     one_non_ont_predicate = False
-    for s, t, o, i in tmp.predicates():
-        if o is not None:   # bipredicate
-            if t == 'type':
-                type_rules.append('type(%s,%s)' % (s, o))
-            else:
-                rules.append('predinst(%s(%s,%s),%s)' % (t, s, o, i))
-                one_non_ont_predicate = True
-        else:               # monopredicate
-            if t not in {'var', 'is_type'}:
-                rules.append('predinst(%s(%s),%s)' % (t, s, i))
-                one_non_ont_predicate = True
+    ignore = set()
+
+    if predicate_exclusions is not None:
+        for t in predicate_exclusions:
+            for s, t, o, i in tmp.predicates(predicate_type=t):
+                ignore.update({s,o,i})
+
+    for item in tmp.predicates():
+        if item[0] not in ignore and item[2] not in ignore and item[3] not in ignore:
+            s, t, o, i = _non_string_map(item, non_string_node_mapping)
+            if o is not None:   # bipredicate
+                if t == 'type':
+                    type_rules.append('type(%s,%s)' % (s, o))
+                else:
+                    rules.append('predinst(%s(%s,%s),%s)' % (t, s, o, i))
+                    one_non_ont_predicate = True
+            else:               # monopredicate
+                if t not in {'var', 'is_type'}:
+                    rules.append('predinst(%s(%s),%s)' % (t, s, i))
+                    one_non_ont_predicate = True
     if not one_non_ont_predicate: # if there is no predinst in knowledge prolog, a prolog query using predinst causes error to be thrown (predinst is not defined)
         rules.append('predinst(xtestx(xax, xbx), xnx)')
-    return type_rules + rules
+    return type_rules + rules, non_string_node_mapping
 
+def _non_string_map(item, non_string_node_mapping):
+    for e in item:
+        if e not in non_string_node_mapping:
+            if not isinstance(e, str):
+                e_id = identification_string(len(non_string_node_mapping), chars=CHARS.lower())
+                non_string_node_mapping[e] = e_id
+                yield e_id
+            else:
+                yield e
+        else:
+            yield non_string_node_mapping[e]
 
 def to_query_prolog(cg):
     """
@@ -199,3 +255,5 @@ def to_query_prolog(cg):
                 rules.extend([predinst_disj, arg1])
     return ', '.join(rules), {var: map[var] for var in vars}
 
+if __name__ == '__main__':
+    print(InferenceEngineSpec.verify(InferenceEngine))

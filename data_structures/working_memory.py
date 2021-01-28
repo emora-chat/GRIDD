@@ -1,6 +1,6 @@
 from data_structures.concept_graph import ConceptGraph
 from data_structures.working_memory_spec import WorkingMemorySpec
-import data_structures.infer as pl
+from data_structures.inference_engine import InferenceEngine
 from utilities import identification_string, CHARS
 from itertools import chain
 import networkx as nx
@@ -12,6 +12,7 @@ class WorkingMemory(ConceptGraph):
 
     def __init__(self, knowledge_base, *filenames_or_logicstrings):
         self.knowledge_base = knowledge_base
+        self.inference_engine = InferenceEngine()
         self.span_dict = {}
         super().__init__(namespace='WM')
         self.load(*filenames_or_logicstrings)
@@ -66,35 +67,29 @@ class WorkingMemory(ConceptGraph):
         self.pull_ontology()
 
     def inferences(self, *types_or_rules):
-        next = 0
-        wm_rules = pl.generate_inference_graphs(self)
-        rules_to_run = {}
+        rules_to_run = []
         for identifier in types_or_rules:
-            if self.has(identifier):      # concept id
-                rules_to_run[identifier] = wm_rules[identifier]
-            else:                         # logic string or file
-                input = identifier
-                if input.endswith('.kg'):  # file
-                    input = open(input, 'r').read()
+            if identifier.endswith('.kg'):  # file
+                input = open(identifier, 'r').read()
                 tree = self.knowledge_base._knowledge_parser.parse(input)
                 additions = self.knowledge_base._knowledge_parser.transform(tree)
-                cg = ConceptGraph(namespace=identification_string(next, CHARS))
-                next += 1
+                cg = ConceptGraph()
                 for addition in additions:
                     cg.concatenate(addition)
-                file_rules = pl.generate_inference_graphs(cg)
-                assert rules_to_run.keys().isdisjoint(file_rules.keys())
-                rules_to_run.update(file_rules)
+                file_rules = self.inference_engine.generate_rules_from_graph(cg)
+                rules_to_run.extend(file_rules)
+            else: # concept id or logic string
+                rules_to_run.append(identifier)
 
-        solutions_dict = pl.infer(self, rules_to_run)
+        solutions_dict = self.inference_engine.run(self, *rules_to_run)
         return solutions_dict
 
-    # todo - move core logic to infer.py
+    # todo - move core logic to infer.py?
     def implications(self, *types_or_rules):
         imps = []
         solutions_dict = self.inferences(*types_or_rules)
         for rule, solutions in solutions_dict.items():
-            post_graph = rule.postcondition
+            post_graph = rule[1]
             for solution in solutions:
                 cg = ConceptGraph(namespace=post_graph._namespace)
                 for s, t, o, i in post_graph.predicates():
@@ -118,7 +113,7 @@ class WorkingMemory(ConceptGraph):
         return types
 
     def rules(self):
-        return pl.generate_inference_graphs(self)
+        return self.inference_engine.generate_rules_from_graph(self)
 
     def update_spans(self, span_dict):
         self.span_dict.update(span_dict)
@@ -157,14 +152,16 @@ class WorkingMemory(ConceptGraph):
 if __name__ == '__main__':
     print(WorkingMemorySpec.verify(WorkingMemory))
 
-    cg1 = ConceptGraph(concepts=['princess', 'hiss', 'fluffy', 'bark', 'friend'], namespace='1')
-    a = cg1.add('princess', 'hiss')
-    cg1.add(a, 'volume', 'loud')
-    cg1.add('fluffy', 'bark')
-    cg1.add('princess', 'friend', 'fluffy')
-    cg1.add('fluffy', 'friend', 'princess')
-
-    from data_structures.knowledge_base import KnowledgeBase
-    wm = WorkingMemory(KnowledgeBase())
-    wm.concatenate(cg1)
-    wm.display_graph()
+    # display_graph() example
+    #
+    # cg1 = ConceptGraph(concepts=['princess', 'hiss', 'fluffy', 'bark', 'friend'], namespace='1')
+    # a = cg1.add('princess', 'hiss')
+    # cg1.add(a, 'volume', 'loud')
+    # cg1.add('fluffy', 'bark')
+    # cg1.add('princess', 'friend', 'fluffy')
+    # cg1.add('fluffy', 'friend', 'princess')
+    #
+    # from data_structures.knowledge_base import KnowledgeBase
+    # wm = WorkingMemory(KnowledgeBase())
+    # wm.concatenate(cg1)
+    # wm.display_graph()
