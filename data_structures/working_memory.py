@@ -1,7 +1,7 @@
-from data_structures.concept_graph import ConceptGraph
-from data_structures.working_memory_spec import WorkingMemorySpec
-from data_structures.inference_engine import InferenceEngine
-from utilities import identification_string, CHARS
+from GRIDD.data_structures.concept_graph import ConceptGraph
+from GRIDD.data_structures.working_memory_spec import WorkingMemorySpec
+from GRIDD.data_structures.inference_engine import InferenceEngine
+from GRIDD.utilities import identification_string, CHARS
 from itertools import chain
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -157,7 +157,7 @@ if __name__ == '__main__':
     # cg1.add('princess', 'friend', 'fluffy')
     # cg1.add('fluffy', 'friend', 'princess')
     #
-    # from data_structures.knowledge_base import KnowledgeBase
+    # from GRIDD.data_structures.knowledge_base import KnowledgeBase
     # wm = WorkingMemory(KnowledgeBase())
     # wm.concatenate(cg1)
     # wm.display_graph()

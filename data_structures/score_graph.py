@@ -1,5 +1,5 @@
 
-from data_structures.score_graph_spec import ScoreGraphSpec
+from GRIDD.data_structures.score_graph_spec import ScoreGraphSpec
 from structpy.graph.directed.labeled.data.multilabeled_digraph_data import MultiLabeledDigraphDataNX as Graph
 from collections import defaultdict
 

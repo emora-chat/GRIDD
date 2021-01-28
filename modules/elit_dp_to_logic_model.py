@@ -1,9 +1,9 @@
-from modules.text_to_logic_model import ParseToLogic, Span
+from GRIDD.modules.text_to_logic_model import ParseToLogic, Span
 
-from data_structures.concept_graph import ConceptGraph
-from data_structures.knowledge_base import KnowledgeBase
-import data_structures.knowledge_base as knowledge_base_file
-from data_structures.working_memory import WorkingMemory
+from GRIDD.data_structures.concept_graph import ConceptGraph
+from GRIDD.data_structures.knowledge_base import KnowledgeBase
+import GRIDD.data_structures.knowledge_base as knowledge_base_file
+from GRIDD.data_structures.working_memory import WorkingMemory
 
 import os
 from os.path import join

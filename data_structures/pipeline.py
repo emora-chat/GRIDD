@@ -1,8 +1,8 @@
 
-from data_structures.pipeline_spec import PipelineSpec
+from GRIDD.data_structures.pipeline_spec import PipelineSpec
 
 from structpy.graph.directed.labeled.data.multilabeled_digraph_data import MultiLabeledDigraphDataNX as Graph
-from utilities import identification_string
+from GRIDD.utilities import identification_string
 
 class Pipeline:
 

@@ -1,7 +1,7 @@
 import pytest
-from modules.elit_models import ElitModels
-from modules.elit_dp_to_logic_model import ElitDPToLogic, NODES, DP_LABELS
-from data_structures.knowledge_base import KnowledgeBase
+from GRIDD.modules.elit_models import ElitModels
+from GRIDD.modules.elit_dp_to_logic_model import ElitDPToLogic, NODES, DP_LABELS
+from GRIDD.data_structures.knowledge_base import KnowledgeBase
 from os.path import join
 
 @pytest.fixture

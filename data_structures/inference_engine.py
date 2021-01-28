@@ -1,11 +1,11 @@
 import json, time
 from pyswip import Prolog, Variable
-from utilities import identification_string, CHARS
+from GRIDD.utilities import identification_string, CHARS
 from structpy.map.bijective.bimap import Bimap
-from data_structures.concept_graph import ConceptGraph
-from data_structures.inference_engine_spec import InferenceEngineSpec
-from data_structures.knowledge_parser import KnowledgeParser
-import utilities as util
+from GRIDD.data_structures.concept_graph import ConceptGraph
+from GRIDD.data_structures.inference_engine_spec import InferenceEngineSpec
+from GRIDD.data_structures.knowledge_parser import KnowledgeParser
+import GRIDD.utilities as util
 
 
 class InferenceEngine:

@@ -1,9 +1,9 @@
 
-from data_structures.knowledge_base import KnowledgeBase
-from data_structures.working_memory import WorkingMemory
+from GRIDD.data_structures.knowledge_base import KnowledgeBase
+from GRIDD.data_structures.working_memory import WorkingMemory
 import os
 from os.path import join
-from utilities import collect
+from GRIDD.utilities import collect
 
 
 if __name__ == '__main__':

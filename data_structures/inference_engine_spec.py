@@ -1,6 +1,6 @@
 from structpy import specification
-from data_structures.concept_graph import ConceptGraph
-from data_structures.knowledge_base import KnowledgeBase
+from GRIDD.data_structures.concept_graph import ConceptGraph
+from GRIDD.data_structures.knowledge_base import KnowledgeBase
 
 @specification
 class InferenceEngineSpec:

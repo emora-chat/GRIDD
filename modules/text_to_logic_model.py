@@ -1,9 +1,9 @@
 
 from abc import abstractmethod
 from collections import defaultdict
-from data_structures.concept_graph import ConceptGraph
-from data_structures.knowledge_parser import KnowledgeParser
-from data_structures.inference_engine import InferenceEngine
+from GRIDD.data_structures.concept_graph import ConceptGraph
+from GRIDD.data_structures.knowledge_parser import KnowledgeParser
+from GRIDD.data_structures.inference_engine import InferenceEngine
 
 DEBUG=False
 

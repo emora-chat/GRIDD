@@ -1,4 +1,4 @@
-from data_structures.concept_graph import ConceptGraph
+from GRIDD.data_structures.concept_graph import ConceptGraph
 
 class ImplicationRule:
     """

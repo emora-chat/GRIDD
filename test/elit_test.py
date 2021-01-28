@@ -1,5 +1,5 @@
 import pytest
-from modules.elit_models import ElitModels
+from GRIDD.modules.elit_models import ElitModels
 
 @pytest.fixture
 def elitmodels():

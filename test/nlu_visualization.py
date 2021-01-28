@@ -1,6 +1,6 @@
-from chatbot import Chatbot
+from GRIDD.chatbot import Chatbot
 from os.path import join
-from data_structures.working_memory import WorkingMemory
+from GRIDD.data_structures.working_memory import WorkingMemory
 
 if __name__ == '__main__':
     chatbot = Chatbot(join('GRIDD', 'resources', 'kg_files', 'framework_test.kg'))

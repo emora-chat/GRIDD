@@ -5,20 +5,20 @@ warnings.filterwarnings('ignore')
 import time
 from os.path import join
 
-from data_structures.knowledge_base import KnowledgeBase
-from data_structures.working_memory import WorkingMemory
+from GRIDD.data_structures.knowledge_base import KnowledgeBase
+from GRIDD.data_structures.working_memory import WorkingMemory
 
-from data_structures.pipeline import Pipeline
-from modules.elit_models import ElitModels
-from modules.elit_dp_to_logic_model import ElitDPToLogic, NODES, DP_LABELS
-from modules.merge_span_to_merge_concept import MergeSpanToMergeConcept
-from modules.inference_rule_based import InferenceRuleBased
-from modules.mention_bridge import MentionBridge
-from modules.merge_bridge import MergeBridge
-from modules.inference_bridge import InferenceBridge
+from GRIDD.data_structures.pipeline import Pipeline
+from GRIDD.modules.elit_models import ElitModels
+from GRIDD.modules.elit_dp_to_logic_model import ElitDPToLogic, NODES, DP_LABELS
+from GRIDD.modules.merge_span_to_merge_concept import MergeSpanToMergeConcept
+from GRIDD.modules.inference_rule_based import InferenceRuleBased
+from GRIDD.modules.mention_bridge import MentionBridge
+from GRIDD.modules.merge_bridge import MergeBridge
+from GRIDD.modules.inference_bridge import InferenceBridge
 
 if QUICK_LOCAL_TESTING is False:
-    from modules.sentence_casing import SentenceCaser
+    from GRIDD.modules.sentence_casing import SentenceCaser
 else:
     SentenceCaser = (lambda: (lambda x, y: x))
 

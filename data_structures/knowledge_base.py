@@ -1,7 +1,7 @@
-from data_structures.concept_graph import ConceptGraph
-from data_structures.knowledge_base_spec import KnowledgeBaseSpec
-from data_structures.knowledge_parser import KnowledgeParser
-from utilities import collect
+from GRIDD.data_structures.concept_graph import ConceptGraph
+from GRIDD.data_structures.knowledge_base_spec import KnowledgeBaseSpec
+from GRIDD.data_structures.knowledge_parser import KnowledgeParser
+from GRIDD.utilities import collect
 from os.path import join
 
 BASE_NODES = {'object', 'type', 'is_type', 'expression', 'expr', 'pre', 'post', 'var', 'property', 'focus'}

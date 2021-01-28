@@ -117,6 +117,16 @@ the homework that was assigned
 the homework that was hard
 ["DT", "NN", "DT", "VBD", "JJ"]
 
+(7) both should be 'neg' dp?
+
+['I', 'ca', 'nt', 'buy', 'a', 'house']
+['PRP', 'MD', 'RB', 'VB', 'DT', 'NN']
+[[3, 'nsbj'], [3, 'modal'], [3, 'adv'], [-1, 'root'], [5, 'det'], [3, 'obj']]
+
+['I', 'can', 'not', 'buy', 'a', 'house']
+['PRP', 'MD', 'RB', 'VB', 'DT', 'NN']
+[[3, 'nsbj'], [3, 'modal'], [3, 'neg'], [-1, 'root'], [5, 'det'], [3, 'obj']]
+
 
 
 -------------

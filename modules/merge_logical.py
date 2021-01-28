@@ -1,5 +1,5 @@
 
-from data_structures.inference_engine import infer, ImplicationRule
+from GRIDD.data_structures.inference_engine import infer, ImplicationRule
 
 
 class MergeLogical:

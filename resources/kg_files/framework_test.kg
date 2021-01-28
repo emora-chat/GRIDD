@@ -99,11 +99,18 @@ like<predicate>
 like[like,liked,likes,liking]
 
 is<predicate>
-is[be,are,is,were,was]
-do<predicate>
-do[do,does,did]
+is[be,are,is,were,was,am]
 go<predicate>
 go[go,went,goes,going]
+
+do<predicate>
+do[do,does,did]
+can<object>
+can[can,ca,could]
+should<object>
+should[should]
+will<object>
+will[will,would]
 
 user=person()
 user[i,me,my]

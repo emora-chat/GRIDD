@@ -1,11 +1,11 @@
 from structpy.graph.directed.labeled.multilabeled_parallel_digraph_networkx import MultiLabeledParallelDigraphNX
 from structpy.map.map import Map
 from structpy.map.index.index import Index
-from data_structures.concept_graph_spec import ConceptGraphSpec
+from GRIDD.data_structures.concept_graph_spec import ConceptGraphSpec
 CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 from collections import defaultdict
 import json
-import utilities as util
+import GRIDD.utilities as util
 
 class ConceptGraph:
 
@@ -249,10 +249,11 @@ class ConceptGraph:
             self.add(s, t, concept_a, i)
         if self.has(predicate_id=concept_b):
             s, t, o, i = self.predicate(concept_b)
-            if o is not None:
-                self._bipredicate_instances[(s,t,o)].add(concept_a)
-            else:
-                self._monopredicate_instances[(s,t)].add(concept_a)
+            self.add(s, t, o, concept_a)
+            # if o is not None:
+            #     self._bipredicate_instances[(s,t,o)].add(concept_a)
+            # else:
+            #     self._monopredicate_instances[(s,t)].add(concept_a)
             self._detach(s, t, o, i)
         self.remove(concept_b)
         return concept_a

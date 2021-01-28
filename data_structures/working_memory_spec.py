@@ -1,8 +1,8 @@
 
 from structpy import specification
 
-from data_structures.concept_graph_spec import ConceptGraphSpec
-from data_structures.knowledge_base import KnowledgeBase
+from GRIDD.data_structures.concept_graph_spec import ConceptGraphSpec
+from GRIDD.data_structures.knowledge_base import KnowledgeBase
 
 
 @specification
