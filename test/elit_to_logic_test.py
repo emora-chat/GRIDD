@@ -19,12 +19,12 @@ def test_svdo_simple(elitmodels, elit_to_logic):
     """ Tests constructions of subject-verb-determiner-object """
     sentence = 'I bought a house'
     tok, pos, dp = elitmodels(sentence)
-    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
+    mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 3
-    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
-    (bought_sp,) = [span for span in span_dict.values() if span.string == 'bought']
-    (house_sp,) = [span for span in span_dict.values() if span.string == 'house']
+    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
+    (bought_sp,) = [span for span in mentions.keys() if span.string == 'bought']
+    (house_sp,) = [span for span in mentions.keys() if span.string == 'house']
 
     i_mg = mentions[i_sp]
     assert i_mg.has('user', 'center')
@@ -54,11 +54,11 @@ def test_sv_simple(elitmodels, elit_to_logic):
     """ Tests constructions of subject-verb """
     sentence = 'I walked'
     tok, pos, dp = elitmodels(sentence)
-    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
+    mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 2
-    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
-    (walked_sp,) = [span for span in span_dict.values() if span.string == 'walked']
+    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
+    (walked_sp,) = [span for span in mentions.keys() if span.string == 'walked']
 
     i_mg = mentions[i_sp]
     assert i_mg.has('user', 'center')
@@ -80,12 +80,12 @@ def test_slvo(elitmodels, elit_to_logic):
     """ Tests constructions of subj-light_verb-verb-obj """
     sentence = 'I made a call to you'
     tok, pos, dp = elitmodels(sentence)
-    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
+    mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 3
-    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
-    (call_sp,) = [span for span in span_dict.values() if span.string == 'call']
-    (you_sp,) = [span for span in span_dict.values() if span.string == 'you']
+    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
+    (call_sp,) = [span for span in mentions.keys() if span.string == 'call']
+    (you_sp,) = [span for span in mentions.keys() if span.string == 'you']
 
     i_mg = mentions[i_sp]
     assert i_mg.has('user', 'center')
@@ -112,14 +112,14 @@ def test_prepositional_phrases(elitmodels, elit_to_logic):
     """ Tests constructions of prepositional phrases """
     sentence = 'I bought a house in Georgia'
     tok, pos, dp = elitmodels(sentence)
-    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
+    mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 5
-    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
-    (bought_sp,) = [span for span in span_dict.values() if span.string == 'bought']
-    (house_sp,) = [span for span in span_dict.values() if span.string == 'house']
-    (in_sp,) = [span for span in span_dict.values() if span.string == 'in']
-    (georgia_sp,) = [span for span in span_dict.values() if span.string == 'georgia']
+    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
+    (bought_sp,) = [span for span in mentions.keys() if span.string == 'bought']
+    (house_sp,) = [span for span in mentions.keys() if span.string == 'house']
+    (in_sp,) = [span for span in mentions.keys() if span.string == 'in']
+    (georgia_sp,) = [span for span in mentions.keys() if span.string == 'georgia']
 
     i_mg = mentions[i_sp]
     assert i_mg.has('user', 'center')
@@ -161,13 +161,13 @@ def test_prepositional_phrases(elitmodels, elit_to_logic):
 
     sentence = 'I walked to the house'
     tok, pos, dp = elitmodels(sentence)
-    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
+    mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 4
-    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
-    (walked_sp,) = [span for span in span_dict.values() if span.string == 'walked']
-    (house_sp,) = [span for span in span_dict.values() if span.string == 'house']
-    (to_sp,) = [span for span in span_dict.values() if span.string == 'to']
+    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
+    (walked_sp,) = [span for span in mentions.keys() if span.string == 'walked']
+    (house_sp,) = [span for span in mentions.keys() if span.string == 'house']
+    (to_sp,) = [span for span in mentions.keys() if span.string == 'to']
 
     i_mg = mentions[i_sp]
     assert i_mg.has('user', 'center')
@@ -206,12 +206,12 @@ def test_comp(elitmodels, elit_to_logic):
     """ Tests constructions with comp attachments where comp structure misses nsbj and obj """
     sentence = 'I like to walk'
     tok, pos, dp = elitmodels(sentence)
-    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
+    mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 3
-    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
-    (like_sp,) = [span for span in span_dict.values() if span.string == 'like']
-    (walk_sp,) = [span for span in span_dict.values() if span.string == 'walk']
+    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
+    (like_sp,) = [span for span in mentions.keys() if span.string == 'like']
+    (walk_sp,) = [span for span in mentions.keys() if span.string == 'walk']
 
     i_mg = mentions[i_sp]
     assert i_mg.has('user', 'center')
@@ -244,13 +244,13 @@ def test_inner_comp_with_obj(elitmodels, elit_to_logic):
     """ Tests constructions with comp attachments where comp structure has obj but no nsbj """
     sentence = 'I like to buy clothes'
     tok, pos, dp = elitmodels(sentence)
-    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
+    mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 4
-    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
-    (like_sp,) = [span for span in span_dict.values() if span.string == 'like']
-    (buy_sp,) = [span for span in span_dict.values() if span.string == 'buy']
-    (clothes_sp,) = [span for span in span_dict.values() if span.string == 'clothes']
+    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
+    (like_sp,) = [span for span in mentions.keys() if span.string == 'like']
+    (buy_sp,) = [span for span in mentions.keys() if span.string == 'buy']
+    (clothes_sp,) = [span for span in mentions.keys() if span.string == 'clothes']
 
     i_mg = mentions[i_sp]
     assert i_mg.has('user', 'center')
@@ -287,13 +287,13 @@ def test_inner_comp_with_nsbj(elitmodels, elit_to_logic):
     """ Tests constructions with comp attachments where comp structure has nsbj but no obj """
     sentence = 'I like when you walk'
     tok, pos, dp = elitmodels(sentence)
-    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
+    mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 4
-    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
-    (you_sp,) = [span for span in span_dict.values() if span.string == 'you']
-    (like_sp,) = [span for span in span_dict.values() if span.string == 'like']
-    (walk_sp,) = [span for span in span_dict.values() if span.string == 'walk']
+    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
+    (you_sp,) = [span for span in mentions.keys() if span.string == 'you']
+    (like_sp,) = [span for span in mentions.keys() if span.string == 'like']
+    (walk_sp,) = [span for span in mentions.keys() if span.string == 'walk']
 
     i_mg = mentions[i_sp]
     assert i_mg.has('user', 'center')
@@ -329,14 +329,14 @@ def test_inner_comp_with_nsbj_obj(elitmodels, elit_to_logic):
     """ Tests constructions with comp attachments where comp structure has both nsbj and obj """
     sentence = 'I like when you buy clothes'
     tok, pos, dp = elitmodels(sentence)
-    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
+    mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 5
-    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
-    (like_sp,) = [span for span in span_dict.values() if span.string == 'like']
-    (you_sp,) = [span for span in span_dict.values() if span.string == 'you']
-    (buy_sp,) = [span for span in span_dict.values() if span.string == 'buy']
-    (clothes_sp,) = [span for span in span_dict.values() if span.string == 'clothes']
+    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
+    (like_sp,) = [span for span in mentions.keys() if span.string == 'like']
+    (you_sp,) = [span for span in mentions.keys() if span.string == 'you']
+    (buy_sp,) = [span for span in mentions.keys() if span.string == 'buy']
+    (clothes_sp,) = [span for span in mentions.keys() if span.string == 'clothes']
 
     i_mg = mentions[i_sp]
     assert i_mg.has('user', 'center')
@@ -378,12 +378,12 @@ def test_ref_det(elitmodels, elit_to_logic):
     """ Tests constructions with referential determiners """
     sentence = 'I like the house'
     tok, pos, dp = elitmodels(sentence)
-    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
+    mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 3
-    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
-    (like_sp,) = [span for span in span_dict.values() if span.string == 'like']
-    (house_sp,) = [span for span in span_dict.values() if span.string == 'house']
+    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
+    (like_sp,) = [span for span in mentions.keys() if span.string == 'like']
+    (house_sp,) = [span for span in mentions.keys() if span.string == 'house']
 
     house_mg = mentions[house_sp]
     house_insts = house_mg.predicates(predicate_type='type', object='house')
@@ -402,12 +402,12 @@ def test_inst_det(elitmodels, elit_to_logic):
     """ Tests constructions with instantiative determiners """
     sentence = 'I like a house'
     tok, pos, dp = elitmodels(sentence)
-    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
+    mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 3
-    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
-    (like_sp,) = [span for span in span_dict.values() if span.string == 'like']
-    (house_sp,) = [span for span in span_dict.values() if span.string == 'house']
+    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
+    (like_sp,) = [span for span in mentions.keys() if span.string == 'like']
+    (house_sp,) = [span for span in mentions.keys() if span.string == 'house']
 
     house_mg = mentions[house_sp]
     house_insts = house_mg.predicates(predicate_type='type', object='house')
@@ -425,13 +425,13 @@ def test_poss_pron(elitmodels, elit_to_logic):
     """ Tests constructions with possessives (pronouns and nouns) """
     sentence = 'I like my house'
     tok, pos, dp = elitmodels(sentence)
-    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
+    mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 4
-    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
-    (like_sp,) = [span for span in span_dict.values() if span.string == 'like']
-    (my_sp,) = [span for span in span_dict.values() if span.string == 'my']
-    (house_sp,) = [span for span in span_dict.values() if span.string == 'house']
+    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
+    (like_sp,) = [span for span in mentions.keys() if span.string == 'like']
+    (my_sp,) = [span for span in mentions.keys() if span.string == 'my']
+    (house_sp,) = [span for span in mentions.keys() if span.string == 'house']
 
     my_mg = mentions[my_sp]
     my_insts = my_mg.predicates(predicate_type='possess')
@@ -458,13 +458,13 @@ def test_poss_pron(elitmodels, elit_to_logic):
 
     sentence = "I like John's house"
     tok, pos, dp = elitmodels(sentence)
-    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
+    mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 4
-    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
-    (like_sp,) = [span for span in span_dict.values() if span.string == 'like']
-    (john_sp,) = [span for span in span_dict.values() if span.string == 'john']
-    (house_sp,) = [span for span in span_dict.values() if span.string == 'house']
+    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
+    (like_sp,) = [span for span in mentions.keys() if span.string == 'like']
+    (john_sp,) = [span for span in mentions.keys() if span.string == 'john']
+    (house_sp,) = [span for span in mentions.keys() if span.string == 'house']
 
     john_mg = mentions[john_sp]
     john_insts = john_mg.predicates(predicate_type='possess')
@@ -491,13 +491,13 @@ def test_poss_pron(elitmodels, elit_to_logic):
 
     sentence = "I like Johns house"
     tok, pos, dp = elitmodels(sentence)
-    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
+    mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 4
-    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
-    (like_sp,) = [span for span in span_dict.values() if span.string == 'like']
-    (john_sp,) = [span for span in span_dict.values() if span.string == 'johns']
-    (house_sp,) = [span for span in span_dict.values() if span.string == 'house']
+    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
+    (like_sp,) = [span for span in mentions.keys() if span.string == 'like']
+    (john_sp,) = [span for span in mentions.keys() if span.string == 'johns']
+    (house_sp,) = [span for span in mentions.keys() if span.string == 'house']
 
     john_mg = mentions[john_sp]
     john_insts = john_mg.predicates(predicate_type='possess')
@@ -526,13 +526,13 @@ def test_compound(elitmodels, elit_to_logic):
     """ Tests constructions with compound attachments """
     sentence = 'I like New York'
     tok, pos, dp = elitmodels(sentence)
-    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
+    mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 4
-    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
-    (like_sp,) = [span for span in span_dict.values() if span.string == 'like']
-    (new_sp,) = [span for span in span_dict.values() if span.string == 'new']
-    (york_sp,) = [span for span in span_dict.values() if span.string == 'york']
+    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
+    (like_sp,) = [span for span in mentions.keys() if span.string == 'like']
+    (new_sp,) = [span for span in mentions.keys() if span.string == 'new']
+    (york_sp,) = [span for span in mentions.keys() if span.string == 'york']
 
     new_mg = mentions[new_sp]
     new_insts = new_mg.predicates(predicate_type='compound')
@@ -555,12 +555,12 @@ def test_adv(elitmodels, elit_to_logic):
     """ Tests constructions with adverb attachments """
     sentence = 'I walked quickly'
     tok, pos, dp = elitmodels(sentence)
-    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
+    mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 3
-    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
-    (walked_sp,) = [span for span in span_dict.values() if span.string == 'walked']
-    (quickly_sp,) = [span for span in span_dict.values() if span.string == 'quickly']
+    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
+    (walked_sp,) = [span for span in mentions.keys() if span.string == 'walked']
+    (quickly_sp,) = [span for span in mentions.keys() if span.string == 'quickly']
 
     quickly_mg = mentions[quickly_sp]
     quick_insts = quickly_mg.predicates(predicate_type='qualifier')
@@ -573,18 +573,6 @@ def test_adv(elitmodels, elit_to_logic):
     assert len(merges) == 2
     assert ((walked_sp, 'subject'), (i_sp, 'self')) in merges
     assert ((quickly_sp, 'subject'), (walked_sp, 'self')) in merges
-
-def test_csbj(elitmodels, elit_to_logic):
-    """ Tests constructions with csbj """
-    assert False
-    sentence = 'placeholder'
-    tok, pos, dp = elitmodels(sentence)
-    mentions, merges, span_dict = elit_to_logic(tok, pos, dp)
-
-    assert len(mentions) == 3
-    (i_sp,) = [span for span in span_dict.values() if span.string == 'i']
-    (walked_sp,) = [span for span in span_dict.values() if span.string == 'walked']
-    (quickly_sp,) = [span for span in span_dict.values() if span.string == 'quickly']
 
 
 

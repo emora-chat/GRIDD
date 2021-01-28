@@ -13,7 +13,6 @@ class WorkingMemory(ConceptGraph):
     def __init__(self, knowledge_base, *filenames_or_logicstrings):
         self.knowledge_base = knowledge_base
         self.inference_engine = InferenceEngine()
-        self.span_dict = {}
         super().__init__(namespace='WM')
         self.load(*filenames_or_logicstrings)
 
@@ -115,9 +114,6 @@ class WorkingMemory(ConceptGraph):
     def rules(self):
         return self.inference_engine.generate_rules_from_graph(self)
 
-    def update_spans(self, span_dict):
-        self.span_dict.update(span_dict)
-
     def display_graph(self, exclusions=None):
         G = nx.DiGraph()
         edge_labels = {}
@@ -127,7 +123,7 @@ class WorkingMemory(ConceptGraph):
                 if t in {'type', 'time'}:
                     edge_labels[(s, o)] = t
                 elif t == 'exprof':
-                    edge_labels[(self.span_dict[s], o)] = t
+                    edge_labels[(str(s), o)] = t
                 elif t in {'instantiative', 'referential'}:
                     edge_labels[(s, t)] = ''
                 else:
