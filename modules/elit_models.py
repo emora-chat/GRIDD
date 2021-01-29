@@ -11,7 +11,7 @@ class ElitModels:
     def __init__(self):
         self.model = Client('http://0.0.0.0:8000')
 
-    def __call__(self, system_utterance, user_utterance, coref_context):
+    def __call__(self, user_utterance, system_utterance=None, coref_context=None):
         """
         args[0] - string utterance
         returns (list of tokens, list of pos tags, list of dependency parse connections

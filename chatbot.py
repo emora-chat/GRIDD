@@ -51,7 +51,7 @@ class Chatbot:
 
         self.pipeline = Pipeline(
             ('utter', 'wm') > sentence_caser > ('cased_utter'),
-            ('system_utter', 'cased_utter', 'cr_state') > elit_models > ('tok', 'pos', 'dp', 'cr'),
+            ('cased_utter', 'system_utter', 'cr_state') > elit_models > ('tok', 'pos', 'dp', 'cr'),
             ('tok', 'pos', 'dp') > elit_dp > ('dp_mentions', 'dp_merges'),
             ('dp_mentions', 'wm') > mention_bridge > ('wm_after_mentions'),
             ('dp_merges', 'wm_after_mentions') > merge_dp > ('node_merges'),

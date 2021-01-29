@@ -1,5 +1,5 @@
 
-from data_structures.span_spec import SpanSpec
+from GRIDD.data_structures.span_spec import SpanSpec
 import re
 
 
