@@ -1,3 +1,4 @@
+import GRIDD.globals as globals
 
 class InferenceBridge:
 
@@ -7,5 +8,6 @@ class InferenceBridge:
         args[0] - list of implication cgs
         args[1] - working memory
         """
-        print('You have reached the end of the implemented Pipeline.')
+        if globals.DEBUG:
+            print('You have reached the end of the implemented Pipeline.')
         return '__EXIT__\n'

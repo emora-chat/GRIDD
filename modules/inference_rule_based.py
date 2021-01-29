@@ -1,3 +1,4 @@
+import GRIDD.globals as globals
 
 class InferenceRuleBased:
 
@@ -11,7 +12,8 @@ class InferenceRuleBased:
         """
         working_memory = args[0]
         implications = working_memory.implications(*self.inference_files)
-        self.display_implications(implications)
+        if globals.DEBUG:
+            self.display_implications(implications)
         return implications
 
     def display_implications(self, implications):

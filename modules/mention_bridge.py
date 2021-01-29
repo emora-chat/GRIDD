@@ -1,3 +1,4 @@
+import GRIDD.globals as globals
 
 class MentionBridge:
 
@@ -8,11 +9,12 @@ class MentionBridge:
         args[1] - working memory
         """
         mentions, working_memory = args
-        print()
-        print('<< Mentions Identified >>')
-        for span in mentions:
-            print('%s(%d,%d)'%(span.string, span.start, span.end))
-        print()
+        if globals.DEBUG:
+            print()
+            print('<< Mentions Identified >>')
+            for span in mentions:
+                print('%s(%d,%d)'%(span.string, span.start, span.end))
+            print()
         new_concepts = set()
         for span, mention_graph in mentions.items():
             ((focus,t,o,i,),) = mention_graph.predicates(predicate_type='focus')

@@ -1,24 +1,11 @@
 
 from abc import abstractmethod
-from collections import defaultdict
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.knowledge_parser import KnowledgeParser
 from GRIDD.data_structures.inference_engine import InferenceEngine
+from GRIDD.utilities import Span
 
-DEBUG=False
-
-class Span:
-
-    def __init__(self, string, start, end):
-        self.string = string
-        self.start = start
-        self.end = end
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return '%s(%d,%d)'%(self.string, self.start, self.end)
+LOCALDEBUG=False
 
 """
 Notes:
@@ -107,7 +94,7 @@ class ParseToLogic:
         rule_assignments = self._inference(ewm)
         mentions = self._get_mentions(rule_assignments, ewm)
         merges = self._get_merges(rule_assignments, ewm)
-        if DEBUG:
+        if LOCALDEBUG:
             self.display_mentions(mentions, ewm)
             self.display_merges(merges, ewm)
         return mentions, merges
