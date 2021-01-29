@@ -2,7 +2,7 @@ from lark import Lark, Transformer
 from GRIDD.data_structures.concept_graph import ConceptGraph
 
 class ParserStruct:
-    
+
     def __init__(self, value, pred_instances):
         self.value = value
         self.pred_instances = pred_instances
@@ -31,7 +31,7 @@ class KnowledgeParser:
                 subject: string_term | bipredicate | monopredicate | instance | ontological
                 object: string_term | bipredicate | monopredicate | instance | ontological
                 string_term: STRING
-                STRING: /[a-z_A-Z0-9]/+
+                STRING: /[a-z_A-Z0-9"]/+
                 string_wspace_term: STRING_WSPACE
                 STRING_WSPACE: /[a-z_A-Z0-9 ]/+
                 WHITESPACE: (" " | "\n")+

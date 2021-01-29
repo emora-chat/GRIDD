@@ -23,7 +23,7 @@ if __name__ == '__main__':
             f.write('\n')
 
     kb = KnowledgeBase(kb)
-
+    old_solutions = set()
     mode = 'logic'
     if mode == 'logic':
         wm = WorkingMemory(kb)
@@ -43,19 +43,6 @@ if __name__ == '__main__':
                 print('*'*20)
                 wm.concatenate(cg)
             logic_string = input('>>> ')
-    elif mode == 'lang':
-        from GRIDD.chatbot import Chatbot
-        chatbot = Chatbot(kb)
 
-        lang_string = input('>>> ')
-        while lang_string != 'q':
-            wm = WorkingMemory(kb)
-            wm.pull(2)
-            chatbot.run([{'text': lang_string}], wm)
-            cgs = wm.implications('rules.kg')
-            for cg in cgs:
-                print(cg.pretty_print())
-                print('*'*20)
-            lang_string = input('>>> ')
 
 
