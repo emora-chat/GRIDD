@@ -23,9 +23,9 @@ class MergeSpanToMergeConceptSpec:
         working_memory = ConceptGraph(
             predicates=[
                 ('X', 'likes', 'Y', 'xly'),
-                ('"likes"', 'exprof', 'xly'),
-                ('"user"', 'exprof', 'user'),
-                ('"avengers"', 'exprof', 'avengers')
+                ('"likes"', 'ref', 'xly'),
+                ('"user"', 'ref', 'user'),
+                ('"avengers"', 'ref', 'avengers')
             ]
         )
 

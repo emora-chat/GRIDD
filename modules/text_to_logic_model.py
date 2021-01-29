@@ -1,11 +1,10 @@
 
 from abc import abstractmethod
-from collections import defaultdict
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.knowledge_parser import KnowledgeParser
 from GRIDD.data_structures.inference_engine import InferenceEngine
 
-DEBUG=False
+LOCALDEBUG=False
 
 """
 Notes:
@@ -50,7 +49,7 @@ class ParseToLogic:
         """
         for concept in pregraph.concepts():
             if pregraph.has(concept, 'var') and not pregraph.has(predicate_id=concept) \
-                and len(pregraph.predicates(concept, 'exprof')) == 0 and len(pregraph.predicates(concept, 'expr')) == 0:
+                and len(pregraph.predicates(concept, 'ref')) == 0 and len(pregraph.predicates(concept, 'expr')) == 0:
                 # found variable entity instance that does not already have expression defined as part of rule
                 found_supertype = False
                 for supertype in pregraph.objects(concept, 'ltype'):
@@ -61,10 +60,10 @@ class ParseToLogic:
 
     def _expand_references(self, pregraph, concept, supertype=None):
         expression_var = pregraph._get_next_id()
-        exprof = pregraph.add(concept, 'exprof', expression_var)
+        ref = pregraph.add(concept, 'ref', expression_var)
         concept_var = pregraph._get_next_id()
         expr = pregraph.add(expression_var, 'expr', concept_var)
-        new_nodes = [expression_var, exprof, concept_var, expr]
+        new_nodes = [expression_var, ref, concept_var, expr]
         if supertype is not None:
             concept_type = pregraph.add(concept_var, 'type', supertype)
             pregraph.remove(concept, 'ltype', supertype)
@@ -94,7 +93,7 @@ class ParseToLogic:
         rule_assignments = self._inference(ewm)
         mentions = self._get_mentions(rule_assignments, ewm)
         merges = self._get_merges(rule_assignments, ewm)
-        if DEBUG:
+        if LOCALDEBUG:
             self.display_mentions(mentions, ewm)
             self.display_merges(merges, ewm)
         return mentions, merges
@@ -146,7 +145,7 @@ class ParseToLogic:
             pre, post = rule[0], rule[1]
             ((center_var,t,o,i),) = post.predicates(predicate_type='center')
             for solution in solutions:
-                (expression_var,) = pre.objects(center_var, 'exprof')
+                (expression_var,) = pre.objects(center_var, 'ref')
                 (concept_var,) = pre.objects(expression_var, 'expr')
                 center = solution[center_var]
                 if center not in centers_handled:
@@ -272,7 +271,7 @@ class ParseToLogic:
         return span
 
     def _get_expression_of_span(self, span, ewm):
-        expressions = ewm.objects(span, 'exprof')
+        expressions = ewm.objects(span, 'ref')
         if len(expressions) == 1:
             return expressions.pop()
         return None

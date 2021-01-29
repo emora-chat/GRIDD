@@ -25,7 +25,7 @@ INST_DET = ['a', 'an']
 QUEST = ['wdt', 'wp', 'wpds', 'wrb']
 INTERJ = ['uh']
 
-NODES = ['focus', 'center', 'pos', 'exprof', 'type', 'ltype']
+NODES = ['focus', 'center', 'pos', 'ref', 'type', 'ltype']
 DP_LABELS = [x.strip()
              for x in open(join('GRIDD', 'resources', 'elit_dp_labels.txt'), 'r').readlines()
              if len(x.strip()) > 0]
@@ -89,7 +89,7 @@ class ElitDPToLogic(ParseToLogic):
             cg.add(span_node)
             token_to_span_node[token_idx] = span_node
             expression = '"%s"' % expression
-            cg.add(span_node, 'exprof', expression)
+            cg.add(span_node, 'ref', expression)
             cg.add(span_node, 'type', pos)
 
         for token_idx, (head_idx, label) in enumerate(dependencies):

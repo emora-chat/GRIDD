@@ -106,9 +106,14 @@ class Chatbot:
 
 
 if __name__ == '__main__':
+    import GRIDD.globals as globals
+    globals.DEBUG = True
+
     interactive = True
+
     if interactive:
         chatbot = Chatbot(join('GRIDD', 'resources', 'kg_files', 'framework_test.kg'))
         chatbot.chat()
     else:
         print(ChatbotSpec.verify(Chatbot))
+

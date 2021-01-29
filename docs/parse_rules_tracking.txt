@@ -127,7 +127,14 @@ the homework that was hard
 ['PRP', 'MD', 'RB', 'VB', 'DT', 'NN']
 [[3, 'nsbj'], [3, 'modal'], [3, 'neg'], [-1, 'root'], [5, 'det'], [3, 'obj']]
 
+(8) should be comp, not advcl!
 
+User: Yeah I went shopping
+
+<< ELIT Models >>
+['yeah', 'i', 'went', 'shopping']
+['UH', 'PRP', 'VBD', 'VBG']
+[[2, 'disc'], [2, 'nsbj'], [-1, 'root'], [2, 'advcl']]
 
 -------------
 Sentences to check

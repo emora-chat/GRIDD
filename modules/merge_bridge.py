@@ -1,4 +1,4 @@
-from collections import defaultdict
+import GRIDD.globals as globals
 
 class MergeBridge:
 
@@ -28,8 +28,9 @@ class MergeBridge:
                         working_memory.merge(v1, kept)
             visited.append((kept, replaced))
 
-        print("<< Working Memory after NLU >>")
-        print(working_memory.pretty_print(exclusions={'var','is_type','object','entity','predicate','span','exprof'}))
-        print()
-        # working_memory.display_graph(exclusions={'var','is_type','object','entity','predicate','span','exprof','time'})
+        if globals.DEBUG:
+            print("<< Working Memory after NLU >>")
+            print(working_memory.pretty_print(exclusions={'var','is_type','object','entity','predicate','span','ref'}))
+            print()
+            # working_memory.display_graph(exclusions={'var','is_type','object','entity','predicate','span','ref','time'})
         return working_memory

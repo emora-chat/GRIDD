@@ -4,9 +4,12 @@ from structpy.map.index.index import Index
 from GRIDD.data_structures.concept_graph_spec import ConceptGraphSpec
 from GRIDD.data_structures.span import Span
 CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+import GRIDD.utilities as util
 from collections import defaultdict
 import json
-import GRIDD.utilities as util
+
+
+CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 class ConceptGraph:
 
@@ -368,6 +371,19 @@ class ConceptGraph:
                 self.add(s, t, o, i)
             self._next_id = d['next_id']
 
+    def ugly_print(self, exclusions=None):
+        type_str, mono_str, bi_str = '', '', ''
+        for s, t, o, i in self.predicates(predicate_type='type'):
+            type_str += '%s/%s(%s,%s)\n' % (i, t, s, o)
+        for s, t, o, i in self.predicates():
+            if (exclusions is None or t not in exclusions) and t != 'type':
+                if o is not None:
+                    bi_str += '%s/%s(%s,%s)\n' % (i, t, s, o)
+                else:
+                    mono_str += '%s/%s(%s)\n' % (i, t, s)
+        full_string = type_str + '\n' + mono_str + '\n' + bi_str
+        return full_string.strip()
+
     def pretty_print(self, exclusions=None):
         name_counter = defaultdict(int)
         id_map = {}
@@ -391,7 +407,7 @@ class ConceptGraph:
                 concepts = [s, o] if o is not None else [s]
                 for concept in concepts:
                     if concept not in id_map:
-                        if concept.startswith(self._namespace):
+                        if isinstance(concept, str) and concept.startswith(self._namespace):
                             if self.has(predicate_id=concept):
                                 type_string, bi_string, mono_string = self._get_representation(self.predicate(concept),
                                                                                                id_map, name_counter, visited,
@@ -405,6 +421,8 @@ class ConceptGraph:
                                     id_map[concept] = '%s_%d' % (ctype, name_counter[ctype])
                                 else:
                                     id_map[concept] = concept
+                        elif isinstance(concept, Span):
+                            id_map[concept] = concept.string
                         else:
                             id_map[concept] = concept
                 if o is not None:

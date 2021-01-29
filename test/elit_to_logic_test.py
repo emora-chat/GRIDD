@@ -18,7 +18,7 @@ def elit_to_logic():
 def test_svdo_simple(elitmodels, elit_to_logic):
     """ Tests constructions of subject-verb-determiner-object """
     sentence = 'I bought a house'
-    tok, pos, dp = elitmodels(sentence)
+    tok, pos, dp, cr = elitmodels(sentence)
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 3
@@ -53,7 +53,7 @@ def test_svdo_simple(elitmodels, elit_to_logic):
 def test_sv_simple(elitmodels, elit_to_logic):
     """ Tests constructions of subject-verb """
     sentence = 'I walked'
-    tok, pos, dp = elitmodels(sentence)
+    tok, pos, dp, cr = elitmodels(sentence)
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 2
@@ -79,7 +79,7 @@ def test_sv_simple(elitmodels, elit_to_logic):
 def test_slvo(elitmodels, elit_to_logic):
     """ Tests constructions of subj-light_verb-verb-obj """
     sentence = 'I made a call to you'
-    tok, pos, dp = elitmodels(sentence)
+    tok, pos, dp, cr = elitmodels(sentence)
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 3
@@ -111,7 +111,7 @@ def test_slvo(elitmodels, elit_to_logic):
 def test_prepositional_phrases(elitmodels, elit_to_logic):
     """ Tests constructions of prepositional phrases """
     sentence = 'I bought a house in Georgia'
-    tok, pos, dp = elitmodels(sentence)
+    tok, pos, dp, cr = elitmodels(sentence)
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 5
@@ -160,7 +160,7 @@ def test_prepositional_phrases(elitmodels, elit_to_logic):
     assert ((in_sp, 'object'), (georgia_sp, 'self')) in merges
 
     sentence = 'I walked to the house'
-    tok, pos, dp = elitmodels(sentence)
+    tok, pos, dp, cr = elitmodels(sentence)
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 4
@@ -205,7 +205,7 @@ def test_prepositional_phrases(elitmodels, elit_to_logic):
 def test_comp(elitmodels, elit_to_logic):
     """ Tests constructions with comp attachments where comp structure misses nsbj and obj """
     sentence = 'I like to walk'
-    tok, pos, dp = elitmodels(sentence)
+    tok, pos, dp, cr = elitmodels(sentence)
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     # assert len(mentions) == 3
@@ -243,7 +243,7 @@ def test_comp(elitmodels, elit_to_logic):
 def test_inner_comp_with_obj(elitmodels, elit_to_logic):
     """ Tests constructions with comp attachments where comp structure has obj but no nsbj """
     sentence = 'I like to buy clothes'
-    tok, pos, dp = elitmodels(sentence)
+    tok, pos, dp, cr = elitmodels(sentence)
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     # assert len(mentions) == 4
@@ -286,7 +286,7 @@ def test_inner_comp_with_obj(elitmodels, elit_to_logic):
 def test_inner_comp_with_nsbj(elitmodels, elit_to_logic):
     """ Tests constructions with comp attachments where comp structure has nsbj but no obj """
     sentence = 'I like when you walk'
-    tok, pos, dp = elitmodels(sentence)
+    tok, pos, dp, cr = elitmodels(sentence)
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     # assert len(mentions) == 4
@@ -328,7 +328,7 @@ def test_inner_comp_with_nsbj(elitmodels, elit_to_logic):
 def test_inner_comp_with_nsbj_obj(elitmodels, elit_to_logic):
     """ Tests constructions with comp attachments where comp structure has both nsbj and obj """
     sentence = 'I like when you buy clothes'
-    tok, pos, dp = elitmodels(sentence)
+    tok, pos, dp, cr = elitmodels(sentence)
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     # assert len(mentions) == 5
@@ -377,7 +377,7 @@ def test_inner_comp_with_nsbj_obj(elitmodels, elit_to_logic):
 def test_ref_det(elitmodels, elit_to_logic):
     """ Tests constructions with referential determiners """
     sentence = 'I like the house'
-    tok, pos, dp = elitmodels(sentence)
+    tok, pos, dp, cr = elitmodels(sentence)
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 3
@@ -401,7 +401,7 @@ def test_ref_det(elitmodels, elit_to_logic):
 def test_inst_det(elitmodels, elit_to_logic):
     """ Tests constructions with instantiative determiners """
     sentence = 'I like a house'
-    tok, pos, dp = elitmodels(sentence)
+    tok, pos, dp, cr = elitmodels(sentence)
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 3
@@ -424,7 +424,7 @@ def test_inst_det(elitmodels, elit_to_logic):
 def test_poss_pron(elitmodels, elit_to_logic):
     """ Tests constructions with possessives (pronouns and nouns) """
     sentence = 'I like my house'
-    tok, pos, dp = elitmodels(sentence)
+    tok, pos, dp, cr = elitmodels(sentence)
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 4
@@ -457,7 +457,7 @@ def test_poss_pron(elitmodels, elit_to_logic):
     assert ((my_sp, 'object'), (house_sp, 'self')) in merges
 
     sentence = "I like John's house"
-    tok, pos, dp = elitmodels(sentence)
+    tok, pos, dp, cr = elitmodels(sentence)
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 4
@@ -490,7 +490,7 @@ def test_poss_pron(elitmodels, elit_to_logic):
     assert ((john_sp, 'object'), (house_sp, 'self')) in merges
 
     sentence = "I like Johns house"
-    tok, pos, dp = elitmodels(sentence)
+    tok, pos, dp, cr = elitmodels(sentence)
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 4
@@ -525,7 +525,7 @@ def test_poss_pron(elitmodels, elit_to_logic):
 def test_compound(elitmodels, elit_to_logic):
     """ Tests constructions with compound attachments """
     sentence = 'I like New York'
-    tok, pos, dp = elitmodels(sentence)
+    tok, pos, dp, cr = elitmodels(sentence)
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 4
@@ -554,7 +554,7 @@ def test_compound(elitmodels, elit_to_logic):
 def test_adv(elitmodels, elit_to_logic):
     """ Tests constructions with adverb attachments """
     sentence = 'I walked quickly'
-    tok, pos, dp = elitmodels(sentence)
+    tok, pos, dp, cr = elitmodels(sentence)
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 3

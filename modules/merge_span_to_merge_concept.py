@@ -17,9 +17,9 @@ class MergeSpanToMergeConcept:
         for (span1, pos1), (span2, pos2) in span_merges:
             # if no mention for span, no merge possible
             if working_memory.has(span1) and working_memory.has(span2):
-                (concept1,) = working_memory.objects(span1, 'exprof')
+                (concept1,) = working_memory.objects(span1, 'ref')
                 concept1 = self._follow_path(concept1, pos1, working_memory)
-                (concept2,) = working_memory.objects(span2, 'exprof')
+                (concept2,) = working_memory.objects(span2, 'ref')
                 concept2 = self._follow_path(concept2, pos2, working_memory)
                 node_merges.append((concept1,concept2))
         return node_merges
