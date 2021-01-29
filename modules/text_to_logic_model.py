@@ -157,6 +157,7 @@ class ParseToLogic:
                         if node in solution:
                             if node in [center_var,expression_var,concept_var]:
                                 m[node] = self._get_concept_of_span(solution[node], ewm)
+                                # m[node] = solution[node]
                             else:
                                 m[node] = cg._get_next_id()
                         else:
@@ -164,10 +165,20 @@ class ParseToLogic:
                     for subject, typ, object, inst in post.predicates():
                         if object is not None:
                             cg.add(m[subject], m[typ], m[object], predicate_id=m[inst])
+                            self._add_unknowns_to_post([m[subject], m[typ], m[object]], cg, ewm)
                         else:
                             cg.add(m[subject], m[typ], predicate_id=m[inst])
+                            self._add_unknowns_to_post([m[subject], m[typ]], cg, ewm)
                     mentions[center] = cg
         return mentions
+
+    def _add_unknowns_to_post(self, nodes, post, source):
+        for node in nodes:
+            for n in ['verb', 'noun', 'pron', 'adj', 'adv', 'other']:
+                unknown_type = 'unknown_%s' % n
+                if source.has(node, 'type', unknown_type) and not post.has(node, 'type', unknown_type):
+                    post.add(node, 'type', unknown_type)
+                    break
 
     def _get_merges(self, assignments, ewm):
         """
@@ -261,12 +272,12 @@ class ParseToLogic:
         expression = self._get_expression_of_span(span, ewm)
         if expression is not None:
             (concept_var,) = ewm.objects(expression, 'expr')
-            unknown_type = None
-            for n in ['verb', 'noun', 'pron', 'adj', 'adv', 'other']:
-                if ewm.has(concept_var,'type','unknown_%s' % n):
-                    unknown_type = n
-            if unknown_type is not None:
-                return 'unk_%s'%unknown_type
+            # unknown_type = None
+            # for n in ['verb', 'noun', 'pron', 'adj', 'adv', 'other']:
+            #     if ewm.has(concept_var,'type','unknown_%s' % n):
+            #         unknown_type = n
+            # if unknown_type is not None:
+            #     return 'unknown_%s'%unknown_type
             return concept_var
         return span
 
