@@ -2,7 +2,17 @@
   "namespace": "2",
   "next_id": 2,
   "predicates": [
-    "fluffy,bark,None,2_0",
-    "princess,friend,fluffy,2_1"
+    [
+      "fluffy",
+      "bark",
+      "None",
+      "2_0"
+    ],
+    [
+      "princess",
+      "friend",
+      "fluffy",
+      "2_1"
+    ]
   ]
 }

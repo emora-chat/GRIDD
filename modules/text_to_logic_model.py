@@ -7,19 +7,6 @@ from GRIDD.data_structures.inference_engine import InferenceEngine
 
 DEBUG=False
 
-class Span:
-
-    def __init__(self, string, start, end):
-        self.string = string
-        self.start = start
-        self.end = end
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return '%s(%d,%d)'%(self.string, self.start, self.end)
-
 """
 Notes:
     predicate_types in post cannot match predicate_types in pre (other than `type`)

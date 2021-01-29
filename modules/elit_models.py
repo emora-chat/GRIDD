@@ -11,22 +11,40 @@ class ElitModels:
     def __init__(self):
         self.model = Client('http://0.0.0.0:8000')
 
-    def __call__(self, system_utterance, user_utterance):
+    def __call__(self, system_utterance, user_utterance, coref_context):
         """
         args[0] - string utterance
         returns (list of tokens, list of pos tags, list of dependency parse connections
         """
-        parse_dict = self.model.parse([system_utterance, user_utterance],
-                                      models=['tok', 'pos', 'ner', 'srl', 'dep', 'ocr'],
-                                      speaker_ids=[1, 2])
-        # print(parse_dict["tok"][0])
-        # print(parse_dict["pos"][0])
-        # print(parse_dict["dep"][0])
-        # print()
-        return [tok.lower() for tok in parse_dict["tok"][1]], \
-               parse_dict["pos"][1], \
-               parse_dict["dep"][1], \
-               parse_dict["ocr"]
+        if user_utterance is None and system_utterance is None:
+            return [], [], [], None
+        elif user_utterance is None:
+            parse_dict = self.model.parse(
+                [system_utterance],
+                models=['tok', 'pos', 'ner', 'srl', 'dep', 'ocr'],
+                speaker_ids=[1]
+            )
+            return [], [], [], parse_dict["ocr"]
+        elif system_utterance is None:
+            parse_dict = self.model.parse(
+                [user_utterance],
+                models=['tok', 'pos', 'ner', 'srl', 'dep', 'ocr'],
+                speaker_ids=[2]
+            )
+            return [tok.lower() for tok in parse_dict["tok"][0]], \
+                   parse_dict["pos"][0], \
+                   parse_dict["dep"][0], \
+                   parse_dict["ocr"]
+        else:
+            parse_dict = self.model.parse(
+                [system_utterance, user_utterance],
+                models=['tok', 'pos', 'ner', 'srl', 'dep', 'ocr'],
+                speaker_ids=[1, 2]
+            )
+            return [tok.lower() for tok in parse_dict["tok"][1]], \
+                   parse_dict["pos"][1], \
+                   parse_dict["dep"][1], \
+                   parse_dict["ocr"]
 
 
 if __name__ == '__main__':

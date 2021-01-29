@@ -14,7 +14,7 @@ class PipelineSpec:
     """
 
     @specification.init
-    def PIPELINE(Pipeline, components, tags=None):
+    def PIPELINE(Pipeline, components, tags=None, inputs=None, outputs=None):
         """
         Construct a pipeline by tagging (or wrapping with a call) each callable
         component with `Pipeline.component`.
@@ -23,13 +23,17 @@ class PipelineSpec:
         produce. Inputs and output _data_s are id'd by a string.
 
         _Data_s that are inputs to some component but not outputs are considered
-        inputs to the pipeline as a whole.
+        inputs to the pipeline as a whole by default.
 
         _Data_s that are outputs of some component but are not inputs are considered
-        outputs of the pipeline as a whole.
+        outputs of the pipeline as a whole by default.
 
         Components can be given _tags_, just as a way to organize them for creating
         subpipelines (see `.__getitem__` below).
+
+        Specifying `inputs` and/or `outputs` explicitly by passing in a `list` of `str`
+        will force the pipeline to expect the provided inputs in order of appearance
+        and/or output the specified results in order.
         """
 
         @Pipeline.component
@@ -56,7 +60,8 @@ class PipelineSpec:
                 first_stage: ['stage1', 'nlu'],
                 second_stage: ['nlu'],
                 fourth_stage: ['final']
-            }
+            },
+            outputs=['r', 'h']
         )
         return pipeline
 
@@ -68,9 +73,10 @@ class PipelineSpec:
         an output of some pipeline component. Args are matched to
         input _data_s in the order the _data_s were defined.
         """
-        assert pipeline(2, 3) == '# 5 -- hello #'
+        result = pipeline(2, 3)
+        assert result == ('# 5 -- hello #', 'hello')
 
-    def getitem(pipeline):
+    def sub(pipeline, tags_or_stages, inputs=None, outputs=None):
         """
         Create a subpipeline. This filters out components in the
         pipeline. As long as the filtering process does not cause
@@ -78,7 +84,6 @@ class PipelineSpec:
         pipeline after filtering can be called like normal and is
         independent from the full, original pipeline.
         """
-        subpipeline = pipeline['stage1', 'second_stage']
-        assert subpipeline(2, 3) == ['hello', '5']
-
-        assert pipeline['nlu'](2, 3) == ['hello', '5']
+        subpipeline = pipeline.sub('stage1', 'second_stage')
+        result = subpipeline(2, 3)
+        assert result == ('hello', '5')

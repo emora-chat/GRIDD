@@ -41,7 +41,7 @@ class Pipeline:
                 return self
 
         def __str__(self):
-            if hasattr(self.fn, __name__):
+            if hasattr(self.fn, '__name__'):
                 name = {self.fn.__name__}
             else:
                 name = {type(self.fn).__name__}
@@ -50,11 +50,13 @@ class Pipeline:
         def __repr__(self):
             return str(self)
 
-    def __init__(self, *components, tags=None):
+    def __init__(self, *components, tags=None, inputs=None, outputs=None):
         self._graph = Graph()
         self._stages = set()
         self._datas = set()
         self._order = {}
+        self._inputs = inputs
+        self._outputs = outputs
         next_id = 0
         anon_outs = {}
         for component in components:
@@ -93,22 +95,16 @@ class Pipeline:
         self._tags = {} if tags is None else \
             {k: (set(v) if hasattr(v, '__iter__') else {v}) for k, v in tags.items()}
         for stage in self._stages:
-            if stage in self._tags:
-                if hasattr(stage.fn, __name__):
-                    self._tags[stage].add(stage.fn.__name__)
-                else:
-                    self._tags[stage].add(type(stage.fn).__name__)
-            else:
-                if hasattr(stage.fn, __name__):
-                    self._tags[stage] = {stage.fn.__name__}
-                else:
-                    self._tags[stage] = {type(stage.fn).__name__}
+            if stage not in self._tags:
+                self._tags[stage] = set()
+            if hasattr(stage.fn, '__name__'):
+                self._tags[stage].add(stage.fn.__name__)
 
     def __call__(self, *args, **kwargs):
         inputs = {n for n in self._graph.nodes() if len(self._graph.in_edges(n)) == 0}
         outputs = {n for n in self._graph.nodes() if len(self._graph.out_edges(n)) == 0}
-        inputs = sorted(inputs, key=self._order.__getitem__)
-        outputs = sorted(outputs, key=self._order.__getitem__)
+        inputs = sorted(inputs, key=self._order.__getitem__) if self._inputs is None else self._inputs
+        outputs = sorted(outputs, key=self._order.__getitem__) if self._outputs is None else self._outputs
         stages = sorted(self._stages, key=self._order.__getitem__)
         datas = {}
         invalidated = set(stages)
@@ -137,14 +133,11 @@ class Pipeline:
                         invalidated.add(t)
                 invalidated.remove(stage)
 
-        return [datas[o] for o in outputs] if len(outputs) > 1 else datas[outputs[0]]
+        return tuple((datas[o] for o in outputs)) if len(outputs) > 1 else datas[outputs[0]]
 
-    def __getitem__(self, item):
+    def sub(self, *tags_or_stages, inputs=None, outputs=None):
         subpipeline = self.copy()
-        if not isinstance(item, str):
-            tags = set(item)
-        else:
-            tags = {item}
+        tags = set(tags_or_stages)
         for stage in subpipeline._stages:
             if not subpipeline._tags[stage] & tags:
                 subpipeline._graph.remove(stage)
@@ -154,7 +147,15 @@ class Pipeline:
         nodes = set(subpipeline._graph.nodes())
         subpipeline._stages &= nodes
         subpipeline._datas &= nodes
+        subpipeline._order = dict(self._order)
         return subpipeline
+
+    def __getitem__(self, item):
+        if not isinstance(item, str):
+            tags = set(item)
+        else:
+            tags = {item}
+        return self.sub(*tags)
 
     def copy(self):
         cp = Pipeline()

@@ -1,5 +1,6 @@
-from GRIDD.modules.text_to_logic_model import ParseToLogic, Span
 
+from GRIDD.modules.text_to_logic_model import ParseToLogic
+from GRIDD.data_structures.span import Span
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.knowledge_base import KnowledgeBase
 import GRIDD.data_structures.knowledge_base as knowledge_base_file
