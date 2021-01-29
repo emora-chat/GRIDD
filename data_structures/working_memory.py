@@ -122,7 +122,7 @@ class WorkingMemory(ConceptGraph):
             if exclusions is None or (t not in exclusions and s not in exclusions and o not in exclusions):
                 if t in {'type', 'time'}:
                     edge_labels[(s, o)] = t
-                elif t == 'exprof':
+                elif t == 'ref':
                     edge_labels[(str(s), o)] = t
                 elif t in {'instantiative', 'referential'}:
                     edge_labels[(s, t)] = ''
