@@ -2,6 +2,8 @@
 from structpy import specification
 
 import json
+from os.path import join
+test_resource_file = join('GRIDD', 'resources', 'kg_files', 'framework_test.kg')
 
 
 @specification
@@ -14,37 +16,29 @@ class ChatbotSpec:
         of knowledge graphs (providable via .kg file names, KnowledgeGraph objects
         or logic strings).
         """
-        chatbot = Chatbot('data_structures/kg_files/framework_test.kg')
+        chatbot = Chatbot(test_resource_file)
         return chatbot
 
     @specification.init
     def respond(Chatbot, user_utterance=None, dialogue_state=None):
         """
         Get a response from the chatbot given a `user_utterance` string.
+        Returns a string representing the chatbot response.
 
         Providing no `user_utterance` prompts the chatbot to initiate
         or continue the dialogue.
 
-        Returns a tuple of the form `(chatbot_response, dialogue_state)`
-        where `chatbot_response` is a string and `dialogue_state` is some
-        object used to track the dialogue state.
-
-        When calling `.respond`, the `dialogue_state` of a previous call
-        can be provided to resume the conversation from that point in the
-        conversation.
+        When calling `.respond`, the `dialogue_state` of a `.save` call
+        can be provided to resume the conversation from the save point.
         """
-        chatbot = Chatbot('data_structures/kg_files/framework_test.kg')
+        chatbot = Chatbot(test_resource_file)
 
         print('Chatbot cold start:')
-        print(chatbot.respond()[0], '\n')
+        print(chatbot.respond(), '\n')
 
         print('Chatbot responds to "I feel okay, how are you?":')
-        utt, ds = chatbot.respond("I feel okay, how are you?")
+        utt = chatbot.respond("I feel okay, how are you?")
         print(utt)
-
-        print('Loading previous point of conversation in new chatbot:')
-        new_chatbot = Chatbot('data_structures/kg_files/framework_test.kg')
-        print(new_chatbot.respond("I feel okay, how are you?", dialogue_state=ds)[0])
 
         return chatbot
 
@@ -53,18 +47,20 @@ class ChatbotSpec:
         Save the chatbot state to a json object for future load.
         """
         js = chatbot.save()
-        with open('ds.json') as f:
+        print(json.dumps(js, indent=2))
+        with open('ds.json', 'w') as f:
             json.dump(js, f)
 
     def load(chatbot, dialogue_state):
         """
         Load the chatbot state from a json object or json string.
         """
-        r1, s1 = chatbot.respond("I bought a new house.")
+        s1 = chatbot.respond("I bought a new house.")
         with open('ds.json') as f:
             chatbot.load(f.read())
-        r2, s2 = chatbot.respond("I bought a new house.")
-        assert r1 == r2
+        s2 = chatbot.respond("I bought a new house.")
+        print(s1)
+        print(s2)
 
 
 

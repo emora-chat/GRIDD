@@ -2,6 +2,7 @@ from structpy.graph.directed.labeled.multilabeled_parallel_digraph_networkx impo
 from structpy.map.map import Map
 from structpy.map.index.index import Index
 from data_structures.concept_graph_spec import ConceptGraphSpec
+from data_structures.span import Span
 CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 from collections import defaultdict
 import json
@@ -316,24 +317,38 @@ class ConceptGraph:
         cp._next_id = self._next_id
         return cp
 
-    def save(self, json_filepath):
+    def save(self, json_filepath=None):
         d = {
             'namespace': self._namespace,
             'next_id': self._next_id,
             'predicates': []
         }
-        for s, t, o, i in self.predicates():
-            d['predicates'].append('%s,%s,%s,%s'%(s, t, o, i))
-        with open(json_filepath, 'w') as f:
-            json.dump(d, f, indent=2)
+        for item in self.predicates():
+            item = [e.to_string() if hasattr(e, 'to_string') else str(e) for e in item]
+            s, t, o, i = item
+            d['predicates'].append([s, t, o, i])
+        if json_filepath:
+            with open(json_filepath, 'w') as f:
+                json.dump(d, f, indent=2)
+        else:
+            return d
 
-    def load(self, json_filepath):
-        with open(json_filepath, 'r') as f:
-            d = json.load(f)
+    def load(self, json_file_str_obj):
+        if isinstance(json_file_str_obj, str):
+            if json_file_str_obj.endswith('.json'):
+                with open(json_file_str_obj, 'r') as f:
+                    d = json.load(f)
+            else:
+                d = json.loads(json_file_str_obj)
+        else:
+            d = json_file_str_obj
         if d['namespace'] != self._namespace:
             namespace_map = {}
-            for line in d['predicates']:
-                s, t, o, i = line.split(',')
+            for item in d['predicates']:
+                for i, e in enumerate(item):
+                    if e.startswith('<span>'):
+                        item[i] = Span.from_string(e)
+                s, t, o, i = item
                 if o == 'None':
                     o = None
                 s = util.map(self, s, d['namespace'], namespace_map)
@@ -342,8 +357,11 @@ class ConceptGraph:
                 i = util.map(self, i, d['namespace'], namespace_map)
                 self.add(s, t, o ,i)
         else:
-            for line in d['predicates']:
-                s, t, o, i = line.split(',')
+            for item in d['predicates']:
+                for i, e in enumerate(item):
+                    if e.startswith('<span>'):
+                        item[i] = Span.from_string(e)
+                s, t, o, i = item
                 if o == 'None':
                     o = None
                 self.add(s, t, o, i)

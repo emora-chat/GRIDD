@@ -1,12 +1,16 @@
+from GRIDD.chatbot_spec import ChatbotSpec
+
 QUICK_LOCAL_TESTING = True
 
 import warnings
 warnings.filterwarnings('ignore')
 import time
 from os.path import join
+import json
 
 from data_structures.knowledge_base import KnowledgeBase
 from data_structures.working_memory import WorkingMemory
+from data_structures.concept_graph import ConceptGraph
 
 from data_structures.pipeline import Pipeline
 from modules.elit_models import ElitModels
@@ -47,7 +51,7 @@ class Chatbot:
 
         self.pipeline = Pipeline(
             ('utter', 'wm') > sentence_caser > ('cased_utter'),
-            ('cased_utter') > elit_models > ('tok', 'pos', 'dp', 'cr'),
+            ('system_utter', 'cased_utter', 'cr_state') > elit_models > ('tok', 'pos', 'dp', 'cr'),
             ('tok', 'pos', 'dp') > elit_dp > ('dp_mentions', 'dp_merges'),
             ('dp_mentions', 'wm') > mention_bridge > ('wm_after_mentions'),
             ('dp_merges', 'wm_after_mentions') > merge_dp > ('node_merges'),
@@ -61,25 +65,50 @@ class Chatbot:
                 mention_bridge: ['mention_bridge'],
                 merge_dp: ['merge_dp'],
                 merge_bridge: ['merge_bridge']
-            }
+            },
+            outputs=['wm_after_inference', 'cr']
         )
+
+    def respond(self, user_utterance=None, dialogue_state=None):
+        if dialogue_state is not None:
+            self.load(dialogue_state)
+        output, coref_context = self.pipeline(
+            user_utterance,
+            self.working_memory,
+            self.auxiliary_state.get('system_utterance', None),
+            self.auxiliary_state.get('coref_context', None)
+        )
+        self.auxiliary_state['coref_context'] = coref_context
+        self.auxiliary_state['system_utterane'] = output
+        return output
 
     def chat(self):
         utterance = input('User: ')
         while utterance != 'q':
             s = time.time()
-            output = self.pipeline(utterance, self.working_memory)
+            response = self.respond(utterance)
             elapsed = time.time() - s
-            print('[%.6f s] %s' % (elapsed, output))
+            print('[%.6f s] %s' % (elapsed, response))
             utterance = input('User: ')
 
     def save(self):
-        pass
+        dialogue_state = {
+            'working_memory': self.working_memory.save(),
+            'aux': self.auxiliary_state
+        }
+        return dialogue_state
 
     def load(self, dialogue_state):
-        pass
+        self.working_memory = WorkingMemory(self.knowledge_base)
+        dialogue_state = json.loads(dialogue_state)
+        ConceptGraph.load(self.working_memory, dialogue_state['working_memory'])
+        self.auxiliary_state = dialogue_state['aux']
 
 
 if __name__ == '__main__':
-    chatbot = Chatbot(join('GRIDD', 'resources', 'kg_files', 'framework_test.kg'))
-    chatbot.chat()
+    interactive = True
+    if interactive:
+        chatbot = Chatbot(join('GRIDD', 'resources', 'kg_files', 'framework_test.kg'))
+        chatbot.chat()
+    else:
+        print(ChatbotSpec.verify(Chatbot))

@@ -1,5 +1,6 @@
 
 from data_structures.span_spec import SpanSpec
+import re
 
 
 class Span:
@@ -14,6 +15,13 @@ class Span:
 
     def __str__(self):
         return '%s(%d,%d)'%(self.string, self.start, self.end)
+
+    def to_string(self):
+        return '<span>'+str(self)
+
+    @classmethod
+    def from_string(cls, string):
+        return Span(*re.match(r'<span>([^(]*)\(([0-9]+), ?([0-9])+\)', string).groups())
 
 
 if __name__ == '__main__':
