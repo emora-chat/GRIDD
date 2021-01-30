@@ -16,9 +16,9 @@ class WorkingMemory(ConceptGraph):
         self.knowledge_base = knowledge_base
         self.inference_engine = InferenceEngine()
         super().__init__(namespace='WM')
-        self.load(*filenames_or_logicstrings)
+        self.init_load(*filenames_or_logicstrings)
 
-    def load(self, *filenames_or_logicstrings):
+    def init_load(self, *filenames_or_logicstrings):
         for input in filenames_or_logicstrings:
             if input.endswith('.kg'):
                 input = open(input, 'r').read()

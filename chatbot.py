@@ -79,7 +79,7 @@ class Chatbot:
             self.auxiliary_state.get('coref_context', None)
         )
         self.auxiliary_state['coref_context'] = coref_context
-        self.auxiliary_state['system_utterane'] = output
+        self.auxiliary_state['system_utterance'] = output
         return output
 
     def chat(self):
