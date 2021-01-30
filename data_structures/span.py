@@ -5,10 +5,13 @@ import re
 
 class Span:
 
-    def __init__(self, string, start, end):
+    def __init__(self, string, start, end, sentence=None, turn=None, speaker=None):
         self.string = string
         self.start = start
         self.end = end
+        self.sentence = sentence
+        self.turn = turn
+        self.speaker = speaker
 
     def __repr__(self):
         return str(self)

@@ -12,8 +12,19 @@ class MergeCoreference:
         """
         Output: List of pairs of nodes to merge in working memory based on coref model.
         """
-        node_merges = []
-
+        span_merges = []
+        global_tokens = coref_output['global_tokens']
+        clusters = coref_output['clusters']
+        for cluster in clusters:
+            for i, s1 in enumerate(cluster):
+                for j, s2 in enumerate(cluster[i+1:]):
+                    x1, y1 = s1
+                    x2, y2 = s2
+                    e1 = global_tokens[y1-1]
+                    e2 = global_tokens[y2-1]
+                    span_merges.append(((e1, 'self'), (e2, 'self')))
+        node_merges = merge_span_to_merge_concept(span_merges, working_memory)
+        return node_merges
 
 
 if __name__ == '__main__':

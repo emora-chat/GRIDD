@@ -4,7 +4,7 @@ from GRIDD.modules.merge_span_to_merge_concept_spec import MergeSpanToMergeConce
 
 class MergeSpanToMergeConcept:
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, span_merges, working_memory):
         """
         Calculate node merge scores for pairs of nodes in working_memory
         based on dependency parse merge outputs
@@ -12,7 +12,6 @@ class MergeSpanToMergeConcept:
         args[0] - span_obj merges based on dependency parse
         args[1] - working memory
         """
-        span_merges, working_memory = args
         node_merges = []
         for (span1, pos1), (span2, pos2) in span_merges:
             # if no mention for span, no merge possible

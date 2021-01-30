@@ -1,7 +1,6 @@
 
 from math import log
 import os
-from os.path import join
 
 CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 

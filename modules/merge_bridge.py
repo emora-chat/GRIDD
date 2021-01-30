@@ -1,22 +1,25 @@
 import GRIDD.globals as globals
 
+from itertools import chain
+
+
 class MergeBridge:
 
     def __init__(self, threshold_score):
         self.threshold = threshold_score
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, working_memory, *node_merge_pairs):
         """
         Merge the highest scored node pair together in the graph
-        args[0] - node merges
-        args[1] - working memory
+        args[0] - working memory
+        args[1+] - lists of node pairs to merge
         """
-        node_merges, working_memory = args
+        node_merge_pairs = chain(*node_merge_pairs)
         visited = []
         merge_map = {}
 
         # If merges are chained, need to re-merge previous nodes that receive a later merge
-        for concept1, concept2 in node_merges:
+        for concept1, concept2 in node_merge_pairs:
             concept1 = merge_map.get(concept1, concept1)
             concept2 = merge_map.get(concept2, concept2)
             kept = working_memory.merge(concept1, concept2)

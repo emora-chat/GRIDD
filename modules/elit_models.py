@@ -3,52 +3,63 @@ from GRIDD.modules.elit_models_spec import ElitModelsSpec
 
 from elit.client import Client
 import GRIDD.globals as globals
+from GRIDD.data_structures.span import Span
+from itertools import chain
+
 
 
 class ElitModels:
     """
-    Interacts with running ELIT server to retrieve ELIT model outputs for a given utterance
+    Interacts with running ELIT server to retrieve ELIT model outputs for a given turn
     """
     def __init__(self):
         self.model = Client('http://0.0.0.0:8000')
 
-    def __call__(self, user_utterance, system_utterance=None, coref_context=None):
+    def __call__(self, user_utterance, aux_state={}):
         """
-        args[0] - string utterance
+        args[0] - string turn
         returns list of tokens, list of pos tags, list of dependency parse connections
         """
+        prev_global_toks = aux_state.get('coref_context', {}).get('global_tokens', [])
+        aux_state.get('coref_context', {}).pop('global_tokens', None)
 
-        if user_utterance is None and system_utterance is None:
+        system_utterance = aux_state.get('system_utterance', None)
+        utterances = [system_utterance, user_utterance]
+        speaker_ids = [1, 2]
+        coref_context = aux_state.get('coref_context', None)
+        models = ['tok', 'pos', 'ner', 'srl', 'dep', 'ocr']
+        for i in range(len(utterances)-1,-1,-1):
+            if utterances[i] is None:
+                del utterances[i]
+                del speaker_ids[i]
+
+        parse_dict = self.model.parse(
+            utterances,
+            models=models,
+            speaker_ids=speaker_ids,
+            coref_context=coref_context
+        )
+
+        turn_index = aux_state.get('turn_index', None)
+        all_tokens = []
+        for j, toks in enumerate(parse_dict['tok']):
+            tokens = []
+            for i, tok in enumerate(toks):
+                tokens.append(Span(tok.lower(), i, i+1, 0, turn_index, speaker_ids[j]))
+            all_tokens.append(tokens)
+
+        global_tokens = list(chain(prev_global_toks, *all_tokens))
+        coref_result = parse_dict.get('ocr', {})
+        coref_result['global_tokens'] = global_tokens
+
+        if 2 not in speaker_ids:
             return [], [], [], None
-        elif user_utterance is None:
-            parse_dict = self.model.parse(
-                [system_utterance],
-                models=['tok', 'pos', 'ner', 'srl', 'dep', 'ocr'],
-                speaker_ids=[1]
-            )
-            return [], [], [], parse_dict["ocr"]
-        elif system_utterance is None:
-            parse_dict = self.model.parse(
-                [user_utterance],
-                models=['tok', 'pos', 'ner', 'srl', 'dep', 'ocr'],
-                speaker_ids=[2]
-            )
-            tok = [tok.lower() for tok in parse_dict["tok"][0]]
-            pos = parse_dict["pos"][0]
-            dep = parse_dict["dep"][0]
-            self.print(tok, pos, dep)
-            return tok, pos, dep, parse_dict["ocr"]
-        else:
-            parse_dict = self.model.parse(
-                [system_utterance, user_utterance],
-                models=['tok', 'pos', 'ner', 'srl', 'dep', 'ocr'],
-                speaker_ids=[1, 2]
-            )
-            tok = [tok.lower() for tok in parse_dict["tok"][1]]
-            pos = parse_dict["pos"][1]
-            dep = parse_dict["dep"][1]
-            self.print(tok, pos, dep)
-            return tok, pos, dep, parse_dict["ocr"]
+        user_result_idx = speaker_ids.index(2)
+        tok = all_tokens[user_result_idx]
+        pos = parse_dict["pos"][user_result_idx]
+        dep = parse_dict["dep"][user_result_idx]
+        return tok, pos, dep, coref_result
+
 
     def print(self, tok, pos, dep):
         if True or globals.DEBUG:

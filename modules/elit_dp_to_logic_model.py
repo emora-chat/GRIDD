@@ -74,17 +74,17 @@ class ElitDPToLogic(ParseToLogic):
         """
         Add dependency parse links into the expression concept graph
         :param dependencies: list of dependency relations
-        :param tokens: list of tokens
+        :param tokens: list of spans
         :param pos_tags: list of part of speech tags
         :param cg: the concept graph being created
         """
         token_to_span_node = {}
         for token_idx in range(len(tokens)):
-            expression = tokens[token_idx]
+            span_node = tokens[token_idx]
+            expression = span_node.string
             pos = pos_tags[token_idx].lower().replace('$','ds')
             if not cg.has(pos):
                 cg.add(pos, 'type', 'pos')
-            span_node = Span(expression, token_idx, token_idx+1) #todo - add sentence id
             self.spans.append(span_node)
             cg.add(span_node)
             token_to_span_node[token_idx] = span_node
