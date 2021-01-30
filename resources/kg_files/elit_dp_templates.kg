@@ -4,7 +4,7 @@ nsbj(X, Z/pos())
 is_type(Y)
 p/Y(Z,X)
 focus(p)
-center(Y)
+center(X)
 time(p,present)
 ;
 
@@ -14,7 +14,7 @@ csbj(X, Z/pos())
 is_type(Y)
 p/Y(Z,X)
 focus(p)
-center(Y)
+center(X)
 time(p,present)
 ;
 
@@ -24,7 +24,7 @@ nsbj(X, Z/pos())
 is_type(Y)
 p/Y(Z,X)
 focus(p)
-center(Y)
+center(X)
 time(p,past)
 ;
 
@@ -34,8 +34,14 @@ csbj(X, Z/pos())
 is_type(Y)
 p/Y(Z,X)
 focus(p)
-center(Y)
+center(X)
 time(p,past)
+;
+
+cop(X/pos(), Y/pos())
+-> copula_verb ->
+center(Y)
+focus(Y)
 ;
 
 nsbj(X/past_tense(), Y/pos())
@@ -445,13 +451,6 @@ focus(p)
 center(Y)
 ;
 
-adv(X/pos(), Y/pos())
--> adv ->
-p/qualifier(X, Y)
-focus(p)
-center(Y)
-;
-
 advnp(X/pos(), Y/pos())
 -> advnp ->
 p/qualifier(X, Y)
@@ -460,7 +459,23 @@ center(Y)
 ;
 
 advcl(X/pos(), Y/pos())
+adv(Y, Z/pos())
+-> advcl_adv ->
+is_type(Z)
+p/Z(X,Y)
+focus(p)
+center(Z)
+;
+
+advcl(X/pos(), Y/pos())
 -> advcl ->
+p/qualifier(X, Y)
+focus(p)
+center(Y)
+;
+
+adv(X/pos(), Y/pos())
+-> adv ->
 p/qualifier(X, Y)
 focus(p)
 center(Y)
