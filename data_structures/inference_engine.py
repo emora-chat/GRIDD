@@ -12,16 +12,19 @@ class InferenceEngine:
 
     def __init__(self):
         self.logic_parser = KnowledgeParser(None, None, ensure_kb_compatible=False)
+        self.prolog = Prolog()
 
     def run(self, concept_graph, *inference_rules, ordered_rule_ids=None):
 
         kg_statements, non_string_node_mapping = to_knowledge_prolog(concept_graph,
                                                                      predicate_exclusions={'pre', 'post'})
+
         non_string_node_mapping = {v: k for k, v in non_string_node_mapping.items()}
 
-        prolog = Prolog()
+        s = time.time()
         for statement in kg_statements:
-            prolog.assertz(statement)
+            self.prolog.assertz(statement)
+        print('Asserts: %.2f'%(time.time()-s))
 
         if len(inference_rules) == 0:
             all_rules = self.generate_rules_from_graph(concept_graph, with_names=True)
@@ -47,9 +50,13 @@ class InferenceEngine:
             all_rules = [rule for rule_id in ordered_rule_ids for rule in all_rules if rule[2] == rule_id]
 
         solutions = {}
+        times = []
         for rule in all_rules:
             inference_query, inference_map = to_query_prolog(rule[0])
-            solns = list(prolog.query(inference_query))
+            s = time.time()
+            solns = list(self.prolog.query(inference_query))
+            times.append(time.time() - s)
+            print('Rule %s: %.2f' % (rule[2], time.time() - s))
             parsed_solns = [json.loads(json.dumps(soln, cls=PyswipEncoder)) for soln in solns]
             solutions[rule] = []
             for match in parsed_solns:
@@ -58,9 +65,12 @@ class InferenceEngine:
                     solution_node = non_string_node_mapping.get(match[value], match[value])
                     variable_assignments[key] = solution_node
                 solutions[rule].append(variable_assignments)
+        print('Rule sum: %.2f'%(sum(times)))
 
+        s = time.time()
         for statement in kg_statements:
-            prolog.retract(statement)
+            self.prolog.retract(statement)
+        print('Asserts retracted: %.2f'%(time.time()-s))
 
         return solutions
 
