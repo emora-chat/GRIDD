@@ -1,6 +1,7 @@
 
 from math import log
 import os
+from structpy.map import Bimap
 
 CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -26,6 +27,30 @@ def identification_string(x, chars=None):
         d = _get_digit(x, i, n)
         string = chars[d] + string
     return string
+
+class IdNamespace(Bimap):
+
+    def __init__(self, tag='', chars=None):
+        Bimap.__init__(self)
+        self.tag = tag
+        self.chars = chars
+        self.counter = 0
+
+    def get(self, obj=None):
+        if obj is None:
+            ident = self.tag + identification_string(self.counter, self.chars)
+            self.counter += 1
+            return ident
+        elif obj in self.entries:
+            return self.entries[obj]
+        else:
+            ident = self.get()
+            self.entries[obj] = ident
+            return ident
+
+    def identify(self, ident):
+        rev = self.entries.reverse()
+        return rev[ident] if ident in rev else None
 
 def collect(*files_folders_or_strings, extension=None, directory=None):
     collected = []

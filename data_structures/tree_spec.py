@@ -5,14 +5,21 @@ from structpy import specification
 @specification
 class TreeSpec:
 
-    def TREE(Tree, root, edges):
+    @specification.init
+    def TREE(Tree, root, edges=None):
         tree = Tree(
             'animal',
-            ('animal', 'amphibian'),
-            ('animal', 'mammal', 'dominant'),
-            ('mammal', 'human', 'apex'),
-            ('mammal', 'cat', 'pet')
+            edges=[
+                ('animal', 'amphibian'),
+                ('animal', 'mammal', 'dominant'),
+                ('mammal', 'human', 'apex'),
+                ('mammal', 'cat', 'pet')
+            ]
         )
+        return tree
+
+    def root(tree):
+        assert tree.root() == 'animal'
 
     def has(tree, node, child=None, label=None):
         assert tree.has('animal')
