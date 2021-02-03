@@ -32,7 +32,7 @@ if __name__ == '__main__':
         while logic_string != 'q':
             if not logic_string.strip().endswith(';'):
                 logic_string += ';'
-            wm.load(logic_string)
+            wm.load_logic(logic_string)
             wm.pull(2)
             rules = [join('gridd_files', 'kb_test', 'rules', file)
                      for file in os.listdir(join('gridd_files', 'kb_test', 'rules'))
