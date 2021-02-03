@@ -136,6 +136,14 @@ User: Yeah I went shopping
 ['UH', 'PRP', 'VBD', 'VBG']
 [[2, 'disc'], [2, 'nsbj'], [-1, 'root'], [2, 'advcl']]
 
+(9) NLU pipeline error????
+
+'I enjoy not being involved with someone and being by myself .'
+
+two "being" spans map to same node, is this correct??
+
+can be solved by mapping "being" to "is" in ontology, but not sure if this is a deeper problem than that
+
 -------------
 Sentences to check
 -------------

@@ -17,7 +17,7 @@ class Span:
         return str(self)
 
     def __str__(self):
-        return '%s(%d,%d)'%(self.string, self.start, self.end)
+        return '%s(%s,%s)'%(self.string, str(self.start), str(self.end))
 
     def to_string(self):
         return '<span>'+str(self)

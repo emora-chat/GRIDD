@@ -251,13 +251,12 @@ class ConceptGraph:
         for s, t, o, i in self.predicates(object=concept_b):
             self._detach(s, t, o, i)
             self.add(s, t, concept_a, i)
+        for s, t, o, i in self.predicates(predicate_type=concept_b):
+            self._detach(s, t, o, i)
+            self.add(s, concept_a, o, i)
         if self.has(predicate_id=concept_b):
             s, t, o, i = self.predicate(concept_b)
             self.add(s, t, o, concept_a)
-            # if o is not None:
-            #     self._bipredicate_instances[(s,t,o)].add(concept_a)
-            # else:
-            #     self._monopredicate_instances[(s,t)].add(concept_a)
             self._detach(s, t, o, i)
         self.remove(concept_b)
         return concept_a
@@ -376,7 +375,8 @@ class ConceptGraph:
         for s, t, o, i in self.predicates(predicate_type='type'):
             type_str += '%s/%s(%s,%s)\n' % (i, t, s, o)
         for s, t, o, i in self.predicates():
-            if (exclusions is None or t not in exclusions) and t != 'type':
+            if (exclusions is None or (t not in exclusions and s not in exclusions and o not in exclusions)) \
+                    and t != 'type':
                 if o is not None:
                     bi_str += '%s/%s(%s,%s)\n' % (i, t, s, o)
                 else:

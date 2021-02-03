@@ -4,8 +4,8 @@ from GRIDD.data_structures.inference_engine import InferenceEngine
 from GRIDD.utilities import identification_string, CHARS
 from itertools import chain
 from collections import deque
-import networkx as nx
-import matplotlib.pyplot as plt
+# import networkx as nx
+# import matplotlib.pyplot as plt
 
 
 class WorkingMemory(ConceptGraph):
@@ -16,9 +16,9 @@ class WorkingMemory(ConceptGraph):
         self.knowledge_base = knowledge_base
         self.inference_engine = InferenceEngine()
         super().__init__(namespace='WM')
-        self.load(*filenames_or_logicstrings)
+        self.load_logic(*filenames_or_logicstrings)
 
-    def load(self, *filenames_or_logicstrings):
+    def load_logic(self, *filenames_or_logicstrings):
         for input in filenames_or_logicstrings:
             if input.endswith('.kg'):
                 input = open(input, 'r').read()
@@ -205,34 +205,34 @@ class WorkingMemory(ConceptGraph):
             return concept[0] == '"' and concept[-1] == '"'     # Expression node
 
 
-    def display_graph(self, exclusions=None):
-        G = nx.DiGraph()
-        edge_labels = {}
-
-        for s, t, o, i in self.predicates():
-            if exclusions is None or (t not in exclusions and s not in exclusions and o not in exclusions):
-                if t in {'type', 'time'}:
-                    edge_labels[(s, o)] = t
-                elif t == 'ref':
-                    edge_labels[(str(s), o)] = t
-                elif t in {'instantiative', 'referential'}:
-                    edge_labels[(s, t)] = ''
-                else:
-                    edge_labels[(i, s)] = 's'
-                    if o is not None:
-                        edge_labels[(i, o)] = 'o'
-                    edge_labels[(i, t)] = 't'
-
-        G.add_edges_from(edge_labels.keys())
-        pos = nx.spring_layout(G, iterations=500,
-                               k=10)
-        plt.figure()
-        nx.draw(G, pos, edge_color='black', font_size=7,
-                node_size=300, node_color='pink', alpha=0.8,
-                labels={node:node for node in G.nodes()})
-        nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels,
-                                     font_size=7, font_color='red')
-        plt.show()
+    # def display_graph(self, exclusions=None):
+    #     G = nx.DiGraph()
+    #     edge_labels = {}
+    #
+    #     for s, t, o, i in self.predicates():
+    #         if exclusions is None or (t not in exclusions and s not in exclusions and o not in exclusions):
+    #             if t in {'type', 'time'}:
+    #                 edge_labels[(s, o)] = t
+    #             elif t == 'ref':
+    #                 edge_labels[(str(s), o)] = t
+    #             elif t in {'instantiative', 'referential'}:
+    #                 edge_labels[(s, t)] = ''
+    #             else:
+    #                 edge_labels[(i, s)] = 's'
+    #                 if o is not None:
+    #                     edge_labels[(i, o)] = 'o'
+    #                 edge_labels[(i, t)] = 't'
+    #
+    #     G.add_edges_from(edge_labels.keys())
+    #     pos = nx.spring_layout(G, iterations=500,
+    #                            k=10)
+    #     plt.figure()
+    #     nx.draw(G, pos, edge_color='black', font_size=7,
+    #             node_size=300, node_color='pink', alpha=0.8,
+    #             labels={node:node for node in G.nodes()})
+    #     nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels,
+    #                                  font_size=7, font_color='red')
+    #     plt.show()
 
 
 if __name__ == '__main__':

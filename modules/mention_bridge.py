@@ -18,9 +18,11 @@ class MentionBridge:
         new_concepts = set()
         for span, mention_graph in mentions.items():
             ((focus,t,o,i,),) = mention_graph.predicates(predicate_type='focus')
+            ((center, t, o, i,),) = mention_graph.predicates(predicate_type='center')
             mapped_ids = working_memory.concatenate(mention_graph, predicate_exclusions={'focus','center'})
             new_concepts.update(mapped_ids.values())
             working_memory.add(span, 'ref', mapped_ids.get(focus,focus))
+            working_memory.add(span, 'def', mapped_ids.get(center,center))
             working_memory.add(span, 'type', 'span')
         working_memory.pull_ontology(new_concepts)
         return working_memory

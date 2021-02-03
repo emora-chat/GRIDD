@@ -62,7 +62,7 @@ class ElitModels:
 
 
     def print(self, tok, pos, dep):
-        if True or globals.DEBUG:
+        if globals.DEBUG:
             print()
             print('<< ELIT Models >> ')
             print(tok)

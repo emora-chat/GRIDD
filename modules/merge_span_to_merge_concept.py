@@ -28,6 +28,8 @@ class MergeSpanToMergeConcept:
             return working_memory.subject(concept)
         elif pos == 'object':
             return working_memory.object(concept)
+        elif pos == 'type':
+            return working_memory.type(concept)
         return concept
 
 
