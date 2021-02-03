@@ -3,6 +3,7 @@ from GRIDD.data_structures.knowledge_base import KnowledgeBase
 from GRIDD.data_structures.working_memory import WorkingMemory
 import os
 from os.path import join
+from collections import defaultdict
 
 if __name__ == '__main__':
     if not os.path.exists('gridd_files'):
@@ -22,30 +23,46 @@ if __name__ == '__main__':
 
     print('loading kb...')
     kb = KnowledgeBase(kb)
-    print('kb loaded...')
+    print('initializing wm...')
+    wm = WorkingMemory(kb)
+    wm.knowledge_base._knowledge_parser._predicate_transformer.ensure_kb_compatible = False
+    print('loading rules...')
+    rules = []
+    for file in os.listdir(join('gridd_files', 'kb_test', 'rules')):
+        if file.endswith('.kg'):
+            rules.extend(wm.load_rules_from_file(join('gridd_files', 'kb_test', 'rules', file)))
     print()
-    old_solutions = set()
+    old_solutions = defaultdict(list)
     mode = 'logic'
     if mode == 'logic':
-        wm = WorkingMemory(kb)
-        wm.knowledge_base._knowledge_parser._predicate_transformer.ensure_kb_compatible = False
         logic_string = input('>>> ')
         while logic_string != 'q':
             if not logic_string.strip().endswith(';'):
                 logic_string += ';'
             wm.load_logic(logic_string)
-            wm.pull(2)
-            rules = [join('gridd_files', 'kb_test', 'rules', file)
-                     for file in os.listdir(join('gridd_files', 'kb_test', 'rules'))
-                     if file.endswith('.kg')]
-            cgs = wm.implications(*rules)
+            wm.pull(1)
+            inference_dict = wm.inferences(*rules)
+
+            new_solutions = defaultdict(list)
+            for rule, solutions in inference_dict.items():
+                for solution in solutions:
+                    repeat = False
+                    for old in old_solutions[rule]:
+                        if solution == old:
+                            repeat = True
+                            break
+                    if not repeat:
+                        new_solutions[rule].append(solution)
+                        old_solutions[rule].append(solution)
+
+            cgs = wm.apply_implications(new_solutions)
             for cg in cgs:
-                output = cg.pretty_print()
-                if output not in old_solutions:
-                    print(output)
-                    print('*'*20)
-                    wm.concatenate(cg)
-                    old_solutions.add(output)
+                wm.concatenate(cg)
+
+            print('*'*20)
+            output = wm.ugly_print(exclusions={'is_type', 'object', 'predicate', 'entity', 'post', 'pre'})
+            print(output)
+            print('*'*20)
             logic_string = input('>>> ')
 
 

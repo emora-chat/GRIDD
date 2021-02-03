@@ -16,6 +16,11 @@ var<predicate>
 person<entity>
 bot<entity>
 
+user=person()
+user[i,me,my,mine]
+emora=bot()
+emora[you,your,yours]
+
 reason<predicate>
 like<predicate>
 sad<predicate>

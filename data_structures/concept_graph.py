@@ -371,9 +371,14 @@ class ConceptGraph:
             self._next_id = d['next_id']
 
     def ugly_print(self, exclusions=None):
-        type_str, mono_str, bi_str = '', '', ''
+        ont_str, inst_str, mono_str, bi_str = '', '', '', ''
         for s, t, o, i in self.predicates(predicate_type='type'):
-            type_str += '%s/%s(%s,%s)\n' % (i, t, s, o)
+            if exclusions is None or (t not in exclusions and s not in exclusions and o not in exclusions):
+                tmp = '%s/%s(%s,%s)\n' % (i, t, s, o)
+                if 'wm_' in tmp[tmp.find('/'):] or 'kb_' in tmp[tmp.find('/'):]:
+                    inst_str += tmp
+                else:
+                    ont_str += tmp
         for s, t, o, i in self.predicates():
             if (exclusions is None or (t not in exclusions and s not in exclusions and o not in exclusions)) \
                     and t != 'type':
@@ -381,7 +386,7 @@ class ConceptGraph:
                     bi_str += '%s/%s(%s,%s)\n' % (i, t, s, o)
                 else:
                     mono_str += '%s/%s(%s)\n' % (i, t, s)
-        full_string = type_str + '\n' + mono_str + '\n' + bi_str
+        full_string = ont_str + '\n' + inst_str + '\n' + mono_str + '\n' + bi_str
         return full_string.strip()
 
     def pretty_print(self, exclusions=None):
@@ -446,7 +451,7 @@ class ConceptGraph:
         return type_string, bi_string, mono_string
 
     def __str__(self):
-        return 'CG<%s>' % (str(id(self))[:5])
+        return 'CG<%s>' % (str(id(self))[-5:])
 
     def __repr__(self):
         return str(self)

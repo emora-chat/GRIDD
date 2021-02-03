@@ -10,7 +10,7 @@ from collections import deque
 
 class WorkingMemory(ConceptGraph):
 
-    EXCLUDE_ON_PULL = {'type'}
+    EXCLUDE_ON_PULL = {'type', 'expr'}
 
     def __init__(self, knowledge_base, *filenames_or_logicstrings):
         self.knowledge_base = knowledge_base
@@ -51,13 +51,29 @@ class WorkingMemory(ConceptGraph):
         for i in range(order, 0, -1):
             to_pull = set()
             for puller in pull_set:
-                related = set(self.knowledge_base.predicates(puller)) \
-                          | set(self.knowledge_base.predicates(object=puller))
-                for pred_type in WorkingMemory.EXCLUDE_ON_PULL:
-                    related -= set(self.knowledge_base.predicates(puller, pred_type))
-                    related -= set(self.knowledge_base.predicates(predicate_type=pred_type, object=puller))
-                for rel in related | {puller}:
-                    if self.knowledge_base.has(predicate_id=rel):
+                related = set(self.knowledge_base.predicates(puller)) | set(self.knowledge_base.predicates(object=puller))
+
+                # remove predicates of types in EXCLUDE_ON_PULL
+                if len(related) > 0:
+                    for pred_type in WorkingMemory.EXCLUDE_ON_PULL:
+                        related -= set(self.knowledge_base.predicates(puller, pred_type))
+                        related -= set(self.knowledge_base.predicates(predicate_type=pred_type, object=puller))
+
+                # add all 1-degree neighbors of predicate instances from related
+                predicate_neighbors = set()
+                for predicate in related:
+                    instance = predicate[3]
+                    pred_relations = set(self.knowledge_base.predicates(instance)) | set(self.knowledge_base.predicates(object=instance))
+                    if len(pred_relations) > 0:
+                        for pred_type in WorkingMemory.EXCLUDE_ON_PULL:
+                            pred_relations -= set(self.knowledge_base.predicates(instance, pred_type))
+                            pred_relations -= set(self.knowledge_base.predicates(predicate_type=pred_type, object=instance))
+                    predicate_neighbors.update(pred_relations)
+                related.update(predicate_neighbors)
+
+                # ensure all predicate instances are fully represented
+                for rel in {e for tuple in related for i, e in enumerate(tuple) if i != 3} | {puller}:
+                    if self.knowledge_base.has(predicate_id=rel) and not self.has(predicate_id=rel):
                         related.add(self.knowledge_base.predicate(rel))
                 to_pull |= related
             covered |= pull_set
@@ -70,26 +86,45 @@ class WorkingMemory(ConceptGraph):
     def inferences(self, *types_or_rules):
         rules_to_run = []
         for identifier in types_or_rules:
-            if identifier.endswith('.kg'):  # file
-                input = open(identifier, 'r').read()
-                tree = self.knowledge_base._knowledge_parser.parse(input)
-                additions = self.knowledge_base._knowledge_parser.transform(tree)
-                cg = ConceptGraph()
-                for addition in additions:
-                    cg.concatenate(addition)
-                file_rules = self.inference_engine.generate_rules_from_graph(cg)
-                rules_to_run.extend(file_rules)
+            if isinstance(identifier, tuple):
+                rules_to_run.append(identifier)
+            elif identifier.endswith('.kg'):  # file
+                rules_to_run.extend(self.load_rules_from_file(identifier))
             else: # concept id or logic string
                 rules_to_run.append(identifier)
 
         solutions_dict = self.inference_engine.run(self, *rules_to_run)
         return solutions_dict
 
+    def load_rules_from_file(self, file):
+        input = open(file, 'r').read()
+        tree = self.knowledge_base._knowledge_parser.parse(input)
+        additions = self.knowledge_base._knowledge_parser.transform(tree)
+        cg = ConceptGraph()
+        for addition in additions:
+            cg.concatenate(addition)
+        return self.inference_engine.generate_rules_from_graph(cg)
+
     # todo - move core logic to infer.py?
-    def implications(self, *types_or_rules):
+    def infer_and_apply(self, *types_or_rules):
         imps = []
         solutions_dict = self.inferences(*types_or_rules)
         for rule, solutions in solutions_dict.items():
+            post_graph = rule[1]
+            for solution in solutions:
+                cg = ConceptGraph(namespace=post_graph._namespace)
+                for s, t, o, i in post_graph.predicates():
+                    s = solution.get(s, s)
+                    t = solution.get(t, t)
+                    o = solution.get(o, o)
+                    i = solution.get(i, i)
+                    cg.add(s, t, o, i)
+                imps.append(cg)
+        return imps
+
+    def apply_implications(self, inferences):
+        imps = []
+        for rule, solutions in inferences.items():
             post_graph = rule[1]
             for solution in solutions:
                 cg = ConceptGraph(namespace=post_graph._namespace)

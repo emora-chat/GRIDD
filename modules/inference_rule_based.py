@@ -11,7 +11,7 @@ class InferenceRuleBased:
         args[0] - working memory
         """
         working_memory = args[0]
-        implications = working_memory.implications(*self.inference_files)
+        implications = working_memory.infer_and_apply(*self.inference_files)
         if globals.DEBUG:
             self.display_implications(implications)
         return implications

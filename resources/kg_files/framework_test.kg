@@ -71,10 +71,6 @@ should[should]
 will<object>
 will[will,would]
 
-user=person()
-user[i,me,my,mine]
-emora=bot()
-emora[you,your,yours]
 ;
 
 question<predicate>
