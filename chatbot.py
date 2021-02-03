@@ -11,8 +11,8 @@ import json
 from GRIDD.data_structures.knowledge_base import KnowledgeBase
 from GRIDD.data_structures.working_memory import WorkingMemory
 from GRIDD.data_structures.concept_graph import ConceptGraph
-
 from GRIDD.data_structures.pipeline import Pipeline
+
 from GRIDD.modules.elit_models import ElitModels
 from GRIDD.modules.elit_dp_to_logic_model import ElitDPToLogic, NODES, DP_LABELS
 from GRIDD.modules.merge_span_to_merge_concept import MergeSpanToMergeConcept
@@ -25,7 +25,6 @@ if QUICK_LOCAL_TESTING is False:
     from GRIDD.modules.sentence_casing import SentenceCaser
 else:
     SentenceCaser = (lambda: (lambda x, y: x))
-
 
 class Chatbot:
     """
