@@ -21,14 +21,12 @@ user[i,me,my,mine]
 emora=bot()
 emora[you,your,yours]
 
-reason<predicate>
-like<predicate>
-sad<predicate>
-happy<predicate>
-enemy<predicate>
-
-now=entity()
-past=entity()
-future=entity();
+datetime<entity>
+yesterday=datetime()
+tomorrow=datetime()
+today=datetime()
+now=datetime()
+past=datetime()
+future=datetime();
 
 

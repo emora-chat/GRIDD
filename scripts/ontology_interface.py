@@ -60,7 +60,7 @@ if __name__ == '__main__':
 
     while inp != 'q':
         inp = inp.strip()
-        if '.' in inp:
+        if '_n_' in inp or '_v_' in inp or '_a_' in inp or '_s_' in inp:
             details(inp, kb)
         else:
             concepts = kb._concept_graph.objects('"%s"'%inp, 'expr')
