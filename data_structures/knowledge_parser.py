@@ -28,13 +28,13 @@ class KnowledgeParser:
                 alias: string_wspace_term
                 aliases: alias ("," alias)+
                 id: string_term
-                subject: string_term | bipredicate | monopredicate | instance | ontological
-                object: string_term | bipredicate | monopredicate | instance | ontological
+                subject: string_wspace_term | bipredicate | monopredicate | instance | ontological
+                object: string_wspace_term | bipredicate | monopredicate | instance | ontological
                 string_term: STRING
-                STRING: /[a-z_A-Z0-9"]/+
+                STRING: /[a-z_A-Z0-9".]/+
                 string_wspace_term: STRING_WSPACE
-                STRING_WSPACE: /[a-z_A-Z0-9 ]/+
-                WHITESPACE: (" " | "\n")+
+                STRING_WSPACE: /[a-z_A-Z0-9 ".]/+
+                WHITESPACE: (" " | "\n" | "\t")+
                 %ignore WHITESPACE
             """
     _parser = Lark(_grammar, parser="earley")
@@ -250,7 +250,7 @@ class PredicateTransformer(Transformer):
         return to_return
 
     def string_wspace_term(self, args):
-        to_return = ParserStruct(str(args[0]), pred_instances=set())
+        to_return = ParserStruct(str(args[0]).strip(), pred_instances=set())
         return to_return
 
     def knowledge(self, args):
@@ -328,7 +328,8 @@ class PredicateTransformer(Transformer):
         if isinstance(node, str) and node.startswith('_int_'):
             node = int(node[5:])
         if node not in self.local_names:
-            if self.ensure_kb_compatible and not self.kg.has(node) and node not in new_concepts:
+            if self.ensure_kb_compatible and '"' not in node and not self.kg.has(node) and node not in new_concepts:
+                # do not include expression nodes in this existence check
                 raise Exception("error - node %s does not exist!" % node)
             elif node not in new_concepts:
                 self.add_node(node)
