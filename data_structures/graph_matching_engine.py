@@ -1,52 +1,100 @@
 
-from GRIDD.utilities import IdNamespace
-from GRIDD.data_structures.tree import Tree
-from collections import deque
-import torch
+from GRIDD.data_structures.graph_matching_engine_spec import GraphMatchingEngineSpec
 
+from GRIDD.utilities import IdNamespace
+from collections import deque
+from itertools import chain
+import torch
 
 class GraphMatchingEngine:
 
+    def __init__(self):
+        pass
+
     def match(self, data_graph, *query_graphs):
-        query_trees, single_node_queries, edge_map = self.query_to_trees(*query_graphs)
+        query_graphs = list(query_graphs)
+        for i, qg in enumerate(query_graphs):
+            if isinstance(qg, tuple):
+                qg, vars = qg
+                query_graphs[i] = qg
+                for var in vars:
+                    qg.data(var)['var'] = True
 
+        edge_ids = IdNamespace(namespace=int)
 
-    def query_to_trees(self, *query_graphs):
-        queries = []  # (query tree, query graph, node map of tree_node: graph_node)
-        single_node_queries = []  # query tree of single node
-        edge_map = IdNamespace('__edge__')  # (actual_label, reversed?): fabricated_label
+        data_node_ids = IdNamespace(data_graph.nodes(), namespace=int)
+
+        attribute_ids = IdNamespace(data_node_ids, namespace=int)
+
+        for node in data_graph.nodes():
+            if 'attributes' in data_graph.data(node):
+                for attribute in data_graph.data(node)['attributes']:
+                    attribute_ids.get(attribute)
+
+        data_edges = [(data_node_ids[s], data_node_ids[t], edge_ids.get(l))
+                       for s, t, l in data_graph.edges()]
+        query_node_ids = IdNamespace(namespace=int)
         for query_graph in query_graphs:
-            trees = []
-            all_visited = set()  # nodes from the query not yet organized into some query tree
-            while all_visited != set(query_graph.nodes()):
-                node_ids = IdNamespace('__node__')
-                node_map = {}  # map to construct of tree_node: query_node
-                root = list(set(query_graph.nodes()) - all_visited)[0]
-                root_id = node_ids.get()
-                tree = Tree(root_id)  # query tree to construct
-                node_map[root_id] = root
-                visited = set()  # nodes visited in the traversal
-                q = deque([root_id])  # frontier
-                while q:
-                    expanding = q.popleft()
-                    if expanding not in visited:
-                        visited.add(expanding)
-                        for s, t, l in query_graph.out_edges(expanding):
-                            t_ = node_ids.get()
-                            l_ = edge_map.get((l, False))
-                            tree.add(s, t_, l_)
-                            node_map[t_] = t
-                        for s, t, l in query_graph.in_edges(expanding):
-                            s_ = node_ids.get()
-                            l_ = edge_map.get((l, True))
-                            tree.add(s_, t, l_)
-                            node_map[s_] = s
-                all_visited |= set(node_map.values())
-            for tree, node_map in trees:
-                if len(tree.edges()) > 1:
-                    queries.append((tree, query_graph, node_map))
-                else:
-                    single_node_queries.append((tree, query_graph, node_map))
-        return queries, single_node_queries, edge_map
+            for node in query_graph.nodes():
+                query_node_ids.get((query_graph, node))
+                attribute_ids.get(node)
+                if 'attributes' in query_graph.data(node):
+                    for attribute in query_graph.data(node)['attributes']:
+                        attribute_ids.get(attribute)
+
+        query_edges = list(chain(*[
+            [[query_node_ids[q, s], query_node_ids[q, t], edge_ids.get(l)]
+                for s, t, l in q.edges()] for q in query_graphs
+        ]))
+
+        num_labels = len(edge_ids)
+
+        data_graph_adjacency = torch.sparse.LongTensor(
+            torch.LongTensor(list(zip(*data_edges))),
+            torch.ones(len(data_edges)),
+            torch.Size([len(data_node_ids), len(data_node_ids), num_labels])
+        )
+
+        query_graphs_adjacency = torch.sparse.LongTensor(
+            torch.LongTensor(list(zip(*query_edges))),
+            torch.ones(len(query_edges)),
+            torch.Size([len(query_node_ids), len(query_node_ids), num_labels])
+        )
+
+        data_node_attr_pairs = []
+        for node in data_graph.nodes():
+            data_node_attr_pairs.append((data_node_ids[node], attribute_ids[node]))
+            if 'attributes' in data_graph.data(node):
+                for attr in data_graph.data(node)['attributes']:
+                    data_node_attr_pairs.append((data_node_ids[node], attribute_ids[attr]))
+
+        data_attributes = torch.sparse.LongTensor(
+            indices=torch.LongTensor(list(zip(*data_node_attr_pairs))),
+            values=torch.ones(len(data_node_attr_pairs)),
+            size=torch.Size([len(data_node_ids), len(attribute_ids)])
+        )
+
+        query_node_attr_pairs = []
+        for query_graph in query_graphs:
+            for node in query_graph.nodes():
+                q = query_node_ids[(query_graph, node)]
+                query_node_attr_pairs.append((q, attribute_ids[node]))
+                if 'attributes' in query_graph.data(node):
+                    for attr in query_graph.data(node)['attributes']:
+                        query_node_attr_pairs.append((q, attribute_ids[attr]))
+
+        query_attributes = torch.sparse.LongTensor(
+            indices=torch.LongTensor(list(zip(*query_node_attr_pairs))),
+            values=torch.ones(len(query_node_attr_pairs)),
+            size=torch.Size([len(query_node_ids), len(attribute_ids)])
+        )
 
 
+
+        return
+
+
+
+
+if __name__ == '__main__':
+    print(GraphMatchingEngineSpec.verify(GraphMatchingEngine))

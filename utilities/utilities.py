@@ -30,22 +30,28 @@ def identification_string(x, chars=None):
 
 class IdNamespace(Bimap):
 
-    def __init__(self, tag='', chars=None):
+    def __init__(self, items=None, namespace='', chars=None):
         Bimap.__init__(self)
-        self.tag = tag
+        self.namespace = namespace
         self.chars = chars
         self.counter = 0
+        if items is not None:
+            for item in items:
+                self.get(item)
 
     def get(self, obj=None):
         if obj is None:
-            ident = self.tag + identification_string(self.counter, self.chars)
+            if self.namespace is not int:
+                ident = self.namespace + identification_string(self.counter, self.chars)
+            else:
+                ident = self.counter
             self.counter += 1
             return ident
-        elif obj in self.entries:
-            return self.entries[obj]
+        elif obj in self:
+            return self[obj]
         else:
             ident = self.get()
-            self.entries[obj] = ident
+            self[obj] = ident
             return ident
 
     def identify(self, ident):

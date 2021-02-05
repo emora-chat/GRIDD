@@ -30,34 +30,34 @@ class GraphMatchingEngineSpec:
         solution is a dict mapping variables to values.
         """
         data_graph = Graph([
-            ('mary', 'likes', 'john'),
-            ('mary', 'likes', 'sally'),
-            ('sally', 'likes', 'john'),
-            ('john', 'dislikes', 'tom'),
-            ('tom', 'dislikes', 'john'),
-            ('tom', 'likes', 'mary'),
-            ('sally', 'dislikes', 'tom'),
-            ('john', 'likes', 'mary')
+            ('mary', 'john', 'likes'),
+            ('mary', 'sally', 'likes'),
+            ('sally', 'john', 'likes'),
+            ('john', 'tom', 'dislikes'),
+            ('tom', 'john', 'dislikes'),
+            ('tom', 'mary', 'likes'),
+            ('sally', 'tom', 'dislikes'),
+            ('john', 'mary', 'likes')
         ], nodes={
             'mary': dict(attributes={'leader'})
         })
 
         query1 = Graph([
-            ('X', 'likes', 'Y'),
+            ('X', 'Y', 'likes'),
         ], nodes={
             'X': dict(var=True),
             'Y': dict(var=True)
         })
 
         query2 = Graph([
-            ('X', 'likes', 'Y'),
-            ('Y', 'dislikes', 'Z')
+            ('X', 'Y', 'likes'),
+            ('Y', 'Z', 'dislikes')
         ])
 
         query3 = Graph([
-            ('X', 'likes', 'Y'),
-            ('Y', 'likes', 'Z'),
-            ('Z', 'likes', 'Y')
+            ('X', 'Y', 'likes'),
+            ('Y', 'Z', 'likes'),
+            ('Z', 'Y', 'likes')
         ], nodes={
             'X': dict(attributes={'leader'})
         })

@@ -36,7 +36,7 @@ class ElitDPToLogic(ParseToLogic):
     def text_to_graph(self, *args):
         """
         Transform the ELIT Dependency Parse attachment list into a concept graph,
-        supported with the token and pos tag lists
+        supported with the token and pos namespace lists
         args[0,1,2] - tok, pos, dp
         :return dependency parse cg
         """
