@@ -35,7 +35,7 @@ if __name__ == '__main__':
     old_solutions = defaultdict(list)
     mode = 'logic'
     if mode == 'logic':
-        logic_string = input('>>> ')
+        logic_string = input('>>> ').lower()
         while logic_string != 'q':
             if not logic_string.strip().endswith(';'):
                 logic_string += ';'
