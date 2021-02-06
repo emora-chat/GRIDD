@@ -102,7 +102,7 @@ class ParseToLogic:
         """
         Pull expressions from KB into the expression working_memory
         """
-        ewm.pull(order=1, concepts=['"%s"'%span_node.string for span_node in self.spans])
+        ewm.pull(order=1, concepts=['"%s"'%span_node.string for span_node in self.spans], exclude_on_pull={'type'})
 
     def _unknown_expression_identification(self, ewm):
         """

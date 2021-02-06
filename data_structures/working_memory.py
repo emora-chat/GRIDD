@@ -10,8 +10,6 @@ from collections import deque
 
 class WorkingMemory(ConceptGraph):
 
-    EXCLUDE_ON_PULL = {'type', 'expr'}
-
     def __init__(self, knowledge_base, *filenames_or_logicstrings):
         self.knowledge_base = knowledge_base
         self.inference_engine = InferenceEngine()
@@ -42,7 +40,7 @@ class WorkingMemory(ConceptGraph):
         for item in to_pull:
             self.add(*item)
 
-    def pull(self, order=1, concepts=None):
+    def pull(self, order=1, concepts=None, exclude_on_pull=None):
         if isinstance(concepts, list):
             concepts = set(concepts)
         pulling = set()
@@ -54,8 +52,8 @@ class WorkingMemory(ConceptGraph):
                 related = set(self.knowledge_base.predicates(puller)) | set(self.knowledge_base.predicates(object=puller))
 
                 # remove predicates of types in EXCLUDE_ON_PULL
-                if len(related) > 0:
-                    for pred_type in WorkingMemory.EXCLUDE_ON_PULL:
+                if exclude_on_pull is not None and len(related) > 0:
+                    for pred_type in exclude_on_pull:
                         related -= set(self.knowledge_base.predicates(puller, pred_type))
                         related -= set(self.knowledge_base.predicates(predicate_type=pred_type, object=puller))
 
@@ -64,8 +62,8 @@ class WorkingMemory(ConceptGraph):
                 for predicate in related:
                     instance = predicate[3]
                     pred_relations = set(self.knowledge_base.predicates(instance)) | set(self.knowledge_base.predicates(object=instance))
-                    if len(pred_relations) > 0:
-                        for pred_type in WorkingMemory.EXCLUDE_ON_PULL:
+                    if exclude_on_pull is not None and len(pred_relations) > 0:
+                        for pred_type in exclude_on_pull:
                             pred_relations -= set(self.knowledge_base.predicates(instance, pred_type))
                             pred_relations -= set(self.knowledge_base.predicates(predicate_type=pred_type, object=instance))
                     predicate_neighbors.update(pred_relations)

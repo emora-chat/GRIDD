@@ -123,6 +123,7 @@ shop<predicate>
 shop[shop,shopped,shops,shopping]
 like<predicate>
 like[like,liked,likes,liking]
+happy<predicate>
 
 john=person()
 john[john,johns]

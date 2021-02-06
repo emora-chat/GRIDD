@@ -40,7 +40,7 @@ if __name__ == '__main__':
             if not logic_string.strip().endswith(';'):
                 logic_string += ';'
             wm.load_logic(logic_string)
-            wm.pull(1)
+            wm.pull(1, exclude_on_pull={'type', 'expr'})
             inference_dict = wm.inferences(*rules)
 
             new_solutions = defaultdict(list)

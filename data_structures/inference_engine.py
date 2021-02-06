@@ -215,11 +215,11 @@ def to_query_prolog(cg):
                 next += 1
                 str_repr = '%s(%s,%s)' % (pred_type, subject, object)
                 map[str_repr] = pred_var
-                if pred_type not in map:
-                    map[pred_type] = identification_string(next, chars=CHARS)
-                    vars.add(pred_type)
-                    next += 1
-                for arg in [inst_id, subject, object]:
+                # if pred_type not in map:
+                #     map[pred_type] = identification_string(next, chars=CHARS)
+                #     vars.add(pred_type)
+                #     next += 1
+                for arg in [inst_id, subject, object, pred_type]:
                     if arg not in map:
                         if cg.has(arg, 'var'):
                             map[arg] = identification_string(next, chars=CHARS)
@@ -243,11 +243,11 @@ def to_query_prolog(cg):
                 next += 1
                 str_repr = '%s(%s)' % (pred_type, subject)
                 map[str_repr] = pred_var
-                if pred_type not in map:
-                    map[pred_type] = identification_string(next, chars=CHARS)
-                    vars.add(pred_type)
-                    next += 1
-                for arg in [inst_id, subject]:
+                # if pred_type not in map:
+                #     map[pred_type] = identification_string(next, chars=CHARS)
+                #     vars.add(pred_type)
+                #     next += 1
+                for arg in [inst_id, subject, pred_type]:
                     if arg not in map:
                         if cg.has(arg, 'var'):
                             map[arg] = identification_string(next, chars=CHARS)

@@ -126,8 +126,10 @@ if __name__ == '__main__':
 
     if interactive:
         chatbot = Chatbot(join('GRIDD', 'resources', 'kg_files', 'framework_test.kg'))
-        chatbot.respond('I bought a new house and I love it')
-        chatbot.respond('It is pretty big and it has a pool in the back')
+        chatbot.chat()
     else:
         print(ChatbotSpec.verify(Chatbot))
+        chatbot = Chatbot(join('GRIDD', 'resources', 'kg_files', 'framework_test.kg'))
+        chatbot.respond('I bought a new house and I love it')
+        chatbot.respond('It is pretty big and it has a pool in the back')
 
