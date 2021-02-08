@@ -373,7 +373,8 @@ class ConceptGraph:
     def ugly_print(self, exclusions=None):
         type_str, mono_str, bi_str = '', '', ''
         for s, t, o, i in self.predicates(predicate_type='type'):
-            type_str += '%s/%s(%s,%s)\n' % (i, t, s, o)
+            if s not in exclusions and o not in exclusions:
+                type_str += '%s/%s(%s,%s)\n' % (i, t, s, o)
         for s, t, o, i in self.predicates():
             if (exclusions is None or (t not in exclusions and s not in exclusions and o not in exclusions)) \
                     and t != 'type':

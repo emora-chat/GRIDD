@@ -13,7 +13,7 @@ Notes:
 
 class ParseToLogic:
 
-    def __init__(self, knowledge_base, template_starter_predicates, *template_file_names):
+    def __init__(self, knowledge_base, template_starter_predicates, *template_file_names, allowed_extensions=None):
         self.knowledge_base = knowledge_base
         self.inference_engine = InferenceEngine()
         self.templates = ConceptGraph(predicates=template_starter_predicates)
@@ -23,6 +23,9 @@ class ParseToLogic:
         for rule in self.rules:
             self._reference_expansion(rule[0])
         self.spans = []
+        if allowed_extensions is None:
+            allowed_extensions = []
+        self.allowed_extensions = allowed_extensions
 
     def load_templates(self, *filenames_or_logicstrings):
         ordered_rule_ids = []

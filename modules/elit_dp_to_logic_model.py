@@ -30,6 +30,7 @@ DP_LABELS = [x.strip()
              for x in open(join('GRIDD', 'resources', 'elit_dp_labels.txt'), 'r').readlines()
              if len(x.strip()) > 0]
 
+EXTENSION_RULES = ['question_word']
 
 class ElitDPToLogic(ParseToLogic):
 

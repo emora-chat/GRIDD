@@ -12,6 +12,7 @@ class ElitModels:
     def __init__(self):
         self.model = Client('http://0.0.0.0:8000')
 
+    #todo - coref context isnt used in this function???
     def __call__(self, user_utterance, system_utterance=None, coref_context=None):
         """
         args[0] - string utterance

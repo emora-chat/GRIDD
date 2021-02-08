@@ -14,7 +14,7 @@ from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.pipeline import Pipeline
 
 from GRIDD.modules.elit_models import ElitModels
-from GRIDD.modules.elit_dp_to_logic_model import ElitDPToLogic, NODES, DP_LABELS
+from GRIDD.modules.elit_dp_to_logic_model import ElitDPToLogic, NODES, DP_LABELS, EXTENSION_RULES
 from GRIDD.modules.merge_span_to_merge_concept import MergeSpanToMergeConcept
 from GRIDD.modules.inference_rule_based import InferenceRuleBased
 from GRIDD.modules.mention_bridge import MentionBridge
@@ -39,7 +39,8 @@ class Chatbot:
         elit_models = Pipeline.component(ElitModels())
         template_starter_predicates = [(n, 'is_type') for n in NODES+DP_LABELS]
         template_file = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
-        elit_dp = Pipeline.component(ElitDPToLogic(self.knowledge_base, template_starter_predicates, template_file))
+        elit_dp = Pipeline.component(ElitDPToLogic(self.knowledge_base, template_starter_predicates,
+                                                   template_file, allowed_extensions=EXTENSION_RULES))
         mention_bridge = Pipeline.component(MentionBridge())
         merge_dp = Pipeline.component(MergeSpanToMergeConcept())
         merge_bridge = Pipeline.component(MergeBridge(threshold_score=0.2))
