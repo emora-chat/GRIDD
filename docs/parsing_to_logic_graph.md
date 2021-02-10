@@ -1,0 +1,782 @@
+
+## Copula
+
+Copula constructions become two-argument predicates of the format `copula(subject, root)`.
+
+Subject can be a noun or clause.
+
+<details>
+  <summary>Conversions</summary>
+
+	cop(X/pos(), Y/present_tense())
+	nsbj(X, Z/pos())
+	-> nsbj_copula_present ->
+	is_type(Y)
+	p/Y(Z,X)
+	focus(p)
+	center(X)
+	time(p,present)
+	;
+	
+	cop(X/pos(), Y/present_tense())
+	csbj(X, Z/pos())
+	-> csbj_copula_present ->
+	is_type(Y)
+	p/Y(Z,X)
+	focus(p)
+	center(X)
+	time(p,present)
+	;
+	
+	cop(X/pos(), Y/past_tense())
+	nsbj(X, Z/pos())
+	-> nsbj_copula_past ->
+	is_type(Y)
+	p/Y(Z,X)
+	focus(p)
+	center(X)
+	time(p,past)
+	;
+	
+	cop(X/pos(), Y/past_tense())
+	csbj(X, Z/pos())
+	-> csbj_copula_past ->
+	is_type(Y)
+	p/Y(Z,X)
+	focus(p)
+	center(X)
+	time(p,past)
+	;
+ 
+</details>
+ 
+#### Examples
+
+John is a student.
+
+Sally became a doctor last year.
+
+## Subject-Verb-Object
+
+Two-argument predicates of the format `root(subject, object)`.
+
+Subject can be a noun or clause.
+
+ <details>
+  <summary>Conversions</summary>
+  
+	nsbj(X/past_tense(), Y/pos())
+	obj(X, Z/pos())
+	-> nsbj_dobj_past_verb ->
+	is_type(X)
+	p/X(Y,Z)
+	time(p, past)
+	focus(p)
+	center(X)
+	;
+	
+	csbj(X/past_tense(), Y/pos())
+	obj(X, Z/pos())
+	-> csbj_dobj_past_verb ->
+	is_type(X)
+	p/X(Y,Z)
+	time(p, past)
+	focus(p)
+	center(X)
+	;
+	
+	nsbj(X/present_tense(), Y/pos())
+	obj(X, Z/pos())
+	-> nsbj_dobj_pres_verb ->
+	is_type(X)
+	p/X(Y,Z)
+	time(p, now)
+	focus(p)
+	center(X)
+	;
+	
+	csbj(X/present_tense(), Y/pos())
+	obj(X, Z/pos())
+	-> csbj_dobj_pres_verb ->
+	is_type(X)
+	p/X(Y,Z)
+	time(p, now)
+	focus(p)
+	center(X)
+	;
+
+ </details>
+
+
+## Light Verb with Subject and Object
+
+Two-argument predicates of the format `root(subject, object)`. The light verb is dropped.
+
+Subject can be a noun or clause.
+
+ <details>
+  <summary>Conversions</summary>
+
+	nsbj(X/noun(), Y/pos())
+	obj(X, Z/pos())
+	lv(X, U/past_tense())
+	-> nsbj_obj_light_verb_past ->
+	is_type(X)
+	p/X(Y,Z)
+	time(p, past)
+	focus(p)
+	center(X)
+	;
+	
+	csbj(X/noun(), Y/pos())
+	obj(X, Z/pos())
+	lv(X, U/past_tense())
+	-> csbj_obj_light_verb_past ->
+	is_type(X)
+	p/X(Y,Z)
+	time(p, past)
+	focus(p)
+	center(X)
+	;
+	
+	nsbj(X/noun(), Y/pos())
+	obj(X, Z/pos())
+	lv(X, U/present_tense())
+	-> nsbj_obj_light_verb_present ->
+	is_type(X)
+	p/X(Y,Z)
+	time(p, present)
+	focus(p)
+	center(X)
+	;
+	
+	csbj(X/noun(), Y/pos())
+	obj(X, Z/pos())
+	lv(X, U/present_tense())
+	-> csbj_obj_light_verb_present ->
+	is_type(X)
+	p/X(Y,Z)
+	time(p, present)
+	focus(p)
+	center(X)
+	;
+
+ </details>
+
+
+
+#### Examples
+
+John made a call to Mary.
+
+## Light Verb with Subject only
+
+One-argument predicates of the format `root(subject)`. The light verb is dropped.
+
+Subject can be a noun or clause.
+
+ <details>
+  <summary>Conversions</summary>
+
+	nsbj(X/noun(), Y/pos())
+	lv(X, U/past_tense())
+	-> nsbj_light_verb_past ->
+	is_type(X)
+	p/X(Y)
+	time(p, past)
+	focus(p)
+	center(X)
+	;
+	
+	csbj(X/noun(), Y/pos())
+	lv(X, U/past_tense())
+	-> csbj_light_verb_past ->
+	is_type(X)
+	p/X(Y)
+	time(p, past)
+	focus(p)
+	center(X)
+	;
+	
+	nsbj(X/noun(), Y/pos())
+	lv(X, U/present_tense())
+	-> nsbj_light_verb_present ->
+	is_type(X)
+	p/X(Y)
+	time(p, present)
+	focus(p)
+	center(X)
+	;
+	
+	csbj(X/noun(), Y/pos())
+	lv(X, U/present_tense())
+	-> csbj_light_verb_present ->
+	is_type(X)
+	p/X(Y)
+	time(p, present)
+	focus(p)
+	center(X)
+	;
+
+ </details>
+
+#### Examples
+
+John made a call.
+
+## Complement
+
+ <details>
+  <summary>Conversions</summary>
+
+	nsbj(X/past_tense(), Y/pos())
+	comp(X, Z/pos())
+	-> nsbj_outer_comp_verb_past ->
+	is_type(X)
+	p/X(Y,Z)
+	time(p,past)
+	focus(p)
+	center(X)
+	;
+	
+	csbj(X/past_tense(), Y/pos())
+	comp(X, Z/pos())
+	-> csbj_outer_comp_verb_past ->
+	is_type(X)
+	p/X(Y,Z)
+	time(p,past)
+	focus(p)
+	center(X)
+	;
+	
+	nsbj(X/present_tense(), Y/pos())
+	comp(X, Z/pos())
+	-> nsbj_outer_comp_verb_present ->
+	is_type(X)
+	p/X(Y,Z)
+	time(p,present)
+	focus(p)
+	center(X)
+	;
+	
+	csbj(X/present_tense(), Y/pos())
+	comp(X, Z/pos())
+	-> csbj_outer_comp_verb_present ->
+	is_type(X)
+	p/X(Y,Z)
+	time(p,present)
+	focus(p)
+	center(X)
+	;
+	
+	nsbj(X/verb(), Y/pos())
+	comp(X, Z/pos())
+	nsbj(Z, B/pos())
+	obj(Z, A/pos())
+	-> nsbj_nsbj_inner_comp_with_obj_verb ->
+	is_type(Z)
+	p/Z(B,A)
+	focus(p)
+	center(Z)
+	;
+	
+	nsbj(X/verb(), Y/pos())
+	comp(X, Z/pos())
+	csbj(Z, B/pos())
+	obj(Z, A/pos())
+	-> nsbj_csbj_inner_comp_with_obj_verb ->
+	is_type(Z)
+	p/Z(B,A)
+	focus(p)
+	center(Z)
+	;
+	
+	csbj(X/verb(), Y/pos())
+	comp(X, Z/pos())
+	nsbj(Z, B/pos())
+	obj(Z, A/pos())
+	-> csbj_nsbj_inner_comp_with_obj_verb ->
+	is_type(Z)
+	p/Z(B,A)
+	focus(p)
+	center(Z)
+	;
+	
+	csbj(X/verb(), Y/pos())
+	comp(X, Z/pos())
+	csbj(Z, B/pos())
+	obj(Z, A/pos())
+	-> csbj_csbj_inner_comp_with_obj_verb ->
+	is_type(Z)
+	p/Z(B,A)
+	focus(p)
+	center(Z)
+	;
+	
+	nsbj(X/verb(), Y/pos())
+	comp(X, Z/pos())
+	nsbj(Z, A/pos())
+	-> nsbj_nsbj_inner_comp_verb ->
+	is_type(Z)
+	p/Z(A)
+	focus(p)
+	center(Z)
+	;
+	
+	csbj(X/verb(), Y/pos())
+	comp(X, Z/pos())
+	nsbj(Z, A/pos())
+	-> csbj_nsbj_inner_comp_verb ->
+	is_type(Z)
+	p/Z(A)
+	focus(p)
+	center(Z)
+	;
+	
+	nsbj(X/verb(), Y/pos())
+	comp(X, Z/pos())
+	csbj(Z, A/pos())
+	-> nsbj_csbj_inner_comp_verb ->
+	is_type(Z)
+	p/Z(A)
+	focus(p)
+	center(Z)
+	;
+	
+	csbj(X/verb(), Y/pos())
+	comp(X, Z/pos())
+	csbj(Z, A/pos())
+	-> csbj_csbj_inner_comp_verb ->
+	is_type(Z)
+	p/Z(A)
+	focus(p)
+	center(Z)
+	;
+	
+	nsbj(X/verb(), Y/pos())
+	comp(X, Z/pos())
+	obj(Z, A/pos())
+	-> nsbj_inner_comp_with_obj_verb ->
+	is_type(Z)
+	p/Z(Y,A)
+	focus(p)
+	center(Z)
+	;
+	
+	csbj(X/verb(), Y/pos())
+	comp(X, Z/pos())
+	obj(Z, A/pos())
+	-> csbj_inner_comp_with_obj_verb ->
+	is_type(Z)
+	p/Z(Y,A)
+	focus(p)
+	center(Z)
+	;
+	
+	nsbj(X/verb(), Y/pos())
+	comp(X, Z/pos())
+	-> nsbj_inner_comp_verb ->
+	is_type(Z)
+	p/Z(Y)
+	focus(p)
+	center(Z)
+	;
+	
+	csbj(X/verb(), Y/pos())
+	comp(X, Z/pos())
+	-> csbj_inner_comp_verb ->
+	is_type(Z)
+	p/Z(Y)
+	focus(p)
+	center(Z)
+	;
+
+ </details>
+
+## Verbs without Objects
+
+ <details>
+  <summary>Conversions</summary>
+
+	nsbj(X/past_tense(), Y/pos())
+	-> nsbj_no_obj_past_verb ->
+	is_type(X)
+	p/X(Y)
+	time(p, past)
+	focus(p)
+	center(X)
+	;
+	
+	csbj(X/past_tense(), Y/pos())
+	-> csbj_no_obj_past_verb ->
+	is_type(X)
+	p/X(Y)
+	time(p, past)
+	focus(p)
+	center(X)
+	;
+	
+	nsbj(X/present_tense(), Y/pos())
+	-> nsbj_no_obj_present_verb ->
+	is_type(X)
+	p/X(Y)
+	time(p, present)
+	focus(p)
+	center(X)
+	;
+	
+	csbj(X/present_tense(), Y/pos())
+	-> csbj_no_obj_present_verb ->
+	is_type(X)
+	p/X(Y)
+	time(p, present)
+	focus(p)
+	center(X)
+	;
+
+</details>
+
+## Prepositional Phrases
+
+ <details>
+  <summary>Conversions</summary>
+
+	ppmod(X/pos(), Y/pos())
+	case(Y, Z/pos())
+	-> preposition_phrase ->
+	is_type(Z)
+	p/Z(X,Y)
+	focus(p)
+	center(Z)
+	;
+
+</details>
+
+```
+relcl(X/pos(), Y/pos())
+-> relative_clause ->
+p/qualifier(X, Y)
+focus(p)
+center(Y)
+;
+```
+
+```
+det(X/pos(), Y/dt())
+ltype(Y, ref_det)
+-> ref_determiner ->
+is_type(X)
+focus(inst/X())
+center(X)
+referential(inst)
+;
+```
+
+```
+det(X/pos(), Y/dt())
+ltype(Y, inst_det)
+-> inst_determiner ->
+is_type(X)
+focus(inst/X())
+center(X)
+instantiative(inst)
+;
+```
+
+```
+det(X/pos(), Y/wdt())
+-> wh_determiner ->
+is_type(X)
+x/X()
+question(x)
+focus(x)
+center(X)
+;
+```
+
+```
+det(X/pos(), Y/dt())
+-> determiner ->
+is_type(X)
+focus(X())
+center(X)
+;
+```
+
+```
+dat(X/pos(), Y/pos())
+-> indirect_obj ->
+p/indirect_obj(X, Y)
+focus(p)
+center(Y)
+;
+```
+
+```
+attr(X/pos(), Y/pos())
+-> general_attribute ->
+p/property(X,Y)
+focus(p)
+center(Y)
+;
+```
+
+```
+acl(X/pos(), Y/pos())
+-> acl ->
+p/property(X, Y)
+focus(p)
+center(Y)
+;
+```
+
+```
+poss(X/pos(), Y/pos())
+-> obj_of_possessive ->
+is_type(X)
+focus(X())
+center(X)
+;
+```
+
+```
+poss(X/pos(), Y/pos())
+-> agent_of_possessive ->
+p/possess(Y, X)
+focus(p)
+center(Y)
+;
+```
+
+```
+advnp(X/pos(), Y/pos())
+-> advnp ->
+p/qualifier(X, Y)
+focus(p)
+center(Y)
+;
+```
+
+```
+advcl(X/pos(), Y/pos())
+adv(Y, Z/pos())
+-> advcl_adv ->
+is_type(Z)
+p/Z(X,Y)
+focus(p)
+center(Z)
+;
+
+advcl(X/pos(), Y/pos())
+-> advcl ->
+p/qualifier(X, Y)
+focus(p)
+center(Y)
+;
+```
+
+```
+adv(X/pos(), Y/pos())
+-> adv ->
+p/qualifier(X, Y)
+focus(p)
+center(Y)
+;
+```
+
+```
+prt(X/pos(), Y/pos())
+-> verb_particle ->
+p/particle(X, Y)
+focus(p)
+center(Y)
+;
+```
+
+```
+conj(X/pos(), Y/pos())
+-> conjunct ->
+p/conjunct(X, Y)
+focus(p)
+center(Y)
+;
+```
+
+```
+num(X/pos(), Y/pos())
+-> numeric ->
+p/numeric(X, Y)
+focus(p)
+center(Y)
+;
+```
+
+```
+neg(X/pos(), Y/pos())
+-> negation ->
+p/negate(X, Y)
+focus(p)
+center(Y)
+;
+```
+
+```
+appo(X/pos(), Y/pos())
+-> appositive ->
+p/appositive(X, Y)
+focus(p)
+center(Y)
+;
+```
+
+```
+raise(X/pos(), Y/pos())
+-> raise_verb ->
+p/mode(X, Y)
+focus(p)
+center(Y)
+;
+```
+
+```
+aux(X/pos(), Y/pos())
+-> aux ->
+p/mode(X, Y)
+focus(p)
+center(Y)
+;
+```
+
+```
+modal(X/pos(), Y/pos())
+-> modal ->
+p/mode(X, Y)
+focus(p)
+center(Y)
+;
+```
+
+```
+com(X/pos(), Y/pos())
+-> compound_concept ->
+p/compound(Y, X)
+focus(p)
+center(Y)
+;
+```
+
+```
+voc(X/pos(), Y/pos())
+-> vocalization ->
+p/relay_info(X, Y)
+focus(p)
+center(Y)
+;
+```
+
+```
+prn(X/pos(), Y/pos())
+-> parenthetical ->
+p/parenthical(X, Y)
+focus(p)
+center(Y)
+;
+```
+
+```
+dep(X/pos(), Y/pos())
+-> unknown_relation ->
+p/attachment(X, Y)
+focus(p)
+center(Y)
+;
+```
+
+```
+disc(X/pos(), Y/pos())
+ref(Y, E/expression())
+expr(E, affirm)
+-> affirm_disc ->
+p/affirm(user, X)
+focus(p)
+center(Y)
+;
+
+ref(Y/interj(), E/expression())
+expr(E, affirm)
+-> affirm_interj ->
+p/affirm(user, object())
+focus(p)
+center(Y)
+;
+
+disc(X/pos(), Y/pos())
+ref(Y, E/expression())
+expr(E, reject)
+-> reject_disc ->
+p/reject(user, X)
+focus(p)
+center(Y)
+;
+
+ref(Y/interj(), E/expression())
+expr(E, reject)
+-> reject_interj ->
+p/reject(user, object())
+focus(p)
+center(Y)
+;
+
+disc(X/pos(), Y/pos())
+ref(Y, E/expression())
+expr(E, acknowledge)
+-> acknowledge_disc ->
+p/acknowledge(user, X)
+focus(p)
+center(Y)
+;
+
+ref(Y/interj(), E/expression())
+expr(E, acknowledge)
+-> acknowledge_interj ->
+p/acknowledge(user, object())
+focus(p)
+center(Y)
+;
+```
+
+```
+ref(Y/interj(), E/expression())
+expr(E, greet)
+-> greet_interj ->
+p/greet(user, emora)
+focus(p)
+center(Y)
+;
+
+ref(Y/interj(), E/expression())
+expr(E, dismiss)
+-> dismiss_interj ->
+p/dismiss(user, emora)
+focus(p)
+center(Y)
+;
+```
+
+```
+X/noun()
+-> concept ->
+focus(X)
+center(X)
+;
+```
+
+```
+X/question_word()
+-> question_word ->
+question(q/object())
+focus(q)
+center(X)
+;
+```
+ 
