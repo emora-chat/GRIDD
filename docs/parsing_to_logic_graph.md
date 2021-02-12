@@ -1,4 +1,69 @@
 
+## Copula-Denoted Questions
+
+Copula constructions are in interrogative form when the copula precedes the subject. 
+
+Subject can be a noun or clause.
+
+<details>
+  <summary>Conversions</summary>
+
+	cop(X/pos(), Y/present_tense())
+	nsbj(X, Z/pos())
+	precede(Y, Z)
+	-> q_nsbj_copula_present ->
+	is_type(Y)
+	p/Y(Z,X)
+	q/question(p)
+	time(p,present)
+	focus(q)
+	center(X)
+	;
+	
+	cop(X/pos(), Y/present_tense())
+	csbj(X, Z/pos())
+	precede(Y, Z)
+	-> q_csbj_copula_present ->
+	is_type(Y)
+	p/Y(Z,X)
+	q/question(p)
+	time(p,present)
+	focus(q)
+	center(X)
+	;
+	
+	cop(X/pos(), Y/past_tense())
+	nsbj(X, Z/pos())
+	precede(Y, Z)
+	-> q_nsbj_copula_past ->
+	is_type(Y)
+	p/Y(Z,X)
+	q/question(p)
+	time(p,past)
+	focus(q)
+	center(X)
+	;
+	
+	cop(X/pos(), Y/past_tense())
+	csbj(X, Z/pos())
+	precede(Y, Z)
+	-> q_csbj_copula_past ->
+	is_type(Y)
+	p/Y(Z,X)
+	q/question(p)
+	time(p,past)
+	focus(q)
+	center(X)
+	;
+ 
+</details>
+
+#### Examples
+
+Is John a student?
+
+Was the book good?
+
 ## Copula
 
 Copula constructions become two-argument predicates of the format `copula(subject, root)`.
@@ -13,9 +78,9 @@ Subject can be a noun or clause.
 	-> nsbj_copula_present ->
 	is_type(Y)
 	p/Y(Z,X)
+	time(p,present)
 	focus(p)
 	center(X)
-	time(p,present)
 	;
 	
 	cop(X/pos(), Y/present_tense())
@@ -23,9 +88,9 @@ Subject can be a noun or clause.
 	-> csbj_copula_present ->
 	is_type(Y)
 	p/Y(Z,X)
+	time(p,present)
 	focus(p)
 	center(X)
-	time(p,present)
 	;
 	
 	cop(X/pos(), Y/past_tense())
@@ -33,9 +98,9 @@ Subject can be a noun or clause.
 	-> nsbj_copula_past ->
 	is_type(Y)
 	p/Y(Z,X)
+	time(p,past)
 	focus(p)
 	center(X)
-	time(p,past)
 	;
 	
 	cop(X/pos(), Y/past_tense())
@@ -43,9 +108,9 @@ Subject can be a noun or clause.
 	-> csbj_copula_past ->
 	is_type(Y)
 	p/Y(Z,X)
+	time(p,past)
 	focus(p)
 	center(X)
-	time(p,past)
 	;
  
 </details>
@@ -67,7 +132,7 @@ Subject can be a noun or clause.
   
 	nsbj(X/past_tense(), Y/pos())
 	obj(X, Z/pos())
-	-> nsbj_dobj_past_verb ->
+	-> nsbj_dobj_past ->
 	is_type(X)
 	p/X(Y,Z)
 	time(p, past)
@@ -77,7 +142,7 @@ Subject can be a noun or clause.
 	
 	csbj(X/past_tense(), Y/pos())
 	obj(X, Z/pos())
-	-> csbj_dobj_past_verb ->
+	-> csbj_dobj_past ->
 	is_type(X)
 	p/X(Y,Z)
 	time(p, past)
@@ -87,7 +152,7 @@ Subject can be a noun or clause.
 	
 	nsbj(X/present_tense(), Y/pos())
 	obj(X, Z/pos())
-	-> nsbj_dobj_pres_verb ->
+	-> nsbj_dobj_present ->
 	is_type(X)
 	p/X(Y,Z)
 	time(p, now)
@@ -97,7 +162,7 @@ Subject can be a noun or clause.
 	
 	csbj(X/present_tense(), Y/pos())
 	obj(X, Z/pos())
-	-> csbj_dobj_pres_verb ->
+	-> csbj_dobj_present ->
 	is_type(X)
 	p/X(Y,Z)
 	time(p, now)
@@ -452,56 +517,65 @@ John made a call.
 
 </details>
 
-```
-relcl(X/pos(), Y/pos())
--> relative_clause ->
-p/qualifier(X, Y)
-focus(p)
-center(Y)
-;
-```
+## Relative Clause
 
-```
-det(X/pos(), Y/dt())
-ltype(Y, ref_det)
--> ref_determiner ->
-is_type(X)
-focus(inst/X())
-center(X)
-referential(inst)
-;
-```
+ <details>
+  <summary>Conversions</summary>
 
-```
-det(X/pos(), Y/dt())
-ltype(Y, inst_det)
--> inst_determiner ->
-is_type(X)
-focus(inst/X())
-center(X)
-instantiative(inst)
-;
-```
+	relcl(X/pos(), Y/pos())
+	-> relative_clause ->
+	p/qualifier(X, Y)
+	focus(p)
+	center(Y)
+	;
 
-```
-det(X/pos(), Y/wdt())
--> wh_determiner ->
-is_type(X)
-x/X()
-question(x)
-focus(x)
-center(X)
-;
-```
+</details>
 
-```
-det(X/pos(), Y/dt())
--> determiner ->
-is_type(X)
-focus(X())
-center(X)
-;
-```
+
+
+## Determiner
+
+ <details>
+  <summary>Conversions</summary>
+
+	det(X/pos(), Y/dt())
+	ltype(Y, ref_det)
+	-> ref_determiner ->
+	is_type(X)
+	focus(inst/X())
+	center(X)
+	referential(inst)
+	;
+	
+	det(X/pos(), Y/dt())
+	ltype(Y, inst_det)
+	-> inst_determiner ->
+	is_type(X)
+	focus(inst/X())
+	center(X)
+	instantiative(inst)
+	;
+	
+	det(X/pos(), Y/wdt())
+	-> wh_determiner ->
+	is_type(X)
+	x/X()
+	question(x)
+	focus(x)
+	center(X)
+	;
+	
+	det(X/pos(), Y/dt())
+	-> determiner ->
+	is_type(X)
+	focus(X())
+	center(X)
+	;
+
+</details>
+
+
+## Indirect Object
 
 ```
 dat(X/pos(), Y/pos())
@@ -512,6 +586,8 @@ center(Y)
 ;
 ```
 
+## General Attribute
+
 ```
 attr(X/pos(), Y/pos())
 -> general_attribute ->
@@ -520,6 +596,8 @@ focus(p)
 center(Y)
 ;
 ```
+
+## ACL
 
 ```
 acl(X/pos(), Y/pos())
@@ -530,6 +608,8 @@ center(Y)
 ;
 ```
 
+## Possessive
+
 ```
 poss(X/pos(), Y/pos())
 -> obj_of_possessive ->
@@ -537,9 +617,7 @@ is_type(X)
 focus(X())
 center(X)
 ;
-```
 
-```
 poss(X/pos(), Y/pos())
 -> agent_of_possessive ->
 p/possess(Y, X)
@@ -548,6 +626,8 @@ center(Y)
 ;
 ```
 
+## Adverbials
+
 ```
 advnp(X/pos(), Y/pos())
 -> advnp ->
@@ -555,9 +635,7 @@ p/qualifier(X, Y)
 focus(p)
 center(Y)
 ;
-```
 
-```
 advcl(X/pos(), Y/pos())
 adv(Y, Z/pos())
 -> advcl_adv ->
@@ -573,9 +651,7 @@ p/qualifier(X, Y)
 focus(p)
 center(Y)
 ;
-```
 
-```
 adv(X/pos(), Y/pos())
 -> adv ->
 p/qualifier(X, Y)
@@ -583,6 +659,8 @@ focus(p)
 center(Y)
 ;
 ```
+
+## Verb Particle
 
 ```
 prt(X/pos(), Y/pos())
@@ -593,6 +671,8 @@ center(Y)
 ;
 ```
 
+## Conjunct
+
 ```
 conj(X/pos(), Y/pos())
 -> conjunct ->
@@ -601,6 +681,8 @@ focus(p)
 center(Y)
 ;
 ```
+
+## Numeric
 
 ```
 num(X/pos(), Y/pos())
@@ -611,6 +693,8 @@ center(Y)
 ;
 ```
 
+## Negation
+
 ```
 neg(X/pos(), Y/pos())
 -> negation ->
@@ -619,6 +703,8 @@ focus(p)
 center(Y)
 ;
 ```
+
+## Appositive
 
 ```
 appo(X/pos(), Y/pos())
@@ -629,32 +715,144 @@ center(Y)
 ;
 ```
 
-```
-raise(X/pos(), Y/pos())
--> raise_verb ->
-p/mode(X, Y)
-focus(p)
-center(Y)
-;
-```
+## Auxiliary-Verb-Denoted Question
 
-```
-aux(X/pos(), Y/pos())
--> aux ->
-p/mode(X, Y)
-focus(p)
-center(Y)
-;
-```
+Interrogative sentences can be formed by the aux verb preceding the subject. 
 
-```
-modal(X/pos(), Y/pos())
--> modal ->
-p/mode(X, Y)
-focus(p)
-center(Y)
-;
-```
+The overall tense of the question is also affected by the aux verb.
+
+ <details>
+  <summary>Conversions</summary>
+	
+	aux(X/pos(), Y/past_tense())
+	nsbj(X, Z/pos())
+	precede(Y,Z)
+	-> q_aux_past ->
+	q/question(X)
+	time(X, past)
+	center(Y)
+	focus(q)
+	;
+	
+	aux(X/pos(), Y/present_tense())
+	nsbj(X, Z/pos())
+	precede(Y,Z)
+	-> q_aux_present ->
+	q/question(X)
+	time(X, now)
+	center(Y)
+	focus(q)
+	;
+	
+</details>
+
+## Auxiliary Verbs
+
+Auxiliary verbs modify the tense of their parent verb.
+
+ <details>
+  <summary>Conversions</summary>
+
+	aux(X/pos(), Y/past_tense())
+	-> aux_past ->
+	t/time(X, past)
+	center(Y)
+	focus(t)
+	;
+	
+	aux(X/pos(), Y/present_tense())
+	-> aux_present ->
+	t/time(X, now)
+	center(Y)
+	focus(t)
+	;
+
+</details>
+
+## Modal-Verb-Denoted Question
+
+Interrogative sentences can be formed by the modal verb preceding the subject. 
+
+The overall meaning of the verb is also modified by the modal. 
+
+ <details>
+  <summary>Conversions</summary>
+  
+	modal(X/pos(), Y/past_tense())
+	nsbj(X, Z/pos())
+	precede(Y, Z)
+	-> q_modal_past ->
+	m/mode(X, Y)
+	q/question(m)
+	time(X, past)
+	center(Y)
+	focus(q)
+	;
+	
+	modal(X/pos(), Y/present_tense())
+	nsbj(X, Z/pos())
+	precede(Y, Z)
+	-> q_modal_present ->
+	m/mode(X, Y)
+	q/question(m)
+	time(X, now)
+	center(Y)
+	focus(q)
+	;
+	
+</details>
+
+## Modals
+
+Modify the meaning of the parent verbs by inducing a contemplation of possibilities/likelihoods.
+
+ <details>
+  <summary>Conversions</summary>
+  
+	modal(X/pos(), Y/past_tense())
+	-> modal_past ->
+	m/mode(Y,X)
+	time(X, past)
+	center(Y)
+	focus(m)
+	;
+	
+	modal(X/pos(), Y/present_tense())
+	-> modal_present ->
+	m/mode(Y,X)
+	time(X, now)
+	center(Y)
+	focus(m)
+	;
+	
+</details>
+
+## Raising Verbs
+
+Modify the meaning of their parent verbs.
+
+ <details>
+  <summary>Conversions</summary>
+  
+	raise(X/pos(), Y/past_tense())
+	-> raise_verb_past ->
+	p/mode(X, Y)
+	time(X, past)
+	focus(p)
+	center(Y)
+	;
+	
+	raise(X/pos(), Y/present_tense())
+	-> raise_verb_present ->
+	p/mode(X, Y)
+	time(X, now)
+	focus(p)
+	center(Y)
+	;
+	
+</details>
+
+## Compound Concept
 
 ```
 com(X/pos(), Y/pos())
@@ -665,118 +863,169 @@ center(Y)
 ;
 ```
 
-```
-voc(X/pos(), Y/pos())
--> vocalization ->
-p/relay_info(X, Y)
-focus(p)
-center(Y)
-;
-```
+## Vocative
 
-```
-prn(X/pos(), Y/pos())
--> parenthetical ->
-p/parenthical(X, Y)
-focus(p)
-center(Y)
-;
-```
+Captures when the speaker addresses a specific person.
 
-```
-dep(X/pos(), Y/pos())
--> unknown_relation ->
-p/attachment(X, Y)
-focus(p)
-center(Y)
-;
-```
+Represented as the predicate `relay_info` where the subject is information being presented and the object is the person receiving the information.
 
-```
-disc(X/pos(), Y/pos())
-ref(Y, E/expression())
-expr(E, affirm)
--> affirm_disc ->
-p/affirm(user, X)
-focus(p)
-center(Y)
-;
+<details>
+  <summary>Conversions</summary>
 
-ref(Y/interj(), E/expression())
-expr(E, affirm)
--> affirm_interj ->
-p/affirm(user, object())
-focus(p)
-center(Y)
-;
+	voc(X/pos(), Y/pos())
+	-> vocalization ->
+	p/relay_info(X, Y)
+	focus(p)
+	center(Y)
+	;
 
-disc(X/pos(), Y/pos())
-ref(Y, E/expression())
-expr(E, reject)
--> reject_disc ->
-p/reject(user, X)
-focus(p)
-center(Y)
-;
+</details>
 
-ref(Y/interj(), E/expression())
-expr(E, reject)
--> reject_interj ->
-p/reject(user, object())
-focus(p)
-center(Y)
-;
+## General Parenthetical
 
-disc(X/pos(), Y/pos())
-ref(Y, E/expression())
-expr(E, acknowledge)
--> acknowledge_disc ->
-p/acknowledge(user, X)
-focus(p)
-center(Y)
-;
+<details>
+  <summary>Conversions</summary>
 
-ref(Y/interj(), E/expression())
-expr(E, acknowledge)
--> acknowledge_interj ->
-p/acknowledge(user, object())
-focus(p)
-center(Y)
-;
-```
+	prn(X/pos(), Y/pos())
+	-> parenthetical ->
+	p/parenthical(X, Y)
+	focus(p)
+	center(Y)
+	;
 
-```
-ref(Y/interj(), E/expression())
-expr(E, greet)
--> greet_interj ->
-p/greet(user, emora)
-focus(p)
-center(Y)
-;
+</details>
 
-ref(Y/interj(), E/expression())
-expr(E, dismiss)
--> dismiss_interj ->
-p/dismiss(user, emora)
-focus(p)
-center(Y)
-;
-```
+## General Dependency
 
-```
-X/noun()
--> concept ->
-focus(X)
-center(X)
-;
-```
+<details>
+  <summary>Conversions</summary>
 
-```
-X/question_word()
--> question_word ->
-question(q/object())
-focus(q)
-center(X)
-;
-```
+	dep(X/pos(), Y/pos())
+	-> unknown_relation ->
+	p/attachment(X, Y)
+	focus(p)
+	center(Y)
+	;
+
+</details>
+
+## Dialogue Acknowledgements
+
+Recognize when the speaker affirms, rejects, or acknowledges.
+
+Represented as a predicate where the speaker is the subject and the thing being talked about is the object. 
+
+If a target of the indication is not explicitly provided, then it is a variable.
+
+<details>
+  <summary>Conversions</summary>
+
+	disc(X/pos(), Y/pos())
+	ref(Y, E/expression())
+	expr(E, affirm)
+	-> affirm_disc ->
+	p/affirm(user, X)
+	focus(p)
+	center(Y)
+	;
+	
+	ref(Y/interj(), E/expression())
+	expr(E, affirm)
+	-> affirm_interj ->
+	p/affirm(user, object())
+	focus(p)
+	center(Y)
+	;
+	
+	disc(X/pos(), Y/pos())
+	ref(Y, E/expression())
+	expr(E, reject)
+	-> reject_disc ->
+	p/reject(user, X)
+	focus(p)
+	center(Y)
+	;
+	
+	ref(Y/interj(), E/expression())
+	expr(E, reject)
+	-> reject_interj ->
+	p/reject(user, object())
+	focus(p)
+	center(Y)
+	;
+	
+	disc(X/pos(), Y/pos())
+	ref(Y, E/expression())
+	expr(E, acknowledge)
+	-> acknowledge_disc ->
+	p/acknowledge(user, X)
+	focus(p)
+	center(Y)
+	;
+	
+	ref(Y/interj(), E/expression())
+	expr(E, acknowledge)
+	-> acknowledge_interj ->
+	p/acknowledge(user, object())
+	focus(p)
+	center(Y)
+	;
+
+</details>
+
+## Dialogue Pleasantries
+
+Recognize single-word greetings (`greet`) and goodbyes (`dismiss`).
+
+Represented as predicates where the speaker is the subject and the dialogue partner is the object.
+
+<details>
+  <summary>Conversions</summary>
+
+	ref(Y/interj(), E/expression())
+	expr(E, greet)
+	-> greet_interj ->
+	p/greet(user, emora)
+	focus(p)
+	center(Y)
+	;
+	
+	ref(Y/interj(), E/expression())
+	expr(E, dismiss)
+	-> dismiss_interj ->
+	p/dismiss(user, emora)
+	focus(p)
+	center(Y)
+	;
+
+</details>
+
+## Named Entity
+
+Recognize all nouns that exist as concepts in the KG. 
+
+<details>
+  <summary>Conversions</summary>
+
+	X/noun()
+	-> concept ->
+	focus(X)
+	center(X)
+	;
+	
+</details>
+
+## Question Word
+
+<details>
+  <summary>Conversions</summary>
+  
+	X/question_word()
+	-> question_word ->
+	question(q/object())
+	focus(q)
+	center(X)
+	;
+	
+</details>
  
