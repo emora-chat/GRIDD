@@ -24,9 +24,11 @@ TODO - map adverbial question_words to their semantic concepts
 	precede(Y, Z)
 	precede(Z, A)
 	-> q_nadv ->
-	p/Y(X, question(object()))
+	p/Y(X, o/object())
+	question(o)
 	focus(p)
-	center(Z)
+	center(Y)
+	cover(Z)
 	;
 	
 	adv(X/pos(), Y/question_word())
@@ -35,9 +37,11 @@ TODO - map adverbial question_words to their semantic concepts
 	precede(Y, Z)
 	precede(Z, A)
 	-> q_cadv ->
-	p/Y(X, question(object()))
+	p/Y(X, o/object())
+	question(o)
 	focus(p)
-	center(Z)
+	center(Y)
+	cover(Z)
 	;
   
 </details>
@@ -65,7 +69,8 @@ Represented as `copula(nsbj, question(question_word))`.
 	nsbj(X, Z/pos())
 	-> qw_ncopula_present ->
 	is_type(Y)
-	p/Y(Z, question(X))
+	p/Y(Z, X)
+	question(X)
 	time(p,present)
 	focus(p)
 	center(X)
@@ -75,7 +80,8 @@ Represented as `copula(nsbj, question(question_word))`.
 	csbj(X, Z/pos())
 	-> qw_ccopula_present ->
 	is_type(Y)
-	p/Y(Z, question(X))
+	p/Y(Z, X)
+	question(X)
 	time(p,present)
 	focus(p)
 	center(X)
@@ -85,7 +91,8 @@ Represented as `copula(nsbj, question(question_word))`.
 	nsbj(X, Z/pos())
 	-> qw_ncopula_past ->
 	is_type(Y)
-	p/Y(Z,question(X))
+	p/Y(Z, X)
+	question(X)
 	time(p,past)
 	focus(p)
 	center(X)
@@ -95,7 +102,8 @@ Represented as `copula(nsbj, question(question_word))`.
 	csbj(X, Z/pos())
 	-> qw_ccopula_past ->
 	is_type(Y)
-	p/Y(Z,question(X))
+	p/Y(Z, X)
+	question(X)
 	time(p,past)
 	focus(p)
 	center(X)
@@ -140,8 +148,10 @@ Represented by wrapping the subject/object/dative with the `question` predicate.
 	precede(Y, Z)
 	precede(Z, A)
 	-> q_ndat ->
-	p/indirect_obj(X, question(object()))
-	center(Z)
+	p/indirect_obj(X, o/object())
+	question(o)
+	center(Y)
+	cover(Z)
 	focus(p)
 	;
 		
@@ -151,8 +161,10 @@ Represented by wrapping the subject/object/dative with the `question` predicate.
 	precede(Y, Z)
 	precede(Z, A)
 	-> q_cdat ->
-	p/indirect_obj(X, question(object()))
-	center(Z)
+	p/indirect_obj(X, o/object())
+	question(o)
+	center(Y)
+	cover(Z)
 	focus(p)
 	;
   
@@ -858,12 +870,19 @@ Modify the meaning of their parent verbs.
 
 ## Determiner
 
+Captures definite and indefinite specifications of concepts.
+
+`det` dependency relation specifies instances of a concept, where
+definite instances exist in a `referential` predicate and ndefinite instances exist in an `instantiative` predicate.
+
+Determiners which are not a part of a `det` dependency relation are `object` instances, following the same predicate structure as above. 
+
  <details>
   <summary>Conversions</summary>
 
 	det(X/pos(), Y/dt())
 	ltype(Y, ref_det)
-	-> ref_determiner ->
+	-> ref_concept_determiner ->
 	is_type(X)
 	focus(inst/X())
 	center(X)
@@ -872,26 +891,33 @@ Modify the meaning of their parent verbs.
 	
 	det(X/pos(), Y/dt())
 	ltype(Y, inst_det)
-	-> inst_determiner ->
+	-> inst_concept_determiner ->
 	is_type(X)
 	focus(inst/X())
 	center(X)
 	instantiative(inst)
 	;
 	
-	det(X/pos(), Y/wdt())
-	-> wh_determiner ->
+	det(X/pos(), Y/dt())
+	-> other_concept_determiner ->
 	is_type(X)
-	x/X()
-	question(x)
-	focus(x)
+	focus(X())
 	center(X)
 	;
 	
-	det(X/pos(), Y/dt())
-	-> determiner ->
-	is_type(X)
-	focus(X())
+	X/dt()
+	ltype(X, ref_det)
+	-> ref_determiner ->
+	focus(o/object())
+	referential(o)
+	center(X)
+	;
+	
+	X/dt()
+	ltype(X, inst_det)
+	-> inst_determiner ->
+	focus(o/object())
+	instantiative(o)
 	center(X)
 	;
 

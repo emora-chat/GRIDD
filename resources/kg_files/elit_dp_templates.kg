@@ -1,4 +1,117 @@
 
+adv(X/pos(), Y/question_word())
+aux(X, Z/pos())
+nsbj(X, A/pos())
+precede(Y, Z)
+precede(Z, A)
+-> q_nadv ->
+p/Y(X, o/object())
+question(o)
+focus(p)
+center(Y)
+cover(Z)
+;
+
+adv(X/pos(), Y/question_word())
+aux(X, Z/pos())
+csbj(X, A/pos())
+precede(Y, Z)
+precede(Z, A)
+-> q_cadv ->
+p/Y(X, o/object())
+question(o)
+focus(p)
+center(Y)
+cover(Z)
+;
+
+
+cop(X/question_word(), Y/present_tense())
+nsbj(X, Z/pos())
+-> qw_ncopula_present ->
+is_type(Y)
+p/Y(Z, X)
+question(X)
+time(p,present)
+focus(p)
+center(X)
+;
+
+cop(X/question_word(), Y/present_tense())
+csbj(X, Z/pos())
+-> qw_ccopula_present ->
+is_type(Y)
+p/Y(Z, X)
+question(X)
+time(p,present)
+focus(p)
+center(X)
+;
+
+cop(X/question_word(), Y/past_tense())
+nsbj(X, Z/pos())
+-> qw_ncopula_past ->
+is_type(Y)
+p/Y(Z, X)
+question(X)
+time(p,past)
+focus(p)
+center(X)
+;
+
+cop(X/question_word(), Y/past_tense())
+csbj(X, Z/pos())
+-> qw_ccopula_past ->
+is_type(Y)
+p/Y(Z, X)
+question(X)
+time(p,past)
+focus(p)
+center(X)
+;
+
+
+obj(X/pos(), Y/question_word())
+-> obj_question ->
+q/question(object())
+center(Y)
+focus(q)
+;
+
+nsbj(X/pos(), Y/question_word())
+-> nsbj_question ->
+q/question(object())
+center(Y)
+focus(q)
+;
+
+dat(X/pos(), Y/question_word())
+aux(X, Z/pos())
+nsbj(X, A/pos())
+precede(Y, Z)
+precede(Z, A)
+-> q_ndat ->
+p/indirect_obj(X, o/object())
+question(o)
+center(Y)
+cover(Z)
+focus(p)
+;
+
+dat(X/pos(), Y/question_word())
+aux(X, Z/pos())
+csbj(X, A/pos())
+precede(Y, Z)
+precede(Z, A)
+-> q_cdat ->
+p/indirect_obj(X, o/object())
+question(o)
+center(Y)
+cover(Z)
+focus(p)
+;
+
+
 cop(X/pos(), Y/present_tense())
 nsbj(X, Z/pos())
 precede(Y, Z)
@@ -535,7 +648,7 @@ center(Y)
 
 det(X/pos(), Y/dt())
 ltype(Y, ref_det)
--> ref_determiner ->
+-> ref_concept_determiner ->
 is_type(X)
 focus(inst/X())
 center(X)
@@ -544,26 +657,33 @@ referential(inst)
 
 det(X/pos(), Y/dt())
 ltype(Y, inst_det)
--> inst_determiner ->
+-> inst_concept_determiner ->
 is_type(X)
 focus(inst/X())
 center(X)
 instantiative(inst)
 ;
 
-det(X/pos(), Y/wdt())
--> wh_determiner ->
+det(X/pos(), Y/dt())
+-> other_concept_determiner ->
 is_type(X)
-x/X()
-question(x)
-focus(x)
+focus(X())
 center(X)
 ;
 
-det(X/pos(), Y/dt())
--> determiner ->
-is_type(X)
-focus(X())
+X/dt()
+ltype(X, ref_det)
+-> ref_determiner ->
+focus(o/object())
+referential(o)
+center(X)
+;
+
+X/dt()
+ltype(X, inst_det)
+-> inst_determiner ->
+focus(o/object())
+instantiative(o)
 center(X)
 ;
 

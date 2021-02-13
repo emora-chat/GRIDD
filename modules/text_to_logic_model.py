@@ -142,7 +142,7 @@ class ParseToLogic:
 
         assignments: dict<rule: list<assignments>>
         """
-        centers_handled = set() # `markcover` predicates also used here
+        centers_handled = set()
         mentions = {}
         for rule, solutions in assignments.items():
             pre, post = rule[0], rule[1]
@@ -153,6 +153,10 @@ class ParseToLogic:
                 center = solution[center_var]
                 if center not in centers_handled:
                     centers_handled.add(center)
+                    covered = post.predicates(predicate_type='cover')
+                    if len(covered) > 0:
+                        for cover_var, _, _, _ in covered:
+                            centers_handled.add(solution[cover_var])
                     m = {}
                     cg = ConceptGraph(namespace=post._namespace)
                     cg._next_id = post._next_id
@@ -160,7 +164,6 @@ class ParseToLogic:
                         if node in solution:
                             if node in [center_var,expression_var,concept_var]:
                                 m[node] = self._get_concept_of_span(solution[node], ewm)
-                                # m[node] = solution[node]
                             else:
                                 m[node] = cg._get_next_id()
                         else:
