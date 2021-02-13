@@ -1,5 +1,176 @@
 
-## Copula-Denoted Questions
+## Adverbial Questions
+
+Captures questions that start with `When`, `Where`, `Why`, and `How` in the adverb role.
+
+Represented as `question_word(main_predicate, question(object()))`.
+
+TODO - map adverbial question_words to their semantic concepts
+
+`when` => `time`
+
+`where` => `locate`
+
+`why` => `cause`
+
+`how` => `qualifier`
+
+<details>
+  <summary>Conversions</summary>
+  
+	adv(X/pos(), Y/question_word())
+	aux(X, Z/pos())
+	nsbj(X, A/pos())
+	precede(Y, Z)
+	precede(Z, A)
+	-> q_nadv ->
+	p/Y(X, question(object()))
+	focus(p)
+	center(Z)
+	;
+	
+	adv(X/pos(), Y/question_word())
+	aux(X, Z/pos())
+	csbj(X, A/pos())
+	precede(Y, Z)
+	precede(Z, A)
+	-> q_cadv ->
+	p/Y(X, question(object()))
+	focus(p)
+	center(Z)
+	;
+  
+</details>
+
+#### Examples
+
+How did this happen
+
+How did you do on the test
+
+Why are you sad
+
+When did you start reading
+
+## Copular Questions
+
+Captures questions that start with `How`, `What`, and `Who` as the root of a copular construction. 
+
+Represented as `copula(nsbj, question(question_word))`.
+
+<details>
+  <summary>Conversions</summary>
+  
+	cop(X/question_word(), Y/present_tense())
+	nsbj(X, Z/pos())
+	-> qw_ncopula_present ->
+	is_type(Y)
+	p/Y(Z, question(X))
+	time(p,present)
+	focus(p)
+	center(X)
+	;
+	
+	cop(X/question_word(), Y/present_tense())
+	csbj(X, Z/pos())
+	-> qw_ccopula_present ->
+	is_type(Y)
+	p/Y(Z, question(X))
+	time(p,present)
+	focus(p)
+	center(X)
+	;
+	
+	cop(X/question_word(), Y/past_tense())
+	nsbj(X, Z/pos())
+	-> qw_ncopula_past ->
+	is_type(Y)
+	p/Y(Z,question(X))
+	time(p,past)
+	focus(p)
+	center(X)
+	;
+	
+	cop(X/question_word(), Y/past_tense())
+	csbj(X, Z/pos())
+	-> qw_ccopula_past ->
+	is_type(Y)
+	p/Y(Z,question(X))
+	time(p,past)
+	focus(p)
+	center(X)
+	;
+  
+</details>
+
+#### Examples
+
+How are you
+
+What is your name
+
+Who is your favorite actor
+
+## Subject/Object/Dative Questions
+
+Captures questions that contain `Who` and `What` as subjects, objects, or datives. 
+
+Represented by wrapping the subject/object/dative with the `question` predicate. 
+
+<details>
+  <summary>Conversions</summary>
+  
+	obj(X/pos(), Y/question_word())
+	-> obj_question ->
+	q/question(object())
+	center(Y)
+	focus(q)
+	;
+	
+	nsbj(X/pos(), Y/question_word())
+	-> nsbj_question ->
+	q/question(object())
+	center(Y)
+	focus(q)
+	;
+	
+	dat(X/pos(), Y/question_word())
+	aux(X, Z/pos())
+	nsbj(X, A/pos())
+	precede(Y, Z)
+	precede(Z, A)
+	-> q_ndat ->
+	p/indirect_obj(X, question(object()))
+	center(Z)
+	focus(p)
+	;
+		
+	dat(X/pos(), Y/question_word())
+	aux(X, Z/pos())
+	csbj(X, A/pos())
+	precede(Y, Z)
+	precede(Z, A)
+	-> q_cdat ->
+	p/indirect_obj(X, question(object()))
+	center(Z)
+	focus(p)
+	;
+  
+</details>
+
+#### Examples
+
+What are you doing
+
+Who played Thanos
+
+Who did you give it to
+
+Who did John make a call to
+
+Who did Mary take care of
+
+## Interrogative Copula
 
 Copula constructions are in interrogative form when the copula precedes the subject. 
 
@@ -16,7 +187,7 @@ Subject can be a noun or clause.
 	p/Y(Z,X)
 	q/question(p)
 	time(p,present)
-	focus(q)
+	focus(p)
 	center(X)
 	;
 	
@@ -28,7 +199,7 @@ Subject can be a noun or clause.
 	p/Y(Z,X)
 	q/question(p)
 	time(p,present)
-	focus(q)
+	focus(p)
 	center(X)
 	;
 	
@@ -40,7 +211,7 @@ Subject can be a noun or clause.
 	p/Y(Z,X)
 	q/question(p)
 	time(p,past)
-	focus(q)
+	focus(p)
 	center(X)
 	;
 	
@@ -52,7 +223,7 @@ Subject can be a noun or clause.
 	p/Y(Z,X)
 	q/question(p)
 	time(p,past)
-	focus(q)
+	focus(p)
 	center(X)
 	;
  
@@ -69,6 +240,9 @@ Was the book good?
 Copula constructions become two-argument predicates of the format `copula(subject, root)`.
 
 Subject can be a noun or clause.
+
+The specific copular verb is captured by an identifier rule s.t. it will be merged into the 
+predicate.
 
 <details>
   <summary>Conversions</summary>
@@ -111,6 +285,12 @@ Subject can be a noun or clause.
 	time(p,past)
 	focus(p)
 	center(X)
+	;
+	
+	cop(X/pos(), Y/pos())
+	-> id_copular_verb ->
+	focus(Y)
+	center(Y)
 	;
  
 </details>
@@ -501,6 +681,149 @@ John made a call.
 
 </details>
 
+## Interrogative Auxiliary Verb
+
+Interrogative sentences can be formed by the aux verb preceding the subject. 
+
+The overall tense of the question is also affected by the aux verb.
+
+ <details>
+  <summary>Conversions</summary>
+	
+	aux(X/pos(), Y/past_tense())
+	nsbj(X, Z/pos())
+	precede(Y,Z)
+	-> q_aux_past ->
+	q/question(X)
+	time(X, past)
+	center(Y)
+	focus(q)
+	;
+	
+	aux(X/pos(), Y/present_tense())
+	nsbj(X, Z/pos())
+	precede(Y,Z)
+	-> q_aux_present ->
+	q/question(X)
+	time(X, now)
+	center(Y)
+	focus(q)
+	;
+	
+</details>
+
+## Auxiliary Verbs
+
+Auxiliary verbs modify the tense of their parent verb.
+
+TODO - different auxiliaries interact with their parent verbs in different ways
+
+`have found` => aux: present + main: past = overall: past
+
+`did find` => aux: past + main: present = overall: past
+
+ <details>
+  <summary>Conversions</summary>
+
+	aux(X/pos(), Y/past_tense())
+	-> aux_past ->
+	t/time(X, past)
+	center(Y)
+	focus(t)
+	;
+	
+	aux(X/pos(), Y/present_tense())
+	-> aux_present ->
+	t/time(X, now)
+	center(Y)
+	focus(t)
+	;
+
+</details>
+
+## Interrogative Modal Verb
+
+Interrogative sentences can be formed by the modal verb preceding the subject. 
+
+The overall meaning of the verb is also modified by the modal. 
+
+ <details>
+  <summary>Conversions</summary>
+  
+	modal(X/pos(), Y/past_tense())
+	nsbj(X, Z/pos())
+	precede(Y, Z)
+	-> q_modal_past ->
+	m/mode(X, Y)
+	q/question(m)
+	time(X, past)
+	center(Y)
+	focus(m)
+	;
+	
+	modal(X/pos(), Y/present_tense())
+	nsbj(X, Z/pos())
+	precede(Y, Z)
+	-> q_modal_present ->
+	m/mode(X, Y)
+	q/question(m)
+	time(X, now)
+	center(Y)
+	focus(m)
+	;
+	
+</details>
+
+## Modals
+
+Modify the meaning of the parent verbs by inducing a contemplation of possibilities/likelihoods.
+
+ <details>
+  <summary>Conversions</summary>
+  
+	modal(X/pos(), Y/past_tense())
+	-> modal_past ->
+	m/mode(Y,X)
+	time(X, past)
+	center(Y)
+	focus(m)
+	;
+	
+	modal(X/pos(), Y/present_tense())
+	-> modal_present ->
+	m/mode(Y,X)
+	time(X, now)
+	center(Y)
+	focus(m)
+	;
+	
+</details>
+
+## Raising Verbs
+
+Modify the meaning of their parent verbs.
+
+ <details>
+  <summary>Conversions</summary>
+  
+	raise(X/pos(), Y/past_tense())
+	-> raise_verb_past ->
+	p/mode(X, Y)
+	time(X, past)
+	focus(p)
+	center(Y)
+	;
+	
+	raise(X/pos(), Y/present_tense())
+	-> raise_verb_present ->
+	p/mode(X, Y)
+	time(X, now)
+	focus(p)
+	center(Y)
+	;
+	
+</details>
+
 ## Prepositional Phrases
 
  <details>
@@ -577,291 +900,187 @@ John made a call.
 
 ## Indirect Object
 
-```
-dat(X/pos(), Y/pos())
--> indirect_obj ->
-p/indirect_obj(X, Y)
-focus(p)
-center(Y)
-;
-```
+ <details>
+  <summary>Conversions</summary>
+
+	dat(X/pos(), Y/pos())
+	-> indirect_obj ->
+	p/indirect_obj(X, Y)
+	focus(p)
+	center(Y)
+	;
+
+</details>
 
 ## General Attribute
 
-```
-attr(X/pos(), Y/pos())
--> general_attribute ->
-p/property(X,Y)
-focus(p)
-center(Y)
-;
-```
+ <details>
+  <summary>Conversions</summary>
+  
+	attr(X/pos(), Y/pos())
+	-> general_attribute ->
+	p/property(X,Y)
+	focus(p)
+	center(Y)
+	;
+
+</details>
 
 ## ACL
 
-```
-acl(X/pos(), Y/pos())
--> acl ->
-p/property(X, Y)
-focus(p)
-center(Y)
-;
-```
+ <details>
+  <summary>Conversions</summary>
+  
+	acl(X/pos(), Y/pos())
+	-> acl ->
+	p/property(X, Y)
+	focus(p)
+	center(Y)
+	;
+
+</details>
 
 ## Possessive
 
-```
-poss(X/pos(), Y/pos())
--> obj_of_possessive ->
-is_type(X)
-focus(X())
-center(X)
-;
+ <details>
+  <summary>Conversions</summary>
+	  
+	poss(X/pos(), Y/pos())
+	-> obj_of_possessive ->
+	is_type(X)
+	focus(X())
+	center(X)
+	;
+	
+	poss(X/pos(), Y/pos())
+	-> agent_of_possessive ->
+	p/possess(Y, X)
+	focus(p)
+	center(Y)
+	;
 
-poss(X/pos(), Y/pos())
--> agent_of_possessive ->
-p/possess(Y, X)
-focus(p)
-center(Y)
-;
-```
+</details>
 
 ## Adverbials
 
-```
-advnp(X/pos(), Y/pos())
--> advnp ->
-p/qualifier(X, Y)
-focus(p)
-center(Y)
-;
+ <details>
+  <summary>Conversions</summary>
+  
+	advnp(X/pos(), Y/pos())
+	-> advnp ->
+	p/qualifier(X, Y)
+	focus(p)
+	center(Y)
+	;
+	
+	advcl(X/pos(), Y/pos())
+	adv(Y, Z/pos())
+	-> advcl_adv ->
+	is_type(Z)
+	p/Z(X,Y)
+	focus(p)
+	center(Z)
+	;
+	
+	advcl(X/pos(), Y/pos())
+	-> advcl ->
+	p/qualifier(X, Y)
+	focus(p)
+	center(Y)
+	;
+	
+	adv(X/pos(), Y/pos())
+	-> adv ->
+	p/qualifier(X, Y)
+	focus(p)
+	center(Y)
+	;
 
-advcl(X/pos(), Y/pos())
-adv(Y, Z/pos())
--> advcl_adv ->
-is_type(Z)
-p/Z(X,Y)
-focus(p)
-center(Z)
-;
-
-advcl(X/pos(), Y/pos())
--> advcl ->
-p/qualifier(X, Y)
-focus(p)
-center(Y)
-;
-
-adv(X/pos(), Y/pos())
--> adv ->
-p/qualifier(X, Y)
-focus(p)
-center(Y)
-;
-```
+</details>
 
 ## Verb Particle
 
-```
-prt(X/pos(), Y/pos())
--> verb_particle ->
-p/particle(X, Y)
-focus(p)
-center(Y)
-;
-```
+ <details>
+  <summary>Conversions</summary>
+  
+	prt(X/pos(), Y/pos())
+	-> verb_particle ->
+	p/particle(X, Y)
+	focus(p)
+	center(Y)
+	;
+
+</details>
 
 ## Conjunct
 
-```
-conj(X/pos(), Y/pos())
--> conjunct ->
-p/conjunct(X, Y)
-focus(p)
-center(Y)
-;
-```
+ <details>
+  <summary>Conversions</summary>
+  
+	conj(X/pos(), Y/pos())
+	-> conjunct ->
+	p/conjunct(X, Y)
+	focus(p)
+	center(Y)
+	;
+
+</details>
 
 ## Numeric
 
-```
-num(X/pos(), Y/pos())
--> numeric ->
-p/numeric(X, Y)
-focus(p)
-center(Y)
-;
-```
+ <details>
+  <summary>Conversions</summary>
+  
+	num(X/pos(), Y/pos())
+	-> numeric ->
+	p/numeric(X, Y)
+	focus(p)
+	center(Y)
+	;
+
+</details>
 
 ## Negation
 
-```
-neg(X/pos(), Y/pos())
--> negation ->
-p/negate(X, Y)
-focus(p)
-center(Y)
-;
-```
+ <details>
+  <summary>Conversions</summary>
+  
+	neg(X/pos(), Y/pos())
+	-> negation ->
+	p/negate(X, Y)
+	focus(p)
+	center(Y)
+	;
+
+</details>
 
 ## Appositive
 
-```
-appo(X/pos(), Y/pos())
--> appositive ->
-p/appositive(X, Y)
-focus(p)
-center(Y)
-;
-```
-
-## Auxiliary-Verb-Denoted Question
-
-Interrogative sentences can be formed by the aux verb preceding the subject. 
-
-The overall tense of the question is also affected by the aux verb.
-
- <details>
-  <summary>Conversions</summary>
-	
-	aux(X/pos(), Y/past_tense())
-	nsbj(X, Z/pos())
-	precede(Y,Z)
-	-> q_aux_past ->
-	q/question(X)
-	time(X, past)
-	center(Y)
-	focus(q)
-	;
-	
-	aux(X/pos(), Y/present_tense())
-	nsbj(X, Z/pos())
-	precede(Y,Z)
-	-> q_aux_present ->
-	q/question(X)
-	time(X, now)
-	center(Y)
-	focus(q)
-	;
-	
-</details>
-
-## Auxiliary Verbs
-
-Auxiliary verbs modify the tense of their parent verb.
-
- <details>
-  <summary>Conversions</summary>
-
-	aux(X/pos(), Y/past_tense())
-	-> aux_past ->
-	t/time(X, past)
-	center(Y)
-	focus(t)
-	;
-	
-	aux(X/pos(), Y/present_tense())
-	-> aux_present ->
-	t/time(X, now)
-	center(Y)
-	focus(t)
-	;
-
-</details>
-
-## Modal-Verb-Denoted Question
-
-Interrogative sentences can be formed by the modal verb preceding the subject. 
-
-The overall meaning of the verb is also modified by the modal. 
-
  <details>
   <summary>Conversions</summary>
   
-	modal(X/pos(), Y/past_tense())
-	nsbj(X, Z/pos())
-	precede(Y, Z)
-	-> q_modal_past ->
-	m/mode(X, Y)
-	q/question(m)
-	time(X, past)
-	center(Y)
-	focus(q)
-	;
-	
-	modal(X/pos(), Y/present_tense())
-	nsbj(X, Z/pos())
-	precede(Y, Z)
-	-> q_modal_present ->
-	m/mode(X, Y)
-	q/question(m)
-	time(X, now)
-	center(Y)
-	focus(q)
-	;
-	
-</details>
-
-## Modals
-
-Modify the meaning of the parent verbs by inducing a contemplation of possibilities/likelihoods.
-
- <details>
-  <summary>Conversions</summary>
-  
-	modal(X/pos(), Y/past_tense())
-	-> modal_past ->
-	m/mode(Y,X)
-	time(X, past)
-	center(Y)
-	focus(m)
-	;
-	
-	modal(X/pos(), Y/present_tense())
-	-> modal_present ->
-	m/mode(Y,X)
-	time(X, now)
-	center(Y)
-	focus(m)
-	;
-	
-</details>
-
-## Raising Verbs
-
-Modify the meaning of their parent verbs.
-
- <details>
-  <summary>Conversions</summary>
-  
-	raise(X/pos(), Y/past_tense())
-	-> raise_verb_past ->
-	p/mode(X, Y)
-	time(X, past)
+	appo(X/pos(), Y/pos())
+	-> appositive ->
+	p/appositive(X, Y)
 	focus(p)
 	center(Y)
 	;
-	
-	raise(X/pos(), Y/present_tense())
-	-> raise_verb_present ->
-	p/mode(X, Y)
-	time(X, now)
-	focus(p)
-	center(Y)
-	;
-	
+
 </details>
 
 ## Compound Concept
 
-```
-com(X/pos(), Y/pos())
--> compound_concept ->
-p/compound(Y, X)
-focus(p)
-center(Y)
-;
-```
+ <details>
+  <summary>Conversions</summary>
+  
+	com(X/pos(), Y/pos())
+	-> compound_concept ->
+	p/compound(Y, X)
+	focus(p)
+	center(Y)
+	;
+
+</details>
 
 ## Vocative
 
@@ -1015,7 +1234,7 @@ Recognize all nouns that exist as concepts in the KG.
 	
 </details>
 
-## Question Word
+<!--## Question Word
 
 <details>
   <summary>Conversions</summary>
@@ -1027,5 +1246,5 @@ Recognize all nouns that exist as concepts in the KG.
 	center(X)
 	;
 	
-</details>
+</details>-->
  
