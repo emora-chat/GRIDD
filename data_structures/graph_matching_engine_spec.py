@@ -43,43 +43,41 @@ class GraphMatchingEngineSpec:
         })
 
         query1 = Graph([
-            ('X', 'Y', 'likes'),
+            ('A', 'B', 'likes'),
         ], nodes={
-            'X': dict(var=True),
-            'Y': dict(var=True)
+            'A': dict(var=True),
+            'B': dict(var=True)
         })
 
         query2 = Graph([
-            ('X', 'Y', 'likes'),
-            ('Y', 'Z', 'dislikes')
+            ('C', 'D', 'likes'),
+            ('D', 'E', 'dislikes')
         ])
 
         query3 = Graph([
             ('X', 'Y', 'likes'),
             ('Y', 'Z', 'likes'),
-            ('Z', 'Y', 'likes')
+            ('Z', 'X', 'likes')
         ], nodes={
             'X': dict(attributes={'leader'})
         })
 
-        solutions = matcher.match(data_graph, query1, (query2, 'XYZ'), (query3, 'XYZ'))
+        solutions = matcher.match(data_graph, query1, (query2, 'CDE'), (query3, 'XYZ'))
 
         assert solutions == {
             query1: [
-                {'X': 'mary', 'Y': 'john'},
-                {'X': 'mary', 'Y': 'sally'},
-                {'X': 'sally', 'Y': 'john'},
-                {'X': 'tom', 'Y': 'mary'},
-                {'X': 'john', 'Y': 'mary'}
+                {'A': 'mary', 'B': 'john'},
+                {'A': 'mary', 'B': 'sally'},
+                {'A': 'sally', 'B': 'john'},
+                {'A': 'tom', 'B': 'mary'},
+                {'A': 'john', 'B': 'mary'}
             ],
             query2: [
-                {'X': 'mary', 'Y': 'john', 'Z': 'tom'},
-                {'X': 'mary', 'Y': 'sally', 'Z': 'tom'},
-                {'X': 'sally', 'Y': 'john', 'Z': 'tom'}
+                {'C': 'mary', 'D': 'john', 'E': 'tom'},
+                {'C': 'mary', 'D': 'sally', 'E': 'tom'},
+                {'C': 'sally', 'D': 'john', 'E': 'tom'}
             ],
             query3: [
-                {'X': 'mary', 'Y': 'sally', 'Z': 'john'},
-                {'X': 'john', 'Y': 'mary', 'Z': 'sally'},
-                {'X': 'sally', 'Y': 'john', 'Z': 'mary'}
+                {'X': 'mary', 'Y': 'sally', 'Z': 'john'}
             ]
         }
