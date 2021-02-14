@@ -969,6 +969,52 @@ Modify the meaning of their parent verbs.
 
 </details>
 
+## Passive Constructions
+
+Captures sentences with passive voice.
+
+ <details>
+  <summary>Conversions</summary>
+
+	nsbj(X/pos(), Y/pos())
+	obj(X, Z/pos())
+	precede(Z, X)
+	-> nobj_passive_voice ->
+	is_type(X)
+	p/X(Y, Z)
+	focus(p)
+	center(X)
+	;
+	
+	csbj(X/pos(), Y/pos())
+	obj(X, Z/pos())
+	precede(Z, X)
+	-> cobj_passive_voice ->
+	is_type(X)
+	p/X(Y, Z)
+	focus(p)
+	center(X)
+	;
+
+	obj(X/pos(), Y/pos())
+	precede(Y, X)
+	-> obj_passive_voice ->
+	is_type(X)
+	p/X(Y)
+	focus(p)
+	center(X)
+	;
+
+</details>
+
+#### Examples
+
+The dog was found.
+
+The dog was found by the policeman.
+
+I was chosen.
+
 ## Relative Clause
 
  <details>
@@ -1002,8 +1048,9 @@ Determiners which are not a part of a `det` dependency relation are `object` ins
 	-> ref_concept_determiner ->
 	is_type(X)
 	focus(inst/X())
-	center(X)
 	referential(inst)
+	center(X)
+	cover(Y)
 	;
 	
 	det(X/pos(), Y/dt())
@@ -1011,8 +1058,9 @@ Determiners which are not a part of a `det` dependency relation are `object` ins
 	-> inst_concept_determiner ->
 	is_type(X)
 	focus(inst/X())
-	center(X)
 	instantiative(inst)
+	center(X)
+	cover(Y)
 	;
 	
 	det(X/pos(), Y/dt())
@@ -1020,6 +1068,7 @@ Determiners which are not a part of a `det` dependency relation are `object` ins
 	is_type(X)
 	focus(X())
 	center(X)
+	cover(Y)
 	;
 	
 	X/dt()
@@ -1043,6 +1092,8 @@ Determiners which are not a part of a `det` dependency relation are `object` ins
 
 ## Indirect Object
 
+Captures verb constructions with indirect objects.
+
  <details>
   <summary>Conversions</summary>
 
@@ -1055,7 +1106,15 @@ Determiners which are not a part of a `det` dependency relation are `object` ins
 
 </details>
 
+#### Examples
+
+I gave the letter to you.
+
+I bought a present for my mom.
+
 ## General Attribute
+
+Captures `attr` dependency relation as `property` logic relation.
 
  <details>
   <summary>Conversions</summary>
@@ -1068,6 +1127,10 @@ Determiners which are not a part of a `det` dependency relation are `object` ins
 	;
 
 </details>
+
+#### Examples
+
+The red car
 
 ## ACL
 

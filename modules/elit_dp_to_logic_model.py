@@ -91,7 +91,8 @@ class ElitDPToLogic(ParseToLogic):
             cg.add(span_node, 'ref', expression)
             cg.add(span_node, 'type', pos)
             if token_idx > 0:
-                cg.add(token_to_span_node[token_idx-1], 'precede', span_node)
+                for i in range(token_idx):
+                    cg.add(token_to_span_node[i], 'precede', span_node)
 
         for token_idx, (head_idx, label) in enumerate(dependencies):
             if head_idx != -1:
