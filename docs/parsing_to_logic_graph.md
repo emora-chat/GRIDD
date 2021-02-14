@@ -5,17 +5,11 @@ TODO - update all rules that determine tense to consider if auxiliary is present
 
 Captures questions that start with `When`, `Where`, `Why`, and `How` in the adverb role.
 
-Represented as `question_word(main_predicate, question(object()))`.
+Represented as `question(main_predicate, question(object()))`.
 
-TODO - map adverbial question_words to their semantic concepts
+The mapping between question word and semantic concept is:
 
-`when` => `time`
-
-`where` => `locate`
-
-`why` => `cause`
-
-`how` => `qualifier`
+`when`=`time` | `where`=`locate` | `why`=`cause` | `how`=`qualifier`
 
 <details>
   <summary>Conversions</summary>

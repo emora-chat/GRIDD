@@ -289,25 +289,25 @@ class PredicateTransformer(Transformer):
 
     def add_bipredicate(self, subject, object, type, predicate_id=None):
         if self.ensure_kb_compatible:
-            concepts = self.addition_construction.concepts()
-            if subject not in concepts:
+            kg = self.kg._concept_graph
+            if not (self.addition_construction.has(subject) or kg.has(subject)):
                 raise Exception(":param 'source' error - node %s does not exist!" % subject)
-            elif object not in concepts:
+            elif not (self.addition_construction.has(object) or kg.has(object)):
                 raise Exception(":param 'target' error - node %s does not exist!" % object)
-            elif type not in concepts:
+            elif not (self.addition_construction.has(type) or kg.has(type)):
                 raise Exception(":param 'label' error - node %s does not exist!" % type)
-            if predicate_id in concepts:
+            if predicate_id is not None and (self.addition_construction.has(predicate_id=predicate_id) or kg.has(predicate_id=predicate_id)):
                 raise Exception("predicate id %s already exists!" % predicate_id)
         return self.addition_construction.add(subject, type, object, predicate_id=predicate_id)
 
     def add_monopredicate(self, subject, type, predicate_id=None):
         if self.ensure_kb_compatible:
-            concepts = self.addition_construction.concepts()
-            if subject not in concepts:
+            kg = self.kg._concept_graph
+            if not (self.addition_construction.has(subject) or kg.has(subject)):
                 raise Exception(":param 'source' error - node %s does not exist!" % subject)
-            elif type not in concepts:
-                raise Exception(":param 'label' error - node %s does not exist!" % type)
-            if predicate_id in concepts:
+            elif not (self.addition_construction.has(type) or kg.has(type)):
+                raise Exception(":param 'target' error - node %s does not exist!" % type)
+            if predicate_id is not None and (self.addition_construction.has(predicate_id=predicate_id) or kg.has(predicate_id=predicate_id)):
                 raise Exception("predicate id %s already exists!" % predicate_id)
         return self.addition_construction.add(subject, type, predicate_id=predicate_id)
 

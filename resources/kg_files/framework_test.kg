@@ -42,14 +42,13 @@ for[for]
 of<predicate>
 of[of]
 
-when<predicate>
-when[when]
-where<predicate>
-where[where]
-why<predicate>
-why[why]
-how<predicate>
-how[how]
+time[when]
+locate<predicate>
+locate[where]
+cause<predicate>
+cause[why]
+qualifier<predicate>
+qualifier[how]
 
 what<entity>
 what[what]
