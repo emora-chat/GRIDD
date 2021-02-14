@@ -1,4 +1,6 @@
 
+TODO - update all rules that determine tense to consider if auxiliary is present and remove auxiliary rule (and for auxiliary interrogative?)
+
 ## Adverbial Questions
 
 Captures questions that start with `When`, `Where`, `Why`, and `How` in the adverb role.
@@ -58,12 +60,68 @@ When did you start reading
 
 ## Copular Questions
 
-Captures questions that start with `How`, `What`, and `Who` as the root of a copular construction. 
+Captures questions that start with `How`, `What`, and `Who` as the root of a copular construction or as the determiner of the root. 
 
 Represented as `copula(nsbj, question(question_word))`.
 
 <details>
   <summary>Conversions</summary>
+  
+	cop(X/pos(), Y/present_tense())
+	nsbj(X, Z/pos())
+	det(X, D/question_word())
+	-> qdet_ncopula_present ->
+	is_type(Y)
+	is_type(X)
+	p/Y(Z, inst/X())
+	question(inst)
+	time(p, now)
+	focus(p)
+	center(X)
+	cover(D)
+	;
+	
+	cop(X/pos(), Y/present_tense())
+	nsbj(X, Z/pos())
+	det(X, D/question_word())
+	-> qdet_ccopula_present ->
+	is_type(Y)
+	is_type(X)
+	p/Y(Z, inst/X())
+	question(inst)
+	time(p, now)
+	focus(p)
+	center(X)
+	cover(D)
+	;
+	
+	cop(X/pos(), Y/past_tense())
+	nsbj(X, Z/pos())
+	det(X, D/question_word())
+	-> qdet_ncopula_past ->
+	is_type(Y)
+	is_type(X)
+	p/Y(Z, inst/X())
+	question(inst)
+	time(p, past)
+	focus(p)
+	center(X)
+	cover(D)
+	;
+	
+	cop(X/pos(), Y/past_tense())
+	nsbj(X, Z/pos())
+	det(X, D/question_word())
+	-> qdet_ccopula_past ->
+	is_type(Y)
+	is_type(X)
+	p/Y(Z, inst/X())
+	question(inst)
+	time(p, past)
+	focus(p)
+	center(X)
+	cover(D)
+	;
   
 	cop(X/question_word(), Y/present_tense())
 	nsbj(X, Z/pos())
@@ -71,7 +129,7 @@ Represented as `copula(nsbj, question(question_word))`.
 	is_type(Y)
 	p/Y(Z, X)
 	question(X)
-	time(p,present)
+	time(p, now)
 	focus(p)
 	center(X)
 	;
@@ -82,7 +140,7 @@ Represented as `copula(nsbj, question(question_word))`.
 	is_type(Y)
 	p/Y(Z, X)
 	question(X)
-	time(p,present)
+	time(p, now)
 	focus(p)
 	center(X)
 	;
@@ -93,7 +151,7 @@ Represented as `copula(nsbj, question(question_word))`.
 	is_type(Y)
 	p/Y(Z, X)
 	question(X)
-	time(p,past)
+	time(p, past)
 	focus(p)
 	center(X)
 	;
@@ -104,7 +162,7 @@ Represented as `copula(nsbj, question(question_word))`.
 	is_type(Y)
 	p/Y(Z, X)
 	question(X)
-	time(p,past)
+	time(p, past)
 	focus(p)
 	center(X)
 	;
@@ -118,6 +176,8 @@ How are you
 What is your name
 
 Who is your favorite actor
+
+What color was it
 
 ## Subject/Object/Dative Questions
 
@@ -182,6 +242,63 @@ Who did John make a call to
 
 Who did Mary take care of
 
+## Interrogative Determiner
+
+Captures questions that ask for a specific instance of a concept by using question words as determiners.
+
+Overrules the auxiliary question rule, which would cause an incorrect interpretation of such questions, but need to maintain the tense determined by auxiliary.
+
+<details>
+  <summary>Conversions</summary>
+  
+	det(X/pos(), Y/question_word())
+	obj(Z/pos(), X)
+	aux(Z, A/pos())
+	-> q_aux_det ->
+	is_type(X)
+	inst/X()
+	question(inst)
+	focus(inst)
+	center(X)
+	cover(Y)
+	;
+	
+	det(X/pos(), Y/question_word())
+	obj(Z/pos(), X)
+	aux(Z, A/present_tense())
+	-> q_aux_det_pres ->
+	p/time(Z, now)
+	focus(p)
+	center(A)
+	;
+	
+	det(X/pos(), Y/question_word())
+	obj(Z/pos(), X)
+	aux(Z, A/past_tense())
+	-> q_aux_det_past ->
+	p/time(Z, past)
+	focus(p)
+	center(A)
+	;
+	
+	det(X/pos(), Y/question_word())
+	-> q_det ->
+	is_type(X)
+	inst/X()
+	question(inst)
+	focus(inst)
+	center(X)
+	cover(Y)
+	;
+  
+</details>
+
+#### Examples
+
+What candy did you buy
+
+What show has dinosaurs
+
 ## Interrogative Copula
 
 Copula constructions are in interrogative form when the copula precedes the subject. 
@@ -198,7 +315,7 @@ Subject can be a noun or clause.
 	is_type(Y)
 	p/Y(Z,X)
 	q/question(p)
-	time(p,present)
+	time(p, now)
 	focus(p)
 	center(X)
 	;
@@ -210,7 +327,7 @@ Subject can be a noun or clause.
 	is_type(Y)
 	p/Y(Z,X)
 	q/question(p)
-	time(p,present)
+	time(p, now)
 	focus(p)
 	center(X)
 	;
@@ -222,7 +339,7 @@ Subject can be a noun or clause.
 	is_type(Y)
 	p/Y(Z,X)
 	q/question(p)
-	time(p,past)
+	time(p, past)
 	focus(p)
 	center(X)
 	;
@@ -234,7 +351,7 @@ Subject can be a noun or clause.
 	is_type(Y)
 	p/Y(Z,X)
 	q/question(p)
-	time(p,past)
+	time(p, past)
 	focus(p)
 	center(X)
 	;
@@ -264,7 +381,7 @@ predicate.
 	-> nsbj_copula_present ->
 	is_type(Y)
 	p/Y(Z,X)
-	time(p,present)
+	time(p, now)
 	focus(p)
 	center(X)
 	;
@@ -274,7 +391,7 @@ predicate.
 	-> csbj_copula_present ->
 	is_type(Y)
 	p/Y(Z,X)
-	time(p,present)
+	time(p, now)
 	focus(p)
 	center(X)
 	;
@@ -402,7 +519,7 @@ Subject can be a noun or clause.
 	-> nsbj_obj_light_verb_present ->
 	is_type(X)
 	p/X(Y,Z)
-	time(p, present)
+	time(p, now)
 	focus(p)
 	center(X)
 	;
@@ -413,7 +530,7 @@ Subject can be a noun or clause.
 	-> csbj_obj_light_verb_present ->
 	is_type(X)
 	p/X(Y,Z)
-	time(p, present)
+	time(p, now)
 	focus(p)
 	center(X)
 	;
@@ -460,7 +577,7 @@ Subject can be a noun or clause.
 	-> nsbj_light_verb_present ->
 	is_type(X)
 	p/X(Y)
-	time(p, present)
+	time(p, now)
 	focus(p)
 	center(X)
 	;
@@ -470,7 +587,7 @@ Subject can be a noun or clause.
 	-> csbj_light_verb_present ->
 	is_type(X)
 	p/X(Y)
-	time(p, present)
+	time(p, now)
 	focus(p)
 	center(X)
 	;
@@ -511,7 +628,7 @@ John made a call.
 	-> nsbj_outer_comp_verb_present ->
 	is_type(X)
 	p/X(Y,Z)
-	time(p,present)
+	time(p, now)
 	focus(p)
 	center(X)
 	;
@@ -521,7 +638,7 @@ John made a call.
 	-> csbj_outer_comp_verb_present ->
 	is_type(X)
 	p/X(Y,Z)
-	time(p,present)
+	time(p, now)
 	focus(p)
 	center(X)
 	;
@@ -677,7 +794,7 @@ John made a call.
 	-> nsbj_no_obj_present_verb ->
 	is_type(X)
 	p/X(Y)
-	time(p, present)
+	time(p, now)
 	focus(p)
 	center(X)
 	;
@@ -686,7 +803,7 @@ John made a call.
 	-> csbj_no_obj_present_verb ->
 	is_type(X)
 	p/X(Y)
-	time(p, present)
+	time(p, now)
 	focus(p)
 	center(X)
 	;
@@ -1243,6 +1360,31 @@ Represented as predicates where the speaker is the subject and the dialogue part
 	center(Y)
 	;
 
+</details>
+
+## Pronoun
+
+Recognize all pronouns that exist as concepts in the KG.
+
+If pronoun is referential (e.g. `it`), then it has a `referential` predicate. 
+
+<details>
+  <summary>Conversions</summary>
+
+	X/pron()
+	ltype(X, ref_det)
+	-> ref_pron ->
+	focus(o/object())
+	referential(o)
+	center(X)
+	;
+
+	X/pron()
+	-> pron ->
+	focus(X)
+	center(X)
+	;
+	
 </details>
 
 ## Named Entity

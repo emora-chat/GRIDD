@@ -26,13 +26,69 @@ cover(Z)
 ;
 
 
+cop(X/pos(), Y/present_tense())
+nsbj(X, Z/pos())
+det(X, D/question_word())
+-> qdet_ncopula_present ->
+is_type(Y)
+is_type(X)
+p/Y(Z, inst/X())
+question(inst)
+time(p, now)
+focus(p)
+center(X)
+cover(D)
+;
+
+cop(X/pos(), Y/present_tense())
+nsbj(X, Z/pos())
+det(X, D/question_word())
+-> qdet_ccopula_present ->
+is_type(Y)
+is_type(X)
+p/Y(Z, inst/X())
+question(inst)
+time(p, now)
+focus(p)
+center(X)
+cover(D)
+;
+
+cop(X/pos(), Y/past_tense())
+nsbj(X, Z/pos())
+det(X, D/question_word())
+-> qdet_ncopula_past ->
+is_type(Y)
+is_type(X)
+p/Y(Z, inst/X())
+question(inst)
+time(p, past)
+focus(p)
+center(X)
+cover(D)
+;
+
+cop(X/pos(), Y/past_tense())
+nsbj(X, Z/pos())
+det(X, D/question_word())
+-> qdet_ccopula_past ->
+is_type(Y)
+is_type(X)
+p/Y(Z, inst/X())
+question(inst)
+time(p, past)
+focus(p)
+center(X)
+cover(D)
+;
+
 cop(X/question_word(), Y/present_tense())
 nsbj(X, Z/pos())
 -> qw_ncopula_present ->
 is_type(Y)
 p/Y(Z, X)
 question(X)
-time(p,present)
+time(p, now)
 focus(p)
 center(X)
 ;
@@ -43,7 +99,7 @@ csbj(X, Z/pos())
 is_type(Y)
 p/Y(Z, X)
 question(X)
-time(p,present)
+time(p, now)
 focus(p)
 center(X)
 ;
@@ -54,7 +110,7 @@ nsbj(X, Z/pos())
 is_type(Y)
 p/Y(Z, X)
 question(X)
-time(p,past)
+time(p, past)
 focus(p)
 center(X)
 ;
@@ -65,7 +121,7 @@ csbj(X, Z/pos())
 is_type(Y)
 p/Y(Z, X)
 question(X)
-time(p,past)
+time(p, past)
 focus(p)
 center(X)
 ;
@@ -112,6 +168,47 @@ focus(p)
 ;
 
 
+det(X/pos(), Y/question_word())
+obj(Z/pos(), X)
+aux(Z, A/pos())
+-> q_aux_det ->
+is_type(X)
+inst/X()
+question(inst)
+focus(inst)
+center(X)
+cover(Y)
+;
+
+det(X/pos(), Y/question_word())
+obj(Z/pos(), X)
+aux(Z, A/present_tense())
+-> q_aux_det_pres ->
+p/time(Z, now)
+focus(p)
+center(A)
+;
+
+det(X/pos(), Y/question_word())
+obj(Z/pos(), X)
+aux(Z, A/past_tense())
+-> q_aux_det_past ->
+p/time(Z, past)
+focus(p)
+center(A)
+;
+
+det(X/pos(), Y/question_word())
+-> q_det ->
+is_type(X)
+inst/X()
+question(inst)
+focus(inst)
+center(X)
+cover(Y)
+;
+
+
 cop(X/pos(), Y/present_tense())
 nsbj(X, Z/pos())
 precede(Y, Z)
@@ -119,7 +216,7 @@ precede(Y, Z)
 is_type(Y)
 p/Y(Z,X)
 q/question(p)
-time(p,present)
+time(p, now)
 focus(p)
 center(X)
 ;
@@ -131,7 +228,7 @@ precede(Y, Z)
 is_type(Y)
 p/Y(Z,X)
 q/question(p)
-time(p,present)
+time(p, now)
 focus(p)
 center(X)
 ;
@@ -143,7 +240,7 @@ precede(Y, Z)
 is_type(Y)
 p/Y(Z,X)
 q/question(p)
-time(p,past)
+time(p, past)
 focus(p)
 center(X)
 ;
@@ -155,7 +252,7 @@ precede(Y, Z)
 is_type(Y)
 p/Y(Z,X)
 q/question(p)
-time(p,past)
+time(p, past)
 focus(p)
 center(X)
 ;
@@ -166,7 +263,7 @@ nsbj(X, Z/pos())
 -> nsbj_copula_present ->
 is_type(Y)
 p/Y(Z,X)
-time(p,present)
+time(p, now)
 focus(p)
 center(X)
 ;
@@ -176,7 +273,7 @@ csbj(X, Z/pos())
 -> csbj_copula_present ->
 is_type(Y)
 p/Y(Z,X)
-time(p,present)
+time(p, now)
 focus(p)
 center(X)
 ;
@@ -277,7 +374,7 @@ lv(X, U/present_tense())
 -> nsbj_obj_light_verb_present ->
 is_type(X)
 p/X(Y,Z)
-time(p, present)
+time(p, now)
 focus(p)
 center(X)
 ;
@@ -288,7 +385,7 @@ lv(X, U/present_tense())
 -> csbj_obj_light_verb_present ->
 is_type(X)
 p/X(Y,Z)
-time(p, present)
+time(p, now)
 focus(p)
 center(X)
 ;
@@ -319,7 +416,7 @@ lv(X, U/present_tense())
 -> nsbj_light_verb_present ->
 is_type(X)
 p/X(Y)
-time(p, present)
+time(p, now)
 focus(p)
 center(X)
 ;
@@ -329,7 +426,7 @@ lv(X, U/present_tense())
 -> csbj_light_verb_present ->
 is_type(X)
 p/X(Y)
-time(p, present)
+time(p, now)
 focus(p)
 center(X)
 ;
@@ -360,7 +457,7 @@ comp(X, Z/pos())
 -> nsbj_outer_comp_verb_present ->
 is_type(X)
 p/X(Y,Z)
-time(p,present)
+time(p, now)
 focus(p)
 center(X)
 ;
@@ -370,7 +467,7 @@ comp(X, Z/pos())
 -> csbj_outer_comp_verb_present ->
 is_type(X)
 p/X(Y,Z)
-time(p,present)
+time(p, now)
 focus(p)
 center(X)
 ;
@@ -520,7 +617,7 @@ nsbj(X/present_tense(), Y/pos())
 -> nsbj_no_obj_present_verb ->
 is_type(X)
 p/X(Y)
-time(p, present)
+time(p, now)
 focus(p)
 center(X)
 ;
@@ -529,7 +626,7 @@ csbj(X/present_tense(), Y/pos())
 -> csbj_no_obj_present_verb ->
 is_type(X)
 p/X(Y)
-time(p, present)
+time(p, now)
 focus(p)
 center(X)
 ;
@@ -896,6 +993,21 @@ expr(E, dismiss)
 p/dismiss(user, emora)
 focus(p)
 center(Y)
+;
+
+
+X/pron()
+ltype(X, ref_det)
+-> ref_pron ->
+focus(o/object())
+referential(o)
+center(X)
+;
+
+X/pron()
+-> pron ->
+focus(X)
+center(X)
 ;
 
 

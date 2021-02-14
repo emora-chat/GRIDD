@@ -4,16 +4,11 @@ from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.knowledge_parser import KnowledgeParser
 from GRIDD.data_structures.inference_engine import InferenceEngine
 
-LOCALDEBUG=False
-
-"""
-Notes:
-    predicate_types in post cannot match predicate_types in pre (other than `type`)
-"""
+LOCALDEBUG = False
 
 class ParseToLogic:
 
-    def __init__(self, knowledge_base, template_starter_predicates, *template_file_names, allowed_extensions=None):
+    def __init__(self, knowledge_base, template_starter_predicates, *template_file_names):
         self.knowledge_base = knowledge_base
         self.inference_engine = InferenceEngine()
         self.templates = ConceptGraph(predicates=template_starter_predicates)
@@ -23,9 +18,6 @@ class ParseToLogic:
         for rule in self.rules:
             self._reference_expansion(rule[0])
         self.spans = []
-        if allowed_extensions is None:
-            allowed_extensions = []
-        self.allowed_extensions = allowed_extensions
 
     def load_templates(self, *filenames_or_logicstrings):
         ordered_rule_ids = []
