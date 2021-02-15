@@ -15,11 +15,13 @@ class ElitModels:
     def __init__(self):
         self.model = Client('http://0.0.0.0:8000')
 
-    def __call__(self, user_utterance, aux_state={}):
+    def __call__(self, user_utterance, aux_state=None):
         """
         args[0] - string turn
         returns list of tokens, list of pos tags, list of dependency parse connections
         """
+        if aux_state is None:
+            aux_state = {}
         prev_global_toks = aux_state.get('coref_context', {}).get('global_tokens', [])
         aux_state.get('coref_context', {}).pop('global_tokens', None)
 

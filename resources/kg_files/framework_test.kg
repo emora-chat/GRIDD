@@ -18,6 +18,8 @@ that<ref_det>
 that[that]
 this<ref_det>
 this[this]
+it<ref_det>
+it[it]
 
 affirm<predicate>
 affirm[yes,yeah,yea,sure,yep,yup]
@@ -40,14 +42,13 @@ for[for]
 of<predicate>
 of[of]
 
-when<predicate>
-when[when]
-where<predicate>
-where[where]
-why<predicate>
-why[why]
-how<predicate>
-how[how]
+time[when]
+locate<predicate>
+locate[where]
+cause<predicate>
+cause[why]
+qualifier<predicate>
+qualifier[how]
 
 what<entity>
 what[what]
@@ -57,19 +58,34 @@ who[who]
 not<object>
 not[not,nt]
 
-is<predicate>
-is[be,are,is,were,was,am]
-go<predicate>
-go[go,went,goes,going]
-
+be<predicate>
+be[be,are,is,were,was,am]
 do<predicate>
 do[do,does,did]
+have<predicate>
+have[have,has,had]
+
 can<object>
-can[can,ca,could]
+can[can,ca]
+could<object>
+could[could]
+shall<object>
+shall[shall]
 should<object>
 should[should]
 will<object>
-will[will,would]
+will[will]
+would<object>
+would[would]
+may<object>
+may[may]
+might<object>
+might[might]
+must<object>
+must[must]
+
+go<predicate>
+go[go,went,goes,going]
 
 ;
 
@@ -104,10 +120,8 @@ georgia<object>
 georgia[georgia]
 clothing<object>
 clothing[clothing,clothes]
-new<object>
-new[new]
-york<object>
-york[york]
+new_york<object>
+new_york[new york]
 quick<object>
 quick[quick,quickly]
 name<object>

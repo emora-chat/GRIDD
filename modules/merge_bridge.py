@@ -14,7 +14,7 @@ class MergeBridge:
         args[0] - working memory
         args[1+] - lists of node pairs to merge
         """
-        node_merge_pairs = chain(*node_merge_pairs)
+        node_merge_pairs = chain(*[ls for ls in node_merge_pairs if ls is not None])
         visited = []
         merge_map = {}
 
@@ -33,8 +33,6 @@ class MergeBridge:
 
         if globals.DEBUG:
             print("<< Working Memory after NLU >>")
-            print(working_memory.pretty_print(exclusions={'var','is_type','object','entity','predicate',
-                                                          'span','ref','def'}))
+            print(working_memory.ugly_print(exclusions={'var','is_type','object','entity','predicate','span','ref'}))
             print()
-            # working_memory.display_graph(exclusions={'var','is_type','object','entity','predicate','span','ref','time'})
         return working_memory

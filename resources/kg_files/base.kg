@@ -27,6 +27,5 @@ tomorrow=datetime()
 today=datetime()
 now=datetime()
 past=datetime()
-future=datetime();
-
-
+future=datetime()
+;

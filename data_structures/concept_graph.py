@@ -371,22 +371,25 @@ class ConceptGraph:
             self._next_id = d['next_id']
 
     def ugly_print(self, exclusions=None):
-        ont_str, inst_str, mono_str, bi_str = '', '', '', ''
-        for s, t, o, i in self.predicates(predicate_type='type'):
-            if exclusions is None or (t not in exclusions and s not in exclusions and o not in exclusions):
-                tmp = '%s/%s(%s,%s)\n' % (i, t, s, o)
-                if 'wm_' in tmp[tmp.find('/'):] or 'kb_' in tmp[tmp.find('/'):]:
-                    inst_str += tmp
-                else:
-                    ont_str += tmp
+        strings = defaultdict(str)
+        preds = ['type', 'def', 'instantiative', 'referential', 'question']
+        for pred in preds:
+            if exclusions is None or pred not in exclusions:
+                for s, t, o, i in self.predicates(predicate_type=pred):
+                    if s not in exclusions and o not in exclusions:
+                        if o is not None:
+                            strings[pred] += '%s/%s(%s,%s)\n' % (i, t, s, o)
+                        else:
+                            strings[pred] += '%s/%s(%s)\n' % (i, t, s)
+        strings['mono'] = ''
+        strings['bi'] = ''
         for s, t, o, i in self.predicates():
-            if (exclusions is None or (t not in exclusions and s not in exclusions and o not in exclusions)) \
-                    and t != 'type':
+            if (exclusions is None or (t not in exclusions and s not in exclusions and o not in exclusions)) and t not in preds:
                 if o is not None:
-                    bi_str += '%s/%s(%s,%s)\n' % (i, t, s, o)
+                    strings['bi'] += '%s/%s(%s,%s)\n' % (i, t, s, o)
                 else:
-                    mono_str += '%s/%s(%s)\n' % (i, t, s)
-        full_string = ont_str + '\n' + inst_str + '\n' + mono_str + '\n' + bi_str
+                    strings['mono'] += '%s/%s(%s)\n' % (i, t, s)
+        full_string = '\n'.join(strings.values())
         return full_string.strip()
 
     def pretty_print(self, exclusions=None):

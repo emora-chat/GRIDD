@@ -53,6 +53,7 @@ class Chatbot:
         sentence_caser = c(SentenceCaser())
         merge_coref = c(MergeCoreference())
 
+        # todo - add coref_merges back as input to merge_bridge once module is fixed
         self.pipeline = Pipeline(
             ('utter', 'wm') > sentence_caser > ('cased_utter'),
             ('cased_utter', 'aux_state') > elit_models > ('tok', 'pos', 'dp', 'cr'),
@@ -60,7 +61,7 @@ class Chatbot:
             ('dp_mentions', 'wm') > mention_bridge > ('wm_after_mentions'),
             ('dp_merges', 'wm_after_mentions') > merge_dp > ('dp_node_merges'),
             ('cr', 'wm_after_mentions') > merge_coref > ('coref_merges'),
-            ('wm_after_mentions', 'dp_node_merges', 'coref_merges') > merge_bridge > ('wm_after_merges'),
+            ('wm_after_mentions', 'dp_node_merges') > merge_bridge > ('wm_after_merges'),
             ('wm_after_merges') > inference_rulebased > ('implications'),
             ('implications', 'wm_after_merges') > inference_bridge > ('wm_after_inference'),
             tags ={
@@ -69,6 +70,7 @@ class Chatbot:
                 elit_dp: ['elit_dp'],
                 mention_bridge: ['mention_bridge'],
                 merge_dp: ['merge_dp'],
+                merge_coref: ['merge_coref'],
                 merge_bridge: ['merge_bridge']
             },
             outputs=['wm_after_inference', 'cr']

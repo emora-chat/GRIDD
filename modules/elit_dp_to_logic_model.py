@@ -30,7 +30,6 @@ DP_LABELS = [x.strip()
              for x in open(join('GRIDD', 'resources', 'elit_dp_labels.txt'), 'r').readlines()
              if len(x.strip()) > 0]
 
-
 class ElitDPToLogic(ParseToLogic):
 
     def text_to_graph(self, *args):
@@ -78,25 +77,35 @@ class ElitDPToLogic(ParseToLogic):
         :param pos_tags: list of part of speech tags
         :param cg: the concept graph being created
         """
-        token_to_span_node = {}
         for token_idx in range(len(tokens)):
             span_node = tokens[token_idx]
             expression = span_node.string
             pos = pos_tags[token_idx].lower().replace('$','ds')
             if not cg.has(pos):
                 cg.add(pos, 'type', 'pos')
-            self.spans.append(span_node)
             cg.add(span_node)
-            token_to_span_node[token_idx] = span_node
+            self.spans.append(span_node)
             expression = '"%s"' % expression
             cg.add(span_node, 'ref', expression)
             cg.add(span_node, 'type', pos)
+            if token_idx > 0:
+                for i in range(token_idx):
+                    cg.add(tokens[i], 'precede', span_node)
 
         for token_idx, (head_idx, label) in enumerate(dependencies):
             if head_idx != -1:
-                source = token_to_span_node[head_idx]
-                target = token_to_span_node[token_idx]
-                cg.add(source, label, target)
+                source = tokens[head_idx]
+                target = tokens[token_idx]
+                if label == 'com': # condense compound relations into single entity
+                    source.string = target.string + ' ' + source.string
+                    source.start = target.start
+                    for tuple in cg.predicates(target, 'ref') + cg.predicates(source, 'ref'):
+                        cg.remove(tuple[2]) # remove non-condensed expressions
+                    cg.remove(target)
+                    self.spans.remove(target)
+                    cg.add(source, 'ref', '"%s"'%source.string) # add updated condensed expression
+                else:
+                    cg.add(source, label, target)
 
 
 if __name__ == '__main__':

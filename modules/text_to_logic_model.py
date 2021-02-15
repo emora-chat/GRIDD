@@ -4,12 +4,7 @@ from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.knowledge_parser import KnowledgeParser
 from GRIDD.data_structures.inference_engine import InferenceEngine
 
-LOCALDEBUG=False
-
-"""
-Notes:
-    predicate_types in post cannot match predicate_types in pre (other than `type`)
-"""
+LOCALDEBUG = False
 
 class ParseToLogic:
 
@@ -133,13 +128,20 @@ class ParseToLogic:
         # for a specific center is kept and all other templates with the same center are discarded.
         # Affects _get_mentions() and _get_merges()!
 
+    def _update_centers(self, centers_handled, post, center, solution):
+        centers_handled.add(center)
+        covered = post.predicates(predicate_type='cover')
+        if len(covered) > 0:
+            for cover_var, _, _, _ in covered:
+                centers_handled.add(solution[cover_var])
+
     def _get_mentions(self, assignments, ewm):
         """
         Produce dict<mention span: mention graph>.
 
         assignments: dict<rule: list<assignments>>
         """
-        centers_handled = set() # `markcover` predicates also used here
+        centers_handled = set()
         mentions = {}
         for rule, solutions in assignments.items():
             pre, post = rule[0], rule[1]
@@ -149,7 +151,7 @@ class ParseToLogic:
                 (concept_var,) = pre.objects(expression_var, 'expr')
                 center = solution[center_var]
                 if center not in centers_handled:
-                    centers_handled.add(center)
+                    self._update_centers(centers_handled, post, center, solution)
                     m = {}
                     cg = ConceptGraph(namespace=post._namespace)
                     cg._next_id = post._next_id
@@ -157,7 +159,6 @@ class ParseToLogic:
                         if node in solution:
                             if node in [center_var,expression_var,concept_var]:
                                 m[node] = self._get_concept_of_span(solution[node], ewm)
-                                # m[node] = solution[node]
                             else:
                                 m[node] = cg._get_next_id()
                         else:
@@ -196,7 +197,7 @@ class ParseToLogic:
                 focus = solution.get(focus_var, focus_var)
                 center = solution.get(center_var, center_var)
                 if center not in centers_handled:
-                    centers_handled.add(center)
+                    self._update_centers(centers_handled, post, center, solution)
                     if post.has(predicate_id=focus):
                         # focus is a predicate instance, need to consider its subj/obj/type
                         if post.subject(focus) in solution and solution[post.subject(focus)] != center:

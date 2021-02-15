@@ -1,7 +1,7 @@
 
-from modules.merge_coreference_spec import MergeCoreferenceSpec
+from GRIDD.modules.merge_coreference_spec import MergeCoreferenceSpec
 
-from modules.merge_span_to_merge_concept import MergeSpanToMergeConcept
+from GRIDD.modules.merge_span_to_merge_concept import MergeSpanToMergeConcept
 merge_span_to_merge_concept = MergeSpanToMergeConcept()
 
 
@@ -11,6 +11,8 @@ class MergeCoreference:
     def __call__(self, coref_output, working_memory):
         """
         Output: List of pairs of nodes to merge in working memory based on coref model.
+
+        todo - if one mention is poss DP, merge subject with self of other; otherwise, merge selves
         """
         span_merges = []
         global_tokens = coref_output['global_tokens']

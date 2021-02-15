@@ -223,7 +223,7 @@ def test_comp(elitmodels, elit_to_logic):
     ((s, t, o, i),) = like_preds
     assert o is not None
     assert like_mg.has(i, 'focus')
-    assert like_mg.has(i, 'time', 'present')
+    assert like_mg.has(i, 'time', 'now')
     assert like_mg.has('like', 'center')
     
     walk_mg = mentions[walk_sp]
@@ -262,7 +262,7 @@ def test_inner_comp_with_obj(elitmodels, elit_to_logic):
     ((s, t, o, i),) = like_preds
     assert o is not None
     assert like_mg.has(i, 'focus')
-    assert like_mg.has(i, 'time', 'present')
+    assert like_mg.has(i, 'time', 'now')
     assert like_mg.has('like', 'center')
 
     buy_mg = mentions[buy_sp]
@@ -305,7 +305,7 @@ def test_inner_comp_with_nsbj(elitmodels, elit_to_logic):
     ((s, t, o, i),) = like_preds
     assert o is not None
     assert like_mg.has(i, 'focus')
-    assert like_mg.has(i, 'time', 'present')
+    assert like_mg.has(i, 'time', 'now')
     assert like_mg.has('like', 'center')
 
     walk_mg = mentions[walk_sp]
@@ -352,7 +352,7 @@ def test_inner_comp_with_nsbj_obj(elitmodels, elit_to_logic):
     ((s, t, o, i),) = like_preds
     assert o is not None
     assert like_mg.has(i, 'focus')
-    assert like_mg.has(i, 'time', 'present')
+    assert like_mg.has(i, 'time', 'now')
     assert like_mg.has('like', 'center')
 
     buy_mg = mentions[buy_sp]
@@ -528,28 +528,18 @@ def test_compound(elitmodels, elit_to_logic):
     tok, pos, dp, cr = elitmodels(sentence)
     mentions, merges = elit_to_logic(tok, pos, dp)
 
-    assert len(mentions) == 4
+    assert len(mentions) == 3
     (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
     (like_sp,) = [span for span in mentions.keys() if span.string == 'like']
-    (new_sp,) = [span for span in mentions.keys() if span.string == 'new']
-    (york_sp,) = [span for span in mentions.keys() if span.string == 'york']
+    (new_york_sp,) = [span for span in mentions.keys() if span.string == 'new york']
 
-    new_mg = mentions[new_sp]
-    new_insts = new_mg.predicates(predicate_type='compound')
-    assert len(new_insts) == 1
-    ((s, t, o, i),) = new_insts
-    assert o is not None
-    assert new_mg.has(i, 'focus')
-    assert new_mg.has('new', 'center')
+    york_mg = mentions[new_york_sp]
+    assert york_mg.has('new_york', 'focus')
+    assert york_mg.has('new_york', 'center')
 
-    york_mg = mentions[york_sp]
-    assert york_mg.has('york', 'focus')
-    assert york_mg.has('york', 'center')
-
-    assert len(merges) == 3
+    assert len(merges) == 2
     assert ((like_sp, 'subject'), (i_sp, 'self')) in merges
-    assert ((like_sp, 'object'), (york_sp, 'self')) in merges
-    assert ((new_sp, 'object'), (york_sp, 'self')) in merges
+    assert ((like_sp, 'object'), (new_york_sp, 'self')) in merges
 
 def test_adv(elitmodels, elit_to_logic):
     """ Tests constructions with adverb attachments """
