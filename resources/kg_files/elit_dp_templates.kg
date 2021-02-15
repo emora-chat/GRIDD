@@ -633,36 +633,97 @@ center(X)
 
 
 aux(X/pos(), Y/past_tense())
+ref(Y, E/expression())
+expr(E, do)
 nsbj(X, Z/pos())
 precede(Y,Z)
--> q_aux_past ->
+-> q_aux_do_past ->
 q/question(X)
-time(X, past)
+aux_time(X, past)
 center(Y)
 focus(q)
 ;
 
 aux(X/pos(), Y/present_tense())
+ref(Y, E/expression())
+expr(E, do)
 nsbj(X, Z/pos())
 precede(Y,Z)
--> q_aux_present ->
+-> q_aux_do_present ->
 q/question(X)
-time(X, now)
+aux_time(X, now)
+center(Y)
+focus(q)
+;
+
+aux(X/pos(), Y/past_tense())
+ref(Y, E/expression())
+expr(E, be)
+nsbj(X, Z/pos())
+precede(Y,Z)
+-> q_aux_be_past ->
+q/question(X)
+aux_time(X, past)
+center(Y)
+focus(q)
+;
+
+aux(X/pos(), Y/present_tense())
+ref(Y, E/expression())
+expr(E, be)
+nsbj(X, Z/pos())
+precede(Y,Z)
+-> q_aux_be_present ->
+q/question(X)
+aux_time(X, now)
+center(Y)
+focus(q)
+;
+
+aux(X/pos(), Y/pos())
+ref(Y, E/expression())
+expr(E, have)
+nsbj(X, Z/pos())
+precede(Y,Z)
+-> q_aux_have ->
+q/question(X)
 center(Y)
 focus(q)
 ;
 
 
 aux(X/pos(), Y/past_tense())
--> aux_past ->
-t/time(X, past)
+ref(Y, E/expression())
+expr(E, do)
+-> aux_do_past ->
+t/aux_time(X, past)
 center(Y)
 focus(t)
 ;
 
 aux(X/pos(), Y/present_tense())
--> aux_present ->
-t/time(X, now)
+ref(Y, E/expression())
+expr(E, do)
+-> aux_do_present ->
+t/aux_time(X, now)
+center(Y)
+focus(t)
+;
+
+aux(X/pos(), Y/past_tense())
+ref(Y, E/expression())
+expr(E, be)
+-> aux_be_past ->
+t/aux_time(X, past)
+center(Y)
+focus(t)
+;
+
+aux(X/pos(), Y/present_tense())
+ref(Y, E/expression())
+expr(E, be)
+-> aux_be_present ->
+t/aux_time(X, now)
 center(Y)
 focus(t)
 ;

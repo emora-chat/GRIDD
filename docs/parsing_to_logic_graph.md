@@ -822,50 +822,119 @@ The overall tense of the question is also affected by the aux verb.
   <summary>Conversions</summary>
 	
 	aux(X/pos(), Y/past_tense())
+	ref(Y, E/expression())
+	expr(E, do)
 	nsbj(X, Z/pos())
 	precede(Y,Z)
-	-> q_aux_past ->
+	-> q_aux_do_past ->
 	q/question(X)
-	time(X, past)
+	aux_time(X, past)
 	center(Y)
 	focus(q)
 	;
 	
 	aux(X/pos(), Y/present_tense())
+	ref(Y, E/expression())
+	expr(E, do)
 	nsbj(X, Z/pos())
 	precede(Y,Z)
-	-> q_aux_present ->
+	-> q_aux_do_present ->
 	q/question(X)
-	time(X, now)
+	aux_time(X, now)
+	center(Y)
+	focus(q)
+	;
+	
+	aux(X/pos(), Y/past_tense())
+	ref(Y, E/expression())
+	expr(E, be)
+	nsbj(X, Z/pos())
+	precede(Y,Z)
+	-> q_aux_be_past ->
+	q/question(X)
+	aux_time(X, past)
+	center(Y)
+	focus(q)
+	;
+	
+	aux(X/pos(), Y/present_tense())
+	ref(Y, E/expression())
+	expr(E, be)
+	nsbj(X, Z/pos())
+	precede(Y,Z)
+	-> q_aux_be_present ->
+	q/question(X)
+	aux_time(X, now)
+	center(Y)
+	focus(q)
+	;
+	
+	aux(X/pos(), Y/pos())
+	ref(Y, E/expression())
+	expr(E, have)
+	nsbj(X, Z/pos())
+	precede(Y,Z)
+	-> q_aux_have ->
+	q/question(X)
 	center(Y)
 	focus(q)
 	;
 	
 </details>
 
+#### Examples
+
+Did you buy a house
+
+Do you buy houses
+
+Were you buying a house
+
+Are you buying a house
+
+Have you bought a house
+
 ## Auxiliary Verbs
 
 Auxiliary verbs modify the tense of their parent verb.
 
-TODO - different auxiliaries interact with their parent verbs in different ways
-
-`have found` => aux: present + main: past = overall: past
-
-`did find` => aux: past + main: present = overall: past
+TODO - properly update tense of main verb using auxiliaries, right now we have both a `time` predicate and an `aux_time` predicate
 
  <details>
   <summary>Conversions</summary>
 
 	aux(X/pos(), Y/past_tense())
-	-> aux_past ->
-	t/time(X, past)
+	ref(Y, E/expression())
+	expr(E, do)
+	-> aux_do_past ->
+	t/aux_time(X, past)
 	center(Y)
 	focus(t)
 	;
 	
 	aux(X/pos(), Y/present_tense())
-	-> aux_present ->
-	t/time(X, now)
+	ref(Y, E/expression())
+	expr(E, do)
+	-> aux_do_present ->
+	t/aux_time(X, now)
+	center(Y)
+	focus(t)
+	;
+	
+	aux(X/pos(), Y/past_tense())
+	ref(Y, E/expression())
+	expr(E, be)
+	-> aux_be_past ->
+	t/aux_time(X, past)
+	center(Y)
+	focus(t)
+	;
+	
+	aux(X/pos(), Y/present_tense())
+	ref(Y, E/expression())
+	expr(E, be)
+	-> aux_be_present ->
+	t/aux_time(X, now)
 	center(Y)
 	focus(t)
 	;
