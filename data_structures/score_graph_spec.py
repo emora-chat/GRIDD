@@ -2,20 +2,9 @@
 from structpy import specification
 from structpy.graph.directed.labeled.data.multilabeled_digraph_data_spec import MultiLabeledDigraphDataSpec
 
-
 E = 0.0001
 
 my_values = {'a': 2, 'b': 8, 'c': 3, 'd': 6}
-
-def push(a, b):
-    num = (b - a)
-    denom = (b - a) ** 2
-    bdelta = num / denom
-    adelta = 0
-    return adelta, bdelta
-
-def pull(a, b):
-    pass
 
 @specification
 class ScoreGraphSpec:
