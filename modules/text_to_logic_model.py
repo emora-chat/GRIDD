@@ -128,6 +128,13 @@ class ParseToLogic:
         # for a specific center is kept and all other templates with the same center are discarded.
         # Affects _get_mentions() and _get_merges()!
 
+    def _update_centers(self, centers_handled, post, center, solution):
+        centers_handled.add(center)
+        covered = post.predicates(predicate_type='cover')
+        if len(covered) > 0:
+            for cover_var, _, _, _ in covered:
+                centers_handled.add(solution[cover_var])
+
     def _get_mentions(self, assignments, ewm):
         """
         Produce dict<mention span: mention graph>.
@@ -144,11 +151,7 @@ class ParseToLogic:
                 (concept_var,) = pre.objects(expression_var, 'expr')
                 center = solution[center_var]
                 if center not in centers_handled:
-                    centers_handled.add(center)
-                    covered = post.predicates(predicate_type='cover')
-                    if len(covered) > 0:
-                        for cover_var, _, _, _ in covered:
-                            centers_handled.add(solution[cover_var])
+                    self._update_centers(centers_handled, post, center, solution)
                     m = {}
                     cg = ConceptGraph(namespace=post._namespace)
                     cg._next_id = post._next_id
@@ -194,7 +197,7 @@ class ParseToLogic:
                 focus = solution.get(focus_var, focus_var)
                 center = solution.get(center_var, center_var)
                 if center not in centers_handled:
-                    centers_handled.add(center)
+                    self._update_centers(centers_handled, post, center, solution)
                     if post.has(predicate_id=focus):
                         # focus is a predicate instance, need to consider its subj/obj/type
                         if post.subject(focus) in solution and solution[post.subject(focus)] != center:

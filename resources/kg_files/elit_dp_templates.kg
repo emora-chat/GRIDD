@@ -668,41 +668,20 @@ focus(t)
 ;
 
 
-modal(X/pos(), Y/past_tense())
+modal(X/pos(), Y/md())
 nsbj(X, Z/pos())
 precede(Y, Z)
--> q_modal_past ->
+-> q_modal ->
 m/mode(X, Y)
 q/question(m)
-time(X, past)
-center(Y)
-focus(m)
-;
-
-modal(X/pos(), Y/present_tense())
-nsbj(X, Z/pos())
-precede(Y, Z)
--> q_modal_present ->
-m/mode(X, Y)
-q/question(m)
-time(X, now)
 center(Y)
 focus(m)
 ;
 
 
-modal(X/pos(), Y/past_tense())
--> modal_past ->
+modal(X/pos(), Y/md())
+-> modal ->
 m/mode(Y,X)
-time(X, past)
-center(Y)
-focus(m)
-;
-
-modal(X/pos(), Y/present_tense())
--> modal_present ->
-m/mode(Y,X)
-time(X, now)
 center(Y)
 focus(m)
 ;
