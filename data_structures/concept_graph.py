@@ -28,6 +28,7 @@ class ConceptGraph:
         if predicates is not None:
             for predicate in predicates:
                 self.add(*predicate)
+        self.features = {}
 
     def _get_next_id(self):
         if self._namespace is not None:

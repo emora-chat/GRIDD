@@ -15,6 +15,8 @@ class WorkingMemory(ConceptGraph):
         self.inference_engine = InferenceEngine()
         super().__init__(namespace='WM')
         self.load_logic(*filenames_or_logicstrings)
+        self.features['salience'] = {}
+        self.features['cover'] = {}
 
     def load_logic(self, *filenames_or_logicstrings):
         for input in filenames_or_logicstrings:
@@ -39,6 +41,9 @@ class WorkingMemory(ConceptGraph):
                         visited.add(t)
         for item in to_pull:
             self.add(*item)
+            for e in item:
+                if e not in self.features['salience']:
+                    self.features['salience'][e] = 0
 
     def pull(self, order=1, concepts=None, exclude_on_pull=None):
         if isinstance(concepts, list):
@@ -78,7 +83,10 @@ class WorkingMemory(ConceptGraph):
             pulling |= to_pull
             pull_set = set(chain(*to_pull)) - covered - {None}
         cg = ConceptGraph(predicates=pulling)
-        self.concatenate(cg)
+        id_map = self.concatenate(cg)
+        for id in id_map.values():
+            if id not in self.features['salience']:
+                self.features['salience'][id] = 0
         self.pull_ontology()
 
     def inferences(self, *types_or_rules):

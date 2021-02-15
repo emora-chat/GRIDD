@@ -1,13 +1,14 @@
-import GRIDD.globals as globals
 
 class InferenceBridge:
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, implication_cgs, working_memory):
         """
         Add implications to working memory
-        args[0] - list of implication cgs
-        args[1] - working memory
         """
-        if globals.DEBUG:
-            print('You have reached the end of the implemented Pipeline.')
-        return '__EXIT__\n'
+        # todo - how to set inference salience???
+        for cg in implication_cgs:
+            mapped_ids = working_memory.concatenate(cg)
+            for id in mapped_ids.values():
+                working_memory.features['salience'][id] = \
+                    max(working_memory.features['salience'].get(id, 0.0), 0.5)
+        return working_memory

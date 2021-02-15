@@ -18,18 +18,26 @@ class MergeBridge:
         visited = []
         merge_map = {}
 
-        # If merges are chained, need to re-merge previous nodes that receive a later merge
         for concept1, concept2 in node_merge_pairs:
             concept1 = merge_map.get(concept1, concept1)
             concept2 = merge_map.get(concept2, concept2)
             kept = working_memory.merge(concept1, concept2)
             replaced = concept2 if kept == concept1 else concept1
             merge_map[replaced] = kept
-            if replaced in merge_map.values():
+            if replaced in merge_map.values(): # If merges are chained, need to re-merge previous nodes that receive a later merge
                 for v1, v2 in visited:
                     if v1 == replaced:
                         working_memory.merge(v1, kept)
             visited.append((kept, replaced))
+            # Update salience
+            working_memory.features['salience'][kept] = max(working_memory.features['salience'][kept],
+                                                            working_memory.features['salience'][replaced])
+            del working_memory.features['salience'][replaced]
+            # Update cover
+            working_memory.features['cover'][kept] = max(working_memory.features['cover'].get(kept, 0.0),
+                                                         working_memory.features['cover'].get(replaced, 0.0))
+            if replaced in working_memory.features['cover']:
+                del working_memory.features['cover'][replaced]
 
         if globals.DEBUG:
             print("<< Working Memory after NLU >>")

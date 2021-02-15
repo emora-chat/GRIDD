@@ -23,6 +23,8 @@ from GRIDD.modules.mention_bridge import MentionBridge
 from GRIDD.modules.merge_bridge import MergeBridge
 from GRIDD.modules.inference_bridge import InferenceBridge
 from GRIDD.modules.merge_coreference import MergeCoreference
+from GRIDD.modules.feature_propogation import FeaturePropogation
+from GRIDD.modules.response_selection_salience import SalienceResponseSelection
 
 if QUICK_LOCAL_TESTING is False:
     from GRIDD.modules.sentence_casing import SentenceCaser
@@ -52,6 +54,8 @@ class Chatbot:
         inference_bridge = c(InferenceBridge())
         sentence_caser = c(SentenceCaser())
         merge_coref = c(MergeCoreference())
+        feature_propogation = c(FeaturePropogation())
+        response_selection = c(SalienceResponseSelection())
 
         # todo - add coref_merges back as input to merge_bridge once module is fixed
         self.pipeline = Pipeline(
@@ -64,6 +68,8 @@ class Chatbot:
             ('wm_after_mentions', 'dp_node_merges') > merge_bridge > ('wm_after_merges'),
             ('wm_after_merges') > inference_rulebased > ('implications'),
             ('implications', 'wm_after_merges') > inference_bridge > ('wm_after_inference'),
+            ('wm_after_inference') > feature_propogation > ('wm_after_sync'),
+            ('wm_after_sync') > response_selection > ('response_predicate'),
             tags ={
                 sentence_caser: ['sentence_caser'],
                 elit_models: ['elit_models'],
@@ -73,7 +79,7 @@ class Chatbot:
                 merge_coref: ['merge_coref'],
                 merge_bridge: ['merge_bridge']
             },
-            outputs=['wm_after_inference', 'cr']
+            outputs=['response_predicate', 'cr']
         )
 
     def respond(self, user_utterance=None, dialogue_state=None):
