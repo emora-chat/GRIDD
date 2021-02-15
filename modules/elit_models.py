@@ -15,6 +15,7 @@ class ElitModels:
     def __init__(self):
         self.model = Client('http://0.0.0.0:8000')
 
+    # todo - call elit_model.create_coref_context_from_online_output() and get_turn_history() before using coref_context in parse()
     def __call__(self, user_utterance, aux_state=None):
         """
         args[0] - string turn
