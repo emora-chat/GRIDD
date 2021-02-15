@@ -763,6 +763,8 @@ John made a call.
 
 ## Verbs without Objects
 
+Captures expressions where the verb only has a subject.
+
  <details>
   <summary>Conversions</summary>
 
@@ -803,6 +805,12 @@ John made a call.
 	;
 
 </details>
+
+#### Examples
+
+I run.
+
+The program ended.
 
 ## Interrogative Auxiliary Verb
 
@@ -949,6 +957,8 @@ Modify the meaning of their parent verbs.
 
 ## Prepositional Phrases
 
+Captures prepositional phrases by converting the preposition into a predicate of the form `preposition(parent_predicate, object_of_preposition)`
+
  <details>
   <summary>Conversions</summary>
 
@@ -962,6 +972,12 @@ Modify the meaning of their parent verbs.
 	;
 
 </details>
+
+#### Examples
+
+I walked in the door.
+
+The cat hid under the bed.
 
 ## Passive Constructions
 
@@ -1011,6 +1027,8 @@ I was chosen.
 
 ## Relative Clause
 
+TODO - make better
+
  <details>
   <summary>Conversions</summary>
 
@@ -1022,8 +1040,6 @@ I was chosen.
 	;
 
 </details>
-
-
 
 ## Determiner
 
@@ -1142,6 +1158,8 @@ The red car
 
 ## Possessive
 
+Captures possessive phrases by constructing a `possess` predicate between the possessor and the possessed.
+
  <details>
   <summary>Conversions</summary>
 	  
@@ -1160,6 +1178,12 @@ The red car
 	;
 
 </details>
+
+#### Examples
+
+My car
+
+John's sister
 
 ## Adverbials
 
@@ -1200,6 +1224,8 @@ The red car
 
 ## Verb Particle
 
+Captures verb particles by attaching a `particle` predicate to the verb.
+
  <details>
   <summary>Conversions</summary>
   
@@ -1211,6 +1237,10 @@ The red car
 	;
 
 </details>
+
+#### Examples
+
+He made up an excuse.
 
 ## Conjunct
 
@@ -1228,6 +1258,8 @@ The red car
 
 ## Numeric
 
+Captures expressions of quantities by constructing a `numeric` predicate between the source of the quantity and the quantity itself.
+
  <details>
   <summary>Conversions</summary>
   
@@ -1239,6 +1271,10 @@ The red car
 	;
 
 </details>
+
+#### Examples
+
+I bought four tickets.
 
 ## Negation
 
@@ -1262,20 +1298,6 @@ The red car
 	appo(X/pos(), Y/pos())
 	-> appositive ->
 	p/appositive(X, Y)
-	focus(p)
-	center(Y)
-	;
-
-</details>
-
-## Compound Concept
-
- <details>
-  <summary>Conversions</summary>
-  
-	com(X/pos(), Y/pos())
-	-> compound_concept ->
-	p/compound(Y, X)
 	focus(p)
 	center(Y)
 	;
@@ -1458,6 +1480,10 @@ Recognize all nouns that exist as concepts in the KG.
 	;
 	
 </details>
+
+## Compound Concept
+
+Compound concepts are condensed into a single entity when the dependency relations are preprocessed  into a `concept graph`, before any conversion rules are applied.
 
 <!--## Question Word
 

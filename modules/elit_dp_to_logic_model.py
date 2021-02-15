@@ -84,9 +84,9 @@ class ElitDPToLogic(ParseToLogic):
             if not cg.has(pos):
                 cg.add(pos, 'type', 'pos')
             span_node = Span(expression, token_idx, token_idx+1) #todo - add sentence id
-            self.spans.append(span_node)
             cg.add(span_node)
             token_to_span_node[token_idx] = span_node
+            self.spans.append(span_node)
             expression = '"%s"' % expression
             cg.add(span_node, 'ref', expression)
             cg.add(span_node, 'type', pos)
@@ -98,7 +98,16 @@ class ElitDPToLogic(ParseToLogic):
             if head_idx != -1:
                 source = token_to_span_node[head_idx]
                 target = token_to_span_node[token_idx]
-                cg.add(source, label, target)
+                if label == 'com': # condense compound relations into single entity
+                    source.string = target.string + ' ' + source.string
+                    source.start = target.start
+                    for tuple in cg.predicates(target, 'ref') + cg.predicates(source, 'ref'):
+                        cg.remove(tuple[2]) # remove non-condensed expressions
+                    cg.remove(target)
+                    self.spans.remove(target)
+                    cg.add(source, 'ref', '"%s"'%source.string) # add updated condensed expression
+                else:
+                    cg.add(source, label, target)
 
 
 if __name__ == '__main__':

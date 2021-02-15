@@ -928,14 +928,6 @@ center(Y)
 ;
 
 
-com(X/pos(), Y/pos())
--> compound_concept ->
-p/compound(Y, X)
-focus(p)
-center(Y)
-;
-
-
 voc(X/pos(), Y/pos())
 -> vocalization ->
 p/relay_info(X, Y)
