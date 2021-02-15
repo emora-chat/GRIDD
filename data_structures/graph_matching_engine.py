@@ -39,12 +39,9 @@ class GraphMatchingEngine:
         query_target_counts = torch.sparse.LongTensor(qt.T, qtc, [len(query_ids), len(edge_ids)]).to_dense()
         display(query_target_counts, query_ids, edge_ids, None,
                 label='Query in-constraint counts')
-        query_slabel_counts = torch.sum(query_source_counts.to(torch.bool).long(), 1)
-        display(query_slabel_counts.unsqueeze(1), query_ids, None, None,
-                label='Query in-constraint label type counts')
-        query_tlabel_counts = torch.sum(query_target_counts.to(torch.bool).long(), 1)
-        display(query_tlabel_counts.unsqueeze(1), query_ids, None, None,
-                label='Query out-constraint label type counts')
+        query_counts = torch.cat([query_source_counts, query_target_counts], 1)
+        display(query_counts, query_ids, None, None,
+                label='Query constraint counts')
         for i in range(1):
             unique_sts = torch.unique(edge_pairs[:,[0,1,2,4]], dim=0)
             unique_stt = torch.unique(edge_pairs[:,[0,1,3,4]], dim=0)
@@ -54,30 +51,30 @@ class GraphMatchingEngine:
             ct, rct, target_counts = torch.unique(unique_stt[:,[1,2,3]], dim=0, return_inverse=True, return_counts=True)
             display(torch.cat([ct, target_counts.unsqueeze(1)], dim=1), query_ids, data_ids, edge_ids, None,
                     label='In-property counts per candidate node assignment')
-            csl, rcsl, source_counts_l = torch.unique(cs[:,:2], dim=0, return_inverse=True, return_counts=True)
-            display(torch.cat([csl, source_counts_l.unsqueeze(1)], dim=1), query_ids, data_ids, None,
-                    label='Out-property type counts per candidate node assignment')
-            ctl, rctl, target_counts_l = torch.unique(ct[:,:2], dim=0, return_inverse=True, return_counts=True)
-            display(torch.cat([ctl, target_counts_l.unsqueeze(1)], dim=1), query_ids, data_ids, None,
-                    label='In-property type counts per candidate node assignment')
-            req_source_counts = gather_by_indices(query_source_counts, cs[:,[0,2]])
-            req_target_counts = gather_by_indices(query_target_counts, ct[:,[0,2]])
-            req_source_counts_l = query_slabel_counts[csl[:,0]]
-            req_target_counts_l = query_tlabel_counts[ctl[:,0]]
-            source_compatibility_mask_ = torch.le(req_source_counts, source_counts)
-            target_compatibility_mask_ = torch.le(req_target_counts, target_counts)
-            source_compatibility_mask_l = torch.le(req_source_counts_l, source_counts_l)
-            target_compatibility_mask_l = torch.le(req_target_counts_l, target_counts_l)
-            source_compatibility_mask = torch.logical_and(source_compatibility_mask_, source_compatibility_mask_l)
-            target_compatibility_mask = torch.logical_and(target_compatibility_mask_, target_compatibility_mask_l)
+            sources, rsi = torch.unique(cs[:,:2], dim=0, return_inverse=True)
+            display(sources, query_ids, data_ids, label='Source assignments')
+            targets, rti = torch.unique(ct[:,:2], dim=0, return_inverse=True)
+            display(targets, query_ids, data_ids, label='Target assignments')
+            assignments, dri = torch.unique(torch.cat([sources, targets], 0), dim=0, return_inverse=True)
+            source_label_counts = torch.index_put(torch.zeros(sources.size(0), len(edge_ids)).long(), (rsi, cs[:,2]), source_counts)
+            display(torch.cat([sources, source_label_counts], 1), query_ids, data_ids, *([None]*len(edge_ids)),
+                    label='Out-property counts per candidate node assignment')
+            target_label_counts = torch.index_put(torch.zeros(targets.size(0), len(edge_ids)).long(), (rti, ct[:,2]), target_counts)
+            display(torch.cat([targets, target_label_counts], 1), query_ids, data_ids, *([None]*len(edge_ids)),
+                    label='In-property counts per candidate node assignment')
+            req_source_counts = query_source_counts[sources[:,0]]
+            display(torch.cat([sources, req_source_counts], 1), query_ids, data_ids, *([None]*len(edge_ids)),
+                    label='Required out-property counts per candidate node assignment')
+            req_target_counts = query_target_counts[targets[:,0]]
+            display(torch.cat([targets, req_target_counts], 1), query_ids, data_ids, *([None]*len(edge_ids)),
+                    label='Required in-property counts per candidate node assignment')
+            source_check = torch.le(req_source_counts, source_label_counts)
+            target_check = torch.le(req_target_counts, target_label_counts)
+            source_compatibility_mask = torch.ge(torch.sum(source_check.long(), dim=1), len(edge_ids))
+            target_compatibility_mask = torch.ge(torch.sum(target_check.long(), dim=1), len(edge_ids))
             source_incompatibility_ = filter_rows(cs, ~source_compatibility_mask)[:,:2]
             target_incompatibility_ = filter_rows(ct, ~target_compatibility_mask)[:,:2]
-            source_incompatibility_l = filter_rows(csl, ~source_compatibility_mask_l)
-            target_incompatibility_l = filter_rows(ctl, ~target_compatibility_mask_l)
-            incompatible_assignments = torch.cat([
-                source_incompatibility_, target_incompatibility_,
-                source_incompatibility_l, target_incompatibility_l
-            ], dim=0).unique(dim=0)
+            incompatible_assignments = torch.cat([source_incompatibility_, target_incompatibility_], dim=0).unique(dim=0)
             display(incompatible_assignments, query_ids, data_ids,
                     label='Incompatible assignments')
             edge_pairs = filter_rows(edge_pairs, ~row_membership(edge_pairs[:,[0,2]], incompatible_assignments))
