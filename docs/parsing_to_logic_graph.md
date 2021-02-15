@@ -907,23 +907,16 @@ The overall meaning of the verb is also modified by the modal.
 
 ## Modals
 
-Modify the meaning of the parent verbs by inducing a contemplation of possibilities/likelihoods.
+Modify the meaning of the parent verbs by inducing a contemplation of possibilities/necessities.
+
+TODO - does this ever affect tense? 
 
  <details>
   <summary>Conversions</summary>
   
-	modal(X/pos(), Y/past_tense())
-	-> modal_past ->
+	modal(X/pos(), Y/md())
+	-> modal ->
 	m/mode(Y,X)
-	time(X, past)
-	center(Y)
-	focus(m)
-	;
-	
-	modal(X/pos(), Y/present_tense())
-	-> modal_present ->
-	m/mode(Y,X)
-	time(X, now)
 	center(Y)
 	focus(m)
 	;
