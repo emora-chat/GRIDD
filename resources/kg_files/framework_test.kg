@@ -124,10 +124,8 @@ georgia<object>
 georgia[georgia]
 clothing<object>
 clothing[clothing,clothes]
-new<object>
-new[new]
-york<object>
-york[york]
+new_york<object>
+new_york[new york]
 quick<object>
 quick[quick,quickly]
 name<object>

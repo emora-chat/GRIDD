@@ -478,12 +478,64 @@ Subject can be a noun or clause.
 
 ## Light Verb with Subject and Object
 
-Two-argument predicates of the format `root(subject, object)`. The light verb is dropped.
+Two-argument predicates of the format `root(subject, object)`. The light verb is dropped. The determiner of the root is dropped, if there is one.
 
 Subject can be a noun or clause.
 
  <details>
   <summary>Conversions</summary>
+
+	nsbj(X/noun(), Y/pos())
+	det(X, A/dt())
+	obj(X, Z/pos())
+	lv(X, U/past_tense())
+	-> nsbj_obj_det_light_verb_past ->
+	is_type(X)
+	p/X(Y,Z)
+	time(p, past)
+	focus(p)
+	center(X)
+	cover(A)
+	;
+	
+	csbj(X/noun(), Y/pos())
+	det(X, A/dt())
+	obj(X, Z/pos())
+	lv(X, U/past_tense())
+	-> csbj_obj_det_light_verb_past ->
+	is_type(X)
+	p/X(Y,Z)
+	time(p, past)
+	focus(p)
+	center(X)
+	cover(A)
+	;
+	
+	nsbj(X/noun(), Y/pos())
+	det(X, A/dt())
+	obj(X, Z/pos())
+	lv(X, U/present_tense())
+	-> nsbj_obj_det_light_verb_present ->
+	is_type(X)
+	p/X(Y,Z)
+	time(p, now)
+	focus(p)
+	center(X)
+	cover(A)
+	;
+	
+	csbj(X/noun(), Y/pos())
+	det(X, A/dt())
+	obj(X, Z/pos())
+	lv(X, U/present_tense())
+	-> csbj_obj_det_light_verb_present ->
+	is_type(X)
+	p/X(Y,Z)
+	time(p, now)
+	focus(p)
+	center(X)
+	cover(A)
+	;
 
 	nsbj(X/noun(), Y/pos())
 	obj(X, Z/pos())
@@ -539,12 +591,60 @@ John made a call to Mary.
 
 ## Light Verb with Subject only
 
-One-argument predicates of the format `root(subject)`. The light verb is dropped.
+One-argument predicates of the format `root(subject)`. The light verb is dropped. The determiner of the root is dropped, if there is one.
 
 Subject can be a noun or clause.
 
  <details>
   <summary>Conversions</summary>
+
+	nsbj(X/noun(), Y/pos())
+	det(X, A/dt())
+	lv(X, U/past_tense())
+	-> nsbj_det_light_verb_past ->
+	is_type(X)
+	p/X(Y)
+	time(p, past)
+	focus(p)
+	center(X)
+	cover(A)
+	;
+	
+	csbj(X/noun(), Y/pos())
+	det(X, A/dt())
+	lv(X, U/past_tense())
+	-> csbj_det_light_verb_past ->
+	is_type(X)
+	p/X(Y)
+	time(p, past)
+	focus(p)
+	center(X)
+	cover(A)
+	;
+	
+	nsbj(X/noun(), Y/pos())
+	det(X, A/dt())
+	lv(X, U/present_tense())
+	-> nsbj_det_light_verb_present ->
+	is_type(X)
+	p/X(Y)
+	time(p, now)
+	focus(p)
+	center(X)
+	cover(A)
+	;
+	
+	csbj(X/noun(), Y/pos())
+	det(X, A/dt())
+	lv(X, U/present_tense())
+	-> csbj_det_light_verb_present ->
+	is_type(X)
+	p/X(Y)
+	time(p, now)
+	focus(p)
+	center(X)
+	cover(A)
+	;
 
 	nsbj(X/noun(), Y/pos())
 	lv(X, U/past_tense())

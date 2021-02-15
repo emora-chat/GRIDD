@@ -347,6 +347,58 @@ center(X)
 
 
 nsbj(X/noun(), Y/pos())
+det(X, A/dt())
+obj(X, Z/pos())
+lv(X, U/past_tense())
+-> nsbj_obj_det_light_verb_past ->
+is_type(X)
+p/X(Y,Z)
+time(p, past)
+focus(p)
+center(X)
+cover(A)
+;
+
+csbj(X/noun(), Y/pos())
+det(X, A/dt())
+obj(X, Z/pos())
+lv(X, U/past_tense())
+-> csbj_obj_det_light_verb_past ->
+is_type(X)
+p/X(Y,Z)
+time(p, past)
+focus(p)
+center(X)
+cover(A)
+;
+
+nsbj(X/noun(), Y/pos())
+det(X, A/dt())
+obj(X, Z/pos())
+lv(X, U/present_tense())
+-> nsbj_obj_det_light_verb_present ->
+is_type(X)
+p/X(Y,Z)
+time(p, now)
+focus(p)
+center(X)
+cover(A)
+;
+
+csbj(X/noun(), Y/pos())
+det(X, A/dt())
+obj(X, Z/pos())
+lv(X, U/present_tense())
+-> csbj_obj_det_light_verb_present ->
+is_type(X)
+p/X(Y,Z)
+time(p, now)
+focus(p)
+center(X)
+cover(A)
+;
+
+nsbj(X/noun(), Y/pos())
 obj(X, Z/pos())
 lv(X, U/past_tense())
 -> nsbj_obj_light_verb_past ->
@@ -390,6 +442,54 @@ focus(p)
 center(X)
 ;
 
+
+nsbj(X/noun(), Y/pos())
+det(X, A/dt())
+lv(X, U/past_tense())
+-> nsbj_det_light_verb_past ->
+is_type(X)
+p/X(Y)
+time(p, past)
+focus(p)
+center(X)
+cover(A)
+;
+
+csbj(X/noun(), Y/pos())
+det(X, A/dt())
+lv(X, U/past_tense())
+-> csbj_det_light_verb_past ->
+is_type(X)
+p/X(Y)
+time(p, past)
+focus(p)
+center(X)
+cover(A)
+;
+
+nsbj(X/noun(), Y/pos())
+det(X, A/dt())
+lv(X, U/present_tense())
+-> nsbj_det_light_verb_present ->
+is_type(X)
+p/X(Y)
+time(p, now)
+focus(p)
+center(X)
+cover(A)
+;
+
+csbj(X/noun(), Y/pos())
+det(X, A/dt())
+lv(X, U/present_tense())
+-> csbj_det_light_verb_present ->
+is_type(X)
+p/X(Y)
+time(p, now)
+focus(p)
+center(X)
+cover(A)
+;
 
 nsbj(X/noun(), Y/pos())
 lv(X, U/past_tense())
