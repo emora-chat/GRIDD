@@ -881,24 +881,12 @@ The overall meaning of the verb is also modified by the modal.
  <details>
   <summary>Conversions</summary>
   
-	modal(X/pos(), Y/past_tense())
+	modal(X/pos(), Y/md())
 	nsbj(X, Z/pos())
 	precede(Y, Z)
-	-> q_modal_past ->
+	-> q_modal ->
 	m/mode(X, Y)
 	q/question(m)
-	time(X, past)
-	center(Y)
-	focus(m)
-	;
-	
-	modal(X/pos(), Y/present_tense())
-	nsbj(X, Z/pos())
-	precede(Y, Z)
-	-> q_modal_present ->
-	m/mode(X, Y)
-	q/question(m)
-	time(X, now)
 	center(Y)
 	focus(m)
 	;
