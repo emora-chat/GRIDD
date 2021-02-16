@@ -94,7 +94,7 @@ class Chatbot:
             self.auxiliary_state
         )
         self.auxiliary_state['coref_context'] = coref_context
-        self.auxiliary_state['system_utterane'] = output
+        self.auxiliary_state['system_utterance'] = output
         self.auxiliary_state['turn_index'] += 1
 
         return output

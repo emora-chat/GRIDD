@@ -1,7 +1,21 @@
 p/buy(X/person(),Y/house())
 time(p,past)
 =>
-locate(Y, l/location())
+yll/locate(Y, l/location())
+time(yll, now)
 question(l)
 ;
 
+buy(X/person(), Y/house())
+locate(Y, Z/state())
+=>
+xlz/live(X,Z)
+question(like(X,xlz))
+;
+
+buy(X/person(), Y/car())
+=>
+question(xld/like(X, xdy/drive(X,Y)))
+time(xld, now)
+time(xdy, now)
+;

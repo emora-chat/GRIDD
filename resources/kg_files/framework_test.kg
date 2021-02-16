@@ -91,6 +91,9 @@ go[go,went,goes,going]
 
 question<predicate>
 location<entity>
+state<location>
+georgia<state>
+georgia[georgia]
 locate<predicate>
 
 physical_feature<object>
@@ -116,8 +119,8 @@ orange[orange]
 
 house<object>
 house[house]
-georgia<object>
-georgia[georgia]
+car<object>
+car[car]
 clothing<object>
 clothing[clothing,clothes]
 new_york<object>
@@ -138,6 +141,8 @@ shop[shop,shopped,shops,shopping]
 like<predicate>
 like[like,liked,likes,liking]
 happy<predicate>
+live<predicate>
+drive<predicate>
 
 john=person()
 john[john,johns]

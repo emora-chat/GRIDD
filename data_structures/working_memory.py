@@ -126,7 +126,7 @@ class WorkingMemory(ConceptGraph):
                     i = solution.get(i, i)
                     cg.add(s, t, o, i)
                 imps.append(cg)
-        return imps
+        return solutions_dict, imps
 
     def apply_implications(self, inferences):
         imps = []

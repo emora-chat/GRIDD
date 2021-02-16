@@ -10,8 +10,10 @@ class InferenceRuleBased:
         Gather implications of applying inference rules to working memory
         args[0] - working memory
         """
+
+        # todo - maintain solutions that have been used before to prevent reapplying the same inference
         working_memory = args[0]
-        implications = working_memory.infer_and_apply(*self.inference_files)
+        solutions, implications = working_memory.infer_and_apply(*self.inference_files)
         if globals.DEBUG:
             self.display_implications(implications)
         return implications
