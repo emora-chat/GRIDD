@@ -3,6 +3,5 @@ time(p,past)
 =>
 locate(Y, l/location())
 question(l)
-h/happy(X)
 ;
 
