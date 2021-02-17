@@ -39,7 +39,8 @@ class GraphMatchingEngineSpec:
             ('sally', 'tom', 'dislikes'),
             ('john', 'mary', 'likes')
         ], nodes={
-            'mary': dict(attributes={'leader'})
+            'mary': dict(attributes={'leader'}),
+            'tom': dict(attributes={'leader'})
         })
 
         query1 = Graph([
@@ -62,12 +63,11 @@ class GraphMatchingEngineSpec:
             'X': dict(attributes={'leader'})
         })
 
-        query4 = Graph([
-            ('F', 'G', 'likes'),
-            ('G', 'F', 'likes')
-        ])
+        query4 = Graph(nodes={
+            'F': dict(attributes={'leader'})
+        })
 
-        solutions = matcher.match(data_graph, query1, (query2, 'CDE'), (query3, 'XYZ'), (query4, 'FG'))
+        solutions = matcher.match(data_graph, query1, (query2, 'CDE'), (query3, 'XYZ'), (query4, 'F'))
 
         assert solutions_equal(
             solutions[query1],
@@ -96,8 +96,8 @@ class GraphMatchingEngineSpec:
         assert solutions_equal(
             solutions[query4],
             [
-                {'F': 'mary', 'G': 'john'},
-                {'F': 'john', 'G': 'mary'}
+                {'F': 'tom'},
+                {'F': 'mary'}
             ])
 
 def solutions_equal(a, b):

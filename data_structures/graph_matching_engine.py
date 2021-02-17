@@ -1,7 +1,7 @@
 
 from GRIDD.data_structures.graph_matching_engine_spec import GraphMatchingEngineSpec
 
-from GRIDD.utilities import IdNamespace, hashabledict
+from GRIDD.utilities import IdNamespace
 from itertools import chain
 import torch
 
@@ -20,6 +20,12 @@ class GraphMatchingEngine:
         query_adj = torch.LongTensor(list(chain(*query_adj_entries)))
         query_attr = entries_to_tensor(query_attr_entries, query_ids, attr_ids)
         compatible_nodes = joined_subset(query_attr, data_attr)
+        query_nodes = torch.arange(0, query_attr.size(0), dtype=torch.long)
+        floating_node_filter = ~row_membership(query_nodes.unsqueeze(1),
+                                               torch.unique(torch.cat([query_adj[:,0], query_adj[:,1]], 0)).unsqueeze(1))
+        floating_nodes = filter_rows(query_nodes.unsqueeze(1), floating_node_filter).squeeze(1)
+        fc = torch.nonzero(compatible_nodes[floating_nodes,:])
+        floating_compatibilities = torch.cat([floating_nodes[fc[:,0]].unsqueeze(1), fc[:,1:]], 1)
         edge_pairs = join(query_adj, data_adj, 2, list(range(len(edge_ids))))
         source_compatible = gather_by_indices(compatible_nodes, edge_pairs[:,[0,2]])
         target_compatible = gather_by_indices(compatible_nodes, edge_pairs[:,[1,3]])
@@ -91,8 +97,8 @@ class GraphMatchingEngine:
             prev_num_edges = num_edges
             num_edges = edge_pairs.size(0)
             i += 1
-        edge_assignments = edge_pairs_postproc(edge_pairs, query_ids, data_ids, edge_ids)
-        all_solutions = gather_solutions(edge_assignments)
+        edge_assignments, node_assignments = edge_pairs_postproc(edge_pairs, floating_compatibilities, query_ids, data_ids, edge_ids)
+        all_solutions = gather_solutions(edge_assignments, node_assignments)
         return all_solutions
 
 def query_graph_var_preproc(*query_graphs):
@@ -150,18 +156,26 @@ def entries_to_tensor(attrs, node_ids, attribute_ids):
     attrs = torch.sparse.LongTensor(indices=attr_indices, values=attr_values, size=attr_size).to_dense()
     return attrs
 
-def edge_pairs_postproc(edge_pairs, query_ids, data_ids, edge_ids):
+def edge_pairs_postproc(edge_pairs, floating_compatibilities, query_ids, data_ids, edge_ids):
     ids = [query_ids.reverse(), query_ids.reverse(), data_ids.reverse(), data_ids.reverse(), edge_ids.reverse()]
     edge_assignments = {}
     for row in edge_pairs:
         row = [(ids[i][int(e)]) for i, e in enumerate(row)]
         (qg, qs), (_, qt), ds, dt, l = row
         edge_assignments.setdefault(qg, {}).setdefault((qs, qt, l), []).append((ds, dt))
-    return {qg: qa for qg, qa in edge_assignments.items() if len(qg.edges()) == len(qa)}
+    edge_assignments = {qg: qa for qg, qa in edge_assignments.items() if len(qg.edges()) == len(qa)}
+    floating_comps = [(ids[0][int(e[0])], ids[2][int(e[1])]) for i, e in enumerate(floating_compatibilities)]
+    node_assignments = {}
+    for (qg, qn), dn in floating_comps:
+        node_assignments.setdefault(qg, {}).setdefault(qn, []).append(dn)
+        if qg not in edge_assignments:
+            edge_assignments[qg] = {}
+    return edge_assignments, node_assignments
 
-def gather_solutions(edge_assignments):
+def gather_solutions(edge_assignments, node_assignments):
     all_solutions = {}
     for query_graph, edge_assignment in edge_assignments.items():
+        node_assignment = node_assignments.get(query_graph, {})
         num_vars = len(query_graph.nodes())
         solutions = [{}]
         edges = list(edge_traversal(query_graph))
@@ -178,10 +192,20 @@ def gather_solutions(edge_assignments):
                             solution[var] = val
                 alternative_solutions.extend(new_solutions)
             solutions = alternative_solutions
-        for solution in solutions:
+        full_solutions = combinations(solutions, *[[(var, val) for val in valset] for var, valset in node_assignment.items()])
+        final_solutions = []
+        for solution in full_solutions:
+            if len(solution) == 1:
+                final_solutions.append(solution[0])
+            else:
+                edge_sol, node_sols = dict(solution[0]), solution[1:]
+                edge_sol.update(node_sols)
+                final_solutions.append(edge_sol)
+        for solution in final_solutions:
             if len(solution) == num_vars:
                 all_solutions.setdefault(query_graph, set()).add(frozenset(solution.items()))
-    all_solutions = {k: [dict(s) for s in v] for k, v in all_solutions.items()}
+    all_solutions = {qg: [{k: v for k, v in sol if 'var' in qg.data(k)} for sol in sols]
+                     for qg, sols in all_solutions.items()}
     return all_solutions
 
 def edge_traversal(graph):
@@ -196,6 +220,19 @@ def edge_traversal(graph):
             stack.extend(list(graph.out_edges(ps)))
             stack.extend(list(graph.in_edges(pt)))
             stack.extend(list(graph.out_edges(pt)))
+
+def combinations(*itemsets):
+    c = [[]]
+    for itemset in list(itemsets):
+        if itemset:
+            cn = []
+            for item in list(itemset):
+                ce = [list(e) for e in c]
+                for sol in ce:
+                    sol.append(item)
+                cn.extend(ce)
+            c = cn
+    return c
 
 def joined_subset(x, y):
     """
@@ -323,5 +360,4 @@ def display(x, *ids, label=None):
     print()
 
 if __name__ == '__main__':
-
     print(GraphMatchingEngineSpec.verify(GraphMatchingEngine))
