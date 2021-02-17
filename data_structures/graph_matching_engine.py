@@ -1,7 +1,7 @@
 
 from GRIDD.data_structures.graph_matching_engine_spec import GraphMatchingEngineSpec
 
-from GRIDD.utilities import IdNamespace
+from GRIDD.utilities import IdNamespace, hashabledict
 from itertools import chain
 import torch
 
@@ -11,8 +11,8 @@ class GraphMatchingEngine:
     def __init__(self):
         pass
 
-    def match(self, data_graph, *query_graphs):
-        query_graphs = query_graph_var_pp(*query_graphs)
+    def match(self, data_graph, *query_graphs, limit=10):
+        query_graphs = query_graph_var_preproc(*query_graphs)
         data_adj_entries, data_attr_entries, data_ids, edge_ids, attr_ids = graph_to_entries(data_graph)
         query_adj_entries, query_attr_entries, query_ids, _, _ = graph_to_entries(*query_graphs, edge_ids=edge_ids, attribute_ids=attr_ids)
         data_adj = torch.LongTensor(list(chain(*data_adj_entries)))
@@ -42,7 +42,10 @@ class GraphMatchingEngine:
         constraints = torch.cat([query_source_counts, query_target_counts], 1)
         display(constraints, query_ids, None, None,
                 label='Query constraint counts')
-        for i in range(1):
+        prev_num_edges = edge_pairs.size(0) * 2
+        num_edges = edge_pairs.size(0)
+        i = 0
+        while num_edges < prev_num_edges or i == limit:
             qsqtdsl = torch.unique(edge_pairs[:,[0,1,2,4]], dim=0)
             qsqtdtl = torch.unique(edge_pairs[:,[0,1,3,4]], dim=0)
             qsdsl, source_counts = torch.unique(qsqtdsl[:,[0,2,3]], dim=0, return_counts=True)
@@ -85,10 +88,14 @@ class GraphMatchingEngine:
             edge_pairs = filter_rows(edge_pairs, ~edge_filter_2)
             display(edge_pairs, query_ids, query_ids, data_ids, data_ids, edge_ids,
                     label='Edge candidates (%d) after %d link filters' % (len(edge_pairs), i + 1))
+            prev_num_edges = num_edges
+            num_edges = edge_pairs.size(0)
+            i += 1
+        edge_assignments = edge_pairs_postproc(edge_pairs, query_ids, data_ids, edge_ids)
+        all_solutions = gather_solutions(edge_assignments)
+        return all_solutions
 
-        return
-
-def query_graph_var_pp(*query_graphs):
+def query_graph_var_preproc(*query_graphs):
     """Preprocess query graph vars"""
     query_graphs = list(query_graphs)
     for i, qg in enumerate(query_graphs):
@@ -142,6 +149,53 @@ def entries_to_tensor(attrs, node_ids, attribute_ids):
     attr_size = torch.Size([len(node_ids), len(attribute_ids)])
     attrs = torch.sparse.LongTensor(indices=attr_indices, values=attr_values, size=attr_size).to_dense()
     return attrs
+
+def edge_pairs_postproc(edge_pairs, query_ids, data_ids, edge_ids):
+    ids = [query_ids.reverse(), query_ids.reverse(), data_ids.reverse(), data_ids.reverse(), edge_ids.reverse()]
+    edge_assignments = {}
+    for row in edge_pairs:
+        row = [(ids[i][int(e)]) for i, e in enumerate(row)]
+        (qg, qs), (_, qt), ds, dt, l = row
+        edge_assignments.setdefault(qg, {}).setdefault((qs, qt, l), []).append((ds, dt))
+    return {qg: qa for qg, qa in edge_assignments.items() if len(qg.edges()) == len(qa)}
+
+def gather_solutions(edge_assignments):
+    all_solutions = {}
+    for query_graph, edge_assignment in edge_assignments.items():
+        num_vars = len(query_graph.nodes())
+        solutions = [{}]
+        edges = list(edge_traversal(query_graph))
+        for qs, qt, l in edges:
+            alternative_solutions = []
+            for ds, dt in edge_assignment[(qs, qt, l)]:
+                new_solutions = [dict(solution) for solution in solutions]
+                for var, val in [(qs, ds), (qt, dt)]:
+                    for solution in list(new_solutions):
+                        if var in solution:
+                            if solution[var] != val and solution in new_solutions:
+                                new_solutions.remove(solution)
+                        else:
+                            solution[var] = val
+                alternative_solutions.extend(new_solutions)
+            solutions = alternative_solutions
+        for solution in solutions:
+            if len(solution) == num_vars:
+                all_solutions.setdefault(query_graph, set()).add(frozenset(solution.items()))
+    all_solutions = {k: [dict(s) for s in v] for k, v in all_solutions.items()}
+    return all_solutions
+
+def edge_traversal(graph):
+    visited = set()
+    stack = list(graph.edges())
+    while stack:
+        ps, pt, pl = stack.pop()
+        if (ps, pt, pl) not in visited:
+            visited.add((ps, pt, pl))
+            yield (ps, pt, pl)
+            stack.extend(list(graph.in_edges(ps)))
+            stack.extend(list(graph.out_edges(ps)))
+            stack.extend(list(graph.in_edges(pt)))
+            stack.extend(list(graph.out_edges(pt)))
 
 def joined_subset(x, y):
     """
@@ -231,7 +285,7 @@ def row_membership(a, b):
     c = torch.cat([a, b], 0)
     c_unique, c_ridx, c_counts = torch.unique(c, dim=0, return_inverse=True, return_counts=True)
     a_exist = a_counts[a_ridx]
-    c_exist = c_counts[a_ridx]
+    c_exist = c_counts[c_ridx[:a.size(0)]]
     m = torch.gt(c_exist, a_exist)
     return m
 

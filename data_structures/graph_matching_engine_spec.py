@@ -62,22 +62,46 @@ class GraphMatchingEngineSpec:
             'X': dict(attributes={'leader'})
         })
 
-        solutions = matcher.match(data_graph, query1, (query2, 'CDE'), (query3, 'XYZ'))
+        query4 = Graph([
+            ('F', 'G', 'likes'),
+            ('G', 'F', 'likes')
+        ])
 
-        assert solutions == {
-            query1: [
+        solutions = matcher.match(data_graph, query1, (query2, 'CDE'), (query3, 'XYZ'), (query4, 'FG'))
+
+        assert solutions_equal(
+            solutions[query1],
+            [
                 {'A': 'mary', 'B': 'john'},
                 {'A': 'mary', 'B': 'sally'},
                 {'A': 'sally', 'B': 'john'},
                 {'A': 'tom', 'B': 'mary'},
                 {'A': 'john', 'B': 'mary'}
-            ],
-            query2: [
+            ])
+
+        assert solutions_equal(
+            solutions[query2],
+            [
                 {'C': 'mary', 'D': 'john', 'E': 'tom'},
                 {'C': 'mary', 'D': 'sally', 'E': 'tom'},
                 {'C': 'sally', 'D': 'john', 'E': 'tom'}
-            ],
-            query3: [
+            ])
+
+        assert solutions_equal(
+            solutions[query3],
+            [
                 {'X': 'mary', 'Y': 'sally', 'Z': 'john'}
-            ]
-        }
+            ])
+
+        assert solutions_equal(
+            solutions[query4],
+            [
+                {'F': 'mary', 'G': 'john'},
+                {'F': 'john', 'G': 'mary'}
+            ])
+
+def solutions_equal(a, b):
+    a_cmp = sorted([sorted(e.items()) for e in a])
+    b_cmp = sorted([sorted(e.items()) for e in b])
+    cmp = a_cmp == b_cmp
+    return cmp

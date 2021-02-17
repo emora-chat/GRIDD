@@ -92,6 +92,15 @@ def map(current_graph, other_concept, other_namespace, id_map):
         current_graph.add(mapped_concept)
     return mapped_concept
 
+class hashabledict(dict):
+  def __key(self):
+    return tuple((k,self[k]) for k in sorted(self))
+  def __hash__(self):
+    return hash(self.__key())
+  def __eq__(self, other):
+    self_id = self.__key()
+    other_id = other.__key()
+    return self_id == other_id
 
 if __name__ == '__main__':
     for i in range(1000):
