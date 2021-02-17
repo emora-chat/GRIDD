@@ -1,11 +1,6 @@
 
-class BaseResponseGeneration:
+class ResponseGeneration:
 
-    def run(self, input, working_memory):
-        """
+    def __call__(self, main_predicate, supporting_predicates):
 
-        :param input: ordered sequence of predicate trees
-        :param working_memory: updated dialogue graph by merge-and-inference procedure
-        :return: natural language representation of predicate trees
-        """
-        return ' & '.join(str(x) for x in input)
+        return str(main_predicate) + ' ' + str(supporting_predicates)
