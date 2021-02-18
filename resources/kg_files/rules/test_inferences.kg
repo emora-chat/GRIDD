@@ -10,11 +10,11 @@ buy(X/person(), Y/house())
 locate(Y, Z/state())
 =>
 xlz/live(X,Z)
-question(like(X,xlz))
+question(like.v.01(X,xlz))
 ;
 
 buy(X/person(), Y/car())
 =>
-question(xld/like(X, Y))
+question(xld/like.v.01(X, Y))
 time(xld, now)
 ;

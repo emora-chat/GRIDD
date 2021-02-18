@@ -1631,6 +1631,21 @@ Recognize all nouns that exist as concepts in the KG.
 	
 </details>
 
+## Single Words
+
+If a word is mentioned that does not match a previous rule, instantiate it as a lone concept.
+
+<details>
+  <summary>Conversions</summary>
+
+	X/pos()
+	-> single_word ->
+	focus(X())
+	center(X)
+	;
+	
+</details>
+
 ## Compound Concept
 
 Compound concepts are condensed into a single entity when the dependency relations are preprocessed  into a `concept graph`, before any conversion rules are applied.

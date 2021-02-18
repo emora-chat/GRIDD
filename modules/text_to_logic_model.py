@@ -272,7 +272,9 @@ class ParseToLogic:
     def _get_concept_of_span(self, span, ewm):
         expression = self._get_expression_of_span(span, ewm)
         if expression is not None:
-            (concept_var,) = ewm.objects(expression, 'expr')
+            # todo - disambiguation between multiple concepts per expression (for now, selecting first)
+            expressions = ewm.objects(expression, 'expr')
+            concept_var = next(iter(expressions))
             # unknown_type = None
             # for n in ['verb', 'noun', 'pron', 'adj', 'adv', 'other']:
             #     if ewm.has(concept_var,'type','unknown_%s' % n):

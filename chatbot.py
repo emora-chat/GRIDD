@@ -4,9 +4,8 @@ QUICK_LOCAL_TESTING = True
 
 import warnings
 warnings.filterwarnings('ignore')
-import time
+import time, os, json
 from os.path import join
-import json
 
 from GRIDD.data_structures.knowledge_base import KnowledgeBase
 from GRIDD.data_structures.working_memory import WorkingMemory
@@ -28,6 +27,8 @@ from GRIDD.modules.response_selection_salience import SalienceResponseSelection
 from GRIDD.modules.response_expansion import ResponseExpansion
 from GRIDD.modules.response_generation import ResponseGeneration
 
+from GRIDD.utilities import collect
+
 if QUICK_LOCAL_TESTING is False:
     from GRIDD.modules.sentence_casing import SentenceCaser
 else:
@@ -38,7 +39,7 @@ class Chatbot:
     Implementation of full chatbot pipeline. Instantiate and chat!
     """
 
-    def __init__(self, *knowledge_base):
+    def __init__(self, *knowledge_base, rules):
         self.knowledge_base = KnowledgeBase(*knowledge_base)
         self.working_memory = WorkingMemory(self.knowledge_base)
         self.auxiliary_state = {'turn_index': 0}
@@ -51,8 +52,7 @@ class Chatbot:
         mention_bridge = c(MentionBridge())
         merge_dp = c(MergeSpanToMergeConcept())
         merge_bridge = c(MergeBridge(threshold_score=0.2))
-        inference_rulebased = c(
-            InferenceRuleBased([join('GRIDD', 'resources', 'kg_files', 'test_inferences.kg')]))
+        inference_rulebased = c(InferenceRuleBased(rules))
         inference_bridge = c(InferenceBridge())
         sentence_caser = c(SentenceCaser())
         merge_coref = c(MergeCoreference())
@@ -142,8 +142,12 @@ if __name__ == '__main__':
 
     interactive = True
 
+    kb = join('GRIDD', 'resources', 'kg_files', 'kb')
+    rule_dir = join('GRIDD', 'resources', 'kg_files', 'rules')
+    rules = [join(rule_dir, file) for file in os.listdir(rule_dir) if file.endswith('.kg')]
+
     if interactive:
-        chatbot = Chatbot(join('GRIDD', 'resources', 'kg_files', 'framework_test.kg'))
+        chatbot = Chatbot(kb, rules=rules)
         chatbot.chat()
     else:
         print(ChatbotSpec.verify(Chatbot))

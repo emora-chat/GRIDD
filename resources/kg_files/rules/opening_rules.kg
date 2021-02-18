@@ -1,4 +1,4 @@
-E/feeling_n_01()
+E/feeling.n.01()
 -> emotion ->
 cause(E, question(object()))
 ;

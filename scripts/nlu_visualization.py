@@ -9,7 +9,10 @@ if __name__ == '__main__':
 
     extract_elit_rules_from_doc.extract()
 
-    chatbot = Chatbot(join('GRIDD', 'resources', 'kg_files', 'framework_test.kg'))
+    kb = join('GRIDD', 'resources', 'kg_files', 'kb')
+    test_kb = join('GRIDD', 'resources', 'kg_files', 'framework_test.kg')
+
+    chatbot = Chatbot(kb)
     nlu = chatbot.pipeline['sentence_caser',
                      'elit_models', 'elit_dp',
                      'mention_bridge',

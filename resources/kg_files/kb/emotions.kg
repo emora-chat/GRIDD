@@ -2,9 +2,8 @@ attribute.n.02<entity>
 state.n.02<attribute.n.02>
 feeling.n.01<state.n.02>
 expr("feeling", feeling.n.01)
-emotion.n.01<feeling.n.01>
-expr("emotion", emotion.n.01)
-anger.n.01<emotion.n.01>
+expr("emotion", feeling.n.01)
+anger.n.01<feeling.n.01>
 expr("anger", anger.n.01)
 expr("ire", anger.n.01)
 annoyance.n.02<anger.n.01>
@@ -31,8 +30,10 @@ expr("outrage", indignation.n.01)
 umbrage.n.01<anger.n.01>
 expr("offense", umbrage.n.01)
 expr("offence", umbrage.n.01)
-anxiety.n.02<emotion.n.01>
+anxiety.n.02<feeling.n.01>
 expr("anxiety", anxiety.n.02)
+expr("anxious", anxiety.n.02)
+expr("nervous", anxiety.n.02)
 angst.n.01<anxiety.n.02>
 expr("angst", angst.n.01)
 concern.n.02<anxiety.n.02>
@@ -43,33 +44,33 @@ sinking.n.03<anxiety.n.02>
 expr("sinking", sinking.n.03)
 worry.n.02<anxiety.n.02>
 expr("worry", worry.n.02)
-emotional_state.n.01<emotion.n.01>
-expr("spirit", emotional_state.n.01)
-ecstasy.n.01<emotional_state.n.01>
+ecstasy.n.01<feeling.n.01>
 expr("ecstasy", ecstasy.n.01)
 expr("rapture", ecstasy.n.01)
 expr("transport", ecstasy.n.01)
-embarrassment.n.02<emotional_state.n.01>
+embarrassment.n.02<feeling.n.01>
 expr("embarrassment", embarrassment.n.02)
-gratification.n.01<emotional_state.n.01>
+gratification.n.01<feeling.n.01>
 expr("satisfaction", gratification.n.01)
 comfort.n.05<gratification.n.01>
 expr("comfort", comfort.n.05)
-happiness.n.01<emotional_state.n.01>
+happiness.n.01<feeling.n.01>
 expr("happiness", happiness.n.01)
 expr("felicity", happiness.n.01)
 blessedness.n.01<happiness.n.01>
 nirvana.n.01<blessedness.n.01>
 expr("nirvana", nirvana.n.01)
 expr("enlightenment", nirvana.n.01)
-unhappiness.n.02<emotional_state.n.01>
+unhappiness.n.02<feeling.n.01>
 sadness.n.02<unhappiness.n.02>
 expr("sadness", sadness.n.02)
 expr("sorrow", sadness.n.02)
+expr("depressed", sadness.n.02)
+expr("depression", sadness.n.02)
 mourning.n.01<sadness.n.02>
 expr("mourning", mourning.n.01)
 expr("bereavement", mourning.n.01)
-fear.n.01<emotion.n.01>
+fear.n.01<feeling.n.01>
 expr("fear", fear.n.01)
 alarm.n.01<fear.n.01>
 expr("alarm", alarm.n.01)
@@ -96,9 +97,9 @@ scare.n.02<fear.n.01>
 expr("scare", scare.n.02)
 timidity.n.01<fear.n.01>
 diffidence.n.01<timidity.n.01>
-fear.n.03<emotion.n.01>
+fear.n.03<feeling.n.01>
 expr("awe", fear.n.03)
-hate.n.01<emotion.n.01>
+hate.n.01<feeling.n.01>
 expr("hate", hate.n.01)
 expr("hatred", hate.n.01)
 hostility.n.03<hate.n.01>
@@ -120,7 +121,7 @@ expr("malice", malice.n.01)
 expr("spite", malice.n.01)
 expr("venom", malice.n.01)
 misoneism.n.01<hate.n.01>
-joy.n.01<emotion.n.01>
+joy.n.01<feeling.n.01>
 expr("joy", joy.n.01)
 elation.n.02<joy.n.01>
 exhilaration.n.01<joy.n.01>
@@ -135,7 +136,7 @@ expr("kick", bang.n.04)
 exultation.n.01<joy.n.01>
 triumph.n.02<exultation.n.01>
 expr("triumph", triumph.n.02)
-love.n.01<emotion.n.01>
+love.n.01<feeling.n.01>
 expr("love", love.n.01)
 benevolence.n.01<love.n.01>
 devotion.n.01<love.n.01>
@@ -592,7 +593,7 @@ okay<unhappiness.n.02>
 expr("okay", okay)
 expr("ok", okay)
 expr("fine", okay)
-anger.n.02<emotion.n.01>
+anger.n.02<feeling.n.01>
 expr("anger", anger.n.02)
 angry.s.01<anger.n.02>
 expr("angry", angry.s.01)
@@ -636,9 +637,7 @@ expr("enthusiastic", passionate.s.01)
 expr("loving", passionate.s.01)
 apathetic.s.02<apathy.n.01>
 expr("indifferent", apathetic.s.02)
-psychological_state.n.01<state.n.02>
-cognitive_state.n.01<psychological_state.n.01>
-interestedness.n.01<cognitive_state.n.01>
+interestedness.n.01<feeling.n.01>
 interested.s.01<interestedness.n.01>
 expr("interested", interested.s.01)
 expr("curious", interested.s.01)
@@ -648,8 +647,7 @@ expr("frantic", agitated.s.01)
 expr("shaken", agitated.s.01)
 expr("psychedelic", agitated.s.01)
 expr("tense", agitated.s.01)
-physical_condition.n.01<state.n.02>
-good_health.n.01<physical_condition.n.01>
+good_health.n.01<feeling.n.01>
 energy.n.05<good_health.n.01>
 expr("vim", energy.n.05)
 expr("vitality", energy.n.05)
@@ -707,16 +705,39 @@ expr("tranquil", composed.s.01)
 expr("collected", composed.s.01)
 expr("poised", composed.s.01)
 expr("cool", composed.s.01)
-elation.n.01<psychological_state.n.01>
+elation.n.01<feeling.n.01>
 bliss.n.01<elation.n.01>
 expr("bliss", bliss.n.01)
 ecstasy.n.02<bliss.n.01>
 expr("ecstasy", ecstasy.n.02)
+expr("ecstatic", ecstasy.n.02)
 expr("rapture", ecstasy.n.02)
 joyless.s.01<joylessness.n.01>
 expr("depressing", joyless.s.01)
 expr("unhappy", joyless.s.01)
 
-pos_feeling<feeling.n.01>
-neg_feeling<feeling.n.01>
+stress<feeling.n.01>
+expr("stress", stress)
+expr("stressed", stress)
+expr("overwhelmed", stress)
 
+pos_feeling<feeling.n.01>
+happiness.n.01<pos_feeling>
+good_health.n.01<pos_feeling>
+elation.n.01<pos_feeling>
+rejoice.v.01<pos_feeling>
+joy.n.01<pos_feeling>
+hope.n.02<pos_feeling>
+pleasure.n.01<pos_feeling>
+
+neg_feeling<feeling.n.01>
+stress<neg_feeling>
+anger.n.01<neg_feeling>
+anger.n.02<neg_feeling>
+unhappiness.n.02<neg_feeling>
+sadness.n.01<neg_feeling>
+pain.n.02<neg_feeling>
+anxiety.n.02<neg_feeling>
+fear.n.01<neg_feeling>
+hate.n.01<neg_feeling>
+dislike.n.02<neg_feeling>

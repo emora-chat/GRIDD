@@ -2,13 +2,13 @@ X/student()
 =>
 attend(X, question(school_level()))
 has(X, t/teacher())
-like(X, question(t))
+like.v.01(X, question(t))
 has(X, class())
 ;
 
 has(X/person(), Y/class())
 =>
-question(like(X,Y))
+question(like.v.01(X,Y))
 ;
 
 o/obligation(X/person(), object())
