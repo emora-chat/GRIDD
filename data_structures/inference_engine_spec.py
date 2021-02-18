@@ -2,7 +2,7 @@
 from structpy import specification
 
 from GRIDD.data_structures.concept_graph import ConceptGraph
-
+import time
 
 @specification
 class InferenceEngineSpec:
@@ -52,7 +52,9 @@ class InferenceEngineSpec:
         like(x, z)
         '''.split(';')
 
+        t = time.time()
         solutions = inference_engine.infer(facts, *rules)
+        print('Elapsed: %.3f'%(time.time()-t))
 
         assert solutions_equal(solutions[list(inference_engine.rules.keys())[0]], [
                 {'a': 'john', 'b': 'mary', 'alb': 'jlm'},
@@ -77,18 +79,18 @@ class InferenceEngineSpec:
         """
 
         facts = '''
-        like(john, mary)
-        like(mary, sally)
+        jlm=like(john=object(), mary=object())
+        mls=like(mary, sally=object())
         '''
 
         rules = '''
-        like(x/object(), y/object())
-        like(y/object(), z/object())
+        xly=like(x=object(), y=object())
+        ylz=like(y, z=object())
         =>
         like(x, z)
         '''.split(';')
 
-        implications = inference_engine.apply(facts, rules)
+        implications = inference_engine.apply(facts, *rules)
 
         assert concept_graphs_equal(
             implications[rules[0]][0],

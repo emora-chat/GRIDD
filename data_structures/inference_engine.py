@@ -54,7 +54,7 @@ class InferenceEngine:
                 precondition.data(node)['attributes'] = types
             converted_rules[rid] = precondition
         sols = self.matcher.match(facts_graph, *list(converted_rules.values()))
-        return sols
+        return {converted_rules.reverse()[precondition]: sol for precondition, sol in sols.items()}
 
     def apply(self, facts=None, *rules, solutions=None):
         if facts is not None:
