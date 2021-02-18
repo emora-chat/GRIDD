@@ -1,0 +1,34 @@
+X/student()
+=>
+attend(X, question(school_level()))
+has(X, t/teacher())
+like(X, question(t))
+has(X, class())
+;
+
+has(X/person(), Y/class())
+=>
+question(like(X,Y))
+;
+
+o/obligation(X/person(), object())
+=>
+feel(X, question(e/emotion()))
+cause(e, o)
+;
+
+a/attitude(person(), object())
+=>
+cause(a, question(object()))
+;
+
+X/emotion()
+=>
+cause(X, Z/object())
+;
+
+X/class()
+=>
+about(X, question(school_subject()))
+;
+

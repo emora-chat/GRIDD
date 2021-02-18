@@ -1,0 +1,24 @@
+E/feeling_n_01()
+-> emotion ->
+cause(E, question(object()))
+;
+
+F/feel(person(), pos_feeling())
+=>
+property(F, positive)
+;
+
+PF/feel(person(), neg_feeling())
+=>
+property(PF, negative)
+EF/feel(emora, sorry)
+about(EF,PF)
+;
+
+cause(feeling_n_01(), F/fail(person(),t/test()))
+=>
+property(F, negative)
+property(t, hard)
+;
+
+

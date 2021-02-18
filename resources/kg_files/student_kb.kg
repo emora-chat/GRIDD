@@ -1,0 +1,67 @@
+question<predicate>
+
+student<person>
+teacher<person>
+classmate<person>
+friend<person>
+
+obligation<predicate>
+due<predicate>
+about<predicate>
+
+workload<entity>
+exam<workload>
+test<exam>
+quiz<exam>
+homework<workload>
+project<workload>
+presentation<workload>
+worksheet<homework>
+
+school_subject<entity>
+english<school_subject>
+math<school_subject>
+science<school_subject>
+
+class<entity>
+
+meeting<entity>
+class_session<meeting>
+lecture<meeting>
+study_group<meeting>
+
+attend<predicate>
+school<entity>
+school_level<entity>
+high_school<school_level>
+middle_school<school_level>
+college<school_level>
+
+cause<predicate>
+feel<predicate>
+
+emotion<entity>
+stress<emotion>
+happiness<emotion>
+anger<emotion>
+sadness<emotion>
+excitement<emotion>
+
+attitude<predicate>
+like<attitude>
+dislike<attitude>
+fear<attitude>
+
+study<predicate>
+
+type(emora, student)
+o1/obligation(emora, h/homework())
+due(o1, tomorrow)
+about(h, math)
+o2/obligation(emora, p/presentation())
+due(o2, tomorrow)
+about(p, science)
+like(emora, science)
+dislike(emora, math)
+;
+

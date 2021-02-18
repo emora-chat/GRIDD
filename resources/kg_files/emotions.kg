@@ -1,0 +1,722 @@
+attribute.n.02<entity>
+state.n.02<attribute.n.02>
+feeling.n.01<state.n.02>
+expr("feeling", feeling.n.01)
+emotion.n.01<feeling.n.01>
+expr("emotion", emotion.n.01)
+anger.n.01<emotion.n.01>
+expr("anger", anger.n.01)
+expr("ire", anger.n.01)
+annoyance.n.02<anger.n.01>
+frustration.n.03<annoyance.n.02>
+expr("frustration", frustration.n.03)
+harassment.n.01<annoyance.n.02>
+expr("harassment", harassment.n.01)
+pique.n.02<annoyance.n.02>
+expr("temper", pique.n.02)
+expr("irritation", pique.n.02)
+bad_temper.n.01<anger.n.01>
+fit.n.01<bad_temper.n.01>
+expr("fit", fit.n.01)
+irascibility.n.01<bad_temper.n.01>
+expr("spleen", irascibility.n.01)
+fury.n.01<anger.n.01>
+expr("fury", fury.n.01)
+expr("rage", fury.n.01)
+expr("madness", fury.n.01)
+wrath.n.01<fury.n.01>
+expr("wrath", wrath.n.01)
+indignation.n.01<anger.n.01>
+expr("outrage", indignation.n.01)
+umbrage.n.01<anger.n.01>
+expr("offense", umbrage.n.01)
+expr("offence", umbrage.n.01)
+anxiety.n.02<emotion.n.01>
+expr("anxiety", anxiety.n.02)
+angst.n.01<anxiety.n.02>
+expr("angst", angst.n.01)
+concern.n.02<anxiety.n.02>
+expr("concern", concern.n.02)
+insecurity.n.02<anxiety.n.02>
+expr("insecurity", insecurity.n.02)
+sinking.n.03<anxiety.n.02>
+expr("sinking", sinking.n.03)
+worry.n.02<anxiety.n.02>
+expr("worry", worry.n.02)
+emotional_state.n.01<emotion.n.01>
+expr("spirit", emotional_state.n.01)
+ecstasy.n.01<emotional_state.n.01>
+expr("ecstasy", ecstasy.n.01)
+expr("rapture", ecstasy.n.01)
+expr("transport", ecstasy.n.01)
+embarrassment.n.02<emotional_state.n.01>
+expr("embarrassment", embarrassment.n.02)
+gratification.n.01<emotional_state.n.01>
+expr("satisfaction", gratification.n.01)
+comfort.n.05<gratification.n.01>
+expr("comfort", comfort.n.05)
+happiness.n.01<emotional_state.n.01>
+expr("happiness", happiness.n.01)
+expr("felicity", happiness.n.01)
+blessedness.n.01<happiness.n.01>
+nirvana.n.01<blessedness.n.01>
+expr("nirvana", nirvana.n.01)
+expr("enlightenment", nirvana.n.01)
+unhappiness.n.02<emotional_state.n.01>
+sadness.n.02<unhappiness.n.02>
+expr("sadness", sadness.n.02)
+expr("sorrow", sadness.n.02)
+mourning.n.01<sadness.n.02>
+expr("mourning", mourning.n.01)
+expr("bereavement", mourning.n.01)
+fear.n.01<emotion.n.01>
+expr("fear", fear.n.01)
+alarm.n.01<fear.n.01>
+expr("alarm", alarm.n.01)
+apprehension.n.01<fear.n.01>
+expr("dread", apprehension.n.01)
+chill.n.04<apprehension.n.01>
+expr("chill", chill.n.04)
+foreboding.n.01<apprehension.n.01>
+shadow.n.04<foreboding.n.01>
+expr("shadow", shadow.n.04)
+suspense.n.01<apprehension.n.01>
+expr("suspense", suspense.n.01)
+frisson.n.01<fear.n.01>
+expr("chill", frisson.n.01)
+expr("thrill", frisson.n.01)
+horror.n.01<fear.n.01>
+expr("horror", horror.n.01)
+intimidation.n.03<fear.n.01>
+expr("intimidation", intimidation.n.03)
+panic.n.01<fear.n.01>
+expr("panic", panic.n.01)
+expr("terror", panic.n.01)
+scare.n.02<fear.n.01>
+expr("scare", scare.n.02)
+timidity.n.01<fear.n.01>
+diffidence.n.01<timidity.n.01>
+fear.n.03<emotion.n.01>
+expr("awe", fear.n.03)
+hate.n.01<emotion.n.01>
+expr("hate", hate.n.01)
+expr("hatred", hate.n.01)
+hostility.n.03<hate.n.01>
+expr("hostility", hostility.n.03)
+aggression.n.02<hostility.n.03>
+expr("aggression", aggression.n.02)
+belligerence.n.01<hostility.n.03>
+resentment.n.01<hostility.n.03>
+expr("gall", resentment.n.01)
+envy.n.01<resentment.n.01>
+expr("envy", envy.n.01)
+jealousy.n.01<envy.n.01>
+expr("jealousy", jealousy.n.01)
+grudge.n.01<resentment.n.01>
+expr("grievance", grudge.n.01)
+malevolence.n.01<hate.n.01>
+malice.n.01<malevolence.n.01>
+expr("malice", malice.n.01)
+expr("spite", malice.n.01)
+expr("venom", malice.n.01)
+misoneism.n.01<hate.n.01>
+joy.n.01<emotion.n.01>
+expr("joy", joy.n.01)
+elation.n.02<joy.n.01>
+exhilaration.n.01<joy.n.01>
+expr("excitement", exhilaration.n.01)
+bang.n.04<exhilaration.n.01>
+expr("bang", bang.n.04)
+expr("boot", bang.n.04)
+expr("rush", bang.n.04)
+expr("flush", bang.n.04)
+expr("thrill", bang.n.04)
+expr("kick", bang.n.04)
+exultation.n.01<joy.n.01>
+triumph.n.02<exultation.n.01>
+expr("triumph", triumph.n.02)
+love.n.01<emotion.n.01>
+expr("love", love.n.01)
+benevolence.n.01<love.n.01>
+devotion.n.01<love.n.01>
+expr("devotion", devotion.n.01)
+lovingness.n.01<love.n.01>
+expr("caring", lovingness.n.01)
+warmheartedness.n.01<lovingness.n.01>
+expr("warmth", warmheartedness.n.01)
+loyalty.n.02<love.n.01>
+expr("loyalty", loyalty.n.02)
+puppy_love.n.01<love.n.01>
+expr("crush", puppy_love.n.01)
+worship.n.02<love.n.01>
+expr("worship", worship.n.02)
+affection.n.01<feeling.n.01>
+expr("affection", affection.n.01)
+attachment.n.01<affection.n.01>
+expr("attachment", attachment.n.01)
+regard.n.06<affection.n.01>
+expr("regard", regard.n.06)
+expr("respect", regard.n.06)
+agitation.n.03<feeling.n.01>
+fidget.n.01<agitation.n.03>
+stir.n.02<agitation.n.03>
+expr("stir", stir.n.02)
+electricity.n.03<stir.n.02>
+expr("electricity", electricity.n.03)
+sensation.n.03<stir.n.02>
+expr("sensation", sensation.n.03)
+tumult.n.02<agitation.n.03>
+expr("turmoil", tumult.n.02)
+unrest.n.02<agitation.n.03>
+expr("unrest", unrest.n.02)
+ambivalence.n.01<feeling.n.01>
+conflict.n.02<ambivalence.n.01>
+expr("conflict", conflict.n.02)
+apathy.n.01<feeling.n.01>
+emotionlessness.n.01<apathy.n.01>
+expr("indifference", emotionlessness.n.01)
+astonishment.n.01<feeling.n.01>
+stupefaction.n.01<astonishment.n.01>
+daze.n.01<stupefaction.n.01>
+expr("shock", daze.n.01)
+surprise.n.01<astonishment.n.01>
+expr("surprise", surprise.n.01)
+wonder.n.01<astonishment.n.01>
+expr("wonder", wonder.n.01)
+expr("admiration", wonder.n.01)
+awe.n.01<wonder.n.01>
+expr("awe", awe.n.01)
+calmness.n.03<feeling.n.01>
+tranquillity.n.02<calmness.n.03>
+expr("tranquility", tranquillity.n.02)
+peace.n.03<tranquillity.n.02>
+expr("peace", peace.n.03)
+expr("serenity", peace.n.03)
+complex.n.03<feeling.n.01>
+expr("complex", complex.n.03)
+desire.n.01<feeling.n.01>
+expr("desire", desire.n.01)
+ambition.n.01<desire.n.01>
+expr("ambition", ambition.n.01)
+expr("aspiration", ambition.n.01)
+caprice.n.01<desire.n.01>
+expr("impulse", caprice.n.01)
+craving.n.01<desire.n.01>
+expr("craving", craving.n.01)
+addiction.n.02<craving.n.01>
+expr("addiction", addiction.n.02)
+appetite.n.01<craving.n.01>
+expr("appetite", appetite.n.01)
+stomach.n.04<appetite.n.01>
+expr("stomach", stomach.n.04)
+longing.n.01<desire.n.01>
+expr("longing", longing.n.01)
+discontentment.n.01<longing.n.01>
+dissatisfaction.n.01<discontentment.n.01>
+boredom.n.01<dissatisfaction.n.01>
+expr("boredom", boredom.n.01)
+fatigue.n.03<boredom.n.01>
+expr("fatigue", fatigue.n.03)
+disappointment.n.01<dissatisfaction.n.01>
+expr("disappointment", disappointment.n.01)
+frustration.n.01<disappointment.n.01>
+expr("frustration", frustration.n.01)
+expr("defeat", frustration.n.01)
+hankering.n.01<longing.n.01>
+expr("yen", hankering.n.01)
+nostalgia.n.01<longing.n.01>
+expr("nostalgia", nostalgia.n.01)
+pining.n.01<longing.n.01>
+temptation.n.02<desire.n.01>
+expr("temptation", temptation.n.02)
+urge.n.02<desire.n.01>
+expr("urge", urge.n.02)
+wish.n.01<desire.n.01>
+expr("wish", wish.n.01)
+expr("wishing", wish.n.01)
+despair.n.02<feeling.n.01>
+expr("despair", despair.n.02)
+discouragement.n.01<despair.n.02>
+intimidation.n.02<discouragement.n.01>
+expr("intimidation", intimidation.n.02)
+pessimism.n.01<despair.n.02>
+resignation.n.01<despair.n.02>
+expr("resignation", resignation.n.01)
+expr("surrender", resignation.n.01)
+devastation.n.02<feeling.n.01>
+expr("devastation", devastation.n.02)
+dislike.n.02<feeling.n.01>
+expr("dislike", dislike.n.02)
+alienation.n.01<dislike.n.02>
+isolation.n.02<alienation.n.01>
+expr("isolation", isolation.n.02)
+contempt.n.01<dislike.n.02>
+expr("contempt", contempt.n.01)
+expr("despite", contempt.n.01)
+disgust.n.01<dislike.n.02>
+nausea.n.02<disgust.n.01>
+expr("nausea", nausea.n.02)
+repugnance.n.01<disgust.n.01>
+expr("horror", repugnance.n.01)
+enthusiasm.n.01<feeling.n.01>
+expr("enthusiasm", enthusiasm.n.01)
+eagerness.n.01<enthusiasm.n.01>
+ardor.n.01<eagerness.n.01>
+expr("elan", ardor.n.01)
+expr("zeal", ardor.n.01)
+expectation.n.03<feeling.n.01>
+expr("expectation", expectation.n.03)
+anticipation.n.01<expectation.n.03>
+expr("anticipation", anticipation.n.01)
+expr("expectancy", anticipation.n.01)
+fever.n.02<anticipation.n.01>
+expr("fever", fever.n.02)
+suspense.n.03<anticipation.n.01>
+expr("suspense", suspense.n.03)
+fearlessness.n.01<feeling.n.01>
+security.n.03<fearlessness.n.01>
+confidence.n.02<security.n.03>
+expr("confidence", confidence.n.02)
+glow.n.04<feeling.n.01>
+expr("glow", glow.n.04)
+gratitude.n.01<feeling.n.01>
+expr("gratitude", gratitude.n.01)
+gravity.n.03<feeling.n.01>
+expr("gravity", gravity.n.03)
+earnestness.n.01<gravity.n.03>
+expr("seriousness", earnestness.n.01)
+happiness.n.02<feeling.n.01>
+expr("happiness", happiness.n.02)
+belonging.n.01<happiness.n.02>
+expr("belonging", belonging.n.01)
+cheerfulness.n.02<happiness.n.02>
+contentment.n.01<happiness.n.02>
+satisfaction.n.01<contentment.n.01>
+expr("satisfaction", satisfaction.n.01)
+complacency.n.01<satisfaction.n.01>
+fulfillment.n.01<satisfaction.n.01>
+expr("fulfillment", fulfillment.n.01)
+pride.n.02<satisfaction.n.01>
+expr("pride", pride.n.02)
+gaiety.n.01<happiness.n.02>
+hope.n.02<feeling.n.01>
+expr("hope", hope.n.02)
+encouragement.n.03<hope.n.02>
+expr("encouragement", encouragement.n.03)
+optimism.n.01<hope.n.02>
+expr("optimism", optimism.n.01)
+humility.n.02<feeling.n.01>
+expr("humility", humility.n.02)
+meekness.n.01<humility.n.02>
+expr("submission", meekness.n.01)
+levity.n.01<feeling.n.01>
+liking.n.01<feeling.n.01>
+expr("liking", liking.n.01)
+admiration.n.01<liking.n.01>
+expr("admiration", admiration.n.01)
+expr("esteem", admiration.n.01)
+approval.n.02<liking.n.01>
+expr("approval", approval.n.02)
+favor.n.04<approval.n.02>
+expr("favor", favor.n.04)
+expr("favour", favor.n.04)
+captivation.n.02<liking.n.01>
+expr("fascination", captivation.n.02)
+fondness.n.01<liking.n.01>
+expr("fancy", fondness.n.01)
+friendliness.n.01<liking.n.01>
+brotherhood.n.03<friendliness.n.01>
+expr("brotherhood", brotherhood.n.03)
+good_will.n.03<friendliness.n.01>
+expr("goodwill", good_will.n.03)
+inclination.n.05<liking.n.01>
+expr("inclination", inclination.n.05)
+leaning.n.01<inclination.n.05>
+expr("leaning", leaning.n.01)
+expr("tendency", leaning.n.01)
+stomach.n.03<inclination.n.05>
+expr("stomach", stomach.n.03)
+preference.n.01<liking.n.01>
+expr("preference", preference.n.01)
+expr("taste", preference.n.01)
+weakness.n.05<preference.n.01>
+expr("weakness", weakness.n.05)
+pain.n.02<feeling.n.01>
+expr("pain", pain.n.02)
+distress.n.01<pain.n.02>
+expr("distress", distress.n.01)
+expr("hurt", distress.n.01)
+expr("suffering", distress.n.01)
+anguish.n.01<distress.n.01>
+expr("torture", anguish.n.01)
+wound.n.03<distress.n.01>
+expr("wound", wound.n.03)
+suffering.n.04<pain.n.02>
+expr("suffering", suffering.n.04)
+expr("hurt", suffering.n.04)
+agony.n.01<suffering.n.04>
+expr("agony", agony.n.01)
+expr("torture", agony.n.01)
+discomfort.n.02<suffering.n.04>
+expr("discomfort", discomfort.n.02)
+expr("irritation", discomfort.n.02)
+pang.n.01<feeling.n.01>
+expr("stab", pang.n.01)
+passion.n.01<feeling.n.01>
+expr("passion", passion.n.01)
+ardor.n.03<passion.n.01>
+wildness.n.01<passion.n.01>
+expr("abandon", wildness.n.01)
+pleasure.n.01<feeling.n.01>
+expr("pleasure", pleasure.n.01)
+comfort.n.02<pleasure.n.01>
+expr("comfort", comfort.n.02)
+consolation.n.01<comfort.n.02>
+relief.n.01<comfort.n.02>
+expr("relief", relief.n.01)
+delight.n.01<pleasure.n.01>
+expr("delight", delight.n.01)
+amusement.n.01<delight.n.01>
+expr("amusement", amusement.n.01)
+enjoyment.n.01<pleasure.n.01>
+expr("enjoyment", enjoyment.n.01)
+pleasantness.n.01<pleasure.n.01>
+pride.n.01<feeling.n.01>
+expr("pride", pride.n.01)
+amour_propre.n.01<pride.n.01>
+expr("vanity", amour_propre.n.01)
+dignity.n.01<pride.n.01>
+expr("dignity", dignity.n.01)
+ego.n.01<pride.n.01>
+expr("ego", ego.n.01)
+sadness.n.01<feeling.n.01>
+expr("sadness", sadness.n.01)
+cheerlessness.n.01<sadness.n.01>
+joylessness.n.01<cheerlessness.n.01>
+depression.n.04<sadness.n.01>
+expr("depression", depression.n.04)
+despondency.n.01<depression.n.04>
+oppression.n.03<depression.n.04>
+expr("oppression", oppression.n.03)
+forlornness.n.01<sadness.n.01>
+expr("loneliness", forlornness.n.01)
+heaviness.n.02<sadness.n.01>
+melancholy.n.01<sadness.n.01>
+expr("melancholy", melancholy.n.01)
+misery.n.02<sadness.n.01>
+expr("misery", misery.n.02)
+sorrow.n.01<sadness.n.01>
+expr("sorrow", sorrow.n.01)
+grief.n.01<sorrow.n.01>
+expr("grief", grief.n.01)
+mournfulness.n.01<sorrow.n.01>
+woe.n.02<mournfulness.n.01>
+expr("woe", woe.n.02)
+sorrow.n.02<sadness.n.01>
+expr("sorrow", sorrow.n.02)
+expr("regret", sorrow.n.02)
+expr("rue", sorrow.n.02)
+compunction.n.01<sorrow.n.02>
+guilt.n.02<compunction.n.01>
+expr("guilt", guilt.n.02)
+sensitivity.n.03<feeling.n.01>
+expr("sensitivity", sensitivity.n.03)
+feelings.n.01<sensitivity.n.03>
+expr("feelings", feelings.n.01)
+sensibility.n.02<sensitivity.n.03>
+expr("sensibility", sensibility.n.02)
+insight.n.02<sensibility.n.02>
+expr("insight", insight.n.02)
+sentiment.n.01<feeling.n.01>
+expr("sentiment", sentiment.n.01)
+sentimentality.n.02<sentiment.n.01>
+shame.n.01<feeling.n.01>
+expr("shame", shame.n.01)
+conscience.n.03<shame.n.01>
+expr("conscience", conscience.n.03)
+embarrassment.n.01<shame.n.01>
+expr("embarrassment", embarrassment.n.01)
+chagrin.n.01<embarrassment.n.01>
+expr("humiliation", chagrin.n.01)
+confusion.n.03<embarrassment.n.01>
+expr("confusion", confusion.n.03)
+soul.n.03<feeling.n.01>
+expr("soul", soul.n.03)
+sympathy.n.02<feeling.n.01>
+expr("sympathy", sympathy.n.02)
+commiseration.n.01<sympathy.n.02>
+expr("pity", commiseration.n.01)
+expr("ruth", commiseration.n.01)
+compassion.n.01<sympathy.n.02>
+expr("compassion", compassion.n.01)
+mercifulness.n.01<compassion.n.01>
+expr("mercy", mercifulness.n.01)
+forgiveness.n.01<mercifulness.n.01>
+expr("forgiveness", forgiveness.n.01)
+compatibility.n.01<sympathy.n.02>
+expr("compatibility", compatibility.n.01)
+concern.n.03<sympathy.n.02>
+empathy.n.01<sympathy.n.02>
+expr("empathy", empathy.n.01)
+kindheartedness.n.01<sympathy.n.02>
+temper.n.02<feeling.n.01>
+expr("temper", temper.n.02)
+expr("mood", temper.n.02)
+expr("humor", temper.n.02)
+expr("humour", temper.n.02)
+good_humor.n.01<temper.n.02>
+ill_humor.n.01<temper.n.02>
+irritability.n.01<ill_humor.n.01>
+pet.n.03<irritability.n.01>
+expr("pet", pet.n.03)
+moodiness.n.01<ill_humor.n.01>
+unconcern.n.02<feeling.n.01>
+heartlessness.n.01<unconcern.n.02>
+cruelty.n.02<heartlessness.n.01>
+expr("cruelty", cruelty.n.02)
+indifference.n.01<unconcern.n.02>
+expr("indifference", indifference.n.01)
+expr("distant", indifference.n.01)
+withdrawal.n.04<indifference.n.01>
+expr("withdrawal", withdrawal.n.04)
+expr("detachment", withdrawal.n.04)
+feel.v.01<predicate>
+expr("feel", feel.v.01)
+anger.v.02<feel.v.01>
+expr("anger", anger.v.02)
+steam.v.04<anger.v.02>
+expr("steam", steam.v.04)
+burn.v.06<feel.v.01>
+expr("burn", burn.v.06)
+glow.v.04<feel.v.01>
+expr("glow", glow.v.04)
+glow.v.05<feel.v.01>
+expr("glow", glow.v.05)
+expr("beam", glow.v.05)
+expr("shine", glow.v.05)
+harbor.v.01<feel.v.01>
+expr("harbor", harbor.v.01)
+expr("harbour", harbor.v.01)
+expr("entertain", harbor.v.01)
+expr("nurse", harbor.v.01)
+pride.v.01<feel.v.01>
+expr("pride", pride.v.01)
+expr("plume", pride.v.01)
+expr("congratulate", pride.v.01)
+rejoice.v.01<feel.v.01>
+expr("rejoice", rejoice.v.01)
+expr("joy", rejoice.v.01)
+cheer.v.04<rejoice.v.01>
+expr("cheer", cheer.v.04)
+exuberate.v.01<cheer.v.04>
+expr("rejoice", exuberate.v.01)
+expr("triumph", exuberate.v.01)
+glory.v.01<exuberate.v.01>
+expr("glory", glory.v.01)
+exult.v.01<rejoice.v.01>
+wallow.v.04<exult.v.01>
+expr("rejoice", wallow.v.04)
+expr("triumph", wallow.v.04)
+repent.v.02<feel.v.01>
+expr("regret", repent.v.02)
+expr("rue", repent.v.02)
+suffer.v.03<feel.v.01>
+expr("suffer", suffer.v.03)
+grieve.v.01<suffer.v.03>
+expr("sorrow", grieve.v.01)
+feel_for.v.01<grieve.v.01>
+expr("pity", feel_for.v.01)
+expr("compassionate", feel_for.v.01)
+care.v.01<feel_for.v.01>
+expr("care", care.v.01)
+commiserate.v.01<feel_for.v.01>
+dislike.v.01<predicate>
+expr("dislike", dislike.v.01)
+hate.v.01<dislike.v.01>
+expr("hate", hate.v.01)
+contemn.v.01<hate.v.01>
+resent.v.01<dislike.v.01>
+expr("resent", resent.v.01)
+stew.v.02<resent.v.01>
+expr("stew", stew.v.02)
+desire.v.01<predicate>
+like.v.01<desire.v.01>
+expr("like", like.v.01)
+frustrated.s.01<frustration.n.01>
+expr("defeated", frustrated.s.01)
+expr("disappointed", frustrated.s.01)
+expr("frustrated", frustrated.s.01)
+expr("unsuccessful", frustrated.s.01)
+concerned.s.01<concern.n.03>
+expr("concerned", concerned.s.01)
+expr("afraid", concerned.s.01)
+expr("haunted", concerned.s.01)
+expr("obsessed", concerned.s.01)
+expr("attentive", concerned.s.01)
+expr("troubled", concerned.s.01)
+afraid.s.5<concerned.s.01>
+expr("afraid", afraid.s.5)
+unconcerned.s.01<unconcern.n.02>
+expr("casual", unconcerned.s.01)
+expr("detached", unconcerned.s.01)
+expr("indifferent", unconcerned.s.01)
+expr("careless", unconcerned.s.01)
+happy.s.01<happiness.n.01>
+expr("happy", happy.s.01)
+expr("blessed", happy.s.01)
+expr("bright", happy.s.01)
+expr("golden", happy.s.01)
+expr("prosperous", happy.s.01)
+expr("laughing", happy.s.01)
+expr("cheerful", happy.s.01)
+expr("content", happy.s.01)
+expr("glad", happy.s.01)
+expr("joyful", happy.s.01)
+good<happiness.n.01>
+expr("good", good)
+expr("great", good)
+expr("fantastic", good)
+expr("well", good)
+unhappy.s.01<unhappiness.n.02>
+expr("unhappy", unhappy.s.01)
+expr("miserable", unhappy.s.01)
+expr("suffering", unhappy.s.01)
+expr("depressing", unhappy.s.01)
+expr("distressed", unhappy.s.01)
+expr("sad", unhappy.s.01)
+bad<unhappiness.n.02>
+expr("bad", bad)
+expr("terrible", bad)
+expr("horrible", bad)
+okay<unhappiness.n.02>
+expr("okay", okay)
+expr("ok", okay)
+expr("fine", okay)
+anger.n.02<emotion.n.01>
+expr("anger", anger.n.02)
+angry.s.01<anger.n.02>
+expr("angry", angry.s.01)
+expr("aggravated", angry.s.01)
+expr("furious", angry.s.01)
+expr("mad", angry.s.01)
+expr("sore", angry.s.01)
+loved.s.01<love.n.01>
+expr("loved", loved.s.01)
+expr("admired", loved.s.01)
+expr("beloved", loved.s.01)
+expr("darling", loved.s.01)
+expr("dear", loved.s.01)
+expr("cherished", loved.s.01)
+expr("precious", loved.s.01)
+expr("wanted", loved.s.01)
+expr("favored", loved.s.01)
+expr("favorite", loved.s.01)
+expr("favourite", loved.s.01)
+expr("pet", loved.s.01)
+expr("preferred", loved.s.01)
+unloved.s.01<hate.v.01>
+expr("hated", unloved.s.01)
+expr("rejected", unloved.s.01)
+expr("unwanted", unloved.s.01)
+ashamed.s.01<shame.n.01>
+expr("ashamed", ashamed.s.01)
+expr("embarrassed", ashamed.s.01)
+expr("guilty", ashamed.s.01)
+sympathetic.s.02<sympathy.n.02>
+expr("sympathetic", sympathetic.s.02)
+expr("compassionate", sympathetic.s.02)
+passionateness.n.01<feeling.n.01>
+passionate.s.01<passionateness.n.01>
+expr("passionate", passionate.s.01)
+expr("fiery", passionate.s.01)
+expr("fanatic", passionate.s.01)
+expr("wild", passionate.s.01)
+expr("emotional", passionate.s.01)
+expr("enthusiastic", passionate.s.01)
+expr("loving", passionate.s.01)
+apathetic.s.02<apathy.n.01>
+expr("indifferent", apathetic.s.02)
+psychological_state.n.01<state.n.02>
+cognitive_state.n.01<psychological_state.n.01>
+interestedness.n.01<cognitive_state.n.01>
+interested.s.01<interestedness.n.01>
+expr("interested", interested.s.01)
+expr("curious", interested.s.01)
+agitated.s.01<anxiety.n.02>
+expr("emotional", agitated.s.01)
+expr("frantic", agitated.s.01)
+expr("shaken", agitated.s.01)
+expr("psychedelic", agitated.s.01)
+expr("tense", agitated.s.01)
+physical_condition.n.01<state.n.02>
+good_health.n.01<physical_condition.n.01>
+energy.n.05<good_health.n.01>
+expr("vim", energy.n.05)
+expr("vitality", energy.n.05)
+energetic.s.01<energy.n.05>
+expr("energetic", energetic.s.01)
+expr("alert", energetic.s.01)
+expr("lively", energetic.s.01)
+expr("merry", energetic.s.01)
+expr("spanking", energetic.s.01)
+expr("driving", energetic.s.01)
+expr("vigorous", energetic.s.01)
+expr("active", energetic.s.01)
+expr("dynamic", energetic.s.01)
+expr("dynamical", energetic.s.01)
+expr("spirited", energetic.s.01)
+excited.s.5<energetic.s.01>
+expr("excited", excited.s.5)
+trait.n.01<attribute.n.02>
+inactiveness.n.02<trait.n.01>
+lethargy.n.03<inactiveness.n.02>
+lethargic.s.01<lethargy.n.03>
+expr("dreamy", lethargic.s.01)
+expr("inactive", lethargic.s.01)
+inspired.s.01<nirvana.n.01>
+expr("divine", inspired.s.01)
+expr("inspired", inspired.s.01)
+expr("glorious", inspired.s.01)
+satisfied.s.01<satisfaction.n.01>
+expr("satisfied", satisfied.s.01)
+expr("content", satisfied.s.01)
+discontentedness.n.01<longing.n.01>
+discontented.s.01<discontentedness.n.01>
+expr("dissatisfied", discontented.s.01)
+expr("restless", discontented.s.01)
+expr("unhappy", discontented.s.01)
+despondent.s.01<despondency.n.01>
+expr("hopeless", despondent.s.01)
+hopeless.s.5<despondent.s.01>
+expr("hopeless", hopeless.s.5)
+hopeful.s.01<optimism.n.01>
+expr("hopeful", hopeful.s.01)
+expr("encouraging", hopeful.s.01)
+expr("optimistic", hopeful.s.01)
+disturbed.s.02<anxiety.n.02>
+expr("distressed", disturbed.s.02)
+expr("disturbed", disturbed.s.02)
+expr("upset", disturbed.s.02)
+expr("worried", disturbed.s.02)
+expr("troubled", disturbed.s.02)
+composed.s.01<calmness.n.03>
+expr("composed", composed.s.01)
+expr("calm", composed.s.01)
+expr("serene", composed.s.01)
+expr("tranquil", composed.s.01)
+expr("collected", composed.s.01)
+expr("poised", composed.s.01)
+expr("cool", composed.s.01)
+elation.n.01<psychological_state.n.01>
+bliss.n.01<elation.n.01>
+expr("bliss", bliss.n.01)
+ecstasy.n.02<bliss.n.01>
+expr("ecstasy", ecstasy.n.02)
+expr("rapture", ecstasy.n.02)
+joyless.s.01<joylessness.n.01>
+expr("depressing", joyless.s.01)
+expr("unhappy", joyless.s.01)
+
+pos_feeling<feeling.n.01>
+neg_feeling<feeling.n.01>
+
