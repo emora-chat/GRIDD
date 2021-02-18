@@ -20,6 +20,9 @@ class KnowledgeBase:
         for input in strings_or_kbs:
             if isinstance(input, str):
                 if len(input.strip()) > 0:
+                    input = input.strip()
+                    if input[-1] != ';':
+                        input += ';'
                     tree = self._knowledge_parser.parse(input)
                     additions = self._knowledge_parser.transform(tree)
                     for addition in additions:
