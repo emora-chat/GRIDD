@@ -11,7 +11,7 @@ import GRIDD.utilities as util
 class InferenceEngine:
 
     def __init__(self):
-        self.logic_parser = KnowledgeParser(None, None, ensure_kb_compatible=False)
+        self.logic_parser = KnowledgeParser()
 
     def run(self, concept_graph, *inference_rules, ordered_rule_ids=None):
 

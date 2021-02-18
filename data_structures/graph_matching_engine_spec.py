@@ -2,7 +2,6 @@
 from structpy import specification
 from structpy.graph.directed.labeled.data.multilabeled_digraph_data import MultiLabeledDigraphDataNX as Graph
 
-
 @specification
 class GraphMatchingEngineSpec:
 
@@ -67,7 +66,14 @@ class GraphMatchingEngineSpec:
             'F': dict(attributes={'leader'})
         })
 
-        solutions = matcher.match(data_graph, query1, (query2, 'CDE'), (query3, 'XYZ'), (query4, 'F'))
+        query5 = Graph([
+            ('G', 'H', 'likes')
+        ], nodes={
+            'G': dict(attributes={'leader'}),
+            'H': dict(attributes={'leader'})
+        })
+
+        solutions = matcher.match(data_graph, query1, (query2, 'CDE'), (query3, 'XYZ'), (query4, 'F'), (query5, 'GH'))
 
         assert solutions_equal(
             solutions[query1],
@@ -98,6 +104,12 @@ class GraphMatchingEngineSpec:
             [
                 {'F': 'tom'},
                 {'F': 'mary'}
+            ])
+
+        assert solutions_equal(
+            solutions[query5],
+            [
+                {'G': 'tom', 'H': 'mary'}
             ])
 
 def solutions_equal(a, b):

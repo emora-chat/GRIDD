@@ -106,6 +106,14 @@ class ConceptGraphSpec:
             ('Peter', 'likes', 'Sarah', 'x_2')
         }
 
+    def concepts(concept_graph):
+        """
+        Get all nodes in the concept graph
+        """
+        assert set(concept_graph.concepts()) == {'Peter', 'John', 'Sarah', 'Mary', 'Jack',
+                                            'likes', 'happy', 'dislikes',
+                                            'pjl_1', 'x_0', 'x_1', 'x_2', 'x_3', 'x_4', 'x_5'}
+
     def subjects(concept_graph, concept, type=None):
         """
         Return a set of related concepts to `concept`, where each element of the
@@ -130,6 +138,16 @@ class ConceptGraphSpec:
         iterable appears in a predicate with `concept`.
         """
         assert set(concept_graph.related('Peter')) == {'John', 'Sarah', 'Mary'}
+
+    def to_graph(concept_graph):
+        """
+        Convert the ConceptGraph into a Digraph of s/t/o edges.
+        """
+        graph = concept_graph.to_graph()
+        assert graph.has('pjl_1', 'Peter', 's')
+        assert graph.has('pjl_1', 'John', 'o')
+        assert graph.has('pjl_1', 'likes', 't')
+        assert graph.has('Sarah')
 
     @specification.init
     def CONCEPT_GRAPH_MUTATORS(ConceptGraph, predicates=None, concepts=None, namespace=None):
@@ -289,13 +307,6 @@ class ConceptGraphSpec:
         b = cg3.add('fluffy', 'friend', 'princess')
         assert b == '1_4'
         return cg3
-
-    def concepts(concept_graph):
-        """
-        Get all nodes in the concept graph
-        """
-        assert concept_graph.concepts() == {'fluffy','bark','princess','hiss','volume','loud','friend',
-                                            '1_0', '1_1', '1_2', '1_3', '1_4'}
 
     def pretty_print(concept_graph, predicate_exclusions=None):
         """

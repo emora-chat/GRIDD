@@ -1,5 +1,7 @@
 from lark import Lark, Transformer
 from GRIDD.data_structures.concept_graph import ConceptGraph
+from GRIDD.data_structures.knowledge_parser_spec import KnowledgeParserSpec
+import GRIDD.utilities as util
 
 class ParserStruct:
 
@@ -39,7 +41,7 @@ class KnowledgeParser:
             """
     _parser = Lark(_grammar, parser="earley")
 
-    def __init__(self, kg, base_nodes, ensure_kb_compatible=True):
+    def __init__(self, kg=None, base_nodes=None, ensure_kb_compatible=False):
         self._predicate_transformer = PredicateTransformer(kg, base_nodes, ensure_kb_compatible)
 
     def parse(self, input):
@@ -47,6 +49,54 @@ class KnowledgeParser:
 
     def transform(self, tree):
         return self._predicate_transformer.transform(tree)
+
+    def to_concept_graph(self, *logic_strings):
+        additions = []
+        for logic_string in logic_strings:
+            logic_string = logic_string.strip()
+            if len(logic_string) > 0:
+                if logic_string[-1] != ';':
+                    logic_string += ';'
+                tree = self.parse(logic_string)
+                additions.extend(self.transform(tree))
+        return additions
+
+    def to_rules(self, *logic_strings, with_names=False):
+        rule_graphs = self.to_concept_graph(*logic_strings)
+        rules = []
+        for rule in rule_graphs:
+            inferences, implications = {}, {}
+            id_maps = {}
+            for situation_node, _, constraint, _ in rule.predicates(predicate_type='pre'):
+                if situation_node not in inferences:
+                    inferences[situation_node] = ConceptGraph(namespace='pre', concepts=['var'])
+                    id_maps[situation_node] = {}
+                self._transfer_concept(rule, inferences[situation_node], constraint, id_maps[situation_node])
+
+            for situation_node, _, implication, _ in rule.predicates(predicate_type='post'):
+                if situation_node not in implications:
+                    implications[situation_node] = ConceptGraph(namespace='post')
+                self._transfer_concept(rule, implications[situation_node], implication, id_maps[situation_node])
+
+            rules.extend([(inferences[situation_node], implications[situation_node]) if not with_names else
+                     (inferences[situation_node], implications[situation_node], situation_node)
+                     for situation_node in inferences])
+        return rules
+
+    def _transfer_concept(self, cg, new_graph, concept_id, id_map):
+        """
+        Adds the concept `concept_id` from `cg` to `new_graph`
+        """
+        if cg.has(predicate_id=concept_id):  # predicate instance
+            components = [cg.subject(concept_id), cg.type(concept_id), cg.object(concept_id)]
+            mapped_components = []
+            for comp in components:
+                if comp is not None:
+                    comp = util.map(new_graph, comp, cg._namespace, id_map)
+                mapped_components.append(comp)
+            new_graph.add(*mapped_components, predicate_id=util.map(new_graph, concept_id, cg._namespace, id_map))
+        else:  # entity instance
+            util.map(new_graph, concept_id, cg._namespace, id_map)
 
 
 class PredicateTransformer(Transformer):
@@ -414,3 +464,8 @@ class PredicateTransformer(Transformer):
         self.additions = []
         self.addition_construction = ConceptGraph(concepts=self.base_nodes, namespace='add')
         self.local_names = {}
+
+logic_parser = KnowledgeParser()
+
+if __name__ == '__main__':
+    print(KnowledgeParserSpec.verify(KnowledgeParser))

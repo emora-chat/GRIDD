@@ -339,13 +339,15 @@ def display(x, *ids, label=None):
             to_print = []
             for i, e in enumerate(row):
                 if hasattr(ids[i], '__getitem__'):
+                    if int(e) == 3:
+                        djakfd = 0
                     e_ = ids[i][int(e)]
                 else:
                     e_ = int(e)
                 if isinstance(e_, tuple):
                     _, e_ = e_
                 to_print.append(e_)
-            print(('{:6}'*len(row)).format(*to_print))
+            print(('{:10}'*len(row)).format(*to_print))
     else:
         colnames = [((ids[1][i]) if ids[1] is not None else '') for i in range(x.size(1))]
         print((' '*9+'{:>9}'*x.size(1)).format(*colnames))

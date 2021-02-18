@@ -1,7 +1,10 @@
+
+from GRIDD.data_structures.concept_graph_spec import ConceptGraphSpec
+
 from structpy.graph.directed.labeled.multilabeled_parallel_digraph_networkx import MultiLabeledParallelDigraphNX
+from structpy.graph.directed.labeled.data.multilabeled_digraph_data import MultiLabeledDigraphDataNX as Graph
 from structpy.map.map import Map
 from structpy.map.index.index import Index
-from GRIDD.data_structures.concept_graph_spec import ConceptGraphSpec
 from GRIDD.data_structures.span import Span
 CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 import GRIDD.utilities as util
@@ -237,6 +240,36 @@ class ConceptGraph:
         neighbors = self.subjects(concept, type)
         neighbors.update(self.objects(concept, type))
         return neighbors
+
+    def subtypes(self, concept):
+        subtypes = set()
+        for predicate in self.predicates(predicate_type='type', object=concept):
+            subtype = predicate[0]
+            subtypes.add(subtype)
+            subtypes.update(self.subtypes(subtype))
+        return subtypes
+
+    # todo - efficiency check
+    #  if multiple paths to same ancestor,
+    #  it will pull ancestor's ancestor-chain multiple times
+    def supertypes(self, concept):
+        types = set()
+        for predicate in self.predicates(subject=concept, predicate_type='type'):
+            supertype = predicate[2]
+            types.add(supertype)
+            types.update(self.supertypes(supertype))
+        return types
+
+    def to_graph(self):
+        graph = Graph()
+        for s, t, o, i in self.predicates():
+            graph.add(i, s, 's')
+            graph.add(i, t, 't')
+            if o is not None:
+                graph.add(i, o, 'o')
+        for c in self.concepts():
+            graph.add(c)
+        return graph
 
     def merge(self, concept_a, concept_b):
         if self.has(predicate_id=concept_a) and self.has(predicate_id=concept_b):
