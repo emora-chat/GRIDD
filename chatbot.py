@@ -56,7 +56,7 @@ class Chatbot:
         inference_bridge = c(InferenceBridge())
         sentence_caser = c(SentenceCaser())
         merge_coref = c(MergeCoreference())
-        feature_propogation = c(FeaturePropogation())
+        feature_propogation = c(FeaturePropogation(max_score=1.0, turn_decrement=0.1, propogation_rate=0.5, propogation_decrement=0.1))
         response_selection = c(SalienceResponseSelection())
         response_expansion = c(ResponseExpansion())
         response_generation = c(ResponseGeneration())
@@ -70,11 +70,11 @@ class Chatbot:
             ('dp_merges', 'wm_after_mentions') > merge_dp > ('dp_node_merges'),
             ('cr', 'wm_after_mentions') > merge_coref > ('coref_merges'),
             ('wm_after_mentions', 'dp_node_merges') > merge_bridge > ('wm_after_merges'),
-            ('wm_after_merges') > inference_rulebased > ('implications'),
+            ('wm_after_merges', 'aux_state') > inference_rulebased > ('implications', 'inference_memory'),
             ('implications', 'wm_after_merges') > inference_bridge > ('wm_after_inference'),
-            ('wm_after_inference') > feature_propogation > ('wm_after_sync'),
-            ('wm_after_sync') > response_selection > ('response_predicate'),
-            ('response_predicate', 'wm_after_sync') > response_expansion > ('main_response', 'supporting_predicates'),
+            ('wm_after_inference', 'iterations') > feature_propogation > ('wm_after_prop'),
+            ('wm_after_prop') > response_selection > ('response_predicate'),
+            ('response_predicate', 'wm_after_prop') > response_expansion > ('main_response', 'supporting_predicates', 'wm_after_exp'),
             ('main_response', 'supporting_predicates') > response_generation > ('response'),
             tags ={
                 sentence_caser: ['sentence_caser'],
@@ -85,22 +85,26 @@ class Chatbot:
                 merge_coref: ['merge_coref'],
                 merge_bridge: ['merge_bridge']
             },
-            outputs=['response', 'cr']
+            outputs=['response', 'wm_after_exp', 'inference_memory', 'cr']
         )
 
     def respond(self, user_utterance=None, dialogue_state=None):
         if dialogue_state is not None:
             self.load(dialogue_state)
-        output, coref_context = self.pipeline(
+        response, wm, inference_memory, coref_context = self.pipeline(
             user_utterance,
             self.working_memory,
-            self.auxiliary_state
+            self.auxiliary_state,
+            2
         )
         self.auxiliary_state['coref_context'] = coref_context
-        self.auxiliary_state['system_utterance'] = output
+        self.auxiliary_state['system_utterance'] = response
         self.auxiliary_state['turn_index'] += 1
+        self.auxiliary_state['inference_memory'] = inference_memory
 
-        return output
+        self.working_memory = wm
+
+        return response
 
     def chat(self):
         utterance = input('User: ')

@@ -18,7 +18,6 @@ class ElitModels:
     # todo - call elit_model.create_coref_context_from_online_output() and get_turn_history() before using coref_context in parse()
     def __call__(self, user_utterance, aux_state=None):
         """
-        args[0] - string turn
         returns list of tokens, list of pos tags, list of dependency parse connections
         """
         if aux_state is None:

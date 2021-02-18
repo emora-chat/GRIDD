@@ -6,7 +6,7 @@ from collections import defaultdict
 
 class ScoreGraph(Graph):
 
-    def __init__(self, edges=None, updaters=None, get_fn=None, set_fn=None, default=0):
+    def __init__(self, edges=None, updaters=None, get_fn=None, set_fn=None, default=0, maximum=1.0):
         Graph.__init__(self, edges=edges)
         self._get_fn = get_fn
         self._set_fn = set_fn
@@ -15,6 +15,7 @@ class ScoreGraph(Graph):
             for label, updater in updaters.items():
                 self.set_updater(label, updater)
         self._default = float(default)
+        self._maximum = float(maximum)
         if self._get_fn is not None:
             for node in self.nodes():
                 self.data(node).score = self._get_fn(node)
@@ -44,7 +45,7 @@ class ScoreGraph(Graph):
                     deltas[s] += s_delta * lr
                     deltas[t] += t_delta * lr
             for node, delta in deltas.items():
-                self.data(node).score += delta
+                self.data(node).score = min(self.data(node).score + delta, self._maximum)
         if push:
             self.push()
 

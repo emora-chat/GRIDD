@@ -15,7 +15,6 @@ question(like(X,xlz))
 
 buy(X/person(), Y/car())
 =>
-question(xld/like(X, xdy/drive(X,Y)))
+question(xld/like(X, Y))
 time(xld, now)
-time(xdy, now)
 ;
