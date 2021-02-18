@@ -4,6 +4,7 @@ from GRIDD.data_structures.inference_engine_spec import InferenceEngineSpec
 from GRIDD.data_structures.graph_matching_engine import GraphMatchingEngine
 from GRIDD.data_structures.knowledge_parser import logic_parser
 from structpy.map import Bimap
+from GRIDD.data_structures.concept_graph import ConceptGraph
 
 
 class InferenceEngine:
@@ -12,7 +13,7 @@ class InferenceEngine:
         self.rules = {rule: logic_parser.to_rules(rule)[0] for rule in rules}
         self.matcher = GraphMatchingEngine()
 
-    def infer(self, facts, *rules):
+    def infer(self, facts, *rules, return_rules=False):
         facts_concept_graph = logic_parser.to_concept_graph(facts)[0]
         attributes = {}
         types = set()
@@ -54,16 +55,29 @@ class InferenceEngine:
                 precondition.data(node)['attributes'] = types
             converted_rules[rid] = precondition
         sols = self.matcher.match(facts_graph, *list(converted_rules.values()))
-        return {converted_rules.reverse()[precondition]: sol for precondition, sol in sols.items()}
+        if return_rules:
+            sols = {(converted_rules.reverse()[precondition], rules[converted_rules.reverse()[precondition]]):
+                        sol for precondition, sol in sols.items()}
+        else:
+            sols = {converted_rules.reverse()[precondition]: sol for precondition, sol in sols.items()}
+        return sols
 
     def apply(self, facts=None, *rules, solutions=None):
         if facts is not None:
-            solutions = self.infer(facts, *rules)
+            solutions = self.infer(facts, *rules, return_rules=True)
         implications = {}
-        for rule, sols in solutions.items():
+        for (rid, (pre, post)), sols in solutions.items():
             for sol in sols:
-                # assign vars to vals
-                pass
+                cg = ConceptGraph(namespace='implied')
+                id_map = cg.id_map(post)
+                for pred in post.predicates():
+                    pred = [sol.get(x, x) for x in pred]
+                    pred = [id_map.get(x) if x is not None else None for x in pred]
+                    cg.add(*pred)
+                for concept in post.concepts():
+                    concept = id_map.get(sol.get(concept, concept))
+                    cg.add(concept)
+                implications.setdefault(rid, []).append(cg)
         return implications
 
 

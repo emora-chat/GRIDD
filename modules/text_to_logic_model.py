@@ -59,9 +59,9 @@ class ParseToLogic:
                     self._expand_references(pregraph, concept)
 
     def _expand_references(self, pregraph, concept, supertype=None):
-        expression_var = pregraph._get_next_id()
+        expression_var = pregraph.id_map().get()
         ref = pregraph.add(concept, 'ref', expression_var)
-        concept_var = pregraph._get_next_id()
+        concept_var = pregraph.id_map().get()
         expr = pregraph.add(expression_var, 'expr', concept_var)
         new_nodes = [expression_var, ref, concept_var, expr]
         if supertype is not None:
@@ -112,7 +112,7 @@ class ParseToLogic:
             expression = '"%s"' % span_node.string
             references = ewm.objects(expression, 'expr')
             if len(references) == 0:
-                unk_node = ewm.add(ewm._get_next_id())
+                unk_node = ewm.add(ewm.id_map().get())
                 types = ewm.supertypes(span_node)
                 pos_type = 'other'
                 for n in ['verb', 'noun', 'pron', 'adj', 'adv']:
@@ -158,7 +158,7 @@ class ParseToLogic:
                             if node in [center_var,expression_var,concept_var]:
                                 m[node] = self._get_concept_of_span(solution[node], ewm)
                             else:
-                                m[node] = cg._get_next_id()
+                                m[node] = cg.id_map().get()
                         else:
                             m[node] = node
                     for subject, typ, object, inst in post.predicates():

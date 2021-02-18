@@ -1,7 +1,7 @@
 
 from GRIDD.data_structures.graph_matching_engine_spec import GraphMatchingEngineSpec
 
-from GRIDD.utilities import IdNamespace
+from GRIDD.data_structures.id_map import IdMap
 from itertools import chain
 import torch
 
@@ -118,10 +118,10 @@ def graph_to_entries(*graphs, edge_ids=None, attribute_ids=None):
     """
     with_disambiguation = len(graphs) > 1
     if edge_ids is None:
-        edge_ids = IdNamespace(namespace=int)
+        edge_ids = IdMap(namespace=int)
     if attribute_ids is None:
-        attribute_ids = IdNamespace(namespace=int)
-    node_ids = IdNamespace(namespace=int)
+        attribute_ids = IdMap(namespace=int)
+    node_ids = IdMap(namespace=int)
     adjacencies = []
     attrs = []
     for graph in graphs:

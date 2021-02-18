@@ -2,6 +2,7 @@
 from structpy import specification
 
 from GRIDD.data_structures.concept_graph import ConceptGraph
+from GRIDD.data_structures.knowledge_parser import logic_parser
 import time
 
 @specification
@@ -94,9 +95,9 @@ class InferenceEngineSpec:
 
         assert concept_graphs_equal(
             implications[rules[0]][0],
-            ConceptGraph('''
-            like(john, sally)
-            ''')
+            logic_parser.to_concept_graph('''
+            like(john, sally);
+            ''')[0]
         )
 
 def solutions_equal(a, b):
@@ -106,4 +107,5 @@ def solutions_equal(a, b):
     return cmp
 
 def concept_graphs_equal(a, b):
-    return False
+    return frozenset([(s,t,o) for s, t, o, i in a.predicates()]) \
+        == frozenset([(s,t,o) for s, t, o, i in b.predicates()])

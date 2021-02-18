@@ -1,2 +1,2 @@
 
-from GRIDD.utilities.utilities import identification_string, CHARS, collect, map, IdNamespace, hashabledict
+from GRIDD.utilities.utilities import identification_string, CHARS, collect, hashabledict
