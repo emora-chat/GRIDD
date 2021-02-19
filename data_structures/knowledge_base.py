@@ -12,23 +12,10 @@ class KnowledgeBase:
     def __init__(self, *filenames_or_logicstrings, namespace='KB', ensure_kb_compatible=True):
         self._concept_graph = ConceptGraph(concepts=BASE_NODES, namespace=namespace)
         self._knowledge_parser = KnowledgeParser(kg=self, base_nodes=BASE_NODES, ensure_kb_compatible=ensure_kb_compatible)
-        self.load(join('GRIDD', 'resources', 'kg_files', 'base.kg'))
-        self.load(*filenames_or_logicstrings)
-
-    def load(self, *filenames_or_logicstrings):
-        strings_or_kbs = collect(*filenames_or_logicstrings, extension='.kg')
-        for input in strings_or_kbs:
-            if isinstance(input, str):
-                if len(input.strip()) > 0:
-                    input = input.strip()
-                    if input[-1] != ';':
-                        input += ';'
-                    tree = self._knowledge_parser.parse(input)
-                    additions = self._knowledge_parser.transform(tree)
-                    for addition in additions:
-                        self._concept_graph.concatenate(addition)
-            elif isinstance(input, KnowledgeBase):
-                self._concept_graph.concatenate(input)
+        self._concept_graph.concatenate(KnowledgeParser.from_data(join('GRIDD', 'resources', 'kg_files', 'base.kg'),
+                                                                       parser=self._knowledge_parser))
+        self._concept_graph.concatenate(KnowledgeParser.from_data(*filenames_or_logicstrings,
+                                                                  parser=self._knowledge_parser))
 
     def subtypes(self, concept):
         subtypes = set()

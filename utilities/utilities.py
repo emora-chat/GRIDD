@@ -38,7 +38,7 @@ def collect(*files_folders_or_strings, extension=None, directory=None):
                     files_or_strings.append(os.path.join(ffs, fs))
         else:
             files_or_strings.append(ffs)
-    for ffs in files_or_strings:
+    for ffs in sorted(files_or_strings):
         if not extension or (isinstance(ffs, str) and ffs.endswith(extension)):
             with open(ffs, 'r') as f:
                 collected.append(f.read())

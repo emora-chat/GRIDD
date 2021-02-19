@@ -53,9 +53,11 @@ class KnowledgeParser:
         return self._predicate_transformer.transform(tree)
 
     @classmethod
-    def from_data(self, *datas, namespace='default_'):
-        if not isinstance(datas[0], str):
+    def from_data(self, *datas, parser=None, namespace='default_'):
+        if len(datas) > 0 and not isinstance(datas[0], str):
             return datas[0]
+        if parser is None:
+            parser = logic_parser
         concept_graph = cg.ConceptGraph(namespace=namespace)
         for data in datas:
             if isinstance(data, str) and (os.path.isdir(data) or os.path.isfile(data)):
@@ -69,7 +71,7 @@ class KnowledgeParser:
                 if len(d) > 0:
                     if d[-1] != ';':
                         d += ';'
-                    additions = logic_parser.transform(logic_parser.parse(d))
+                    additions = parser.transform(parser.parse(d))
                     for addition in additions:
                         concept_graph.concatenate(addition)
         return concept_graph

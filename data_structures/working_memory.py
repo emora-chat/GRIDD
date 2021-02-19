@@ -1,4 +1,5 @@
 from GRIDD.data_structures.concept_graph import ConceptGraph
+from GRIDD.data_structures.knowledge_parser import KnowledgeParser, logic_parser
 from GRIDD.data_structures.working_memory_spec import WorkingMemorySpec
 from GRIDD.data_structures.inference_engine import InferenceEngine
 from GRIDD.utilities import identification_string, CHARS
@@ -14,19 +15,11 @@ class WorkingMemory(ConceptGraph):
         self.knowledge_base = knowledge_base
         self.inference_engine = InferenceEngine()
         super().__init__(namespace='WM')
-        self.load_logic(*filenames_or_logicstrings)
+        if len(filenames_or_logicstrings) > 0:
+            self.concatenate(KnowledgeParser.from_data(*filenames_or_logicstrings,
+                                                       parser=logic_parser))
         self.features['salience'] = {}
         self.features['cover'] = {}
-
-    def load_logic(self, *filenames_or_logicstrings):
-        for input in filenames_or_logicstrings:
-            if input.endswith('.kg'):
-                input = open(input, 'r').read()
-            if len(input.strip()) > 0:
-                tree = self.knowledge_base._knowledge_parser.parse(input)
-                additions = self.knowledge_base._knowledge_parser.transform(tree)
-                for addition in additions:
-                    self.concatenate(addition)
 
     def pull_ontology(self, concepts=None):
         to_pull = set()
@@ -89,60 +82,6 @@ class WorkingMemory(ConceptGraph):
                 self.features['salience'][id] = 0
         self.pull_ontology()
 
-    def inferences(self, *types_or_rules):
-        rules_to_run = []
-        for identifier in types_or_rules:
-            if isinstance(identifier, tuple):
-                rules_to_run.append(identifier)
-            elif identifier.endswith('.kg'):  # file
-                rules_to_run.extend(self.load_rules_from_file(identifier))
-            else: # concept id or logic string
-                rules_to_run.append(identifier)
-
-        solutions_dict = self.inference_engine.run(self, *rules_to_run)
-        return solutions_dict
-
-    def load_rules_from_file(self, file):
-        input = open(file, 'r').read()
-        tree = self.knowledge_base._knowledge_parser.parse(input)
-        additions = self.knowledge_base._knowledge_parser.transform(tree)
-        cg = ConceptGraph()
-        for addition in additions:
-            cg.concatenate(addition)
-        return self.inference_engine.generate_rules_from_graph(cg)
-
-    # todo - move core logic to infer.py?
-    def infer_and_apply(self, *types_or_rules):
-        imps = []
-        solutions_dict = self.inferences(*types_or_rules)
-        for rule, solutions in solutions_dict.items():
-            post_graph = rule[1]
-            for solution in solutions:
-                cg = ConceptGraph(namespace=post_graph._namespace)
-                for s, t, o, i in post_graph.predicates():
-                    s = solution.get(s, s)
-                    t = solution.get(t, t)
-                    o = solution.get(o, o)
-                    i = solution.get(i, i)
-                    cg.add(s, t, o, i)
-                imps.append(cg)
-        return solutions_dict, imps
-
-    def apply_implications(self, inferences):
-        imps = []
-        for rule, solutions in inferences.items():
-            post_graph = rule[1]
-            for solution in solutions:
-                cg = ConceptGraph(namespace=post_graph._namespace)
-                for s, t, o, i in post_graph.predicates():
-                    s = solution.get(s, s)
-                    t = solution.get(t, t)
-                    o = solution.get(o, o)
-                    i = solution.get(i, i)
-                    cg.add(s, t, o, i)
-                imps.append(cg)
-        return imps
-
     # todo - efficiency check
     #  if multiple paths to same ancestor,
     #  it will pull ancestor's ancestor-chain multiple times
@@ -176,8 +115,8 @@ class WorkingMemory(ConceptGraph):
                 supertypes[i].update(supertypes[t])
             return supertypes
 
-    def rules(self):
-        return self.inference_engine.generate_rules_from_graph(self)
+    # def rules(self):
+    #     return self.inference_engine.generate_rules_from_graph(self)
 
     def equivalent(self, ref, target, types=None):
         """
