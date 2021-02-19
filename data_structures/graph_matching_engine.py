@@ -5,7 +5,7 @@ from GRIDD.data_structures.id_map import IdMap
 from itertools import chain
 import torch, time
 
-DEBUG = True
+DEBUG = False
 
 class GraphMatchingEngine:
 

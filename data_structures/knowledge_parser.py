@@ -124,6 +124,13 @@ class KnowledgeParser:
         rules = [(inferences[situation_node], implications[situation_node]) if not with_names else
                       (inferences[situation_node], implications[situation_node], situation_node)
                       for situation_node in inferences]
+
+        # debugging
+        for rule in rules:
+            for sig, insts in rule[0]._monopredicate_instances.items():
+                if len(insts) == 0:
+                    assert False
+
         return rules
 
 

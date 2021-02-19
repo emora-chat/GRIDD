@@ -137,7 +137,7 @@ if __name__ == '__main__':
     import GRIDD.globals as globals
     globals.DEBUG = True
 
-    interactive = True
+    interactive = False
 
     kb = join('GRIDD', 'resources', 'kg_files', 'kb')
     rules_dir = join('GRIDD', 'resources', 'kg_files', 'rules')
@@ -149,7 +149,10 @@ if __name__ == '__main__':
         chatbot.chat()
     else:
         print(ChatbotSpec.verify(Chatbot))
-        chatbot = Chatbot(join('GRIDD', 'resources', 'kg_files', 'framework_test.kg'))
-        chatbot.respond('I bought a new house and I love it')
-        chatbot.respond('It is pretty big and it has a pool in the back')
-
+        for i in range(1):
+            chatbot = Chatbot(kb, rules=rules)
+            chatbot.respond('I bought a car')
+            chatbot.respond('I bought a house')
+            print('\n' * 2)
+            print('#' * 30)
+            print('\n' * 2)

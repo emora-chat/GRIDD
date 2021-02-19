@@ -26,7 +26,7 @@ class InferenceRuleBased:
             new = []
             for solution in solutions:
                 repeat = False
-                for old in inference_memory[rule_id]:
+                for old in inference_memory.get(rule_id, []):
                     if solution == old:
                         repeat = True
                         break
@@ -45,6 +45,7 @@ class InferenceRuleBased:
 
     def display_implications(self, implications):
         print("<< Inferences >>")
-        for cg in implications:
-            print(cg.pretty_print())
-            print('*'*20 + '\n')
+        for rule_id, cgs in implications.items():
+            for cg in cgs:
+                print(cg.pretty_print())
+                print('*'*20 + '\n')

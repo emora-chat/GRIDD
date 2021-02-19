@@ -4,19 +4,20 @@ from structpy import specification
 import json
 from os.path import join
 test_resource_file = join('GRIDD', 'resources', 'kg_files', 'framework_test.kg')
-
+test_rule_files = [join('GRIDD', 'resources', 'kg_files', 'rules', 'test_inferences.kg')]
 
 @specification
 class ChatbotSpec:
 
     @specification.init
-    def CHATBOT(Chatbot, knowledge_base):
+    def CHATBOT(Chatbot, knowledge_base, rules):
         """
         Instantiate a chatbot. The constructor expects a variable number
         of knowledge graphs (providable via .kg file names, KnowledgeGraph objects
-        or logic strings).
+        or logic strings) and a list of rules (providable via .kg file names, ConceptGraph objects
+        or logic strings)
         """
-        chatbot = Chatbot(test_resource_file)
+        chatbot = Chatbot(test_resource_file, rules=test_rule_files)
         return chatbot
 
     @specification.init
@@ -31,7 +32,7 @@ class ChatbotSpec:
         When calling `.respond`, the `dialogue_state` of a `.save` call
         can be provided to resume the conversation from the save point.
         """
-        chatbot = Chatbot(test_resource_file)
+        chatbot = Chatbot(test_resource_file, rules=test_rule_files)
 
         print('Chatbot cold start:')
         print(chatbot.respond(), '\n')

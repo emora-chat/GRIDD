@@ -257,7 +257,8 @@ class ConceptGraph:
             other = other
         return IdMap(namespace=self._ids.namespace,
                      start_index=self._ids.index,
-                     condition=(lambda other_id: isinstance(other, str) and other_id.startswith(other))
+                     condition=(lambda other_id: self.id_map().namespace != other and isinstance(other_id, str)
+                                                 and isinstance(other, str) and other_id.startswith(other))
                      )
 
     def to_graph(self):

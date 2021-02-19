@@ -14,7 +14,7 @@ class InferenceEngine:
 
     def infer(self, facts, *rules):
         st = time.time()
-        facts_concept_graph = KnowledgeParser.from_data(facts, namespace='facts_')
+        facts_concept_graph = KnowledgeParser.from_data(facts, namespace='facts_').copy()
         attributes = {}
         types = set()
         for c in facts_concept_graph.concepts():
@@ -35,6 +35,7 @@ class InferenceEngine:
         rules = Bimap(rules)
         converted_rules = Bimap()
         for rid, (pre, post) in rules.items():
+            pre = pre.copy()
             varset = set()
             attributes = {}
             types = set()
@@ -59,6 +60,7 @@ class InferenceEngine:
         print('Rule Graphs to NetworkX - Elapsed: %.3f' % (time.time() - st))
 
         sols = self.matcher.match(facts_graph, *list(converted_rules.values()))
+        sols = {converted_rules.reverse()[precondition]: sols for precondition, sols in sols.items()}
         sols = {rule_id: (rules[rule_id][0], rules[rule_id][1], sol_ls) for rule_id, sol_ls in sols.items()}
         return sols
 
