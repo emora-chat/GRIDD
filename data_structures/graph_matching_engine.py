@@ -3,7 +3,7 @@ from GRIDD.data_structures.graph_matching_engine_spec import GraphMatchingEngine
 
 from GRIDD.data_structures.id_map import IdMap
 from itertools import chain
-import torch
+import torch, time
 
 DEBUG = False
 
@@ -13,8 +13,15 @@ class GraphMatchingEngine:
         pass
 
     def match(self, data_graph, *query_graphs, limit=10):
+        st = time.time()
         query_graphs = query_graph_var_preproc(*query_graphs)
+        print('Rule Graphs to Matrix - Elapsed: %.3f'%(time.time() - st))
+
+        st = time.time()
         data_adj_entries, data_attr_entries, data_ids, edge_ids, attr_ids = graph_to_entries(data_graph)
+        print('Data Graph to Matrix - Elapsed: %.3f' % (time.time() - st))
+
+        st = time.time()
         query_adj_entries, query_attr_entries, query_ids, _, _ = graph_to_entries(*query_graphs, edge_ids=edge_ids, attribute_ids=attr_ids)
         data_adj = torch.LongTensor(list(chain(*data_adj_entries)))
         data_attr = entries_to_tensor(data_attr_entries, data_ids, attr_ids)
@@ -116,8 +123,12 @@ class GraphMatchingEngine:
             prev_num_edges = num_edges
             num_edges = edge_pairs.size(0)
             i += 1
+        print('Graph Matching - Elapsed: %.3f' % (time.time() - st))
+
+        st = time.time()
         edge_assignments, node_assignments = edge_pairs_postproc(edge_pairs, floating_compatibilities, query_ids, data_ids, edge_ids)
         all_solutions = gather_solutions(edge_assignments, node_assignments)
+        print('Gather Solutions - Elapsed: %.3f' % (time.time() - st))
         return all_solutions
 
 def query_graph_var_preproc(*query_graphs):

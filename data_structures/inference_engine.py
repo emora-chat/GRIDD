@@ -28,7 +28,7 @@ class InferenceEngine:
         facts_graph = facts_concept_graph.to_graph()
         for node, types in attributes.items():
             facts_graph.data(node)['attributes'] = types
-        print('Fact Graph Elapsed: %.3f'%(time.time()-st))
+        print('Fact Graph to NetworkX - Elapsed: %.3f'%(time.time()-st))
 
         st = time.time()
         rules = {**self.rules, **KnowledgeParser.rules(*rules)}
@@ -56,11 +56,10 @@ class InferenceEngine:
             for node, types in attributes.items():
                 precondition.data(node)['attributes'] = types
             converted_rules[rid] = precondition
-        print('Rule Graphs Elapsed: %.3f' % (time.time() - st))
+        print('Rule Graphs to NetworkX - Elapsed: %.3f' % (time.time() - st))
 
-        st = time.time()
         sols = self.matcher.match(facts_graph, *list(converted_rules.values()))
-        print('Graph Matcher Elapsed: %.3f'%(time.time()-st))
+
         if return_rules:
             sols = {(converted_rules.reverse()[precondition], rules[converted_rules.reverse()[precondition]]):
                         sol for precondition, sol in sols.items()}
