@@ -68,7 +68,7 @@ class ParseToLogic:
         ewm = self.text_to_graph(*args)
         self._expression_pull(ewm)
         self._unknown_expression_identification(ewm)
-        rule_assignments = {(*self.inference_engine.rules[rule], rule): sols for rule, sols in self._inference(ewm).items()}
+        rule_assignments = {(pre, post, rule): sols for rule, (pre, post, sols) in self._inference(ewm).items()}
         mentions = self._get_mentions(rule_assignments, ewm)
         merges = self._get_merges(rule_assignments, ewm)
         if LOCALDEBUG:

@@ -21,9 +21,9 @@ class MentionBridge:
             ((center, t, o, i,),) = mention_graph.predicates(predicate_type='center')
             mapped_ids = working_memory.concatenate(mention_graph, predicate_exclusions={'focus','center','cover'})
             for id in mapped_ids.values():
-                working_memory.features['salience'][id] = 1.0
+                working_memory.features[id]['salience'] = 1.0
                 if working_memory.has(predicate_id=id):
-                    working_memory.features['cover'][id] = 1.0
+                    working_memory.features[id]['cover'] = 1.0
             new_concepts.update(mapped_ids.values())
             mapped_focus = mapped_ids.get(focus)
             mapped_center = mapped_ids.get(center)

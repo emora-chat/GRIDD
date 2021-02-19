@@ -5,7 +5,7 @@ from GRIDD.data_structures.id_map import IdMap
 from itertools import chain
 import torch, time
 
-DEBUG = False
+DEBUG = True
 
 class GraphMatchingEngine:
 
@@ -52,11 +52,11 @@ class GraphMatchingEngine:
                     label='Query in-constraint counts')
         query_source_counts = torch.sparse.LongTensor(qs.T, qsc, [len(query_ids), len(edge_ids)]).to_dense()
         if DEBUG:
-            display(query_source_counts, query_ids, edge_ids, None,
+            display(query_source_counts, query_ids, edge_ids,
                     label='Query out-constraint counts')
         query_target_counts = torch.sparse.LongTensor(qt.T, qtc, [len(query_ids), len(edge_ids)]).to_dense()
         if DEBUG:
-            display(query_target_counts, query_ids, edge_ids, None,
+            display(query_target_counts, query_ids, edge_ids,
                     label='Query in-constraint counts')
         constraints = torch.cat([query_source_counts, query_target_counts], 1)
         if DEBUG:
@@ -376,7 +376,7 @@ def display(x, *ids, label=None):
                     e_ = int(e)
                 if isinstance(e_, tuple):
                     _, e_ = e_
-                to_print.append(e_)
+                to_print.append(str(e_))
             print(('{:10}'*len(row)).format(*to_print))
     else:
         colnames = [((ids[1][i]) if ids[1] is not None else '') for i in range(x.size(1))]

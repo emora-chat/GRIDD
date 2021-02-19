@@ -18,8 +18,6 @@ class WorkingMemory(ConceptGraph):
         if len(filenames_or_logicstrings) > 0:
             self.concatenate(KnowledgeParser.from_data(*filenames_or_logicstrings,
                                                        parser=logic_parser))
-        self.features['salience'] = {}
-        self.features['cover'] = {}
 
     def pull_ontology(self, concepts=None):
         to_pull = set()
@@ -35,8 +33,7 @@ class WorkingMemory(ConceptGraph):
         for item in to_pull:
             self.add(*item)
             for e in item:
-                if e not in self.features['salience']:
-                    self.features['salience'][e] = 0
+                self.features[e]['salience'] = self.features[e].get('salience', 0.0)
 
     def pull(self, order=1, concepts=None, exclude_on_pull=None):
         if isinstance(concepts, list):
@@ -78,8 +75,7 @@ class WorkingMemory(ConceptGraph):
         cg = ConceptGraph(predicates=pulling)
         id_map = self.concatenate(cg)
         for id in id_map.values():
-            if id not in self.features['salience']:
-                self.features['salience'][id] = 0
+            self.features[id]['salience'] = self.features[id].get('salience', 0.0)
         self.pull_ontology()
 
     # todo - efficiency check

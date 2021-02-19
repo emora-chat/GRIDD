@@ -32,7 +32,7 @@ class ConceptGraph:
         if predicates is not None:
             for predicate in predicates:
                 self.add(*predicate)
-        self.features = {}
+        self.features = defaultdict(dict)
 
     def add(self, concept, predicate_type=None, object=None, predicate_id=None):
         self._bipredicates_graph.add(concept)

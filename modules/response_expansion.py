@@ -14,11 +14,11 @@ class ResponseExpansion:
         else:
             expansions = self.get_question_supports(main_s, working_memory)
 
-        working_memory.features['salience'][main_i] = 1.0
-        working_memory.features['cover'][main_i] = 1.0
+        working_memory.features[main_i]['salience'] = 1.0
+        working_memory.features[main_i]['cover'] = 1.0
         for pred in expansions:
-            working_memory.features['salience'][pred[3]] = 1.0
-            working_memory.features['cover'][pred[3]] = 1.0
+            working_memory.features[pred[3]]['salience'] = 1.0
+            working_memory.features[pred[3]]['cover'] = 1.0
 
         return main_predicate, expansions - {main_predicate}, working_memory
 

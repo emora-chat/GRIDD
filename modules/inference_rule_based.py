@@ -19,21 +19,26 @@ class InferenceRuleBased:
         # todo - maintain solutions that have been used before to prevent reapplying the same inference (rules are generated each turn, rather than loaded ahead of time!)
 
         inference_dict = self.inference_engine.infer(working_memory)
-        inference_memory = aux_state.get('inference_memory', defaultdict(list))
+        inference_memory = aux_state.get('inference_memory', {})
 
         new_solutions = defaultdict(list)
-        for rule, solutions in inference_dict.items():
+        for rule_id, (pre, post, solutions) in inference_dict.items():
+            new = []
             for solution in solutions:
                 repeat = False
-                for old in inference_memory[rule]:
+                for old in inference_memory[rule_id]:
                     if solution == old:
                         repeat = True
                         break
                 if not repeat:
-                    new_solutions[rule].append(solution)
-                    inference_memory[rule].append(solution)
+                    new.append(solution)
+            new_solutions[rule_id] = (pre, post, new)
+            if rule_id not in inference_memory:
+                inference_memory[rule_id] = (pre, post, new)
+            else:
+                inference_memory[rule_id][2].extend(new)
 
-        implications = self.inference_engine.apply(solutions=inference_dict)
+        implications = self.inference_engine.apply(solutions=new_solutions)
         if globals.DEBUG:
             self.display_implications(implications)
         return implications, inference_memory

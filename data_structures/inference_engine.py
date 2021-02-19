@@ -12,7 +12,7 @@ class InferenceEngine:
         self.rules = KnowledgeParser.rules(*rules)
         self.matcher = GraphMatchingEngine()
 
-    def infer(self, facts, *rules, return_rules=False):
+    def infer(self, facts, *rules):
         st = time.time()
         facts_concept_graph = KnowledgeParser.from_data(facts, namespace='facts_')
         attributes = {}
@@ -59,19 +59,14 @@ class InferenceEngine:
         print('Rule Graphs to NetworkX - Elapsed: %.3f' % (time.time() - st))
 
         sols = self.matcher.match(facts_graph, *list(converted_rules.values()))
-
-        if return_rules:
-            sols = {(converted_rules.reverse()[precondition], rules[converted_rules.reverse()[precondition]]):
-                        sol for precondition, sol in sols.items()}
-        else:
-            sols = {converted_rules.reverse()[precondition]: sol for precondition, sol in sols.items()}
+        sols = {rule_id: (rules[rule_id][0], rules[rule_id][1], sol_ls) for rule_id, sol_ls in sols.items()}
         return sols
 
     def apply(self, facts=None, *rules, solutions=None):
         if facts is not None:
-            solutions = self.infer(facts, *rules, return_rules=True)
+            solutions = self.infer(facts, *rules)
         implications = {}
-        for (rid, (pre, post)), sols in solutions.items():
+        for rid, (pre, post, sols) in solutions.items():
             for sol in sols:
                 cg = ConceptGraph(namespace='implied')
                 id_map = cg.id_map(post)

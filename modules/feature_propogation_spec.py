@@ -12,6 +12,7 @@ class FeaturePropogationSpec:
         feature_propogation = FeaturePropogation(max_score=1.0, turn_decrement=0.1, propogation_rate=0.5, propogation_decrement=0.1)
         return feature_propogation
 
+    # todo - update features to use [node]['salience']
     def __call__(feature_propogation, working_memory, iterations):
         """
         Update the spreadable features of working_memory

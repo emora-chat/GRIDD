@@ -13,8 +13,8 @@ class FeaturePropogation:
         """
         Update the features of the nodes in working memory
         """
-        for key in working_memory.features['salience']:
-            working_memory.features['salience'][key] = max(0.0, working_memory.features['salience'][key] - self.turn_decrement)
+        for key in working_memory.features:
+            working_memory.features[key]['salience'] = max(0.0, working_memory.features[key]['salience'] - self.turn_decrement)
 
         edges = [(*edge, 'spread') for s, t, o, i in working_memory.predicates()
                                     for edge in [(s, i), (i, s), (o, i), (i, o)]
@@ -30,8 +30,8 @@ class FeaturePropogation:
                                          if x is not None and y is not None and x - self.propogation_decrement >= y
                                          else 0))
             },
-            get_fn=lambda x: working_memory.features['salience'].get(x, 0.0),
-            set_fn=lambda x, y: working_memory.features['salience'].__setitem__(x, y),
+            get_fn=lambda x: working_memory.features[x].get('salience', 0.0),
+            set_fn=lambda x, y: working_memory.features[x].__setitem__('salience', y),
             maximum=self.max_score
         )
 

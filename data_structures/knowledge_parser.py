@@ -2,7 +2,7 @@ from lark import Lark, Transformer
 import GRIDD.data_structures.concept_graph as cg
 from GRIDD.data_structures.knowledge_parser_spec import KnowledgeParserSpec
 from GRIDD.utilities import Counter, collect
-import os
+import os, json
 from collections import defaultdict
 
 class ParserStruct:
@@ -26,6 +26,8 @@ class KnowledgeParser:
                 instance: ((name "/")|(id "="))? type "(" ")"
                 ontological: id "<" (type | types) ">"
                 expression: id "[" (alias | aliases) "]"
+                metadata: id "{" data "}"
+                data: /[^{}]+/
                 name: string_term
                 type: string_term 
                 types: type ("," type)+
@@ -278,6 +280,13 @@ class PredicateTransformer(Transformer):
             self.add_bipredicate(alias_node, 'expression', 'type', predicate_id=self.addition_construction.id_map().get())
             self.add_bipredicate(alias_node, id, 'expr', predicate_id=self.addition_construction.id_map().get())
         return id
+
+    def metadata(self, args):
+        id, data = args
+        new_concepts = self.addition_construction.concepts()
+        id = self._hierarchical_node_check(id, new_concepts)
+        data_dict = json.loads(data)
+        self.addition_construction.features[id].update(data_dict)
 
     def name(self, args):
         to_return = ParserStruct(str(args[0].value), pred_instances=args[0].pred_instances)
