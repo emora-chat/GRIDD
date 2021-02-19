@@ -1,6 +1,6 @@
 p/buy(X/person(),Y/house())
 time(p,past)
-=>
+-> buy_house ->
 yll/locate(Y, l/location())
 time(yll, now)
 question(l)
@@ -8,13 +8,13 @@ question(l)
 
 buy(X/person(), Y/house())
 locate(Y, Z/state())
-=>
+-> live_state ->
 xlz/live(X,Z)
 question(like.v.01(X,xlz))
 ;
 
 buy(X/person(), Y/car())
-=>
+-> buy_car ->
 question(xld/like.v.01(X, Y))
 time(xld, now)
 ;

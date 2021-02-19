@@ -25,8 +25,8 @@ class MentionBridge:
                 if working_memory.has(predicate_id=id):
                     working_memory.features['cover'][id] = 1.0
             new_concepts.update(mapped_ids.values())
-            mapped_focus = mapped_ids.get(focus,focus)
-            mapped_center = mapped_ids.get(center,center)
+            mapped_focus = mapped_ids.get(focus)
+            mapped_center = mapped_ids.get(center)
             working_memory.add(span, 'ref', mapped_focus)
             working_memory.add(span, 'def', mapped_center)
             working_memory.add(span, 'type', 'span')

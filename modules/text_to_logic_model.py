@@ -3,35 +3,18 @@ from abc import abstractmethod
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.knowledge_parser import KnowledgeParser
 from GRIDD.data_structures.inference_engine import InferenceEngine
+from GRIDD.utilities import collect
 
 LOCALDEBUG = False
 
 class ParseToLogic:
 
-    def __init__(self, knowledge_base, template_starter_predicates, *template_file_names):
+    def __init__(self, knowledge_base, *template_file_names):
         self.knowledge_base = knowledge_base
-        self.inference_engine = InferenceEngine()
-        self.templates = ConceptGraph(predicates=template_starter_predicates)
-        self._template_parser = KnowledgeParser(kg=self.templates, base_nodes=self.templates.concepts(), ensure_kb_compatible=False)
-        self.ordered_rule_ids = self.load_templates(*template_file_names)
-        self.rules = self.inference_engine.generate_rules_from_graph(self.templates, with_names=True)
-        for rule in self.rules:
+        self.inference_engine = InferenceEngine(*template_file_names)
+        for rule in self.inference_engine.rules.values():
             self._reference_expansion(rule[0])
         self.spans = []
-
-    def load_templates(self, *filenames_or_logicstrings):
-        ordered_rule_ids = []
-        for input in filenames_or_logicstrings:
-            if input.endswith('.kg'):
-                input = open(input, 'r').read()
-            if len(input.strip()) > 0:
-                tree = self._template_parser.parse(input)
-                additions = self._template_parser.transform(tree)
-                for addition in additions:
-                    id_map = self.templates.concatenate(addition)
-                    s = addition.predicates(predicate_type='post')[0][0]
-                    ordered_rule_ids.append(id_map.get(s,s))
-        return ordered_rule_ids
 
     def _reference_expansion(self, pregraph):
         """
@@ -54,9 +37,9 @@ class ParseToLogic:
                     self._expand_references(pregraph, concept)
 
     def _expand_references(self, pregraph, concept, supertype=None):
-        expression_var = pregraph._get_next_id()
+        expression_var = pregraph.id_map().get()
         ref = pregraph.add(concept, 'ref', expression_var)
-        concept_var = pregraph._get_next_id()
+        concept_var = pregraph.id_map().get()
         expr = pregraph.add(expression_var, 'expr', concept_var)
         new_nodes = [expression_var, ref, concept_var, expr]
         if supertype is not None:
@@ -85,7 +68,7 @@ class ParseToLogic:
         ewm = self.text_to_graph(*args)
         self._expression_pull(ewm)
         self._unknown_expression_identification(ewm)
-        rule_assignments = self._inference(ewm)
+        rule_assignments = {(*self.inference_engine.rules[rule], rule): sols for rule, sols in self._inference(ewm).items()}
         mentions = self._get_mentions(rule_assignments, ewm)
         merges = self._get_merges(rule_assignments, ewm)
         if LOCALDEBUG:
@@ -107,7 +90,7 @@ class ParseToLogic:
             expression = '"%s"' % span_node.string
             references = ewm.objects(expression, 'expr')
             if len(references) == 0:
-                unk_node = ewm.add(ewm._get_next_id())
+                unk_node = ewm.add(ewm.id_map().get())
                 types = ewm.supertypes(span_node)
                 pos_type = 'other'
                 for n in ['verb', 'noun', 'pron', 'adj', 'adv']:
@@ -122,7 +105,7 @@ class ParseToLogic:
         Apply the template rules to the current expression working_memory
         and get the variable assignments of the solutions
         """
-        return self.inference_engine.run(ewm, *self.rules, ordered_rule_ids=self.ordered_rule_ids)
+        return self.inference_engine.infer(ewm)
 
         # Parse templates are priority-ordered, such that the highest-priority matching template
         # for a specific center is kept and all other templates with the same center are discarded.
@@ -153,14 +136,14 @@ class ParseToLogic:
                 if center not in centers_handled:
                     self._update_centers(centers_handled, post, center, solution)
                     m = {}
-                    cg = ConceptGraph(namespace=post._namespace)
-                    cg._next_id = post._next_id
+                    cg = ConceptGraph(namespace=post.id_map().namespace)
+                    cg.id_map().index = post.id_map().index
                     for node in post.concepts():
                         if node in solution:
                             if node in [center_var,expression_var,concept_var]:
                                 m[node] = self._get_concept_of_span(solution[node], ewm)
                             else:
-                                m[node] = cg._get_next_id()
+                                m[node] = cg.id_map().get()
                         else:
                             m[node] = node
                     for subject, typ, object, inst in post.predicates():

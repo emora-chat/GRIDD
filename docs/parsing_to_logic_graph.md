@@ -1649,18 +1649,4 @@ If a word is mentioned that does not match a previous rule, instantiate it as a 
 ## Compound Concept
 
 Compound concepts are condensed into a single entity when the dependency relations are preprocessed  into a `concept graph`, before any conversion rules are applied.
-
-<!--## Question Word
-
-<details>
-  <summary>Conversions</summary>
-  
-	X/question_word()
-	-> question_word ->
-	question(q/object())
-	focus(q)
-	center(X)
-	;
-	
-</details>-->
  

@@ -1,161 +1,108 @@
+
 from structpy import specification
-from GRIDD.data_structures.concept_graph import ConceptGraph
-from GRIDD.data_structures.knowledge_base import KnowledgeBase
+
+from GRIDD.data_structures.knowledge_parser import KnowledgeParser
+import time
 
 @specification
 class InferenceEngineSpec:
 
     @specification.init
-    def INFERENCE_ENGINE(InferenceEngine):
-        inference_engine = InferenceEngine()
-        return inference_engine
-
-
-    def run(inference_engine, concept_graph, inference_rules, ordered_rule_ids=None):
+    def INFERENCE_ENGINE(InferenceEngine, rules):
         """
-        Applies each rule from inference_rules to the concept_graph and identifies all valid assignments.
+        `rules` are preloaded and checked on every `infer` call.
 
-        If ordered_rule_ids is specified, the rules are applied in the order indicated by ordered_rule_ids.
-        However, in this case, if any of the provided rules are not named, then an assertion error is thrown.
-
-        `inference_rules` is a variable number of rules where the rule can be:
+        `rules` is a variable number of rules where the rule can be:
             logic string of SINGLE rule
             rule concept id in concept graph
-            tuple of concept graphs (precondition, postcondition)
+            tuple of concept graphs (precondition, postcondition, name(optional))
 
-        The tuples can have an optional third element which provides a string name for the rule.
+        """
+        rules = '''
+        alb=like(a=object(), b=object())
+        -> like_happy ->
+        happy(b)
+        '''.split(';')
 
-        If no inference rules are provided, then all rules present in the concept graph will be applied.
+        inference_engine = InferenceEngine(*rules)
+        return inference_engine
 
-        Returns a dictionary <rule id: list of assignments>.
+    def infer(inference_engine, facts, rules):
+        """
+        `facts` define a graph against which the rule preconditions will be checked for matches.
 
-        If logic string is given, rule id is the logic string.
-        If rule concept id is given, rule id is the rule concept id.
-        If tuple is given, rule id is the tuple.
-        If no inference rules are provided, the rule ids are the concept ids
-        of the rules in the concept graph.
+        `facts` can be a concept graph or a logic string.
+
+        Same `rules` format as constructor.
+
+        Returns dictionary mapping rules to their solutions.
         """
 
-        cg = ConceptGraph(predicates=[
-            ('fido', 'type', 'dog'),
-            ('princess', 'type', 'cat')
+        facts = '''
+        jlm=like(john=object(), mary=object())
+        mls=like(mary, sally=object())
+        '''
+
+        rules = '''
+        xly=like(x=object(), y=object())
+        ylz=like(y, z=object())
+        -> trans_like ->
+        like(x, z)
+        '''.split(';')
+
+        t = time.time()
+        solutions = inference_engine.infer(facts, *rules)
+        print('Elapsed: %.3f'%(time.time()-t))
+
+        assert solutions_equal(solutions['like_happy'], [
+                {'a': 'john', 'b': 'mary', 'alb': 'jlm'},
+                {'a': 'mary', 'b': 'sally', 'alb': 'mls'}
+            ]
+        )
+
+        assert solutions_equal(solutions['trans_like'], [
+            {'x': 'john', 'y': 'mary', 'z': 'sally', 'xly': 'jlm', 'ylz': 'mls'}
         ])
 
-        # Logic string
-        rule = '''
-            x/dog() => bark(x);
-        '''
-        rule2 = '''
-            x/cat() => meow(x);
-        '''
-        assignments = inference_engine.run(cg, rule, rule2)
-        for rule, solutions in assignments.items():
-            if rule[0].has('dog'):
-                assert len(solutions) == 1
-                assert 'fido' in solutions[0].values()
-            elif rule[0].has('cat'):
-                assert len(solutions) == 1
-                assert 'princess' in solutions[0].values()
 
-        # Tuples
-        rules_str = '''
-            x/dog() => bark(x);
-            x/cat() => meow(x);
-        '''
-        rule_base = KnowledgeBase(rules_str, ensure_kb_compatible=False)._concept_graph
-        rules = inference_engine.generate_rules_from_graph(rule_base)
-        assignments = inference_engine.run(cg, *rules)
-        for rule in rules:
-            assert len(assignments[rule]) == 1
-            if rule[0].has('dog'):
-                dog_var = rule[0].predicates(predicate_type='type', object='dog')[0][0]
-                assert assignments[rule][0][dog_var] == 'fido'
-            elif rule[0].has('cat'):
-                cat_var = rule[0].predicates(predicate_type='type', object='cat')[0][0]
-                assert assignments[rule][0][cat_var] == 'princess'
-            else:
-                assert False
-
-        # No inference rules
-        rules_str = '''
-            x/dog() -> dogs_bark -> bark(x);
-            x/cat() -> cats_meow -> meow(x);
-        '''
-        cg = KnowledgeBase(rules_str, ensure_kb_compatible=False)._concept_graph
-        cg.add('fido', 'type', 'dog')
-        cg.add('princess', 'type', 'cat')
-        assignments = inference_engine.run(cg)
-        for rule, solutions in assignments.items():
-            if rule[0].has('dog'):
-                assert len(solutions) == 1
-                assert 'fido' in solutions[0].values()
-            elif rule[0].has('cat'):
-                assert len(solutions) == 1
-                assert 'princess' in solutions[0].values()
-
-        # Order is specified
-        assignments = inference_engine.run(cg, ordered_rule_ids=['cats_meow', 'dogs_bark'])
-        assert len(assignments) == 2
-        rules = list(assignments.keys())
-        cat_rule = rules[0]
-        dog_rule = rules[1]
-        assert cat_rule[0].has('cat')
-        assert len(assignments[cat_rule]) == 1
-        assert 'princess' in assignments[cat_rule][0].values()
-        assert dog_rule[0].has('dog')
-        assert len(assignments[dog_rule]) == 1
-        assert 'fido' in assignments[dog_rule][0].values()
-
-        # Rule concept id
-        assignments = inference_engine.run(cg, 'cats_meow')
-        assert len(assignments) == 1
-        rules = list(assignments.keys())
-        cat_rule = rules[0]
-        assert cat_rule[0].has('cat')
-        assert len(assignments[cat_rule]) == 1
-        assert 'princess' in assignments[cat_rule][0].values()
-
-    def generate_rules_from_graph(inference_engine, concept_graph, with_names=False):
+    def apply(inference_engine, facts=None, rules=None, solutions=None):
         """
-        Extracts the inference rules and their corresponding implications from `concept graph` as
-        tuples of concept_graphs.
+        If facts and rules are provided, run `infer` to get solutions and then generate the postconditions.
 
-        If the list of ordered_rule_ids is given, then the pairs are returned in the specified order.
+        Same `rules` format as constructor.
 
-        if with_names is True
-            :returns list[(precondition_cg, postcondition_cg, rule_name)]
-        otherwise
-            :returns list[(precondition_cg, postcondition_cg)]
+        If solutions are provided, generate the postconditions.
+
+        Returns list of generated postconditions.
         """
-        rule = '''
-            x/dog() => bark(x);
-        '''
-        rule_base = KnowledgeBase(rule, ensure_kb_compatible=False)._concept_graph
-        rules = inference_engine.generate_rules_from_graph(rule_base)
-        assert len(rules) == 1
-        assert len(rules[0]) == 2
-        assert len(rules[0][0].predicates(predicate_type='type', object='dog')) == 1
-        dog_var = rules[0][0].predicates(predicate_type='type', object='dog')[0][0]
-        assert rules[0][1].has(dog_var, 'bark')
 
-        dog_rule = '''
-            x/dog() -> dogs_bark -> bark(x);
+        facts = '''
+        jlm=like(john=object(), mary=object())
+        mls=like(mary, sally=object())
         '''
-        cat_rule = '''
-            x/cat() -> cats_meow -> meow(x);
-        '''
-        rule_base = KnowledgeBase(dog_rule, cat_rule, ensure_kb_compatible=False)._concept_graph
-        rules = inference_engine.generate_rules_from_graph(rule_base, with_names=True)
-        assert len(rules) == 2
-        for rule in rules:
-            assert len(rule) == 3
-            if rule[2] == 'cats_meow':
-                assert len(rule[0].predicates(predicate_type='type', object='cat')) == 1
-                cat_var = rule[0].predicates(predicate_type='type', object='cat')[0][0]
-                assert rule[1].has(cat_var, 'meow')
-            elif rule[2] == 'dogs_bark':
-                assert len(rule[0].predicates(predicate_type='type', object='dog')) == 1
-                dog_var = rule[0].predicates(predicate_type='type', object='dog')[0][0]
-                assert rule[1].has(dog_var, 'bark')
-            else:
-                assert False
+
+        rules = '''
+        xly=like(x=object(), y=object())
+        ylz=like(y, z=object())
+        -> trans_like ->
+        like(x, z)
+        '''.split(';')
+
+        implications = inference_engine.apply(facts, *rules)
+
+        assert concept_graphs_equal(
+            implications['trans_like'][0],
+            KnowledgeParser.from_data('''
+            like(john, sally);
+            ''')
+        )
+
+def solutions_equal(a, b):
+    a_cmp = sorted([sorted(e.items()) for e in a])
+    b_cmp = sorted([sorted(e.items()) for e in b])
+    cmp = a_cmp == b_cmp
+    return cmp
+
+def concept_graphs_equal(a, b):
+    return frozenset([(s,t,o) for s, t, o, i in a.predicates()]) \
+        == frozenset([(s,t,o) for s, t, o, i in b.predicates()])

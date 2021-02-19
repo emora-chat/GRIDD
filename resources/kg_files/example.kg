@@ -9,37 +9,19 @@ actor<person>
 chris_evans=actor()
 chris_evans[evans,chris evans]
 
-emora=bot()
-
 watch<predicate>
+like<predicate>
+happy<predicate>
+sad<predicate>
+enemy<predicate>
 
 ela/like(emora,avengers)
-reason(ela,like(emora,chris_evans))
+cause(ela,like(emora,chris_evans))
 time(ela,now)
 time(eh/happy(emora),now)
 time(ewa/watch(emora,avengers),now)
-reason(eh,ewa);
+cause(eh,ewa);
 
-go<predicate>
 store<entity>
-user=person()
 time(go(user,s/store()),past)
 time(go(user,s2/store()),future);
-
-like(person(),z/person())
-like(person(),z)
-->
-love_triangle;
-
-love_triangle
-->
-sad(now);
-
-like(p/person(),now)
--> positive_mindset ->
-happy(p);
-
-like(x/person(),z/person())
-like(y/person(),z)
-=>
-enemy(x,y);

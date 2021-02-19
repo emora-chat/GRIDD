@@ -1,23 +1,27 @@
-from structpy.graph.directed.labeled.multilabeled_parallel_digraph_networkx import MultiLabeledParallelDigraphNX
-from structpy.map.map import Map
-from structpy.map.index.index import Index
+
 from GRIDD.data_structures.concept_graph_spec import ConceptGraphSpec
+
+from structpy.graph.directed.labeled.multilabeled_parallel_digraph_networkx import MultiLabeledParallelDigraphNX
+from structpy.graph.directed.labeled.data.multilabeled_digraph_data import MultiLabeledDigraphDataNX as Graph
+from structpy.map.map import Map
+from GRIDD.data_structures.id_map import IdMap
+from structpy.map.index.index import Index
 from GRIDD.data_structures.span import Span
 CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-import GRIDD.utilities as util
 from collections import defaultdict
 import json
-
-
-CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+from GRIDD.utilities import Counter, collect
 
 class ConceptGraph:
 
     def __init__(self, predicates=None, concepts=None, namespace=None):
-        if namespace is None:
-            namespace = 'def'
-        self._namespace = namespace.lower()
-        self._next_id = 0
+        if namespace is not None:
+            namespace = namespace
+        if isinstance(namespace, IdMap):
+            self._ids = namespace
+        else:
+            self._ids = IdMap(namespace=namespace, start_index=Counter(),
+                              contains=lambda x: self.has(x) or self.has(predicate_id=x))
         self._bipredicates_graph = MultiLabeledParallelDigraphNX()
         self._bipredicate_instances = Index()
         self._monopredicates_map = Map()
@@ -30,27 +34,13 @@ class ConceptGraph:
                 self.add(*predicate)
         self.features = {}
 
-    def _get_next_id(self):
-        if self._namespace is not None:
-            next_id = self._namespace + '_' + str(self._next_id)
-            while self.has(next_id):
-                self._next_id += 1
-                next_id = self._namespace + '_' + str(self._next_id)
-        else:
-            next_id = str(self._next_id)
-            while self.has(next_id):
-                self._next_id += 1
-                next_id = str(self._next_id)
-        self._next_id += 1
-        return next_id
-
     def add(self, concept, predicate_type=None, object=None, predicate_id=None):
         self._bipredicates_graph.add(concept)
         if predicate_type is None:  # Add concept
             return concept
         elif object is None:        # Add monopredicate
             if predicate_id is None:
-                predicate_id = self._get_next_id()
+                predicate_id = self._ids.get()
             elif self.has(predicate_id=predicate_id): #todo - check signature
                 if self.predicate(predicate_id) != (concept, predicate_type, object, predicate_id):
                     raise ValueError("Predicate id '%s' already exists!" % str(predicate_id))
@@ -63,7 +53,7 @@ class ConceptGraph:
             return predicate_id
         else:                       # Add bipredicate
             if predicate_id is None:
-                predicate_id = self._get_next_id()
+                predicate_id = self._ids.get()
             elif self.has(predicate_id=predicate_id): #todo - check signature
                 if self.predicate(predicate_id) != (concept, predicate_type, object, predicate_id):
                     raise ValueError("Predicate id '%s' already exists!" % str(predicate_id))
@@ -239,10 +229,52 @@ class ConceptGraph:
         neighbors.update(self.objects(concept, type))
         return neighbors
 
+    def subtypes(self, concept):
+        subtypes = set()
+        for predicate in self.predicates(predicate_type='type', object=concept):
+            subtype = predicate[0]
+            subtypes.add(subtype)
+            subtypes.update(self.subtypes(subtype))
+        return subtypes
+
+    # todo - efficiency check
+    #  if multiple paths to same ancestor,
+    #  it will pull ancestor's ancestor-chain multiple times
+    def supertypes(self, concept):
+        types = set()
+        for predicate in self.predicates(subject=concept, predicate_type='type'):
+            supertype = predicate[2]
+            types.add(supertype)
+            types.update(self.supertypes(supertype))
+        return types
+
+    def id_map(self, other=None):
+        if other is None:
+            return self._ids
+        if not isinstance(other, str):
+            other = other._ids.namespace
+        else:
+            other = other
+        return IdMap(namespace=self._ids.namespace,
+                     start_index=self._ids.index,
+                     condition=(lambda other_id: isinstance(other, str) and other_id.startswith(other))
+                     )
+
+    def to_graph(self):
+        graph = Graph()
+        for s, t, o, i in self.predicates():
+            graph.add(i, s, 's')
+            graph.add(i, t, 't')
+            if o is not None:
+                graph.add(i, o, 'o')
+        for c in self.concepts():
+            graph.add(c)
+        return graph
+
     def merge(self, concept_a, concept_b):
         if self.has(predicate_id=concept_a) and self.has(predicate_id=concept_b):
             raise ValueError("Cannot merge two predicate instances!")
-        if concept_a.startswith(self._namespace) and not concept_b.startswith(self._namespace):
+        if concept_a.startswith(self._ids.namespace) and not concept_b.startswith(self._ids.namespace):
             tmp = concept_a
             concept_a = concept_b
             concept_b = tmp
@@ -274,57 +306,35 @@ class ConceptGraph:
             if len(self._bipredicate_instances[(subject, predicate_type, object)]) == 0:
                 del self._bipredicate_instances[(subject, predicate_type, object)]
 
-    def concatenate(self, concept_graph, predicate_exclusions=None):
-        id_map = {}
-        if predicate_exclusions is not None:
-            for s, t, o, i in concept_graph.predicates():
-                if t not in predicate_exclusions:
-                    s = util.map(self, s, concept_graph._namespace, id_map)
-                    t = util.map(self, t, concept_graph._namespace, id_map)
-                    o = util.map(self, o, concept_graph._namespace, id_map)
-                    i = util.map(self, i, concept_graph._namespace, id_map)
-                    self.add(s, t, o, i)
-        else:
-            for s, t, o, i in concept_graph.predicates():
-                s = util.map(self, s, concept_graph._namespace, id_map)
-                t = util.map(self, t, concept_graph._namespace, id_map)
-                o = util.map(self, o, concept_graph._namespace, id_map)
-                i = util.map(self, i, concept_graph._namespace, id_map)
-                self.add(s, t, o, i)
+    def concatenate(self, concept_graph, predicate_exclusions=None, concepts=None, id_map=None):
+        if id_map is None:
+            id_map = self.id_map(concept_graph)
+        for s, t, o, i in concept_graph.predicates():
+            if (predicate_exclusions is None or t not in predicate_exclusions) and (concepts is None or i in concepts):
+                self.add(*(id_map.get(x) if x is not None else None for x in (s, t, o, i)))
         for concept in concept_graph.concepts():
             if concept not in id_map:
                 if predicate_exclusions is None:
-                    concept = util.map(self, concept, concept_graph._namespace, id_map)
-                    self.add(concept)
+                    if concepts is None or concept in concepts:
+                        self.add(id_map.get(concept))
                 else:
-                    if concept not in predicate_exclusions:
-                        if not concept_graph.has(predicate_id=concept) or concept_graph.type(concept) not in predicate_exclusions:
-                            concept = util.map(self, concept, concept_graph._namespace, id_map)
-                            self.add(concept)
+                    if concept not in predicate_exclusions and (concepts is None or concept in concepts):
+                        if not concept_graph.has(predicate_id=concept) \
+                           or concept_graph.type(concept) not in predicate_exclusions:
+                            self.add(id_map.get(concept))
         return id_map
 
     def copy(self, namespace=None):
         if namespace is None:
-            namespace = self._namespace
+            namespace = self._ids.namespace
         cp = ConceptGraph(namespace=namespace)
-        if namespace != self._namespace:
-            namespace_map = {}
-            for s, t, o, i in self.predicates():
-                s = util.map(cp, s, self._namespace, namespace_map)
-                t = util.map(cp, t, self._namespace, namespace_map)
-                o = util.map(cp, o, self._namespace, namespace_map)
-                i = util.map(cp, i, self._namespace, namespace_map)
-                cp.add(s, t, o, i)
-        else:
-            for s, t, o, i in self.predicates():
-                cp.add(s, t, o, i)
-        cp._next_id = self._next_id
+        cp.concatenate(self)
         return cp
 
     def save(self, json_filepath=None):
         d = {
-            'namespace': self._namespace,
-            'next_id': self._next_id,
+            'namespace': self._ids.namespace,
+            'next_id': int(self._ids.index),
             'predicates': []
         }
         for item in self.predicates():
@@ -346,20 +356,16 @@ class ConceptGraph:
                 d = json.loads(json_file_str_obj)
         else:
             d = json_file_str_obj
-        if d['namespace'] != self._namespace:
-            namespace_map = {}
+        if d['namespace'] != self._ids.namespace:
             for item in d['predicates']:
+                id_map = self.id_map(d['namespace'])
                 for i, e in enumerate(item):
                     if e.startswith('<span>'):
                         item[i] = Span.from_string(e)
                 s, t, o, i = item
                 if o == 'None':
                     o = None
-                s = util.map(self, s, d['namespace'], namespace_map)
-                t = util.map(self, t, d['namespace'], namespace_map)
-                o = util.map(self, o, d['namespace'], namespace_map)
-                i = util.map(self, i, d['namespace'], namespace_map)
-                self.add(s, t, o ,i)
+                self.add(*(id_map.get(x) if x is not None else None for x in (s, t, o ,i)))
         else:
             for item in d['predicates']:
                 for i, e in enumerate(item):
@@ -369,7 +375,7 @@ class ConceptGraph:
                 if o == 'None':
                     o = None
                 self.add(s, t, o, i)
-            self._next_id = d['next_id']
+            self._ids.index = Counter(d['next_id'])
 
     def ugly_print(self, exclusions=None):
         strings = defaultdict(list)
@@ -417,7 +423,7 @@ class ConceptGraph:
                 concepts = [s, o] if o is not None else [s]
                 for concept in concepts:
                     if concept not in id_map:
-                        if isinstance(concept, str) and concept.startswith(self._namespace):
+                        if isinstance(concept, str) and concept.startswith(self.id_map().namespace):
                             if self.has(predicate_id=concept):
                                 type_string, bi_string, mono_string = self._get_representation(self.predicate(concept),
                                                                                                id_map, name_counter, visited,
@@ -460,8 +466,6 @@ class ConceptGraph:
 
     def __repr__(self):
         return str(self)
-
-
 
 if __name__ == '__main__':
     print(ConceptGraphSpec.verify(ConceptGraph))

@@ -1,12 +1,14 @@
 import GRIDD.globals as globals
 from collections import defaultdict
 from GRIDD.data_structures.inference_engine import InferenceEngine
+from GRIDD.utilities import collect
 
 class InferenceRuleBased:
 
-    def __init__(self, infer_files):
-        self.inference_engine = InferenceEngine()
-        self.rules = infer_files
+    def __init__(self, *infer_files):
+        # rule_logic_strings = [chunk.strip() for string in collect(*infer_files, extension='.kg')
+        #                       for chunk in string.split(';') if len(chunk.strip()) > 0]
+        self.inference_engine = InferenceEngine(*infer_files)
 
     def __call__(self, working_memory, aux_state):
         """
@@ -16,7 +18,7 @@ class InferenceRuleBased:
 
         # todo - maintain solutions that have been used before to prevent reapplying the same inference (rules are generated each turn, rather than loaded ahead of time!)
 
-        inference_dict = working_memory.inferences(*self.rules)
+        inference_dict = self.inference_engine.infer(working_memory)
         inference_memory = aux_state.get('inference_memory', defaultdict(list))
 
         new_solutions = defaultdict(list)
@@ -31,7 +33,7 @@ class InferenceRuleBased:
                     new_solutions[rule].append(solution)
                     inference_memory[rule].append(solution)
 
-        implications = working_memory.apply_implications(new_solutions)
+        implications = self.inference_engine.apply(solutions=inference_dict)
         if globals.DEBUG:
             self.display_implications(implications)
         return implications, inference_memory

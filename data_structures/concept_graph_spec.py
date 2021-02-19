@@ -27,7 +27,7 @@ class ConceptGraphSpec:
             ('Peter', 'happy'),
             ('Jack', 'happy'),
             ('Peter', 'dislikes', 'Mary')
-        ], namespace='x')
+        ], namespace='x_')
         return concept_graph
 
     def has(concept_graph, concept=None, predicate_type=None, object=None, predicate_id=None):
@@ -106,6 +106,14 @@ class ConceptGraphSpec:
             ('Peter', 'likes', 'Sarah', 'x_2')
         }
 
+    def concepts(concept_graph):
+        """
+        Get all nodes in the concept graph
+        """
+        assert set(concept_graph.concepts()) == {'Peter', 'John', 'Sarah', 'Mary', 'Jack',
+                                            'likes', 'happy', 'dislikes',
+                                            'pjl_1', 'x_0', 'x_1', 'x_2', 'x_3', 'x_4', 'x_5'}
+
     def subjects(concept_graph, concept, type=None):
         """
         Return a set of related concepts to `concept`, where each element of the
@@ -131,6 +139,16 @@ class ConceptGraphSpec:
         """
         assert set(concept_graph.related('Peter')) == {'John', 'Sarah', 'Mary'}
 
+    def to_graph(concept_graph):
+        """
+        Convert the ConceptGraph into a Digraph of s/t/o edges.
+        """
+        graph = concept_graph.to_graph()
+        assert graph.has('pjl_1', 'Peter', 's')
+        assert graph.has('pjl_1', 'John', 'o')
+        assert graph.has('pjl_1', 'likes', 't')
+        assert graph.has('Sarah')
+
     @specification.init
     def CONCEPT_GRAPH_MUTATORS(ConceptGraph, predicates=None, concepts=None, namespace=None):
         """
@@ -142,7 +160,7 @@ class ConceptGraphSpec:
             ('Peter', 'likes', 'Sarah'),
             ('Peter', 'happy'),
             ('Jack', 'happy')
-        ], namespace='x')
+        ], namespace='x_')
         return concept_graph
 
     def add(concept_graph, concept, predicate_type=None, object=None, predicate_id=None):
@@ -199,14 +217,33 @@ class ConceptGraphSpec:
         assert concept_graph.has('Peter', 'likes', 'John', 'pjl_1')
 
     @specification.init
+    def id_map(ConceptGraph, other):
+        """
+        Provide a mapping of ids from `ConceptGraph other` to this Concept Graph.
+        """
+        a = ConceptGraph([
+            ('I', 'like', 'ice cream'),
+            ('I', 'hate', 'dogs', 'ihd')
+        ], namespace='x_')
+        b = ConceptGraph([
+            ('Something', 'is', 'happening')
+        ], namespace='y_')
+
+        idm = b.id_map(a)
+        assert idm.get('ihd') == 'ihd'
+        assert idm.get('x_0') == 'y_1'
+        assert idm['x_0'] == 'y_1'
+        assert idm.identify('y_1') == 'x_0'
+
+    @specification.init
     def concatenate(ConceptGraph, conceptgraph, predicate_exclusions=None):
         """
         Concatenate this concept graph with another.
         """
-        cg1 = ConceptGraph(concepts=['princess', 'hiss'], namespace='1')
+        cg1 = ConceptGraph(concepts=['princess', 'hiss'], namespace='1_')
         cg1.add('princess', 'hiss')
 
-        cg2 = ConceptGraph(concepts=['fluffy', 'bark', 'princess', 'friend'], namespace='2')
+        cg2 = ConceptGraph(concepts=['fluffy', 'bark', 'princess', 'friend'], namespace='2_')
         fb = cg2.add('fluffy', 'bark')
         cg2.add('princess', 'friend', 'fluffy')
         cg2.add(fb, 'volume', 'loud')
@@ -248,7 +285,7 @@ class ConceptGraphSpec:
         final_pred_subj = concept_graph.predicates('fluffy', 'bark', None)[0][3]
         assert new_cg.has(final_pred_subj, 'volume', 'loud')
 
-        namespace_cg = concept_graph.copy(namespace="new")
+        namespace_cg = concept_graph.copy(namespace="new_")
         assert namespace_cg.predicates('fluffy', 'bark', None)[0][3].startswith("new")
         assert namespace_cg.predicates('princess' , 'friend', 'fluffy')[0][3].startswith("new")
         assert namespace_cg.predicates('princess', 'hiss', None)[0][3].startswith("new")
@@ -262,19 +299,19 @@ class ConceptGraphSpec:
 
     @specification.init
     def load(ConceptGraph, json_file_str_obj):
-        cg1 = ConceptGraph(concepts=['princess', 'hiss'], namespace='1')
+        cg1 = ConceptGraph(concepts=['princess', 'hiss'], namespace='1_')
         a = cg1.add('princess', 'hiss')
         cg1.add(a, 'volume', 'loud')
         cg1_file = join(checkpoints, 'load_test_cg1.json')
         cg1.save(cg1_file)
 
-        cg2 = ConceptGraph(concepts=['fluffy', 'bark', 'princess', 'friend'], namespace='2')
+        cg2 = ConceptGraph(concepts=['fluffy', 'bark', 'princess', 'friend'], namespace='2_')
         cg2.add('fluffy', 'bark')
         cg2.add('princess', 'friend', 'fluffy')
         cg2_file = join(checkpoints, 'load_test_cg2.json')
         cg2.save(cg2_file)
 
-        cg3 = ConceptGraph(namespace='1')
+        cg3 = ConceptGraph(namespace='1_')
         cg3.load(cg1_file)
 
         assert cg3.has('princess', 'hiss')
@@ -284,18 +321,11 @@ class ConceptGraphSpec:
 
         assert cg3.has('fluffy', 'bark')
         assert cg3.has('princess', 'friend', 'fluffy')
-        assert cg3.predicates('princess', 'friend', 'fluffy')[0][3].startswith("1")
+        assert cg3.predicates('princess', 'friend', 'fluffy')[0][3].startswith('1')
 
         b = cg3.add('fluffy', 'friend', 'princess')
         assert b == '1_4'
         return cg3
-
-    def concepts(concept_graph):
-        """
-        Get all nodes in the concept graph
-        """
-        assert concept_graph.concepts() == {'fluffy','bark','princess','hiss','volume','loud','friend',
-                                            '1_0', '1_1', '1_2', '1_3', '1_4'}
 
     def pretty_print(concept_graph, predicate_exclusions=None):
         """
@@ -303,8 +333,8 @@ class ConceptGraphSpec:
         defined by the knowledge base text file format.
         """
         concept_graph.add('dog', 'type', 'entity')
-        concept_graph.add(concept_graph._get_next_id(), 'type', 'dog')
-        concept_graph.add(concept_graph._get_next_id(), 'type', 'dog')
+        concept_graph.add(concept_graph.id_map().get(), 'type', 'dog')
+        concept_graph.add(concept_graph.id_map().get(), 'type', 'dog')
         concept_graph.add('polly', 'type', 'dog')
 
         pi = concept_graph.add('polly','hiss')

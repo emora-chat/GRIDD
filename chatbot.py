@@ -27,8 +27,6 @@ from GRIDD.modules.response_selection_salience import SalienceResponseSelection
 from GRIDD.modules.response_expansion import ResponseExpansion
 from GRIDD.modules.response_generation import ResponseGeneration
 
-from GRIDD.utilities import collect
-
 if QUICK_LOCAL_TESTING is False:
     from GRIDD.modules.sentence_casing import SentenceCaser
 else:
@@ -46,13 +44,12 @@ class Chatbot:
 
         c = Pipeline.component
         elit_models = c(ElitModels())
-        template_starter_predicates = [(n, 'is_type') for n in NODES+DP_LABELS]
         template_file = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
-        elit_dp = c(ElitDPToLogic(self.knowledge_base, template_starter_predicates, template_file))
+        elit_dp = c(ElitDPToLogic(self.knowledge_base, template_file))
         mention_bridge = c(MentionBridge())
         merge_dp = c(MergeSpanToMergeConcept())
         merge_bridge = c(MergeBridge(threshold_score=0.2))
-        inference_rulebased = c(InferenceRuleBased(rules))
+        inference_rulebased = c(InferenceRuleBased(*rules))
         inference_bridge = c(InferenceBridge())
         sentence_caser = c(SentenceCaser())
         merge_coref = c(MergeCoreference())
@@ -143,8 +140,9 @@ if __name__ == '__main__':
     interactive = True
 
     kb = join('GRIDD', 'resources', 'kg_files', 'kb')
-    rule_dir = join('GRIDD', 'resources', 'kg_files', 'rules')
-    rules = [join(rule_dir, file) for file in os.listdir(rule_dir) if file.endswith('.kg')]
+    rules_dir = join('GRIDD', 'resources', 'kg_files', 'rules')
+    rules = [rules_dir]
+    # rules = [join(rules_dir, file) for file in os.listdir(rules_dir) if file.endswith('.kg')]
 
     if interactive:
         chatbot = Chatbot(kb, rules=rules)

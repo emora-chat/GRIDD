@@ -1188,12 +1188,3 @@ X/pos()
 focus(X())
 center(X)
 ;
-
-
-X/question_word()
--> question_word ->
-question(q/object())
-focus(q)
-center(X)
-;
-
