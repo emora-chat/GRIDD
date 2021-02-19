@@ -4,7 +4,7 @@ from GRIDD.data_structures.graph_matching_engine import GraphMatchingEngine
 from structpy.map import Bimap
 from GRIDD.data_structures.knowledge_parser import KnowledgeParser
 from GRIDD.data_structures.concept_graph import ConceptGraph
-
+import time
 
 class InferenceEngine:
 
@@ -13,6 +13,7 @@ class InferenceEngine:
         self.matcher = GraphMatchingEngine()
 
     def infer(self, facts, *rules, return_rules=False):
+        st = time.time()
         facts_concept_graph = KnowledgeParser.from_data(facts, namespace='facts_')
         attributes = {}
         types = set()
@@ -27,7 +28,9 @@ class InferenceEngine:
         facts_graph = facts_concept_graph.to_graph()
         for node, types in attributes.items():
             facts_graph.data(node)['attributes'] = types
+        print('Fact Graph Elapsed: %.3f'%(time.time()-st))
 
+        st = time.time()
         rules = {**self.rules, **KnowledgeParser.rules(*rules)}
         rules = Bimap(rules)
         converted_rules = Bimap()
@@ -53,7 +56,11 @@ class InferenceEngine:
             for node, types in attributes.items():
                 precondition.data(node)['attributes'] = types
             converted_rules[rid] = precondition
+        print('Rule Graphs Elapsed: %.3f' % (time.time() - st))
+
+        st = time.time()
         sols = self.matcher.match(facts_graph, *list(converted_rules.values()))
+        print('Graph Matcher Elapsed: %.3f'%(time.time()-st))
         if return_rules:
             sols = {(converted_rules.reverse()[precondition], rules[converted_rules.reverse()[precondition]]):
                         sol for precondition, sol in sols.items()}
