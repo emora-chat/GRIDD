@@ -357,6 +357,7 @@ time(p, past)
 focus(p)
 center(X)
 cover(A)
+cover(U)
 ;
 
 csbj(X/noun(), Y/pos())
@@ -370,6 +371,7 @@ time(p, past)
 focus(p)
 center(X)
 cover(A)
+cover(U)
 ;
 
 nsbj(X/noun(), Y/pos())
@@ -383,6 +385,7 @@ time(p, now)
 focus(p)
 center(X)
 cover(A)
+cover(U)
 ;
 
 csbj(X/noun(), Y/pos())
@@ -396,6 +399,7 @@ time(p, now)
 focus(p)
 center(X)
 cover(A)
+cover(U)
 ;
 
 nsbj(X/noun(), Y/pos())
@@ -407,6 +411,7 @@ p/X(Y,Z)
 time(p, past)
 focus(p)
 center(X)
+cover(U)
 ;
 
 csbj(X/noun(), Y/pos())
@@ -418,6 +423,7 @@ p/X(Y,Z)
 time(p, past)
 focus(p)
 center(X)
+cover(U)
 ;
 
 nsbj(X/noun(), Y/pos())
@@ -429,6 +435,7 @@ p/X(Y,Z)
 time(p, now)
 focus(p)
 center(X)
+cover(U)
 ;
 
 csbj(X/noun(), Y/pos())
@@ -440,6 +447,7 @@ p/X(Y,Z)
 time(p, now)
 focus(p)
 center(X)
+cover(U)
 ;
 
 
@@ -453,6 +461,7 @@ time(p, past)
 focus(p)
 center(X)
 cover(A)
+cover(U)
 ;
 
 csbj(X/noun(), Y/pos())
@@ -465,6 +474,7 @@ time(p, past)
 focus(p)
 center(X)
 cover(A)
+cover(U)
 ;
 
 nsbj(X/noun(), Y/pos())
@@ -477,6 +487,7 @@ time(p, now)
 focus(p)
 center(X)
 cover(A)
+cover(U)
 ;
 
 csbj(X/noun(), Y/pos())
@@ -489,6 +500,7 @@ time(p, now)
 focus(p)
 center(X)
 cover(A)
+cover(U)
 ;
 
 nsbj(X/noun(), Y/pos())
@@ -499,6 +511,7 @@ p/X(Y)
 time(p, past)
 focus(p)
 center(X)
+cover(U)
 ;
 
 csbj(X/noun(), Y/pos())
@@ -509,6 +522,7 @@ p/X(Y)
 time(p, past)
 focus(p)
 center(X)
+cover(U)
 ;
 
 nsbj(X/noun(), Y/pos())
@@ -519,6 +533,7 @@ p/X(Y)
 time(p, now)
 focus(p)
 center(X)
+cover(U)
 ;
 
 csbj(X/noun(), Y/pos())
@@ -529,6 +544,7 @@ p/X(Y)
 time(p, now)
 focus(p)
 center(X)
+cover(U)
 ;
 
 
@@ -1168,6 +1184,7 @@ focus(o/object())
 referential(o)
 center(X)
 ;
+
 
 X/noun()
 ltype(X, object)

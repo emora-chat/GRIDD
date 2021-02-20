@@ -20,3 +20,6 @@ def extract():
         f.write(rules)
 
     print('\nWrote %d parse-to-logic rules'%count)
+
+if __name__ == '__main__':
+    extract()

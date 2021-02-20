@@ -496,6 +496,7 @@ Subject can be a noun or clause.
 	focus(p)
 	center(X)
 	cover(A)
+	cover(U)
 	;
 	
 	csbj(X/noun(), Y/pos())
@@ -509,6 +510,7 @@ Subject can be a noun or clause.
 	focus(p)
 	center(X)
 	cover(A)
+	cover(U)
 	;
 	
 	nsbj(X/noun(), Y/pos())
@@ -522,6 +524,7 @@ Subject can be a noun or clause.
 	focus(p)
 	center(X)
 	cover(A)
+	cover(U)
 	;
 	
 	csbj(X/noun(), Y/pos())
@@ -535,6 +538,7 @@ Subject can be a noun or clause.
 	focus(p)
 	center(X)
 	cover(A)
+	cover(U)
 	;
 
 	nsbj(X/noun(), Y/pos())
@@ -546,6 +550,7 @@ Subject can be a noun or clause.
 	time(p, past)
 	focus(p)
 	center(X)
+	cover(U)
 	;
 	
 	csbj(X/noun(), Y/pos())
@@ -557,6 +562,7 @@ Subject can be a noun or clause.
 	time(p, past)
 	focus(p)
 	center(X)
+	cover(U)
 	;
 	
 	nsbj(X/noun(), Y/pos())
@@ -568,6 +574,7 @@ Subject can be a noun or clause.
 	time(p, now)
 	focus(p)
 	center(X)
+	cover(U)
 	;
 	
 	csbj(X/noun(), Y/pos())
@@ -579,6 +586,7 @@ Subject can be a noun or clause.
 	time(p, now)
 	focus(p)
 	center(X)
+	cover(U)
 	;
 
  </details>
@@ -608,6 +616,7 @@ Subject can be a noun or clause.
 	focus(p)
 	center(X)
 	cover(A)
+	cover(U)
 	;
 	
 	csbj(X/noun(), Y/pos())
@@ -620,6 +629,7 @@ Subject can be a noun or clause.
 	focus(p)
 	center(X)
 	cover(A)
+	cover(U)
 	;
 	
 	nsbj(X/noun(), Y/pos())
@@ -632,6 +642,7 @@ Subject can be a noun or clause.
 	focus(p)
 	center(X)
 	cover(A)
+	cover(U)
 	;
 	
 	csbj(X/noun(), Y/pos())
@@ -644,6 +655,7 @@ Subject can be a noun or clause.
 	focus(p)
 	center(X)
 	cover(A)
+	cover(U)
 	;
 
 	nsbj(X/noun(), Y/pos())
@@ -654,6 +666,7 @@ Subject can be a noun or clause.
 	time(p, past)
 	focus(p)
 	center(X)
+	cover(U)
 	;
 	
 	csbj(X/noun(), Y/pos())
@@ -664,6 +677,7 @@ Subject can be a noun or clause.
 	time(p, past)
 	focus(p)
 	center(X)
+	cover(U)
 	;
 	
 	nsbj(X/noun(), Y/pos())
@@ -674,6 +688,7 @@ Subject can be a noun or clause.
 	time(p, now)
 	focus(p)
 	center(X)
+	cover(U)
 	;
 	
 	csbj(X/noun(), Y/pos())
@@ -684,6 +699,7 @@ Subject can be a noun or clause.
 	time(p, now)
 	focus(p)
 	center(X)
+	cover(U)
 	;
 
  </details>
