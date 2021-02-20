@@ -137,7 +137,7 @@ if __name__ == '__main__':
     import GRIDD.globals as globals
     globals.DEBUG = True
 
-    interactive = False
+    interactive = True
 
     kb = join('GRIDD', 'resources', 'kg_files', 'kb')
     rules_dir = join('GRIDD', 'resources', 'kg_files', 'rules')
