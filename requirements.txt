@@ -2,3 +2,4 @@ lark-parser==0.11.1
 matplotlib==3.3.3
 networkx==2.5
 torch==1.7.1
+pytest
