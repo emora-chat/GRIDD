@@ -1,6 +1,8 @@
 
 from GRIDD.data_structures.knowledge_base import KnowledgeBase
+from GRIDD.data_structures.knowledge_parser import KnowledgeParser
 from GRIDD.data_structures.working_memory import WorkingMemory
+from GRIDD.data_structures.inference_engine import InferenceEngine
 import os
 from os.path import join
 from collections import defaultdict
@@ -25,23 +27,18 @@ if __name__ == '__main__':
     kb = KnowledgeBase(kb)
     print('initializing wm...')
     wm = WorkingMemory(kb)
-    wm.knowledge_base._knowledge_parser._predicate_transformer.ensure_kb_compatible = False
-    print('loading rules...')
-    rules = []
-    for file in os.listdir(join('gridd_files', 'kb_test', 'rules')):
-        if file.endswith('.kg'):
-            rules.extend(wm.load_rules_from_file(join('gridd_files', 'kb_test', 'rules', file)))
-    print()
+    print('initializing inference engine...')
+    inference_engine = InferenceEngine(join('gridd_files', 'kb_test', 'rules'))
+
     old_solutions = defaultdict(list)
     mode = 'logic'
     if mode == 'logic':
         logic_string = input('>>> ').lower()
         while logic_string != 'q':
-            if not logic_string.strip().endswith(';'):
-                logic_string += ';'
-            wm.load_logic(logic_string)
+            logic_graph = KnowledgeParser.from_data(logic_string)
+            wm.concatenate(logic_graph)
             wm.pull(1, exclude_on_pull={'type', 'expr'})
-            inference_dict = wm.inferences(*rules)
+            inference_dict = inference_engine.infer(wm)
 
             new_solutions = defaultdict(list)
             for rule, solutions in inference_dict.items():
@@ -55,9 +52,10 @@ if __name__ == '__main__':
                         new_solutions[rule].append(solution)
                         old_solutions[rule].append(solution)
 
-            cgs = wm.apply_implications(new_solutions)
-            for cg in cgs:
-                wm.concatenate(cg)
+            implications = inference_engine.apply(solutions=new_solutions)
+            for rule, cgs in implications.items():
+                for cg in cgs:
+                    wm.concatenate(cg)
 
             print('*'*20)
             output = wm.ugly_print(exclusions={'is_type', 'object', 'predicate', 'entity', 'post', 'pre'})

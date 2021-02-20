@@ -15,28 +15,29 @@ class InferenceRuleBased:
         Gather implications of applying inference rules to working memory.
         Ignore all implications that are derived from inferences already covered in auxiliary_state['inference_memory'].
         """
-
-        # todo - maintain solutions that have been used before to prevent reapplying the same inference (rules are generated each turn, rather than loaded ahead of time!)
-
         inference_dict = self.inference_engine.infer(working_memory)
         inference_memory = aux_state.get('inference_memory', {})
 
         new_solutions = defaultdict(list)
         for rule_id, (pre, post, solutions) in inference_dict.items():
             new = []
+            old_sols = inference_memory.get(rule_id, [])
+            if len(old_sols) > 0:
+                old_sols = old_sols[2]
             for solution in solutions:
                 repeat = False
-                for old in inference_memory.get(rule_id, []):
+                for old in old_sols:
                     if solution == old:
                         repeat = True
                         break
                 if not repeat:
                     new.append(solution)
-            new_solutions[rule_id] = (pre, post, new)
-            if rule_id not in inference_memory:
-                inference_memory[rule_id] = (pre, post, new)
-            else:
-                inference_memory[rule_id][2].extend(new)
+            if len(new) > 0:
+                new_solutions[rule_id] = (pre, post, new)
+                if rule_id not in inference_memory:
+                    inference_memory[rule_id] = (pre, post, new)
+                else:
+                    inference_memory[rule_id][2].extend(new)
 
         implications = self.inference_engine.apply(solutions=new_solutions)
         if globals.DEBUG:
@@ -44,7 +45,7 @@ class InferenceRuleBased:
         return implications, inference_memory
 
     def display_implications(self, implications):
-        print("<< Inferences >>")
+        print("\n<< Inferences >>")
         for rule_id, cgs in implications.items():
             for cg in cgs:
                 print(cg.pretty_print())
