@@ -1,5 +1,3 @@
-question<predicate>
-
 student<person>
 teacher<person>
 classmate<person>
@@ -49,7 +47,7 @@ excitement<emotion>
 
 attitude<predicate>
 like<attitude>
-dislike<attitude>
+dislike.v.01<attitude>
 fear<attitude>
 
 study<predicate>
@@ -61,7 +59,7 @@ about(h, math)
 o2/obligation(emora, p/presentation())
 due(o2, tomorrow)
 about(p, science)
-like(emora, science)
-dislike(emora, math)
+like.v.01(emora, science)
+dislike.v.01(emora, math)
 ;
 

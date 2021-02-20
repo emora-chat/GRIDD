@@ -3,7 +3,7 @@ from GRIDD.data_structures.knowledge_base import KnowledgeBase
 from GRIDD.data_structures.knowledge_parser import KnowledgeParser
 from GRIDD.data_structures.working_memory import WorkingMemory
 from GRIDD.data_structures.inference_engine import InferenceEngine
-import os
+import os, time
 from os.path import join
 from collections import defaultdict
 
@@ -24,7 +24,9 @@ if __name__ == '__main__':
             f.write('\n')
 
     print('loading kb...')
+    st = time.time()
     kb = KnowledgeBase(kb)
+    print('\tElapsed: %.3f'%(time.time()-st))
     print('initializing wm...')
     wm = WorkingMemory(kb)
     print('initializing inference engine...')

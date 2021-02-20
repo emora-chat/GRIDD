@@ -1169,22 +1169,10 @@ referential(o)
 center(X)
 ;
 
-X/pron()
--> pron ->
-focus(X)
-center(X)
-;
-
-
-X/noun()
--> concept ->
-focus(X)
-center(X)
-;
-
 
 X/pos()
 -> single_word ->
 focus(X())
 center(X)
 ;
+

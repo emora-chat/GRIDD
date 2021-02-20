@@ -1608,32 +1608,14 @@ If pronoun is referential (e.g. `it`), then it has a `referential` predicate.
 	center(X)
 	;
 
-	X/pron()
-	-> pron ->
-	focus(X)
-	center(X)
-	;
-	
 </details>
-
-## Named Entity
-
-Recognize all nouns that exist as concepts in the KG. 
-
-<details>
-  <summary>Conversions</summary>
-
-	X/noun()
-	-> concept ->
-	focus(X)
-	center(X)
-	;
 	
-</details>
 
 ## Single Words
 
 If a word is mentioned that does not match a previous rule, instantiate it as a lone concept.
+
+This captures non-referential pronouns, nouns, etc.
 
 <details>
   <summary>Conversions</summary>
