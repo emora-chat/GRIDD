@@ -9,11 +9,12 @@ LOCALDEBUG = False
 
 class ParseToLogic:
 
-    def __init__(self, knowledge_base, *template_file_names):
+    def __init__(self, knowledge_base, *template_file_names, device='cpu'):
         self.knowledge_base = knowledge_base
-        self.inference_engine = InferenceEngine(*template_file_names)
-        for rule in self.inference_engine.rules.values():
+        rules = KnowledgeParser.rules(*template_file_names)
+        for rule_id, rule in rules.items():
             self._reference_expansion(rule[0])
+        self.inference_engine = InferenceEngine(*[(*rule, rule_id) for rule_id, rule in rules.items()], device=device)
         self.spans = []
 
     def _reference_expansion(self, pregraph):
@@ -105,7 +106,8 @@ class ParseToLogic:
         Apply the template rules to the current expression working_memory
         and get the variable assignments of the solutions
         """
-        return self.inference_engine.infer(ewm)
+        solutions = self.inference_engine.infer(ewm)
+        return solutions
 
         # Parse templates are priority-ordered, such that the highest-priority matching template
         # for a specific center is kept and all other templates with the same center are discarded.

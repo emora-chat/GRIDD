@@ -1,6 +1,6 @@
 import pytest
 from GRIDD.modules.elit_models import ElitModels
-from GRIDD.modules.elit_dp_to_logic_model import ElitDPToLogic, NODES, DP_LABELS
+from GRIDD.modules.elit_dp_to_logic_model import ElitDPToLogic, NODES
 from GRIDD.data_structures.knowledge_base import KnowledgeBase
 from os.path import join
 
@@ -11,9 +11,8 @@ def elitmodels():
 @pytest.fixture
 def elit_to_logic():
     kb = KnowledgeBase(join('GRIDD', 'resources', 'kg_files', 'framework_test.kg'))
-    template_starter_predicates = [(n, 'is_type') for n in NODES+DP_LABELS]
     template_file = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
-    return ElitDPToLogic(kb, template_starter_predicates, template_file)
+    return ElitDPToLogic(kb, template_file)
 
 def test_svdo_simple(elitmodels, elit_to_logic):
     """ Tests constructions of subject-verb-determiner-object """

@@ -54,13 +54,13 @@ class InferenceEngineSpec:
         solutions = inference_engine.infer(facts, *rules)
         print('Elapsed: %.3f'%(time.time()-t))
 
-        assert solutions_equal(solutions['like_happy'], [
+        assert solutions_equal(solutions['like_happy'][2], [
                 {'a': 'john', 'b': 'mary', 'alb': 'jlm'},
                 {'a': 'mary', 'b': 'sally', 'alb': 'mls'}
             ]
         )
 
-        assert solutions_equal(solutions['trans_like'], [
+        assert solutions_equal(solutions['trans_like'][2], [
             {'x': 'john', 'y': 'mary', 'z': 'sally', 'xly': 'jlm', 'ylz': 'mls'}
         ])
 

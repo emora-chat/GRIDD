@@ -10,7 +10,7 @@ import torch
 from time import time
 
 DEBUG = False
-TIMING = True
+TIMING = False
 
 class GraphMatchingEngine:
 

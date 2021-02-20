@@ -30,14 +30,13 @@ class MergeBridge:
                         working_memory.merge(v1, kept)
             visited.append((kept, replaced))
             # Update salience
-            working_memory.features[kept]['salience']= max(working_memory.features[kept] ['salience'],
-                                                            working_memory.features[replaced]['salience'])
-            del working_memory.features[replaced]['salience']
+            working_memory.features[kept]['salience']= max(working_memory.features[kept].get('salience', 0.0),
+                                                            working_memory.features[replaced].get('salience', 0.0))
             # Update cover
             working_memory.features[kept]['cover'] = max(working_memory.features[kept].get('cover', 0.0),
                                                          working_memory.features[replaced].get('cover', 0.0))
-            if 'cover' in working_memory.features[replaced]:
-                del working_memory.features[replaced]['cover']
+            del working_memory.features[replaced]
+
 
         if globals.DEBUG:
             print("<< Working Memory after NLU >>")

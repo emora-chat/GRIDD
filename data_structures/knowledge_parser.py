@@ -83,7 +83,10 @@ class KnowledgeParser:
         rules = {}
         for data in datas:
             if not isinstance(data, str):
-                rules.update({rule[2]: (rule[0], rule[1])
+                if isinstance(data, tuple):
+                    rules.update({data[2]: (data[0], data[1])})
+                else:
+                    rules.update({rule[2]: (rule[0], rule[1])
                               for rule in KnowledgeParser._extract_rules_from_graph(data, with_names=True)})
             else:
                 if isinstance(data, str) and (os.path.isdir(data) or os.path.isfile(data)):

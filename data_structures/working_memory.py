@@ -13,7 +13,6 @@ class WorkingMemory(ConceptGraph):
 
     def __init__(self, knowledge_base, *filenames_or_logicstrings):
         self.knowledge_base = knowledge_base
-        self.inference_engine = InferenceEngine()
         super().__init__(namespace='WM')
         if len(filenames_or_logicstrings) > 0:
             self.concatenate(KnowledgeParser.from_data(*filenames_or_logicstrings,
@@ -110,9 +109,6 @@ class WorkingMemory(ConceptGraph):
                 supertypes.get(i, set()).add(t)
                 supertypes[i].update(supertypes[t])
             return supertypes
-
-    # def rules(self):
-    #     return self.inference_engine.generate_rules_from_graph(self)
 
     def equivalent(self, ref, target, types=None):
         """

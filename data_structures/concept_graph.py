@@ -77,6 +77,7 @@ class ConceptGraph:
                 self._monopredicate_instances[(concept, predicate_type)].remove(predicate_id)
                 if len(self._monopredicate_instances[(concept, predicate_type)]) == 0:
                     self._monopredicates_map[concept].remove(predicate_type)
+                    del self._monopredicate_instances[(concept, predicate_type)]
             self.remove(concept=predicate_id)
         elif predicate_type is not None:    # Remove predicates by type and signature
             for s, t, o, i in self.predicates(concept, predicate_type, object):

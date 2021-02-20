@@ -1620,11 +1620,19 @@ This captures non-referential pronouns, nouns, etc.
 <details>
   <summary>Conversions</summary>
 
-	X/pos()
-	-> single_word ->
-	focus(X())
-	center(X)
-	;
+    X/noun()
+    ltype(X, object)
+    -> noun ->
+    focus(X)
+    center(X)
+    ;
+    
+    X/allow_single()
+    ltype(X, object)
+    -> single_word ->
+    focus(X())
+    center(X)
+    ;
 	
 </details>
 

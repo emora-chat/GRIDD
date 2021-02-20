@@ -24,11 +24,17 @@ REF_DET = ['the', 'those', 'these', 'that', 'this']
 INST_DET = ['a', 'an']
 QUEST = ['wdt', 'wp', 'wpds', 'wrb']
 INTERJ = ['uh']
+ALLOW_SINGLE = ['dt', 'ex', 'adj', 'noun', 'pron', 'adv', 'interj', 'verb', 'question_word']
 
 NODES = ['focus', 'center', 'pos', 'ref', 'type', 'ltype']
-DP_LABELS = [x.strip()
-             for x in open(join('GRIDD', 'resources', 'elit_dp_labels.txt'), 'r').readlines()
-             if len(x.strip()) > 0]
+
+POS_MAP = {'in': 'prepo',
+           'to': 'pos_to',
+           'uh': 'intrj'}
+
+# DP_LABELS = [x.strip()
+#              for x in open(join('GRIDD', 'resources', 'elit_dp_labels.txt'), 'r').readlines()
+#              if len(x.strip()) > 0]
 
 class ElitDPToLogic(ParseToLogic):
 
@@ -48,23 +54,25 @@ class ElitDPToLogic(ParseToLogic):
 
         ewm.add('prp', 'type', 'noun')
         for n in ['past_tense', 'present_tense']:
-            ewm.add(n, 'type', 'verb')
+            ewm.add(POS_MAP.get(n, n), 'type', 'verb')
         for n in PAST_VB:
-            ewm.add(n, 'type', 'past_tense')
+            ewm.add(POS_MAP.get(n, n), 'type', 'past_tense')
         for n in PRES_VB:
-            ewm.add(n, 'type', 'present_tense')
+            ewm.add(POS_MAP.get(n, n), 'type', 'present_tense')
         for n in ADJ:
-            ewm.add(n, 'type', 'adj')
+            ewm.add(POS_MAP.get(n, n), 'type', 'adj')
         for n in NOUN:
-            ewm.add(n, 'type', 'noun')
+            ewm.add(POS_MAP.get(n, n), 'type', 'noun')
         for n in PRONOUN:
-            ewm.add(n, 'type', 'pron')
+            ewm.add(POS_MAP.get(n, n), 'type', 'pron')
         for n in ADV:
-            ewm.add(n, 'type', 'adv')
+            ewm.add(POS_MAP.get(n, n), 'type', 'adv')
         for n in QUEST:
-            ewm.add(n, 'type', 'question_word')
+            ewm.add(POS_MAP.get(n, n), 'type', 'question_word')
         for n in INTERJ:
-            ewm.add(n, 'type', 'interj')
+            ewm.add(POS_MAP.get(n, n), 'type', 'interj')
+        for n in ALLOW_SINGLE:
+            ewm.add(POS_MAP.get(n, n), 'type', 'allow_single')
         self.convert(*args, ewm)
         return ewm
 
@@ -81,6 +89,7 @@ class ElitDPToLogic(ParseToLogic):
             span_node = tokens[token_idx]
             expression = span_node.string
             pos = pos_tags[token_idx].lower().replace('$','ds')
+            pos = POS_MAP.get(pos, pos)
             if not cg.has(pos):
                 cg.add(pos, 'type', 'pos')
             cg.add(span_node)

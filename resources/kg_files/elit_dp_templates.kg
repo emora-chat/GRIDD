@@ -1169,8 +1169,15 @@ referential(o)
 center(X)
 ;
 
+X/noun()
+ltype(X, object)
+-> noun ->
+focus(X)
+center(X)
+;
 
-X/pos()
+X/allow_single()
+ltype(X, object)
 -> single_word ->
 focus(X())
 center(X)
