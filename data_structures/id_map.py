@@ -13,7 +13,7 @@ class IdMap(Bimap):
         self.chars = chars
         self.index = start_index
         self.condition = condition
-        self.contains = contains if contains else lambda x: x in self
+        self.contains = contains if contains else lambda x: x in self.reverse()
         if items is not None:
             for item in items:
                 self.get(item)
