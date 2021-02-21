@@ -80,6 +80,44 @@ def test_adv_question_parse_graph_matching():
     solutions = ie.infer(pg, (pre_from_parse['q_nadv'][0], ConceptGraph(), 'q_nadv'))
     return solutions
 
+def test_lone_comp():
+    rule = '''
+    comp(X/pos(), Y/pos())
+    -> lone_comp ->
+    p/property(X, Y)
+	focus(p)
+	center(Y)
+    ;
+    '''
+    pre_from_parse = KnowledgeParser.rules(rule)
+
+    preds = [
+        ('A', 'adv', 'B', 'C'),
+        ('B', 'ref', 'D', 'E'),
+        ('D', 'expr', 'F', 'G'),
+        ('A', 'aux', 'H', 'I'),
+        ('H', 'ref', 'J', 'K'),
+        ('J', 'expr', 'L', 'M'),
+        ('A', 'nsbj', 'N', 'O'),
+        ('N', 'ref', 'P', 'Q'),
+        ('P', 'expr', 'R', 'S'),
+        ('A', 'ref', 'T', 'U'),
+        ('T', 'expr', 'V', 'W'),
+        ('B', 'precede', 'H', 'X'),
+        ('H', 'precede', 'N', 'Y'),
+        ('A', 'type', 'pstg', 'AA'),
+        ('B', 'type', 'question_word', 'BB'),
+        ('H', 'type', 'pstg', 'HH'),
+        ('N', 'type', 'pstg', 'NN')
+    ]
+
+    pg = ConceptGraph([(s.lower(),t,o.lower(),i.lower()) for s,t,o,i in preds])
+
+    ie = InferenceEngine(device='cuda')
+    solutions = ie.infer(pg, (pre_from_parse['q_nadv'][0], ConceptGraph(), 'q_nadv'))
+    return solutions
+
+
 if __name__ == '__main__':
     for rule_id, (pre, post, sols) in test_adv_question_parse_graph_matching().items():
         print(rule_id)

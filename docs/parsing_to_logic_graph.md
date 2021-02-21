@@ -1684,12 +1684,19 @@ This captures non-referential pronouns, nouns, etc.
 <details>
   <summary>Conversions</summary>
 
+    comp(X/pstg(), Y/pstg())
+    -> lone_comp ->
+    p/property(X, Y)
+	focus(p)
+	center(Y)
+    ;
+
     X/noun()
     ltype(X, object)
     -> noun ->
     focus(X)
     center(X)
-    ;
+    ;  
     
     X/allow_single()
     ltype(X, object)

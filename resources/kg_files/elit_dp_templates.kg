@@ -1234,6 +1234,13 @@ center(X)
 ;
 
 
+comp(X/pos(), Y/pos())
+-> lone_comp ->
+p/property(X, Y)
+focus(p)
+center(Y)
+;
+
 X/noun()
 ltype(X, object)
 -> noun ->
