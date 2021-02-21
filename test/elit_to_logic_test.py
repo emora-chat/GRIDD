@@ -563,6 +563,92 @@ def test_adv(elitmodels, elit_to_logic):
     assert ((walked_sp, 'subject'), (i_sp, 'self')) in merges
     assert ((quickly_sp, 'subject'), (walked_sp, 'self')) in merges
 
+def test_aux_question(elitmodels, elit_to_logic):
+    """ Tests constructions with  """
+    sentence = 'Did I buy a house'
+    tok, pos, dp, cr = elitmodels(sentence)
+    mentions, merges = elit_to_logic(tok, pos, dp)
+
+    assert len(mentions) == 4
+    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
+    (buy_sp,) = [span for span in mentions.keys() if span.string == 'buy']
+    (house_sp,) = [span for span in mentions.keys() if span.string == 'house']
+    (did_sp,) = [span for span in mentions.keys() if span.string == 'did']
+
+    buy_mg = mentions[buy_sp]
+    bought_preds = buy_mg.predicates(predicate_type='buy')
+    assert len(bought_preds) == 1
+    ((s,t,o,i),) = bought_preds
+    assert o is not None
+    assert buy_mg.has(i, 'focus')
+    assert buy_mg.has('buy', 'center')
+
+    house_mg = mentions[house_sp]
+    house_insts = house_mg.predicates(predicate_type='type', object='house')
+    assert len(house_insts) == 1
+    ((s,t,o,i),) = house_insts
+    assert house_mg.has(s, 'focus')
+    assert house_mg.has('house', 'center')
+
+    did_mg = mentions[did_sp]
+    aux_preds = did_mg.predicates(predicate_type='aux_time')
+    assert len(aux_preds) == 1
+    ((s,t,o,i),) = aux_preds
+    assert o == 'past'
+    quest_preds = did_mg.predicates(predicate_type='question')
+    assert len(quest_preds) == 1
+    ((s,t,o,i),) = quest_preds
+    assert o is None
+    assert did_mg.has(i, 'focus')
+    assert did_mg.has('do', 'center')
+
+    assert len(merges) == 3
+    assert ((buy_sp, 'subject'), (i_sp, 'self')) in merges
+    assert ((buy_sp, 'object'), (house_sp, 'self')) in merges
+    assert ((did_sp, 'subject'), (buy_sp, 'self')) in merges
+
+def test_adv_question_word(elitmodels, elit_to_logic):
+    """ Tests constructions with  """
+    sentence = 'How did this happen'
+    tok, pos, dp, cr = elitmodels(sentence)
+    mentions, merges = elit_to_logic(tok, pos, dp)
+
+    assert len(mentions) == 3
+    (how_sp,) = [span for span in mentions.keys() if span.string == 'how']
+    (this_sp,) = [span for span in mentions.keys() if span.string == 'this']
+    (happen_sp,) = [span for span in mentions.keys() if span.string == 'happen']
+
+    happen_mg = mentions[happen_sp]
+    preds = happen_mg.predicates(predicate_type='happen')
+    assert len(preds) == 1
+    ((s,t,o,i),) = preds
+    assert o is None
+    assert happen_mg.has(i, 'focus')
+    assert happen_mg.has('happen', 'center')
+
+    this_mg = mentions[this_sp]
+    preds = this_mg.predicates(predicate_type='referential')
+    assert len(preds) == 1
+    ((s,t,o,i),) = preds
+    assert o is None
+    assert this_mg.has(s, 'focus')
+    assert this_mg.has('this', 'center')
+
+    how_mg = mentions[how_sp]
+    preds = how_mg.predicates(predicate_type='qualifier')
+    assert len(preds) == 1
+    ((s,t,o,i),) = preds
+    assert o is not None
+    quest_preds = how_mg.predicates(predicate_type='question')
+    assert len(quest_preds) == 1
+    ((s,t,_,_),) = quest_preds
+    assert s == o
+    assert how_mg.has(i, 'focus')
+    assert how_mg.has('qualifier', 'center')
+
+    assert len(merges) == 2
+    assert ((happen_sp, 'subject'), (this_sp, 'self')) in merges
+    assert ((how_sp, 'subject'), (happen_sp, 'self')) in merges
 
 
 

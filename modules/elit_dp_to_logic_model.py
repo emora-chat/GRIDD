@@ -26,11 +26,13 @@ QUEST = ['wdt', 'wp', 'wpds', 'wrb']
 INTERJ = ['uh']
 ALLOW_SINGLE = ['dt', 'ex', 'adj', 'noun', 'pron', 'adv', 'interj', 'verb', 'question_word']
 
-NODES = ['focus', 'center', 'pos', 'ref', 'type', 'ltype']
+NODES = ['focus', 'center', 'pstg', 'ref', 'type', 'ltype']
 
 POS_MAP = {'in': 'prepo',
            'to': 'pos_to',
            'uh': 'intrj'}
+
+PRECEDE_LABELS = ['aux', 'modal', 'obj', 'cop']
 
 # DP_LABELS = [x.strip()
 #              for x in open(join('GRIDD', 'resources', 'elit_dp_labels.txt'), 'r').readlines()
@@ -50,7 +52,7 @@ class ElitDPToLogic(ParseToLogic):
         ewm.concatenate(cg)
 
         for n in ['verb', 'noun', 'adj', 'pron', 'adv', 'question_word', 'interj']:
-            ewm.add(n, 'type', 'pos')
+            ewm.add(n, 'type', 'pstg')
 
         ewm.add('prp', 'type', 'noun')
         for n in ['past_tense', 'present_tense']:
@@ -85,21 +87,24 @@ class ElitDPToLogic(ParseToLogic):
         :param pos_tags: list of part of speech tags
         :param cg: the concept graph being created
         """
+        precede_token_idx = [idx for idx, (head_idx, label) in enumerate(dependencies)
+                             if label.lower() in PRECEDE_LABELS or pos_tags[idx].lower().replace('$','ds') in QUEST]
         for token_idx in range(len(tokens)):
             span_node = tokens[token_idx]
             expression = span_node.string
             pos = pos_tags[token_idx].lower().replace('$','ds')
             pos = POS_MAP.get(pos, pos)
-            if not cg.has(pos):
-                cg.add(pos, 'type', 'pos')
+            if 'pstg' not in cg.supertypes(pos): # todo - optimization by dynamic programming
+                cg.add(pos, 'type', 'pstg')
             cg.add(span_node)
             self.spans.append(span_node)
             expression = '"%s"' % expression
             cg.add(span_node, 'ref', expression)
             cg.add(span_node, 'type', pos)
             if token_idx > 0:
-                for i in range(token_idx):
-                    cg.add(tokens[i], 'precede', span_node)
+                for pti in precede_token_idx:
+                    if pti < token_idx:
+                        cg.add(tokens[pti], 'precede', span_node)
 
         for token_idx, (head_idx, label) in enumerate(dependencies):
             if head_idx != -1:

@@ -37,7 +37,7 @@ class Chatbot:
     Implementation of full chatbot pipeline. Instantiate and chat!
     """
 
-    def __init__(self, *knowledge_base, rules):
+    def __init__(self, *knowledge_base, rules, device='cpu'):
         self.knowledge_base = KnowledgeBase(*knowledge_base)
         self.working_memory = WorkingMemory(self.knowledge_base)
         self.auxiliary_state = {'turn_index': 0}
@@ -45,7 +45,7 @@ class Chatbot:
         c = Pipeline.component
         elit_models = c(ElitModels())
         template_file = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
-        elit_dp = c(ElitDPToLogic(self.knowledge_base, template_file, device='cuda:0'))
+        elit_dp = c(ElitDPToLogic(self.knowledge_base, template_file, device=device))
         mention_bridge = c(MentionBridge())
         merge_dp = c(MergeSpanToMergeConcept())
         merge_bridge = c(MergeBridge(threshold_score=0.2))
