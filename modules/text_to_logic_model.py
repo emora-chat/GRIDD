@@ -3,6 +3,7 @@ from abc import abstractmethod
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.knowledge_parser import KnowledgeParser
 from GRIDD.data_structures.inference_engine import InferenceEngine
+import torch, gc
 from GRIDD.utilities import collect
 
 LOCALDEBUG = False
@@ -103,13 +104,22 @@ class ParseToLogic:
                     ewm.add('unknown_%s' % pos_type, 'type', 'object')
                 ewm.add(expression, 'expr', unk_node)
 
-    def _inference(self, ewm):
+    def _inference(self, ewm, retry=None):
         """
         Apply the template rules to the current expression working_memory
         and get the variable assignments of the solutions
         """
-        solutions = self.inference_engine.infer(ewm)
-        return solutions
+        try:
+            solutions = self.inference_engine.infer(ewm)
+            return solutions
+        except RuntimeError as e:
+            print('\n' + str(e))
+            if retry == 4:
+                return {}
+            gc.collect()
+            torch.cuda.empty_cache()
+            self._inference(ewm, retry=retry+1 if retry is not None else 1)
+
 
         # Parse templates are priority-ordered, such that the highest-priority matching template
         # for a specific center is kept and all other templates with the same center are discarded.
