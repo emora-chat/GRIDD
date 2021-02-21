@@ -371,6 +371,54 @@ predicate.
   <summary>Conversions</summary>
 
 	cop(X/pstg(), Y/present_tense())
+	det(X, D/dt())
+	nsbj(X, Z/pstg())
+	-> nsbj_det_copula_present ->
+	is_type(Y)
+	p/Y(Z,X)
+	time(p, now)
+	focus(p)
+	center(X)
+	cover(D)
+	;
+	
+	cop(X/pstg(), Y/present_tense())
+	det(X, D/dt())
+	csbj(X, Z/pstg())
+	-> csbj_det_copula_present ->
+	is_type(Y)
+	p/Y(Z,X)
+	time(p, now)
+	focus(p)
+	center(X)
+	cover(D)
+	;
+	
+	cop(X/pstg(), Y/past_tense())
+	det(X, D/dt())
+	nsbj(X, Z/pstg())
+	-> nsbj_det_copula_past ->
+	is_type(Y)
+	p/Y(Z,X)
+	time(p,past)
+	focus(p)
+	center(X)
+	cover(D)
+	;
+	
+	cop(X/pstg(), Y/past_tense())
+	det(X, D/dt())
+	csbj(X, Z/pstg())
+	-> csbj_det_copula_past ->
+	is_type(Y)
+	p/Y(Z,X)
+	time(p,past)
+	focus(p)
+	center(X)
+	cover(D)
+	;
+
+	cop(X/pstg(), Y/present_tense())
 	nsbj(X, Z/pstg())
 	-> nsbj_copula_present ->
 	is_type(Y)

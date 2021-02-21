@@ -99,6 +99,8 @@ class ParseToLogic:
                         pos_type = n
                         break
                 ewm.add(unk_node, 'type', 'unknown_%s'%pos_type)
+                if not ewm.has('unknown_%s'%pos_type, 'type', 'object'):
+                    ewm.add('unknown_%s' % pos_type, 'type', 'object')
                 ewm.add(expression, 'expr', unk_node)
 
     def _inference(self, ewm):
