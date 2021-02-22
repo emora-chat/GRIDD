@@ -9,12 +9,13 @@ from structpy.map.index.index import Index
 from GRIDD.data_structures.span import Span
 CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 from collections import defaultdict
-import json
+import json, copy
 from GRIDD.utilities import Counter, collect
+import GRIDD.globals
 
 class ConceptGraph:
 
-    def __init__(self, predicates=None, concepts=None, namespace=None):
+    def __init__(self, predicates=None, concepts=None, namespace=None, feature_cls=GRIDD.globals.FEATURE_CLS):
         if namespace is not None:
             namespace = namespace
         if isinstance(namespace, IdMap):
@@ -32,7 +33,7 @@ class ConceptGraph:
         if predicates is not None:
             for predicate in predicates:
                 self.add(*predicate)
-        self.features = defaultdict(dict)
+        self.features = feature_cls()
 
     def add(self, concept, predicate_type=None, object=None, predicate_id=None):
         self._bipredicates_graph.add(concept)
@@ -294,6 +295,7 @@ class ConceptGraph:
             self.add(s, t, o, concept_a)
             self._detach(s, t, o, i)
         self.remove(concept_b)
+        self.features.merge(concept_a, concept_b)
         return concept_a
 
     def _detach(self, subject, predicate_type, object, predicate_id):
@@ -324,6 +326,7 @@ class ConceptGraph:
                         if not concept_graph.has(predicate_id=concept) \
                            or concept_graph.type(concept) not in predicate_exclusions:
                             self.add(id_map.get(concept))
+        self.features.update(concept_graph.features, id_map)
         return id_map
 
     def copy(self, namespace=None):
@@ -331,13 +334,15 @@ class ConceptGraph:
             namespace = self._ids.namespace
         cp = ConceptGraph(namespace=namespace)
         cp.concatenate(self)
+        cp.features = copy.deepcopy(self.features)
         return cp
 
     def save(self, json_filepath=None):
         d = {
             'namespace': self._ids.namespace,
             'next_id': int(self._ids.index),
-            'predicates': []
+            'predicates': [],
+            'features': self.features.to_dict()
         }
         for item in self.predicates():
             item = [e.to_string() if hasattr(e, 'to_string') else str(e) for e in item]
@@ -368,6 +373,7 @@ class ConceptGraph:
                 if o == 'None':
                     o = None
                 self.add(*(id_map.get(x) if x is not None else None for x in (s, t, o ,i)))
+                self.features.update(d['features'], id_map=id_map)
         else:
             for item in d['predicates']:
                 for i, e in enumerate(item):
@@ -378,6 +384,7 @@ class ConceptGraph:
                     o = None
                 self.add(s, t, o, i)
             self._ids.index = Counter(d['next_id'])
+            self.features.update(d['features'])
 
     def ugly_print(self, exclusions=None):
         strings = defaultdict(list)

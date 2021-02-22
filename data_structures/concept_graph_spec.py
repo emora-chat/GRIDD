@@ -2,6 +2,8 @@
 from structpy import specification
 import json
 from os.path import join
+import GRIDD.globals
+from GRIDD.data_structures.node_features import NodeFeatures
 
 checkpoints = join('GRIDD', 'resources', 'checkpoints')
 
@@ -16,7 +18,7 @@ class ConceptGraphSpec:
     """
 
     @specification.init
-    def CONCEPT_GRAPH(ConceptGraph, predicates=None, concepts=None, namespace=None):
+    def CONCEPT_GRAPH(ConceptGraph, predicates=None, concepts=None, namespace=None,  feature_cls=GRIDD.globals.FEATURE_CLS):
         """
         """
         concept_graph = ConceptGraph(predicates=[
@@ -27,7 +29,7 @@ class ConceptGraphSpec:
             ('Peter', 'happy'),
             ('Jack', 'happy'),
             ('Peter', 'dislikes', 'Mary')
-        ], namespace='x_')
+        ], namespace='x_', feature_cls=NodeFeatures)
         return concept_graph
 
     def has(concept_graph, concept=None, predicate_type=None, object=None, predicate_id=None):
@@ -212,9 +214,12 @@ class ConceptGraphSpec:
 
         If both concepts are a predicate instance, ValueError is raised.
         """
+        concept_graph.features['pjl_1']['cover'] = 0
+        concept_graph.features['Sarah']['cover'] = 1
         concept_graph.merge('pjl_1', 'Sarah')
         assert concept_graph.has('Peter', 'likes', 'pjl_1')
         assert concept_graph.has('Peter', 'likes', 'John', 'pjl_1')
+        assert concept_graph.features['pjl_1']['cover'] == 1
 
     @specification.init
     def id_map(ConceptGraph, other):
@@ -242,11 +247,15 @@ class ConceptGraphSpec:
         """
         cg1 = ConceptGraph(concepts=['princess', 'hiss'], namespace='1_')
         cg1.add('princess', 'hiss')
+        cg1.features['princess']['salience'] = 0.5
+        cg1.features['princess']['cover'] = 0.5
 
         cg2 = ConceptGraph(concepts=['fluffy', 'bark', 'princess', 'friend'], namespace='2_')
         fb = cg2.add('fluffy', 'bark')
         cg2.add('princess', 'friend', 'fluffy')
         cg2.add(fb, 'volume', 'loud')
+        cg2.features['princess']['salience'] = 0.75
+        cg2.features['princess']['cover'] = 0.25
 
         assert not cg1.has('fluffy')
         assert not cg2.has('hiss')
@@ -260,6 +269,9 @@ class ConceptGraphSpec:
                                         ('princess' , 'friend', 'fluffy', '1_1')]
         fb_merge = cg1.predicates('fluffy', 'bark', None)[0][3]
         assert cg1.has(fb_merge, 'volume', 'loud')
+
+        assert cg1.features['princess']['salience'] == 0.75
+        assert cg1.features['princess']['cover'] == 0.5
 
         return cg1
 
@@ -292,6 +304,9 @@ class ConceptGraphSpec:
         for i in range(4):
             assert not namespace_cg.has(predicate_id='1_%d'%i)
             assert namespace_cg.has(predicate_id='new_%d'%i)
+        new_cg_features = new_cg.features.items()
+        for item in concept_graph.features.items():
+            assert item in new_cg_features
 
     def save(concept_graph, json_filepath=None):
         path = join(checkpoints, 'save_test.json')
@@ -302,6 +317,8 @@ class ConceptGraphSpec:
         cg1 = ConceptGraph(concepts=['princess', 'hiss'], namespace='1_')
         a = cg1.add('princess', 'hiss')
         cg1.add(a, 'volume', 'loud')
+        cg1.features['princess']['salience'] = 0.75
+        cg1.features['princess']['cover'] = 0.25
         cg1_file = join(checkpoints, 'load_test_cg1.json')
         cg1.save(cg1_file)
 
@@ -311,21 +328,25 @@ class ConceptGraphSpec:
         cg2_file = join(checkpoints, 'load_test_cg2.json')
         cg2.save(cg2_file)
 
-        cg3 = ConceptGraph(namespace='1_')
-        cg3.load(cg1_file)
+        concept_graph = ConceptGraph(namespace='1_')
+        concept_graph.load(cg1_file)
 
-        assert cg3.has('princess', 'hiss')
-        assert cg3.predicate(a) == ('princess', 'hiss', None, a)
+        assert concept_graph.has('princess', 'hiss')
+        assert concept_graph.predicate(a) == ('princess', 'hiss', None, a)
+        assert concept_graph.features['princess']['salience'] == 0.75
+        assert concept_graph.features['princess']['cover'] == 0.25
 
-        cg3.load(cg2_file)
+        concept_graph.load(cg2_file)
 
-        assert cg3.has('fluffy', 'bark')
-        assert cg3.has('princess', 'friend', 'fluffy')
-        assert cg3.predicates('princess', 'friend', 'fluffy')[0][3].startswith('1')
+        assert concept_graph.has('fluffy', 'bark')
+        assert concept_graph.has('princess', 'friend', 'fluffy')
+        assert concept_graph.predicates('princess', 'friend', 'fluffy')[0][3].startswith('1')
+        assert concept_graph.features['princess']['salience'] == 0.75
+        assert concept_graph.features['princess']['cover'] == 0.25
 
-        b = cg3.add('fluffy', 'friend', 'princess')
+        b = concept_graph.add('fluffy', 'friend', 'princess')
         assert b == '1_4'
-        return cg3
+        return concept_graph
 
     def pretty_print(concept_graph, predicate_exclusions=None):
         """

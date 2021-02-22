@@ -15,12 +15,12 @@ class KnowledgeParser:
 
     _grammar = r"""
                 start: knowledge+
-                knowledge: ((bipredicate | monopredicate | instance | ontological | expression )+ ";") | ((anon_rule | named_rule | inference | implication) ";")
+                knowledge: ((bipredicate | monopredicate | instance | ontological | metadata | expression )+ ";") | ((anon_rule | named_rule | inference | implication) ";")
                 anon_rule: conditions "=>" conditions
                 named_rule: conditions "->" type "->" conditions
                 inference: conditions "->" type
                 implication: type "->" conditions
-                conditions: (bipredicate | monopredicate | instance | ontological)+
+                conditions: (bipredicate | monopredicate | instance | ontological | metadata)+
                 bipredicate: ((name "/")|(id "="  ))? type "(" subject "," object ")"
                 monopredicate: ((name "/")|(id "="  ))? type "(" subject ")"
                 instance: ((name "/")|(id "="))? type "(" ")"
@@ -282,7 +282,10 @@ class PredicateTransformer(Transformer):
         return id
 
     def metadata(self, args):
-        id, data = args
+        data = '{' + args[1].children[0] + '}'
+        if '"' not in data or "'" in data:
+            raise Exception('For the keys of the metadata, you must enclose them in double-quotation marks!')
+        id = args[0].value[4:] if args[0].value.startswith('_id_') else args[0].value
         id = self._hierarchical_node_check(id)
         data_dict = json.loads(data)
         self.addition_construction.features[id].update(data_dict)
