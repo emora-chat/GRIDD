@@ -118,7 +118,7 @@ class ParseToLogic:
                 return {}
             gc.collect()
             torch.cuda.empty_cache()
-            self._inference(ewm, retry=retry+1 if retry is not None else 1)
+            return self._inference(ewm, retry=retry+1 if retry is not None else 1)
 
 
         # Parse templates are priority-ordered, such that the highest-priority matching template
