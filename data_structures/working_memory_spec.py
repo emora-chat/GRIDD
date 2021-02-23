@@ -30,29 +30,18 @@ class WorkingMemorySpec:
         KB = KnowledgeBase(kb)
         return WorkingMemory(KB)
 
-    def load(working_memory, filenames_or_logicstrings):
-        """
-
-        """
-        wm = '''       
-        fluffy=dog()
-        chase(fido,fluffy)
-        ;
-        '''
-        working_memory.load(wm)
-        assert working_memory.has('fido')
-        assert working_memory.has('fido','chase','fluffy')
-
-    def pull_ontology(working_memory):
+    def pull_ontology(working_memory, concepts=None):
         """
         Add all concepts from the `.knowledge_base` that are super-types of concepts
         in working memory.
         """
+        working_memory.add('fido')
         working_memory.pull_ontology()
         assert working_memory.has('fido', 'type', 'dog')
         assert working_memory.has('dog', 'type', 'animal')
         assert working_memory.has('animal', 'type', 'entity')
 
+    # todo
     def pull_rules(working_memory):
         """
         Add all concepts from the `.knowledge_base` that are part of some implication
@@ -76,47 +65,6 @@ class WorkingMemorySpec:
         working_memory.pull()
         assert working_memory.has('victor', 'chase', 'fido')
 
-    def inferences(working_memory, types_or_rules):
-        """
-        Check and return all specified implications on predicates in working memory.
-
-        Providing `str` concept ids will use rules from the pre/post conditions of the
-        type with that id.
-
-        Providing `str` file names ending with the `.kg` extension will use rules from
-        the .kg file of that name.
-
-        Providing `str` representing a logic string will use rule(s) from that logic string.
-        """
-        all_dogs_bark = '''
-        x/dog()
-        -> all_dogs_bark ->
-        bark(x)
-        ;
-        '''
-        solutions = working_memory.inferences(all_dogs_bark)
-        assert len(solutions) == 1
-        for rule, solutions in solutions.items():
-            to_check = ['fluffy', 'fido']
-            for solution in solutions:
-                if 'fluffy' in solution.values():
-                    to_check.remove('fluffy')
-                elif 'fido' in solution.values():
-                    to_check.remove('fido')
-                else:
-                    assert False
-            assert len(to_check) == 0
-
-    def implications(working_memory, types_or_rules):
-        all_dogs_bark = '''
-        x/dog()
-        -> all_dogs_bark ->
-        bark(x)
-        ;
-        '''
-        implications = working_memory.implications(all_dogs_bark)
-        assert len(implications) == 2
-
     #todo - prune function of WorkingMemory
     def prune(working_memory, remaining=0, score_function=None):
         """
@@ -127,25 +75,8 @@ class WorkingMemorySpec:
         """
         pass
 
-    def rules(working_memory):
-        """
-        Find all rules in working memory and return as a dict of type_node_id to ImplicationRule object.
-        """
-        rule = '''       
-        test_dog=dog()
-        -> all_dogs_bark ->
-        bark(test_dog)
-        ;
-        '''
-        working_memory.load(rule)
-        rules = working_memory.rules()
-        assert len(rules) == 1
-        rule = rules[0]
-        assert rule[0].has('test_dog', 'type', 'dog')
-        assert rule[1].has('test_dog', 'bark')
-
     def supertypes(working_memory):
         """
-        # TODO
+        # todo
         """
         pass

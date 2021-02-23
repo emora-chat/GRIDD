@@ -31,8 +31,7 @@ class WorkingMemory(ConceptGraph):
                         visited.add(t)
         for item in to_pull:
             self.add(*item)
-            for e in item:
-                self.features[e]['salience'] = self.features[e].get('salience', 0.0)
+            self.features.update_from_ontology(item)
 
     def pull(self, order=1, concepts=None, exclude_on_pull=None):
         if isinstance(concepts, list):
@@ -73,8 +72,7 @@ class WorkingMemory(ConceptGraph):
             pull_set = set(chain(*to_pull)) - covered - {None}
         cg = ConceptGraph(predicates=pulling)
         id_map = self.concatenate(cg)
-        for id in id_map.values():
-            self.features[id]['salience'] = self.features[id].get('salience', 0.0)
+        self.features.update_from_kb(id_map.values())
         self.pull_ontology()
 
     # todo - efficiency check

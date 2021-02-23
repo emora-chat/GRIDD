@@ -13,14 +13,9 @@ class ResponseExpansion:
             expansions = self.get_predicate_supports(main_predicate, working_memory)
         else:
             expansions = self.get_question_supports(main_s, working_memory)
-
-        working_memory.features[main_i]['salience'] = 1.0
-        working_memory.features[main_i]['cover'] = 1.0
-        for pred in expansions:
-            working_memory.features[pred[3]]['salience'] = 1.0
-            working_memory.features[pred[3]]['cover'] = 1.0
-
-        return main_predicate, expansions - {main_predicate}, working_memory
+        expansions -= {main_predicate}
+        working_memory.features.update_from_response(main_predicate, expansions)
+        return main_predicate, expansions, working_memory
 
     def get_predicate_supports(self, main_predicate, working_memory):
         main_s, main_t, main_o, main_i = main_predicate

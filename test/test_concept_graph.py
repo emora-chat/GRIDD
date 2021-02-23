@@ -1,4 +1,3 @@
-from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.knowledge_parser import KnowledgeParser
 
 def test_parse_metadata():

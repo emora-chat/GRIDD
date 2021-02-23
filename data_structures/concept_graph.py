@@ -334,7 +334,7 @@ class ConceptGraph:
             namespace = self._ids.namespace
         cp = ConceptGraph(namespace=namespace)
         cp.concatenate(self)
-        cp.features = copy.deepcopy(self.features)
+        cp.features = self.features.copy()
         return cp
 
     def save(self, json_filepath=None):
@@ -342,7 +342,7 @@ class ConceptGraph:
             'namespace': self._ids.namespace,
             'next_id': int(self._ids.index),
             'predicates': [],
-            'features': self.features.to_dict()
+            'features': self.features
         }
         for item in self.predicates():
             item = [e.to_string() if hasattr(e, 'to_string') else str(e) for e in item]
