@@ -23,6 +23,9 @@ class FeaturePropogationSpec:
         working_memory.features['avengers']['salience'] = 1.0
         working_memory.features['likes']['salience'] = 1.0
         working_memory.add('avengers', 'genre', 'action', 'wm_1')
+        working_memory.add('sally', 'eat', 'cake', 'wm_2')
+        working_memory.features['wm_2']['salience'] = 1.0
+        working_memory.features['wm_2']['coldstart'] = 1.0
 
         feature_propogation(working_memory, iterations=1)
         assert 0.9 - E <= working_memory.features['wm_0']['salience'] <= 0.9 + E
@@ -31,6 +34,7 @@ class FeaturePropogationSpec:
         assert 0.9 - E <= working_memory.features['likes']['salience'] <= 0.9 + E
         assert 0.4 - E <= working_memory.features['wm_1']['salience'] <= 0.4 + E
         assert 0.0 - E <= working_memory.features['action']['salience'] <= 0.0 + E
+        assert working_memory.features['wm_2']['salience'] == 1.0
 
         working_memory = WorkingMemory(KnowledgeBase())
         working_memory.add('john', 'likes', 'avengers', 'wm_0')

@@ -72,7 +72,7 @@ class Chatbot:
             ('wm_after_inference', 'iterations') > feature_propogation > ('wm_after_prop'),
             ('wm_after_prop') > response_selection > ('response_predicate'),
             ('response_predicate', 'wm_after_prop') > response_expansion > ('main_response', 'supporting_predicates', 'wm_after_exp'),
-            ('main_response', 'supporting_predicates') > response_generation > ('response'),
+            ('main_response', 'supporting_predicates', 'aux_state') > response_generation > ('response'),
             tags ={
                 sentence_caser: ['sentence_caser'],
                 elit_models: ['elit_models'],

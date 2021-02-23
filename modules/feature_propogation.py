@@ -13,8 +13,9 @@ class FeaturePropogation:
         """
         Update the features of the nodes in working memory
         """
-        for key in working_memory.features:
-            working_memory.features[key]['salience'] = max(0.0, working_memory.features[key].get('salience', 0.0) - self.turn_decrement)
+        for key, features in working_memory.features.items():
+            if features.get('coldstart', 0) == 0:
+                working_memory.features[key]['salience'] = max(0.0, working_memory.features[key].get('salience', 0.0) - self.turn_decrement)
 
         edges = [(*edge, 'spread') for s, t, o, i in working_memory.predicates()
                                     for edge in [(s, i), (i, s), (o, i), (i, o)]
