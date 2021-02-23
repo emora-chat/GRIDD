@@ -1,6 +1,7 @@
 
-expansion_types = ['type', 'property', 'qualifier', 'time', 'question', 'referential', 'instantiative',
-                   'possess', 'indirect_obj', 'mode', 'negate']
+subj_expansion_types = {'type', 'property', 'qualifier', 'time', 'question', 'referential', 'instantiative',
+                        'indirect_obj', 'mode', 'negate'}
+obj_expansion_types = {'possess'}
 
 class ResponseExpansion:
 
@@ -34,8 +35,9 @@ class ResponseExpansion:
         expansions = set()
         items = [item for item in items if item is not None]
         for element in items:
-            for pred_type in expansion_types:
+            for pred_type in subj_expansion_types:
                 expansions.update(working_memory.predicates(element, predicate_type=pred_type))
+            for pred_type in obj_expansion_types:
                 expansions.update(working_memory.predicates(predicate_type=pred_type, object=element))
         return expansions
 
@@ -53,7 +55,7 @@ class ResponseExpansion:
             expansions.update(working_memory.predicates(object=question_focus))
             predicate_supports = set()
             for s, t, o, i in expansions:
-                if t not in expansion_types:
+                if t not in subj_expansion_types.union(obj_expansion_types):
                     preds = self.get_predicate_supports((s,t,o,i), working_memory)
                     predicate_supports.update(preds)
             expansions.update(predicate_supports)

@@ -14,7 +14,7 @@ class FeaturePropogation:
         Update the features of the nodes in working memory
         """
         for key, features in working_memory.features.items():
-            if features.get('coldstart', 0) == 0:
+            if features.get('coldstart', 0.0) == 0.0 and features.get('cover', 0.0) == 0.0:
                 working_memory.features[key]['salience'] = max(0.0, working_memory.features[key].get('salience', 0.0) - self.turn_decrement)
 
         edges = [(*edge, 'spread') for s, t, o, i in working_memory.predicates()
@@ -26,8 +26,7 @@ class FeaturePropogation:
         score_graph = ScoreGraph(
             edges=edges,
             updaters={
-                'spread': (lambda x, y: (0,
-                                         min(self.max_score - y, self.propogation_rate*(x - self.propogation_decrement - y))
+                'spread': (lambda x, y: (0, self.propogation_rate*(x - self.propogation_decrement - y)
                                          if x is not None and y is not None and x - self.propogation_decrement >= y
                                          else 0))
             },

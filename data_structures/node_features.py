@@ -45,8 +45,8 @@ class NodeFeatures(defaultdict):
                 self[id]['salience'] = max(inference_salience, self[id].get('salience', 0.0))
 
     def update_from_response(self, main_predicate, expansion_predicates):
-        self[main_predicate]['salience'] = 1.0
-        self[main_predicate]['cover'] = 1.0
+        self[main_predicate[3]]['salience'] = 1.0
+        self[main_predicate[3]]['cover'] = 1.0
         for pred in expansion_predicates:
             self[pred[3]]['salience'] = 1.0
             self[pred[3]]['cover'] = 1.0

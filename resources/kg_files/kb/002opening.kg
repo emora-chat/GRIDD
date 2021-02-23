@@ -1,1 +1,21 @@
+efh/feel.v.01(emora, h/happiness.n.01())
+time(efh, today)
 
+book<entity>
+interesting<entity>
+genre<entity>
+fantasy<genre>
+the_hobbit=book()
+read<predicate>
+fail<predicate>
+hard<entity>
+judgment<entity>
+positive<judgment>
+negative<judgment>
+
+cause(h, read(emora, the_hobbit))
+property(the_hobbit, interesting)
+property(the_hobbit, fantasy)
+
+name<entity>
+day<entity>
