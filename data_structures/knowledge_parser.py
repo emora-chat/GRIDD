@@ -289,6 +289,7 @@ class PredicateTransformer(Transformer):
         id = self._hierarchical_node_check(id)
         data_dict = json.loads(data)
         self.addition_construction.features[id].update(data_dict)
+        return ParserStruct(None, set())
 
     def name(self, args):
         to_return = ParserStruct(str(args[0].value), pred_instances=args[0].pred_instances)

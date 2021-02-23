@@ -18,3 +18,13 @@ buy(X/person(), Y/car())
 question(xld/like.v.01(X, Y))
 time(xld, now)
 ;
+
+buy(X/person(), Y/car())
+-> buy_car ->
+
+
+xdc/drive(X,Y)
+xdc{"cover": 1}
+question(xld/like.v.01(X, xdc))
+time(xld, now)
+;

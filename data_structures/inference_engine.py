@@ -88,6 +88,10 @@ class InferenceEngine:
                     concept = id_map.get(sol.get(concept, concept))
                     cg.add(concept)
                 implications.setdefault(rid, []).append(cg)
+                mapped_features = {new_node: post.features[old_node] for old_node, new_node in id_map.items()}
+                for node, features in mapped_features.items():
+                    if len(features) > 0:
+                        cg.features[node].update(features)
         return implications
 
 if __name__ == '__main__':
