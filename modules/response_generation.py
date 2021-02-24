@@ -5,7 +5,8 @@ from collections import defaultdict
 device='cuda:0'
 nlg_model = None
 prefix = 'translate Graph to English: '
-exclusions = {}
+exclusions={'var', 'is_type', 'ref', 'def', 'span', 'datetime', 'predicate', 'unknown_verb', 'unknown_noun',
+            'unknown_pron', 'unknown_adj', 'unknown_adv', 'unknown_other'}
 
 class ResponseGeneration:
 
