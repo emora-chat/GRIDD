@@ -207,10 +207,15 @@ class ConceptGraphSpec:
         concept_graph.remove('Mark')
         assert not concept_graph.has('Mark')
 
-    def merge(concept_graph, concept_a, concept_b):
+    def merge(concept_graph, concept_a, concept_b, strict_order=False):
         """
-        Merge two concepts together in the concept graph (`concept_a`'s id represents
-        both concepts after the merge unless `concept_a`'s id contains the namespace whereas `concept_b`'s does not).
+        Merge two concepts together in the concept graph.
+
+        If `strict_order` is False,
+            `concept_a`'s id represents both concepts after the merge
+            unless `concept_a`'s id contains the namespace whereas `concept_b`'s does not.
+        Otherwise,
+            `concept_a`'s is the maintained id.
 
         If both concepts are a predicate instance, ValueError is raised.
         """

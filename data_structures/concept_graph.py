@@ -274,10 +274,10 @@ class ConceptGraph:
             graph.add(c)
         return graph
 
-    def merge(self, concept_a, concept_b):
+    def merge(self, concept_a, concept_b, strict_order=False):
         if self.has(predicate_id=concept_a) and self.has(predicate_id=concept_b):
             raise ValueError("Cannot merge two predicate instances!")
-        if concept_a.startswith(self._ids.namespace) and not concept_b.startswith(self._ids.namespace):
+        if not strict_order and concept_a.startswith(self._ids.namespace) and not concept_b.startswith(self._ids.namespace):
             tmp = concept_a
             concept_a = concept_b
             concept_b = tmp

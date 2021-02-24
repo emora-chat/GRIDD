@@ -149,34 +149,28 @@ class ParseToLogic:
                 center = solution[center_var]
                 if center not in centers_handled:
                     self._update_centers(centers_handled, post, center, solution)
-                    m = {}
-                    cg = ConceptGraph(namespace=post.id_map().namespace)
-                    cg.id_map().index = post.id_map().index
-                    for node in post.concepts():
-                        if node in solution:
-                            if node in [center_var,expression_var,concept_var]:
-                                m[node] = self._get_concept_of_span(solution[node], ewm)
-                            else:
-                                m[node] = cg.id_map().get()
+                    post_to_ewm_map = {node: self._get_concept_of_span(solution[node], ewm)
+                         for node in post.concepts()
+                         if node in solution and node in [center_var,expression_var,concept_var]}
+                    cg = ConceptGraph(namespace='ment_')
+                    post_to_cg_map = cg.concatenate(post)
+                    for post_node, ewm_node in post_to_ewm_map.items():
+                        cg_node = post_to_cg_map[post_node]
+                        cg.add(ewm_node)
+                        if ewm_node.startswith(ewm.id_map().namespace):
+                            cg.merge(cg_node, ewm_node, strict_order=True)
                         else:
-                            m[node] = node
-                    for subject, typ, object, inst in post.predicates():
-                        if object is not None:
-                            cg.add(m[subject], m[typ], m[object], predicate_id=m[inst])
-                            self._add_unknowns_to_post([m[subject], m[typ], m[object]], cg, ewm)
-                        else:
-                            cg.add(m[subject], m[typ], predicate_id=m[inst])
-                            self._add_unknowns_to_post([m[subject], m[typ]], cg, ewm)
+                            cg.merge(ewm_node, cg_node, strict_order=True)
+                        self._add_unknowns_to_cg(ewm_node, ewm, cg_node, cg)
                     mentions[center] = cg
         return mentions
 
-    def _add_unknowns_to_post(self, nodes, post, source):
-        for node in nodes:
-            for n in ['verb', 'noun', 'pron', 'adj', 'adv', 'other']:
-                unknown_type = 'unknown_%s' % n
-                if source.has(node, 'type', unknown_type) and not post.has(node, 'type', unknown_type):
-                    post.add(node, 'type', unknown_type)
-                    break
+    def _add_unknowns_to_cg(self, source_node, source, cg_node, cg):
+        for n in ['verb', 'noun', 'pron', 'adj', 'adv', 'other']:
+            unknown_type = 'unknown_%s' % n
+            if source.has(source_node, 'type', unknown_type) and not cg.has(cg_node, 'type', unknown_type):
+                cg.add(cg_node, 'type', unknown_type)
+                break
 
     def _get_merges(self, assignments, ewm):
         """

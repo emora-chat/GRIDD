@@ -5,6 +5,7 @@ from GRIDD.data_structures.pipeline import Pipeline
 c = Pipeline.component
 
 from GRIDD.data_structures.span import Span
+from copy import deepcopy
 
 from os.path import join
 import json
@@ -105,11 +106,12 @@ class ChatbotServer:
 
     def nlp_preprocessing_handler(self, input_dict):
         input = load(input_dict)
-        previous_aux = input.get('aux_state', [None, None])[1]
-        input["aux_state"] = previous_aux if previous_aux is not None else {'turn_index': 0}
+        previous_aux = input.get('aux_state', None)
+        input["aux_state"] = previous_aux if previous_aux is not None else {'turn_index': -1}
+        input["aux_state"]["turn_index"] += 1
         tok, pos, dp, cr = self.nlp_processing(utter=input["utter"],
                                                aux_state=input["aux_state"])
-        return save(tok=tok, pos=pos, dp=dp, cr=cr)
+        return save(tok=tok, pos=pos, dp=dp, cr=cr, aux_state=input["aux_state"])
 
     def utter_conversion_handler(self, input_dict):
         input = load(input_dict)
@@ -120,11 +122,12 @@ class ChatbotServer:
 
     def utter_integration_handler(self, input_dict):
         input = load(input_dict)
-        previous_wm = input.get('wm', [None, None])[1]
+        previous_wm = input.get('wm', None)
         input["wm"] = previous_wm if previous_wm is not None else WorkingMemory(KB, join('GRIDD', 'resources', 'kg_files', 'wm'))
         wm_after_merges = self.utter_integration(dp_mentions=input["dp_mentions"],
                                                  wm=input["wm"],
-                                                 dp_merges=input["dp_merges"])
+                                                 dp_merges=input["dp_merges"],
+                                                 cr=input["cr"])
         return save(wm=wm_after_merges)
 
     def dialogue_inference_handler(self, input_dict):
@@ -135,54 +138,57 @@ class ChatbotServer:
 
     def response_selection_handler(self, input_dict):
         input = load(input_dict)
+        input["iterations"] = 2
         main_response, supporting_predicates, wm_after_exp = self.response_selection(wm_after_inference=input["wm"],
                                                                                      iterations=input["iterations"])
-        return save(main_response=main_response, supporting_predicates=supporting_predicates, wm=wm_after_exp)
+        return save(main_response=main_response, supporting_predicates=list(supporting_predicates), wm=wm_after_exp)
 
     def response_generation_handler(self, input_dict):
         input = load(input_dict)
         response = self.response_generation(main_response=input["main_response"],
                                             supporting_predicates=input["supporting_predicates"],
-                                            aux_state=["aux_state"])
+                                            aux_state=input["aux_state"])
         return save(response=response)
 
     #####
     # Chat
     #####
 
-    def chat(self, utter=None):
+    def chat(self, static_utter=None):
         current_state = {}
 
         while True:
-            if utter is None:
+            if static_utter is None:
                 utter = input('User: ')
+            else:
+                utter = static_utter
             if utter == 'stop':
                 break
 
-            msg = {'utter': utter}
-            msg = self.nlp_preprocessing_handler(msg)
+            current_state["utter"] = utter
+            msg = self.nlp_preprocessing_handler(deepcopy(current_state))
             current_state.update(msg)
 
-            msg = self.utter_conversion_handler(msg)
+            msg = self.utter_conversion_handler(deepcopy(current_state))
             current_state.update(msg)
 
-            msg = self.utter_integration_handler(msg)
+            msg = self.utter_integration_handler(deepcopy(current_state))
             current_state.update(msg)
 
-            msg.update({'aux_state': current_state["aux_state"]})
-            msg = self.dialogue_inference_handler(msg)
+            msg = self.dialogue_inference_handler(deepcopy(current_state))
             current_state.update(msg)
 
-            msg = self.response_selection_handler(msg)
+            msg = self.response_selection_handler(deepcopy(current_state))
             current_state.update(msg)
 
-            msg.update({"aux_state": current_state["aux_state"]})
-            msg = self.response_generation_handler(msg)
+            msg = self.response_generation_handler(deepcopy(current_state))
             current_state.update(msg)
 
             print(msg)
             print()
 
+            if static_utter is not None:
+                break
 
 def save(**data):
     for key, value in data.items():
@@ -258,4 +264,4 @@ if __name__ == '__main__':
     rules = [rules_dir]
 
     chatbot = ChatbotServer(rules=rules)
-    chatbot.chat("lets chat")
+    chatbot.chat()
