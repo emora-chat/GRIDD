@@ -38,11 +38,12 @@ class InferenceRuleBased:
                     inference_memory[rule_id] = (pre, post, new)
                 else:
                     inference_memory[rule_id][2].extend(new)
+        aux_state['inference_memory'] = inference_memory
 
         implications = self.inference_engine.apply(solutions=new_solutions)
         if globals.DEBUG:
             self.display_implications(implications)
-        return implications, inference_memory
+        return implications, aux_state
 
     def display_implications(self, implications):
         print("\n<< Inferences >>")

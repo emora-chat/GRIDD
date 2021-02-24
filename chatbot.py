@@ -17,11 +17,11 @@ from GRIDD.data_structures.pipeline import Pipeline
 from GRIDD.modules.elit_models import ElitModels
 from GRIDD.modules.elit_dp_to_logic_model import ElitDPToLogic
 from GRIDD.modules.merge_span_to_merge_concept import MergeSpanToMergeConcept
-from GRIDD.modules.inference_rule_based import InferenceRuleBased
 from GRIDD.modules.mention_bridge import MentionBridge
-from GRIDD.modules.merge_bridge import MergeBridge
-from GRIDD.modules.inference_bridge import InferenceBridge
 from GRIDD.modules.merge_coreference import MergeCoreference
+from GRIDD.modules.merge_bridge import MergeBridge
+from GRIDD.modules.inference_rule_based import InferenceRuleBased
+from GRIDD.modules.inference_bridge import InferenceBridge
 from GRIDD.modules.feature_propogation import FeaturePropogation
 from GRIDD.modules.response_selection_salience import SalienceResponseSelection
 from GRIDD.modules.response_expansion import ResponseExpansion
@@ -43,16 +43,16 @@ class Chatbot:
         self.auxiliary_state = {'turn_index': 0}
 
         c = Pipeline.component
+        sentence_caser = c(SentenceCaser())
         elit_models = c(ElitModels())
         template_file = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
         elit_dp = c(ElitDPToLogic(self.knowledge_base, template_file, device=device))
         mention_bridge = c(MentionBridge())
         merge_dp = c(MergeSpanToMergeConcept())
+        merge_coref = c(MergeCoreference())
         merge_bridge = c(MergeBridge(threshold_score=0.2))
         inference_rulebased = c(InferenceRuleBased(*rules))
         inference_bridge = c(InferenceBridge())
-        sentence_caser = c(SentenceCaser())
-        merge_coref = c(MergeCoreference())
         feature_propogation = c(FeaturePropogation(max_score=1.0, turn_decrement=0.1, propogation_rate=0.5, propogation_decrement=0.1))
         response_selection = c(SalienceResponseSelection())
         response_expansion = c(ResponseExpansion())
@@ -67,12 +67,12 @@ class Chatbot:
             ('dp_merges', 'wm_after_mentions') > merge_dp > ('dp_node_merges'),
             ('cr', 'wm_after_mentions') > merge_coref > ('coref_merges'),
             ('wm_after_mentions', 'dp_node_merges') > merge_bridge > ('wm_after_merges'),
-            ('wm_after_merges', 'aux_state') > inference_rulebased > ('implications', 'inference_memory'),
+            ('wm_after_merges', 'aux_state') > inference_rulebased > ('implications', 'aux_state_update'),
             ('implications', 'wm_after_merges') > inference_bridge > ('wm_after_inference'),
             ('wm_after_inference', 'iterations') > feature_propogation > ('wm_after_prop'),
             ('wm_after_prop') > response_selection > ('response_predicate'),
             ('response_predicate', 'wm_after_prop') > response_expansion > ('main_response', 'supporting_predicates', 'wm_after_exp'),
-            ('main_response', 'supporting_predicates', 'aux_state') > response_generation > ('response'),
+            ('main_response', 'supporting_predicates', 'aux_state_update') > response_generation > ('response'),
             tags ={
                 sentence_caser: ['sentence_caser'],
                 elit_models: ['elit_models'],
@@ -82,22 +82,22 @@ class Chatbot:
                 merge_coref: ['merge_coref'],
                 merge_bridge: ['merge_bridge']
             },
-            outputs=['response', 'wm_after_exp', 'inference_memory', 'cr']
+            outputs=['response', 'wm_after_exp', 'aux_state_update', 'cr']
         )
 
     def respond(self, user_utterance=None, dialogue_state=None):
         if dialogue_state is not None:
             self.load(dialogue_state)
-        response, wm, inference_memory, coref_context = self.pipeline(
+        response, wm, aux_state_update, coref_context = self.pipeline(
             user_utterance,
             self.working_memory,
             self.auxiliary_state,
             2
         )
+        self.auxiliary_state = aux_state_update
         self.auxiliary_state['coref_context'] = coref_context
         self.auxiliary_state['system_utterance'] = response
         self.auxiliary_state['turn_index'] += 1
-        self.auxiliary_state['inference_memory'] = inference_memory
 
         self.working_memory = wm
 
@@ -117,6 +117,7 @@ class Chatbot:
         global_tokens = coref_context.get('global_tokens', [])
         global_tokens = [span.to_string() for span in global_tokens]
         coref_context['global_tokens'] = global_tokens
+        self.auxiliary_state['coref_context'] = coref_context
         dialogue_state = {
             'working_memory': self.working_memory.save(),
             'aux': self.auxiliary_state
@@ -132,6 +133,7 @@ class Chatbot:
         global_tokens = coref_context.get('global_tokens', [])
         global_tokens = [Span.from_string(span) for span in global_tokens]
         coref_context['global_tokens'] = global_tokens
+        self.auxiliary_state['coref_context'] = coref_context
 
 if __name__ == '__main__':
     import GRIDD.globals as globals
