@@ -5,7 +5,7 @@ TODO - update all rules that determine tense to consider if auxiliary is present
 
 Captures questions that start with `When`, `Where`, `Why`, and `How` in the adverb role.
 
-Represented as `question(main_predicate, question(object()))`.
+Represented as `question_concept(main_predicate, question(object()))`.
 
 The mapping between question word and semantic concept is:
 
