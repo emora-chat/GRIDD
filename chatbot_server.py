@@ -9,16 +9,15 @@ from GRIDD.data_structures.span import Span
 from os.path import join
 import json
 
-kb = join('GRIDD', 'resources', 'kg_files', 'kb')
-KB = KnowledgeBase(kb)
-
 class ChatbotServer:
     """
     Implementation of full chatbot pipeline in server architecture.
     """
     def initialize_full_pipeline(self, rules, device='cpu'):
+        kb = join('GRIDD', 'resources', 'kg_files', 'kb')
+        self.kb = KnowledgeBase(kb)
         self.nlp_processing = init_nlp_preprocessing()
-        self.utter_conversion = init_utter_conversion(device)
+        self.utter_conversion = init_utter_conversion(device, self.kb)
         self.utter_integration = init_utter_integration()
         self.dialogue_inference = init_dialogue_inference(rules)
         self.response_selection = init_response_selection()
@@ -57,13 +56,13 @@ class ChatbotServer:
             msg = utter_conversion_handler(self.utter_conversion, self.convert_state(current_state))
             self.update_current_turn_state(current_state, msg)
 
-            msg = utter_integration_handler(self.utter_integration, self.convert_state(current_state))
+            msg = utter_integration_handler(self.utter_integration, self.convert_state(current_state), self.kb)
             self.update_current_turn_state(current_state, msg)
 
-            msg = dialogue_inference_handler(self.dialogue_inference, self.convert_state(current_state))
+            msg = dialogue_inference_handler(self.dialogue_inference, self.convert_state(current_state), self.kb)
             self.update_current_turn_state(current_state, msg)
 
-            msg = response_selection_handler(self.response_selection, self.convert_state(current_state))
+            msg = response_selection_handler(self.response_selection, self.convert_state(current_state), self.kb)
             self.update_current_turn_state(current_state, msg)
 
             msg = response_generation_handler(self.response_generation, self.convert_state(current_state))
@@ -95,7 +94,7 @@ def init_nlp_preprocessing(local_testing=True):
         outputs=['tok', 'pos', 'dp', 'cr']
     )
 
-def init_utter_conversion(device):
+def init_utter_conversion(device, KB):
     from GRIDD.modules.elit_dp_to_logic_model import ElitDPToLogic
     template_file = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
     elit_dp = c(ElitDPToLogic(KB, template_file, device=device))
@@ -177,24 +176,24 @@ def utter_conversion_handler(pipeline, input_dict):
         dp_mentions, dp_merges = pipeline(tok=input["tok"], pos=input["pos"], dp=input["dp"])
     return save(dp_mentions=dp_mentions, dp_merges=dp_merges)
 
-def utter_integration_handler(pipeline, input_dict):
+def utter_integration_handler(pipeline, input_dict, KB):
     input = {"dp_mentions": input_dict.get("dp_mentions",[])[0], "dp_merges": input_dict.get("dp_merges",[])[0], "cr": input_dict.get("cr",[])[0],
              "wm": input_dict.get("wm",[])[1]}
-    input = load(input)
+    input = load(input, KB)
     if input["wm"] is None:
         input["wm"] = WorkingMemory(KB, join('GRIDD', 'resources', 'kg_files', 'wm'))
     wm_after_merges = pipeline(dp_mentions=input["dp_mentions"], wm=input["wm"], dp_merges=input["dp_merges"], cr=input["cr"])
     return save(wm=wm_after_merges)
 
-def dialogue_inference_handler(pipeline, input_dict):
+def dialogue_inference_handler(pipeline, input_dict, KB):
     input = {"wm": input_dict.get("wm",[])[0], "aux_state": input_dict.get("aux_state",[])[0]}
-    input = load(input)
+    input = load(input, KB)
     wm_after_inference, aux_state_update = pipeline(wm_after_merges=input["wm"], aux_state=input["aux_state"])
     return save(wm=wm_after_inference, aux_state=aux_state_update)
 
-def response_selection_handler(pipeline, input_dict):
+def response_selection_handler(pipeline, input_dict, KB):
     input = {"wm": input_dict.get("wm",[])[0]}
-    input = load(input)
+    input = load(input, KB)
     input["iterations"] = 2
     main_response, supporting_predicates, wm_after_exp = pipeline(wm_after_inference=input["wm"], iterations=input["iterations"])
     return save(main_response=main_response, supporting_predicates=list(supporting_predicates), wm=wm_after_exp)
@@ -230,7 +229,7 @@ def save(**data):
         data[key] = json.dumps(value, cls=DataEncoder)
     return data
 
-def load(json_dict):
+def load(json_dict, KB=None):
     for key, value in json_dict.items():
         if value is not None:
             if isinstance(key, str) and key.startswith('wm'):
