@@ -158,7 +158,7 @@ def init_response_generation():
 ##############################
 
 def nlp_preprocessing_handler(pipeline, input_dict):
-    input = {"utter": input_dict.get("utter",[])[0].strip(), "aux_state": input_dict.get("aux_state",[])[1]}
+    input = {"utter": input_dict.get("utter",[None])[0].strip(), "aux_state": input_dict.get("aux_state",[None])[1]}
     input = load(input)
     if input["aux_state"] is None:
         input["aux_state"] = {'turn_index': -1}
@@ -169,7 +169,7 @@ def nlp_preprocessing_handler(pipeline, input_dict):
     return save(tok=tok, pos=pos, dp=dp, cr=cr, aux_state=input["aux_state"])
 
 def utter_conversion_handler(pipeline, input_dict):
-    input = {"tok": input_dict.get("tok",[])[0], "pos": input_dict.get("pos",[])[0], "dp": input_dict.get("dp",[])[0]}
+    input = {"tok": input_dict.get("tok",[[]])[0], "pos": input_dict.get("pos",[[]])[0], "dp": input_dict.get("dp",[[]])[0]}
     input = load(input)
     dp_mentions,dp_merges={},[]
     if input["dp"] is not None and len(input["dp"]) > 0:
@@ -177,8 +177,8 @@ def utter_conversion_handler(pipeline, input_dict):
     return save(dp_mentions=dp_mentions, dp_merges=dp_merges)
 
 def utter_integration_handler(pipeline, input_dict, KB):
-    input = {"dp_mentions": input_dict.get("dp_mentions",[])[0], "dp_merges": input_dict.get("dp_merges",[])[0], "cr": input_dict.get("cr",[])[0],
-             "wm": input_dict.get("wm",[])[1]}
+    input = {"dp_mentions": input_dict.get("dp_mentions",[{}])[0], "dp_merges": input_dict.get("dp_merges",[[]])[0], "cr": input_dict.get("cr",[{}])[0],
+             "wm": input_dict.get("wm",[None])[1]}
     input = load(input, KB)
     if input["wm"] is None:
         input["wm"] = WorkingMemory(KB, join('GRIDD', 'resources', 'kg_files', 'wm'))
@@ -186,21 +186,21 @@ def utter_integration_handler(pipeline, input_dict, KB):
     return save(wm=wm_after_merges)
 
 def dialogue_inference_handler(pipeline, input_dict, KB):
-    input = {"wm": input_dict.get("wm",[])[0], "aux_state": input_dict.get("aux_state",[])[0]}
+    input = {"wm": input_dict.get("wm",[None])[0], "aux_state": input_dict.get("aux_state",[{}])[0]}
     input = load(input, KB)
     wm_after_inference, aux_state_update = pipeline(wm_after_merges=input["wm"], aux_state=input["aux_state"])
     return save(wm=wm_after_inference, aux_state=aux_state_update)
 
 def response_selection_handler(pipeline, input_dict, KB):
-    input = {"wm": input_dict.get("wm",[])[0]}
+    input = {"wm": input_dict.get("wm",[None])[0]}
     input = load(input, KB)
     input["iterations"] = 2
     main_response, supporting_predicates, wm_after_exp = pipeline(wm_after_inference=input["wm"], iterations=input["iterations"])
     return save(main_response=main_response, supporting_predicates=list(supporting_predicates), wm=wm_after_exp)
 
 def response_generation_handler(pipeline, input_dict, nlg_model=None, device='cuda:0'):
-    input = {"main_response": input_dict.get("main_response",[])[0], "supporting_predicates": input_dict.get("supporting_predicates",[])[0],
-             "aux_state": input_dict.get("aux_state",[])[0]}
+    input = {"main_response": input_dict.get("main_response",[None])[0], "supporting_predicates": input_dict.get("supporting_predicates",[[]])[0],
+             "aux_state": input_dict.get("aux_state",[{}])[0]}
     input = load(input)
     response = pipeline(main_response=input["main_response"], supporting_predicates=input["supporting_predicates"], aux_state=input["aux_state"],
                         nlg_model=nlg_model, device=device)
