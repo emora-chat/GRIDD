@@ -165,14 +165,16 @@ def nlp_preprocessing_handler(pipeline, input_dict):
         input["aux_state"] = {'turn_index': -1}
     input["aux_state"]["turn_index"] += 1
     tok,pos,dp,cr = [],[],[],{}
-    if len(input["utter"]) > 0:
+    if input["utter"] is not None and len(input["utter"]) > 0:
         tok, pos, dp, cr = pipeline(utter=input["utter"], aux_state=input["aux_state"])
     return save(tok=tok, pos=pos, dp=dp, cr=cr, aux_state=input["aux_state"])
 
 def utter_conversion_handler(pipeline, input_dict):
     input = {"tok": input_dict.get("tok",[])[0], "pos": input_dict.get("pos",[])[0], "dp": input_dict.get("dp",[])[0]}
     input = load(input)
-    dp_mentions, dp_merges = pipeline(tok=input["tok"], pos=input["pos"], dp=input["dp"])
+    dp_mentions,dp_merges={},[]
+    if input["dp"] is not None and len(input["dp"]) > 0:
+        dp_mentions, dp_merges = pipeline(tok=input["tok"], pos=input["pos"], dp=input["dp"])
     return save(dp_mentions=dp_mentions, dp_merges=dp_merges)
 
 def utter_integration_handler(pipeline, input_dict):
