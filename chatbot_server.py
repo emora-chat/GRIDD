@@ -17,7 +17,7 @@ class ChatbotServer:
     Implementation of full chatbot pipeline in server architecture.
     """
     def initialize_full_pipeline(self, rules, device='cpu'):
-        self.nlp_processing = init_nlp_processing()
+        self.nlp_processing = init_nlp_preprocessing()
         self.utter_conversion = init_utter_conversion(device)
         self.utter_integration = init_utter_integration()
         self.dialogue_inference = init_dialogue_inference(rules)
@@ -81,7 +81,7 @@ class ChatbotServer:
 # Subpipeline initializations
 ##############################
 
-def init_nlp_processing(local_testing=True):
+def init_nlp_preprocessing(local_testing=True):
     from GRIDD.modules.elit_models import ElitModels
     if not local_testing:
         from GRIDD.modules.sentence_casing import SentenceCaser
