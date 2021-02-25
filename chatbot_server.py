@@ -5,12 +5,9 @@ from GRIDD.data_structures.pipeline import Pipeline
 c = Pipeline.component
 
 from GRIDD.data_structures.span import Span
-from copy import deepcopy
 
 from os.path import join
 import json
-
-QUICK_LOCAL_TESTING = True
 
 kb = join('GRIDD', 'resources', 'kg_files', 'kb')
 KB = KnowledgeBase(kb)
@@ -84,9 +81,9 @@ class ChatbotServer:
 # Subpipeline initializations
 ##############################
 
-def init_nlp_processing():
+def init_nlp_processing(local_testing=True):
     from GRIDD.modules.elit_models import ElitModels
-    if QUICK_LOCAL_TESTING is False:
+    if not local_testing:
         from GRIDD.modules.sentence_casing import SentenceCaser
     else:
         SentenceCaser = (lambda: (lambda x: x))
