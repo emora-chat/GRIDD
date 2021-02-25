@@ -2,8 +2,6 @@
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from collections import defaultdict
 
-device='cuda:0'
-nlg_model = None
 prefix = 'translate Graph to English: '
 exclusions={'var', 'is_type', 'ref', 'def', 'span', 'datetime', 'predicate', 'unknown_verb', 'unknown_noun',
             'unknown_pron', 'unknown_adj', 'unknown_adv', 'unknown_other'}
@@ -45,7 +43,7 @@ class ResponseGeneration:
         full_string = ' '.join(strings.values())
         return full_string.strip()
 
-    def __call__(self, main_predicate, supporting_predicates, aux_state):
+    def __call__(self, main_predicate, supporting_predicates, aux_state, nlg_model=None, device='cuda:0'):
         response = ""
         turn_idx = aux_state.get('turn_index', None)
         if turn_idx is not None and int(turn_idx) == 0:
