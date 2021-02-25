@@ -56,7 +56,7 @@ When did you start reading
 
 Captures questions that start with `How`, `What`, and `Who` as the root of a copular construction or as the determiner of the root. 
 
-Represented as `copula(nsbj, question(question_word))`.
+Represented as `copula(nsbj, question(question_concept))`.
 
 <details>
   <summary>Conversions</summary>
