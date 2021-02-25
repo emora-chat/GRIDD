@@ -15,8 +15,8 @@ class MergeCoreference:
         todo - if one mention is poss DP, merge subject with self of other; otherwise, merge selves
         """
         span_merges = []
-        global_tokens = coref_output['global_tokens']
-        clusters = coref_output['clusters']
+        global_tokens = coref_output.get('global_tokens', [])
+        clusters = coref_output.get('clusters', [])
         for cluster in clusters:
             for i, s1 in enumerate(cluster):
                 for j, s2 in enumerate(cluster[i+1:]):
