@@ -8,6 +8,10 @@ exclusions={'var', 'is_type', 'ref', 'def', 'span', 'datetime', 'predicate', 'un
 
 class ResponseGeneration:
 
+    def __init__(self, nlg_model=None, device='cpu'):
+        self.nlg_model = nlg_model
+        self.device = device
+
     def convert(self, main_predicate, supporting_predicates):
         cg = ConceptGraph(predicates=[main_predicate]+supporting_predicates)
         strings = defaultdict(str)
@@ -43,24 +47,24 @@ class ResponseGeneration:
         full_string = ' '.join(strings.values())
         return full_string.strip()
 
-    def __call__(self, main_predicate, supporting_predicates, aux_state, nlg_model=None, device='cuda:0'):
+    def __call__(self, main_predicate, supporting_predicates, aux_state):
         response = ""
         turn_idx = aux_state.get('turn_index', None)
         if turn_idx is not None and int(turn_idx) == 0:
             response += 'Hi, this is an Alexa Prize Socialbot. '
         output = self.convert(main_predicate, supporting_predicates)
         print('in main NLG call...')
-        print(nlg_model)
-        print(type(nlg_model))
-        print(nlg_model is not None)
-        if nlg_model is not None:
+        print(self.nlg_model)
+        print(type(self.nlg_model))
+        print(self.nlg_model is not None)
+        if self.nlg_model is not None:
             print('Running NLG model...')
             try:
-                encoding = nlg_model.tokenizer.prepare_seq2seq_batch([prefix + output.rstrip('\n')], max_length=512,
+                encoding = self.nlg_model.tokenizer.prepare_seq2seq_batch([prefix + output.rstrip('\n')], max_length=512,
                                                                  max_target_length=384, return_tensors="pt").data
-                encoding["input_ids"] = encoding["input_ids"].to(device)
-                encoding["attention_mask"] = encoding["attention_mask"].to(device)
-                output = nlg_model.test_step(encoding)[0]
+                encoding["input_ids"] = encoding["input_ids"].to(self.device)
+                encoding["attention_mask"] = encoding["attention_mask"].to(self.device)
+                output = self.nlg_model.test_step(encoding)[0]
             except Exception as e:
                 print('FAILED! %s' % e)
                 output = "Well, I am not sure what to say to that. What else do you want to talk about?"
