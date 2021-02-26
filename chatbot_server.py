@@ -198,7 +198,7 @@ def response_selection_handler(pipeline, input_dict, KB):
     main_response, supporting_predicates, wm_after_exp = pipeline(wm_after_inference=input["wm"], iterations=input["iterations"])
     return save(main_response=main_response, supporting_predicates=list(supporting_predicates), wm=wm_after_exp)
 
-def response_generation_handler(pipeline, input_dict, nlg_model=None, device='cuda:0'):
+def response_generation_handler(pipeline, input_dict):
     input = {"main_response": input_dict.get("main_response",[None])[0], "supporting_predicates": input_dict.get("supporting_predicates",[[]])[0],
              "aux_state": input_dict.get("aux_state",[{}])[0]}
     input = load(input)
