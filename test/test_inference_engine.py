@@ -1,6 +1,4 @@
 
-import pytest
-
 from GRIDD.data_structures.graph_matching_engine import GraphMatchingEngine
 from structpy.graph.directed.labeled.data.multilabeled_digraph_data import MultiLabeledDigraphDataNX as Graph
 import random as r
@@ -8,6 +6,7 @@ from time import time
 from itertools import chain
 from structpy.map import Function
 import inspect
+import torch
 
 def test_graph_matching_efficiency(
         data_edges,         # number of edges in data graph
@@ -26,7 +25,7 @@ def test_graph_matching_efficiency(
         device='cuda'       # hardware
 ):
     print('\n' + '#' * 80)
-    args = inspect.getargvalues(inspect.currentframe()).locals
+    args = dict(inspect.getargvalues(inspect.currentframe()).locals)
     print('Generating query graphs...')
     query_graphs = generate_queries(queries, query_edges, query_vars, attributes, query_attributes, query_nodes)
     print('Generating data graph...')
@@ -38,7 +37,8 @@ def test_graph_matching_efficiency(
     solutions = matching_engine.match(data_graph, *query_graphs, limit=filter_iterations)
     t_f = time()
     print('Inference completed in {:.5f} seconds.'.format(t_f - t_i))
-    print('Args:')
+    print('Memory utilization:', str(torch.cuda.memory_stats()['allocated_bytes.all.peak'] / 10 ** 6), 'MB')
+    print('\nArgs:')
     for k, v in args.items():
         print(k, '=', v)
     print('#'*80+'\n')
@@ -135,68 +135,6 @@ def generate_attributes(attributes, node_attributes, *nodes, subset=None):
 
 if __name__ == '__main__':
     test_graph_matching_efficiency(
-        data_edges=100,
-        queries=100,
-        query_edges=6,
-        solutions=10,
-        query_solutions=2,
-        near_solutions=0,
-        query_vars=5,
-        attributes=10,
-        data_attributes=3,
-        query_attributes=1,
-        nodes=50,
-        query_nodes=100,
-        filter_iterations=10
-    )
-    test_graph_matching_efficiency(
-        data_edges=100,
-        queries=100,
-        query_edges=6,
-        solutions=10,
-        query_solutions=2,
-        near_solutions=0,
-        query_vars=5,
-        attributes=10,
-        data_attributes=3,
-        query_attributes=1,
-        nodes=50,
-        query_nodes=100,
-        filter_iterations=10,
-        device='cpu'
-    )
-    test_graph_matching_efficiency(
-        data_edges=100,
-        queries=1000,
-        query_edges=6,
-        solutions=10,
-        query_solutions=2,
-        near_solutions=0,
-        query_vars=5,
-        attributes=10,
-        data_attributes=3,
-        query_attributes=1,
-        nodes=50,
-        query_nodes=1000,
-        filter_iterations=10
-    )
-    test_graph_matching_efficiency(
-        data_edges=100,
-        queries=1000,
-        query_edges=6,
-        solutions=10,
-        query_solutions=2,
-        near_solutions=0,
-        query_vars=5,
-        attributes=10,
-        data_attributes=3,
-        query_attributes=1,
-        nodes=50,
-        query_nodes=1000,
-        filter_iterations=10,
-        device='cpu'
-    )
-    test_graph_matching_efficiency(
         data_edges=200,
         queries=1000,
         query_edges=6,
@@ -211,21 +149,6 @@ if __name__ == '__main__':
         query_nodes=1000,
         filter_iterations=10
     )
-    test_graph_matching_efficiency(
-        data_edges=200,
-        queries=1000,
-        query_edges=6,
-        solutions=10,
-        query_solutions=2,
-        near_solutions=0,
-        query_vars=5,
-        attributes=10,
-        data_attributes=3,
-        query_attributes=1,
-        nodes=50,
-        query_nodes=1000,
-        filter_iterations=10,
-        device='cpu'
-    )
+    print('done')
 
 
