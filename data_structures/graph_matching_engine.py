@@ -1,6 +1,6 @@
 
 import os
-print('Working dir:', os.getcwd())
+# print('Working dir:', os.getcwd())
 
 from GRIDD.data_structures.graph_matching_engine_spec import GraphMatchingEngineSpec
 

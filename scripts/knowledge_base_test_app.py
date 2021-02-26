@@ -3,6 +3,7 @@ from GRIDD.data_structures.knowledge_base import KnowledgeBase
 from GRIDD.data_structures.knowledge_parser import KnowledgeParser
 from GRIDD.data_structures.working_memory import WorkingMemory
 from GRIDD.data_structures.inference_engine import InferenceEngine
+from GRIDD.chatbot_server import ChatbotServer
 import os, time
 from os.path import join
 from collections import defaultdict
@@ -23,18 +24,17 @@ if __name__ == '__main__':
         with open(join(kb, 'kb.kg'), 'w') as f:
             f.write('\n')
 
-    print('loading kb...')
-    st = time.time()
-    kb = KnowledgeBase(kb)
-    print('\tElapsed: %.3f'%(time.time()-st))
-    print('initializing wm...')
-    wm = WorkingMemory(kb)
-    print('initializing inference engine...')
-    inference_engine = InferenceEngine(join('gridd_files', 'kb_test', 'rules'))
+    mode = input('Mode [logic/lang]: ')
+    if mode.lower() == 'logic':
+        print("<< LOGIC MODE >>")
+        print('loading kb...')
+        kb = KnowledgeBase(kb)
+        print('initializing wm...')
+        wm = WorkingMemory(kb)
+        print('initializing inference engine...')
+        inference_engine = InferenceEngine(join('gridd_files', 'kb_test', 'rules'))
+        old_solutions = defaultdict(list)
 
-    old_solutions = defaultdict(list)
-    mode = 'logic'
-    if mode == 'logic':
         logic_string = input('>>> ').lower()
         while logic_string != 'q':
             logic_graph = KnowledgeParser.from_data(logic_string)
@@ -64,6 +64,15 @@ if __name__ == '__main__':
             print(output)
             print('*'*20)
             logic_string = input('>>> ')
+    else:
+        print("<< LANGUAGE MODE >>")
+        kb_files = join('gridd_files', 'kb_test', 'kb')
+        rules_dir = join(join('gridd_files', 'kb_test', 'rules'))
+        rules = [rules_dir]
+
+        chatbot = ChatbotServer()
+        chatbot.initialize_full_pipeline(kb_files=kb_files, rules=rules, device='cpu')
+        chatbot.chat(load_coldstarts=False)
 
 
 
