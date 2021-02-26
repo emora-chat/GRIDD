@@ -49,6 +49,10 @@ class ResponseGeneration:
         if turn_idx is not None and int(turn_idx) == 0:
             response += 'Hi, this is an Alexa Prize Socialbot. '
         output = self.convert(main_predicate, supporting_predicates)
+        print('in main NLG call...')
+        print(nlg_model)
+        print(type(nlg_model))
+        print(nlg_model is not None)
         if nlg_model is not None:
             print('Running NLG model...')
             try:
