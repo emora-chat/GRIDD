@@ -1,6 +1,7 @@
 
-expansion_types = ['type', 'property', 'qualifier', 'time', 'question', 'referential', 'instantiative',
-                   'possess', 'indirect_obj', 'mode', 'negate']
+subj_expansion_types = {'type', 'property', 'qualifier', 'time', 'question', 'referential', 'instantiative',
+                        'indirect_obj', 'mode', 'negate'}
+obj_expansion_types = {'possess'}
 
 class ResponseExpansion:
 
@@ -13,14 +14,9 @@ class ResponseExpansion:
             expansions = self.get_predicate_supports(main_predicate, working_memory)
         else:
             expansions = self.get_question_supports(main_s, working_memory)
-
-        working_memory.features[main_i]['salience'] = 1.0
-        working_memory.features[main_i]['cover'] = 1.0
-        for pred in expansions:
-            working_memory.features[pred[3]]['salience'] = 1.0
-            working_memory.features[pred[3]]['cover'] = 1.0
-
-        return main_predicate, expansions - {main_predicate}, working_memory
+        expansions -= {main_predicate}
+        working_memory.features.update_from_response(main_predicate, expansions)
+        return main_predicate, expansions, working_memory
 
     def get_predicate_supports(self, main_predicate, working_memory):
         main_s, main_t, main_o, main_i = main_predicate
@@ -39,8 +35,9 @@ class ResponseExpansion:
         expansions = set()
         items = [item for item in items if item is not None]
         for element in items:
-            for pred_type in expansion_types:
+            for pred_type in subj_expansion_types:
                 expansions.update(working_memory.predicates(element, predicate_type=pred_type))
+            for pred_type in obj_expansion_types:
                 expansions.update(working_memory.predicates(predicate_type=pred_type, object=element))
         return expansions
 
@@ -58,7 +55,7 @@ class ResponseExpansion:
             expansions.update(working_memory.predicates(object=question_focus))
             predicate_supports = set()
             for s, t, o, i in expansions:
-                if t not in expansion_types:
+                if t not in subj_expansion_types.union(obj_expansion_types):
                     preds = self.get_predicate_supports((s,t,o,i), working_memory)
                     predicate_supports.update(preds)
             expansions.update(predicate_supports)

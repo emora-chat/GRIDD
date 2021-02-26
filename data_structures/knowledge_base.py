@@ -14,8 +14,10 @@ class KnowledgeBase:
         self._knowledge_parser = KnowledgeParser(kg=self, base_nodes=BASE_NODES, ensure_kb_compatible=ensure_kb_compatible)
         self._concept_graph.concatenate(KnowledgeParser.from_data(join('GRIDD', 'resources', 'kg_files', 'base.kg'),
                                                                        parser=self._knowledge_parser))
-        self._concept_graph.concatenate(KnowledgeParser.from_data(*filenames_or_logicstrings,
-                                                                  parser=self._knowledge_parser))
+        inputs = collect(*filenames_or_logicstrings, extension='.kg')
+        for input in inputs:
+            addition = KnowledgeParser.from_data(input, parser=self._knowledge_parser)
+            self._concept_graph.concatenate(addition)
 
     def subtypes(self, concept):
         subtypes = set()

@@ -48,6 +48,8 @@ shop<predicate>
 shop[shop,shopped,shops,shopping]
 like<predicate>
 like[like,liked,likes,liking]
+happen<predicate>
+happen[happen,happens,happened,happening]
 happy<predicate>
 live<predicate>
 drive<predicate>

@@ -13,7 +13,6 @@ class WorkingMemory(ConceptGraph):
 
     def __init__(self, knowledge_base, *filenames_or_logicstrings):
         self.knowledge_base = knowledge_base
-        self.inference_engine = InferenceEngine()
         super().__init__(namespace='WM')
         if len(filenames_or_logicstrings) > 0:
             self.concatenate(KnowledgeParser.from_data(*filenames_or_logicstrings,
@@ -32,8 +31,7 @@ class WorkingMemory(ConceptGraph):
                         visited.add(t)
         for item in to_pull:
             self.add(*item)
-            for e in item:
-                self.features[e]['salience'] = self.features[e].get('salience', 0.0)
+            self.features.update_from_ontology(item)
 
     def pull(self, order=1, concepts=None, exclude_on_pull=None):
         if isinstance(concepts, list):
@@ -74,8 +72,7 @@ class WorkingMemory(ConceptGraph):
             pull_set = set(chain(*to_pull)) - covered - {None}
         cg = ConceptGraph(predicates=pulling)
         id_map = self.concatenate(cg)
-        for id in id_map.values():
-            self.features[id]['salience'] = self.features[id].get('salience', 0.0)
+        self.features.update_from_kb(id_map.values())
         self.pull_ontology()
 
     # todo - efficiency check
@@ -110,9 +107,6 @@ class WorkingMemory(ConceptGraph):
                 supertypes.get(i, set()).add(t)
                 supertypes[i].update(supertypes[t])
             return supertypes
-
-    # def rules(self):
-    #     return self.inference_engine.generate_rules_from_graph(self)
 
     def equivalent(self, ref, target, types=None):
         """

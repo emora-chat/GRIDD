@@ -1,7 +1,7 @@
 
-adv(X/pos(), Y/question_word())
-aux(X, Z/pos())
-nsbj(X, A/pos())
+adv(X/pstg(), Y/question_word())
+aux(X, Z/pstg())
+nsbj(X, A/pstg())
 precede(Y, Z)
 precede(Z, A)
 -> q_nadv ->
@@ -12,9 +12,9 @@ center(Y)
 cover(Z)
 ;
 
-adv(X/pos(), Y/question_word())
-aux(X, Z/pos())
-csbj(X, A/pos())
+adv(X/pstg(), Y/question_word())
+aux(X, Z/pstg())
+csbj(X, A/pstg())
 precede(Y, Z)
 precede(Z, A)
 -> q_cadv ->
@@ -26,8 +26,8 @@ cover(Z)
 ;
 
 
-cop(X/pos(), Y/present_tense())
-nsbj(X, Z/pos())
+cop(X/pstg(), Y/present_tense())
+nsbj(X, Z/pstg())
 det(X, D/question_word())
 -> qdet_ncopula_present ->
 is_type(Y)
@@ -40,8 +40,8 @@ center(X)
 cover(D)
 ;
 
-cop(X/pos(), Y/present_tense())
-nsbj(X, Z/pos())
+cop(X/pstg(), Y/present_tense())
+nsbj(X, Z/pstg())
 det(X, D/question_word())
 -> qdet_ccopula_present ->
 is_type(Y)
@@ -54,8 +54,8 @@ center(X)
 cover(D)
 ;
 
-cop(X/pos(), Y/past_tense())
-nsbj(X, Z/pos())
+cop(X/pstg(), Y/past_tense())
+nsbj(X, Z/pstg())
 det(X, D/question_word())
 -> qdet_ncopula_past ->
 is_type(Y)
@@ -68,8 +68,8 @@ center(X)
 cover(D)
 ;
 
-cop(X/pos(), Y/past_tense())
-nsbj(X, Z/pos())
+cop(X/pstg(), Y/past_tense())
+nsbj(X, Z/pstg())
 det(X, D/question_word())
 -> qdet_ccopula_past ->
 is_type(Y)
@@ -83,7 +83,7 @@ cover(D)
 ;
 
 cop(X/question_word(), Y/present_tense())
-nsbj(X, Z/pos())
+nsbj(X, Z/pstg())
 -> qw_ncopula_present ->
 is_type(Y)
 p/Y(Z, X)
@@ -94,7 +94,7 @@ center(X)
 ;
 
 cop(X/question_word(), Y/present_tense())
-csbj(X, Z/pos())
+csbj(X, Z/pstg())
 -> qw_ccopula_present ->
 is_type(Y)
 p/Y(Z, X)
@@ -105,7 +105,7 @@ center(X)
 ;
 
 cop(X/question_word(), Y/past_tense())
-nsbj(X, Z/pos())
+nsbj(X, Z/pstg())
 -> qw_ncopula_past ->
 is_type(Y)
 p/Y(Z, X)
@@ -116,7 +116,7 @@ center(X)
 ;
 
 cop(X/question_word(), Y/past_tense())
-csbj(X, Z/pos())
+csbj(X, Z/pstg())
 -> qw_ccopula_past ->
 is_type(Y)
 p/Y(Z, X)
@@ -127,23 +127,23 @@ center(X)
 ;
 
 
-obj(X/pos(), Y/question_word())
+obj(X/pstg(), Y/question_word())
 -> obj_question ->
 q/question(object())
 center(Y)
 focus(q)
 ;
 
-nsbj(X/pos(), Y/question_word())
+nsbj(X/pstg(), Y/question_word())
 -> nsbj_question ->
 q/question(object())
 center(Y)
 focus(q)
 ;
 
-dat(X/pos(), Y/question_word())
-aux(X, Z/pos())
-nsbj(X, A/pos())
+dat(X/pstg(), Y/question_word())
+aux(X, Z/pstg())
+nsbj(X, A/pstg())
 precede(Y, Z)
 precede(Z, A)
 -> q_ndat ->
@@ -154,9 +154,9 @@ cover(Z)
 focus(p)
 ;
 
-dat(X/pos(), Y/question_word())
-aux(X, Z/pos())
-csbj(X, A/pos())
+dat(X/pstg(), Y/question_word())
+aux(X, Z/pstg())
+csbj(X, A/pstg())
 precede(Y, Z)
 precede(Z, A)
 -> q_cdat ->
@@ -168,9 +168,9 @@ focus(p)
 ;
 
 
-det(X/pos(), Y/question_word())
-obj(Z/pos(), X)
-aux(Z, A/pos())
+det(X/pstg(), Y/question_word())
+obj(Z/pstg(), X)
+aux(Z, A/pstg())
 -> q_aux_det ->
 is_type(X)
 inst/X()
@@ -180,8 +180,8 @@ center(X)
 cover(Y)
 ;
 
-det(X/pos(), Y/question_word())
-obj(Z/pos(), X)
+det(X/pstg(), Y/question_word())
+obj(Z/pstg(), X)
 aux(Z, A/present_tense())
 -> q_aux_det_pres ->
 p/time(Z, now)
@@ -189,8 +189,8 @@ focus(p)
 center(A)
 ;
 
-det(X/pos(), Y/question_word())
-obj(Z/pos(), X)
+det(X/pstg(), Y/question_word())
+obj(Z/pstg(), X)
 aux(Z, A/past_tense())
 -> q_aux_det_past ->
 p/time(Z, past)
@@ -198,7 +198,7 @@ focus(p)
 center(A)
 ;
 
-det(X/pos(), Y/question_word())
+det(X/pstg(), Y/question_word())
 -> q_det ->
 is_type(X)
 inst/X()
@@ -209,8 +209,8 @@ cover(Y)
 ;
 
 
-cop(X/pos(), Y/present_tense())
-nsbj(X, Z/pos())
+cop(X/pstg(), Y/present_tense())
+nsbj(X, Z/pstg())
 precede(Y, Z)
 -> q_nsbj_copula_present ->
 is_type(Y)
@@ -221,8 +221,8 @@ focus(p)
 center(X)
 ;
 
-cop(X/pos(), Y/present_tense())
-csbj(X, Z/pos())
+cop(X/pstg(), Y/present_tense())
+csbj(X, Z/pstg())
 precede(Y, Z)
 -> q_csbj_copula_present ->
 is_type(Y)
@@ -233,8 +233,8 @@ focus(p)
 center(X)
 ;
 
-cop(X/pos(), Y/past_tense())
-nsbj(X, Z/pos())
+cop(X/pstg(), Y/past_tense())
+nsbj(X, Z/pstg())
 precede(Y, Z)
 -> q_nsbj_copula_past ->
 is_type(Y)
@@ -245,8 +245,8 @@ focus(p)
 center(X)
 ;
 
-cop(X/pos(), Y/past_tense())
-csbj(X, Z/pos())
+cop(X/pstg(), Y/past_tense())
+csbj(X, Z/pstg())
 precede(Y, Z)
 -> q_csbj_copula_past ->
 is_type(Y)
@@ -258,8 +258,56 @@ center(X)
 ;
 
 
-cop(X/pos(), Y/present_tense())
-nsbj(X, Z/pos())
+cop(X/pstg(), Y/present_tense())
+det(X, D/dt())
+nsbj(X, Z/pstg())
+-> nsbj_det_copula_present ->
+is_type(Y)
+p/Y(Z,X)
+time(p, now)
+focus(p)
+center(X)
+cover(D)
+;
+
+cop(X/pstg(), Y/present_tense())
+det(X, D/dt())
+csbj(X, Z/pstg())
+-> csbj_det_copula_present ->
+is_type(Y)
+p/Y(Z,X)
+time(p, now)
+focus(p)
+center(X)
+cover(D)
+;
+
+cop(X/pstg(), Y/past_tense())
+det(X, D/dt())
+nsbj(X, Z/pstg())
+-> nsbj_det_copula_past ->
+is_type(Y)
+p/Y(Z,X)
+time(p,past)
+focus(p)
+center(X)
+cover(D)
+;
+
+cop(X/pstg(), Y/past_tense())
+det(X, D/dt())
+csbj(X, Z/pstg())
+-> csbj_det_copula_past ->
+is_type(Y)
+p/Y(Z,X)
+time(p,past)
+focus(p)
+center(X)
+cover(D)
+;
+
+cop(X/pstg(), Y/present_tense())
+nsbj(X, Z/pstg())
 -> nsbj_copula_present ->
 is_type(Y)
 p/Y(Z,X)
@@ -268,8 +316,8 @@ focus(p)
 center(X)
 ;
 
-cop(X/pos(), Y/present_tense())
-csbj(X, Z/pos())
+cop(X/pstg(), Y/present_tense())
+csbj(X, Z/pstg())
 -> csbj_copula_present ->
 is_type(Y)
 p/Y(Z,X)
@@ -278,8 +326,8 @@ focus(p)
 center(X)
 ;
 
-cop(X/pos(), Y/past_tense())
-nsbj(X, Z/pos())
+cop(X/pstg(), Y/past_tense())
+nsbj(X, Z/pstg())
 -> nsbj_copula_past ->
 is_type(Y)
 p/Y(Z,X)
@@ -288,8 +336,8 @@ focus(p)
 center(X)
 ;
 
-cop(X/pos(), Y/past_tense())
-csbj(X, Z/pos())
+cop(X/pstg(), Y/past_tense())
+csbj(X, Z/pstg())
 -> csbj_copula_past ->
 is_type(Y)
 p/Y(Z,X)
@@ -298,15 +346,15 @@ focus(p)
 center(X)
 ;
 
-cop(X/pos(), Y/pos())
+cop(X/pstg(), Y/pstg())
 -> id_copular_verb ->
 focus(Y)
 center(Y)
 ;
 
 
-nsbj(X/past_tense(), Y/pos())
-obj(X, Z/pos())
+nsbj(X/past_tense(), Y/pstg())
+obj(X, Z/pstg())
 -> nsbj_dobj_past ->
 is_type(X)
 p/X(Y,Z)
@@ -315,8 +363,8 @@ focus(p)
 center(X)
 ;
 
-csbj(X/past_tense(), Y/pos())
-obj(X, Z/pos())
+csbj(X/past_tense(), Y/pstg())
+obj(X, Z/pstg())
 -> csbj_dobj_past ->
 is_type(X)
 p/X(Y,Z)
@@ -325,8 +373,8 @@ focus(p)
 center(X)
 ;
 
-nsbj(X/present_tense(), Y/pos())
-obj(X, Z/pos())
+nsbj(X/present_tense(), Y/pstg())
+obj(X, Z/pstg())
 -> nsbj_dobj_present ->
 is_type(X)
 p/X(Y,Z)
@@ -335,8 +383,8 @@ focus(p)
 center(X)
 ;
 
-csbj(X/present_tense(), Y/pos())
-obj(X, Z/pos())
+csbj(X/present_tense(), Y/pstg())
+obj(X, Z/pstg())
 -> csbj_dobj_present ->
 is_type(X)
 p/X(Y,Z)
@@ -346,9 +394,9 @@ center(X)
 ;
 
 
-nsbj(X/noun(), Y/pos())
+nsbj(X/noun(), Y/pstg())
 det(X, A/dt())
-obj(X, Z/pos())
+obj(X, Z/pstg())
 lv(X, U/past_tense())
 -> nsbj_obj_det_light_verb_past ->
 is_type(X)
@@ -357,11 +405,12 @@ time(p, past)
 focus(p)
 center(X)
 cover(A)
+cover(U)
 ;
 
-csbj(X/noun(), Y/pos())
+csbj(X/noun(), Y/pstg())
 det(X, A/dt())
-obj(X, Z/pos())
+obj(X, Z/pstg())
 lv(X, U/past_tense())
 -> csbj_obj_det_light_verb_past ->
 is_type(X)
@@ -370,11 +419,12 @@ time(p, past)
 focus(p)
 center(X)
 cover(A)
+cover(U)
 ;
 
-nsbj(X/noun(), Y/pos())
+nsbj(X/noun(), Y/pstg())
 det(X, A/dt())
-obj(X, Z/pos())
+obj(X, Z/pstg())
 lv(X, U/present_tense())
 -> nsbj_obj_det_light_verb_present ->
 is_type(X)
@@ -383,11 +433,12 @@ time(p, now)
 focus(p)
 center(X)
 cover(A)
+cover(U)
 ;
 
-csbj(X/noun(), Y/pos())
+csbj(X/noun(), Y/pstg())
 det(X, A/dt())
-obj(X, Z/pos())
+obj(X, Z/pstg())
 lv(X, U/present_tense())
 -> csbj_obj_det_light_verb_present ->
 is_type(X)
@@ -396,10 +447,11 @@ time(p, now)
 focus(p)
 center(X)
 cover(A)
+cover(U)
 ;
 
-nsbj(X/noun(), Y/pos())
-obj(X, Z/pos())
+nsbj(X/noun(), Y/pstg())
+obj(X, Z/pstg())
 lv(X, U/past_tense())
 -> nsbj_obj_light_verb_past ->
 is_type(X)
@@ -407,10 +459,11 @@ p/X(Y,Z)
 time(p, past)
 focus(p)
 center(X)
+cover(U)
 ;
 
-csbj(X/noun(), Y/pos())
-obj(X, Z/pos())
+csbj(X/noun(), Y/pstg())
+obj(X, Z/pstg())
 lv(X, U/past_tense())
 -> csbj_obj_light_verb_past ->
 is_type(X)
@@ -418,10 +471,11 @@ p/X(Y,Z)
 time(p, past)
 focus(p)
 center(X)
+cover(U)
 ;
 
-nsbj(X/noun(), Y/pos())
-obj(X, Z/pos())
+nsbj(X/noun(), Y/pstg())
+obj(X, Z/pstg())
 lv(X, U/present_tense())
 -> nsbj_obj_light_verb_present ->
 is_type(X)
@@ -429,10 +483,11 @@ p/X(Y,Z)
 time(p, now)
 focus(p)
 center(X)
+cover(U)
 ;
 
-csbj(X/noun(), Y/pos())
-obj(X, Z/pos())
+csbj(X/noun(), Y/pstg())
+obj(X, Z/pstg())
 lv(X, U/present_tense())
 -> csbj_obj_light_verb_present ->
 is_type(X)
@@ -440,10 +495,11 @@ p/X(Y,Z)
 time(p, now)
 focus(p)
 center(X)
+cover(U)
 ;
 
 
-nsbj(X/noun(), Y/pos())
+nsbj(X/noun(), Y/pstg())
 det(X, A/dt())
 lv(X, U/past_tense())
 -> nsbj_det_light_verb_past ->
@@ -453,9 +509,10 @@ time(p, past)
 focus(p)
 center(X)
 cover(A)
+cover(U)
 ;
 
-csbj(X/noun(), Y/pos())
+csbj(X/noun(), Y/pstg())
 det(X, A/dt())
 lv(X, U/past_tense())
 -> csbj_det_light_verb_past ->
@@ -465,9 +522,10 @@ time(p, past)
 focus(p)
 center(X)
 cover(A)
+cover(U)
 ;
 
-nsbj(X/noun(), Y/pos())
+nsbj(X/noun(), Y/pstg())
 det(X, A/dt())
 lv(X, U/present_tense())
 -> nsbj_det_light_verb_present ->
@@ -477,9 +535,10 @@ time(p, now)
 focus(p)
 center(X)
 cover(A)
+cover(U)
 ;
 
-csbj(X/noun(), Y/pos())
+csbj(X/noun(), Y/pstg())
 det(X, A/dt())
 lv(X, U/present_tense())
 -> csbj_det_light_verb_present ->
@@ -489,9 +548,10 @@ time(p, now)
 focus(p)
 center(X)
 cover(A)
+cover(U)
 ;
 
-nsbj(X/noun(), Y/pos())
+nsbj(X/noun(), Y/pstg())
 lv(X, U/past_tense())
 -> nsbj_light_verb_past ->
 is_type(X)
@@ -499,9 +559,10 @@ p/X(Y)
 time(p, past)
 focus(p)
 center(X)
+cover(U)
 ;
 
-csbj(X/noun(), Y/pos())
+csbj(X/noun(), Y/pstg())
 lv(X, U/past_tense())
 -> csbj_light_verb_past ->
 is_type(X)
@@ -509,9 +570,10 @@ p/X(Y)
 time(p, past)
 focus(p)
 center(X)
+cover(U)
 ;
 
-nsbj(X/noun(), Y/pos())
+nsbj(X/noun(), Y/pstg())
 lv(X, U/present_tense())
 -> nsbj_light_verb_present ->
 is_type(X)
@@ -519,9 +581,10 @@ p/X(Y)
 time(p, now)
 focus(p)
 center(X)
+cover(U)
 ;
 
-csbj(X/noun(), Y/pos())
+csbj(X/noun(), Y/pstg())
 lv(X, U/present_tense())
 -> csbj_light_verb_present ->
 is_type(X)
@@ -529,11 +592,12 @@ p/X(Y)
 time(p, now)
 focus(p)
 center(X)
+cover(U)
 ;
 
 
-nsbj(X/past_tense(), Y/pos())
-comp(X, Z/pos())
+nsbj(X/past_tense(), Y/pstg())
+comp(X, Z/pstg())
 -> nsbj_outer_comp_verb_past ->
 is_type(X)
 p/X(Y,Z)
@@ -542,8 +606,8 @@ focus(p)
 center(X)
 ;
 
-csbj(X/past_tense(), Y/pos())
-comp(X, Z/pos())
+csbj(X/past_tense(), Y/pstg())
+comp(X, Z/pstg())
 -> csbj_outer_comp_verb_past ->
 is_type(X)
 p/X(Y,Z)
@@ -552,8 +616,8 @@ focus(p)
 center(X)
 ;
 
-nsbj(X/present_tense(), Y/pos())
-comp(X, Z/pos())
+nsbj(X/present_tense(), Y/pstg())
+comp(X, Z/pstg())
 -> nsbj_outer_comp_verb_present ->
 is_type(X)
 p/X(Y,Z)
@@ -562,8 +626,8 @@ focus(p)
 center(X)
 ;
 
-csbj(X/present_tense(), Y/pos())
-comp(X, Z/pos())
+csbj(X/present_tense(), Y/pstg())
+comp(X, Z/pstg())
 -> csbj_outer_comp_verb_present ->
 is_type(X)
 p/X(Y,Z)
@@ -572,10 +636,10 @@ focus(p)
 center(X)
 ;
 
-nsbj(X/verb(), Y/pos())
-comp(X, Z/pos())
-nsbj(Z, B/pos())
-obj(Z, A/pos())
+nsbj(X/verb(), Y/pstg())
+comp(X, Z/pstg())
+nsbj(Z, B/pstg())
+obj(Z, A/pstg())
 -> nsbj_nsbj_inner_comp_with_obj_verb ->
 is_type(Z)
 p/Z(B,A)
@@ -583,10 +647,10 @@ focus(p)
 center(Z)
 ;
 
-nsbj(X/verb(), Y/pos())
-comp(X, Z/pos())
-csbj(Z, B/pos())
-obj(Z, A/pos())
+nsbj(X/verb(), Y/pstg())
+comp(X, Z/pstg())
+csbj(Z, B/pstg())
+obj(Z, A/pstg())
 -> nsbj_csbj_inner_comp_with_obj_verb ->
 is_type(Z)
 p/Z(B,A)
@@ -594,10 +658,10 @@ focus(p)
 center(Z)
 ;
 
-csbj(X/verb(), Y/pos())
-comp(X, Z/pos())
-nsbj(Z, B/pos())
-obj(Z, A/pos())
+csbj(X/verb(), Y/pstg())
+comp(X, Z/pstg())
+nsbj(Z, B/pstg())
+obj(Z, A/pstg())
 -> csbj_nsbj_inner_comp_with_obj_verb ->
 is_type(Z)
 p/Z(B,A)
@@ -605,10 +669,10 @@ focus(p)
 center(Z)
 ;
 
-csbj(X/verb(), Y/pos())
-comp(X, Z/pos())
-csbj(Z, B/pos())
-obj(Z, A/pos())
+csbj(X/verb(), Y/pstg())
+comp(X, Z/pstg())
+csbj(Z, B/pstg())
+obj(Z, A/pstg())
 -> csbj_csbj_inner_comp_with_obj_verb ->
 is_type(Z)
 p/Z(B,A)
@@ -616,9 +680,9 @@ focus(p)
 center(Z)
 ;
 
-nsbj(X/verb(), Y/pos())
-comp(X, Z/pos())
-nsbj(Z, A/pos())
+nsbj(X/verb(), Y/pstg())
+comp(X, Z/pstg())
+nsbj(Z, A/pstg())
 -> nsbj_nsbj_inner_comp_verb ->
 is_type(Z)
 p/Z(A)
@@ -626,9 +690,9 @@ focus(p)
 center(Z)
 ;
 
-csbj(X/verb(), Y/pos())
-comp(X, Z/pos())
-nsbj(Z, A/pos())
+csbj(X/verb(), Y/pstg())
+comp(X, Z/pstg())
+nsbj(Z, A/pstg())
 -> csbj_nsbj_inner_comp_verb ->
 is_type(Z)
 p/Z(A)
@@ -636,9 +700,9 @@ focus(p)
 center(Z)
 ;
 
-nsbj(X/verb(), Y/pos())
-comp(X, Z/pos())
-csbj(Z, A/pos())
+nsbj(X/verb(), Y/pstg())
+comp(X, Z/pstg())
+csbj(Z, A/pstg())
 -> nsbj_csbj_inner_comp_verb ->
 is_type(Z)
 p/Z(A)
@@ -646,9 +710,9 @@ focus(p)
 center(Z)
 ;
 
-csbj(X/verb(), Y/pos())
-comp(X, Z/pos())
-csbj(Z, A/pos())
+csbj(X/verb(), Y/pstg())
+comp(X, Z/pstg())
+csbj(Z, A/pstg())
 -> csbj_csbj_inner_comp_verb ->
 is_type(Z)
 p/Z(A)
@@ -656,9 +720,9 @@ focus(p)
 center(Z)
 ;
 
-nsbj(X/verb(), Y/pos())
-comp(X, Z/pos())
-obj(Z, A/pos())
+nsbj(X/verb(), Y/pstg())
+comp(X, Z/pstg())
+obj(Z, A/pstg())
 -> nsbj_inner_comp_with_obj_verb ->
 is_type(Z)
 p/Z(Y,A)
@@ -666,9 +730,9 @@ focus(p)
 center(Z)
 ;
 
-csbj(X/verb(), Y/pos())
-comp(X, Z/pos())
-obj(Z, A/pos())
+csbj(X/verb(), Y/pstg())
+comp(X, Z/pstg())
+obj(Z, A/pstg())
 -> csbj_inner_comp_with_obj_verb ->
 is_type(Z)
 p/Z(Y,A)
@@ -676,8 +740,8 @@ focus(p)
 center(Z)
 ;
 
-nsbj(X/verb(), Y/pos())
-comp(X, Z/pos())
+nsbj(X/verb(), Y/pstg())
+comp(X, Z/pstg())
 -> nsbj_inner_comp_verb ->
 is_type(Z)
 p/Z(Y)
@@ -685,8 +749,8 @@ focus(p)
 center(Z)
 ;
 
-csbj(X/verb(), Y/pos())
-comp(X, Z/pos())
+csbj(X/verb(), Y/pstg())
+comp(X, Z/pstg())
 -> csbj_inner_comp_verb ->
 is_type(Z)
 p/Z(Y)
@@ -695,7 +759,7 @@ center(Z)
 ;
 
 
-nsbj(X/past_tense(), Y/pos())
+nsbj(X/past_tense(), Y/pstg())
 -> nsbj_no_obj_past_verb ->
 is_type(X)
 p/X(Y)
@@ -704,7 +768,7 @@ focus(p)
 center(X)
 ;
 
-csbj(X/past_tense(), Y/pos())
+csbj(X/past_tense(), Y/pstg())
 -> csbj_no_obj_past_verb ->
 is_type(X)
 p/X(Y)
@@ -713,7 +777,7 @@ focus(p)
 center(X)
 ;
 
-nsbj(X/present_tense(), Y/pos())
+nsbj(X/present_tense(), Y/pstg())
 -> nsbj_no_obj_present_verb ->
 is_type(X)
 p/X(Y)
@@ -722,7 +786,7 @@ focus(p)
 center(X)
 ;
 
-csbj(X/present_tense(), Y/pos())
+csbj(X/present_tense(), Y/pstg())
 -> csbj_no_obj_present_verb ->
 is_type(X)
 p/X(Y)
@@ -732,10 +796,10 @@ center(X)
 ;
 
 
-aux(X/pos(), Y/past_tense())
+aux(X/pstg(), Y/past_tense())
 ref(Y, E/expression())
 expr(E, do)
-nsbj(X, Z/pos())
+nsbj(X, Z/pstg())
 precede(Y,Z)
 -> q_aux_do_past ->
 q/question(X)
@@ -744,10 +808,10 @@ center(Y)
 focus(q)
 ;
 
-aux(X/pos(), Y/present_tense())
+aux(X/pstg(), Y/present_tense())
 ref(Y, E/expression())
 expr(E, do)
-nsbj(X, Z/pos())
+nsbj(X, Z/pstg())
 precede(Y,Z)
 -> q_aux_do_present ->
 q/question(X)
@@ -756,10 +820,10 @@ center(Y)
 focus(q)
 ;
 
-aux(X/pos(), Y/past_tense())
+aux(X/pstg(), Y/past_tense())
 ref(Y, E/expression())
 expr(E, be)
-nsbj(X, Z/pos())
+nsbj(X, Z/pstg())
 precede(Y,Z)
 -> q_aux_be_past ->
 q/question(X)
@@ -768,10 +832,10 @@ center(Y)
 focus(q)
 ;
 
-aux(X/pos(), Y/present_tense())
+aux(X/pstg(), Y/present_tense())
 ref(Y, E/expression())
 expr(E, be)
-nsbj(X, Z/pos())
+nsbj(X, Z/pstg())
 precede(Y,Z)
 -> q_aux_be_present ->
 q/question(X)
@@ -780,10 +844,10 @@ center(Y)
 focus(q)
 ;
 
-aux(X/pos(), Y/pos())
+aux(X/pstg(), Y/pstg())
 ref(Y, E/expression())
 expr(E, have)
-nsbj(X, Z/pos())
+nsbj(X, Z/pstg())
 precede(Y,Z)
 -> q_aux_have ->
 q/question(X)
@@ -792,7 +856,7 @@ focus(q)
 ;
 
 
-aux(X/pos(), Y/past_tense())
+aux(X/pstg(), Y/past_tense())
 ref(Y, E/expression())
 expr(E, do)
 -> aux_do_past ->
@@ -801,7 +865,7 @@ center(Y)
 focus(t)
 ;
 
-aux(X/pos(), Y/present_tense())
+aux(X/pstg(), Y/present_tense())
 ref(Y, E/expression())
 expr(E, do)
 -> aux_do_present ->
@@ -810,7 +874,7 @@ center(Y)
 focus(t)
 ;
 
-aux(X/pos(), Y/past_tense())
+aux(X/pstg(), Y/past_tense())
 ref(Y, E/expression())
 expr(E, be)
 -> aux_be_past ->
@@ -819,7 +883,7 @@ center(Y)
 focus(t)
 ;
 
-aux(X/pos(), Y/present_tense())
+aux(X/pstg(), Y/present_tense())
 ref(Y, E/expression())
 expr(E, be)
 -> aux_be_present ->
@@ -829,8 +893,8 @@ focus(t)
 ;
 
 
-modal(X/pos(), Y/md())
-nsbj(X, Z/pos())
+modal(X/pstg(), Y/md())
+nsbj(X, Z/pstg())
 precede(Y, Z)
 -> q_modal ->
 m/mode(X, Y)
@@ -840,7 +904,7 @@ focus(m)
 ;
 
 
-modal(X/pos(), Y/md())
+modal(X/pstg(), Y/md())
 -> modal ->
 m/mode(Y,X)
 center(Y)
@@ -848,7 +912,7 @@ focus(m)
 ;
 
 
-raise(X/pos(), Y/past_tense())
+raise(X/pstg(), Y/past_tense())
 -> raise_verb_past ->
 p/mode(X, Y)
 time(X, past)
@@ -856,7 +920,7 @@ focus(p)
 center(Y)
 ;
 
-raise(X/pos(), Y/present_tense())
+raise(X/pstg(), Y/present_tense())
 -> raise_verb_present ->
 p/mode(X, Y)
 time(X, now)
@@ -865,8 +929,8 @@ center(Y)
 ;
 
 
-ppmod(X/pos(), Y/pos())
-case(Y, Z/pos())
+ppmod(X/pstg(), Y/pstg())
+case(Y, Z/pstg())
 -> preposition_phrase ->
 is_type(Z)
 p/Z(X,Y)
@@ -875,8 +939,8 @@ center(Z)
 ;
 
 
-nsbj(X/pos(), Y/pos())
-obj(X, Z/pos())
+nsbj(X/pstg(), Y/pstg())
+obj(X, Z/pstg())
 precede(Z, X)
 -> nobj_passive_voice ->
 is_type(X)
@@ -885,8 +949,8 @@ focus(p)
 center(X)
 ;
 
-csbj(X/pos(), Y/pos())
-obj(X, Z/pos())
+csbj(X/pstg(), Y/pstg())
+obj(X, Z/pstg())
 precede(Z, X)
 -> cobj_passive_voice ->
 is_type(X)
@@ -895,7 +959,7 @@ focus(p)
 center(X)
 ;
 
-obj(X/pos(), Y/pos())
+obj(X/pstg(), Y/pstg())
 precede(Y, X)
 -> obj_passive_voice ->
 is_type(X)
@@ -905,7 +969,7 @@ center(X)
 ;
 
 
-relcl(X/pos(), Y/pos())
+relcl(X/pstg(), Y/pstg())
 -> relative_clause ->
 p/qualifier(X, Y)
 focus(p)
@@ -913,7 +977,7 @@ center(Y)
 ;
 
 
-det(X/pos(), Y/dt())
+det(X/pstg(), Y/dt())
 ltype(Y, ref_det)
 -> ref_concept_determiner ->
 is_type(X)
@@ -923,7 +987,7 @@ center(X)
 cover(Y)
 ;
 
-det(X/pos(), Y/dt())
+det(X/pstg(), Y/dt())
 ltype(Y, inst_det)
 -> inst_concept_determiner ->
 is_type(X)
@@ -933,7 +997,7 @@ center(X)
 cover(Y)
 ;
 
-det(X/pos(), Y/dt())
+det(X/pstg(), Y/dt())
 -> other_concept_determiner ->
 is_type(X)
 focus(X())
@@ -958,7 +1022,7 @@ center(X)
 ;
 
 
-dat(X/pos(), Y/pos())
+dat(X/pstg(), Y/pstg())
 -> indirect_obj ->
 p/indirect_obj(X, Y)
 focus(p)
@@ -966,7 +1030,7 @@ center(Y)
 ;
 
 
-attr(X/pos(), Y/pos())
+attr(X/pstg(), Y/pstg())
 -> general_attribute ->
 p/property(X,Y)
 focus(p)
@@ -974,7 +1038,7 @@ center(Y)
 ;
 
 
-acl(X/pos(), Y/pos())
+acl(X/pstg(), Y/pstg())
 -> acl ->
 p/property(X, Y)
 focus(p)
@@ -982,14 +1046,14 @@ center(Y)
 ;
 
 
-poss(X/pos(), Y/pos())
+poss(X/pstg(), Y/pstg())
 -> obj_of_possessive ->
 is_type(X)
 focus(X())
 center(X)
 ;
 
-poss(X/pos(), Y/pos())
+poss(X/pstg(), Y/pstg())
 -> agent_of_possessive ->
 p/possess(Y, X)
 focus(p)
@@ -997,15 +1061,15 @@ center(Y)
 ;
 
 
-advnp(X/pos(), Y/pos())
+advnp(X/pstg(), Y/pstg())
 -> advnp ->
 p/qualifier(X, Y)
 focus(p)
 center(Y)
 ;
 
-advcl(X/pos(), Y/pos())
-adv(Y, Z/pos())
+advcl(X/pstg(), Y/pstg())
+adv(Y, Z/pstg())
 -> advcl_adv ->
 is_type(Z)
 p/Z(X,Y)
@@ -1013,14 +1077,14 @@ focus(p)
 center(Z)
 ;
 
-advcl(X/pos(), Y/pos())
+advcl(X/pstg(), Y/pstg())
 -> advcl ->
 p/qualifier(X, Y)
 focus(p)
 center(Y)
 ;
 
-adv(X/pos(), Y/pos())
+adv(X/pstg(), Y/pstg())
 -> adv ->
 p/qualifier(X, Y)
 focus(p)
@@ -1028,7 +1092,7 @@ center(Y)
 ;
 
 
-prt(X/pos(), Y/pos())
+prt(X/pstg(), Y/pstg())
 -> verb_particle ->
 p/particle(X, Y)
 focus(p)
@@ -1036,7 +1100,7 @@ center(Y)
 ;
 
 
-conj(X/pos(), Y/pos())
+conj(X/pstg(), Y/pstg())
 -> conjunct ->
 p/conjunct(X, Y)
 focus(p)
@@ -1044,7 +1108,7 @@ center(Y)
 ;
 
 
-num(X/pos(), Y/pos())
+num(X/pstg(), Y/pstg())
 -> numeric ->
 p/numeric(X, Y)
 focus(p)
@@ -1052,7 +1116,7 @@ center(Y)
 ;
 
 
-neg(X/pos(), Y/pos())
+neg(X/pstg(), Y/pstg())
 -> negation ->
 p/negate(X, Y)
 focus(p)
@@ -1060,7 +1124,7 @@ center(Y)
 ;
 
 
-appo(X/pos(), Y/pos())
+appo(X/pstg(), Y/pstg())
 -> appositive ->
 p/appositive(X, Y)
 focus(p)
@@ -1068,7 +1132,7 @@ center(Y)
 ;
 
 
-voc(X/pos(), Y/pos())
+voc(X/pstg(), Y/pstg())
 -> vocalization ->
 p/relay_info(X, Y)
 focus(p)
@@ -1076,7 +1140,7 @@ center(Y)
 ;
 
 
-prn(X/pos(), Y/pos())
+prn(X/pstg(), Y/pstg())
 -> parenthetical ->
 p/parenthical(X, Y)
 focus(p)
@@ -1084,7 +1148,7 @@ center(Y)
 ;
 
 
-dep(X/pos(), Y/pos())
+dep(X/pstg(), Y/pstg())
 -> unknown_relation ->
 p/attachment(X, Y)
 focus(p)
@@ -1092,7 +1156,7 @@ center(Y)
 ;
 
 
-disc(X/pos(), Y/pos())
+disc(X/pstg(), Y/pstg())
 ref(Y, E/expression())
 expr(E, affirm)
 -> affirm_disc ->
@@ -1109,7 +1173,7 @@ focus(p)
 center(Y)
 ;
 
-disc(X/pos(), Y/pos())
+disc(X/pstg(), Y/pstg())
 ref(Y, E/expression())
 expr(E, reject)
 -> reject_disc ->
@@ -1126,7 +1190,7 @@ focus(p)
 center(Y)
 ;
 
-disc(X/pos(), Y/pos())
+disc(X/pstg(), Y/pstg())
 ref(Y, E/expression())
 expr(E, acknowledge)
 -> acknowledge_disc ->
@@ -1169,22 +1233,25 @@ referential(o)
 center(X)
 ;
 
-X/pron()
--> pron ->
-focus(X)
-center(X)
-;
 
+comp(X/pos(), Y/pos())
+-> lone_comp ->
+p/property(X, Y)
+focus(p)
+center(Y)
+;
 
 X/noun()
--> concept ->
+ltype(X, object)
+-> noun ->
 focus(X)
 center(X)
 ;
 
-
-X/pos()
+X/allow_single()
+ltype(X, object)
 -> single_word ->
 focus(X())
 center(X)
 ;
+

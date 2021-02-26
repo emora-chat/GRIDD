@@ -8,32 +8,15 @@ import time
 
 class InferenceEngine:
 
-    def __init__(self, *rules):
+    def __init__(self, *rules, device='cpu'):
         self.rules = KnowledgeParser.rules(*rules)
-        self.matcher = GraphMatchingEngine()
-
-    def infer(self, facts, *rules):
         st = time.time()
-        facts_concept_graph = KnowledgeParser.from_data(facts, namespace='facts_').copy()
-        attributes = {}
-        types = set()
-        for c in facts_concept_graph.concepts():
-            attributes[c] = facts_concept_graph.supertypes(c)
-        for s, t, o, i in facts_concept_graph.predicates(predicate_type='type'):
-            facts_concept_graph.remove(predicate_id=i)
-            types.add(o)
-        for type in types:
-            facts_concept_graph.remove(type)
-        facts_concept_graph.remove('type')
-        facts_graph = facts_concept_graph.to_graph()
-        for node, types in attributes.items():
-            facts_graph.data(node)['attributes'] = types
-        print('Fact Graph to NetworkX - Elapsed: %.3f'%(time.time()-st))
+        self.preloaded_rules = self._convert_rules(self.rules)
+        print('Static Rule Graphs to NetworkX - Elapsed: %.3f' % (time.time() - st))
+        self.matcher = GraphMatchingEngine(device=device)
 
-        st = time.time()
-        rules = {**self.rules, **KnowledgeParser.rules(*rules)}
-        rules = Bimap(rules)
-        converted_rules = Bimap()
+    def _convert_rules(self, rules):
+        converted_rules = {}
         for rid, (pre, post) in rules.items():
             pre = pre.copy()
             varset = set()
@@ -57,7 +40,32 @@ class InferenceEngine:
             for node, types in attributes.items():
                 precondition.data(node)['attributes'] = types
             converted_rules[rid] = precondition
-        print('Rule Graphs to NetworkX - Elapsed: %.3f' % (time.time() - st))
+        return converted_rules
+
+    def infer(self, facts, *rules):
+        st = time.time()
+        facts_concept_graph = KnowledgeParser.from_data(facts, namespace='facts_').copy()
+        attributes = {}
+        types = set()
+        for c in facts_concept_graph.concepts():
+            attributes[c] = facts_concept_graph.supertypes(c)
+        for s, t, o, i in facts_concept_graph.predicates(predicate_type='type'):
+            facts_concept_graph.remove(predicate_id=i)
+            types.add(o)
+        for type in types:
+            facts_concept_graph.remove(type)
+        facts_concept_graph.remove('type')
+        facts_graph = facts_concept_graph.to_graph()
+        for node, types in attributes.items():
+            facts_graph.data(node)['attributes'] = types
+        # print('Fact Graph to NetworkX - Elapsed: %.3f'%(time.time()-st))
+
+        st = time.time()
+        dynamic_rules = KnowledgeParser.rules(*rules)
+        rules = Bimap({**self.rules, **dynamic_rules})
+        dynamic_converted_rules = self._convert_rules(dynamic_rules)
+        converted_rules = Bimap({**self.preloaded_rules, **dynamic_converted_rules})
+        # print('Dynamic Rule Graphs to NetworkX - Elapsed: %.3f' % (time.time() - st))
 
         sols = self.matcher.match(facts_graph, *list(converted_rules.values()))
         sols = {converted_rules.reverse()[precondition]: sols for precondition, sols in sols.items()}
@@ -80,6 +88,10 @@ class InferenceEngine:
                     concept = id_map.get(sol.get(concept, concept))
                     cg.add(concept)
                 implications.setdefault(rid, []).append(cg)
+                mapped_features = {new_node: post.features[old_node] for old_node, new_node in id_map.items()}
+                for node, features in mapped_features.items():
+                    if len(features) > 0:
+                        cg.features[node].update(features)
         return implications
 
 if __name__ == '__main__':

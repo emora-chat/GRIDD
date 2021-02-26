@@ -5,7 +5,7 @@ TODO - update all rules that determine tense to consider if auxiliary is present
 
 Captures questions that start with `When`, `Where`, `Why`, and `How` in the adverb role.
 
-Represented as `question(main_predicate, question(object()))`.
+Represented as `question_concept(main_predicate, question(object()))`.
 
 The mapping between question word and semantic concept is:
 
@@ -14,9 +14,9 @@ The mapping between question word and semantic concept is:
 <details>
   <summary>Conversions</summary>
   
-	adv(X/pos(), Y/question_word())
-	aux(X, Z/pos())
-	nsbj(X, A/pos())
+	adv(X/pstg(), Y/question_word())
+	aux(X, Z/pstg())
+	nsbj(X, A/pstg())
 	precede(Y, Z)
 	precede(Z, A)
 	-> q_nadv ->
@@ -27,9 +27,9 @@ The mapping between question word and semantic concept is:
 	cover(Z)
 	;
 	
-	adv(X/pos(), Y/question_word())
-	aux(X, Z/pos())
-	csbj(X, A/pos())
+	adv(X/pstg(), Y/question_word())
+	aux(X, Z/pstg())
+	csbj(X, A/pstg())
 	precede(Y, Z)
 	precede(Z, A)
 	-> q_cadv ->
@@ -56,13 +56,13 @@ When did you start reading
 
 Captures questions that start with `How`, `What`, and `Who` as the root of a copular construction or as the determiner of the root. 
 
-Represented as `copula(nsbj, question(question_word))`.
+Represented as `copula(nsbj, question(question_concept))`.
 
 <details>
   <summary>Conversions</summary>
   
-	cop(X/pos(), Y/present_tense())
-	nsbj(X, Z/pos())
+	cop(X/pstg(), Y/present_tense())
+	nsbj(X, Z/pstg())
 	det(X, D/question_word())
 	-> qdet_ncopula_present ->
 	is_type(Y)
@@ -75,8 +75,8 @@ Represented as `copula(nsbj, question(question_word))`.
 	cover(D)
 	;
 	
-	cop(X/pos(), Y/present_tense())
-	nsbj(X, Z/pos())
+	cop(X/pstg(), Y/present_tense())
+	nsbj(X, Z/pstg())
 	det(X, D/question_word())
 	-> qdet_ccopula_present ->
 	is_type(Y)
@@ -89,8 +89,8 @@ Represented as `copula(nsbj, question(question_word))`.
 	cover(D)
 	;
 	
-	cop(X/pos(), Y/past_tense())
-	nsbj(X, Z/pos())
+	cop(X/pstg(), Y/past_tense())
+	nsbj(X, Z/pstg())
 	det(X, D/question_word())
 	-> qdet_ncopula_past ->
 	is_type(Y)
@@ -103,8 +103,8 @@ Represented as `copula(nsbj, question(question_word))`.
 	cover(D)
 	;
 	
-	cop(X/pos(), Y/past_tense())
-	nsbj(X, Z/pos())
+	cop(X/pstg(), Y/past_tense())
+	nsbj(X, Z/pstg())
 	det(X, D/question_word())
 	-> qdet_ccopula_past ->
 	is_type(Y)
@@ -118,7 +118,7 @@ Represented as `copula(nsbj, question(question_word))`.
 	;
   
 	cop(X/question_word(), Y/present_tense())
-	nsbj(X, Z/pos())
+	nsbj(X, Z/pstg())
 	-> qw_ncopula_present ->
 	is_type(Y)
 	p/Y(Z, X)
@@ -129,7 +129,7 @@ Represented as `copula(nsbj, question(question_word))`.
 	;
 	
 	cop(X/question_word(), Y/present_tense())
-	csbj(X, Z/pos())
+	csbj(X, Z/pstg())
 	-> qw_ccopula_present ->
 	is_type(Y)
 	p/Y(Z, X)
@@ -140,7 +140,7 @@ Represented as `copula(nsbj, question(question_word))`.
 	;
 	
 	cop(X/question_word(), Y/past_tense())
-	nsbj(X, Z/pos())
+	nsbj(X, Z/pstg())
 	-> qw_ncopula_past ->
 	is_type(Y)
 	p/Y(Z, X)
@@ -151,7 +151,7 @@ Represented as `copula(nsbj, question(question_word))`.
 	;
 	
 	cop(X/question_word(), Y/past_tense())
-	csbj(X, Z/pos())
+	csbj(X, Z/pstg())
 	-> qw_ccopula_past ->
 	is_type(Y)
 	p/Y(Z, X)
@@ -182,23 +182,23 @@ Represented by wrapping the subject/object/dative with the `question` predicate.
 <details>
   <summary>Conversions</summary>
   
-	obj(X/pos(), Y/question_word())
+	obj(X/pstg(), Y/question_word())
 	-> obj_question ->
 	q/question(object())
 	center(Y)
 	focus(q)
 	;
 	
-	nsbj(X/pos(), Y/question_word())
+	nsbj(X/pstg(), Y/question_word())
 	-> nsbj_question ->
 	q/question(object())
 	center(Y)
 	focus(q)
 	;
 	
-	dat(X/pos(), Y/question_word())
-	aux(X, Z/pos())
-	nsbj(X, A/pos())
+	dat(X/pstg(), Y/question_word())
+	aux(X, Z/pstg())
+	nsbj(X, A/pstg())
 	precede(Y, Z)
 	precede(Z, A)
 	-> q_ndat ->
@@ -209,9 +209,9 @@ Represented by wrapping the subject/object/dative with the `question` predicate.
 	focus(p)
 	;
 		
-	dat(X/pos(), Y/question_word())
-	aux(X, Z/pos())
-	csbj(X, A/pos())
+	dat(X/pstg(), Y/question_word())
+	aux(X, Z/pstg())
+	csbj(X, A/pstg())
 	precede(Y, Z)
 	precede(Z, A)
 	-> q_cdat ->
@@ -245,9 +245,9 @@ Overrules the auxiliary question rule, which would cause an incorrect interpreta
 <details>
   <summary>Conversions</summary>
   
-	det(X/pos(), Y/question_word())
-	obj(Z/pos(), X)
-	aux(Z, A/pos())
+	det(X/pstg(), Y/question_word())
+	obj(Z/pstg(), X)
+	aux(Z, A/pstg())
 	-> q_aux_det ->
 	is_type(X)
 	inst/X()
@@ -257,8 +257,8 @@ Overrules the auxiliary question rule, which would cause an incorrect interpreta
 	cover(Y)
 	;
 	
-	det(X/pos(), Y/question_word())
-	obj(Z/pos(), X)
+	det(X/pstg(), Y/question_word())
+	obj(Z/pstg(), X)
 	aux(Z, A/present_tense())
 	-> q_aux_det_pres ->
 	p/time(Z, now)
@@ -266,8 +266,8 @@ Overrules the auxiliary question rule, which would cause an incorrect interpreta
 	center(A)
 	;
 	
-	det(X/pos(), Y/question_word())
-	obj(Z/pos(), X)
+	det(X/pstg(), Y/question_word())
+	obj(Z/pstg(), X)
 	aux(Z, A/past_tense())
 	-> q_aux_det_past ->
 	p/time(Z, past)
@@ -275,7 +275,7 @@ Overrules the auxiliary question rule, which would cause an incorrect interpreta
 	center(A)
 	;
 	
-	det(X/pos(), Y/question_word())
+	det(X/pstg(), Y/question_word())
 	-> q_det ->
 	is_type(X)
 	inst/X()
@@ -302,8 +302,8 @@ Subject can be a noun or clause.
 <details>
   <summary>Conversions</summary>
 
-	cop(X/pos(), Y/present_tense())
-	nsbj(X, Z/pos())
+	cop(X/pstg(), Y/present_tense())
+	nsbj(X, Z/pstg())
 	precede(Y, Z)
 	-> q_nsbj_copula_present ->
 	is_type(Y)
@@ -314,8 +314,8 @@ Subject can be a noun or clause.
 	center(X)
 	;
 	
-	cop(X/pos(), Y/present_tense())
-	csbj(X, Z/pos())
+	cop(X/pstg(), Y/present_tense())
+	csbj(X, Z/pstg())
 	precede(Y, Z)
 	-> q_csbj_copula_present ->
 	is_type(Y)
@@ -326,8 +326,8 @@ Subject can be a noun or clause.
 	center(X)
 	;
 	
-	cop(X/pos(), Y/past_tense())
-	nsbj(X, Z/pos())
+	cop(X/pstg(), Y/past_tense())
+	nsbj(X, Z/pstg())
 	precede(Y, Z)
 	-> q_nsbj_copula_past ->
 	is_type(Y)
@@ -338,8 +338,8 @@ Subject can be a noun or clause.
 	center(X)
 	;
 	
-	cop(X/pos(), Y/past_tense())
-	csbj(X, Z/pos())
+	cop(X/pstg(), Y/past_tense())
+	csbj(X, Z/pstg())
 	precede(Y, Z)
 	-> q_csbj_copula_past ->
 	is_type(Y)
@@ -370,8 +370,56 @@ predicate.
 <details>
   <summary>Conversions</summary>
 
-	cop(X/pos(), Y/present_tense())
-	nsbj(X, Z/pos())
+	cop(X/pstg(), Y/present_tense())
+	det(X, D/dt())
+	nsbj(X, Z/pstg())
+	-> nsbj_det_copula_present ->
+	is_type(Y)
+	p/Y(Z,X)
+	time(p, now)
+	focus(p)
+	center(X)
+	cover(D)
+	;
+	
+	cop(X/pstg(), Y/present_tense())
+	det(X, D/dt())
+	csbj(X, Z/pstg())
+	-> csbj_det_copula_present ->
+	is_type(Y)
+	p/Y(Z,X)
+	time(p, now)
+	focus(p)
+	center(X)
+	cover(D)
+	;
+	
+	cop(X/pstg(), Y/past_tense())
+	det(X, D/dt())
+	nsbj(X, Z/pstg())
+	-> nsbj_det_copula_past ->
+	is_type(Y)
+	p/Y(Z,X)
+	time(p,past)
+	focus(p)
+	center(X)
+	cover(D)
+	;
+	
+	cop(X/pstg(), Y/past_tense())
+	det(X, D/dt())
+	csbj(X, Z/pstg())
+	-> csbj_det_copula_past ->
+	is_type(Y)
+	p/Y(Z,X)
+	time(p,past)
+	focus(p)
+	center(X)
+	cover(D)
+	;
+
+	cop(X/pstg(), Y/present_tense())
+	nsbj(X, Z/pstg())
 	-> nsbj_copula_present ->
 	is_type(Y)
 	p/Y(Z,X)
@@ -380,8 +428,8 @@ predicate.
 	center(X)
 	;
 	
-	cop(X/pos(), Y/present_tense())
-	csbj(X, Z/pos())
+	cop(X/pstg(), Y/present_tense())
+	csbj(X, Z/pstg())
 	-> csbj_copula_present ->
 	is_type(Y)
 	p/Y(Z,X)
@@ -390,8 +438,8 @@ predicate.
 	center(X)
 	;
 	
-	cop(X/pos(), Y/past_tense())
-	nsbj(X, Z/pos())
+	cop(X/pstg(), Y/past_tense())
+	nsbj(X, Z/pstg())
 	-> nsbj_copula_past ->
 	is_type(Y)
 	p/Y(Z,X)
@@ -400,8 +448,8 @@ predicate.
 	center(X)
 	;
 	
-	cop(X/pos(), Y/past_tense())
-	csbj(X, Z/pos())
+	cop(X/pstg(), Y/past_tense())
+	csbj(X, Z/pstg())
 	-> csbj_copula_past ->
 	is_type(Y)
 	p/Y(Z,X)
@@ -410,7 +458,7 @@ predicate.
 	center(X)
 	;
 	
-	cop(X/pos(), Y/pos())
+	cop(X/pstg(), Y/pstg())
 	-> id_copular_verb ->
 	focus(Y)
 	center(Y)
@@ -433,8 +481,8 @@ Subject can be a noun or clause.
  <details>
   <summary>Conversions</summary>
   
-	nsbj(X/past_tense(), Y/pos())
-	obj(X, Z/pos())
+	nsbj(X/past_tense(), Y/pstg())
+	obj(X, Z/pstg())
 	-> nsbj_dobj_past ->
 	is_type(X)
 	p/X(Y,Z)
@@ -443,8 +491,8 @@ Subject can be a noun or clause.
 	center(X)
 	;
 	
-	csbj(X/past_tense(), Y/pos())
-	obj(X, Z/pos())
+	csbj(X/past_tense(), Y/pstg())
+	obj(X, Z/pstg())
 	-> csbj_dobj_past ->
 	is_type(X)
 	p/X(Y,Z)
@@ -453,8 +501,8 @@ Subject can be a noun or clause.
 	center(X)
 	;
 	
-	nsbj(X/present_tense(), Y/pos())
-	obj(X, Z/pos())
+	nsbj(X/present_tense(), Y/pstg())
+	obj(X, Z/pstg())
 	-> nsbj_dobj_present ->
 	is_type(X)
 	p/X(Y,Z)
@@ -463,8 +511,8 @@ Subject can be a noun or clause.
 	center(X)
 	;
 	
-	csbj(X/present_tense(), Y/pos())
-	obj(X, Z/pos())
+	csbj(X/present_tense(), Y/pstg())
+	obj(X, Z/pstg())
 	-> csbj_dobj_present ->
 	is_type(X)
 	p/X(Y,Z)
@@ -485,9 +533,9 @@ Subject can be a noun or clause.
  <details>
   <summary>Conversions</summary>
 
-	nsbj(X/noun(), Y/pos())
+	nsbj(X/noun(), Y/pstg())
 	det(X, A/dt())
-	obj(X, Z/pos())
+	obj(X, Z/pstg())
 	lv(X, U/past_tense())
 	-> nsbj_obj_det_light_verb_past ->
 	is_type(X)
@@ -496,11 +544,12 @@ Subject can be a noun or clause.
 	focus(p)
 	center(X)
 	cover(A)
+	cover(U)
 	;
 	
-	csbj(X/noun(), Y/pos())
+	csbj(X/noun(), Y/pstg())
 	det(X, A/dt())
-	obj(X, Z/pos())
+	obj(X, Z/pstg())
 	lv(X, U/past_tense())
 	-> csbj_obj_det_light_verb_past ->
 	is_type(X)
@@ -509,11 +558,12 @@ Subject can be a noun or clause.
 	focus(p)
 	center(X)
 	cover(A)
+	cover(U)
 	;
 	
-	nsbj(X/noun(), Y/pos())
+	nsbj(X/noun(), Y/pstg())
 	det(X, A/dt())
-	obj(X, Z/pos())
+	obj(X, Z/pstg())
 	lv(X, U/present_tense())
 	-> nsbj_obj_det_light_verb_present ->
 	is_type(X)
@@ -522,11 +572,12 @@ Subject can be a noun or clause.
 	focus(p)
 	center(X)
 	cover(A)
+	cover(U)
 	;
 	
-	csbj(X/noun(), Y/pos())
+	csbj(X/noun(), Y/pstg())
 	det(X, A/dt())
-	obj(X, Z/pos())
+	obj(X, Z/pstg())
 	lv(X, U/present_tense())
 	-> csbj_obj_det_light_verb_present ->
 	is_type(X)
@@ -535,10 +586,11 @@ Subject can be a noun or clause.
 	focus(p)
 	center(X)
 	cover(A)
+	cover(U)
 	;
 
-	nsbj(X/noun(), Y/pos())
-	obj(X, Z/pos())
+	nsbj(X/noun(), Y/pstg())
+	obj(X, Z/pstg())
 	lv(X, U/past_tense())
 	-> nsbj_obj_light_verb_past ->
 	is_type(X)
@@ -546,10 +598,11 @@ Subject can be a noun or clause.
 	time(p, past)
 	focus(p)
 	center(X)
+	cover(U)
 	;
 	
-	csbj(X/noun(), Y/pos())
-	obj(X, Z/pos())
+	csbj(X/noun(), Y/pstg())
+	obj(X, Z/pstg())
 	lv(X, U/past_tense())
 	-> csbj_obj_light_verb_past ->
 	is_type(X)
@@ -557,10 +610,11 @@ Subject can be a noun or clause.
 	time(p, past)
 	focus(p)
 	center(X)
+	cover(U)
 	;
 	
-	nsbj(X/noun(), Y/pos())
-	obj(X, Z/pos())
+	nsbj(X/noun(), Y/pstg())
+	obj(X, Z/pstg())
 	lv(X, U/present_tense())
 	-> nsbj_obj_light_verb_present ->
 	is_type(X)
@@ -568,10 +622,11 @@ Subject can be a noun or clause.
 	time(p, now)
 	focus(p)
 	center(X)
+	cover(U)
 	;
 	
-	csbj(X/noun(), Y/pos())
-	obj(X, Z/pos())
+	csbj(X/noun(), Y/pstg())
+	obj(X, Z/pstg())
 	lv(X, U/present_tense())
 	-> csbj_obj_light_verb_present ->
 	is_type(X)
@@ -579,6 +634,7 @@ Subject can be a noun or clause.
 	time(p, now)
 	focus(p)
 	center(X)
+	cover(U)
 	;
 
  </details>
@@ -598,7 +654,7 @@ Subject can be a noun or clause.
  <details>
   <summary>Conversions</summary>
 
-	nsbj(X/noun(), Y/pos())
+	nsbj(X/noun(), Y/pstg())
 	det(X, A/dt())
 	lv(X, U/past_tense())
 	-> nsbj_det_light_verb_past ->
@@ -608,9 +664,10 @@ Subject can be a noun or clause.
 	focus(p)
 	center(X)
 	cover(A)
+	cover(U)
 	;
 	
-	csbj(X/noun(), Y/pos())
+	csbj(X/noun(), Y/pstg())
 	det(X, A/dt())
 	lv(X, U/past_tense())
 	-> csbj_det_light_verb_past ->
@@ -620,9 +677,10 @@ Subject can be a noun or clause.
 	focus(p)
 	center(X)
 	cover(A)
+	cover(U)
 	;
 	
-	nsbj(X/noun(), Y/pos())
+	nsbj(X/noun(), Y/pstg())
 	det(X, A/dt())
 	lv(X, U/present_tense())
 	-> nsbj_det_light_verb_present ->
@@ -632,9 +690,10 @@ Subject can be a noun or clause.
 	focus(p)
 	center(X)
 	cover(A)
+	cover(U)
 	;
 	
-	csbj(X/noun(), Y/pos())
+	csbj(X/noun(), Y/pstg())
 	det(X, A/dt())
 	lv(X, U/present_tense())
 	-> csbj_det_light_verb_present ->
@@ -644,9 +703,10 @@ Subject can be a noun or clause.
 	focus(p)
 	center(X)
 	cover(A)
+	cover(U)
 	;
 
-	nsbj(X/noun(), Y/pos())
+	nsbj(X/noun(), Y/pstg())
 	lv(X, U/past_tense())
 	-> nsbj_light_verb_past ->
 	is_type(X)
@@ -654,9 +714,10 @@ Subject can be a noun or clause.
 	time(p, past)
 	focus(p)
 	center(X)
+	cover(U)
 	;
 	
-	csbj(X/noun(), Y/pos())
+	csbj(X/noun(), Y/pstg())
 	lv(X, U/past_tense())
 	-> csbj_light_verb_past ->
 	is_type(X)
@@ -664,9 +725,10 @@ Subject can be a noun or clause.
 	time(p, past)
 	focus(p)
 	center(X)
+	cover(U)
 	;
 	
-	nsbj(X/noun(), Y/pos())
+	nsbj(X/noun(), Y/pstg())
 	lv(X, U/present_tense())
 	-> nsbj_light_verb_present ->
 	is_type(X)
@@ -674,9 +736,10 @@ Subject can be a noun or clause.
 	time(p, now)
 	focus(p)
 	center(X)
+	cover(U)
 	;
 	
-	csbj(X/noun(), Y/pos())
+	csbj(X/noun(), Y/pstg())
 	lv(X, U/present_tense())
 	-> csbj_light_verb_present ->
 	is_type(X)
@@ -684,6 +747,7 @@ Subject can be a noun or clause.
 	time(p, now)
 	focus(p)
 	center(X)
+	cover(U)
 	;
 
  </details>
@@ -697,8 +761,8 @@ John made a call.
  <details>
   <summary>Conversions</summary>
 
-	nsbj(X/past_tense(), Y/pos())
-	comp(X, Z/pos())
+	nsbj(X/past_tense(), Y/pstg())
+	comp(X, Z/pstg())
 	-> nsbj_outer_comp_verb_past ->
 	is_type(X)
 	p/X(Y,Z)
@@ -707,8 +771,8 @@ John made a call.
 	center(X)
 	;
 	
-	csbj(X/past_tense(), Y/pos())
-	comp(X, Z/pos())
+	csbj(X/past_tense(), Y/pstg())
+	comp(X, Z/pstg())
 	-> csbj_outer_comp_verb_past ->
 	is_type(X)
 	p/X(Y,Z)
@@ -717,8 +781,8 @@ John made a call.
 	center(X)
 	;
 	
-	nsbj(X/present_tense(), Y/pos())
-	comp(X, Z/pos())
+	nsbj(X/present_tense(), Y/pstg())
+	comp(X, Z/pstg())
 	-> nsbj_outer_comp_verb_present ->
 	is_type(X)
 	p/X(Y,Z)
@@ -727,8 +791,8 @@ John made a call.
 	center(X)
 	;
 	
-	csbj(X/present_tense(), Y/pos())
-	comp(X, Z/pos())
+	csbj(X/present_tense(), Y/pstg())
+	comp(X, Z/pstg())
 	-> csbj_outer_comp_verb_present ->
 	is_type(X)
 	p/X(Y,Z)
@@ -737,10 +801,10 @@ John made a call.
 	center(X)
 	;
 	
-	nsbj(X/verb(), Y/pos())
-	comp(X, Z/pos())
-	nsbj(Z, B/pos())
-	obj(Z, A/pos())
+	nsbj(X/verb(), Y/pstg())
+	comp(X, Z/pstg())
+	nsbj(Z, B/pstg())
+	obj(Z, A/pstg())
 	-> nsbj_nsbj_inner_comp_with_obj_verb ->
 	is_type(Z)
 	p/Z(B,A)
@@ -748,10 +812,10 @@ John made a call.
 	center(Z)
 	;
 	
-	nsbj(X/verb(), Y/pos())
-	comp(X, Z/pos())
-	csbj(Z, B/pos())
-	obj(Z, A/pos())
+	nsbj(X/verb(), Y/pstg())
+	comp(X, Z/pstg())
+	csbj(Z, B/pstg())
+	obj(Z, A/pstg())
 	-> nsbj_csbj_inner_comp_with_obj_verb ->
 	is_type(Z)
 	p/Z(B,A)
@@ -759,10 +823,10 @@ John made a call.
 	center(Z)
 	;
 	
-	csbj(X/verb(), Y/pos())
-	comp(X, Z/pos())
-	nsbj(Z, B/pos())
-	obj(Z, A/pos())
+	csbj(X/verb(), Y/pstg())
+	comp(X, Z/pstg())
+	nsbj(Z, B/pstg())
+	obj(Z, A/pstg())
 	-> csbj_nsbj_inner_comp_with_obj_verb ->
 	is_type(Z)
 	p/Z(B,A)
@@ -770,10 +834,10 @@ John made a call.
 	center(Z)
 	;
 	
-	csbj(X/verb(), Y/pos())
-	comp(X, Z/pos())
-	csbj(Z, B/pos())
-	obj(Z, A/pos())
+	csbj(X/verb(), Y/pstg())
+	comp(X, Z/pstg())
+	csbj(Z, B/pstg())
+	obj(Z, A/pstg())
 	-> csbj_csbj_inner_comp_with_obj_verb ->
 	is_type(Z)
 	p/Z(B,A)
@@ -781,9 +845,9 @@ John made a call.
 	center(Z)
 	;
 	
-	nsbj(X/verb(), Y/pos())
-	comp(X, Z/pos())
-	nsbj(Z, A/pos())
+	nsbj(X/verb(), Y/pstg())
+	comp(X, Z/pstg())
+	nsbj(Z, A/pstg())
 	-> nsbj_nsbj_inner_comp_verb ->
 	is_type(Z)
 	p/Z(A)
@@ -791,9 +855,9 @@ John made a call.
 	center(Z)
 	;
 	
-	csbj(X/verb(), Y/pos())
-	comp(X, Z/pos())
-	nsbj(Z, A/pos())
+	csbj(X/verb(), Y/pstg())
+	comp(X, Z/pstg())
+	nsbj(Z, A/pstg())
 	-> csbj_nsbj_inner_comp_verb ->
 	is_type(Z)
 	p/Z(A)
@@ -801,9 +865,9 @@ John made a call.
 	center(Z)
 	;
 	
-	nsbj(X/verb(), Y/pos())
-	comp(X, Z/pos())
-	csbj(Z, A/pos())
+	nsbj(X/verb(), Y/pstg())
+	comp(X, Z/pstg())
+	csbj(Z, A/pstg())
 	-> nsbj_csbj_inner_comp_verb ->
 	is_type(Z)
 	p/Z(A)
@@ -811,9 +875,9 @@ John made a call.
 	center(Z)
 	;
 	
-	csbj(X/verb(), Y/pos())
-	comp(X, Z/pos())
-	csbj(Z, A/pos())
+	csbj(X/verb(), Y/pstg())
+	comp(X, Z/pstg())
+	csbj(Z, A/pstg())
 	-> csbj_csbj_inner_comp_verb ->
 	is_type(Z)
 	p/Z(A)
@@ -821,9 +885,9 @@ John made a call.
 	center(Z)
 	;
 	
-	nsbj(X/verb(), Y/pos())
-	comp(X, Z/pos())
-	obj(Z, A/pos())
+	nsbj(X/verb(), Y/pstg())
+	comp(X, Z/pstg())
+	obj(Z, A/pstg())
 	-> nsbj_inner_comp_with_obj_verb ->
 	is_type(Z)
 	p/Z(Y,A)
@@ -831,9 +895,9 @@ John made a call.
 	center(Z)
 	;
 	
-	csbj(X/verb(), Y/pos())
-	comp(X, Z/pos())
-	obj(Z, A/pos())
+	csbj(X/verb(), Y/pstg())
+	comp(X, Z/pstg())
+	obj(Z, A/pstg())
 	-> csbj_inner_comp_with_obj_verb ->
 	is_type(Z)
 	p/Z(Y,A)
@@ -841,8 +905,8 @@ John made a call.
 	center(Z)
 	;
 	
-	nsbj(X/verb(), Y/pos())
-	comp(X, Z/pos())
+	nsbj(X/verb(), Y/pstg())
+	comp(X, Z/pstg())
 	-> nsbj_inner_comp_verb ->
 	is_type(Z)
 	p/Z(Y)
@@ -850,8 +914,8 @@ John made a call.
 	center(Z)
 	;
 	
-	csbj(X/verb(), Y/pos())
-	comp(X, Z/pos())
+	csbj(X/verb(), Y/pstg())
+	comp(X, Z/pstg())
 	-> csbj_inner_comp_verb ->
 	is_type(Z)
 	p/Z(Y)
@@ -868,7 +932,7 @@ Captures expressions where the verb only has a subject.
  <details>
   <summary>Conversions</summary>
 
-	nsbj(X/past_tense(), Y/pos())
+	nsbj(X/past_tense(), Y/pstg())
 	-> nsbj_no_obj_past_verb ->
 	is_type(X)
 	p/X(Y)
@@ -877,7 +941,7 @@ Captures expressions where the verb only has a subject.
 	center(X)
 	;
 	
-	csbj(X/past_tense(), Y/pos())
+	csbj(X/past_tense(), Y/pstg())
 	-> csbj_no_obj_past_verb ->
 	is_type(X)
 	p/X(Y)
@@ -886,7 +950,7 @@ Captures expressions where the verb only has a subject.
 	center(X)
 	;
 	
-	nsbj(X/present_tense(), Y/pos())
+	nsbj(X/present_tense(), Y/pstg())
 	-> nsbj_no_obj_present_verb ->
 	is_type(X)
 	p/X(Y)
@@ -895,7 +959,7 @@ Captures expressions where the verb only has a subject.
 	center(X)
 	;
 	
-	csbj(X/present_tense(), Y/pos())
+	csbj(X/present_tense(), Y/pstg())
 	-> csbj_no_obj_present_verb ->
 	is_type(X)
 	p/X(Y)
@@ -921,10 +985,10 @@ The overall tense of the question is also affected by the aux verb.
  <details>
   <summary>Conversions</summary>
 	
-	aux(X/pos(), Y/past_tense())
+	aux(X/pstg(), Y/past_tense())
 	ref(Y, E/expression())
 	expr(E, do)
-	nsbj(X, Z/pos())
+	nsbj(X, Z/pstg())
 	precede(Y,Z)
 	-> q_aux_do_past ->
 	q/question(X)
@@ -933,10 +997,10 @@ The overall tense of the question is also affected by the aux verb.
 	focus(q)
 	;
 	
-	aux(X/pos(), Y/present_tense())
+	aux(X/pstg(), Y/present_tense())
 	ref(Y, E/expression())
 	expr(E, do)
-	nsbj(X, Z/pos())
+	nsbj(X, Z/pstg())
 	precede(Y,Z)
 	-> q_aux_do_present ->
 	q/question(X)
@@ -945,10 +1009,10 @@ The overall tense of the question is also affected by the aux verb.
 	focus(q)
 	;
 	
-	aux(X/pos(), Y/past_tense())
+	aux(X/pstg(), Y/past_tense())
 	ref(Y, E/expression())
 	expr(E, be)
-	nsbj(X, Z/pos())
+	nsbj(X, Z/pstg())
 	precede(Y,Z)
 	-> q_aux_be_past ->
 	q/question(X)
@@ -957,10 +1021,10 @@ The overall tense of the question is also affected by the aux verb.
 	focus(q)
 	;
 	
-	aux(X/pos(), Y/present_tense())
+	aux(X/pstg(), Y/present_tense())
 	ref(Y, E/expression())
 	expr(E, be)
-	nsbj(X, Z/pos())
+	nsbj(X, Z/pstg())
 	precede(Y,Z)
 	-> q_aux_be_present ->
 	q/question(X)
@@ -969,10 +1033,10 @@ The overall tense of the question is also affected by the aux verb.
 	focus(q)
 	;
 	
-	aux(X/pos(), Y/pos())
+	aux(X/pstg(), Y/pstg())
 	ref(Y, E/expression())
 	expr(E, have)
-	nsbj(X, Z/pos())
+	nsbj(X, Z/pstg())
 	precede(Y,Z)
 	-> q_aux_have ->
 	q/question(X)
@@ -1003,7 +1067,7 @@ TODO - properly update tense of main verb using auxiliaries, right now we have b
  <details>
   <summary>Conversions</summary>
 
-	aux(X/pos(), Y/past_tense())
+	aux(X/pstg(), Y/past_tense())
 	ref(Y, E/expression())
 	expr(E, do)
 	-> aux_do_past ->
@@ -1012,7 +1076,7 @@ TODO - properly update tense of main verb using auxiliaries, right now we have b
 	focus(t)
 	;
 	
-	aux(X/pos(), Y/present_tense())
+	aux(X/pstg(), Y/present_tense())
 	ref(Y, E/expression())
 	expr(E, do)
 	-> aux_do_present ->
@@ -1021,7 +1085,7 @@ TODO - properly update tense of main verb using auxiliaries, right now we have b
 	focus(t)
 	;
 	
-	aux(X/pos(), Y/past_tense())
+	aux(X/pstg(), Y/past_tense())
 	ref(Y, E/expression())
 	expr(E, be)
 	-> aux_be_past ->
@@ -1030,7 +1094,7 @@ TODO - properly update tense of main verb using auxiliaries, right now we have b
 	focus(t)
 	;
 	
-	aux(X/pos(), Y/present_tense())
+	aux(X/pstg(), Y/present_tense())
 	ref(Y, E/expression())
 	expr(E, be)
 	-> aux_be_present ->
@@ -1050,8 +1114,8 @@ The overall meaning of the verb is also modified by the modal.
  <details>
   <summary>Conversions</summary>
   
-	modal(X/pos(), Y/md())
-	nsbj(X, Z/pos())
+	modal(X/pstg(), Y/md())
+	nsbj(X, Z/pstg())
 	precede(Y, Z)
 	-> q_modal ->
 	m/mode(X, Y)
@@ -1071,7 +1135,7 @@ TODO - does this ever affect tense?
  <details>
   <summary>Conversions</summary>
   
-	modal(X/pos(), Y/md())
+	modal(X/pstg(), Y/md())
 	-> modal ->
 	m/mode(Y,X)
 	center(Y)
@@ -1087,7 +1151,7 @@ Modify the meaning of their parent verbs.
  <details>
   <summary>Conversions</summary>
   
-	raise(X/pos(), Y/past_tense())
+	raise(X/pstg(), Y/past_tense())
 	-> raise_verb_past ->
 	p/mode(X, Y)
 	time(X, past)
@@ -1095,7 +1159,7 @@ Modify the meaning of their parent verbs.
 	center(Y)
 	;
 	
-	raise(X/pos(), Y/present_tense())
+	raise(X/pstg(), Y/present_tense())
 	-> raise_verb_present ->
 	p/mode(X, Y)
 	time(X, now)
@@ -1112,8 +1176,8 @@ Captures prepositional phrases by converting the preposition into a predicate of
  <details>
   <summary>Conversions</summary>
 
-	ppmod(X/pos(), Y/pos())
-	case(Y, Z/pos())
+	ppmod(X/pstg(), Y/pstg())
+	case(Y, Z/pstg())
 	-> preposition_phrase ->
 	is_type(Z)
 	p/Z(X,Y)
@@ -1136,8 +1200,8 @@ Captures sentences with passive voice.
  <details>
   <summary>Conversions</summary>
 
-	nsbj(X/pos(), Y/pos())
-	obj(X, Z/pos())
+	nsbj(X/pstg(), Y/pstg())
+	obj(X, Z/pstg())
 	precede(Z, X)
 	-> nobj_passive_voice ->
 	is_type(X)
@@ -1146,8 +1210,8 @@ Captures sentences with passive voice.
 	center(X)
 	;
 	
-	csbj(X/pos(), Y/pos())
-	obj(X, Z/pos())
+	csbj(X/pstg(), Y/pstg())
+	obj(X, Z/pstg())
 	precede(Z, X)
 	-> cobj_passive_voice ->
 	is_type(X)
@@ -1156,7 +1220,7 @@ Captures sentences with passive voice.
 	center(X)
 	;
 
-	obj(X/pos(), Y/pos())
+	obj(X/pstg(), Y/pstg())
 	precede(Y, X)
 	-> obj_passive_voice ->
 	is_type(X)
@@ -1182,7 +1246,7 @@ TODO - make better
  <details>
   <summary>Conversions</summary>
 
-	relcl(X/pos(), Y/pos())
+	relcl(X/pstg(), Y/pstg())
 	-> relative_clause ->
 	p/qualifier(X, Y)
 	focus(p)
@@ -1203,7 +1267,7 @@ Determiners which are not a part of a `det` dependency relation are `object` ins
  <details>
   <summary>Conversions</summary>
 
-	det(X/pos(), Y/dt())
+	det(X/pstg(), Y/dt())
 	ltype(Y, ref_det)
 	-> ref_concept_determiner ->
 	is_type(X)
@@ -1213,7 +1277,7 @@ Determiners which are not a part of a `det` dependency relation are `object` ins
 	cover(Y)
 	;
 	
-	det(X/pos(), Y/dt())
+	det(X/pstg(), Y/dt())
 	ltype(Y, inst_det)
 	-> inst_concept_determiner ->
 	is_type(X)
@@ -1223,7 +1287,7 @@ Determiners which are not a part of a `det` dependency relation are `object` ins
 	cover(Y)
 	;
 	
-	det(X/pos(), Y/dt())
+	det(X/pstg(), Y/dt())
 	-> other_concept_determiner ->
 	is_type(X)
 	focus(X())
@@ -1257,7 +1321,7 @@ Captures verb constructions with indirect objects.
  <details>
   <summary>Conversions</summary>
 
-	dat(X/pos(), Y/pos())
+	dat(X/pstg(), Y/pstg())
 	-> indirect_obj ->
 	p/indirect_obj(X, Y)
 	focus(p)
@@ -1279,7 +1343,7 @@ Captures `attr` dependency relation as `property` logic relation.
  <details>
   <summary>Conversions</summary>
   
-	attr(X/pos(), Y/pos())
+	attr(X/pstg(), Y/pstg())
 	-> general_attribute ->
 	p/property(X,Y)
 	focus(p)
@@ -1297,7 +1361,7 @@ The red car
  <details>
   <summary>Conversions</summary>
   
-	acl(X/pos(), Y/pos())
+	acl(X/pstg(), Y/pstg())
 	-> acl ->
 	p/property(X, Y)
 	focus(p)
@@ -1313,14 +1377,14 @@ Captures possessive phrases by constructing a `possess` predicate between the po
  <details>
   <summary>Conversions</summary>
 	  
-	poss(X/pos(), Y/pos())
+	poss(X/pstg(), Y/pstg())
 	-> obj_of_possessive ->
 	is_type(X)
 	focus(X())
 	center(X)
 	;
 	
-	poss(X/pos(), Y/pos())
+	poss(X/pstg(), Y/pstg())
 	-> agent_of_possessive ->
 	p/possess(Y, X)
 	focus(p)
@@ -1340,15 +1404,15 @@ John's sister
  <details>
   <summary>Conversions</summary>
   
-	advnp(X/pos(), Y/pos())
+	advnp(X/pstg(), Y/pstg())
 	-> advnp ->
 	p/qualifier(X, Y)
 	focus(p)
 	center(Y)
 	;
 	
-	advcl(X/pos(), Y/pos())
-	adv(Y, Z/pos())
+	advcl(X/pstg(), Y/pstg())
+	adv(Y, Z/pstg())
 	-> advcl_adv ->
 	is_type(Z)
 	p/Z(X,Y)
@@ -1356,14 +1420,14 @@ John's sister
 	center(Z)
 	;
 	
-	advcl(X/pos(), Y/pos())
+	advcl(X/pstg(), Y/pstg())
 	-> advcl ->
 	p/qualifier(X, Y)
 	focus(p)
 	center(Y)
 	;
 	
-	adv(X/pos(), Y/pos())
+	adv(X/pstg(), Y/pstg())
 	-> adv ->
 	p/qualifier(X, Y)
 	focus(p)
@@ -1379,7 +1443,7 @@ Captures verb particles by attaching a `particle` predicate to the verb.
  <details>
   <summary>Conversions</summary>
   
-	prt(X/pos(), Y/pos())
+	prt(X/pstg(), Y/pstg())
 	-> verb_particle ->
 	p/particle(X, Y)
 	focus(p)
@@ -1397,7 +1461,7 @@ He made up an excuse.
  <details>
   <summary>Conversions</summary>
   
-	conj(X/pos(), Y/pos())
+	conj(X/pstg(), Y/pstg())
 	-> conjunct ->
 	p/conjunct(X, Y)
 	focus(p)
@@ -1413,7 +1477,7 @@ Captures expressions of quantities by constructing a `numeric` predicate between
  <details>
   <summary>Conversions</summary>
   
-	num(X/pos(), Y/pos())
+	num(X/pstg(), Y/pstg())
 	-> numeric ->
 	p/numeric(X, Y)
 	focus(p)
@@ -1431,7 +1495,7 @@ I bought four tickets.
  <details>
   <summary>Conversions</summary>
   
-	neg(X/pos(), Y/pos())
+	neg(X/pstg(), Y/pstg())
 	-> negation ->
 	p/negate(X, Y)
 	focus(p)
@@ -1445,7 +1509,7 @@ I bought four tickets.
  <details>
   <summary>Conversions</summary>
   
-	appo(X/pos(), Y/pos())
+	appo(X/pstg(), Y/pstg())
 	-> appositive ->
 	p/appositive(X, Y)
 	focus(p)
@@ -1463,7 +1527,7 @@ Represented as the predicate `relay_info` where the subject is information being
 <details>
   <summary>Conversions</summary>
 
-	voc(X/pos(), Y/pos())
+	voc(X/pstg(), Y/pstg())
 	-> vocalization ->
 	p/relay_info(X, Y)
 	focus(p)
@@ -1477,7 +1541,7 @@ Represented as the predicate `relay_info` where the subject is information being
 <details>
   <summary>Conversions</summary>
 
-	prn(X/pos(), Y/pos())
+	prn(X/pstg(), Y/pstg())
 	-> parenthetical ->
 	p/parenthical(X, Y)
 	focus(p)
@@ -1491,7 +1555,7 @@ Represented as the predicate `relay_info` where the subject is information being
 <details>
   <summary>Conversions</summary>
 
-	dep(X/pos(), Y/pos())
+	dep(X/pstg(), Y/pstg())
 	-> unknown_relation ->
 	p/attachment(X, Y)
 	focus(p)
@@ -1511,7 +1575,7 @@ If a target of the indication is not explicitly provided, then it is a variable.
 <details>
   <summary>Conversions</summary>
 
-	disc(X/pos(), Y/pos())
+	disc(X/pstg(), Y/pstg())
 	ref(Y, E/expression())
 	expr(E, affirm)
 	-> affirm_disc ->
@@ -1528,7 +1592,7 @@ If a target of the indication is not explicitly provided, then it is a variable.
 	center(Y)
 	;
 	
-	disc(X/pos(), Y/pos())
+	disc(X/pstg(), Y/pstg())
 	ref(Y, E/expression())
 	expr(E, reject)
 	-> reject_disc ->
@@ -1545,7 +1609,7 @@ If a target of the indication is not explicitly provided, then it is a variable.
 	center(Y)
 	;
 	
-	disc(X/pos(), Y/pos())
+	disc(X/pstg(), Y/pstg())
 	ref(Y, E/expression())
 	expr(E, acknowledge)
 	-> acknowledge_disc ->
@@ -1608,41 +1672,38 @@ If pronoun is referential (e.g. `it`), then it has a `referential` predicate.
 	center(X)
 	;
 
-	X/pron()
-	-> pron ->
-	focus(X)
-	center(X)
-	;
-	
 </details>
-
-## Named Entity
-
-Recognize all nouns that exist as concepts in the KG. 
-
-<details>
-  <summary>Conversions</summary>
-
-	X/noun()
-	-> concept ->
-	focus(X)
-	center(X)
-	;
 	
-</details>
 
 ## Single Words
 
 If a word is mentioned that does not match a previous rule, instantiate it as a lone concept.
 
+This captures non-referential pronouns, nouns, etc.
+
 <details>
   <summary>Conversions</summary>
 
-	X/pos()
-	-> single_word ->
-	focus(X())
-	center(X)
-	;
+    comp(X/pstg(), Y/pstg())
+    -> lone_comp ->
+    p/property(X, Y)
+	focus(p)
+	center(Y)
+    ;
+
+    X/noun()
+    ltype(X, object)
+    -> noun ->
+    focus(X)
+    center(X)
+    ;  
+    
+    X/allow_single()
+    ltype(X, object)
+    -> single_word ->
+    focus(X())
+    center(X)
+    ;
 	
 </details>
 

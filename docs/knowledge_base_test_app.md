@@ -90,28 +90,7 @@ study(beth, a_41) [a_43]
 
 (1) Install required dependencies:
 
-* (a) Follow installation instructions at [pyswip](https://github.com/yuce/pyswip/blob/master/INSTALL.md) 
-to install the latest stable version of SWI-Prolog.
-
-    * Note: For MacOS, you must update your `PATH` and `DYLD_FALLBACK_LIBRARY_PATH` 
-    environment variables to contain the SWI-Prolog file locations when executing the test script. 
-    The pyswip installation instructions provide example updated variables, however they 
-    may not be correct for your computer. 
-    To determine your `PATH` update, find where the `SWI-Prolog` executable file is located.
-    To determine your `DYLD_FALLBACK_LIBRARY_PATH` update, find where the `libswipl.dylib` file is located.
-    For our development machine, the appropriate locations were the following:
-
-        PATH += `/Applications/SWI-Prolog.app/Contents/MacOS`
-
-        DYLD_FALLBACK_LIBRARY_PATH = `/Applications/SWI-Prolog.app/Contents/Frameworks`
-        
-        If executing the script in the terminal, do the appropriate export commands for updating 
-        PATH and DYLD_FALLBACK_LIBRARY_PATH.
-        
-        If executing the script in an IDE (e.g. Pycharm), modify the environment variables of 
-        your execution configuration to appropriately update PATH and DYLD_FALLBACK_LIBRARY_PATH.
-
-* (b) Execute `pip install -r GRIDD/requirements.txt`
+* (a) Execute `pip install -r GRIDD/requirements.txt`
 
 
 (2) Clone the [structpy repository](https://github.com/jdfinch/structpy). 

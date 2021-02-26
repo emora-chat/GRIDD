@@ -14,5 +14,11 @@
       "loud",
       "1_1"
     ]
-  ]
+  ],
+  "features": {
+    "princess": {
+      "salience": 0.75,
+      "cover": 0.25
+    }
+  }
 }

@@ -11,8 +11,10 @@ if __name__ == '__main__':
 
     kb = join('GRIDD', 'resources', 'kg_files', 'kb')
     test_kb = join('GRIDD', 'resources', 'kg_files', 'framework_test.kg')
+    rules_dir = join('GRIDD', 'resources', 'kg_files', 'rules')
+    rules = [rules_dir]
 
-    chatbot = Chatbot(kb)
+    chatbot = Chatbot(kb, rules=rules, device='cuda:1')
     nlu = chatbot.pipeline['sentence_caser',
                      'elit_models', 'elit_dp',
                      'mention_bridge',

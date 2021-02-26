@@ -482,7 +482,7 @@ withdrawal.n.04<indifference.n.01>
 expr("withdrawal", withdrawal.n.04)
 expr("detachment", withdrawal.n.04)
 feel.v.01<predicate>
-expr("feel", feel.v.01)
+feel.v.01[feel,feels,felt]
 anger.v.02<feel.v.01>
 expr("anger", anger.v.02)
 steam.v.04<anger.v.02>
@@ -503,7 +503,6 @@ expr("nurse", harbor.v.01)
 pride.v.01<feel.v.01>
 expr("pride", pride.v.01)
 expr("plume", pride.v.01)
-expr("congratulate", pride.v.01)
 rejoice.v.01<feel.v.01>
 expr("rejoice", rejoice.v.01)
 expr("joy", rejoice.v.01)
@@ -532,9 +531,9 @@ care.v.01<feel_for.v.01>
 expr("care", care.v.01)
 commiserate.v.01<feel_for.v.01>
 dislike.v.01<predicate>
-expr("dislike", dislike.v.01)
+dislike.v.01[dislike,dislikes,disliked]
 hate.v.01<dislike.v.01>
-expr("hate", hate.v.01)
+hate.v.01[hate,hates,hated]
 contemn.v.01<hate.v.01>
 resent.v.01<dislike.v.01>
 expr("resent", resent.v.01)
@@ -542,7 +541,7 @@ stew.v.02<resent.v.01>
 expr("stew", stew.v.02)
 desire.v.01<predicate>
 like.v.01<desire.v.01>
-expr("like", like.v.01)
+like.v.01[like,likes,liked]
 frustrated.s.01<frustration.n.01>
 expr("defeated", frustrated.s.01)
 expr("disappointed", frustrated.s.01)
@@ -741,22 +740,3 @@ anxiety.n.02<neg_feeling>
 fear.n.01<neg_feeling>
 hate.n.01<neg_feeling>
 dislike.n.02<neg_feeling>
-
-efh/feel.v.01(emora, h/happiness.n.01())
-time(efh, today)
-
-book<entity>
-interesting<entity>
-genre<entity>
-fantasy<genre>
-the_hobbit=book()
-read<predicate>
-fail<predicate>
-hard<entity>
-judgment<entity>
-positive<judgment>
-negative<judgment>
-
-cause(h, read(emora, the_hobbit))
-property(the_hobbit, interesting)
-property(the_hobbit, fantasy)

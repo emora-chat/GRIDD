@@ -19,15 +19,16 @@ class IdMap(Bimap):
                 self.get(item)
 
     def get(self, item=None):
+        namespace = self.namespace if self.namespace is not None else ''
         if item is None:
-            if self.namespace is not int:
-                ident = self.namespace + identification_string(int(self.index), self.chars)
+            if namespace is not int:
+                ident = namespace + identification_string(int(self.index), self.chars)
             else:
                 ident = self.index
             while self.contains(ident):
                 self.index += 1
-                if self.namespace is not int:
-                    ident = self.namespace + identification_string(int(self.index), self.chars)
+                if namespace is not int:
+                    ident = namespace + identification_string(int(self.index), self.chars)
                 else:
                     ident = self.index
             self.index += 1
