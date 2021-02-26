@@ -50,6 +50,7 @@ class ResponseGeneration:
             response += 'Hi, this is an Alexa Prize Socialbot. '
         output = self.convert(main_predicate, supporting_predicates)
         if nlg_model is not None:
+            print('Running NLG model...')
             try:
                 encoding = nlg_model.tokenizer.prepare_seq2seq_batch([prefix + output.rstrip('\n')], max_length=512,
                                                                  max_target_length=384, return_tensors="pt").data

@@ -202,6 +202,7 @@ def response_generation_handler(pipeline, input_dict, nlg_model=None, device='cu
     input = {"main_response": input_dict.get("main_response",[None])[0], "supporting_predicates": input_dict.get("supporting_predicates",[[]])[0],
              "aux_state": input_dict.get("aux_state",[{}])[0]}
     input = load(input)
+    print(nlg_model)
     response = pipeline(main_response=input["main_response"], supporting_predicates=input["supporting_predicates"], aux_state=input["aux_state"],
                         nlg_model=nlg_model, device=device)
     return save(response=response)
