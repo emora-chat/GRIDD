@@ -7,74 +7,7 @@ c = Pipeline.component
 from GRIDD.data_structures.span import Span
 
 from os.path import join
-import json
-
-class ChatbotServer:
-    """
-    Implementation of full chatbot pipeline in server architecture.
-    """
-    def initialize_full_pipeline(self, rules, device='cpu'):
-        kb = join('GRIDD', 'resources', 'kg_files', 'kb')
-        self.kb = KnowledgeBase(kb)
-        self.nlp_processing = init_nlp_preprocessing()
-        self.utter_conversion = init_utter_conversion(device, self.kb)
-        self.utter_integration = init_utter_integration()
-        self.dialogue_inference = init_dialogue_inference(rules)
-        self.response_selection = init_response_selection()
-        self.response_generation = init_response_generation()
-
-    def add_new_turn_state(self, current_state):
-        for key in current_state:
-            current_state[key].insert(0, None)
-
-    def update_current_turn_state(self, current_state, new_vals):
-        for key, value in new_vals.items():
-            if key not in current_state:
-                current_state[key] = [value, None]
-            else:
-                current_state[key][0] = value
-
-    def convert_state(self, current_state, history_turns=1):
-        converted = {key: values[0:history_turns+1] for key, values in current_state.items()}
-        return converted
-
-    def chat(self, static_utter=None):
-        current_state = {'utter': [None,None], 'wm': [None,None], 'aux_state': [None,None]}
-
-        while True:
-            if static_utter is None:
-                utter = input('User: ')
-            else:
-                utter = static_utter
-            if utter == 'stop':
-                break
-
-            current_state["utter"][0] = utter
-            msg = nlp_preprocessing_handler(self.nlp_processing, self.convert_state(current_state))
-            self.update_current_turn_state(current_state, msg)
-
-            msg = utter_conversion_handler(self.utter_conversion, self.convert_state(current_state))
-            self.update_current_turn_state(current_state, msg)
-
-            msg = utter_integration_handler(self.utter_integration, self.convert_state(current_state), self.kb)
-            self.update_current_turn_state(current_state, msg)
-
-            msg = dialogue_inference_handler(self.dialogue_inference, self.convert_state(current_state), self.kb)
-            self.update_current_turn_state(current_state, msg)
-
-            msg = response_selection_handler(self.response_selection, self.convert_state(current_state), self.kb)
-            self.update_current_turn_state(current_state, msg)
-
-            msg = response_generation_handler(self.response_generation, self.convert_state(current_state))
-            self.update_current_turn_state(current_state, msg)
-
-            print(msg)
-            print()
-
-            self.add_new_turn_state(current_state)
-
-            if static_utter is not None:
-                break
+import json, requests
 
 ##############################
 # Subpipeline initializations
@@ -157,16 +90,26 @@ def init_response_generation(nlg_model=None, device='cpu'):
 # Serialization handlers of subpiplines
 ##############################
 
-def nlp_preprocessing_handler(pipeline, input_dict):
-    input = {"utter": input_dict.get("utter",[None])[0].strip(), "aux_state": input_dict.get("aux_state",[None])[1]}
-    input = load(input)
-    if input["aux_state"] is None:
-        input["aux_state"] = {'turn_index': -1}
-    input["aux_state"]["turn_index"] += 1
-    tok,pos,dp,cr = [],[],[],{}
-    if input["utter"] is not None and len(input["utter"]) > 0:
-        tok, pos, dp, cr = pipeline(utter=input["utter"], aux_state=input["aux_state"])
-    return save(tok=tok, pos=pos, dp=dp, cr=cr, aux_state=input["aux_state"])
+def nlp_preprocessing_handler(pipeline, input_dict, local=False):
+    if local:
+        # print('Connecting to remote ELIT model...')
+        input_dict["text"] = input_dict["utter"]
+        del input_dict["utter"]
+        response = requests.post('http://cobot-LoadB-2W3OCXJ807QG-1571077302.us-east-1.elb.amazonaws.com',
+                                 data=json.dumps(input_dict),
+                                 headers={'content-type': 'application/json'},
+                                 timeout=3.0)
+        return response.json()["context_manager"]
+    else:
+        input = {"utter": input_dict.get("utter",[None])[0].strip(), "aux_state": input_dict.get("aux_state",[None])[1]}
+        input = load(input)
+        if input["aux_state"] is None:
+            input["aux_state"] = {'turn_index': -1}
+        input["aux_state"]["turn_index"] += 1
+        tok,pos,dp,cr = [],[],[],{}
+        if input["utter"] is not None and len(input["utter"]) > 0:
+            tok, pos, dp, cr = pipeline(utter=input["utter"], aux_state=input["aux_state"])
+        return save(tok=tok, pos=pos, dp=dp, cr=cr, aux_state=input["aux_state"])
 
 def utter_conversion_handler(pipeline, input_dict):
     input = {"tok": input_dict.get("tok",[[]])[0], "pos": input_dict.get("pos",[[]])[0], "dp": input_dict.get("dp",[[]])[0]}
@@ -176,12 +119,15 @@ def utter_conversion_handler(pipeline, input_dict):
         dp_mentions, dp_merges = pipeline(tok=input["tok"], pos=input["pos"], dp=input["dp"])
     return save(dp_mentions=dp_mentions, dp_merges=dp_merges)
 
-def utter_integration_handler(pipeline, input_dict, KB):
+def utter_integration_handler(pipeline, input_dict, KB, load_coldstarts=True):
     input = {"dp_mentions": input_dict.get("dp_mentions",[{}])[0], "dp_merges": input_dict.get("dp_merges",[[]])[0], "cr": input_dict.get("cr",[{}])[0],
              "wm": input_dict.get("wm",[None])[1]}
     input = load(input, KB)
     if input["wm"] is None:
-        input["wm"] = WorkingMemory(KB, join('GRIDD', 'resources', 'kg_files', 'wm'))
+        if load_coldstarts:
+            input["wm"] = WorkingMemory(KB, join('GRIDD', 'resources', 'kg_files', 'wm'))
+        else:
+            input["wm"] = WorkingMemory(KB)
     wm_after_merges = pipeline(dp_mentions=input["dp_mentions"], wm=input["wm"], dp_merges=input["dp_merges"], cr=input["cr"])
     return save(wm=wm_after_merges)
 
@@ -198,12 +144,25 @@ def response_selection_handler(pipeline, input_dict, KB):
     main_response, supporting_predicates, wm_after_exp = pipeline(wm_after_inference=input["wm"], iterations=input["iterations"])
     return save(main_response=main_response, supporting_predicates=list(supporting_predicates), wm=wm_after_exp)
 
-def response_generation_handler(pipeline, input_dict):
-    input = {"main_response": input_dict.get("main_response",[None])[0], "supporting_predicates": input_dict.get("supporting_predicates",[[]])[0],
-             "aux_state": input_dict.get("aux_state",[{}])[0]}
-    input = load(input)
-    response = pipeline(main_response=input["main_response"], supporting_predicates=input["supporting_predicates"], aux_state=input["aux_state"])
-    return save(response=response)
+def response_generation_handler(pipeline, input_dict, local=False):
+    if local:
+        # print('Connecting to remote NLG model...')
+        response = requests.post('http://cobot-LoadB-1L3YPB9TGV71P-1610005595.us-east-1.elb.amazonaws.com',
+                                 data=json.dumps(input_dict),
+                                 headers={'content-type': 'application/json'},
+                                 timeout=3.0)
+        response = response.json()
+        if "performance" in response:
+            del response["performance"]
+            del response["error"]
+        return response
+    else:
+        input = {"main_response": input_dict.get("main_response", [None])[0],
+                 "supporting_predicates": input_dict.get("supporting_predicates", [[]])[0],
+                 "aux_state": input_dict.get("aux_state", [{}])[0]}
+        input = load(input)
+        response = pipeline(main_response=input["main_response"], supporting_predicates=input["supporting_predicates"], aux_state=input["aux_state"])
+        return save(response=response)
 
 ##############################
 # Serialization functions
@@ -279,13 +238,96 @@ class DataEncoder(json.JSONEncoder):
             return obj.save()
         return json.JSONEncoder.default(self, object)
 
+##############################
+# Chatbot Server Simulation
+##############################
 
+class ChatbotServer:
+    """
+    Implementation of full chatbot pipeline in server architecture.
+    """
+    def initialize_full_pipeline(self, kb_files, rules, device='cpu'):
+        self.kb = KnowledgeBase(kb_files)
+        self.nlp_processing = init_nlp_preprocessing()
+        self.utter_conversion = init_utter_conversion(device, self.kb)
+        self.utter_integration = init_utter_integration()
+        self.dialogue_inference = init_dialogue_inference(rules)
+        self.response_selection = init_response_selection()
+        self.response_generation = init_response_generation()
 
+    def add_new_turn_state(self, current_state):
+        for key in current_state:
+            current_state[key].insert(0, None)
+
+    def update_current_turn_state(self, current_state, new_vals):
+        for key, value in new_vals.items():
+            if key not in current_state:
+                current_state[key] = [value, None]
+            else:
+                current_state[key][0] = value
+
+    def convert_state(self, current_state, history_turns=1):
+        converted = {key: values[0:history_turns+1] for key, values in current_state.items()}
+        return converted
+
+    def chat(self, static_utter=None):
+        current_state = {'utter': [None,None], 'wm': [None,None], 'aux_state': [None,None]}
+
+        while True:
+            if static_utter is None:
+                utter = input('User: ')
+            else:
+                utter = static_utter
+            if utter == 'stop':
+                break
+
+            current_state["utter"][0] = utter
+            msg = nlp_preprocessing_handler(self.nlp_processing, self.convert_state(current_state), local=True)
+            self.update_current_turn_state(current_state, msg)
+
+            msg = utter_conversion_handler(self.utter_conversion, self.convert_state(current_state))
+            self.update_current_turn_state(current_state, msg)
+
+            msg = utter_integration_handler(self.utter_integration, self.convert_state(current_state), self.kb, load_coldstarts=False)
+            self.update_current_turn_state(current_state, msg)
+
+            print('Working Memory:')
+            saved_wm = json.loads(msg["wm"])
+            working_memory = WorkingMemory(self.kb)
+            ConceptGraph.load(working_memory, saved_wm)
+            print(working_memory.ugly_print(exclusions={'is_type', 'object', 'predicate', 'entity', 'post', 'pre',
+                                                        'def', 'span', 'datetime'}))
+            print('-'*10)
+            msg = dialogue_inference_handler(self.dialogue_inference, self.convert_state(current_state), self.kb)
+            self.update_current_turn_state(current_state, msg)
+
+            msg = response_selection_handler(self.response_selection, self.convert_state(current_state), self.kb)
+            self.update_current_turn_state(current_state, msg)
+            print('Selections:')
+            print('\t', msg["main_response"])
+            for support in json.loads(msg["supporting_predicates"]):
+                print('\t', support)
+
+            msg = response_generation_handler(self.response_generation, self.convert_state(current_state), local=True)
+            self.update_current_turn_state(current_state, msg)
+
+            print('NLG Output:')
+            if "response" in msg:
+                print('\t', msg["response"])
+            else:
+                print('\t', msg["message"])
+            print()
+
+            self.add_new_turn_state(current_state)
+
+            if static_utter is not None:
+                break
 
 if __name__ == '__main__':
+    kb = join('GRIDD', 'resources', 'kg_files', 'kb')
     rules_dir = join('GRIDD', 'resources', 'kg_files', 'rules')
     rules = [rules_dir]
 
     chatbot = ChatbotServer()
-    chatbot.initialize_full_pipeline(rules=rules, device='cpu')
+    chatbot.initialize_full_pipeline(kb_files=kb, rules=rules, device='cpu')
     chatbot.chat()

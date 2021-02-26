@@ -9,14 +9,17 @@ class ResponseExpansion:
         """
         Select the supporting predicates for the main predicate.
         """
-        main_s, main_t, main_o, main_i = main_predicate
-        if main_t != 'question':
-            expansions = self.get_predicate_supports(main_predicate, working_memory)
+        if main_predicate is not None:
+            main_s, main_t, main_o, main_i = main_predicate
+            if main_t != 'question':
+                expansions = self.get_predicate_supports(main_predicate, working_memory)
+            else:
+                expansions = self.get_question_supports(main_s, working_memory)
+            expansions -= {main_predicate}
+            working_memory.features.update_from_response(main_predicate, expansions)
+            return main_predicate, expansions, working_memory
         else:
-            expansions = self.get_question_supports(main_s, working_memory)
-        expansions -= {main_predicate}
-        working_memory.features.update_from_response(main_predicate, expansions)
-        return main_predicate, expansions, working_memory
+            return None, [], working_memory
 
     def get_predicate_supports(self, main_predicate, working_memory):
         main_s, main_t, main_o, main_i = main_predicate

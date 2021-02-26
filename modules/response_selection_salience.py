@@ -10,4 +10,8 @@ class SalienceResponseSelection:
                    and working_memory.type(node) not in {'type'}
                    and working_memory.features[node].get('cover', 0.0) != 1.0]
         salience_order = sorted(options, key=lambda x: x[1], reverse=True)
-        return working_memory.predicate(salience_order[0][0])
+        if len(salience_order) > 0:
+            return working_memory.predicate(salience_order[0][0])
+        else:
+            print('[WARNING] No predicate responses found.')
+            return None

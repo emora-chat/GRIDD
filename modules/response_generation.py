@@ -52,18 +52,20 @@ class ResponseGeneration:
         turn_idx = aux_state.get('turn_index', None)
         if turn_idx is not None and int(turn_idx) == 0:
             response += 'Hi, this is an Alexa Prize Socialbot. '
-        output = self.convert(main_predicate, supporting_predicates)
-        print(type(self.nlg_model))
-        if self.nlg_model is not None:
-            print('Running NLG model...')
-            try:
-                encoding = self.nlg_model.tokenizer.prepare_seq2seq_batch([prefix + output.rstrip('\n')], max_length=512,
-                                                                 max_target_length=384, return_tensors="pt").data
-                encoding["input_ids"] = encoding["input_ids"].to(self.device)
-                encoding["attention_mask"] = encoding["attention_mask"].to(self.device)
-                output = self.nlg_model.test_step(encoding)[0]
-            except Exception as e:
-                print('FAILED! %s' % e)
-                output = "Well, I am not sure what to say to that. What else do you want to talk about?"
-        response += output
-        return response
+        if main_predicate is not None:
+            output = self.convert(main_predicate, supporting_predicates)
+            if self.nlg_model is not None:
+                print('Running NLG model...')
+                try:
+                    encoding = self.nlg_model.tokenizer.prepare_seq2seq_batch([prefix + output.rstrip('\n')], max_length=512,
+                                                                     max_target_length=384, return_tensors="pt").data
+                    encoding["input_ids"] = encoding["input_ids"].to(self.device)
+                    encoding["attention_mask"] = encoding["attention_mask"].to(self.device)
+                    output = self.nlg_model.test_step(encoding)[0]
+                except Exception as e:
+                    print('FAILED! %s' % e)
+                    output = "Well, I am not sure what to say to that. What else do you want to talk about?"
+            response += output
+            return response
+        else:
+            return "Well, I am not sure what to say to that. What else do you want to talk about?"

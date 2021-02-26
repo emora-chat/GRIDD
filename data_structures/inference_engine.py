@@ -9,10 +9,9 @@ import time
 class InferenceEngine:
 
     def __init__(self, *rules, device='cpu'):
+        print('Loading rules...')
         self.rules = KnowledgeParser.rules(*rules)
-        st = time.time()
         self.preloaded_rules = self._convert_rules(self.rules)
-        print('Static Rule Graphs to NetworkX - Elapsed: %.3f' % (time.time() - st))
         self.matcher = GraphMatchingEngine(device=device)
 
     def _convert_rules(self, rules):
