@@ -270,7 +270,7 @@ class ChatbotServer:
         converted = {key: values[0:history_turns+1] for key, values in current_state.items()}
         return converted
 
-    def chat(self, static_utter=None):
+    def chat(self, static_utter=None, load_coldstarts=True):
         current_state = {'utter': [None,None], 'wm': [None,None], 'aux_state': [None,None]}
 
         while True:
@@ -288,7 +288,8 @@ class ChatbotServer:
             msg = utter_conversion_handler(self.utter_conversion, self.convert_state(current_state))
             self.update_current_turn_state(current_state, msg)
 
-            msg = utter_integration_handler(self.utter_integration, self.convert_state(current_state), self.kb, load_coldstarts=False)
+            msg = utter_integration_handler(self.utter_integration, self.convert_state(current_state),
+                                            self.kb, load_coldstarts=load_coldstarts)
             self.update_current_turn_state(current_state, msg)
 
             print('Working Memory:')
@@ -330,4 +331,4 @@ if __name__ == '__main__':
 
     chatbot = ChatbotServer()
     chatbot.initialize_full_pipeline(kb_files=kb, rules=rules, device='cpu')
-    chatbot.chat()
+    chatbot.chat(load_coldstarts=True)

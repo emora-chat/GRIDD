@@ -7,7 +7,7 @@ class SalienceResponseSelection:
         """
         options = [(node,features['salience']) for node,features in working_memory.features.items()
                    if working_memory.has(predicate_id=node)
-                   and working_memory.type(node) not in {'type'}
+                   and working_memory.type(node) not in {'type', 'possess', 'referential', 'instantiative'}
                    and working_memory.features[node].get('cover', 0.0) != 1.0]
         salience_order = sorted(options, key=lambda x: x[1], reverse=True)
         if len(salience_order) > 0:
