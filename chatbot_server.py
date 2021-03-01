@@ -95,6 +95,7 @@ def nlp_preprocessing_handler(pipeline, input_dict, local=False):
         # print('Connecting to remote ELIT model...')
         input_dict["text"] = input_dict["utter"]
         del input_dict["utter"]
+        input_dict["conversationId"] = 'local'
         response = requests.post('http://cobot-LoadB-2W3OCXJ807QG-1571077302.us-east-1.elb.amazonaws.com',
                                  data=json.dumps(input_dict),
                                  headers={'content-type': 'application/json'},
@@ -147,6 +148,7 @@ def response_selection_handler(pipeline, input_dict, KB):
 def response_generation_handler(pipeline, input_dict, local=False):
     if local:
         # print('Connecting to remote NLG model...')
+        input_dict["conversationId"] = 'local'
         response = requests.post('http://cobot-LoadB-1L3YPB9TGV71P-1610005595.us-east-1.elb.amazonaws.com',
                                  data=json.dumps(input_dict),
                                  headers={'content-type': 'application/json'},
@@ -182,7 +184,7 @@ def save(**data):
         elif key == 'dp_mentions':
             new_d = {}
             for span,cg in value.items():
-                new_d[span.to_string()] = cg.save()
+                new_d[span] = cg.save()
             value = new_d
         data[key] = json.dumps(value, cls=DataEncoder)
     return data
@@ -221,13 +223,11 @@ def load(json_dict, KB=None):
                     cg = ConceptGraph(namespace=cg_dict["namespace"])
                     cg.id_map().index = cg_dict["next_id"]
                     cg.load(cg_dict)
-                    new_d[Span.from_string(span_str)] = cg
+                    new_d[span_str] = cg
                 json_dict[key] = new_d
             elif key == 'dp_merges':
                 value = json.loads(value) if isinstance(value, str) else value
-                new_pairs = [[(Span.from_string(pair[0][0]), pair[0][1]), (Span.from_string(pair[1][0]), pair[1][1])]
-                             for pair in value]
-                json_dict[key] = new_pairs
+                json_dict[key] = value
     return json_dict
 
 class DataEncoder(json.JSONEncoder):
@@ -246,7 +246,7 @@ class ChatbotServer:
     """
     Implementation of full chatbot pipeline in server architecture.
     """
-    def initialize_full_pipeline(self, kb_files, rules, device='cpu'):
+    def initialize_full_pipeline(self, kb_files, rules, device='cpu', local=False):
         self.kb = KnowledgeBase(kb_files)
         self.nlp_processing = init_nlp_preprocessing()
         self.utter_conversion = init_utter_conversion(device, self.kb)
@@ -254,6 +254,7 @@ class ChatbotServer:
         self.dialogue_inference = init_dialogue_inference(rules)
         self.response_selection = init_response_selection()
         self.response_generation = init_response_generation()
+        self.local = local
 
     def add_new_turn_state(self, current_state):
         for key in current_state:
@@ -282,7 +283,7 @@ class ChatbotServer:
                 break
 
             current_state["utter"][0] = utter
-            msg = nlp_preprocessing_handler(self.nlp_processing, self.convert_state(current_state), local=True)
+            msg = nlp_preprocessing_handler(self.nlp_processing, self.convert_state(current_state), local=self.local)
             self.update_current_turn_state(current_state, msg)
 
             msg = utter_conversion_handler(self.utter_conversion, self.convert_state(current_state))
@@ -309,7 +310,7 @@ class ChatbotServer:
             for support in json.loads(msg["supporting_predicates"]):
                 print('\t', support)
 
-            msg = response_generation_handler(self.response_generation, self.convert_state(current_state), local=True)
+            msg = response_generation_handler(self.response_generation, self.convert_state(current_state), local=self.local)
             self.update_current_turn_state(current_state, msg)
 
             print('NLG Output:')
@@ -330,5 +331,5 @@ if __name__ == '__main__':
     rules = [rules_dir]
 
     chatbot = ChatbotServer()
-    chatbot.initialize_full_pipeline(kb_files=kb, rules=rules, device='cpu')
+    chatbot.initialize_full_pipeline(kb_files=kb, rules=rules, device='cpu', local=True)
     chatbot.chat(load_coldstarts=True)

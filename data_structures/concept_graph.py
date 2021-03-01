@@ -342,7 +342,7 @@ class ConceptGraph:
             'namespace': self._ids.namespace,
             'next_id': int(self._ids.index),
             'predicates': [],
-            'features': self.features
+            'features': self.features.to_json()
         }
         for item in self.predicates():
             item = [e.to_string() if hasattr(e, 'to_string') else str(e) for e in item]
@@ -366,25 +366,19 @@ class ConceptGraph:
         if d['namespace'] != self._ids.namespace:
             for item in d['predicates']:
                 id_map = self.id_map(d['namespace'])
-                for i, e in enumerate(item):
-                    if e.startswith('<span>'):
-                        item[i] = Span.from_string(e)
                 s, t, o, i = item
                 if o == 'None':
                     o = None
                 self.add(*(id_map.get(x) if x is not None else None for x in (s, t, o ,i)))
-                self.features.update(d['features'], id_map=id_map)
+                self.features.from_json(d['features'], id_map=id_map)
         else:
             for item in d['predicates']:
-                for i, e in enumerate(item):
-                    if e.startswith('<span>'):
-                        item[i] = Span.from_string(e)
                 s, t, o, i = item
                 if o == 'None':
                     o = None
                 self.add(s, t, o, i)
             self._ids.index = Counter(d['next_id'])
-            self.features.update(d['features'])
+            self.features.from_json(d['features'])
 
     def ugly_print(self, exclusions=None):
         strings = defaultdict(list)

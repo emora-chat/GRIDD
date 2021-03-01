@@ -21,9 +21,9 @@ def test_svdo_simple(elitmodels, elit_to_logic):
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 3
-    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
-    (bought_sp,) = [span for span in mentions.keys() if span.string == 'bought']
-    (house_sp,) = [span for span in mentions.keys() if span.string == 'house']
+    (i_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'i']
+    (bought_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'bought']
+    (house_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'house']
 
     i_mg = mentions[i_sp]
     assert i_mg.has('user', 'center')
@@ -56,8 +56,8 @@ def test_sv_simple(elitmodels, elit_to_logic):
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 2
-    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
-    (walked_sp,) = [span for span in mentions.keys() if span.string == 'walked']
+    (i_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'i']
+    (walked_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'walked']
 
     i_mg = mentions[i_sp]
     assert i_mg.has('user', 'center')
@@ -82,9 +82,9 @@ def test_slvo(elitmodels, elit_to_logic):
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 3
-    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
-    (call_sp,) = [span for span in mentions.keys() if span.string == 'call']
-    (you_sp,) = [span for span in mentions.keys() if span.string == 'you']
+    (i_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'i']
+    (call_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'call']
+    (you_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'you']
 
     i_mg = mentions[i_sp]
     assert i_mg.has('user', 'center')
@@ -114,11 +114,11 @@ def test_prepositional_phrases(elitmodels, elit_to_logic):
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 5
-    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
-    (bought_sp,) = [span for span in mentions.keys() if span.string == 'bought']
-    (house_sp,) = [span for span in mentions.keys() if span.string == 'house']
-    (in_sp,) = [span for span in mentions.keys() if span.string == 'in']
-    (georgia_sp,) = [span for span in mentions.keys() if span.string == 'georgia']
+    (i_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'i']
+    (bought_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'bought']
+    (house_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'house']
+    (in_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'in']
+    (georgia_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'georgia']
 
     i_mg = mentions[i_sp]
     assert i_mg.has('user', 'center')
@@ -163,10 +163,10 @@ def test_prepositional_phrases(elitmodels, elit_to_logic):
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 4
-    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
-    (walked_sp,) = [span for span in mentions.keys() if span.string == 'walked']
-    (house_sp,) = [span for span in mentions.keys() if span.string == 'house']
-    (to_sp,) = [span for span in mentions.keys() if span.string == 'to']
+    (i_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'i']
+    (walked_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'walked']
+    (house_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'house']
+    (to_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'to']
 
     i_mg = mentions[i_sp]
     assert i_mg.has('user', 'center')
@@ -208,9 +208,9 @@ def test_comp(elitmodels, elit_to_logic):
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     # assert len(mentions) == 3
-    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
-    (like_sp,) = [span for span in mentions.keys() if span.string == 'like']
-    (walk_sp,) = [span for span in mentions.keys() if span.string == 'walk']
+    (i_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'i']
+    (like_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'like']
+    (walk_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'walk']
 
     i_mg = mentions[i_sp]
     assert i_mg.has('user', 'center')
@@ -246,10 +246,10 @@ def test_inner_comp_with_obj(elitmodels, elit_to_logic):
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     # assert len(mentions) == 4
-    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
-    (like_sp,) = [span for span in mentions.keys() if span.string == 'like']
-    (buy_sp,) = [span for span in mentions.keys() if span.string == 'buy']
-    (clothes_sp,) = [span for span in mentions.keys() if span.string == 'clothes']
+    (i_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'i']
+    (like_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'like']
+    (buy_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'buy']
+    (clothes_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'clothes']
 
     i_mg = mentions[i_sp]
     assert i_mg.has('user', 'center')
@@ -289,10 +289,10 @@ def test_inner_comp_with_nsbj(elitmodels, elit_to_logic):
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     # assert len(mentions) == 4
-    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
-    (you_sp,) = [span for span in mentions.keys() if span.string == 'you']
-    (like_sp,) = [span for span in mentions.keys() if span.string == 'like']
-    (walk_sp,) = [span for span in mentions.keys() if span.string == 'walk']
+    (i_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'i']
+    (you_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'you']
+    (like_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'like']
+    (walk_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'walk']
 
     i_mg = mentions[i_sp]
     assert i_mg.has('user', 'center')
@@ -331,11 +331,11 @@ def test_inner_comp_with_nsbj_obj(elitmodels, elit_to_logic):
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     # assert len(mentions) == 5
-    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
-    (like_sp,) = [span for span in mentions.keys() if span.string == 'like']
-    (you_sp,) = [span for span in mentions.keys() if span.string == 'you']
-    (buy_sp,) = [span for span in mentions.keys() if span.string == 'buy']
-    (clothes_sp,) = [span for span in mentions.keys() if span.string == 'clothes']
+    (i_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'i']
+    (like_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'like']
+    (you_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'you']
+    (buy_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'buy']
+    (clothes_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'clothes']
 
     i_mg = mentions[i_sp]
     assert i_mg.has('user', 'center')
@@ -380,9 +380,9 @@ def test_ref_det(elitmodels, elit_to_logic):
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 3
-    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
-    (like_sp,) = [span for span in mentions.keys() if span.string == 'like']
-    (house_sp,) = [span for span in mentions.keys() if span.string == 'house']
+    (i_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'i']
+    (like_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'like']
+    (house_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'house']
 
     house_mg = mentions[house_sp]
     house_insts = house_mg.predicates(predicate_type='type', object='house')
@@ -404,9 +404,9 @@ def test_inst_det(elitmodels, elit_to_logic):
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 3
-    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
-    (like_sp,) = [span for span in mentions.keys() if span.string == 'like']
-    (house_sp,) = [span for span in mentions.keys() if span.string == 'house']
+    (i_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'i']
+    (like_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'like']
+    (house_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'house']
 
     house_mg = mentions[house_sp]
     house_insts = house_mg.predicates(predicate_type='type', object='house')
@@ -427,10 +427,10 @@ def test_poss_pron(elitmodels, elit_to_logic):
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 4
-    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
-    (like_sp,) = [span for span in mentions.keys() if span.string == 'like']
-    (my_sp,) = [span for span in mentions.keys() if span.string == 'my']
-    (house_sp,) = [span for span in mentions.keys() if span.string == 'house']
+    (i_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'i']
+    (like_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'like']
+    (my_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'my']
+    (house_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'house']
 
     my_mg = mentions[my_sp]
     my_insts = my_mg.predicates(predicate_type='possess')
@@ -460,10 +460,10 @@ def test_poss_pron(elitmodels, elit_to_logic):
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 4
-    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
-    (like_sp,) = [span for span in mentions.keys() if span.string == 'like']
-    (john_sp,) = [span for span in mentions.keys() if span.string == 'john']
-    (house_sp,) = [span for span in mentions.keys() if span.string == 'house']
+    (i_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'i']
+    (like_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'like']
+    (john_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'john']
+    (house_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'house']
 
     john_mg = mentions[john_sp]
     john_insts = john_mg.predicates(predicate_type='possess')
@@ -493,10 +493,10 @@ def test_poss_pron(elitmodels, elit_to_logic):
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 4
-    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
-    (like_sp,) = [span for span in mentions.keys() if span.string == 'like']
-    (john_sp,) = [span for span in mentions.keys() if span.string == 'johns']
-    (house_sp,) = [span for span in mentions.keys() if span.string == 'house']
+    (i_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'i']
+    (like_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'like']
+    (john_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'johns']
+    (house_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'house']
 
     john_mg = mentions[john_sp]
     john_insts = john_mg.predicates(predicate_type='possess')
@@ -528,9 +528,9 @@ def test_compound(elitmodels, elit_to_logic):
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 3
-    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
-    (like_sp,) = [span for span in mentions.keys() if span.string == 'like']
-    (new_york_sp,) = [span for span in mentions.keys() if span.string == 'new york']
+    (i_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'i']
+    (like_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'like']
+    (new_york_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'new york']
 
     york_mg = mentions[new_york_sp]
     assert york_mg.has('new_york', 'focus')
@@ -547,9 +547,9 @@ def test_adv(elitmodels, elit_to_logic):
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 3
-    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
-    (walked_sp,) = [span for span in mentions.keys() if span.string == 'walked']
-    (quickly_sp,) = [span for span in mentions.keys() if span.string == 'quickly']
+    (i_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'i']
+    (walked_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'walked']
+    (quickly_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'quickly']
 
     quickly_mg = mentions[quickly_sp]
     quick_insts = quickly_mg.predicates(predicate_type='qualifier')
@@ -570,10 +570,10 @@ def test_aux_question(elitmodels, elit_to_logic):
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 4
-    (i_sp,) = [span for span in mentions.keys() if span.string == 'i']
-    (buy_sp,) = [span for span in mentions.keys() if span.string == 'buy']
-    (house_sp,) = [span for span in mentions.keys() if span.string == 'house']
-    (did_sp,) = [span for span in mentions.keys() if span.string == 'did']
+    (i_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'i']
+    (buy_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'buy']
+    (house_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'house']
+    (did_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'did']
 
     buy_mg = mentions[buy_sp]
     bought_preds = buy_mg.predicates(predicate_type='buy')
@@ -614,9 +614,9 @@ def test_adv_question_word(elitmodels, elit_to_logic):
     mentions, merges = elit_to_logic(tok, pos, dp)
 
     assert len(mentions) == 3
-    (how_sp,) = [span for span in mentions.keys() if span.string == 'how']
-    (this_sp,) = [span for span in mentions.keys() if span.string == 'this']
-    (happen_sp,) = [span for span in mentions.keys() if span.string == 'happen']
+    (how_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'how']
+    (this_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'this']
+    (happen_sp,) = [span for span, mgraph in mentions.items() if mgraph.features[span]["span_data"].string == 'happen']
 
     happen_mg = mentions[happen_sp]
     preds = happen_mg.predicates(predicate_type='happen')

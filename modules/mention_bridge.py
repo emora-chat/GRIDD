@@ -13,7 +13,7 @@ class MentionBridge:
             print()
             print('<< Mentions Identified >>')
             for span in mentions:
-                print('%s(%d,%d)'%(span.string, span.start, span.end))
+                print('%s'%(span[span.index('>')+1:]))
             print()
         new_concepts = set()
         for span, mention_graph in mentions.items():

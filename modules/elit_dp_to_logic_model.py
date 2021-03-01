@@ -90,12 +90,14 @@ class ElitDPToLogic(ParseToLogic):
         precede_token_idx = [idx for idx, (head_idx, label) in enumerate(dependencies)
                              if label.lower() in PRECEDE_LABELS or pos_tags[idx].lower().replace('$','ds') in QUEST]
         for token_idx in range(len(tokens)):
-            span_node = tokens[token_idx]
-            expression = span_node.string
+            span = tokens[token_idx]
+            expression = span.string
             pos = pos_tags[token_idx].lower().replace('$','ds')
             pos = POS_MAP.get(pos, pos)
             if 'pstg' not in cg.supertypes(pos): # todo - optimization by dynamic programming
                 cg.add(pos, 'type', 'pstg')
+            span_node = span.to_string()
+            cg.features[span_node]["span_data"] = span
             cg.add(span_node)
             self.spans.append(span_node)
             expression = '"%s"' % expression
@@ -104,22 +106,33 @@ class ElitDPToLogic(ParseToLogic):
             if token_idx > 0:
                 for pti in precede_token_idx:
                     if pti < token_idx:
-                        cg.add(tokens[pti], 'precede', span_node)
+                        cg.add(tokens[pti].to_string(), 'precede', span_node)
 
         for token_idx, (head_idx, label) in enumerate(dependencies):
             if head_idx != -1:
                 source = tokens[head_idx]
                 target = tokens[token_idx]
                 if label == 'com': # condense compound relations into single entity
+                    original_source = source.to_string()
+                    original_target = target.to_string()
+
+                    for tuple in cg.predicates(original_target, 'ref') + cg.predicates(original_source, 'ref'):
+                        cg.remove(tuple[2]) # remove non-condensed expressions
+                    cg.remove(original_target)
+                    self.spans.remove(original_target)
+                    original_source_span_idx = self.spans.index(original_source)
+                    del cg.features[original_source]
+                    del cg.features[original_target]
+
                     source.string = target.string + ' ' + source.string
                     source.start = target.start
-                    for tuple in cg.predicates(target, 'ref') + cg.predicates(source, 'ref'):
-                        cg.remove(tuple[2]) # remove non-condensed expressions
-                    cg.remove(target)
-                    self.spans.remove(target)
-                    cg.add(source, 'ref', '"%s"'%source.string) # add updated condensed expression
+                    new_source = source.to_string()
+                    cg.features[new_source]["span_data"] = source
+                    self.spans[original_source_span_idx] = new_source
+                    cg.add(new_source, 'ref', '"%s"'%source.string) # add updated condensed expression
+                    cg.merge(new_source, original_source)
                 else:
-                    cg.add(source, label, target)
+                    cg.add(source.to_string(), label, target.to_string())
 
 
 if __name__ == '__main__':

@@ -1,6 +1,7 @@
 
 from collections import defaultdict
 from GRIDD.data_structures.node_features_spec import NodeFeaturesSpec
+from GRIDD.data_structures.span import Span
 
 class NodeFeatures(defaultdict):
 
@@ -75,6 +76,27 @@ class NodeFeatures(defaultdict):
 
     def copy(self):
         return NodeFeatures(self)
+
+    def to_json(self):
+        json_compatible = {}
+        for node, features in self.items():
+            json_compatible[node] = {}
+            for feature, value in features.items():
+                if feature == "span_data":
+                    json_compatible[node][feature] = value.to_string()
+                else:
+                    json_compatible[node][feature] = value
+        return json_compatible
+
+    def from_json(self, json_dict, id_map=None):
+        for node, features in json_dict.items():
+            if id_map is not None:
+                node = id_map.get(node)
+            for feature, value in features.items():
+                if feature == "span_data":
+                    self[node][feature] = Span.from_string(value)
+                else:
+                    self[node][feature] = value
 
 
 if __name__ == '__main__':
