@@ -15,12 +15,6 @@ question(like.v.01(X,xlz))
 
 buy(X/person(), Y/car())
 -> buy_car ->
-question(xld/like.v.01(X, Y))
-time(xld, now)
-;
-
-buy(X/person(), Y/car())
--> buy_car ->
 question(xlc/like.v.01(X, Y))
 time(xlc, now)
 

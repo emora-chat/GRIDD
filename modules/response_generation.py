@@ -37,7 +37,7 @@ class ResponseGeneration:
         mx = conversiondict({
             'emora': 'bot'
         })
-        cg = ConceptGraph(predicates=[main_predicate]+supporting_predicates)
+        cg = ConceptGraph(predicates=[main_predicate]+list(supporting_predicates))
         strings = defaultdict(str)
         preds = ['type', 'instantiative', 'referential', 'question']
         pred = preds[0]

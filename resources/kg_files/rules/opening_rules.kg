@@ -1,22 +1,23 @@
 E/feeling.n.01()
--> emotion ->
-cause(E, question(object()))
+-> emo ->
+cause(E, o/object())
+question(o)
 ;
 
-F/feel(person(), pos_feeling())
-=>
+F/feel.v.01(person(), pos_feeling())
+-> pos_emo ->
 property(F, positive)
 ;
 
-PF/feel(person(), neg_feeling())
-=>
+PF/feel.v.01(person(), neg_feeling())
+-> neg_emo ->
 property(PF, negative)
 EF/feel(emora, sorry)
 about(EF,PF)
 ;
 
-cause(feeling_n_01(), F/fail(person(),t/test()))
-=>
+cause(feeling.n.01(), F/fail(person(),t/test()))
+-> emo_fail_test ->
 property(F, negative)
 property(t, hard)
 ;

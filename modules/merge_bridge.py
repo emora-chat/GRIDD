@@ -24,7 +24,7 @@ class MergeBridge:
             kept = working_memory.merge(concept1, concept2)
             replaced = concept2 if kept == concept1 else concept1
             merge_map[replaced] = kept
-            if replaced in merge_map.values(): # If merges are chained, need to re-merge previous nodes that receive a later merge
+            if replaced in merge_map.values(): # If merges are chained, must re-merge previous nodes that receive a later merge
                 for v1, v2 in visited:
                     if v1 == replaced:
                         working_memory.merge(v1, kept)

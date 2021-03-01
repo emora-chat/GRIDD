@@ -9,17 +9,39 @@ class NodeFeatures(defaultdict):
         if values is not None and len(values) > 0:
             super().update(values)
 
-    def update(self, other, id_map=None):
+    def update(self, other, id_map=None, concepts=None):
         for node, features in other.items():
-            if id_map is not None:
-                node = id_map.get(node)
-            for feature, other_value in features.items():
-                self[node][feature] = max(self[node].get(feature, 0.0), other_value)
+            if concepts is None or node in concepts:
+                if id_map is not None:
+                    node = id_map.get(node)
+                if 'salience' in self[node] or 'salience' in features:
+                    self[node]['salience'] = max(self[node].get('salience', 0.0), features.get('salience', 0.0))
+                if 'cover' in self[node] or 'cover' in features:
+                    self[node]['cover'] = max(self[node].get('cover', 0.0), features.get('cover', 0.0))
+                if 'coldstart' in self[node] or 'coldstart' in features:
+                    self[node]['coldstart'] = max(self[node].get('coldstart', 0.0), features.get('coldstart', 0.0))
+                if 'span_data' in features:
+                    if 'span_data' in self[node]:
+                        print('Exists: ', self[node]['span_data'])
+                        print('Update: ', features[node]['span_data'])
+                        raise Exception('Node already has span info!')
+                    else:
+                        self[node]['span_data'] = features['span_data']
 
     def merge(self, kept, replaced):
-        self[kept]['salience'] = max(self[kept].get('salience', 0.0), self[replaced].get('salience', 0.0))
-        self[kept]['cover'] = max(self[kept].get('cover', 0.0), self[replaced].get('cover', 0.0))
-        self[kept]['coldstart'] = max(self[kept].get('coldstart', 0.0), self[replaced].get('coldstart', 0.0))
+        if 'salience' in self[kept] or 'salience' in self[replaced]:
+            self[kept]['salience'] = max(self[kept].get('salience', 0.0), self[replaced].get('salience', 0.0))
+        if 'cover' in self[kept] or 'cover' in self[replaced]:
+            self[kept]['cover'] = max(self[kept].get('cover', 0.0), self[replaced].get('cover', 0.0))
+        if 'coldstart' in self[kept] or 'coldstart' in self[replaced]:
+            self[kept]['coldstart'] = max(self[kept].get('coldstart', 0.0), self[replaced].get('coldstart', 0.0))
+        if 'span_data' in self[replaced]:
+            if 'span_data' in self[kept]:
+                print('Replaced: ', self[replaced]['span_data'])
+                print('Kept: ', self[kept]['span_data'])
+                raise Exception('Cannot merge two span nodes!')
+            else:
+                self[kept]['span_data'] = self[replaced]['span_data']
         del self[replaced]
 
     def update_from_ontology(self, elements):

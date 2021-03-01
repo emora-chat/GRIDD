@@ -150,8 +150,8 @@ class ParseToLogic:
                 if center not in centers_handled:
                     self._update_centers(centers_handled, post, center, solution)
                     post_to_ewm_map = {node: self._get_concept_of_span(solution[node], ewm)
-                         for node in post.concepts()
-                         if node in solution and node in [center_var,expression_var,concept_var]}
+                                       for node in post.concepts()
+                                       if node in solution and node in [center_var,expression_var,concept_var]}
                     cg = ConceptGraph(namespace='ment_')
                     post_to_cg_map = cg.concatenate(post)
                     for post_node, ewm_node in post_to_ewm_map.items():
