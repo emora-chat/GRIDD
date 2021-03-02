@@ -295,11 +295,20 @@ class ChatbotServer:
                                             self.kb, load_coldstarts=load_coldstarts)
             self.update_current_turn_state(current_state, msg)
 
+            if self.debug:
+                print('\nWorking Memory after Utterance Integration:')
+                saved_wm = json.loads(msg["wm"])
+                working_memory = WorkingMemory(self.kb)
+                ConceptGraph.load(working_memory, saved_wm)
+                print(working_memory.ugly_print(exclusions={'is_type', 'object', 'predicate', 'entity', 'post', 'pre',
+                                                            'def', 'span', 'datetime'}))
+                print()
+
             msg = dialogue_inference_handler(self.dialogue_inference, self.convert_state(current_state), self.kb)
             self.update_current_turn_state(current_state, msg)
 
             if self.debug:
-                print('Working Memory:')
+                print('\nWorking Memory after Inference:')
                 saved_wm = json.loads(msg["wm"])
                 working_memory = WorkingMemory(self.kb)
                 ConceptGraph.load(working_memory, saved_wm)
