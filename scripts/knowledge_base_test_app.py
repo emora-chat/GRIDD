@@ -70,8 +70,13 @@ if __name__ == '__main__':
         rules_dir = join(join('gridd_files', 'kb_test', 'rules'))
         rules = [rules_dir]
 
+        debug = input('Debug [y/n]: ')
+        if debug.lower().strip()[0] == 'y':
+            debug = True
+        else:
+            debug = False
         chatbot = ChatbotServer()
-        chatbot.initialize_full_pipeline(kb_files=kb_files, rules=rules, device='cpu')
+        chatbot.initialize_full_pipeline(kb_files=kb_files, rules=rules, device='cpu', local=True, debug=debug)
         chatbot.chat(load_coldstarts=False)
 
 

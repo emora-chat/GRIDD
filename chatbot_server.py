@@ -246,7 +246,7 @@ class ChatbotServer:
     """
     Implementation of full chatbot pipeline in server architecture.
     """
-    def initialize_full_pipeline(self, kb_files, rules, device='cpu', local=False):
+    def initialize_full_pipeline(self, kb_files, rules, device='cpu', local=False, debug=False):
         self.kb = KnowledgeBase(kb_files)
         self.nlp_processing = init_nlp_preprocessing()
         self.utter_conversion = init_utter_conversion(device, self.kb)
@@ -255,6 +255,7 @@ class ChatbotServer:
         self.response_selection = init_response_selection()
         self.response_generation = init_response_generation()
         self.local = local
+        self.debug = debug
 
     def add_new_turn_state(self, current_state):
         for key in current_state:
@@ -275,6 +276,7 @@ class ChatbotServer:
         current_state = {'utter': [None,None], 'wm': [None,None], 'aux_state': [None,None]}
 
         while True:
+            print('-' * 10)
             if static_utter is None:
                 utter = input('User: ')
             else:
@@ -293,15 +295,17 @@ class ChatbotServer:
                                             self.kb, load_coldstarts=load_coldstarts)
             self.update_current_turn_state(current_state, msg)
 
-            print('Working Memory:')
-            saved_wm = json.loads(msg["wm"])
-            working_memory = WorkingMemory(self.kb)
-            ConceptGraph.load(working_memory, saved_wm)
-            print(working_memory.ugly_print(exclusions={'is_type', 'object', 'predicate', 'entity', 'post', 'pre',
-                                                        'def', 'span', 'datetime'}))
-            print('-'*10)
             msg = dialogue_inference_handler(self.dialogue_inference, self.convert_state(current_state), self.kb)
             self.update_current_turn_state(current_state, msg)
+
+            if self.debug:
+                print('Working Memory:')
+                saved_wm = json.loads(msg["wm"])
+                working_memory = WorkingMemory(self.kb)
+                ConceptGraph.load(working_memory, saved_wm)
+                print(working_memory.ugly_print(exclusions={'is_type', 'object', 'predicate', 'entity', 'post', 'pre',
+                                                            'def', 'span', 'datetime'}))
+                print()
 
             msg = response_selection_handler(self.response_selection, self.convert_state(current_state), self.kb)
             self.update_current_turn_state(current_state, msg)
@@ -331,5 +335,5 @@ if __name__ == '__main__':
     rules = [rules_dir]
 
     chatbot = ChatbotServer()
-    chatbot.initialize_full_pipeline(kb_files=kb, rules=rules, device='cpu', local=True)
+    chatbot.initialize_full_pipeline(kb_files=kb, rules=rules, device='cpu', local=True, debug=True)
     chatbot.chat(load_coldstarts=True)

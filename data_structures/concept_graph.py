@@ -382,7 +382,7 @@ class ConceptGraph:
 
     def ugly_print(self, exclusions=None):
         strings = defaultdict(list)
-        preds = ['type', 'def', 'instantiative', 'referential', 'question']
+        preds = ['type', 'ref', 'def', 'instantiative', 'referential', 'question']
         for pred in preds:
             if exclusions is None or pred not in exclusions:
                 for s, t, o, i in self.predicates(predicate_type=pred):
