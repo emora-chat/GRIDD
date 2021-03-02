@@ -13,6 +13,7 @@ class ElitModels:
     Interacts with running ELIT server to retrieve ELIT model outputs for a given turn
     """
     def __init__(self):
+        print('init elit models')
         self.model = Client('http://0.0.0.0:8000')
 
     # todo - call elit_model.create_coref_context_from_online_output() and get_turn_history() before using coref_context in parse()

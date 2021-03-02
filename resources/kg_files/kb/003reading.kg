@@ -1,0 +1,42 @@
+read<predicate>
+read[read,reads]
+
+character<entity>
+genre<entity>
+nonfiction<genre>
+fiction<genre>
+
+harrypotter=book()
+harrypotter[harry potter]
+
+hermione=character()
+hermione[hermione granger]
+ron=character()
+ron[ron weasley]
+harry=character()
+
+location<entity>
+school<location>
+hogwarts=school()
+
+activity<entity>
+entertainment<activity>
+game<entertainment>
+sport<game>
+quidditch=sport()
+
+interesting<predicate>
+fictional<predicate>
+real<predicate>
+stupid<predicate>
+smart<predicate>
+powerful<predicate>
+good<predicate>
+favorite<predicate>
+
+cool<predicate>
+lame<predicate>
+boring<predicate>
+informative<predicate>
+reckless<predicate>
+;

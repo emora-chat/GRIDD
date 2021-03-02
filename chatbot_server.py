@@ -247,15 +247,18 @@ class ChatbotServer:
     Implementation of full chatbot pipeline in server architecture.
     """
     def initialize_full_pipeline(self, kb_files, rules, device='cpu', local=False, debug=False):
+        self.local = local
+        self.debug = debug
         self.kb = KnowledgeBase(*kb_files)
-        self.nlp_processing = init_nlp_preprocessing()
+        self.nlp_processing = None
+        if not self.local:
+            self.nlp_processing = init_nlp_preprocessing()
         self.utter_conversion = init_utter_conversion(device, self.kb)
         self.utter_integration = init_utter_integration()
         self.dialogue_inference = init_dialogue_inference(rules)
         self.response_selection = init_response_selection()
         self.response_generation = init_response_generation()
-        self.local = local
-        self.debug = debug
+
 
     def add_new_turn_state(self, current_state):
         for key in current_state:
@@ -346,4 +349,4 @@ if __name__ == '__main__':
 
     chatbot = ChatbotServer()
     chatbot.initialize_full_pipeline(kb_files=kb, rules=rules, device='cpu', local=True, debug=True)
-    chatbot.chat(load_coldstarts=True)
+    chatbot.chat(load_coldstarts=False)

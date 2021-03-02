@@ -1,0 +1,25 @@
+read(x/person(), y/book())
+=>
+yig/is(y, g/genre())
+question(g)
+time(yig,now)
+
+xlr/like(x, xr/read(x))
+time(xr,now)
+xr{"cover": 1}
+time(xlr,now)
+question(xlr)
+
+xfc/favorite(x, c/character())
+ciy/in(c, y)
+ciy{"cover": 1}
+question(c)
+time(xfc, now)
+
+xfe/favorite(x, e/event())
+eiy/in(e, y)
+eiy{"cover": 1}
+question(e)
+time(xfe, now)
+;
+
