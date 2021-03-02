@@ -1,4 +1,4 @@
-efh/feel.v.01(emora, h/happiness.n.01())
+efh/feel.v.01(bot, h/happiness.n.01())
 time(efh, today)
 
 book<entity>
@@ -13,9 +13,6 @@ judgment<entity>
 positive<judgment>
 negative<judgment>
 
-cause(h, read(emora, the_hobbit))
+cause(h, read(bot, the_hobbit))
 property(the_hobbit, interesting)
 property(the_hobbit, fantasy)
-
-name<entity>
-day<entity>

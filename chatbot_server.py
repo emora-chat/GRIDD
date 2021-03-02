@@ -247,7 +247,7 @@ class ChatbotServer:
     Implementation of full chatbot pipeline in server architecture.
     """
     def initialize_full_pipeline(self, kb_files, rules, device='cpu', local=False, debug=False):
-        self.kb = KnowledgeBase(kb_files)
+        self.kb = KnowledgeBase(*kb_files)
         self.nlp_processing = init_nlp_preprocessing()
         self.utter_conversion = init_utter_conversion(device, self.kb)
         self.utter_integration = init_utter_integration()
@@ -330,7 +330,8 @@ class ChatbotServer:
                 break
 
 if __name__ == '__main__':
-    kb = join('GRIDD', 'resources', 'kg_files', 'kb')
+    kb_dir = join('GRIDD', 'resources', 'kg_files', 'kb')
+    kb = [kb_dir]
     rules_dir = join('GRIDD', 'resources', 'kg_files', 'rules')
     rules = [rules_dir]
 

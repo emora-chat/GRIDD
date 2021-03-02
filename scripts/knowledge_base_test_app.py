@@ -65,15 +65,16 @@ if __name__ == '__main__':
             print('*'*20)
             logic_string = input('>>> ')
     else:
-        print("<< LANGUAGE MODE >>")
         kb_files = join('gridd_files', 'kb_test', 'kb')
         rules_dir = join(join('gridd_files', 'kb_test', 'rules'))
         rules = [rules_dir]
 
         debug = input('Debug [y/n]: ')
-        if debug.lower().strip()[0] == 'y':
+        if len(debug.strip()) > 0 and debug.lower().strip()[0] == 'y':
+            print("<< LANGUAGE MODE (DEBUG) >>")
             debug = True
         else:
+            print("<< LANGUAGE MODE >>")
             debug = False
         chatbot = ChatbotServer()
         chatbot.initialize_full_pipeline(kb_files=kb_files, rules=rules, device='cpu', local=True, debug=debug)

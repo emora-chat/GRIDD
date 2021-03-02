@@ -1,25 +1,41 @@
-E/feeling.n.01()
--> emo ->
-cause(E, o/object())
+F/feel.v.01(person(), feeling.n.01())
+-> feel_emo_cause ->
+cause(F, o/object())
+question(o)
+;
+
+F/be(person(), feeling.n.01())
+-> be_emo_cause ->
+cause(F, o/object())
 question(o)
 ;
 
 F/feel.v.01(person(), pos_feeling())
--> pos_emo ->
-property(F, positive)
+-> feel_pos_emo ->
+fig/be(F,good)
+fig{"cover": 1}
+believe(bot, fig)
+;
+
+F/be(person(), pos_feeling())
+-> be_pos_emo ->
+fig/be(F,good)
+fig{"cover": 1}
+believe(bot, fig)
 ;
 
 PF/feel.v.01(person(), neg_feeling())
--> neg_emo ->
-property(PF, negative)
-EF/feel(emora, sorry)
+-> feel_neg_emo ->
+bfs/feel(bot, sorry)
+bfs{"cover": 1}
 about(EF,PF)
 ;
 
-cause(feeling.n.01(), F/fail(person(),t/test()))
--> emo_fail_test ->
-property(F, negative)
-property(t, hard)
+PF/be(person(), neg_feeling())
+-> be_neg_emo ->
+bfs/feel(bot, sorry)
+bfs{"cover": 1}
+about(EF,PF)
 ;
 
 

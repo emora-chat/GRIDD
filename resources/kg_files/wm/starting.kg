@@ -1,8 +1,9 @@
-b/be(n/name(), o/object())
-question(o)
-possess(user,n)
-time(b,now)
-b{"coldstart": 1, "salience": 0.999}
+bun/use(bot,n/name())
+indirect_obj(bun,user)
+mode(bun,should)
+question(n)
+time(bun,now)
+bun{"coldstart": 1, "salience": 0.999}
 ;
 
 b/be(user,q/qualifier())
@@ -12,8 +13,8 @@ b{"coldstart": 1, "salience": 0.998}
 ;
 
 possess(user,d/day())
-b/be(d,p/property())
-question(p)
+b/be(d,q/qualifier())
+question(q)
 time(b,now)
-b{"coldstart": 1, "salience": 0.6}
+b{"coldstart": 1, "salience": 0.3}
 ;

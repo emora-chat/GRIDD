@@ -1,3 +1,8 @@
+p/buy(X/person(),Y/object())
+-> buy_to_ownership ->
+possess(X, Y)
+;
+
 p/buy(X/person(),Y/house())
 time(p,past)
 -> buy_house ->
