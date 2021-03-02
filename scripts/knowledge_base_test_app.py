@@ -24,7 +24,7 @@ if __name__ == '__main__':
         with open(join(kb, 'kb.kg'), 'w') as f:
             f.write('\n')
 
-    mode = input('Mode [logic/lang]: ')
+    mode = input('Mode [lang/logic]: ')
     if mode.lower() == 'logic':
         print("<< LOGIC MODE >>")
         print('loading kb...')
@@ -66,10 +66,11 @@ if __name__ == '__main__':
             logic_string = input('>>> ')
     else:
         kb_files = join('gridd_files', 'kb_test', 'kb')
+        kb = [kb_files]
         rules_dir = join(join('gridd_files', 'kb_test', 'rules'))
         rules = [rules_dir]
 
-        debug = input('Debug [y/n]: ')
+        debug = input('Debug [n/y]: ')
         if len(debug.strip()) > 0 and debug.lower().strip()[0] == 'y':
             print("<< LANGUAGE MODE (DEBUG) >>")
             debug = True
@@ -77,7 +78,7 @@ if __name__ == '__main__':
             print("<< LANGUAGE MODE >>")
             debug = False
         chatbot = ChatbotServer()
-        chatbot.initialize_full_pipeline(kb_files=kb_files, rules=rules, device='cpu', local=True, debug=debug)
+        chatbot.initialize_full_pipeline(kb_files=kb, rules=rules, device='cpu', local=True, debug=debug)
         chatbot.chat(load_coldstarts=False)
 
 
