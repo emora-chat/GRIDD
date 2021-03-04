@@ -119,4 +119,11 @@ must[must]
 
 go<predicate>
 go[go,went,goes,going]
+
+unknown_noun<object>
+unknown_adj<object>
+unknown_verb<object>
+unknown_pron<object>
+unknown_adv<object>
+unknown_other<object>
 ;

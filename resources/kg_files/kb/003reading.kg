@@ -1,6 +1,3 @@
-read<predicate>
-read[read,reads]
-
 character<entity>
 genre<entity>
 nonfiction<genre>
@@ -39,4 +36,7 @@ lame<predicate>
 boring<predicate>
 informative<predicate>
 reckless<predicate>
+
+read<predicate>
+read[read,reads]
 ;
