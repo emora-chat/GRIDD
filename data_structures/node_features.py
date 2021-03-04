@@ -74,6 +74,18 @@ class NodeFeatures(defaultdict):
             self[pred[3]]['salience'] = 1.0
             self[pred[3]]['cover'] = 1.0
 
+    def get_reference_links(self, element=None):
+        if element is not None:
+            if element in self:
+                return self[element].get('refl', None)
+            return None
+        else:
+            references = {}
+            for item, features in self.items():
+                if 'refl' in features:
+                    references[item] = features['refl']
+            return references
+
     def copy(self):
         return NodeFeatures(self)
 

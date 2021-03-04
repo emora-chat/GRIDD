@@ -91,19 +91,19 @@ class NodeFeaturesSpec:
         """
         pass
 
-    def update_from_mentions(node_features, elements):
+    def update_from_mentions(node_features, elements, wm):
         """
         Update features of nodes added as a mention identification.
         """
         pass
 
-    def update_from_inference(node_features, elements):
+    def update_from_inference(node_features, elements, wm):
         """
         Update features of nodes added as an inference.
         """
         pass
 
-    def update_from_response(node_features, elements):
+    def update_from_response(node_features, main_predicate, expansion_predicates):
         """
         Update features of nodes which are selected/expanded as response predicates.
         """
@@ -112,3 +112,30 @@ class NodeFeaturesSpec:
     def copy(node_features):
         cp = node_features.copy()
         assert id(cp) != id(node_features)
+
+    def to_json(node_features):
+        pass
+
+    def from_json(node_features, json_dict, id_map=None):
+        pass
+
+    @specification.init
+    def get_reference_links(NodeFeatures, element=None):
+        """
+        Return the reference nodes and their links present in the node features.
+
+        If a specific element is specified,
+            Return the reference links of `element` in `node_features`, if they exist.
+            Otherwise, return None.
+        """
+        node_features = NodeFeatures(
+            {'A': {'refl': ['a', 'aa']},
+             'B': {'refl': ['b']},
+             'C': {'salience': 1.0}
+            }
+        )
+        assert node_features.get_reference_links() == {
+            'A': ['a', 'aa'],
+            'B': ['b']
+        }
+        assert node_features.get_reference_links('A') == ['a', 'aa']
