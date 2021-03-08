@@ -37,9 +37,12 @@ class Chatbot:
     Implementation of full chatbot pipeline. Instantiate and chat!
     """
 
-    def __init__(self, *knowledge_base, starting_wm, rules, device='cpu'):
+    def __init__(self, *knowledge_base, rules, starting_wm=None, device='cpu'):
         self.knowledge_base = KnowledgeBase(*knowledge_base)
-        self.working_memory = WorkingMemory(self.knowledge_base, starting_wm)
+        if starting_wm is not None:
+            self.working_memory = WorkingMemory(self.knowledge_base, starting_wm)
+        else:
+            self.working_memory = WorkingMemory(self.knowledge_base)
         self.auxiliary_state = {'turn_index': 0}
 
         c = Pipeline.component
@@ -148,12 +151,12 @@ if __name__ == '__main__':
     # rules = [join(rules_dir, file) for file in os.listdir(rules_dir) if file.endswith('.kg')]
 
     if interactive:
-        chatbot = Chatbot(kb, starting_wm=starting_wm, rules=rules)
+        chatbot = Chatbot(kb, rules=rules, starting_wm=starting_wm)
         chatbot.chat()
     else:
         # print(ChatbotSpec.verify(Chatbot))
         for i in range(1):
-            chatbot = Chatbot(kb, starting_wm=starting_wm, rules=rules)
+            chatbot = Chatbot(kb, rules=rules, starting_wm=starting_wm)
             r = chatbot.respond('I bought a car')
             print('\nResponse: ', r)
             r = chatbot.respond('I bought a house')

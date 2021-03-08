@@ -41,7 +41,7 @@ cover(D)
 ;
 
 cop(X/pstg(), Y/present_tense())
-nsbj(X, Z/pstg())
+csbj(X, Z/pstg())
 det(X, D/question_word())
 -> qdet_ccopula_present ->
 is_type(Y)
@@ -69,7 +69,7 @@ cover(D)
 ;
 
 cop(X/pstg(), Y/past_tense())
-nsbj(X, Z/pstg())
+csbj(X, Z/pstg())
 det(X, D/question_word())
 -> qdet_ccopula_past ->
 is_type(Y)
@@ -1234,7 +1234,7 @@ center(X)
 ;
 
 
-comp(X/pos(), Y/pos())
+comp(X/pstg(), Y/pstg())
 -> lone_comp ->
 p/property(X, Y)
 focus(p)

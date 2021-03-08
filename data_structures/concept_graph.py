@@ -8,7 +8,7 @@ from GRIDD.data_structures.id_map import IdMap
 from structpy.map.index.index import Index
 from GRIDD.data_structures.span import Span
 CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-from collections import defaultdict
+from collections import defaultdict, deque
 import json, copy
 from GRIDD.utilities import Counter, collect
 import GRIDD.globals
@@ -328,6 +328,27 @@ class ConceptGraph:
                             self.add(id_map.get(concept))
         self.features.update(concept_graph.features, id_map)
         return id_map
+
+    def graph_component_siblings(self, source, target):
+        target = set(self.predicate(target)) if self.has(predicate_id=target) else {target}
+        visited = set()
+        frontier = deque([source])
+        # print('\n %s -> %s'%(source, target))
+        while len(frontier) > 0:
+            # print(frontier)
+            node = frontier.popleft()
+            # print(node)
+            if node in target:
+                return True
+            if node not in visited:
+                visited.add(node)
+                if self.has(predicate_id=node):
+                    nodes = self.predicate(node)
+                    frontier.extend([nodes[0],nodes[2]])
+                else:
+                    frontier.extend(self.related(node))
+        return False
+
 
     def copy(self, namespace=None):
         if namespace is None:

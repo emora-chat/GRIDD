@@ -76,7 +76,7 @@ Represented as `copula(nsbj, question(question_concept))`.
 	;
 	
 	cop(X/pstg(), Y/present_tense())
-	nsbj(X, Z/pstg())
+	csbj(X, Z/pstg())
 	det(X, D/question_word())
 	-> qdet_ccopula_present ->
 	is_type(Y)
@@ -104,7 +104,7 @@ Represented as `copula(nsbj, question(question_concept))`.
 	;
 	
 	cop(X/pstg(), Y/past_tense())
-	nsbj(X, Z/pstg())
+	csbj(X, Z/pstg())
 	det(X, D/question_word())
 	-> qdet_ccopula_past ->
 	is_type(Y)
