@@ -14,7 +14,8 @@ class ParserStruct:
 class KnowledgeParser:
 
     _grammar = r"""
-                start: knowledge+
+                start: (knowledge | comment)+
+                comment: "/*" /[a-zA-Z0-9 .,\-"'=!?]+/ "*/"
                 knowledge: ((bipredicate | monopredicate | instance | ontological | metadata | expression )+ ";") | ((anon_rule | named_rule | inference | implication) ";")
                 anon_rule: conditions "=>" conditions
                 named_rule: conditions "->" type "->" conditions
