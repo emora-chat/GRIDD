@@ -73,6 +73,8 @@ class KnowledgeParserSpec:
             meow(X)
             ;
 
+            /* my comment */
+
             X=dog()
             -> dog_rule ->
             bark(X)
