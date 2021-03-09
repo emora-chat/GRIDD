@@ -1,7 +1,6 @@
 import GRIDD.globals as globals
-
 from itertools import chain
-
+from GRIDD.data_structures.reference_gatherer import gather
 
 class MergeBridge:
 
@@ -29,6 +28,11 @@ class MergeBridge:
                     if v1 == replaced:
                         working_memory.merge(v1, kept)
             visited.append((kept, replaced))
+
+        # convert reference spans to reference predicates
+        for node, features in working_memory.features.items():
+            if 'refl' in features:
+                features['refl'] = gather(node, features['refl'], working_memory)
 
         if globals.DEBUG:
             print("<< Working Memory after NLU >>")
