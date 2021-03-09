@@ -3,7 +3,7 @@ from GRIDD.modules.text_to_logic_model import ParseToLogic
 from GRIDD.data_structures.concept_graph import ConceptGraph
 import GRIDD.data_structures.knowledge_base as knowledge_base_file
 from GRIDD.data_structures.working_memory import WorkingMemory
-from GRIDD.modules.elit_dp_spec import ElitDPSpec
+from GRIDD.modules.elit_dp_to_logic_spec import ElitDPSpec
 
 import os
 from os.path import join

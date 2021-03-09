@@ -29,9 +29,15 @@ class NodeFeatures(defaultdict):
                     else:
                         self[node]['span_data'] = features['span_data']
                 if 'comps' in self[node] and 'comps' in features:
-                    self[node]['comps'] = self[node]['comps'].union(set([id_map.get(comp) if comp in id_map else comp for comp in features['comps']]))
+                    self[node]['comps'] = list(set(self[node]['comps']).union(set([id_map.get(comp)
+                                                                                   if comp in id_map else comp
+                                                                                   for comp in features['comps']])))
                 elif 'comps' in features:
-                    self[node]['comps'] = set([id_map.get(comp) if comp in id_map else comp for comp in features['comps']])
+                    self[node]['comps'] = [id_map.get(comp) if comp in id_map else comp for comp in features['comps']]
+                if 'refl' in self[node] and 'refl' in features:
+                    self[node]['refl'] = list(set(self[node]['refl']).union(set(features['refl'])))
+                elif 'refl' in features:
+                    self[node]['refl'] = features['refl']
 
     def merge(self, kept, replaced):
         if 'salience' in self[kept] or 'salience' in self[replaced]:
@@ -48,13 +54,17 @@ class NodeFeatures(defaultdict):
             else:
                 self[kept]['span_data'] = self[replaced]['span_data']
         if 'comps' in self[kept] and 'comps' in self[replaced]:
-            self[kept]['comps'] = self[kept]['comps'].union(self[replaced]['comps'])
+            self[kept]['comps'] = list(set(self[kept]['comps']).union(self[replaced]['comps']))
         elif 'comps' in self[replaced]:
             self[kept]['comps'] = self[replaced]['comps']
         for node, features in self.items(): # todo - more efficient way of doing this - keep record of all nodes with `comps` feature
             if 'comps' in features and replaced in features['comps']:
                 features['comps'].remove(replaced)
-                features['comps'].add(kept)
+                features['comps'].append(kept)
+        if 'refl' in self[kept] and 'refl' in self[replaced]:
+            self[kept]['refl'] = list(set(self[kept]['refl']).union(set(self[replaced]['refl'])))
+        elif 'refl' in self[replaced]:
+            self[kept]['refl'] = self[replaced]['refl']
         del self[replaced]
 
     def update_from_ontology(self, elements):

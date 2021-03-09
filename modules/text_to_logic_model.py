@@ -4,6 +4,7 @@ from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.knowledge_parser import KnowledgeParser
 from GRIDD.data_structures.inference_engine import InferenceEngine
 from GRIDD.data_structures.id_map import IdMap
+from GRIDD.data_structures.reference_identifier import REFERENCES_BY_RULE
 import torch, gc
 
 LOCALDEBUG = False
@@ -142,7 +143,7 @@ class ParseToLogic:
         mentions = {}
         mention_ids = IdMap(namespace='ment_')
         for rule, solutions in assignments.items():
-            pre, post = rule[0], rule[1]
+            pre, post, rule_name = rule[0], rule[1], rule[2]
             ((center_var,t,o,i),) = post.predicates(predicate_type='center')
             for solution in solutions:
                 (expression_var,) = pre.objects(center_var, 'ref')
@@ -164,6 +165,12 @@ class ParseToLogic:
                         else:
                             cg.merge(ewm_node, cg_node, strict_order=True)
                         self._add_unknowns_to_cg(ewm_node, ewm, cg_node, cg)
+                    # gather component predicates of mention
+                    ((focus_node, _, _, _),) = cg.predicates(predicate_type='focus')
+                    cg.features[focus_node]['comps'] = [pred[3] for pred in cg.predicates()]
+                    # identify reference spans
+                    if rule_name in REFERENCES_BY_RULE:
+                        cg.features[focus_node]['refl'] = REFERENCES_BY_RULE[rule_name](center, ewm)
                     mentions[center] = cg
         return mentions
 

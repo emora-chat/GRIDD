@@ -1,14 +1,22 @@
-from GRIDD.data_structures.reference_identifier_spec import ReferenceIdentifierSpec
+import os
 
-class ReferenceIdentifier:
+DP_LABELS = [x.strip()
+             for x in open(os.path.join('GRIDD', 'resources', 'elit_dp_labels.txt'), 'r').readlines()
+             if len(x.strip()) > 0]
 
-    def __init__(self, reference_by_rule):
-        self.reference_by_rule = reference_by_rule
+def alignment_ref(ref_span_node, cg):
+    frontier = [ref_span_node]
+    subtree = set()
+    while len(frontier) > 0:
+        node = frontier.pop(0)
+        for s,t,o,i in cg.predicates(node):
+            if t in DP_LABELS:
+                frontier.append(o)
+                subtree.add(o)
+    return list(subtree)
 
-    def identify(self, rule, span, data_dict):
-        if rule in self.reference_by_rule:
-            return self.reference_by_rule[rule](span, data_dict)
-        return None
-
-if __name__ == '__main__':
-    print(ReferenceIdentifierSpec.verify(ReferenceIdentifier))
+REFERENCES_BY_RULE = {
+    'obj_of_possessive': alignment_ref,
+    'ref_concept_determiner': alignment_ref,
+    'ref_determiner': alignment_ref
+}
