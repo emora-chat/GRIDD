@@ -3,8 +3,8 @@ from abc import abstractmethod
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.knowledge_parser import KnowledgeParser
 from GRIDD.data_structures.inference_engine import InferenceEngine
+from GRIDD.data_structures.id_map import IdMap
 import torch, gc
-from GRIDD.utilities import collect
 
 LOCALDEBUG = False
 
@@ -59,7 +59,7 @@ class ParseToLogic:
         """
         pass
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args):
         """
         Run the text to logic algorithm using *args as input to translate()
         """
@@ -140,6 +140,7 @@ class ParseToLogic:
         """
         centers_handled = set()
         mentions = {}
+        mention_ids = IdMap(namespace='ment_')
         for rule, solutions in assignments.items():
             pre, post = rule[0], rule[1]
             ((center_var,t,o,i),) = post.predicates(predicate_type='center')
@@ -152,13 +153,12 @@ class ParseToLogic:
                     post_to_ewm_map = {node: self._get_concept_of_span(solution[node], ewm)
                                        for node in post.concepts()
                                        if node in solution and node in [center_var,expression_var,concept_var]}
-                    cg = ConceptGraph(namespace='ment_')
+                    cg = ConceptGraph(namespace=mention_ids)
                     post_to_cg_map = cg.concatenate(post)
                     for post_node, ewm_node in post_to_ewm_map.items():
                         cg_node = post_to_cg_map[post_node]
                         cg.add(ewm_node)
                         cg.features.update(ewm.features, concepts={center})
-                        # cg.features[center]["span_data"] = ewm.features[center]["span_data"]
                         if ewm_node.startswith(ewm.id_map().namespace):
                             cg.merge(cg_node, ewm_node, strict_order=True)
                         else:

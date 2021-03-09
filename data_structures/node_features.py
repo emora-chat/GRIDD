@@ -14,7 +14,7 @@ class NodeFeatures(defaultdict):
         for node, features in other.items():
             if concepts is None or node in concepts:
                 if id_map is not None:
-                    node = id_map.get(node)
+                    node = id_map.get(node) if node in id_map else node
                 if 'salience' in self[node] or 'salience' in features:
                     self[node]['salience'] = max(self[node].get('salience', 0.0), features.get('salience', 0.0))
                 if 'cover' in self[node] or 'cover' in features:
@@ -28,6 +28,10 @@ class NodeFeatures(defaultdict):
                         raise Exception('Node already has span info!')
                     else:
                         self[node]['span_data'] = features['span_data']
+                if 'comps' in self[node] and 'comps' in features:
+                    self[node]['comps'] = self[node]['comps'].union(set([id_map.get(comp) if comp in id_map else comp for comp in features['comps']]))
+                elif 'comps' in features:
+                    self[node]['comps'] = set([id_map.get(comp) if comp in id_map else comp for comp in features['comps']])
 
     def merge(self, kept, replaced):
         if 'salience' in self[kept] or 'salience' in self[replaced]:
@@ -43,6 +47,14 @@ class NodeFeatures(defaultdict):
                 raise Exception('Cannot merge two span nodes!')
             else:
                 self[kept]['span_data'] = self[replaced]['span_data']
+        if 'comps' in self[kept] and 'comps' in self[replaced]:
+            self[kept]['comps'] = self[kept]['comps'].union(self[replaced]['comps'])
+        elif 'comps' in self[replaced]:
+            self[kept]['comps'] = self[replaced]['comps']
+        for node, features in self.items(): # todo - more efficient way of doing this - keep record of all nodes with `comps` feature
+            if 'comps' in features and replaced in features['comps']:
+                features['comps'].remove(replaced)
+                features['comps'].add(kept)
         del self[replaced]
 
     def update_from_ontology(self, elements):

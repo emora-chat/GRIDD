@@ -379,5 +379,5 @@ if __name__ == '__main__':
     rules = [rules_dir]
 
     chatbot = ChatbotServer()
-    chatbot.initialize_full_pipeline(kb_files=kb, rules=rules, device='cpu', local=True, debug=True)
+    chatbot.initialize_full_pipeline(kb_files=kb, rules=rules, device='cpu', local=False, debug=True)
     chatbot.chat(load_coldstarts=False)

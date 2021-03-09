@@ -1,4 +1,5 @@
 from structpy import specification
+from GRIDD.data_structures.id_map import IdMap
 
 @specification
 class NodeFeaturesSpec:
@@ -23,42 +24,47 @@ class NodeFeaturesSpec:
         `id_map` specifies the mapping between the nodes in `other` to the nodes in self
         """
         node_features = NodeFeatures(
-            {'A':
-                {
+            {'A': {
                     'salience': 0.65,
-                    'cover': 0.60
+                    'cover': 0.60,
+                    'comps': {'orig', 'D'}
                 },
-            'B':
-                {
+            'B': {
                     'salience': 0.5,
                     'cover': 0.5
                 },
-            'D':
-                {
+            'D': {
                     'salience': 0.01,
                     'cover': 0.4
                 },
             }
         )
         node_features_2 = NodeFeatures(
-            {'A':
-                {
+            {'A': {
                     'salience': 0.5,
                     'cover': 0.5
                 },
-            'B':
-                {
+            'B': {
                     'salience': 0.75,
                     'cover': 0.85
                 },
-            'C':
-                {
+            'C': {
                     'salience': 0.1,
                     'cover': 0.2
+                },
+            'X': {
+                    'comps': {'x'}
+                },
+            'Z': {
+                    'comps': {'z', 'zz'}
                 }
             }
         )
-        node_features.update(node_features_2)
+        id_map = IdMap()
+        for key, value in {'Z': 'A', 'z': 'a', 'zz': 'aa', 'X': 'E', 'x': 'e'}.items():
+            id_map[key] = value
+
+        node_features.update(node_features_2, id_map=id_map)
         assert node_features['A']['salience'] == 0.65
         assert node_features['A']['cover'] == 0.60
         assert node_features['B']['salience'] == 0.75
@@ -67,6 +73,10 @@ class NodeFeaturesSpec:
         assert node_features['C']['cover'] == 0.2
         assert node_features['D']['salience'] == 0.01
         assert node_features['D']['cover'] == 0.4
+        assert 'Z' not in node_features
+        assert node_features['A']['comps'] == {'orig', 'D', 'a', 'aa'}
+        assert 'X' not in node_features
+        assert node_features['E']['comps'] == {'e'}
         return node_features
 
     def merge(node_features, kept, replaced):
@@ -77,6 +87,7 @@ class NodeFeaturesSpec:
         assert 'D' not in node_features
         assert node_features['C']['salience'] == 0.1
         assert node_features['C']['cover'] == 0.4
+        assert node_features['A']['comps'] == {'orig', 'C', 'a', 'aa'}
 
     # todo - add tests for functions which perform feature updates after specific pipeline steps
     def update_from_ontology(node_features, elements):

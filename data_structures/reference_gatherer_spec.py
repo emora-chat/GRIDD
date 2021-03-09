@@ -43,10 +43,10 @@ class ReferenceGathererSpec:
             (red_span.to_string(), 'ref', 'cpr'),
             (car_span.to_string(), 'ref', 'c1')
         ])
-        graph.features['upc']['comps'] = []
-        graph.features['rpv']['comps'] = []
-        graph.features['cpr']['comps'] = ['prim1']
-        graph.features['c1']['comps'] = ['ctc', 'extra1']
+        graph.features['upc']['comps'] = set()
+        graph.features['rpv']['comps'] = set()
+        graph.features['cpr']['comps'] = {'prim1'}
+        graph.features['c1']['comps'] = {'ctc', 'extra1'}
         constraints_as_spans = {my_span.to_string(), very_span.to_string(),
                                 red_span.to_string()}
 

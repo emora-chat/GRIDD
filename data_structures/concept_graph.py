@@ -327,6 +327,7 @@ class ConceptGraph:
                            or concept_graph.type(concept) not in predicate_exclusions:
                             self.add(id_map.get(concept))
         self.features.update(concept_graph.features, id_map)
+        self.id_map().index = id_map.index
         return id_map
 
     def graph_component_siblings(self, source, target):
