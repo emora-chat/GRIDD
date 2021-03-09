@@ -50,15 +50,51 @@ class InferenceEngineSpec:
         like(x, z)
         '''.split(';')
 
-        t = time.time()
         solutions = inference_engine.infer(facts, *rules)
-        print('Elapsed: %.3f'%(time.time()-t))
 
         assert solutions_equal(solutions['like_happy'][2], [
                 {'a': 'john', 'b': 'mary', 'alb': 'jlm'},
                 {'a': 'mary', 'b': 'sally', 'alb': 'mls'}
             ]
         )
+
+        assert solutions_equal(solutions['trans_like'][2], [
+            {'x': 'john', 'y': 'mary', 'z': 'sally', 'xly': 'jlm', 'ylz': 'mls'}
+        ])
+
+
+        # KB negation test
+        facts = '''
+        jlm=like(john=object(), mary=object()){"confidence": -1}
+        mls=like(mary, sally=object())
+        '''
+        solutions = inference_engine.infer(facts, *rules)
+        assert solutions_equal(solutions['trans_like'][2], [])
+
+
+        # KB unsure test
+        facts = '''
+        jlm=like(john=object(), mary=object()){"confidence": 0}
+        mls=like(mary, sally=object())
+        '''
+        solutions = inference_engine.infer(facts, *rules)
+        assert solutions_equal(solutions['trans_like'][2], [])
+
+        # Query negation test
+        facts = '''
+        jlm=like(john=object(), mary=object()){"confidence": -0.6}
+        mls=like(mary, sally=object())
+        jlk=like(john=object(), kate=object()){"confidence": -0.4}
+        klt=like(kate, tom=object())
+        '''
+        rules = '''
+        xly=like(x=object(), y=object()){"confidence": -0.5}
+        ylz=like(y, z=object())
+        -> trans_like ->
+        like(x, z)
+        '''.split(';')
+
+        solutions = inference_engine.infer(facts, *rules)
 
         assert solutions_equal(solutions['trans_like'][2], [
             {'x': 'john', 'y': 'mary', 'z': 'sally', 'xly': 'jlm', 'ylz': 'mls'}

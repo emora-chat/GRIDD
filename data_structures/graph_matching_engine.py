@@ -1,7 +1,4 @@
 
-import os
-# print('Working dir:', os.getcwd())
-
 from GRIDD.data_structures.graph_matching_engine_spec import GraphMatchingEngineSpec
 
 from GRIDD.data_structures.id_map import IdMap
@@ -23,8 +20,8 @@ class GraphMatchingEngine:
     def match(self, data_graph, *query_graphs, limit=10):
         t_i = time()
         query_graphs = query_graph_var_preproc(*query_graphs)
-        data_adj_entries, data_attr_entries, data_ids, edge_ids, attr_ids = graph_to_entries(data_graph)
-        query_adj_entries, query_attr_entries, query_ids, _, _ = graph_to_entries(*query_graphs,
+        data_adj_entries, data_attr_entries, data_ids, edge_ids, attr_ids, quants = graph_to_entries(data_graph)
+        query_adj_entries, query_attr_entries, query_ids, _, _, thresholds = graph_to_entries(*query_graphs,
                             edge_ids=edge_ids, attribute_ids=attr_ids, with_disambiguation=True)
         query_adj = torch.LongTensor(list(chain(*query_adj_entries))).to(self.device)
         query_attr = entries_to_tensor(query_attr_entries, query_ids, attr_ids).to(self.device)
@@ -33,7 +30,10 @@ class GraphMatchingEngine:
             print('Setup time:', t_f-t_i)
         data_adj = torch.LongTensor(list(chain(*data_adj_entries))).to(self.device)
         data_attr = entries_to_tensor(data_attr_entries, data_ids, attr_ids).to(self.device)
+        quants = quants['num'].to(self.device)
+        thresholds = {k: v.to(self.device) for k, v in thresholds.items()}
         compatible_nodes = joined_subset(query_attr, data_attr)
+        compatible_nodes = quantitative_filter(compatible_nodes, quants, thresholds)
         query_nodes = torch.arange(0, query_attr.size(0), dtype=torch.long, device=self.device)
         floating_node_filter = ~row_membership(query_nodes.unsqueeze(1),
                                                torch.unique(torch.cat([query_adj[:,0], query_adj[:,1]], 0)).unsqueeze(1))
@@ -130,6 +130,7 @@ def graph_to_entries(*graphs, edge_ids=None, attribute_ids=None, with_disambigua
     """
     Returns (adjacencies, attributes, node id namespace, edge id namespace, attribute id namespace)
     """
+    quantities = {}
     with_disambiguation = len(graphs) > 1 or with_disambiguation
     if edge_ids is None:
         edge_ids = IdMap(namespace=int)
@@ -141,13 +142,16 @@ def graph_to_entries(*graphs, edge_ids=None, attribute_ids=None, with_disambigua
     for graph in graphs:
         for node in graph.nodes():
             if with_disambiguation:
-                node_ids.get((graph, node))
+                nid = node_ids.get((graph, node))
             else:
-                node_ids.get(node)
+                nid = node_ids.get(node)
             attribute_ids.get(node)
             if 'attributes' in graph.data(node):
                 for attribute in graph.data(node)['attributes']:
                     attribute_ids.get(attribute)
+            for quant_type in ['num', 'eq', 'ne', 'gt', 'lt', 'ge', 'le']:
+                if quant_type in graph.data(node):
+                    quantities.setdefault(quant_type, []).append([nid, graph.data(node)[quant_type]])
         if with_disambiguation:
             get_id = lambda n: node_ids[(graph, n)]
         else:
@@ -161,7 +165,8 @@ def graph_to_entries(*graphs, edge_ids=None, attribute_ids=None, with_disambigua
             if 'attributes' in graph.data(node):
                 for attr in graph.data(node)['attributes']:
                     attrs.append((get_id(node), attribute_ids[attr]))
-    return adjacencies, attrs, node_ids, edge_ids, attribute_ids
+    quantities = {k: torch.tensor(v) for k, v in quantities.items()}
+    return adjacencies, attrs, node_ids, edge_ids, attribute_ids, quantities
 
 def entries_to_tensor(attrs, node_ids, attribute_ids):
     attr_indices = torch.LongTensor(list(zip(*attrs)))
@@ -247,6 +252,31 @@ def combinations(*itemsets):
                 cn.extend(ce)
             c = cn
     return c
+
+def quantitative_filter(compatible_nodes, data_values, query_thresholds):
+    """
+    Filters `querynode x datanode` matrix `compatible_nodes` in-place based on
+    whether query node thresholds specified in `query_thresholds` are satisfied
+    by the data nodes in the `datanode, value` pair tensor `data_values`.
+    """
+    opcodes = {
+        'eq': torch.eq, 'ne': torch.ne, 'gt': torch.gt, 'lt': torch.lt, 'ge': torch.ge, 'le': torch.le
+    }
+    for op, threshs in query_thresholds.items():
+        compat_values = join(threshs, data_values)
+        operation = opcodes[op]
+        v = compat_values[:,3]
+        t = compat_values[:,1]
+        cmp = operation(v, t)
+        cmpr = cmp.reshape(threshs.size(0), data_values.size(0))
+        values = torch.zeros(threshs.size(0), compatible_nodes.size(1), dtype=torch.long, device=compatible_nodes.device)
+        i = compat_values[:,2].reshape(threshs.size(0), data_values.size(0)).long()
+        values.scatter_(1, i, cmpr.long()).sub_(1)
+        indices = threshs[:,0].long()
+        compatible_nodes.index_add_(0, indices, values)
+        compatible_nodes.clamp_(0, 1)
+    return compatible_nodes
+
 
 def joined_subset(x, y):
     """
@@ -373,6 +403,17 @@ def display(x, *ids, label=None):
                         args[i] = arg[1]
                 print(fmtstr.format(*args))
         print()
+
+def join_cmp(x, y, cmp_func):
+    """
+    Take 2D tensor x of [node, value] pairs and 2D tensor y
+    of [node, threshold] pairs and join-compare them to return a 2D
+    tensor of compatible x, y node pairs.
+    """
+    j = join(x, y)
+    compatible_mask = cmp_func(j[:,1], j[:,3])
+    compatible = torch.unique(filter_rows(j, compatible_mask)[:,[0, 2]], 0)
+    return compatible
 
 if __name__ == '__main__':
     print(GraphMatchingEngineSpec.verify(GraphMatchingEngine))
