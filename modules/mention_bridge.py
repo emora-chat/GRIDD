@@ -17,6 +17,8 @@ class MentionBridge:
                 print('%s'%(span[span.index('>')+1:]))
             print()
         namespace = 'ment_' # todo - link to mentions graph namespace without relying on there being a mention?
+        if len(mentions) > 0:
+            namespace = list(mentions.items())[0][1].id_map()
         mega_mention_graph = ConceptGraph(namespace=namespace)
         for span, mention_graph in mentions.items():
             ((focus,t,o,i,),) = mention_graph.predicates(predicate_type='focus')
