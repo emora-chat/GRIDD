@@ -30,7 +30,7 @@ class GraphMatchingEngine:
             print('Setup time:', t_f-t_i)
         data_adj = torch.LongTensor(list(chain(*data_adj_entries))).to(self.device)
         data_attr = entries_to_tensor(data_attr_entries, data_ids, attr_ids).to(self.device)
-        quants = quants['num'].to(self.device)
+        quants = quants.get('num', torch.empty(0, 2)).to(self.device)
         thresholds = {k: v.to(self.device) for k, v in thresholds.items()}
         compatible_nodes = joined_subset(query_attr, data_attr)
         compatible_nodes = quantitative_filter(compatible_nodes, quants, thresholds)
