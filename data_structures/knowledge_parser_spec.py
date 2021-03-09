@@ -52,6 +52,8 @@ class KnowledgeParserSpec:
             fido=dog()
             bark(fido)
             ;
+            
+            /* comment */
         '''
         concept_graph = KnowledgeParser.from_data(ls1, namespace='cg_')
         assert concept_graph.has('fluffy', 'type', 'cat')
