@@ -1,7 +1,7 @@
 from lark import Lark, Transformer
 import GRIDD.data_structures.concept_graph as cg
 from GRIDD.data_structures.knowledge_parser_spec import KnowledgeParserSpec
-from GRIDD.utilities import Counter, collect
+from GRIDD.utilities import collect
 import os, json
 from collections import defaultdict
 
