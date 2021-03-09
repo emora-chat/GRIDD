@@ -259,6 +259,37 @@ class ChatbotServer:
         self.response_selection = init_response_selection()
         self.response_generation = init_response_generation()
 
+    def initialize_nlu(self, kb_files, device='cpu', local=False):
+        self.local = local
+        self.kb = KnowledgeBase(*kb_files)
+        self.nlp_processing = None
+        if not self.local:
+            self.nlp_processing = init_nlp_preprocessing()
+        self.utter_conversion = init_utter_conversion(device, self.kb)
+        self.utter_integration = init_utter_integration()
+
+    def run_nlu(self, utterance):
+        print('-' * 20)
+        print(utterance)
+        print('-'*20)
+        current_state = {'utter': [None, None], 'wm': [None, None], 'aux_state': [None, None]}
+        current_state["utter"][0] = utterance
+        msg = nlp_preprocessing_handler(self.nlp_processing, self.convert_state(current_state), local=self.local)
+        self.update_current_turn_state(current_state, msg)
+
+        msg = utter_conversion_handler(self.utter_conversion, self.convert_state(current_state))
+        self.update_current_turn_state(current_state, msg)
+
+        msg = utter_integration_handler(self.utter_integration, self.convert_state(current_state),
+                                        self.kb, load_coldstarts=False)
+        self.update_current_turn_state(current_state, msg)
+
+        saved_wm = json.loads(msg["wm"])
+        working_memory = WorkingMemory(self.kb)
+        ConceptGraph.load(working_memory, saved_wm)
+        print(working_memory.ugly_print(exclusions={'is_type', 'object', 'predicate', 'entity', 'post', 'pre',
+                                                    'def', 'span', 'datetime'}))
+        print()
 
     def add_new_turn_state(self, current_state):
         for key in current_state:

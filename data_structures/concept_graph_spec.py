@@ -396,6 +396,37 @@ class ConceptGraphSpec:
             'pvl_2/volume(ph_2,loud)'
         }
 
+    @specification.init
+    def graph_component_siblings(ConceptGraph, source, target):
+        """
+        Checks whether `source` and `target` nodes are in the same graph component
+        """
+        cg1 = ConceptGraph(predicates=[
+            ('bob', 'like', 'jenny', 'blj'),
+            ('jenny', 'like', 'tom', 'jlt'),
+            ('jlt', 'property', 'unconditionally', 'jpu')
+        ])
+        assert cg1.graph_component_siblings('bob', 'jenny')
+        assert cg1.graph_component_siblings('jenny', 'bob')
+        assert cg1.graph_component_siblings('bob', 'tom')
+        assert cg1.graph_component_siblings('tom', 'bob')
+
+        assert cg1.graph_component_siblings('unconditionally', 'jenny')
+        assert cg1.graph_component_siblings('unconditionally', 'tom')
+        assert cg1.graph_component_siblings('unconditionally', 'bob')
+        assert cg1.graph_component_siblings('jpu', 'jlt')
+        assert cg1.graph_component_siblings('jpu', 'jenny')
+        assert cg1.graph_component_siblings('jpu', 'bob')
+
+        cg1.add('tom', 'like', 'bob', 'tlb')
+        assert cg1.graph_component_siblings('bob', 'tom')
+        assert cg1.graph_component_siblings('tom', 'bob')
+
+
+
+
+
+
 
 
 
