@@ -48,7 +48,9 @@ class KnowledgeParserSpec:
             fluffy=cat()
             meow(fluffy)
             ;
-
+            
+            /* comment */
+            
             fido=dog()
             bark(fido)
             ;
