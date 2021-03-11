@@ -32,7 +32,7 @@ class ReferenceMerge:
             match_dict = self.inference_engine.infer(concept_graph, *[(precondition, None, reference_node)
                                                                      for reference_node, precondition
                                                                      in reference_preconditions.items()])
-            compatible_pairs = [(reference_node, match[reference_node])
+            compatible_pairs = [(match[reference_node], reference_node)
                                 for reference_node, (pre,post,matches) in match_dict.items()
                                 for match in matches
                                 if reference_node != match[reference_node]]

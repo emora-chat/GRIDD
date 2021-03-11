@@ -1,6 +1,5 @@
 import GRIDD.globals as globals
 from itertools import chain
-from GRIDD.data_structures.reference_gatherer import gather
 
 class MergeBridge:
 

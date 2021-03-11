@@ -6,6 +6,7 @@ def gather_all_references(working_memory):
     for node, features in working_memory.features.items():
         if 'refsp' in features:
             features['refl'] = gather(node, features['refsp'], working_memory)
+            del features['refsp']
     return working_memory
 
 def gather(reference_node, constraints_as_spans, concept_graph):

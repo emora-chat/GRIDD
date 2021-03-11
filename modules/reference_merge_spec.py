@@ -46,9 +46,9 @@ class ReferenceMergeSpec:
         # Test predicate instance reference
         pairs = ref_merge(cg)
         assert len(pairs) == 3
-        assert ('d1', 'fido') in pairs
-        assert ('d2', 'spark') in pairs
-        assert ('d2', 'rose') in pairs
+        assert ('fido', 'd1') in pairs
+        assert ('spark', 'd2') in pairs
+        assert ('rose', 'd2') in pairs
 
         cg = ConceptGraph(predicates=[
             ('sally', 'go', 'store', 'sgs'),
@@ -64,4 +64,4 @@ class ReferenceMergeSpec:
 
         pairs = ref_merge(cg)
         assert len(pairs) == 1
-        assert ('sgs_q', 'sgs') in pairs
+        assert ('sgs', 'sgs_q') in pairs

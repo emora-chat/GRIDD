@@ -295,6 +295,11 @@ class ConceptGraph:
             self.add(s, t, o, concept_a)
             self._detach(s, t, o, i)
         self.remove(concept_b)
+        # resolve ref links once ref merges with non-ref
+        if 'refl' in self.features[concept_b] and 'refl' not in self.features[concept_a]:
+            del self.features[concept_b]['refl']
+        if 'refl' in self.features[concept_a] and 'refl' not in self.features[concept_b]:
+            del self.features[concept_a]['refl']
         self.features.merge(concept_a, concept_b)
         return concept_a
 
