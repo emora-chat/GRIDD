@@ -25,15 +25,17 @@ class ReferenceMerge:
         return reference_preconditions
 
     def __call__(self, concept_graph):
+        compatible_pairs = []
         references = concept_graph.features.get_reference_links()
-        reference_preconditions = self._get_reference_preconditions(references, concept_graph)
-        match_dict = self.inference_engine.infer(concept_graph, *[(precondition, None, reference_node)
-                                                                 for reference_node, precondition
-                                                                 in reference_preconditions.items()])
-        compatible_pairs = [(reference_node, match[reference_node])
-                            for reference_node, (pre,post,matches) in match_dict.items()
-                            for match in matches
-                            if reference_node != match[reference_node]]
+        if len(references) > 0:
+            reference_preconditions = self._get_reference_preconditions(references, concept_graph)
+            match_dict = self.inference_engine.infer(concept_graph, *[(precondition, None, reference_node)
+                                                                     for reference_node, precondition
+                                                                     in reference_preconditions.items()])
+            compatible_pairs = [(reference_node, match[reference_node])
+                                for reference_node, (pre,post,matches) in match_dict.items()
+                                for match in matches
+                                if reference_node != match[reference_node]]
         return compatible_pairs
 
 

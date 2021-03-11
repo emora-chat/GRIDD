@@ -29,11 +29,6 @@ class MergeBridge:
                         working_memory.merge(v1, kept)
             visited.append((kept, replaced))
 
-        # convert reference spans to reference predicates
-        for node, features in working_memory.features.items():
-            if 'refl' in features:
-                features['refl'] = gather(node, features['refl'], working_memory)
-
         if globals.DEBUG:
             print("<< Working Memory after NLU >>")
             print(working_memory.ugly_print(exclusions={'var','is_type','object','entity','predicate','span','ref'}))

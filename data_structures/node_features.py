@@ -38,6 +38,10 @@ class NodeFeatures(defaultdict):
                     self[node]['refl'] = list(set(self[node]['refl']).union(set(features['refl'])))
                 elif 'refl' in features:
                     self[node]['refl'] = features['refl']
+                if 'refsp' in self[node] and 'refsp' in features:
+                    self[node]['refsp'] = list(set(self[node]['refsp']).union(set(features['refsp'])))
+                elif 'refsp' in features:
+                    self[node]['refsp'] = features['refsp']
 
     def merge(self, kept, replaced):
         if 'salience' in self[kept] or 'salience' in self[replaced]:
@@ -65,6 +69,10 @@ class NodeFeatures(defaultdict):
             self[kept]['refl'] = list(set(self[kept]['refl']).union(set(self[replaced]['refl'])))
         elif 'refl' in self[replaced]:
             self[kept]['refl'] = self[replaced]['refl']
+        if 'refsp' in self[kept] and 'refsp' in self[replaced]:
+            self[kept]['refsp'] = list(set(self[kept]['refsp']).union(set(self[replaced]['refsp'])))
+        elif 'refsp' in self[replaced]:
+            self[kept]['refsp'] = self[replaced]['refsp']
         del self[replaced]
 
     def update_from_ontology(self, elements):

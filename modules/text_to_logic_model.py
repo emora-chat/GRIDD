@@ -170,7 +170,7 @@ class ParseToLogic:
                     cg.features[focus_node]['comps'] = [pred[3] for pred in cg.predicates()]
                     # identify reference spans
                     if rule_name in REFERENCES_BY_RULE:
-                        cg.features[focus_node]['refl'] = REFERENCES_BY_RULE[rule_name](center, ewm)
+                        cg.features[focus_node]['refsp'] = REFERENCES_BY_RULE[rule_name](center, ewm)
                     mentions[center] = cg
         return mentions
 

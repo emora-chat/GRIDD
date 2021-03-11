@@ -1,6 +1,13 @@
 
 PRIMITIVES = {'focus', 'center', 'is_type', 'cover', 'question', 'var'}
 
+def gather_all_references(working_memory):
+    # convert reference spans to reference predicates
+    for node, features in working_memory.features.items():
+        if 'refsp' in features:
+            features['refl'] = gather(node, features['refsp'], working_memory)
+    return working_memory
+
 def gather(reference_node, constraints_as_spans, concept_graph):
     constraints = set()
     focal_nodes = {reference_node}
