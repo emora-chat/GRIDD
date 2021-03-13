@@ -30,6 +30,11 @@ class MergeBridge:
                         working_memory.merge(v1, kept)
             visited.append((kept, replaced))
 
+        # todo - assess whether this pulling works as we want it to...
+        #  how to pull complete information for concepts
+        #  like pull emora possess KB1 needs KB1 type movie AND property(KB1, favorite
+        working_memory.pull(1, exclude_on_pull={'type', 'expr', 'is_type'}) #todo - what does is_type do???
+
         if globals.DEBUG:
             print("<< Working Memory after NLU >>")
             print(working_memory.ugly_print(exclusions={'var','is_type','object','entity','predicate','span','ref'}))

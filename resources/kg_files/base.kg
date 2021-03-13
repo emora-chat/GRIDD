@@ -13,7 +13,10 @@ pre<predicate>
 post<predicate>
 var<predicate>
 
+possess<predicate>
+
 person<entity>
+person[person]
 bot<entity>
 
 user=person()
