@@ -11,10 +11,21 @@ class ParserStruct:
         self.value = value
         self.pred_instances = pred_instances
 
+def _check_rule_name_collision(rule, rules, rule_collisions):
+    rule_name = rule[2]
+    if rule_name in rules:
+        rule_collisions[rule_name] += 1
+        rule_name += '___' + str(rule_collisions[rule_name])
+    if rule_name in rules:
+        raise Exception('Persistent rule name collision: %s\n'
+                        '           Try specifying names for all of your rules using "-> rule_name ->" format instead of "=>".'%rule_name)
+    return rule_name
+
 class KnowledgeParser:
 
     _grammar = r"""
-                start: knowledge+
+                start: (knowledge | comment)+
+                comment: "/*" /[a-zA-Z0-9 .,\-"'=!?]+/ "*/" ";"?
                 knowledge: ((bipredicate | monopredicate | instance | ontological | metadata | expression )+ ";") | ((anon_rule | named_rule | inference | implication) ";")
                 anon_rule: conditions "=>" conditions
                 named_rule: conditions "->" type "->" conditions
@@ -81,13 +92,16 @@ class KnowledgeParser:
     @classmethod
     def rules(self, *datas):
         rules = {}
+        rule_collisions = defaultdict(int)
         for data in datas:
             if not isinstance(data, str):
                 if isinstance(data, tuple):
                     rules.update({data[2]: (data[0], data[1])})
                 else:
-                    rules.update({rule[2]: (rule[0], rule[1])
-                              for rule in KnowledgeParser._extract_rules_from_graph(data, with_names=True)})
+                    rr = KnowledgeParser._extract_rules_from_graph(data, with_names=True)
+                    for rule in rr:
+                        rule_name = _check_rule_name_collision(rule, rules, rule_collisions)
+                        rules[rule_name] = (rule[0], rule[1])
             else:
                 if isinstance(data, str) and (os.path.isdir(data) or os.path.isfile(data)):
                     data = collect(data, extension='.kg')
@@ -100,9 +114,10 @@ class KnowledgeParser:
                             d += ';'
                         additions = logic_parser.transform(logic_parser.parse(d))
                         for addition in additions:
-                            rules.update({rule[2]: (rule[0], rule[1])
-                                          for rule in
-                                          KnowledgeParser._extract_rules_from_graph(addition, with_names=True)})
+                            rr = KnowledgeParser._extract_rules_from_graph(addition, with_names=True)
+                            for rule in rr:
+                                rule_name = _check_rule_name_collision(rule, rules, rule_collisions)
+                                rules[rule_name] = (rule[0], rule[1])
         return rules
 
     @classmethod

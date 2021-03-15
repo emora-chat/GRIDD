@@ -4,12 +4,11 @@ from GRIDD.data_structures.graph_matching_engine import GraphMatchingEngine
 from structpy.map import Bimap
 from GRIDD.data_structures.knowledge_parser import KnowledgeParser
 from GRIDD.data_structures.concept_graph import ConceptGraph
-import time
+
 
 class InferenceEngine:
 
     def __init__(self, *rules, device='cpu'):
-        print('Loading rules...')
         self.rules = KnowledgeParser.rules(*rules)
         self.preloaded_rules = self._convert_rules(self.rules)
         self.matcher = GraphMatchingEngine(device=device)
@@ -42,7 +41,6 @@ class InferenceEngine:
         return converted_rules
 
     def infer(self, facts, *rules):
-        st = time.time()
         facts_concept_graph = KnowledgeParser.from_data(facts, namespace='facts_').copy()
         attributes = {}
         types = set()
@@ -52,20 +50,16 @@ class InferenceEngine:
             facts_concept_graph.remove(predicate_id=i)
             types.add(o)
         for type in types:
-            facts_concept_graph.remove(type)
+            if len(facts_concept_graph.related(type)) == 0: # remove type nodes if only used in type predicates
+                facts_concept_graph.remove(type)
         facts_concept_graph.remove('type')
         facts_graph = facts_concept_graph.to_graph()
         for node, types in attributes.items():
             facts_graph.data(node)['attributes'] = types
-        # print('Fact Graph to NetworkX - Elapsed: %.3f'%(time.time()-st))
-
-        st = time.time()
         dynamic_rules = KnowledgeParser.rules(*rules)
         rules = Bimap({**self.rules, **dynamic_rules})
         dynamic_converted_rules = self._convert_rules(dynamic_rules)
         converted_rules = Bimap({**self.preloaded_rules, **dynamic_converted_rules})
-        # print('Dynamic Rule Graphs to NetworkX - Elapsed: %.3f' % (time.time() - st))
-
         sols = self.matcher.match(facts_graph, *list(converted_rules.values()))
         sols = {converted_rules.reverse()[precondition]: sols for precondition, sols in sols.items()}
         sols = {rule_id: (rules[rule_id][0], rules[rule_id][1], sol_ls) for rule_id, sol_ls in sols.items()}

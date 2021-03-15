@@ -23,6 +23,11 @@ class GraphMatchingEngineSpec:
         element is a LabeledDigraph and the second element is an iterable
         of the nodes that should be considered variables.
 
+        Query graphs defining nodes with attributes in the set `eq, ne, gt, lt, ge, le`
+        corresponding to int/float value `X` will only be assignable to nodes with an
+        analagous attribute `num=Y` where the required comparison between `X` and `Y`
+        is satisfied.
+
         Returns solutions as a `dict<query, list<dict<var, value>>`
         where `query` keys in the outer dict are the provided query
         objects, the value represents a list of solutions, where each
@@ -38,15 +43,16 @@ class GraphMatchingEngineSpec:
             ('sally', 'tom', 'dislikes'),
             ('john', 'mary', 'likes')
         ], nodes={
-            'mary': dict(attributes={'leader'}),
-            'tom': dict(attributes={'leader'})
+            'mary': dict(attributes={'leader'}, num=2),
+            'tom': dict(attributes={'leader'}, num=4),
+            'sally': dict(num=6),
         })
 
         query1 = Graph([
             ('A', 'B', 'likes'),
         ], nodes={
-            'A': dict(var=True),
-            'B': dict(var=True)
+            'A': dict(var=True, gt=1, le=5),
+            'B': dict(var=True, gt=3, le=9.3)
         })
 
         query2 = Graph([
@@ -78,11 +84,7 @@ class GraphMatchingEngineSpec:
         assert solutions_equal(
             solutions[query1],
             [
-                {'A': 'mary', 'B': 'john'},
-                {'A': 'mary', 'B': 'sally'},
-                {'A': 'sally', 'B': 'john'},
-                {'A': 'tom', 'B': 'mary'},
-                {'A': 'john', 'B': 'mary'}
+                {'A': 'mary', 'B': 'sally'}
             ])
 
         assert solutions_equal(

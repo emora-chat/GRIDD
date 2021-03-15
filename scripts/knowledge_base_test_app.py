@@ -4,7 +4,7 @@ from GRIDD.data_structures.knowledge_parser import KnowledgeParser
 from GRIDD.data_structures.working_memory import WorkingMemory
 from GRIDD.data_structures.inference_engine import InferenceEngine
 from GRIDD.chatbot_server import ChatbotServer
-import os, time
+import os
 from os.path import join
 from collections import defaultdict
 

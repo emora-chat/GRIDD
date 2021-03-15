@@ -15,6 +15,14 @@ class ResponseExpansion:
                 expansions = self.get_predicate_supports(main_predicate, working_memory)
             else:
                 expansions = self.get_question_supports(main_s, working_memory)
+            concepts = []
+            for s, t, o, i in expansions:
+                concepts.extend([s,o])
+            for concept in concepts:
+                if working_memory.has(predicate_id=concept):
+                    sig = working_memory.predicate(concept)
+                    expansions.add(sig)
+                    expansions.update(self.get_predicate_supports(sig, working_memory))
             expansions -= {main_predicate}
             working_memory.features.update_from_response(main_predicate, expansions)
             return main_predicate, expansions, working_memory
@@ -33,6 +41,19 @@ class ResponseExpansion:
             expansions.add(obj_pred)
             expansions.update(self.get_one_degree_supports([obj_pred[0], obj_pred[2]], working_memory))
         return expansions
+
+    # need to expand subject or object of predicates if they are predicate inst
+    def retrieve_predicate_instance(self, concept, expansions, working_memory):
+        frontier = [concept]
+        while len(frontier) > 0:
+            concept = frontier.pop()
+            if working_memory.has(predicate_id=concept):
+                sig = working_memory.predicate(concept)
+                if sig not in expansions:
+                    expansions.add(sig)
+                    frontier.append(sig[0])
+                    if sig[2] is not None:
+                        frontier.append(sig[2])
 
     def get_one_degree_supports(self, items, working_memory):
         expansions = set()

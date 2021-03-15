@@ -48,10 +48,14 @@ class KnowledgeParserSpec:
             fluffy=cat()
             meow(fluffy)
             ;
-
+            
+            /* comment */
+            
             fido=dog()
             bark(fido)
             ;
+            
+            /* comment */
         '''
         concept_graph = KnowledgeParser.from_data(ls1, namespace='cg_')
         assert concept_graph.has('fluffy', 'type', 'cat')
@@ -72,6 +76,8 @@ class KnowledgeParserSpec:
             -> cat_rule ->
             meow(X)
             ;
+
+            /* my comment */
 
             X=dog()
             -> dog_rule ->
