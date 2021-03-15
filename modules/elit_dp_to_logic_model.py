@@ -75,6 +75,8 @@ class ElitDPToLogic(ParseToLogic):
             ewm.add(POS_MAP.get(n, n), 'type', 'interj')
         for n in ALLOW_SINGLE:
             ewm.add(POS_MAP.get(n, n), 'type', 'allow_single')
+        ewm.add('nsbj', 'type', 'sbj')
+        ewm.add('csbj', 'type', 'sbj')
         self.convert(*args, ewm)
         return ewm
 
