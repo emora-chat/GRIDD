@@ -30,8 +30,8 @@ class MergeBridge:
 
         # todo - assess whether this pulling works as we want it to...
         #  how to pull complete information for concepts
-        #  like pull emora possess KB1 needs KB1 type movie AND property(KB1, favorite
-        working_memory.pull(1, exclude_on_pull={'type', 'expr', 'is_type'}) #todo - what does is_type do???
+        #  like pull emora possess KB1 needs KB1 type movie AND property(KB1, favorite)
+        working_memory.pull(1, exclude_on_pull={'type', 'expr', 'is_type'}) #todo - what function does is_type have in dialogue graph???
 
         if globals.DEBUG:
             print("<< Working Memory after NLU >>")

@@ -65,6 +65,13 @@ class NodeFeatures(defaultdict):
             if 'comps' in features and replaced in features['comps']:
                 features['comps'].remove(replaced)
                 features['comps'].append(kept)
+
+        # resolve ref links once ref merges with non-ref
+        if 'refl' in self[replaced] and 'refl' not in self[kept]:
+            del self[replaced]['refl']
+        if 'refl' in self[kept] and 'refl' not in self[replaced]:
+            del self[kept]['refl']
+
         if 'refl' in self[kept] and 'refl' in self[replaced]:
             self[kept]['refl'] = list(set(self[kept]['refl']).union(set(self[replaced]['refl'])))
         elif 'refl' in self[replaced]:

@@ -46,7 +46,7 @@ class ReferenceMergeSpec:
         # Test predicate instance reference
         pairs = ref_merge(cg)
         assert ('fido', 'd1') in pairs
-        assert ('ftd', 'dtd') in pairs
+        assert ('ftd', 'dtd') in pairs # todo - graph matching engine does not return type predicates so this fails
         assert ('fcr', 'dcr') in pairs
         assert ('spark', 'd2') in pairs
         assert ('scw', 'dcw') in pairs
