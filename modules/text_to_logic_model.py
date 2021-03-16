@@ -4,7 +4,7 @@ from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.knowledge_parser import KnowledgeParser
 from GRIDD.data_structures.inference_engine import InferenceEngine
 from GRIDD.data_structures.id_map import IdMap
-from GRIDD.data_structures.reference_identifier import REFERENCES_BY_RULE
+from GRIDD.data_structures.reference_identifier import REFERENCES_BY_RULE, QUESTION_INST_REF
 import torch, gc
 
 LOCALDEBUG = False
@@ -165,12 +165,18 @@ class ParseToLogic:
                         else:
                             cg.merge(ewm_node, cg_node, strict_order=True)
                         self._add_unknowns_to_cg(ewm_node, ewm, cg_node, cg)
-                    # gather component predicates of mention
+                    # get focus node of mention
                     ((focus_node, _, _, _),) = cg.predicates(predicate_type='focus')
-                    cg.features[focus_node]['comps'] = [pred[3] for pred in cg.predicates()]
                     # identify reference spans
                     if rule_name in REFERENCES_BY_RULE:
+                        if rule_name in QUESTION_INST_REF:
+                            # some questions have focus node as the question predicate instance,
+                            # when it should be the target of the question predicate instance
+                            focus_node = cg.predicate(focus_node)[0] # todo - update with new bipredicate request representation
                         cg.features[focus_node]['refsp'] = REFERENCES_BY_RULE[rule_name](center, ewm)
+                        cg.features[focus_node]['comps'] = [pred[3] for pred in cg.predicates()]
+                    else:
+                        cg.features[focus_node]['comps'] = [pred[3] for pred in cg.predicates()]
                     mentions[center] = cg
         return mentions
 

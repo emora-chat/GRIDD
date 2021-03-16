@@ -334,7 +334,7 @@ class ChatbotServer:
         converted = {key: values[0:history_turns+1] for key, values in current_state.items()}
         return converted
 
-    def chat(self, static_utter=None, load_coldstarts=True):
+    def chat(self, iteration=1, static_utter=None, load_coldstarts=True):
         current_state = {'utter': [None,None], 'wm': [None,None], 'aux_state': [None,None]}
 
         while True:
@@ -358,7 +358,7 @@ class ChatbotServer:
                                                   self.kb, load_coldstarts=load_coldstarts)
             self.update_current_turn_state(current_state, msg)
 
-            for _ in range(ITERATION):
+            for _ in range(iteration):
                 msg = inter_utter_integration_handler(self.inter_utter_integration,
                                                       self.convert_state(current_state),
                                                       self.kb)
@@ -416,4 +416,4 @@ if __name__ == '__main__':
 
     chatbot = ChatbotServer()
     chatbot.initialize_full_pipeline(kb_files=kb, rules=rules, device='cpu', local=True, debug=True)
-    chatbot.chat(load_coldstarts=False)
+    chatbot.chat(iteration=ITERATION, load_coldstarts=False)

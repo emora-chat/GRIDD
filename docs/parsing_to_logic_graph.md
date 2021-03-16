@@ -121,16 +121,16 @@ Represented by wrapping the subject/object/dative with the `question` predicate.
   
 	obj(X/pstg(), Y/question_word())
 	-> obj_question ->
-	q/question(object())
+	question(o/object())
 	center(Y)
-	focus(q)
+	focus(o)
 	;
 	
 	sbj(X/pstg(), Y/question_word())
 	-> sbj_question ->
-	q/question(object())
+	question(o/object())
 	center(Y)
-	focus(q)
+	focus(o)
 	;
 	
 	dat(X/pstg(), Y/question_word())

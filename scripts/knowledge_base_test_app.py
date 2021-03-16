@@ -79,7 +79,7 @@ if __name__ == '__main__':
             debug = False
         chatbot = ChatbotServer()
         chatbot.initialize_full_pipeline(kb_files=kb, rules=rules, device='cpu', local=True, debug=debug)
-        chatbot.chat(load_coldstarts=False)
+        chatbot.chat(iteration=2, load_coldstarts=False)
 
 
 
