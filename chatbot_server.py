@@ -318,6 +318,7 @@ class ChatbotServer:
         print(working_memory.ugly_print(exclusions={'is_type', 'object', 'predicate', 'entity', 'post', 'pre',
                                                     'def', 'span', 'datetime'}))
         print()
+        return working_memory
 
     def add_new_turn_state(self, current_state):
         for key in current_state:
