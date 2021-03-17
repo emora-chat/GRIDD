@@ -376,48 +376,48 @@ class ConceptGraphSpec:
         assert b == '1_4'
         return concept_graph
 
-    def pretty_print(concept_graph, predicate_exclusions=None):
+    @specification.init
+    def pretty_print(ConceptGraph):
         """
         Prints the predicates of concept_graph in a human-readable format,
         defined by the knowledge base text file format.
         """
-        concept_graph.add('dog', 'type', 'entity')
-        concept_graph.add(concept_graph.id_map().get(), 'type', 'dog')
-        concept_graph.add(concept_graph.id_map().get(), 'type', 'dog')
-        concept_graph.add('polly', 'type', 'dog')
+        cg = ConceptGraph(namespace='x_', predicates=[
+            ('user', 'type', 'person'),
+            ('georgia', 'type', 'state'),
+            ('user', 'go', 'georgia', 'ugg'),
+            ('ugg', 'time', 'july', 'utj'),
+            ('utj', 'property', 'last'),
+            ('ugg', 'mode', 'plane'),
+            ('person_1', 'type', 'person'),
+            ('user', 'sister', 'person_1'),
+            ('user', 'visit', 'person_1', 'uvp'),
+            ('ugg', 'cause', 'uvp'),
+            ('house_1', 'type', 'house'),
+            ('uvp', 'locate', 'house_1'),
+            ('person_1', 'possess', 'house_1'),
+            ('house_1', 'property', 'new'),
+            ('"user"', 'expr', 'user'),
+            ('"person"', 'expr', 'person'),
+            ('"georgia"', 'expr', 'georgia'),
+            ('"state"', 'expr', 'state'),
+            ('"go"', 'expr', 'go'),
+            ('"time"', 'expr', 'time'),
+            ('"july"', 'expr', 'july'),
+            ('"mode"', 'expr', 'mode'),
+            ('"plane"', 'expr', 'plane'),
+            ('"sister"', 'expr', 'sister'),
+            ('"visit"', 'expr', 'visit'),
+            ('"cause"', 'expr', 'cause'),
+            ('"house"', 'expr', 'house'),
+            ('"locate"', 'expr', 'locate'),
+            ('"possess"', 'expr', 'possess'),
+            ('"property"', 'expr', 'property'),
+            ('"new"', 'expr', 'new'),
+            ('"last"', 'expr', 'last')
+        ])
 
-        pi = concept_graph.add('polly','hiss')
-        concept_graph.add(pi, 'volume', 'loud')
-
-        print_collection = set(concept_graph.pretty_print().split('\n'))
-        assert print_collection == {
-            '',
-            'ph/hiss(princess)',
-            'pvl/volume(ph,loud)',
-            'fb/bark(fluffy)',
-            'pff/friend(princess,fluffy)',
-            'ffp/friend(fluffy,princess)',
-            'dte/type(dog,entity)',
-            'ptd/type(polly,dog)',
-            'dtd/type(dog_1,dog)',
-            'dtd_2/type(dog_2,dog)',
-            'ph_2/hiss(polly)',
-            'pvl_2/volume(ph_2,loud)'
-        }
-
-        print_collection = set(concept_graph.pretty_print(exclusions={'friend'}).split('\n'))
-        assert print_collection == {
-            '',
-            'ph/hiss(princess)',
-            'pvl/volume(ph,loud)',
-            'fb/bark(fluffy)',
-            'dte/type(dog,entity)',
-            'ptd/type(polly,dog)',
-            'dtd/type(dog_1,dog)',
-            'dtd_2/type(dog_2,dog)',
-            'ph_2/hiss(polly)',
-            'pvl_2/volume(ph_2,loud)'
-        }
+        cg.pretty_print()
 
     @specification.init
     def graph_component_siblings(ConceptGraph, source, target):

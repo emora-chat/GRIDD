@@ -569,6 +569,14 @@ John made a call.
 
  </details>
 
+#### Examples
+
+I thought John bought a house.
+
+I thought that John did buy a house.
+
+I like buying a house.
+
 ## Verbs without Objects
 
 Captures expressions where the verb only has a subject.
@@ -689,6 +697,10 @@ Have you bought a house
 Auxiliary verbs modify the tense of their parent verb.
 
 TODO - properly update tense of main verb using auxiliaries, right now we have both a `time` predicate and an `aux_time` predicate
+
+TODO - missing 'go' auxiliary
+
+TODO - make auxiliaries that change tense have a common ancestor, then don't need to have rules for each auxiliary type
 
  <details>
   <summary>Conversions</summary>
