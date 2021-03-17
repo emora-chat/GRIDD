@@ -387,6 +387,7 @@ class ConceptGraphSpec:
             ('georgia', 'type', 'state'),
             ('user', 'go', 'georgia', 'ugg'),
             ('ugg', 'time', 'july', 'utj'),
+            ('july', 'property', 'mid'),
             ('utj', 'property', 'last'),
             ('ugg', 'mode', 'plane'),
             ('person_1', 'type', 'person'),
@@ -414,7 +415,8 @@ class ConceptGraphSpec:
             ('"possess"', 'expr', 'possess'),
             ('"property"', 'expr', 'property'),
             ('"new"', 'expr', 'new'),
-            ('"last"', 'expr', 'last')
+            ('"last"', 'expr', 'last'),
+            ('"mid"', 'expr', 'mid')
         ])
 
         cg.pretty_print()

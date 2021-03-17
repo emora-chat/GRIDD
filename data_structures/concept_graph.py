@@ -445,20 +445,32 @@ class ConceptGraph:
         roots = sorted(roots, key=lambda x: len(self.predicates(x[3])), reverse=True)
         visited = set()
         for pred in roots:
-            print('***')
-            pred_instances = deque([pred[3]])
-            while len(pred_instances) > 0:
-                s,t,o,i = self.predicate(pred_instances.pop())
-                if i not in visited:
-                    visited.add(i)
-                    print(f"{self._get_concept_expr(t)}({self._get_concept_expr(s)}, {self._get_concept_expr(o)})")
-                    for s2,t2,o2,i2 in self.predicates(i):
-                        if self.has(predicate_id=o2):
-                            pred_instances.append(o2)
-                            print(f"{self._get_concept_expr(t2)}: {self._get_predinst_expr(o2)}")
-                        else:
-                            print(f"{self._get_concept_expr(t2)}: {self._get_concept_expr(o2)}")
-                    print()
+            s,t,o,i = pred
+            if i not in visited:
+                self._print_predinst(i, visited, tab=0)
+
+    def _print_predinst(self, i, visited, tab):
+        print(self._get_predinst_expr(i,tab))
+        if i not in visited:
+            visited.add(i)
+            self._print_attachments(i, visited, tab=tab+1)
+
+    def _print_attachments(self, node, visited, tab):
+        exclusions = {'expr', 'type'}
+        for s2,t2,o2,i2 in self.predicates(node):
+            if t2 not in exclusions:
+                if self.has(predicate_id=o2):
+                    print('\t'*tab + f"{self._get_concept_expr(t2)}:")
+                    self._print_predinst(o2, visited, tab=tab+1)
+                else:
+                    print('\t'*tab + f"{self._get_concept_expr(t2)}:")
+                    print('\t'*(tab+1) + f"{self._get_concept_expr(o2)}")
+                    if o2 not in visited:
+                        visited.add(o2)
+                        self._print_attachments(o2, visited, tab=tab+2)
+                if i2 not in visited:
+                    visited.add(i2)
+                    self._print_attachments(i2, visited, tab=tab+1)
 
     def _get_concept_expr(self, concept):
         for expression in self.subjects(concept, 'expr'):
@@ -466,12 +478,12 @@ class ConceptGraph:
         for supertype in self.objects(concept, 'type'):
             return self._get_concept_expr(supertype)
 
-    def _get_predinst_expr(self, inst):
-        s,t,o,i = self.predicate(inst)
+    def _get_predinst_expr(self,i,tab):
+        s,t,o,i = self.predicate(i)
         if not self.has(predicate_id=o):
-            return f"{self._get_concept_expr(t)}({self._get_concept_expr(s)}, {self._get_concept_expr(o)})"
+            return '\t'*tab + f"{self._get_concept_expr(t)}({self._get_concept_expr(s)}, {self._get_concept_expr(o)})"
         else:
-            return f"{self._get_concept_expr(t)}({self._get_concept_expr(s)}, {self._get_predinst_expr(o)})"
+            return '\t'*tab + f"{self._get_concept_expr(t)}({self._get_concept_expr(s)}, {self._get_predinst_expr(o,tab=tab+1)})"
 
     def __str__(self):
         return 'CG<%s>' % (str(id(self))[-5:])
