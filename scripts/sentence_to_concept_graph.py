@@ -31,4 +31,14 @@ if __name__ == '__main__':
         with open(os.path.join(dir, file), 'r') as f:
             for line in f:
                 line = line.strip()
-                nlu_pipeline.run_nlu(line)
+                cg = nlu_pipeline.run_nlu(line)
+
+                # To save ConceptGraph to file:
+                # cg.save(json_filepath)
+                # The above saves each ConceptGraph to individual files
+                # If you don't specify filepath, it returns the json dict of the ConceptGraph
+
+                # To load ConceptGraph obtained from nlu_pipeline from file:
+                # loaded_cg = ConceptGraph(namespace='WM').load(json_filepath_or_json_string)
+
+
