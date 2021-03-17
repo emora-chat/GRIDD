@@ -66,16 +66,16 @@ center(X)
 
 obj(X/pstg(), Y/question_word())
 -> obj_question ->
-q/question(object())
+question(o/object())
 center(Y)
-focus(q)
+focus(o)
 ;
 
 sbj(X/pstg(), Y/question_word())
 -> sbj_question ->
-q/question(object())
+question(o/object())
 center(Y)
-focus(q)
+focus(o)
 ;
 
 dat(X/pstg(), Y/question_word())
@@ -83,7 +83,7 @@ aux(X, Z/pstg())
 sbj(X, A/pstg())
 precede(Y, Z)
 precede(Z, A)
--> q_dat ->
+-> dat_question ->
 p/indirect_obj(X, o/object())
 question(o)
 center(Y)
@@ -108,7 +108,7 @@ det(X/pstg(), Y/question_word())
 obj(Z/pstg(), X)
 aux(Z, A/present_tense())
 -> q_aux_det_pres ->
-p/time(Z, now)
+p/aux_time(Z, now)
 focus(p)
 center(A)
 ;
@@ -117,7 +117,7 @@ det(X/pstg(), Y/question_word())
 obj(Z/pstg(), X)
 aux(Z, A/past_tense())
 -> q_aux_det_past ->
-p/time(Z, past)
+p/aux_time(Z, past)
 focus(p)
 center(A)
 ;
