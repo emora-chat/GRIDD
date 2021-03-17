@@ -122,7 +122,6 @@ def test_determiner_questions():
 
 def test_arg_slot_question():
     # who did you give it to
-    # todo - test logic form in system -> might also trigger q_aux_do_past!!
     who_span = Span('who', 1, 2, 0, 0, 1)
     did_span = Span('did', 0, 0, 0, 0, 0)
     you_span = Span('you',0,0,0,0,0)
@@ -167,7 +166,6 @@ def test_copular_questions():
 
 def test_adverbial_question():
     # when did you start reading
-    # todo - test logic form in system -> might also trigger q_aux_do_past!!
     when_span = Span('when', 1, 2, 0, 0, 1)
     did_span = Span('did', 0, 0, 0, 0, 0)
     you_span = Span('you',0,0,0,0,0)

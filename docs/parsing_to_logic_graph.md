@@ -19,12 +19,22 @@ The mapping between question word and semantic concept is:
 	sbj(X, A/pstg())
 	precede(Y, Z)
 	precede(Z, A)
-	-> q_adv ->
+	-> q_aux_adv ->
 	p/Y(X, o/object())
 	question(o)
 	focus(p)
 	center(Y)
 	cover(Z)
+	;
+	
+	adv(X/pstg(), Y/question_word())
+	sbj(X, A/pstg())
+	precede(Y, A)
+	-> q_adv ->
+	p/Y(X, o/object())
+	question(o)
+	focus(p)
+	center(Y)
 	;
   
 </details>

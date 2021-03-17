@@ -72,6 +72,7 @@ REFERENCES_BY_RULE = {
     'qdet_copula_past': subtree_dependencies,
     'qw_copula_present': subtree_dependencies,
     'qw_copula_past': subtree_dependencies,
+    'q_aux_adv': parent_subtree_dependencies,
     'q_adv': parent_subtree_dependencies
 }
 
