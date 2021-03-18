@@ -1,6 +1,4 @@
 
-TODO - update all rules that determine tense to consider if auxiliary is present and remove auxiliary rule (and for auxiliary interrogative?)
-
 ## Adverbial Questions
 
 Captures questions that start with `When`, `Where`, `Why`, and `How` in the adverb role.
@@ -221,8 +219,6 @@ What show has dinosaurs
 
 Copula constructions are in interrogative form when the copula precedes the subject. 
 
-Subject can be a noun or clause.
-
 <details>
   <summary>Conversions</summary>
 
@@ -261,8 +257,6 @@ Was the book good?
 ## Copula
 
 Copula constructions become two-argument predicates of the format `copula(subject, root)`.
-
-Subject can be a noun or clause.
 
 The specific copular verb is captured by an identifier rule s.t. it will be merged into the 
 predicate.
@@ -332,8 +326,6 @@ Sally became a doctor last year.
 
 Two-argument predicates of the format `root(subject, object)`.
 
-Subject can be a noun or clause.
-
  <details>
   <summary>Conversions</summary>
   
@@ -363,8 +355,6 @@ Subject can be a noun or clause.
 ## Light Verb with Subject and Object
 
 Two-argument predicates of the format `root(subject, object)`. The light verb is dropped. The determiner of the root is dropped, if there is one.
-
-Subject can be a noun or clause.
 
  <details>
   <summary>Conversions</summary>
@@ -432,8 +422,6 @@ John made a call to Mary.
 ## Light Verb with Subject only
 
 One-argument predicates of the format `root(subject)`. The light verb is dropped. The determiner of the root is dropped, if there is one.
-
-Subject can be a noun or clause.
 
  <details>
   <summary>Conversions</summary>
