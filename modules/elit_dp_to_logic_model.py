@@ -139,6 +139,9 @@ class ElitDPToLogic(ParseToLogic):
                     cg.merge(new_source, original_source)
                 else:
                     cg.add(source.to_string(), label, target.to_string())
+            else:
+                # assert the root
+                cg.add(tokens[token_idx].to_string(), 'assert')
 
 
 if __name__ == '__main__':

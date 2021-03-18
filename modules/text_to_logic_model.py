@@ -164,6 +164,10 @@ class ParseToLogic:
                         else:
                             cg.merge(ewm_node, cg_node, strict_order=True)
                         self._add_unknowns_to_cg(ewm_node, ewm, cg_node, cg)
+                    if ewm.has(center, 'assert'):
+                        # if center is asserted, add assertion to focus node
+                        ((focus,_,_,_),) = cg.predicates(predicate_type='focus')
+                        cg.add(focus, 'assert')
                     mentions[center] = cg
         return mentions
 
