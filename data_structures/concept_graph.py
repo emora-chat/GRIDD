@@ -438,52 +438,69 @@ class ConceptGraph:
         full_string = '\n'.join([''.join(value) for value in strings.values()])
         return full_string.strip()
 
-    def pretty_print(self):
-        exclusions = {'expr', 'type'}
-        roots = [(s,t,o,i) for s,t,o,i in self.predicates()
-                 if t not in exclusions and not self.has(predicate_id=s) and len(self.predicates(object=i)) == 0]
-        roots = sorted(roots, key=lambda x: len(self.predicates(x[3])), reverse=True)
+    def pretty_print(self, exclusions=None):
+        name_counter = defaultdict(int)
+        id_map = {}
         visited = set()
-        for pred in roots:
-            s,t,o,i = pred
-            if i not in visited:
-                self._print_predinst(i, visited, tab=0)
+        type_string = ""
+        bi_string = ""
+        mono_string = ""
+        for sig in self.predicates():
+            type_string, bi_string, mono_string = self._get_representation(sig, id_map, name_counter, visited,
+                                                                           type_string, bi_string, mono_string,
+                                                                           exclusions)
+        full_string = type_string + '\n' + mono_string + '\n' + bi_string
+        return full_string.strip()
 
-    def _print_predinst(self, i, visited, tab):
-        print(self._get_predinst_expr(i,tab))
-        if i not in visited:
-            visited.add(i)
-            self._print_attachments(i, visited, tab=tab+1)
-
-    def _print_attachments(self, node, visited, tab):
-        exclusions = {'expr', 'type'}
-        for s2,t2,o2,i2 in self.predicates(node):
-            if t2 not in exclusions:
-                if self.has(predicate_id=o2):
-                    print('\t'*tab + f"{self._get_concept_expr(t2)}:")
-                    self._print_predinst(o2, visited, tab=tab+1)
+    def _get_representation(self, predicate_signature, id_map, name_counter, visited,
+                            type_string, bi_string, mono_string, exclusions):
+        if predicate_signature not in visited:
+            s, t, o, i = predicate_signature
+            if exclusions is None or (t not in exclusions and s not in exclusions and o not in exclusions):
+                id_map[t] = t
+                concepts = [s, o] if o is not None else [s]
+                for concept in concepts:
+                    if concept not in id_map:
+                        if isinstance(concept, str) and concept.startswith(self.id_map().namespace):
+                            if self.has(predicate_id=concept):
+                                type_string, bi_string, mono_string = self._get_representation(self.predicate(concept),
+                                                                                               id_map, name_counter,
+                                                                                               visited,
+                                                                                               type_string, bi_string,
+                                                                                               mono_string,
+                                                                                               exclusions)
+                            else:
+                                types = self.predicates(concept, 'type')
+                                if len(types) > 0:
+                                    ctype = types[0][2]
+                                    name_counter[ctype] += 1
+                                    id_map[concept] = '%s_%d' % (ctype, name_counter[ctype])
+                                else:
+                                    id_map[concept] = concept
+                        elif isinstance(concept, Span):
+                            id_map[concept] = concept.string
+                        else:
+                            id_map[concept] = concept
+                if o is not None:
+                    pname = id_map[s].replace('_', '')[0] + id_map[t].replace('_', '')[0] + id_map[o].replace('_', '')[
+                        0]
                 else:
-                    print('\t'*tab + f"{self._get_concept_expr(t2)}:")
-                    print('\t'*(tab+1) + f"{self._get_concept_expr(o2)}")
-                    if o2 not in visited:
-                        visited.add(o2)
-                        self._print_attachments(o2, visited, tab=tab+2)
-                if i2 not in visited:
-                    visited.add(i2)
-                    self._print_attachments(i2, visited, tab=tab+1)
-
-    def _get_concept_expr(self, concept):
-        for expression in self.subjects(concept, 'expr'):
-            return expression.replace('"', '')
-        for supertype in self.objects(concept, 'type'):
-            return self._get_concept_expr(supertype)
-
-    def _get_predinst_expr(self,i,tab):
-        s,t,o,i = self.predicate(i)
-        if not self.has(predicate_id=o):
-            return '\t'*tab + f"{self._get_concept_expr(t)}({self._get_concept_expr(s)}, {self._get_concept_expr(o)})"
-        else:
-            return '\t'*tab + f"{self._get_concept_expr(t)}({self._get_concept_expr(s)}, {self._get_predinst_expr(o,tab=tab+1)})"
+                    pname = id_map[s].replace('_', '')[0] + id_map[t].replace('_', '')[0]
+                name_counter[pname] += 1
+                if name_counter[pname] == 1:
+                    id_map[i] = pname
+                else:
+                    id_map[i] = '%s_%d' % (pname, name_counter[pname])
+                if o is not None:
+                    to_add = '%s/%s(%s,%s)\n' % (id_map[i], id_map[t], id_map[s], id_map[o])
+                    if id_map[t] == 'type':
+                        type_string += to_add
+                    else:
+                        bi_string += to_add
+                else:
+                    mono_string += '%s/%s(%s)\n' % (id_map[i], id_map[t], id_map[s])
+                visited.add(predicate_signature)
+        return type_string, bi_string, mono_string
 
     def __str__(self):
         return 'CG<%s>' % (str(id(self))[-5:])
