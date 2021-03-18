@@ -602,11 +602,10 @@ The overall tense of the question is also affected by the aux verb.
   <summary>Conversions</summary>
 	
 	aux(X/pstg(), Y/past_tense())
-	ref(Y, E/expression())
-	expr(E, do)
+	type(Y, tenseful_aux)
 	sbj(X, Z/pstg())
 	precede(Y,Z)
-	-> q_aux_do_past ->
+	-> q_aux_past ->
 	q/question(X)
 	aux_time(X, past)
 	center(Y)
@@ -614,35 +613,10 @@ The overall tense of the question is also affected by the aux verb.
 	;
 	
 	aux(X/pstg(), Y/present_tense())
-	ref(Y, E/expression())
-	expr(E, do)
+	type(Y, tenseful_aux)
 	sbj(X, Z/pstg())
 	precede(Y,Z)
-	-> q_aux_do_present ->
-	q/question(X)
-	aux_time(X, now)
-	center(Y)
-	focus(q)
-	;
-	
-	aux(X/pstg(), Y/past_tense())
-	ref(Y, E/expression())
-	expr(E, be)
-	sbj(X, Z/pstg())
-	precede(Y,Z)
-	-> q_aux_be_past ->
-	q/question(X)
-	aux_time(X, past)
-	center(Y)
-	focus(q)
-	;
-	
-	aux(X/pstg(), Y/present_tense())
-	ref(Y, E/expression())
-	expr(E, be)
-	sbj(X, Z/pstg())
-	precede(Y,Z)
-	-> q_aux_be_present ->
+	-> q_aux_present ->
 	q/question(X)
 	aux_time(X, now)
 	center(Y)
@@ -684,36 +658,16 @@ TODO - properly update tense of main verb using auxiliaries, right now we have b
   <summary>Conversions</summary>
 
 	aux(X/pstg(), Y/past_tense())
-	ref(Y, E/expression())
-	expr(E, do)
-	-> aux_do_past ->
+	type(Y, tenseful_aux)
+	-> aux_past ->
 	t/aux_time(X, past)
 	center(Y)
 	focus(t)
 	;
 	
 	aux(X/pstg(), Y/present_tense())
-	ref(Y, E/expression())
-	expr(E, do)
-	-> aux_do_present ->
-	t/aux_time(X, now)
-	center(Y)
-	focus(t)
-	;
-	
-	aux(X/pstg(), Y/past_tense())
-	ref(Y, E/expression())
-	expr(E, be)
-	-> aux_be_past ->
-	t/aux_time(X, past)
-	center(Y)
-	focus(t)
-	;
-	
-	aux(X/pstg(), Y/present_tense())
-	ref(Y, E/expression())
-	expr(E, be)
-	-> aux_be_present ->
+	type(Y, tenseful_aux)
+	-> aux_present ->
 	t/aux_time(X, now)
 	center(Y)
 	focus(t)

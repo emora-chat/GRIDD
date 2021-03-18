@@ -26,6 +26,8 @@ QUEST = ['wdt', 'wp', 'wpds', 'wrb']
 INTERJ = ['uh']
 ALLOW_SINGLE = ['dt', 'ex', 'adj', 'noun', 'pron', 'adv', 'interj', 'verb', 'question_word']
 
+TENSEFUL_AUX = ['go', 'goes', 'went', 'do', 'does', 'did', 'be', 'is', 'are', 'were', 'was'] # use lemma instead from elit
+
 NODES = ['focus', 'center', 'pstg', 'ref', 'type', 'ltype']
 
 POS_MAP = {'in': 'prepo',
@@ -99,6 +101,8 @@ class ElitDPToLogic(ParseToLogic):
             if 'pstg' not in cg.supertypes(pos): # todo - optimization by dynamic programming
                 cg.add(pos, 'type', 'pstg')
             span_node = span.to_string()
+            if expression in TENSEFUL_AUX:
+                cg.add(span_node, 'type', 'tenseful_aux')
             cg.features[span_node]["span_data"] = span
             cg.add(span_node)
             self.spans.append(span_node)
@@ -108,7 +112,7 @@ class ElitDPToLogic(ParseToLogic):
             if token_idx > 0:
                 for pti in precede_token_idx:
                     if pti < token_idx:
-                        cg.add(tokens[pti].to_string(), 'precede', span_node)
+                        cg.add(tokens[pti].to_string(), 'precede', span_node) # todo - quantity logic for position considerations
 
         for token_idx, (head_idx, label) in enumerate(dependencies):
             if head_idx != -1:
