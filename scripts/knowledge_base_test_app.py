@@ -78,7 +78,7 @@ if __name__ == '__main__':
             print("<< LANGUAGE MODE >>")
             debug = False
         chatbot = ChatbotServer()
-        chatbot.initialize_full_pipeline(kb_files=kb, rules=rules, device='cpu', local=False, debug=debug)
+        chatbot.initialize_full_pipeline(kb_files=kb, rules=rules, device='cpu', local=True, debug=debug)
         chatbot.chat(load_coldstarts=False)
 
 
