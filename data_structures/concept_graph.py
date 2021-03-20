@@ -555,7 +555,7 @@ class ConceptGraph:
         # for ref_expression in self.subjects(concept, 'ref'):
         #     return ref_expression, None
         for def_expression in self.subjects(concept, 'def'):
-            expression = self.features[def_expression]['span_data'].string
+            expression = self.features[def_expression]['span_data'].expression
             return expression, None
         for expression in self.subjects(concept, 'expr'):
             return expression.replace('"', ''), None

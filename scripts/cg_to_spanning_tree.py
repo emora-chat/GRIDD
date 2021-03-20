@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
     print('\ninitializing nlu...')
     nlu_pipeline = ChatbotServer()
-    nlu_pipeline.initialize_nlu(kb_files=[], device='cpu', local=True)
+    nlu_pipeline.initialize_nlu(kb_files=[], device='cpu', local=False)
     print()
     utter = "I bought a house"
     while utter != 'q':

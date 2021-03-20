@@ -48,7 +48,8 @@ class ElitModels:
         for j, toks in enumerate(parse_dict['tok']):
             tokens = []
             for i, tok in enumerate(toks):
-                tokens.append(Span(tok.lower(), i, i+1, 0, turn_index, speaker_ids[j]))
+                tokens.append(Span(tok.lower(), i, i+1, 0, turn_index, speaker_ids[j],
+                                   parse_dict['lem'][j][i].lower()))
             all_tokens.append(tokens)
 
         global_tokens = list(chain(prev_global_toks, *all_tokens))

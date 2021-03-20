@@ -132,6 +132,7 @@ class ElitDPToLogic(ParseToLogic):
                     del cg.features[original_target]
 
                     source.string = target.string + ' ' + source.string
+                    source.expression = target.expression + ' ' + source.expression
                     source.start = target.start
                     new_source = source.to_string()
                     cg.features[new_source]["span_data"] = source
