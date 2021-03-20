@@ -1,23 +1,31 @@
 is_type(object)
+object[object]
 
 entity<object>
+entity[entity]
 predicate<object>
+predicate[predicate]
 expression<object>
 unknown<object>
+unknown[unknown]
 
 expr<predicate>
 type<predicate>
+type[type]
 is_type<predicate>
 time<predicate>
+time[time]
 pre<predicate>
 post<predicate>
 var<predicate>
 
 possess<predicate>
+possess[possess]
 
 person<entity>
 person[person]
 bot<entity>
+bot[bot]
 
 user=person()
 user[i,me,my,mine]
@@ -33,6 +41,7 @@ past=datetime()
 future=datetime()
 
 property<predicate>
+property[property]
 attachment<predicate>
 
 inst_det<object>

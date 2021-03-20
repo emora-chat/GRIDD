@@ -487,7 +487,7 @@ class ConceptGraph:
         return type_string, bi_string, mono_string
 
     def to_spanning_tree(self):
-        exclude = {'expr', 'assert'}
+        exclude = {'expr', 'def', 'ref', 'assert'}
         root = SpanningNode('__root__')
         ((assertion_node,_,_,_), ) = self.predicates(predicate_type='assert')
         frontier = [(root, assertion_node, None, 'link')]
@@ -508,9 +508,17 @@ class ConceptGraph:
                     pred_node = SpanningNode(id, None, node_type)
                 parent.children[label_type].append(pred_node)
                 for pred in self.predicates(id):
-                    if pred[1] not in exclude and pred[3] != id: frontier.append((pred_node, pred[3], None, 'link'))
+                    if pred[1] not in exclude and pred[3] not in {id, parent.node_id}: frontier.append((pred_node, pred[3], None, 'link'))
                 for pred in self.predicates(object=id):
-                    if pred[1] not in exclude and pred[3] != id: frontier.append((pred_node, pred[3], 'r', 'link'))
+                    if pred[1] not in exclude and pred[3] not in {id, parent.node_id}: frontier.append((pred_node, pred[3], 'r', 'link'))
+            else: # still need to attach node to parent if subj or obj, but do not need to process links or node's children
+                if label_type != 'link':
+                    if self.has(predicate_id=id):
+                        s, t, o, _ = self.predicate(id)
+                        pred_node = SpanningNode(id, t, node_type)
+                    else:
+                        pred_node = SpanningNode(id, None, node_type)
+                    parent.children[label_type].append(pred_node)
         return root
 
     def print_spanning_tree(self, root=None, tab=1, ignore=None):
@@ -532,7 +540,7 @@ class ConceptGraph:
                 self.print_spanning_tree(node, tab+1, ignore)
             elif label == 'link':
                 for node in nodes:
-                    if node.node_id not in ignore:
+                    if ignore is None or node.node_id not in ignore:
                         string = node.pred_type if node.pred_type is not None else node.node_id
                         prefix = node.type + ' ' if node.type is not None else ''
                         expression, source = self._get_expr(string)
@@ -544,6 +552,11 @@ class ConceptGraph:
 
     def _get_expr(self, concept):
         # Return expression of concept if exists; otherwise, return expression of parent
+        # for ref_expression in self.subjects(concept, 'ref'):
+        #     return ref_expression, None
+        for def_expression in self.subjects(concept, 'def'):
+            expression = self.features[def_expression]['span_data'].string
+            return expression, None
         for expression in self.subjects(concept, 'expr'):
             return expression.replace('"', ''), None
         for _, _, supertype, predinst in self.predicates(concept, 'type'):

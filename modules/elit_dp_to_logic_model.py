@@ -83,14 +83,15 @@ class ElitDPToLogic(ParseToLogic):
         return ewm
 
     # todo - verify that POS tags and DP labels are disjoint
-    def convert(self, tokens, pos_tags, dependencies, cg):
+    def convert(self, elit_results, cg):
         """
         Add dependency parse links into the expression concept graph
-        :param dependencies: list of dependency relations
-        :param tokens: list of spans
-        :param pos_tags: list of part of speech tags
+        :param elit_results: dictionary of elit model results
         :param cg: the concept graph being created
         """
+        tokens = elit_results["tok"]
+        pos_tags = elit_results["pos"]
+        dependencies = elit_results["dep"]
         precede_token_idx = [idx for idx, (head_idx, label) in enumerate(dependencies)
                              if label.lower() in PRECEDE_LABELS or pos_tags[idx].lower().replace('$','ds') in QUEST]
         for token_idx in range(len(tokens)):

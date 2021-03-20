@@ -436,14 +436,6 @@ class ConceptGraphSpec:
         #     ('"mid"', 'expr', 'mid')
         # ])
 
-        # cg = KnowledgeParser.from_data('''
-        # like(d/dog(),b/bone())
-        # aunt(john,a/person())
-        # apd/possess(a,d)
-        # property(apd,illegal)
-        #
-        # ''')
-
         cg = ConceptGraph(predicates=[
             ('d', 'type', 'dog', 'dtd'),
             ('b', 'type', 'bone', 'btb'),
@@ -516,6 +508,27 @@ class ConceptGraphSpec:
         s = time.time()
         cg.print_spanning_tree()
         print('print spanning tree: %.5f sec'%(time.time()-s))
+
+        cg = ConceptGraph(predicates=[
+            ('d', 'type', 'dog', 'dtd'),
+            ('b', 'type', 'bone', 'btb'),
+            ('a', 'type', 'person', 'atp'),
+            ('john', 'buy', 'b', 'sbb'),
+            ('d', 'like', 'sbb', 'dlb'),
+            ('john', 'aunt', 'a', 'jaa'),
+            ('a', 'possess', 'd', 'apd'),
+            ('"dog"', 'expr', 'dog'),
+            ('"person"', 'expr', 'person'),
+            ('"bone"', 'expr', 'bone'),
+            ('"buy"', 'expr', 'buy'),
+            ('"like"', 'expr', 'like'),
+            ('"aunt"', 'expr', 'aunt'),
+            ('"possess"', 'expr', 'possess'),
+            ('"john"', 'expr', 'john'),
+            ('"sally"', 'expr', 'sally'),
+            ('dlb', 'assert')
+        ])
+        cg.print_spanning_tree()
 
     @specification.init
     def graph_component_siblings(ConceptGraph, source, target):
