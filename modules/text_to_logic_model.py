@@ -82,14 +82,16 @@ class ParseToLogic:
         """
         Pull expressions from KB into the expression working_memory
         """
-        ewm.pull(order=1, concepts=['"%s"'%ewm.features[span_node]["span_data"].string for span_node in self.spans], exclude_on_pull={'type'})
+        ewm.pull(order=1,
+                 concepts=['"%s"'%ewm.features[span_node]["span_data"].expression for span_node in self.spans],
+                 exclude_on_pull={'type'})
 
     def _unknown_expression_identification(self, ewm):
         """
         Create "UNK" expression nodes for all nodes with no expr references.
         """
         for span_node in self.spans:
-            expression = '"%s"' % ewm.features[span_node]["span_data"].string
+            expression = '"%s"' % ewm.features[span_node]["span_data"].expression
             references = ewm.objects(expression, 'expr')
             if len(references) == 0:
                 unk_node = ewm.add(ewm.id_map().get())

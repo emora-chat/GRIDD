@@ -551,9 +551,10 @@ class ConceptGraph:
                         self.print_spanning_tree(node, tab+1, ignore)
 
     def _get_expr(self, concept):
-        # Return expression of concept if exists; otherwise, return expression of parent
-        # for ref_expression in self.subjects(concept, 'ref'):
-        #     return ref_expression, None
+        # Return span if there is a span defining the concept
+        # otherwise, return the expression of concept if exists
+        # otherwise, return expression of parent if exists
+        # otherwise, return concept id
         for def_expression in self.subjects(concept, 'def'):
             expression = self.features[def_expression]['span_data'].expression
             return expression, None

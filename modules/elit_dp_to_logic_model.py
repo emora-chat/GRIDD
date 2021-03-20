@@ -96,7 +96,7 @@ class ElitDPToLogic(ParseToLogic):
                              if label.lower() in PRECEDE_LABELS or pos_tags[idx].lower().replace('$','ds') in QUEST]
         for token_idx in range(len(tokens)):
             span = tokens[token_idx]
-            expression = span.string
+            expression = span.expression
             pos = pos_tags[token_idx].lower().replace('$','ds')
             pos = POS_MAP.get(pos, pos)
             if 'pstg' not in cg.supertypes(pos): # todo - optimization by dynamic programming
