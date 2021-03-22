@@ -506,7 +506,7 @@ class ConceptGraphSpec:
         assert root.equal(span_tree_root)
 
         s = time.time()
-        cg.print_spanning_tree()
+        print(cg.print_spanning_tree())
         print('print spanning tree: %.5f sec'%(time.time()-s))
 
         cg = ConceptGraph(predicates=[
@@ -528,7 +528,7 @@ class ConceptGraphSpec:
             ('"sally"', 'expr', 'sally'),
             ('dlb', 'assert')
         ])
-        cg.print_spanning_tree()
+        print(cg.print_spanning_tree())
 
     @specification.init
     def graph_component_siblings(ConceptGraph, source, target):

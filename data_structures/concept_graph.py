@@ -487,7 +487,7 @@ class ConceptGraph:
         return type_string, bi_string, mono_string
 
     def to_spanning_tree(self):
-        exclude = {'expr', 'def', 'ref', 'assert'}
+        exclude = {'expr', 'def', 'ref', 'assert', 'type'}
         root = SpanningNode('__root__')
         ((assertion_node,_,_,_), ) = self.predicates(predicate_type='assert')
         frontier = [(root, assertion_node, None, 'link')]
@@ -498,7 +498,7 @@ class ConceptGraph:
                 visited.add(id)
                 if self.has(predicate_id=id):
                     s, t, o, _ = self.predicate(id)
-                    if node_type == 'r': tmp = o; o = s; s = tmp;
+                    if node_type == '_rev_': tmp = o; o = s; s = tmp;
                     pred_node = SpanningNode(id, t, node_type)
                     if parent.node_id != s:
                         frontier.append((pred_node, s, None, 'arg0'))
@@ -510,7 +510,7 @@ class ConceptGraph:
                 for pred in self.predicates(id):
                     if pred[1] not in exclude and pred[3] not in {id, parent.node_id}: frontier.append((pred_node, pred[3], None, 'link'))
                 for pred in self.predicates(object=id):
-                    if pred[1] not in exclude and pred[3] not in {id, parent.node_id}: frontier.append((pred_node, pred[3], 'r', 'link'))
+                    if pred[1] not in exclude and pred[3] not in {id, parent.node_id}: frontier.append((pred_node, pred[3], '_rev_', 'link'))
             else: # still need to attach node to parent if subj or obj, but do not need to process links or node's children
                 if label_type != 'link':
                     if self.has(predicate_id=id):
@@ -521,48 +521,59 @@ class ConceptGraph:
                     parent.children[label_type].append(pred_node)
         return root
 
-    def print_spanning_tree(self, root=None, tab=1, ignore=None):
+    def print_spanning_tree(self, root=None, tab=1):
+        s = ""
         if root is None:
             root = self.to_spanning_tree().children['link'][0]
             string = root.pred_type if root.pred_type is not None else root.node_id
-            expression, source = self._get_expr(string)
-            print(expression)
+            expression = self._get_expr(string)
+            s += expression + '\n'
         for label, nodes in root.children.items():
             if label in {'arg0', 'arg1'}:
                 node = nodes[0]
                 string = node.pred_type if node.pred_type is not None else node.node_id
                 prefix = node.type + ' ' if node.type is not None else ''
-                expression, source = self._get_expr(string)
-                if source is not None:
-                    if ignore is None: ignore = set()
-                    ignore.add(source)
-                print('%s%s%s: %s'%('\t'*tab, prefix, label, expression))
-                self.print_spanning_tree(node, tab+1, ignore)
+                expression = self._get_expr(string)
+                s += '%s%s%s: %s\n'%('\t'*tab, prefix, label, expression)
+                s += self.print_spanning_tree(node, tab+1)
             elif label == 'link':
                 for node in nodes:
-                    if ignore is None or node.node_id not in ignore:
-                        string = node.pred_type if node.pred_type is not None else node.node_id
-                        prefix = node.type + ' ' if node.type is not None else ''
-                        expression, source = self._get_expr(string)
-                        if source is not None:
-                            if ignore is None: ignore = set()
-                            ignore.add(source)
-                        print('%s%s%s:'%('\t'*tab, prefix, expression))
-                        self.print_spanning_tree(node, tab+1, ignore)
+                    string = node.pred_type if node.pred_type is not None else node.node_id
+                    prefix = node.type + ' ' if node.type is not None else ''
+                    expression = self._get_expr(string)
+                    if len(node.children) > 0:
+                        s += '%s%s%s:\n'%('\t'*tab, prefix, expression)
+                        s += self.print_spanning_tree(node, tab+1)
+                    else:
+                        s += '%s%s%s\n' % ('\t' * tab, prefix, expression)
+        return s
 
     def _get_expr(self, concept):
-        # Return span if there is a span defining the concept
-        # otherwise, return the expression of concept if exists
-        # otherwise, return expression of parent if exists
-        # otherwise, return concept id
-        for def_expression in self.subjects(concept, 'def'):
-            expression = self.features[def_expression]['span_data'].expression
-            return expression, None
-        for expression in self.subjects(concept, 'expr'):
-            return expression.replace('"', ''), None
-        for _, _, supertype, predinst in self.predicates(concept, 'type'):
-            return self._get_expr(supertype)[0], predinst
-        return concept, None
+        # Return label of concept as one of the following, in priority order:
+        #   (1) Definitions
+        #   (2) Expressions
+        #   (3) Types
+        #   (4) Concept
+        # SPECIAL CASES: return `user` or `bot` as label of those concepts
+        label = ''
+        if concept in {'user','emora'}:
+            label += concept
+        else:
+            definitions = self.subjects(concept, 'def')
+            if len(definitions) > 0:
+                for def_expression in definitions:
+                    expression = self.features[def_expression]['span_data'].expression
+                    label += expression + ' '
+            else:
+                for expression in self.subjects(concept, 'expr'):
+                    label += expression.replace('"', '') + ' '
+                    break
+            if len(label) == 0:
+                for _, _, supertype, predinst in self.predicates(concept, 'type'):
+                    label += self._get_expr(supertype) + ' '
+            if len(label) == 0:
+                return concept.strip()
+        return label.strip()
 
     def __str__(self):
         return 'CG<%s>' % (str(id(self))[-5:])

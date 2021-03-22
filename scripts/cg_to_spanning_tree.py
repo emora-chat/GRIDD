@@ -11,7 +11,7 @@ if __name__ == '__main__':
     property(apd, illegal)
     assert(dlb)
     ''')
-    cg.print_spanning_tree()
+    print(cg.print_spanning_tree())
 
     print("\nJohn's aunt likes to buy a gift for him")
     cg = KnowledgeParser.from_data('''
@@ -21,7 +21,7 @@ if __name__ == '__main__':
     alb/like(a, abg)
     assert(alb)
     ''')
-    cg.print_spanning_tree()
+    print(cg.print_spanning_tree())
 
     print("\nShowering brings me joy but showering is annoying")
     cg = KnowledgeParser.from_data('''
@@ -32,15 +32,16 @@ if __name__ == '__main__':
     sbs/but(sbj, sba)
     assert(sbs)
     ''')
-    cg.print_spanning_tree()
+    print(cg.print_spanning_tree())
 
     print('\ninitializing nlu...')
     nlu_pipeline = ChatbotServer()
     nlu_pipeline.initialize_nlu(kb_files=[], device='cpu', local=True)
     print()
-    utter = "I bought a house"
+    utter = "what is your favorite show"
     while utter != 'q':
         cg = nlu_pipeline.run_nlu(utter)
-        cg.print_spanning_tree()
+        cg.pull_expressions()
+        print(cg.print_spanning_tree())
         print()
         utter = input('>>> ').strip()
