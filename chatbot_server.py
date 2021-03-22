@@ -265,10 +265,11 @@ class ChatbotServer:
         self.utter_conversion = init_utter_conversion(device, self.kb)
         self.utter_integration = init_utter_integration()
 
-    def run_nlu(self, utterance):
-        print('-' * 20)
-        print(utterance)
-        print('-'*20)
+    def run_nlu(self, utterance, display=True):
+        if display:
+            print('-' * 20)
+            print(utterance)
+            print('-'*20)
         current_state = {'utter': [None, None], 'wm': [None, None], 'aux_state': [None, None]}
         current_state["utter"][0] = utterance
         msg = nlp_preprocessing_handler(self.nlp_processing, self.convert_state(current_state), local=self.local)
@@ -284,9 +285,10 @@ class ChatbotServer:
         saved_wm = json.loads(msg["wm"])
         working_memory = WorkingMemory(self.kb)
         ConceptGraph.load(working_memory, saved_wm)
-        print(working_memory.ugly_print(exclusions={'is_type', 'object', 'predicate', 'entity', 'post', 'pre',
-                                                    'def', 'span', 'datetime'}))
-        print()
+        if display:
+            print(working_memory.ugly_print(exclusions={'is_type', 'object', 'predicate', 'entity', 'post', 'pre',
+                                                        'def', 'span', 'datetime'}))
+            print()
         return working_memory
 
     def add_new_turn_state(self, current_state):

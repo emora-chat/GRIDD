@@ -693,9 +693,9 @@ TODO - does this ever affect tense?
  <details>
   <summary>Conversions</summary>
   
-	modal(X/pstg(), Y/md())
+	modal(X/pstg(), Y/pstg())
 	-> modal ->
-	m/mode(Y,X)
+	m/mode(X, Y)
 	center(Y)
 	focus(m)
 	;
