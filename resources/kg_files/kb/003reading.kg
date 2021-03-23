@@ -16,6 +16,7 @@ historical<genre>
 historical[historical,history]
 
 book<entity>
+book[book]
 hamlet=book()
 hamlet[hamlet]
 dracula=book()
@@ -33,4 +34,21 @@ author[author]
 
 brd/read(bot,dracula)
 time(brd,past)
+
+bld/like.v.01(bot,dracula)
+time(bld,now)
+
+efh/feel.v.01(bot, h/happiness.n.01())
+time(efh, today)
+
+interesting<entity>
+interesting[interesting]
+the_hobbit=book()
+
+cause(efh, read(bot, the_hobbit))
+property(the_hobbit, interesting)
+property(the_hobbit, fantasy)
+
+blh/like.v.01(bot,the_hobbit)
+time(blh,now)
 ;

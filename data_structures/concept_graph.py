@@ -329,7 +329,8 @@ class ConceptGraph:
             id_map = self.id_map(concept_graph)
         for s, t, o, i in concept_graph.predicates():
             if (predicate_exclusions is None or t not in predicate_exclusions) and (concepts is None or i in concepts):
-                self.add(*(id_map.get(x) if x is not None else None for x in (s, t, o, i)))
+                if not self.has(predicate_id=i):
+                    self.add(*(id_map.get(x) if x is not None else None for x in (s, t, o, i)))
         for concept in concept_graph.concepts():
             if concept not in id_map:
                 if predicate_exclusions is None:
