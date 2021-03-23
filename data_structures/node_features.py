@@ -60,7 +60,7 @@ class NodeFeatures(defaultdict):
                 self[id]['cover'] = 1.0
 
     def update_from_inference(self, elements, wm):
-        inference_salience = 0.5  # todo - how to set inference salience???
+        inference_salience = 0.75  # todo - how to set inference salience???
         for id in elements:
             if wm.has(predicate_id=id) and wm.type(id) == 'question':
                 self[id]['salience'] = inference_salience * 1.5
