@@ -30,4 +30,7 @@ event<entity>
 event[event]
 author<person>
 author[author]
+
+brd/read(bot,dracula)
+time(brd,past)
 ;

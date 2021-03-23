@@ -24,13 +24,13 @@ possess[possess]
 
 person<entity>
 person[person]
-bot<entity>
-bot[bot]
+socialbot<entity>
+socialbot[socialbot]
 
 user=person()
 user[i,me,my,mine]
-emora=bot()
-emora[you,your,yours]
+bot=socialbot()
+bot[you,your,yours]
 
 datetime<entity>
 datetime[datetime]
