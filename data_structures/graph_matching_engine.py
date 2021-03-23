@@ -5,6 +5,7 @@ from GRIDD.data_structures.id_map import IdMap
 from itertools import chain
 import torch
 from time import time
+from GRIDD.utilities.utilities import combinations
 
 DEBUG = False
 TIMING = False
@@ -239,19 +240,6 @@ def edge_traversal(graph):
             stack.extend(list(graph.out_edges(ps)))
             stack.extend(list(graph.in_edges(pt)))
             stack.extend(list(graph.out_edges(pt)))
-
-def combinations(*itemsets):
-    c = [[]]
-    for itemset in list(itemsets):
-        if itemset:
-            cn = []
-            for item in list(itemset):
-                ce = [list(e) for e in c]
-                for sol in ce:
-                    sol.append(item)
-                cn.extend(ce)
-            c = cn
-    return c
 
 def quantitative_filter(compatible_nodes, data_values, query_thresholds):
     """

@@ -63,7 +63,8 @@ class InferenceEngine:
             converted_rules[rid] = precondition
         return converted_rules
 
-    def infer(self, facts, *rules):
+    def infer(self, facts, *rules, cached=True):
+        # Todo: allow inference using only provided rules (not cached rules)
         facts_concept_graph = KnowledgeParser.from_data(facts, namespace='facts_').copy()
         attributes = {}
         confidences = {}
@@ -101,6 +102,7 @@ class InferenceEngine:
         return sols
 
     def apply(self, facts=None, *rules, solutions=None):
+        # Todo: refactor signature to mimic IntelligenceCore's apply_inferences
         if facts is not None:
             solutions = self.infer(facts, *rules)
         implications = {}
