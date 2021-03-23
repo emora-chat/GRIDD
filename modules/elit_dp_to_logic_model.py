@@ -89,9 +89,9 @@ class ElitDPToLogic(ParseToLogic):
         :param elit_results: dictionary of elit model results
         :param cg: the concept graph being created
         """
-        tokens = elit_results["tok"]
-        pos_tags = elit_results["pos"]
-        dependencies = elit_results["dep"]
+        tokens = elit_results.get("tok", [])
+        pos_tags = elit_results.get("pos", [])
+        dependencies = elit_results.get("dep", [])
         precede_token_idx = [idx for idx, (head_idx, label) in enumerate(dependencies)
                              if label.lower() in PRECEDE_LABELS or pos_tags[idx].lower().replace('$','ds') in QUEST]
         for token_idx in range(len(tokens)):

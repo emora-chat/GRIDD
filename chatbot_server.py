@@ -210,7 +210,8 @@ def load(json_dict, KB=None):
                 json_dict[key] = value
             elif key == 'elit_results':
                 json_dict[key] = json.loads(value) if isinstance(value, str) else value
-                json_dict[key]['tok'] = [Span.from_string(t) for t in json_dict[key]['tok']]
+                if 'tok' in json_dict[key]:
+                    json_dict[key]['tok'] = [Span.from_string(t) for t in json_dict[key]['tok']]
             elif key in {'main_response', 'supporting_predicates', 'response'}:
                 json_dict[key] = json.loads(value) if isinstance(value, str) else value
             elif key == 'dp_mentions':
