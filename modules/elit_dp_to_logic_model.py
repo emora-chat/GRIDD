@@ -25,6 +25,8 @@ QUEST = ['wdt', 'wp', 'wpds', 'wrb']
 INTERJ = ['uh']
 ALLOW_SINGLE = ['dt', 'ex', 'adj', 'noun', 'pron', 'adv', 'interj', 'verb', 'question_word']
 
+TENSEFUL_AUX = ['go', 'goes', 'went', 'do', 'does', 'did', 'be', 'is', 'are', 'were', 'was'] # use lemma instead from elit
+
 NODES = ['focus', 'center', 'pstg', 'ref', 'type', 'ltype']
 
 POS_MAP = {'in': 'prepo',
@@ -80,24 +82,27 @@ class ElitDPToLogic(ParseToLogic):
         return ewm
 
     # todo - verify that POS tags and DP labels are disjoint
-    def convert(self, tokens, pos_tags, dependencies, cg):
+    def convert(self, elit_results, cg):
         """
         Add dependency parse links into the expression concept graph
-        :param dependencies: list of dependency relations
-        :param tokens: list of spans
-        :param pos_tags: list of part of speech tags
+        :param elit_results: dictionary of elit model results
         :param cg: the concept graph being created
         """
+        tokens = elit_results["tok"]
+        pos_tags = elit_results["pos"]
+        dependencies = elit_results["dep"]
         precede_token_idx = [idx for idx, (head_idx, label) in enumerate(dependencies)
                              if label.lower() in PRECEDE_LABELS or pos_tags[idx].lower().replace('$','ds') in QUEST]
         for token_idx in range(len(tokens)):
             span = tokens[token_idx]
-            expression = span.string
+            expression = span.expression
             pos = pos_tags[token_idx].lower().replace('$','ds')
             pos = POS_MAP.get(pos, pos)
             if 'pstg' not in cg.supertypes(pos): # todo - optimization by dynamic programming
                 cg.add(pos, 'type', 'pstg')
             span_node = span.to_string()
+            if expression in TENSEFUL_AUX:
+                cg.add(span_node, 'type', 'tenseful_aux')
             cg.features[span_node]["span_data"] = span
             cg.add(span_node)
             self.spans.append(span_node)
@@ -107,7 +112,7 @@ class ElitDPToLogic(ParseToLogic):
             if token_idx > 0:
                 for pti in precede_token_idx:
                     if pti < token_idx:
-                        cg.add(tokens[pti].to_string(), 'precede', span_node)
+                        cg.add(tokens[pti].to_string(), 'precede', span_node) # todo - quantity logic for position considerations
 
         for token_idx, (head_idx, label) in enumerate(dependencies):
             if head_idx != -1:
@@ -119,21 +124,25 @@ class ElitDPToLogic(ParseToLogic):
 
                     for tuple in cg.predicates(original_target, 'ref') + cg.predicates(original_source, 'ref'):
                         cg.remove(tuple[2]) # remove non-condensed expressions
-                    cg.remove(original_target)
                     self.spans.remove(original_target)
                     original_source_span_idx = self.spans.index(original_source)
                     del cg.features[original_source]
                     del cg.features[original_target]
 
                     source.string = target.string + ' ' + source.string
+                    source.expression = target.expression + ' ' + source.expression
                     source.start = target.start
                     new_source = source.to_string()
                     cg.features[new_source]["span_data"] = source
                     self.spans[original_source_span_idx] = new_source
                     cg.add(new_source, 'ref', '"%s"'%source.string) # add updated condensed expression
                     cg.merge(new_source, original_source)
+                    cg.merge(new_source, original_target)
                 else:
                     cg.add(source.to_string(), label, target.to_string())
+            else:
+                # assert the root
+                cg.add(tokens[token_idx].to_string(), 'assert')
 
 
 if __name__ == '__main__':

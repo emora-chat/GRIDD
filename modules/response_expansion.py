@@ -1,3 +1,4 @@
+from GRIDD.modules.response_expansion_spec import ResponseExpansionSpec
 
 subj_expansion_types = {'type', 'property', 'qualifier', 'time', 'question', 'referential', 'instantiative',
                         'indirect_obj', 'mode', 'negate'}
@@ -42,19 +43,6 @@ class ResponseExpansion:
             expansions.update(self.get_one_degree_supports([obj_pred[0], obj_pred[2]], working_memory))
         return expansions
 
-    # need to expand subject or object of predicates if they are predicate inst
-    def retrieve_predicate_instance(self, concept, expansions, working_memory):
-        frontier = [concept]
-        while len(frontier) > 0:
-            concept = frontier.pop()
-            if working_memory.has(predicate_id=concept):
-                sig = working_memory.predicate(concept)
-                if sig not in expansions:
-                    expansions.add(sig)
-                    frontier.append(sig[0])
-                    if sig[2] is not None:
-                        frontier.append(sig[2])
-
     def get_one_degree_supports(self, items, working_memory):
         expansions = set()
         items = [item for item in items if item is not None]
@@ -84,3 +72,6 @@ class ResponseExpansion:
                     predicate_supports.update(preds)
             expansions.update(predicate_supports)
         return expansions
+
+if __name__ == '__main__':
+    print(ResponseExpansionSpec.verify(ResponseExpansion))

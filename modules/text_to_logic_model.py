@@ -83,14 +83,16 @@ class ParseToLogic:
         """
         Pull expressions from KB into the expression working_memory
         """
-        ewm.pull(order=1, concepts=['"%s"'%ewm.features[span_node]["span_data"].string for span_node in self.spans], exclude_on_pull={'type'})
+        ewm.pull(order=1,
+                 concepts=['"%s"'%ewm.features[span_node]["span_data"].expression for span_node in self.spans],
+                 exclude_on_pull={'type'})
 
     def _unknown_expression_identification(self, ewm):
         """
         Create "UNK" expression nodes for all nodes with no expr references.
         """
         for span_node in self.spans:
-            expression = '"%s"' % ewm.features[span_node]["span_data"].string
+            expression = '"%s"' % ewm.features[span_node]["span_data"].expression
             references = ewm.objects(expression, 'expr')
             if len(references) == 0:
                 unk_node = ewm.add(ewm.id_map().get())
@@ -167,8 +169,7 @@ class ParseToLogic:
                         self._add_unknowns_to_cg(ewm_node, ewm, cg_node, cg)
                     # get focus node of mention
                     ((focus_node, _, _, _),) = cg.predicates(predicate_type='focus')
-                    # identify reference spans
-                    if rule_name in REFERENCES_BY_RULE:
+                    if rule_name in REFERENCES_BY_RULE: # identify reference spans
                         if rule_name in QUESTION_INST_REF:
                             # some questions have focus node as the question predicate instance,
                             # when it should be the target of the question predicate instance
@@ -177,6 +178,8 @@ class ParseToLogic:
                         cg.features[focus_node]['comps'] = [pred[3] for pred in cg.predicates()]
                     else:
                         cg.features[focus_node]['comps'] = [pred[3] for pred in cg.predicates()]
+                    if ewm.has(center, 'assert'): # if center is asserted, add assertion to focus node
+                        cg.add(focus_node, 'assert')
                     mentions[center] = cg
         return mentions
 

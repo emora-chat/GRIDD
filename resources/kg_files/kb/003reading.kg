@@ -1,42 +1,33 @@
-character<entity>
 genre<entity>
+genre[genre]
 nonfiction<genre>
+nonfiction[nonfiction]
 fiction<genre>
+fiction[fiction]
+fantasy<genre>
+fantasy[fantasy,magic]
+adventure<genre>
+adventure[adventure, adventurous]
+drama<genre>
+drama[drama, dramatic]
+horror<genre>
+horror[horror,scary]
+historical<genre>
+historical[historical,history]
 
-harrypotter=book()
-harrypotter[harry potter]
-
-hermione=character()
-hermione[hermione granger]
-ron=character()
-ron[ron weasley]
-harry=character()
-
-location<entity>
-school<location>
-hogwarts=school()
-
-activity<entity>
-entertainment<activity>
-game<entertainment>
-sport<game>
-quidditch=sport()
-
-interesting<predicate>
-fictional<predicate>
-real<predicate>
-stupid<predicate>
-smart<predicate>
-powerful<predicate>
-good<predicate>
-favorite<predicate>
-
-cool<predicate>
-lame<predicate>
-boring<predicate>
-informative<predicate>
-reckless<predicate>
+book<entity>
+hamlet=book()
+hamlet[hamlet]
+dracula=book()
+dracula[dracula]
 
 read<predicate>
-read[read,reads]
+read[read]
+
+character<entity>
+character[character]
+event<entity>
+event[event]
+author<person>
+author[author]
 ;

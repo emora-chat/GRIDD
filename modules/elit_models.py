@@ -30,7 +30,7 @@ class ElitModels:
         utterances = [system_utterance, user_utterance]
         speaker_ids = [1, 2]
         coref_context = aux_state.get('coref_context', None)
-        models = ['tok', 'pos', 'ner', 'srl', 'dep', 'ocr']
+        models = ['lem', 'tok', 'pos', 'ner', 'srl', 'dep', 'ocr']
         for i in range(len(utterances)-1,-1,-1):
             if utterances[i] is None:
                 del utterances[i]
@@ -48,7 +48,8 @@ class ElitModels:
         for j, toks in enumerate(parse_dict['tok']):
             tokens = []
             for i, tok in enumerate(toks):
-                tokens.append(Span(tok.lower(), i, i+1, 0, turn_index, speaker_ids[j]))
+                tokens.append(Span(tok.lower(), i, i+1, 0, turn_index, speaker_ids[j],
+                                   parse_dict['lem'][j][i].lower()))
             all_tokens.append(tokens)
 
         global_tokens = list(chain(prev_global_toks, *all_tokens))
@@ -58,10 +59,11 @@ class ElitModels:
         if 2 not in speaker_ids:
             return [], [], [], None
         user_result_idx = speaker_ids.index(2)
-        tok = all_tokens[user_result_idx]
-        pos = parse_dict["pos"][user_result_idx]
-        dep = parse_dict["dep"][user_result_idx]
-        return tok, pos, dep, coref_result
+        parse_dict["tok"][user_result_idx] = all_tokens[user_result_idx]
+        parse_dict["ocr"] = coref_result
+
+        return {key: values[user_result_idx] if isinstance(values, list) else values
+                for key, values in parse_dict.items()}
 
 
     def print(self, tok, pos, dep):

@@ -10,32 +10,4 @@ cause(F, o/object())
 question(o)
 ;
 
-F/feel.v.01(person(), pos_feeling())
--> feel_pos_emo ->
-fig/be(F,good)
-fig{"cover": 1}
-believe(bot, fig)
-;
-
-F/be(person(), pos_feeling())
--> be_pos_emo ->
-fig/be(F,good)
-fig{"cover": 1}
-believe(bot, fig)
-;
-
-PF/feel.v.01(person(), neg_feeling())
--> feel_neg_emo ->
-bfs/feel(bot, sorry)
-bfs{"cover": 1}
-about(EF,PF)
-;
-
-PF/be(person(), neg_feeling())
--> be_neg_emo ->
-bfs/feel(bot, sorry)
-bfs{"cover": 1}
-about(EF,PF)
-;
-
 

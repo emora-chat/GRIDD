@@ -1,23 +1,31 @@
 is_type(object)
+object[object]
 
 entity<object>
+entity[entity]
 predicate<object>
+predicate[predicate]
 expression<object>
 unknown<object>
+unknown[unknown]
 
 expr<predicate>
 type<predicate>
+type[type]
 is_type<predicate>
 time<predicate>
+time[time,when]
 pre<predicate>
 post<predicate>
 var<predicate>
 
 possess<predicate>
+possess[possess]
 
 person<entity>
 person[person]
 bot<entity>
+bot[bot]
 
 user=person()
 user[i,me,my,mine]
@@ -25,14 +33,22 @@ emora=bot()
 emora[you,your,yours]
 
 datetime<entity>
+datetime[datetime]
 yesterday=datetime()
+yesterday[yesterday]
 tomorrow=datetime()
+tomorrow[tomorrow]
 today=datetime()
+today[today]
 now=datetime()
+now[now]
 past=datetime()
+past[past]
 future=datetime()
+future[future]
 
 property<predicate>
+property[property]
 attachment<predicate>
 
 inst_det<object>
@@ -76,7 +92,6 @@ for[for]
 of<predicate>
 of[of]
 
-time[when]
 locate<predicate>
 locate[where]
 cause<predicate>
@@ -85,6 +100,7 @@ qualifier<predicate>
 qualifier[how]
 
 question<predicate>
+question[question]
 
 what<entity>
 what[what]
@@ -124,9 +140,15 @@ go<predicate>
 go[go,went,goes,going]
 
 unknown_noun<object>
+unknown_noun[unknown_noun]
 unknown_adj<object>
+unknown_adj[unknown_adj]
 unknown_verb<object>
+unknown_verb[unknown_verb]
 unknown_pron<object>
+unknown_pron[unknown_pron]
 unknown_adv<object>
+unknown_adv[unknown_adv]
 unknown_other<object>
+unknown_other[unknown_other]
 ;
