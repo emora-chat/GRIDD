@@ -48,7 +48,4 @@ the_hobbit=book()
 cause(efh, read(bot, the_hobbit))
 property(the_hobbit, interesting)
 property(the_hobbit, fantasy)
-
-blh/like.v.01(bot,the_hobbit)
-time(blh,now)
 ;

@@ -156,7 +156,7 @@ def inter_utter_integration_handler(pipeline, input_dict, KB):
 
 def dialogue_inference_handler(pipeline, input_dict, KB):
     input = {"wm": input_dict.get("wm",[None])[0], "aux_state": input_dict.get("aux_state",[{}])[0]}
-    input = load(input, KB)
+    input = load(input, KB) #todo - if there is an error in earlier parts that causes wm to not be saved, this module will also break
     wm_after_inference, aux_state_update = pipeline(wm_after_inter_merges=input["wm"], aux_state=input["aux_state"])
     return save(wm=wm_after_inference, aux_state=aux_state_update)
 
@@ -358,31 +358,34 @@ class ChatbotServer:
                                                   self.kb, load_coldstarts=load_coldstarts)
             self.update_current_turn_state(current_state, msg)
 
-            for _ in range(iteration):
+            for d in range(iteration):
+                print('\n ## ITER %d ## \n'%d)
                 msg = inter_utter_integration_handler(self.inter_utter_integration,
                                                       self.convert_state(current_state),
                                                       self.kb)
                 self.update_current_turn_state(current_state, msg)
 
                 if self.debug:
-                    print('\nWorking Memory after Utterance Integration:')
+                    print('\n<< Working Memory after Utterance Integration >>\n')
                     saved_wm = json.loads(msg["wm"])
                     working_memory = WorkingMemory(self.kb)
                     ConceptGraph.load(working_memory, saved_wm)
                     print(working_memory.ugly_print(exclusions={'is_type', 'object', 'predicate', 'entity', 'post', 'pre',
-                                                                'def', 'span', 'datetime'}))
+                                                                'def', 'span', 'datetime',
+                                                                'type', 'ref'}))
                     print()
 
                 msg = dialogue_inference_handler(self.dialogue_inference, self.convert_state(current_state), self.kb)
                 self.update_current_turn_state(current_state, msg)
 
                 if self.debug:
-                    print('\nWorking Memory after Inference:')
+                    print('\n<< Working Memory after Inference >>\n')
                     saved_wm = json.loads(msg["wm"])
                     working_memory = WorkingMemory(self.kb)
                     ConceptGraph.load(working_memory, saved_wm)
                     print(working_memory.ugly_print(exclusions={'is_type', 'object', 'predicate', 'entity', 'post', 'pre',
-                                                                'def', 'span', 'datetime'}))
+                                                                'def', 'span', 'datetime',
+                                                                'type', 'ref'}))
                     print()
 
             msg = response_selection_handler(self.response_selection, self.convert_state(current_state), self.kb)

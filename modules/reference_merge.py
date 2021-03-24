@@ -34,9 +34,11 @@ class ReferenceMerge:
                                                                      in reference_preconditions.items()])
             compatible_pairs = []
             for reference_node, (pre,post,matches) in match_dict.items():
-                for match in matches:
-                    pairs = [(match[node], node) for node in match] if reference_node != match[reference_node] else []
-                    if len(pairs) == 1: # todo - what to do on reference ambiguity; for now, don't merge
+                if len(matches) == 2:
+                    # todo - what to do on reference ambiguity; for now, don't merge
+                    # one match of the 2 is the reference itself, so only one real match is found
+                    for match in matches:
+                        pairs = [(match[node], node) for node in match] if reference_node != match[reference_node] else []
                         compatible_pairs.extend(pairs)
         return compatible_pairs
 
