@@ -183,7 +183,7 @@ Overrules the auxiliary question rule, which would cause an incorrect interpreta
 	obj(Z/pstg(), X)
 	aux(Z, A/present_tense())
 	-> q_aux_det_pres ->
-	p/time(Z, now)
+	p/aux_time(Z, now)
 	focus(p)
 	center(A)
 	;
@@ -192,7 +192,7 @@ Overrules the auxiliary question rule, which would cause an incorrect interpreta
 	obj(Z/pstg(), X)
 	aux(Z, A/past_tense())
 	-> q_aux_det_past ->
-	p/time(Z, past)
+	p/aux_time(Z, past)
 	focus(p)
 	center(A)
 	;

@@ -142,6 +142,7 @@ class ParseToLogic:
         """
         centers_handled = set()
         mentions = {}
+        auxes = set()
         for rule, solutions in assignments.items():
             pre, post = rule[0], rule[1]
             ((center_var,t,o,i),) = post.predicates(predicate_type='center')
@@ -170,7 +171,27 @@ class ParseToLogic:
                         # if center is asserted, add assertion to focus node
                         ((focus,_,_,_),) = cg.predicates(predicate_type='focus')
                         cg.add(focus, 'assert')
+                    if len(cg.predicates(predicate_type='aux_time')) > 0:
+                        auxes.add(center)
                     mentions[center] = cg
+
+        for aux in auxes: # replaces `time` of head predicate of aux-span with `aux_time`
+            heads_of_aux = ewm.subjects(aux, 'aux')
+            for head in heads_of_aux:
+                aux_cg = mentions[aux]
+                preds = aux_cg.predicates(predicate_type='aux_time')
+                if len(preds) > 0:
+                    ((_, _, aux_time, _), ) = preds
+                    head_cg = mentions[head]
+                    preds = head_cg.predicates(predicate_type='time')
+                    if len(preds) > 0:
+                        ((s,t,o,i), ) = preds
+                        head_cg.remove(s,t,o,i)
+                    else: #todo - update comps/reference links???
+                        ((s,_,_,_), ) = head_cg.predicates(predicate_type='focus')
+                        i = head_cg.id_map().get()
+                    head_cg.add(s, 'time', aux_time, i)
+            del mentions[aux]
         return mentions
 
     def _add_unknowns_to_cg(self, source_node, source, cg_node, cg):
