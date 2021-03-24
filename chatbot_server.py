@@ -100,6 +100,11 @@ def nlp_preprocessing_handler(pipeline, input_dict, local=False):
                                  data=json.dumps(input_dict),
                                  headers={'content-type': 'application/json'},
                                  timeout=3.0)
+        elit_results = json.loads(response.json()["context_manager"]['elit_results'])
+        print(input_dict["text"][0])
+        print(elit_results['lem'])
+        print(elit_results['pos'])
+        print(elit_results['tok'])
         return response.json()["context_manager"]
     else:
         input = {"utter": input_dict.get("utter",[None])[0].strip(), "aux_state": input_dict.get("aux_state",[None])[1]}
@@ -381,5 +386,5 @@ if __name__ == '__main__':
 
     chatbot = ChatbotServer()
     chatbot.initialize_full_pipeline(kb_files=kb, rules=rules, device='cpu',
-                                     local=True, debug=True)
+                                     local=False, debug=True)
     chatbot.chat(load_coldstarts=True)

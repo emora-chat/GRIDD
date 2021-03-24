@@ -7,7 +7,7 @@ class Span:
 
     def __init__(self, string, start, end, sentence, turn, speaker, expression):
         self.string = string
-        self.expression = expression if expression != '#crd#' else string
+        self.expression = expression if expression not in ['#crd#', '#ord#'] else string
         self.start = start
         self.end = end
         self.sentence = sentence
