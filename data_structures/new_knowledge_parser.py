@@ -1,11 +1,12 @@
 
 from GRIDD.data_structures.new_knowledge_parser_spec import KnowledgeParserSpec
 
-from lark import Lark, Visitor
+from lark import Lark
 from lark.visitors import Visitor_Recursive
 from GRIDD.data_structures.id_map import IdMap
 from itertools import chain
 from GRIDD.utilities.utilities import combinations
+import json
 
 
 class KnowledgeParser:
@@ -29,7 +30,7 @@ class KnowledgeParser:
         print('--')
         for e, d in self.visitor.metadatas.items():
             print(e, ':', d)
-        return self.visitor.entries
+        return self.visitor.entries, self.visitor.metadatas
 
     _grammar = r'''
 
@@ -112,6 +113,7 @@ class KnowledgeVisitor(Visitor_Recursive):
                 if e not in self.predicates:
                     raise ValueError('Predicate initialization with non-predicate `{}`'.format(e))
         self.entries.extend(entries)
+        self.metadatas.update({self.linstances.get(k, k): v for k, v in self.lmetadatas.items()})
         self.lentries = []
         self.lmetadatas = {}
         self.linstances = {}
@@ -227,6 +229,9 @@ class KnowledgeVisitor(Visitor_Recursive):
         tree.data = inits
 
     def declaration(self, tree):
+        if len(tree.children) > 1:
+            for ident in tree.children[0].data:
+                self.lmetadatas.setdefault(ident, {}).update(tree.children[1].children[0].data)
         tree.data = tree.children[0].data
 
     def reference(self, tree):
@@ -257,6 +262,24 @@ class KnowledgeVisitor(Visitor_Recursive):
         for l in lists:
             if len(first) != len(l):
                 raise ValueError('Mismatched multiplicity in init: |{}| != |{}|'.format(first, l))
+
+    def string(self, tree):
+        tree.data = str(tree.children[0][1:-1])
+
+    def number(self, tree):
+        tree.data = float(tree.children[0])
+
+    def constant(self, tree):
+        tree.data = {'null': None, 'true': True, 'false': False}[tree.children[0]]
+
+    def list(self, tree):
+        tree.data = [c.data for c in tree.children]
+
+    def dict(self, tree):
+        tree.data = {str(c.children[0])[1:-1]: c.children[1].data for c in tree.children}
+
+    def value(self, tree):
+        tree.data = tree.children[0].data
 
 
 if __name__ == '__main__':
