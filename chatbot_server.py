@@ -105,6 +105,7 @@ def nlp_preprocessing_handler(pipeline, input_dict, local=False):
         print(elit_results['lem'])
         print(elit_results['pos'])
         print(elit_results['tok'])
+        print(elit_results['dep'])
         return response.json()["context_manager"]
     else:
         input = {"utter": input_dict.get("utter",[None])[0].strip(), "aux_state": input_dict.get("aux_state",[None])[1]}

@@ -144,36 +144,46 @@ class ParseToLogic:
         mentions = {}
         auxes = set()
         for rule, solutions in assignments.items():
+            link = False
             pre, post = rule[0], rule[1]
-            ((center_var,t,o,i),) = post.predicates(predicate_type='center')
-            for solution in solutions:
+            center_pred = post.predicates(predicate_type='center')
+            if len(center_pred) > 0:
+                ((center_var, _, _, _),) = center_pred
                 (expression_var,) = pre.objects(center_var, 'ref')
                 (concept_var,) = pre.objects(expression_var, 'expr')
-                center = solution[center_var]
+                maintain_in_mention_graph = [center_var, expression_var, concept_var]
+            else: # center-less parse2logic rules specify linking structures but are not defining a specific token mention
+                ((center_var, _, _, _),) = post.predicates(predicate_type='link')
+                link = True
+                maintain_in_mention_graph = []
+            for solution in solutions:
+                center = solution.get(center_var, center_var)
+                if link:
+                    center = '__linking__%s' % center
                 if center not in centers_handled:
-                    self._update_centers(centers_handled, post, center, solution)
-                    post_to_ewm_map = {node: self._get_concept_of_span(solution[node], ewm)
-                                       for node in post.concepts()
-                                       if node in solution and node in [center_var,expression_var,concept_var]}
                     cg = ConceptGraph(namespace='ment_')
                     post_to_cg_map = cg.concatenate(post)
-                    for post_node, ewm_node in post_to_ewm_map.items():
-                        cg_node = post_to_cg_map[post_node]
-                        cg.add(ewm_node)
-                        cg.features.update(ewm.features, concepts={center})
-                        # cg.features[center]["span_data"] = ewm.features[center]["span_data"]
-                        if ewm_node.startswith(ewm.id_map().namespace):
-                            cg.merge(cg_node, ewm_node, strict_order=True)
-                        else:
-                            cg.merge(ewm_node, cg_node, strict_order=True)
-                        self._add_unknowns_to_cg(ewm_node, ewm, cg_node, cg)
-                    if ewm.has(center, 'assert'):
-                        # if center is asserted, add assertion to focus node
-                        ((focus,_,_,_),) = cg.predicates(predicate_type='focus')
-                        cg.add(focus, 'assert')
-                    if len(cg.predicates(predicate_type='aux_time')) > 0:
-                        auxes.add(center)
+                    self._update_centers(centers_handled, post, center, solution)
                     mentions[center] = cg
+                    if not center.startswith('__linking__'):
+                        post_to_ewm_map = {node: self._get_concept_of_span(solution[node], ewm)
+                                           for node in post.concepts()
+                                           if node in solution and node in maintain_in_mention_graph}
+                        if ewm.has(center, 'assert'):
+                            # if center is asserted, add assertion to focus node
+                            ((focus, _, _, _),) = cg.predicates(predicate_type='focus')
+                            cg.add(focus, 'assert')
+                        if len(cg.predicates(predicate_type='aux_time')) > 0:
+                            auxes.add(center)
+                        for post_node, ewm_node in post_to_ewm_map.items():
+                            cg_node = post_to_cg_map[post_node]
+                            cg.add(ewm_node)
+                            if ewm_node.startswith(ewm.id_map().namespace):
+                                cg.merge(cg_node, ewm_node, strict_order=True)
+                            else:
+                                cg.merge(ewm_node, cg_node, strict_order=True)
+                            self._add_unknowns_to_cg(ewm_node, ewm, cg_node, cg)
+                        cg.features.update(ewm.features, concepts={center})
 
         for aux in auxes: # replaces `time` of head predicate of aux-span with `aux_time`
             heads_of_aux = ewm.subjects(aux, 'aux')
@@ -211,11 +221,19 @@ class ParseToLogic:
         merges = []
         for rule, solutions in assignments.items():
             pre, post = rule[0], rule[1]
+            link = False
             ((focus_var,t,o,i),) = post.predicates(predicate_type='focus')
-            ((center_var,t,o,i),) = post.predicates(predicate_type='center')
+            center_pred = post.predicates(predicate_type='center')
+            if len(center_pred) > 0:
+                ((center_var, t, o, i),) = center_pred
+            else:
+                ((center_var, _, _, _),) = post.predicates(predicate_type='link')
+                link = True
             for solution in solutions:
                 focus = solution.get(focus_var, focus_var)
                 center = solution.get(center_var, center_var)
+                if link:
+                    center = '__linking__%s' % center
                 if center not in centers_handled:
                     self._update_centers(centers_handled, post, center, solution)
                     if post.has(predicate_id=focus):

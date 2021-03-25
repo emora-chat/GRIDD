@@ -505,6 +505,24 @@ John made a call.
 	center(X)
 	;
 	
+	comp(X/past_tense(), Z/pstg())
+	-> missing_outer_sbj_comp_past ->
+	is_type(X)
+	p/X(object(),Z)
+	time(p,past)
+	focus(p)
+	center(X)
+	;
+		
+	comp(X/present_tense(), Z/pstg())
+	-> missing_outer_sbj_comp_present ->
+	is_type(X)
+	p/X(object(),Z)
+	time(p,past)
+	focus(p)
+	center(X)
+	;
+	
 	sbj(X/verb(), Y/pstg())
 	comp(X, Z/pstg())
 	sbj(Z, B/pstg())
@@ -796,9 +814,9 @@ TODO - make better
 
 	relcl(X/pstg(), Y/pstg())
 	-> relative_clause ->
-	p/qualifier(X, Y)
+	p/property(X, Y)
 	focus(p)
-	center(Y)
+	link(Y)
 	;
 
 </details>
@@ -908,12 +926,20 @@ The red car
 
  <details>
   <summary>Conversions</summary>
+
+	acl(X/pstg(), Y/pstg())
+	acl_indicator(Y, Z/pstg())
+	-> acl_with_mention ->
+	p/Z(X, Y)
+	focus(p)
+	center(Z)
+	;
   
 	acl(X/pstg(), Y/pstg())
 	-> acl ->
 	p/property(X, Y)
 	focus(p)
-	center(Y)
+	link(Y)
 	;
 
 </details>
@@ -956,12 +982,12 @@ John's sister
 	-> advnp ->
 	p/qualifier(X, Y)
 	focus(p)
-	center(Y)
+	link(Y)
 	;
 	
 	advcl(X/pstg(), Y/pstg())
-	adv(Y, Z/pstg())
-	-> advcl_adv ->
+	advcl_indicator(Y, Z/pstg())
+	-> advcl_with_mention ->
 	is_type(Z)
 	p/Z(X,Y)
 	focus(p)
@@ -972,14 +998,14 @@ John's sister
 	-> advcl ->
 	p/qualifier(X, Y)
 	focus(p)
-	center(Y)
+	link(Y)
 	;
 	
 	adv(X/pstg(), Y/pstg())
 	-> adv ->
 	p/qualifier(X, Y)
 	focus(p)
-	center(Y)
+	link(Y)
 	;
 
 </details>
@@ -1012,6 +1038,13 @@ He made up an excuse.
 	conj(X/pstg(), Y/pstg())
 	-> conjunct ->
 	p/conjunct(X, Y)
+	focus(p)
+	link(Y)
+	;
+	
+	cc(X/pstg(), Y/pstg())
+	-> cc ->
+	p/conjunct_type(X, Y)
 	focus(p)
 	center(Y)
 	;
@@ -1061,7 +1094,7 @@ I bought four tickets.
 	-> appositive ->
 	p/appositive(X, Y)
 	focus(p)
-	center(Y)
+	link(Y)
 	;
 
 </details>

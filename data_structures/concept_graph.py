@@ -487,7 +487,7 @@ class ConceptGraph:
         return type_string, bi_string, mono_string
 
     def to_spanning_tree(self):
-        exclude = {'expr', 'def', 'ref', 'assert', 'type'}
+        exclude = {'expr', 'def', 'ref', 'assert', 'type', 'link'}
         root = SpanningNode('__root__')
         ((assertion_node,_,_,_), ) = self.predicates(predicate_type='assert')
         frontier = [(root, assertion_node, None, 'link')]
@@ -555,25 +555,25 @@ class ConceptGraph:
         #   (3) Types
         #   (4) Concept
         # SPECIAL CASES: return `user` or `bot` as label of those concepts
-        label = ''
+        label = set()
         if concept in {'user','emora'}:
-            label += concept
+            label.add(concept)
         else:
             definitions = self.subjects(concept, 'def')
             if len(definitions) > 0:
                 for def_expression in definitions:
                     expression = self.features[def_expression]['span_data'].expression
-                    label += expression + ' '
+                    label.add(expression)
             else:
                 for expression in self.subjects(concept, 'expr'):
-                    label += expression.replace('"', '') + ' '
+                    label.add(expression.replace('"', ''))
                     break
             if len(label) == 0:
                 for _, _, supertype, predinst in self.predicates(concept, 'type'):
-                    label += self._get_expr(supertype) + ' '
+                    label.add(self._get_expr(supertype))
             if len(label) == 0:
                 return concept.strip()
-        return label.strip()
+        return ' '.join(label)
 
     def __str__(self):
         return 'CG<%s>' % (str(id(self))[-5:])
