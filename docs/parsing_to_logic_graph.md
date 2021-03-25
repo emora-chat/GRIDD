@@ -410,6 +410,8 @@ Two-argument predicates of the format `root(subject, object)`. The light verb is
 	center(X)
 	cover(U)
 	;
+	
+
 
  </details>
 

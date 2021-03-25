@@ -144,7 +144,7 @@ class ElitDPToLogic(ParseToLogic):
                     new_source = source.to_string()
                     cg.features[new_source]["span_data"] = source
                     self.spans[original_source_span_idx] = new_source
-                    cg.add(new_source, 'ref', '"%s"'%source.string) # add updated condensed expression
+                    cg.add(new_source, 'ref', '"%s"'%source.expression) # add updated condensed expression
                     cg.merge(new_source, original_source)
                     cg.merge(new_source, original_target)
                 else:
