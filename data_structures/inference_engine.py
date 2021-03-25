@@ -83,7 +83,8 @@ class InferenceEngine:
             facts_concept_graph.remove(predicate_id=i)
             types.add(o)
         for type in types:
-            facts_concept_graph.remove(type)
+            if len(facts_concept_graph.related(type)) == 0: # remove type nodes if only used in type predicates
+                facts_concept_graph.remove(type)
         facts_concept_graph.remove('type')
         facts_graph = facts_concept_graph.to_graph()
         for node, types in attributes.items():

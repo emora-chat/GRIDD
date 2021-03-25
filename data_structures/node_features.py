@@ -23,9 +23,10 @@ class NodeFeatures(defaultdict):
                     self[node]['coldstart'] = max(self[node].get('coldstart', 0.0), features.get('coldstart', 0.0))
                 if 'span_data' in features:
                     if 'span_data' in self[node]:
-                        print('Exists: ', self[node]['span_data'])
-                        print('Update: ', features[node]['span_data'])
-                        raise Exception('Node already has span info!')
+                        print('Node: ', str(node))
+                        print('Span Exists: ', self[node]['span_data'])
+                        print('Span Update: ', features['span_data'])
+                        raise Exception('Node already has span info!') #todo - get rid of before deployment
                     else:
                         self[node]['span_data'] = features['span_data']
 
@@ -60,7 +61,7 @@ class NodeFeatures(defaultdict):
                 self[id]['cover'] = 1.0
 
     def update_from_inference(self, elements, wm):
-        inference_salience = 0.5  # todo - how to set inference salience???
+        inference_salience = 0.75  # todo - how to set inference salience???
         for id in elements:
             if wm.has(predicate_id=id) and wm.type(id) == 'question':
                 self[id]['salience'] = inference_salience * 1.5

@@ -1,0 +1,64 @@
+like:
+	arg0: dog(
+		r possess:
+			arg1: person(
+				r aunt:
+					arg1: john()
+			)
+			property:
+				arg1: illegal()
+		)
+	arg1: bone()
+	degree:
+		arg1: really()
+
+like:
+	arg0: dog(
+		r possess:
+			arg1: person(
+				r aunt:
+					arg1: john()
+			)
+			property:
+				arg1: illegal()
+		)
+	arg1: buy(
+		arg0: sally()
+		arg1: bone()
+		)
+	degree:
+		arg1: really()
+
+- non-predinst open a parenthesis and after all children are processed, close a parenthesis
+- remove all `()` instances
+
+like:
+	arg0: dog(
+		r possess:
+			arg1: person(
+				r aunt:
+					arg1: john
+			)
+			property:
+				arg1: illegal
+		)
+	arg1: bone
+	degree:
+		arg1: really
+
+like:
+	arg0: dog(
+		r possess:
+			arg1: person(
+				r aunt:
+					arg1: john
+			)
+			property:
+				arg1: illegal
+		)
+	arg1: buy(
+		arg0: sally
+		arg1: bone
+		)
+	degree:
+		arg1: really

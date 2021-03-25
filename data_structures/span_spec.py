@@ -15,6 +15,6 @@ class SpanSpec:
     @specification.init
     def SPAN(Span):
         full_string = 'I love my dog Fido'
-        return Span('my dog', 2, 4, 0, 0, 1)
+        return Span('my dog', 2, 4, 0, 0, 1, 'my dog')
 
 

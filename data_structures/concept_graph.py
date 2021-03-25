@@ -7,6 +7,7 @@ from structpy.map.map import Map
 from GRIDD.data_structures.id_map import IdMap
 from structpy.map.index.index import Index
 from GRIDD.data_structures.span import Span
+from GRIDD.data_structures.spanning_node import SpanningNode
 CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 from collections import defaultdict, deque
 import json, copy
@@ -484,6 +485,95 @@ class ConceptGraph:
                     mono_string += '%s/%s(%s)\n' % (id_map[i], id_map[t], id_map[s])
                 visited.add(predicate_signature)
         return type_string, bi_string, mono_string
+
+    def to_spanning_tree(self):
+        exclude = {'expr', 'def', 'ref', 'assert', 'type', 'link'}
+        root = SpanningNode('__root__')
+        ((assertion_node,_,_,_), ) = self.predicates(predicate_type='assert')
+        frontier = [(root, assertion_node, None, 'link')]
+        visited = set()
+        while len(frontier) > 0:
+            parent, id, node_type, label_type = frontier.pop(0)
+            if id not in visited:
+                visited.add(id)
+                if self.has(predicate_id=id):
+                    s, t, o, _ = self.predicate(id)
+                    if node_type == '_rev_': tmp = o; o = s; s = tmp;
+                    pred_node = SpanningNode(id, t, node_type)
+                    if parent.node_id != s:
+                        frontier.append((pred_node, s, None, 'arg0'))
+                    if o is not None:
+                        frontier.append((pred_node, o, None, 'arg1'))
+                else:
+                    pred_node = SpanningNode(id, None, node_type)
+                parent.children[label_type].append(pred_node)
+                for pred in self.predicates(id):
+                    if pred[1] not in exclude and pred[3] not in {id, parent.node_id}: frontier.append((pred_node, pred[3], None, 'link'))
+                for pred in self.predicates(object=id):
+                    if pred[1] not in exclude and pred[3] not in {id, parent.node_id}: frontier.append((pred_node, pred[3], '_rev_', 'link'))
+            else: # still need to attach node to parent if subj or obj, but do not need to process links or node's children
+                if label_type != 'link':
+                    if self.has(predicate_id=id):
+                        s, t, o, _ = self.predicate(id)
+                        pred_node = SpanningNode(id, t, node_type)
+                    else:
+                        pred_node = SpanningNode(id, None, node_type)
+                    parent.children[label_type].append(pred_node)
+        return root
+
+    def print_spanning_tree(self, root=None, tab=1):
+        s = ""
+        if root is None:
+            root = self.to_spanning_tree().children['link'][0]
+            string = root.pred_type if root.pred_type is not None else root.node_id
+            expression = self._get_expr(string)
+            s += expression + '\n'
+        for label, nodes in root.children.items():
+            if label in {'arg0', 'arg1'}:
+                node = nodes[0]
+                string = node.pred_type if node.pred_type is not None else node.node_id
+                prefix = node.type + ' ' if node.type is not None else ''
+                expression = self._get_expr(string)
+                s += '%s%s%s: %s\n'%('\t'*tab, prefix, label, expression)
+                s += self.print_spanning_tree(node, tab+1)
+            elif label == 'link':
+                for node in nodes:
+                    string = node.pred_type if node.pred_type is not None else node.node_id
+                    prefix = node.type + ' ' if node.type is not None else ''
+                    expression = self._get_expr(string)
+                    if len(node.children) > 0:
+                        s += '%s%s%s:\n'%('\t'*tab, prefix, expression)
+                        s += self.print_spanning_tree(node, tab+1)
+                    else:
+                        s += '%s%s%s\n' % ('\t' * tab, prefix, expression)
+        return s
+
+    def _get_expr(self, concept):
+        # Return label of concept as one of the following, in priority order:
+        #   (1) Definitions
+        #   (2) Expressions
+        #   (3) Types
+        #   (4) Concept
+        # SPECIAL CASES: return `user` or `bot` as label of those concepts
+        label = set()
+        if concept in {'user','emora'}:
+            label.add(concept)
+        else:
+            definitions = self.subjects(concept, 'def')
+            if len(definitions) > 0:
+                for def_expression in definitions:
+                    expression = self.features[def_expression]['span_data'].expression
+                    label.add(expression)
+            else:
+                for expression in self.subjects(concept, 'expr'):
+                    label.add(expression.replace('"', ''))
+                    break
+            if len(label) == 0:
+                for _, _, supertype, predinst in self.predicates(concept, 'type'):
+                    label.add(self._get_expr(supertype))
+            if len(label) == 0:
+                return concept.strip()
+        return ' '.join(label)
 
     def __str__(self):
         return 'CG<%s>' % (str(id(self))[-5:])

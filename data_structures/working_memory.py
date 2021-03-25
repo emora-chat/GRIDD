@@ -33,6 +33,12 @@ class WorkingMemory(ConceptGraph):
             self.add(*item)
             self.features.update_from_ontology(item)
 
+    def pull_expressions(self, concepts=None):
+        concepts = list(self.concepts()) if concepts is None else list(self.concepts() & set(concepts))
+        for c in concepts:
+            for item in self.knowledge_base.predicates(predicate_type='expr', object=c):
+                self.add(*item)
+
     def pull(self, order=1, concepts=None, exclude_on_pull=None):
         if isinstance(concepts, list):
             concepts = set(concepts)

@@ -23,8 +23,8 @@ def init_nlp_preprocessing(local_testing=True):
     elit_models = c(ElitModels())
     return Pipeline(
         ('utter') > sentence_caser > ('cased_utter'),
-        ('cased_utter', 'aux_state') > elit_models > ('tok', 'pos', 'dp', 'cr'),
-        outputs=['tok', 'pos', 'dp', 'cr']
+        ('cased_utter', 'aux_state') > elit_models > ('elit_results'),
+        outputs=['elit_results']
     )
 
 def init_utter_conversion(device, KB):
@@ -32,7 +32,7 @@ def init_utter_conversion(device, KB):
     template_file = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
     elit_dp = c(ElitDPToLogic(KB, template_file, device=device))
     return Pipeline(
-        ('tok', 'pos', 'dp') > elit_dp > ('dp_mentions', 'dp_merges'),
+        ('elit_results') > elit_dp > ('dp_mentions', 'dp_merges'),
         outputs=['dp_mentions', 'dp_merges']
     )
 
@@ -48,7 +48,7 @@ def init_utter_integration():
     return Pipeline(
         ('dp_mentions', 'wm') > mention_bridge > ('wm_after_mentions'),
         ('dp_merges', 'wm_after_mentions') > merge_dp > ('dp_node_merges'),
-        ('cr', 'wm_after_mentions') > merge_coref > ('coref_merges'),
+        ('elit_results', 'wm_after_mentions') > merge_coref > ('coref_merges'),
         ('wm_after_mentions', 'dp_node_merges') > merge_bridge > ('wm_after_merges'),
         outputs=['wm_after_merges']
     )
@@ -100,6 +100,12 @@ def nlp_preprocessing_handler(pipeline, input_dict, local=False):
                                  data=json.dumps(input_dict),
                                  headers={'content-type': 'application/json'},
                                  timeout=3.0)
+        # elit_results = json.loads(response.json()["context_manager"]['elit_results'])
+        # print(input_dict["text"][0])
+        # print(elit_results['lem'])
+        # print(elit_results['pos'])
+        # print(elit_results['tok'])
+        # print(elit_results['dep'])
         return response.json()["context_manager"]
     else:
         input = {"utter": input_dict.get("utter",[None])[0].strip(), "aux_state": input_dict.get("aux_state",[None])[1]}
@@ -107,21 +113,22 @@ def nlp_preprocessing_handler(pipeline, input_dict, local=False):
         if input["aux_state"] is None:
             input["aux_state"] = {'turn_index': -1}
         input["aux_state"]["turn_index"] += 1
-        tok,pos,dp,cr = [],[],[],{}
+        elit_results = {}
         if input["utter"] is not None and len(input["utter"]) > 0:
-            tok, pos, dp, cr = pipeline(utter=input["utter"], aux_state=input["aux_state"])
-        return save(tok=tok, pos=pos, dp=dp, cr=cr, aux_state=input["aux_state"])
+            elit_results = pipeline(utter=input["utter"], aux_state=input["aux_state"])
+        return save(elit_results=elit_results, aux_state=input["aux_state"])
 
 def utter_conversion_handler(pipeline, input_dict):
-    input = {"tok": input_dict.get("tok",[[]])[0], "pos": input_dict.get("pos",[[]])[0], "dp": input_dict.get("dp",[[]])[0]}
+    input = {"elit_results": input_dict.get("elit_results",[{}])[0]}
     input = load(input)
     dp_mentions,dp_merges={},[]
-    if input["dp"] is not None and len(input["dp"]) > 0:
-        dp_mentions, dp_merges = pipeline(tok=input["tok"], pos=input["pos"], dp=input["dp"])
+    if input["elit_results"] is not None and len(input["elit_results"]) > 0:
+        dp_mentions, dp_merges = pipeline(elit_results=input["elit_results"])
     return save(dp_mentions=dp_mentions, dp_merges=dp_merges)
 
 def utter_integration_handler(pipeline, input_dict, KB, load_coldstarts=True):
-    input = {"dp_mentions": input_dict.get("dp_mentions",[{}])[0], "dp_merges": input_dict.get("dp_merges",[[]])[0], "cr": input_dict.get("cr",[{}])[0],
+    input = {"dp_mentions": input_dict.get("dp_mentions",[{}])[0], "dp_merges": input_dict.get("dp_merges",[[]])[0],
+             "elit_results": input_dict.get("elit_results",[{}])[0],
              "wm": input_dict.get("wm",[None])[1]}
     input = load(input, KB)
     if input["wm"] is None:
@@ -129,7 +136,8 @@ def utter_integration_handler(pipeline, input_dict, KB, load_coldstarts=True):
             input["wm"] = WorkingMemory(KB, join('GRIDD', 'resources', 'kg_files', 'wm'))
         else:
             input["wm"] = WorkingMemory(KB)
-    wm_after_merges = pipeline(dp_mentions=input["dp_mentions"], wm=input["wm"], dp_merges=input["dp_merges"], cr=input["cr"])
+    wm_after_merges = pipeline(dp_mentions=input["dp_mentions"], wm=input["wm"],
+                               dp_merges=input["dp_merges"], elit_results=input["elit_results"])
     return save(wm=wm_after_merges)
 
 def dialogue_inference_handler(pipeline, input_dict, KB):
@@ -206,16 +214,12 @@ def load(json_dict, KB=None):
                     coref_context['global_tokens'] = global_tokens
                     value['coref_context'] = coref_context if len(coref_context) > 0 else None
                 json_dict[key] = value
-            elif key == 'tok':
-                value = json.loads(value) if isinstance(value, str) else value
-                json_dict[key] = [Span.from_string(obj) for obj in value]
-            elif key in {'pos', 'dp', 'main_response', 'supporting_predicates', 'response'}:
+            elif key == 'elit_results':
                 json_dict[key] = json.loads(value) if isinstance(value, str) else value
-            elif key == 'cr':
-                value = json.loads(value) if isinstance(value, str) else value
-                if 'global_tokens' in value:
-                    value['global_tokens'] = [Span.from_string(obj) for obj in value['global_tokens']]
-                json_dict[key] = value
+                if 'tok' in json_dict[key]:
+                    json_dict[key]['tok'] = [Span.from_string(t) for t in json_dict[key]['tok']]
+            elif key in {'main_response', 'supporting_predicates', 'response'}:
+                json_dict[key] = json.loads(value) if isinstance(value, str) else value
             elif key == 'dp_mentions':
                 value = json.loads(value) if isinstance(value, str) else value
                 new_d = {}
@@ -268,10 +272,11 @@ class ChatbotServer:
         self.utter_conversion = init_utter_conversion(device, self.kb)
         self.utter_integration = init_utter_integration()
 
-    def run_nlu(self, utterance):
-        print('-' * 20)
-        print(utterance)
-        print('-'*20)
+    def run_nlu(self, utterance, display=True):
+        if display:
+            print('-' * 20)
+            print(utterance)
+            print('-'*20)
         current_state = {'utter': [None, None], 'wm': [None, None], 'aux_state': [None, None]}
         current_state["utter"][0] = utterance
         msg = nlp_preprocessing_handler(self.nlp_processing, self.convert_state(current_state), local=self.local)
@@ -287,9 +292,11 @@ class ChatbotServer:
         saved_wm = json.loads(msg["wm"])
         working_memory = WorkingMemory(self.kb)
         ConceptGraph.load(working_memory, saved_wm)
-        print(working_memory.ugly_print(exclusions={'is_type', 'object', 'predicate', 'entity', 'post', 'pre',
-                                                    'def', 'span', 'datetime'}))
-        print()
+        if display:
+            print(working_memory.ugly_print(exclusions={'is_type', 'object', 'predicate', 'entity', 'post', 'pre',
+                                                        'def', 'span', 'datetime'}))
+            print()
+        return working_memory
 
     def add_new_turn_state(self, current_state):
         for key in current_state:
@@ -379,5 +386,6 @@ if __name__ == '__main__':
     rules = [rules_dir]
 
     chatbot = ChatbotServer()
-    chatbot.initialize_full_pipeline(kb_files=kb, rules=rules, device='cpu', local=True, debug=True)
-    chatbot.chat(load_coldstarts=False)
+    chatbot.initialize_full_pipeline(kb_files=kb, rules=rules, device='cpu',
+                                     local=True, debug=True)
+    chatbot.chat(load_coldstarts=True)

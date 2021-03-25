@@ -1,20 +1,30 @@
-bun/use(bot,n/name())
+bbh/be(bot,happy.s.01)
+qualifier(bbh, m/meet(bot,user))
+time(bbh,now)
+time(m,now)
+bbh{"cover":1}
+
+bun/call(bot, what)
 indirect_obj(bun,user)
 mode(bun,should)
-question(n)
+question(what)
 time(bun,now)
-bun{"coldstart": 1, "salience": 0.999}
+bun{"cover":1}
+
+cbb/conjunct(bbh,bun)
+cbb{"coldstart": 1, "salience": 0.999}
 ;
 
 b/be(user,q/qualifier())
+qualifier(b, today)
 question(q)
 time(b,now)
 b{"coldstart": 1, "salience": 0.998}
 ;
 
-possess(user,d/day())
-b/be(d,q/qualifier())
-question(q)
-time(b,now)
-b{"coldstart": 1, "salience": 0.3}
+udw/do(user,what)
+question(what)
+time(udw,past)
+qualifier(udw,today)
+udw{"coldstart": 1, "salience": 0.3}
 ;

@@ -1,3 +1,4 @@
+from GRIDD.modules.response_expansion_spec import ResponseExpansionSpec
 
 subj_expansion_types = {'type', 'property', 'qualifier', 'time', 'question', 'referential', 'instantiative',
                         'indirect_obj', 'mode', 'negate'}
@@ -15,6 +16,14 @@ class ResponseExpansion:
                 expansions = self.get_predicate_supports(main_predicate, working_memory)
             else:
                 expansions = self.get_question_supports(main_s, working_memory)
+            concepts = []
+            for s, t, o, i in expansions:
+                concepts.extend([s,o])
+            for concept in concepts:
+                if working_memory.has(predicate_id=concept):
+                    sig = working_memory.predicate(concept)
+                    expansions.add(sig)
+                    expansions.update(self.get_predicate_supports(sig, working_memory))
             expansions -= {main_predicate}
             working_memory.features.update_from_response(main_predicate, expansions)
             return main_predicate, expansions, working_memory
@@ -63,3 +72,6 @@ class ResponseExpansion:
                     predicate_supports.update(preds)
             expansions.update(predicate_supports)
         return expansions
+
+if __name__ == '__main__':
+    print(ResponseExpansionSpec.verify(ResponseExpansion))

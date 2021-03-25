@@ -19,8 +19,10 @@ class FeaturePropogation:
 
         edges = [(*edge, 'spread') for s, t, o, i in working_memory.predicates()
                                     for edge in [(s, i), (i, s), (o, i), (i, o)]
-                                    if edge[0] is not None and edge[1] is not None
-                                    and t not in ['ref', 'def'] and o != 'span']
+                                    if edge[0] not in [None, 'user', 'bot']
+                                    and edge[1] not in [None, 'user', 'bot']
+                                    and t not in ['ref', 'def']
+                                    and o != 'span']
 
         # higher salience pulls up lower salience attachments, but not vice versa
         score_graph = ScoreGraph(
