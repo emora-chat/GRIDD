@@ -1,8 +1,26 @@
 from GRIDD.data_structures.knowledge_parser import KnowledgeParser
 from GRIDD.chatbot_server import ChatbotServer
-import os
+import os, requests, json
 
 if __name__ == '__main__':
+    # count = 0
+    # tot = 0
+    # file = os.path.join('DSG2Text', 'resources', 'data', 'dailydialog_dev.txt')
+    # with open(file, 'r') as f:
+    #     for utter in f:
+    #         input_dict = {"text": [utter, None], "conversationId": 'local',
+    #                       "wm": [None,None], "aux_state":[None,None]}
+    #         response = requests.post('http://cobot-LoadB-2W3OCXJ807QG-1571077302.us-east-1.elb.amazonaws.com',
+    #                                  data=json.dumps(input_dict),
+    #                                  headers={'content-type': 'application/json'},
+    #                                  timeout=3.0)
+    #         elit_results = json.loads(response.json()["context_manager"]['elit_results'])
+    #         dp_relations = [rel for _,rel in elit_results['dep']]
+    #         if 'relcl' in dp_relations:
+    #             count += 1
+    #         tot += 1
+    #         if tot % 100 == 0:
+    #             print(count, tot, '%.2f'%(count/tot))
 
     print('\ninitializing nlu...')
     nlu_pipeline = ChatbotServer()
