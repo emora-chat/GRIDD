@@ -219,6 +219,8 @@ class ConceptGraphSpec:
             `concept_a`'s is the maintained id.
 
         If both concepts are a predicate instance, ValueError is raised.
+
+        Returns the remaining concept after merge.
         """
         concept_graph.features['pjl_1']['cover'] = 0
         concept_graph.features['Sarah']['cover'] = 1

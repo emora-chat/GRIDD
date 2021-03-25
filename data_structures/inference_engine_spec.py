@@ -65,7 +65,8 @@ class InferenceEngineSpec:
 
         # KB negation test
         facts = '''
-        jlm=like(john=object(), mary=object()){"confidence": -1}
+        jlm=like(john=object(), mary=object())
+        jlm{"c": -1}
         mls=like(mary, sally=object())
         '''
         solutions = inference_engine.infer(facts, *rules)
@@ -74,7 +75,8 @@ class InferenceEngineSpec:
 
         # KB unsure test
         facts = '''
-        jlm=like(john=object(), mary=object()){"confidence": 0}
+        jlm=like(john=object(), mary=object())
+        jlm{"c": 0}
         mls=like(mary, sally=object())
         '''
         solutions = inference_engine.infer(facts, *rules)
@@ -82,13 +84,16 @@ class InferenceEngineSpec:
 
         # Query negation test
         facts = '''
-        jlm=like(john=object(), mary=object()){"confidence": -0.6}
+        jlm=like(john=object(), mary=object())
+        jlm{"c": -0.6}
         mls=like(mary, sally=object())
-        jlk=like(john=object(), kate=object()){"confidence": -0.4}
+        jlk=like(john=object(), kate=object())
+        jlk{"c": -0.4}
         klt=like(kate, tom=object())
         '''
         rules = '''
-        xly=like(x=object(), y=object()){"confidence": -0.5}
+        xly=like(x=object(), y=object())
+        xly{"c": -0.5}
         ylz=like(y, z=object())
         -> trans_like ->
         like(x, z)
