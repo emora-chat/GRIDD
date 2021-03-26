@@ -1,5 +1,5 @@
 
-from GRIDD.data_structures.concept_graph_spec import ConceptGraphSpec
+from GRIDD.data_structures.concept_graph_spec import ConceptGraphSpec, ConceptGraphFromLogicSpec
 
 from structpy.graph.directed.labeled.multilabeled_parallel_digraph_networkx import MultiLabeledParallelDigraphNX
 from structpy.graph.directed.labeled.data.multilabeled_digraph_data import MultiLabeledDigraphDataNX as Graph
@@ -36,10 +36,13 @@ class ConceptGraph:
                 self.add(concept)
         if predicates is not None:
             if isinstance(predicates, str):
-                predicates, metadatas = compile_concepts(predicates)
-                self.features.update(metadatas)
-            for predicate in predicates:
-                self.add(*predicate)
+                predicates, metadatas = compile_concepts(predicates, namespace='__c__')
+                pred_cg = ConceptGraph(predicates=predicates, namespace='__c__')
+                pred_cg.features.update(metadatas)
+                self.concatenate(pred_cg)
+            else:
+                for predicate in predicates:
+                    self.add(*predicate)
 
     def add(self, concept, predicate_type=None, object=None, predicate_id=None):
         self._bipredicates_graph.add(concept)
@@ -588,7 +591,7 @@ class ConceptGraph:
 
 if __name__ == '__main__':
     print(ConceptGraphSpec.verify(ConceptGraph))
-
+    # print(ConceptGraphFromLogicSpec.verify(ConceptGraph))
 
 
 

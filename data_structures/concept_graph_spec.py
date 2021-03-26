@@ -30,7 +30,7 @@ class ConceptGraphSpec:
             ('Peter', 'happy'),
             ('Jack', 'happy'),
             ('Peter', 'dislikes', 'Mary')
-        ], namespace='x_', feature_cls=NodeFeatures)
+        ], namespace='x_')
         return concept_graph
 
     def has(concept_graph, concept=None, predicate_type=None, object=None, predicate_id=None):
@@ -559,7 +559,21 @@ class ConceptGraphSpec:
         assert cg1.graph_component_siblings('tom', 'bob')
 
 
+@specification
+class ConceptGraphFromLogicSpec:
 
+    @specification.satisfies(ConceptGraphSpec.CONCEPT_GRAPH)
+    def CONCEPT_GRAPH_FROM_LOGIC_STRING(ConceptGraph, predicates):
+        concept_graph = ConceptGraph('''
+                likes(John, Mary)
+                dislikes(Mary, Peter)
+                pjl_1=likes(Peter, John)
+                likes(Peter, Sarah)
+                happy(Peter)
+                happy(Jack)
+                dislikes(Peter, Mary)
+                ''', namespace='x_')
+        return concept_graph
 
 
 

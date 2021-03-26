@@ -24,9 +24,9 @@ class ConceptCompiler:
 
     def __init__(self, instances=_default_instances, types=_default_types, predicates=_default_predicates, namespace='c_'):
         self.parser = Lark(ConceptCompiler._grammar, parser='earley')
-        self.instances = instances
-        self.types = types
-        self.predicates = predicates
+        self.instances = set(instances) if instances is not None else None
+        self.types = set(types) if types is not None else None
+        self.predicates = set(predicates) if predicates is not None else None
         self.namespace = namespace
 
     def compile(self, string, instances=_default_instances, types=_default_types, predicates=_default_predicates, namespace=None):
@@ -41,6 +41,12 @@ class ConceptCompiler:
         )
         visitor.visit(parse_tree)
         return visitor.entries, visitor.metadatas
+
+    def compile_and_update(self):
+        """
+        compile and update types, instances, and predicates to reflect new definitions
+        """
+        raise NotImplementedError()
 
     _grammar = r'''
         start: block*
@@ -326,8 +332,8 @@ class ConceptVisitor(Visitor_Recursive):
         tree.data = tree.children[0].data
 
 
-def compile_concepts(logic_string, instances=None, types=None, predicates=None):
-    return ConceptCompiler().compile(logic_string, instances, types, predicates)
+def compile_concepts(logic_string, instances=None, types=None, predicates=None, namespace='c_'):
+    return ConceptCompiler().compile(logic_string, instances, types, predicates, namespace)
 
 
 if __name__ == '__main__':
