@@ -8,7 +8,7 @@ from GRIDD.data_structures.id_map import IdMap
 from structpy.map.index.index import Index
 from GRIDD.data_structures.span import Span
 from GRIDD.data_structures.spanning_node import SpanningNode
-from GRIDD.data_structures.new_knowledge_parser import compile_concepts
+from GRIDD.data_structures.concept_compiler import compile_concepts
 CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 from collections import defaultdict, deque
 import json

@@ -1,5 +1,5 @@
 
-from GRIDD.data_structures.new_knowledge_parser_spec import ConceptCompilerSpec
+from GRIDD.data_structures.concept_compiler_spec import ConceptCompilerSpec
 
 from lark import Lark, Tree
 from lark.visitors import Visitor_Recursive
@@ -8,23 +8,36 @@ from itertools import chain
 from GRIDD.utilities.utilities import combinations
 
 
+
 class ConceptCompiler:
 
-    def __init__(self, instances=None, types=None, predicates=None):
+    _default_instances = frozenset({
+
+    })
+    _default_types = frozenset({
+        'object', 'entity', 'predicate',
+        'number', 'expression', 'imp_rule'
+    })
+    _default_predicates = frozenset({
+        'type', 'expr', 'predicate'
+    })
+
+    def __init__(self, instances=_default_instances, types=_default_types, predicates=_default_predicates, namespace='c_'):
         self.parser = Lark(ConceptCompiler._grammar, parser='earley')
         self.instances = instances
         self.types = types
         self.predicates = predicates
+        self.namespace = namespace
 
-    def compile(self, string, instances=None, types=None, predicates=None):
-        if instances is None: instances = set()
-        if types is None: types = set()
-        if predicates is None: predicates = set()
+    def compile(self, string, instances=_default_instances, types=_default_types, predicates=_default_predicates, namespace=None):
         if not string.strip().endswith(';'):
             string = string + ';'
         parse_tree = self.parser.parse(string)
         visitor = ConceptVisitor(
-            instances | self.instances, types | self.types, predicates | self.predicates
+            (instances | self.instances) if instances is not None else None,
+            (types | self.types) if types is not None else None,
+            (predicates | self.predicates) if predicates is not None else None,
+            namespace if namespace is not None else self.namespace
         )
         visitor.visit(parse_tree)
         return visitor.entries, visitor.metadatas
@@ -69,14 +82,14 @@ class ConceptCompiler:
 
 class ConceptVisitor(Visitor_Recursive):
 
-    def __init__(self, instances=None, types=None, predicates=None):
+    def __init__(self, instances=None, types=None, predicates=None, namespace='c_'):
         Visitor_Recursive.__init__(self)
         self.entries = []               # quadruples to output
         self.rules = set()
         self.lentries = []              # quadruples of block
         self.metadatas = {}             # concept: json metadata entries
         self.lmetadatas = {}            # concept: json entries for local block
-        self.globals = IdMap(namespace='kg_')   # global id generator
+        self.globals = IdMap(namespace=namespace)   # global id generator
         self.locals = {}                # mapping of local_id : global_id
         self.linstances = set()         # all instances (for rule collection)
         self.plinstances = set()        # local predicate instances for predicate multiplicity
