@@ -73,9 +73,9 @@ def init_response_selection():
     response_expansion = c(ResponseExpansion())
     return Pipeline(
         ('wm_after_inference', 'iterations') > feature_propogation > ('wm_after_prop'),
-        ('wm_after_prop') > response_selection > ('response_predicates'),
+        ('aux_state', 'wm_after_prop') > response_selection > ('aux_state', 'response_predicates'),
         ('response_predicates', 'wm_after_prop') > response_expansion > ('expanded_response_predicates', 'wm_after_exp'),
-        outputs=['expanded_response_predicates', 'wm_after_exp']
+        outputs=['aux_state', 'expanded_response_predicates', 'wm_after_exp']
     )
 
 def init_response_acknowledgment():
@@ -163,11 +163,14 @@ def dialogue_inference_handler(pipeline, input_dict, KB):
     return save(wm=wm_after_inference, aux_state=aux_state_update)
 
 def response_selection_handler(pipeline, input_dict, KB):
-    input = {"wm": input_dict.get("wm",[None])[0]}
+    input = {"aux_state": input_dict.get("aux_state", [{}])[0],
+             "wm": input_dict.get("wm",[None])[0]}
     input = load(input, KB)
     input["iterations"] = 2
-    expanded_response_predicates, wm_after_exp = pipeline(wm_after_inference=input["wm"], iterations=input["iterations"])
-    return save(expanded_response_predicates=expanded_response_predicates, wm=wm_after_exp)
+    aux_state, expanded_response_predicates, wm_after_exp = pipeline(aux_state=input["aux_state"],
+                                                          wm_after_inference=input["wm"],
+                                                          iterations=input["iterations"])
+    return save(aux_state=aux_state, expanded_response_predicates=expanded_response_predicates, wm=wm_after_exp)
 
 def response_acknowledgment_handler(pipeline, input_dict):
     input = {"aux_state": input_dict.get("aux_state", [{}])[0],

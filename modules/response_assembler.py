@@ -16,4 +16,7 @@ class ResponseAssembler:
             response_element = [x for x in response_element if x is not None]
             if len(response_element) > 0:
                 final_response.append(response_element[0])
-        return '. '.join(final_response)
+        if len(final_response) > 0:
+            return '. '.join(final_response)
+        else:
+            return "Well, I am not sure what to say to that. What else do you want to talk about?"

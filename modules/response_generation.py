@@ -74,7 +74,7 @@ class ResponseGeneration:
     def __call__(self, expanded_response_predicates):
         generations = []
         for selection in expanded_response_predicates:
-            if selection[2] == 'nlg':
+            if selection[2] in {'nlg', 'backup'}:
                 generations.append(self.generate(selection[0], selection[1]))
             else:
                 generations.append(None)
@@ -93,7 +93,5 @@ class ResponseGeneration:
                     output = self.nlg_model.test_step(encoding)[0]
                 except Exception as e:
                     print('FAILED! %s' % e)
-                    output = "I'm not sure about that. What else would you like to talk about?"
             return output
-        else:
-            return "Well, I am not sure what to say to that. What else do you want to talk about?"
+        return "I've never thought of that. What else would you like to talk about?"
