@@ -8,11 +8,13 @@ from GRIDD.data_structures.id_map import IdMap
 from structpy.map.index.index import Index
 from GRIDD.data_structures.span import Span
 from GRIDD.data_structures.spanning_node import SpanningNode
+from GRIDD.data_structures.new_knowledge_parser import compile_concepts
 CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 from collections import defaultdict, deque
-import json, copy
-from GRIDD.utilities import Counter, collect
+import json
+from GRIDD.utilities import Counter
 import GRIDD.globals
+
 
 class ConceptGraph:
 
@@ -28,13 +30,16 @@ class ConceptGraph:
         self._bipredicate_instances = Index()
         self._monopredicates_map = Map()
         self._monopredicate_instances = Index()
+        self.features = feature_cls()
         if concepts is not None:
             for concept in concepts:
                 self.add(concept)
         if predicates is not None:
+            if isinstance(predicates, str):
+                predicates, metadatas = compile_concepts(predicates)
+                self.features.update(metadatas)
             for predicate in predicates:
                 self.add(*predicate)
-        self.features = feature_cls()
 
     def add(self, concept, predicate_type=None, object=None, predicate_id=None):
         self._bipredicates_graph.add(concept)
@@ -43,7 +48,7 @@ class ConceptGraph:
         elif object is None:        # Add monopredicate
             if predicate_id is None:
                 predicate_id = self._ids.get()
-            elif self.has(predicate_id=predicate_id): #todo - check signature
+            elif self.has(predicate_id=predicate_id):
                 if self.predicate(predicate_id) != (concept, predicate_type, object, predicate_id):
                     raise ValueError("Predicate id '%s' already exists!" % str(predicate_id))
                 else:
@@ -56,7 +61,7 @@ class ConceptGraph:
         else:                       # Add bipredicate
             if predicate_id is None:
                 predicate_id = self._ids.get()
-            elif self.has(predicate_id=predicate_id): #todo - check signature
+            elif self.has(predicate_id=predicate_id):
                 if self.predicate(predicate_id) != (concept, predicate_type, object, predicate_id):
                     raise ValueError("Predicate id '%s' already exists!" % str(predicate_id))
                 else:

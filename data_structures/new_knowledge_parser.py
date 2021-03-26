@@ -1,39 +1,35 @@
 
-from GRIDD.data_structures.new_knowledge_parser_spec import KnowledgeParserSpec
+from GRIDD.data_structures.new_knowledge_parser_spec import ConceptCompilerSpec
 
-from lark import Lark
+from lark import Lark, Tree
 from lark.visitors import Visitor_Recursive
 from GRIDD.data_structures.id_map import IdMap
 from itertools import chain
 from GRIDD.utilities.utilities import combinations
-import json
 
 
-class KnowledgeParser:
+class ConceptCompiler:
 
     def __init__(self, instances=None, types=None, predicates=None):
-        self.parser = Lark(KnowledgeParser._grammar, parser='earley')
-        self.visitor = KnowledgeVisitor(instances, types, predicates)
+        self.parser = Lark(ConceptCompiler._grammar, parser='earley')
+        self.instances = instances
+        self.types = types
+        self.predicates = predicates
 
-    def parse(self, string):
+    def compile(self, string, instances=None, types=None, predicates=None):
+        if instances is None: instances = set()
+        if types is None: types = set()
+        if predicates is None: predicates = set()
         if not string.strip().endswith(';'):
             string = string + ';'
         parse_tree = self.parser.parse(string)
-        print(parse_tree.pretty())
-        print('\n\n')
-        self.visitor.visit(parse_tree)
-        for e in self.visitor.lentries:
-            print(e)
-        print('--')
-        for e in self.visitor.entries:
-            print(e)
-        print('--')
-        for e, d in self.visitor.metadatas.items():
-            print(e, ':', d)
-        return self.visitor.entries, self.visitor.metadatas
+        visitor = ConceptVisitor(
+            instances | self.instances, types | self.types, predicates | self.predicates
+        )
+        visitor.visit(parse_tree)
+        return visitor.entries, visitor.metadatas
 
     _grammar = r'''
-
         start: block*
         block: (rule | declaration+) ";"
         declaration: _COMMENT? (reference | type_init | concept_init | monopred_init | bipred_init | ref_init | string_init | number_init | m_predicates | m_concepts) json? _COMMENT?     
@@ -51,7 +47,9 @@ class KnowledgeParser:
         number_init: number
         reference: ID
         ID: /[a-zA-Z_.0-9]+/
-        rule: declaration+ "=>" (ID "=>")? declaration+
+        rule: precondition "=>" (ID "=>")? postcondition
+        precondition: declaration+
+        postcondition: declaration+
         json: dict
         value: dict | list | string | number | constant
         string: ESCAPED_STRING 
@@ -69,16 +67,18 @@ class KnowledgeParser:
         %ignore WS
         '''
 
-class KnowledgeVisitor(Visitor_Recursive):
+class ConceptVisitor(Visitor_Recursive):
 
     def __init__(self, instances=None, types=None, predicates=None):
         Visitor_Recursive.__init__(self)
         self.entries = []               # quadruples to output
+        self.rules = set()
         self.lentries = []              # quadruples of block
         self.metadatas = {}             # concept: json metadata entries
         self.lmetadatas = {}            # concept: json entries for local block
         self.globals = IdMap(namespace='kg_')   # global id generator
-        self.linstances = {}            # mapping of local_id : global_id
+        self.locals = {}                # mapping of local_id : global_id
+        self.linstances = set()         # all instances (for rule collection)
         self.plinstances = set()        # local predicate instances for predicate multiplicity
         self.refgen = instances is None # whether references autogenerate concepts
         instances = set() if instances is None else instances
@@ -90,8 +90,34 @@ class KnowledgeVisitor(Visitor_Recursive):
         predicates = set() if predicates is None else predicates
         self.predicates = predicates    # set of all declared predicate types
 
+    def rule(self, tree):
+        if len(tree.children) > 2:
+            rid = tree.children[1]
+        else:
+            rid = self.globals.get()
+        self.check_double_init([rid], self.instances)
+        self.instances.add(rid)
+        self.lentries.append((rid, 'type', 'imp_rule', self.globals.get()))
+        precondition, variables = tree.children[0].data
+        postcondition = tree.children[-1].data
+        self.metadatas.setdefault(rid, {}).update(
+            {'precondition': precondition, 'postcondition': postcondition, 'vars': variables})
+
+    def precondition(self, tree):
+        preinst = set(chain(*[t.refs for t in tree.iter_subtrees() if hasattr(t, 'refs')]))
+        preinst = {self.locals.get(str(i), str(i)) for i in preinst}
+        variables = {self.locals.get(str(i), str(i)) for i in self.linstances}
+        tree.data = (preinst, variables)
+        self.linstances = set()
+
+    def postcondition(self, tree):
+        postinst = set(chain(*[t.refs for t in tree.iter_subtrees() if hasattr(t, 'refs')]))
+        postinst = {self.locals.get(str(i), str(i)) for i in postinst}
+        tree.data = postinst
+        self.linstances = set()
+
     def block(self, _):
-        entries = [[self.linstances.get(c, c) for c in e] for e in self.lentries]
+        entries = [[self.locals.get(c, c) for c in e] for e in self.lentries]
         if not self.refgen:
             refs = []
             for s, t, o, _ in entries:
@@ -113,11 +139,12 @@ class KnowledgeVisitor(Visitor_Recursive):
                 if e not in self.predicates:
                     raise ValueError('Predicate initialization with non-predicate `{}`'.format(e))
         self.entries.extend(entries)
-        self.metadatas.update({self.linstances.get(k, k): v for k, v in self.lmetadatas.items()})
+        self.metadatas.update({self.locals.get(k, k): v for k, v in self.lmetadatas.items()})
         self.lentries = []
         self.lmetadatas = {}
-        self.linstances = {}
+        self.locals = {}
         self.plinstances = set()
+        self.linstances = set()
 
     def type_init(self, tree):
         newtype = [str(c) for c in tree.children[0].children]
@@ -128,6 +155,7 @@ class KnowledgeVisitor(Visitor_Recursive):
             self.types.update(newtype)
         if any([st in self.predicates for st in supertypes]):
             self.predicates.update(newtype)
+        tree.refs = newtype
 
     def concept_init(self, tree):
         types = [str(c) for c in tree.children[-1].children]
@@ -135,9 +163,9 @@ class KnowledgeVisitor(Visitor_Recursive):
             newconcepts = [str(c) for c in tree.children[0].children]
             islocal = tree.children[1].data == 'local'
             if islocal:
-                self.check_double_init(newconcepts, self.linstances)
+                self.check_double_init(newconcepts, self.locals)
                 newmap = {nc: self.globals.get() for nc in newconcepts}
-                self.linstances.update(newmap)
+                self.locals.update(newmap)
                 self.instances.update(newmap.values())
             else:
                 self.check_double_init(newconcepts, self.instances)
@@ -146,25 +174,26 @@ class KnowledgeVisitor(Visitor_Recursive):
             newconcepts = [self.globals.get() for _ in types]
             self.instances.update(newconcepts)
         self.check_mismatched_multiplicity(newconcepts, types)
-        tree.children[-1].data = []
+        self.linstances.update(newconcepts)
+        tree.children[-1].refs = []
         for i, type in enumerate(types):
             typeinst = self.globals.get()
             self.lentries.append((newconcepts[i], 'type', type, typeinst))
-            tree.children[-1].data.append(typeinst)  # Duct tape add type instance
+            tree.children[-1].refs.append(typeinst)  # Duct tape add type instance
             self.plinstances.add(typeinst)
-        tree.data = newconcepts
+        tree.refs = newconcepts
 
     def monopred_init(self, tree):
         types = [str(c) for c in tree.children[-2].children]
-        args = [str(c) for c in tree.children[-1].data]
+        args = [str(c) for c in tree.children[-1].refs]
         type_arg = combinations(types, args)
         if len(tree.children) > 2:
             newconcepts = [str(c) for c in tree.children[0].children]
             islocal = tree.children[1].data == 'local'
             if islocal:
-                self.check_double_init(newconcepts, self.linstances)
+                self.check_double_init(newconcepts, self.locals)
                 newmap = {nc: self.globals.get() for nc in newconcepts}
-                self.linstances.update(newmap)
+                self.locals.update(newmap)
                 self.instances.update(newmap.values())
             else:
                 self.check_double_init(newconcepts, self.instances)
@@ -173,23 +202,24 @@ class KnowledgeVisitor(Visitor_Recursive):
             newconcepts = [self.globals.get() for _ in type_arg]
             self.instances.update(newconcepts)
         self.check_mismatched_multiplicity(newconcepts, type_arg)
+        self.linstances.update(newconcepts)
         for i, (type, arg) in enumerate(type_arg):
             self.lentries.append((arg, type, None, newconcepts[i]))
             self.plinstances.add(newconcepts[i])
-        tree.data = newconcepts
+        tree.refs = newconcepts
 
     def bipred_init(self, tree):
         types = [str(c) for c in tree.children[-3].children]
-        arg0s = [str(c) for c in tree.children[-2].data]
-        arg1s = [str(c) for c in tree.children[-1].data]
+        arg0s = [str(c) for c in tree.children[-2].refs]
+        arg1s = [str(c) for c in tree.children[-1].refs]
         type_args = combinations(types, arg0s, arg1s)
         if len(tree.children) > 3:
             newconcepts = [str(c) for c in tree.children[0].children]
             islocal = tree.children[1].data == 'local'
             if islocal:
-                self.check_double_init(newconcepts, self.linstances)
+                self.check_double_init(newconcepts, self.locals)
                 newmap = {nc: self.globals.get() for nc in newconcepts}
-                self.linstances.update(newmap)
+                self.locals.update(newmap)
                 self.instances.update(newmap.values())
             else:
                 self.check_double_init(newconcepts, self.instances)
@@ -198,17 +228,18 @@ class KnowledgeVisitor(Visitor_Recursive):
             newconcepts = [self.globals.get() for _ in type_args]
             self.instances.update(newconcepts)
         self.check_mismatched_multiplicity(newconcepts, type_args)
+        self.linstances.update(newconcepts)
         for i, (type, arg0, arg1) in enumerate(type_args):
             self.lentries.append((arg0, type, arg1, newconcepts[i]))
             self.plinstances.add(newconcepts[i])
-        tree.data = newconcepts
+        tree.refs = newconcepts
 
     def ref_init(self, tree):
         for i in tree.children[0].children:
             if 'ref' in self.metadatas.get(i, {}):
                 raise ValueError('Reference defined twice for concept {}'.format(i))
-            self.metadatas.setdefault(i, {}).setdefault('ref', []).extend(tree.children[1].data)
-        tree.data = tree.children[0].children
+            self.metadatas.setdefault(i, {}).setdefault('ref', set()).update(tree.children[1].refs)
+        tree.refs = tree.children[0].children
 
     def string_init(self, tree):
         inits = ['"'+s.strip()+'"' for s in tree.children[0].children[0][1:-1].split(',')]
@@ -217,7 +248,7 @@ class KnowledgeVisitor(Visitor_Recursive):
                 inst = self.globals.get()
                 self.lentries.append((init, 'type', 'expression', inst))
                 self.instances.add(init)
-        tree.data = inits
+        tree.refs = inits
 
     def number_init(self, tree):
         inits = tree.children[0].children
@@ -226,30 +257,30 @@ class KnowledgeVisitor(Visitor_Recursive):
                 inst = self.globals.get()
                 self.lentries.append((init, 'type', 'number', inst))
                 self.instances.add(init)
-        tree.data = inits
+        tree.refs = inits
 
     def declaration(self, tree):
         if len(tree.children) > 1:
-            for ident in tree.children[0].data:
+            for ident in tree.children[0].refs:
                 self.lmetadatas.setdefault(ident, {}).update(tree.children[1].children[0].data)
-        tree.data = tree.children[0].data
+        tree.refs = tree.children[0].refs
 
     def reference(self, tree):
-        tree.data = tree.children
+        tree.refs = tree.children
 
     def m_predicates(self, tree):
         predicates = []
         stack = [tree]
         while stack:
             t = stack.pop()
-            if hasattr(t, 'data'):
-                if isinstance(t.data, list):
-                    predicates.extend(set(t.data) & self.plinstances)
+            if isinstance(t, Tree):
+                if hasattr(t, 'refs'):
+                    predicates.extend(set(t.refs) & self.plinstances)
                 stack.extend(t.children)
-        tree.data = predicates
+        tree.refs = predicates
 
     def m_concepts(self, tree):
-        tree.data = list(chain(*[c.data for c in tree.children]))
+        tree.refs = list(chain(*[c.refs for c in tree.children]))
 
     def check_double_init(self, initialized, existing):
         if len(set(initialized)) != len(initialized):
@@ -282,5 +313,9 @@ class KnowledgeVisitor(Visitor_Recursive):
         tree.data = tree.children[0].data
 
 
+def compile_concepts(logic_string, instances=None, types=None, predicates=None):
+    return ConceptCompiler().compile(logic_string, instances, types, predicates)
+
+
 if __name__ == '__main__':
-    print(KnowledgeParserSpec.verify(KnowledgeParser))
+    print(ConceptCompilerSpec.verify(ConceptCompiler))
