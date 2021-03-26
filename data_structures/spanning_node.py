@@ -2,11 +2,12 @@ from collections import defaultdict
 
 class SpanningNode:
 
-    def __init__(self, node_id, pred_type=None, type=None):
+    def __init__(self, node_id, parent, pred_type=None, type=None):
         self.node_id = node_id
         self.pred_type = pred_type
         self.type = type
         self.children = defaultdict(list)
+        self.parent = parent
 
     def equal(self, n):
         if self.node_id != n.node_id or self.type != n.type: return False

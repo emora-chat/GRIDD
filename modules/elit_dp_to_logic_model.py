@@ -24,7 +24,7 @@ REF_DET = ['the', 'those', 'these', 'that', 'this']
 INST_DET = ['a', 'an']
 QUEST = ['wdt', 'wp', 'wpds', 'wrb']
 INTERJ = ['uh']
-ALLOW_SINGLE = ['cd', 'dt', 'ex', 'adj', 'noun', 'pron', 'adv', 'interj', 'verb', 'question_word']
+ALLOW_SINGLE = ['rp', 'fw', 'cd', 'dt', 'ex', 'adj', 'noun', 'pron', 'adv', 'interj', 'verb', 'question_word']
 
 TENSEFUL_AUX = ['go', 'goes', 'went', 'do', 'does', 'did', 'be', 'is', 'are', 'were', 'was'] # use lemma instead from elit
 

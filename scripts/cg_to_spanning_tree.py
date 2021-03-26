@@ -31,6 +31,7 @@ if __name__ == '__main__':
         cg = nlu_pipeline.run_nlu(utter, display=False)
         cg.pull_expressions()
         print(cg.print_spanning_tree())
+        print(cg.ugly_print(exclusions={'is_type', 'object', 'predicate', 'entity', 'post', 'pre', 'def', 'span', 'datetime', 'expr'}))
         print()
         utter = input('>>> ').strip()
 
