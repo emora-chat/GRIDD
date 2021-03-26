@@ -64,14 +64,14 @@ class ConceptCompilerSpec:
         
 
         
-        chase(fido, x/dog())
+        x/dog()
         =>
         scared(fido)
         ;
         
         '''
-        # preds, metas = compiler.compile(test)
-        preds, metas = compiler.compile(rules)
+        preds, metas = compiler.compile(test)
+        # preds, metas = compiler.compile(rules)
         for pred in preds:
             print(pred)
         for k, v in metas.items():

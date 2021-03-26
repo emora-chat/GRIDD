@@ -175,11 +175,11 @@ class ConceptVisitor(Visitor_Recursive):
             self.instances.update(newconcepts)
         self.check_mismatched_multiplicity(newconcepts, types)
         self.linstances.update(newconcepts)
-        tree.children[-1].refs = []
+        #tree.children[-1].refs = []
         for i, type in enumerate(types):
             typeinst = self.globals.get()
             self.lentries.append((newconcepts[i], 'type', type, typeinst))
-            tree.children[-1].refs.append(typeinst)  # Duct tape add type instance
+            #tree.children[-1].refs.append(typeinst)  # Duct tape add type instance
             self.plinstances.add(typeinst)
         tree.refs = newconcepts
 
@@ -238,7 +238,7 @@ class ConceptVisitor(Visitor_Recursive):
         for i in tree.children[0].children:
             if 'ref' in self.metadatas.get(i, {}):
                 raise ValueError('Reference defined twice for concept {}'.format(i))
-            self.metadatas.setdefault(i, {}).setdefault('ref', set()).update(tree.children[1].refs)
+            self.lmetadatas.setdefault(i, {}).setdefault('ref', set()).update(tree.children[1].refs)
         tree.refs = tree.children[0].children
 
     def string_init(self, tree):
