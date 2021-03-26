@@ -14,7 +14,7 @@ class SalienceResponseSelection:
         if len(salience_order) > 0:
             return working_memory.predicate(salience_order[0][0]), 'ack_conf'
         else:
-            print('[WARNING] No predicate responses found.')
+            print('[WARNING] No acknowledgment predicate responses found.')
             return None, None
 
     def select_followup(self, working_memory):
@@ -26,7 +26,7 @@ class SalienceResponseSelection:
         if len(salience_order) > 0:
             return working_memory.predicate(salience_order[0][0]), 'nlg'
         else:
-            print('[WARNING] No predicate responses found.')
+            print('[WARNING] No followup predicate responses found.')
             return None, None
 
 if __name__ == '__main__':

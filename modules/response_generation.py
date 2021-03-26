@@ -71,11 +71,16 @@ class ResponseGeneration:
         full_string = ' '.join(strings.values())
         return full_string.strip()
 
-    def __call__(self, main_predicate, supporting_predicates, aux_state):
-        response = ""
-        turn_idx = aux_state.get('turn_index', None)
-        if turn_idx is not None and int(turn_idx) == 0:
-            response += 'Hi, this is an Alexa Prize Socialbot. '
+    def __call__(self, expanded_response_predicates):
+        generations = []
+        for selection in expanded_response_predicates:
+            if selection[2] == 'nlg':
+                generations.append(self.generate(selection[0], selection[1]))
+            else:
+                generations.append(None)
+        return generations
+
+    def generate(self, main_predicate, supporting_predicates):
         if main_predicate is not None:
             output = self.convert(main_predicate, supporting_predicates)
             if self.nlg_model is not None:
@@ -88,8 +93,7 @@ class ResponseGeneration:
                     output = self.nlg_model.test_step(encoding)[0]
                 except Exception as e:
                     print('FAILED! %s' % e)
-                    output = "Well, I am not sure what to say to that. What else do you want to talk about?"
-            response += output
-            return response
+                    output = "I'm not sure about that. What else would you like to talk about?"
+            return output
         else:
             return "Well, I am not sure what to say to that. What else do you want to talk about?"

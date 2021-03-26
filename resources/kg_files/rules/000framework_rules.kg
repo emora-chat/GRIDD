@@ -1,4 +1,4 @@
-pt/predicate()
+pt/object()
 pred_inst/pt(X/object(), Y/object())
 assert(pred_inst)
 -> assign_ack ->

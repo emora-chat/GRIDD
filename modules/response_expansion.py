@@ -6,10 +6,20 @@ obj_expansion_types = {'possess'}
 
 class ResponseExpansion:
 
-    def __call__(self, main_predicate, working_memory):
+    def __call__(self, main_predicates, working_memory):
         """
         Select the supporting predicates for the main predicate.
         """
+        responses = []
+        for predicate, generation_type in main_predicates:
+            if generation_type not in {"ack_conf", "ack_emo"}:
+                p, e, working_memory = self.get_expansions(predicate, working_memory) # todo - don't need to return working memory because updated inplace?
+                responses.append((p, list(e), generation_type))
+            else:
+                responses.append((predicate, [], generation_type))
+        return responses, working_memory
+
+    def get_expansions(self, main_predicate, working_memory):
         if main_predicate is not None:
             main_s, main_t, main_o, main_i = main_predicate
             if main_t != 'question':
