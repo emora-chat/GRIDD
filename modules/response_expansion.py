@@ -1,4 +1,5 @@
 from GRIDD.modules.response_expansion_spec import ResponseExpansionSpec
+from GRIDD.data_structures.concept_graph import ConceptGraph
 
 subj_expansion_types = {'type', 'property', 'qualifier', 'time', 'question', 'referential', 'instantiative',
                         'indirect_obj', 'mode', 'negate'}
@@ -6,10 +7,33 @@ obj_expansion_types = {'possess'}
 
 class ResponseExpansion:
 
-    def __call__(self, main_predicate, working_memory):
+    def __call__(self, main_predicates, working_memory):
         """
         Select the supporting predicates for the main predicate.
+        Update the node features of the selected predicates.
         """
+        responses = []
+        for predicate, generation_type in main_predicates:
+            if generation_type == 'nlg':
+                p, e, working_memory = self.get_expansions(predicate, working_memory) # todo - don't need to return working memory because updated inplace?
+                responses.append((p, list(e), generation_type))
+                if p is not None:
+                    working_memory.features.update_from_response(responses[-1][0], responses[-1][1])
+            elif generation_type in {"ack_conf", "ack_emo"}:
+                responses.append((predicate, [], generation_type))
+                working_memory.features.update_from_response(responses[-1][0], responses[-1][1])
+            elif generation_type == "backup":
+                cg = ConceptGraph(namespace='default_', predicates=predicate[1])
+                mapped_ids = working_memory.concatenate(cg)
+                main_pred = mapped_ids[predicate[0][3]]
+                main_pred_sig = working_memory.predicate(main_pred)
+                exp_preds = [mapped_ids[pred[3]] for pred in predicate[1]]
+                exp_pred_sigs = [working_memory.predicate(pred) for pred in exp_preds if pred != main_pred]
+                responses.append((main_pred_sig, exp_pred_sigs, generation_type))
+                working_memory.features.update_from_response(responses[-1][0], responses[-1][1])
+        return responses, working_memory
+
+    def get_expansions(self, main_predicate, working_memory):
         if main_predicate is not None:
             main_s, main_t, main_o, main_i = main_predicate
             if main_t != 'question':
@@ -25,7 +49,6 @@ class ResponseExpansion:
                     expansions.add(sig)
                     expansions.update(self.get_predicate_supports(sig, working_memory))
             expansions -= {main_predicate}
-            working_memory.features.update_from_response(main_predicate, expansions)
             return main_predicate, expansions, working_memory
         else:
             return None, [], working_memory

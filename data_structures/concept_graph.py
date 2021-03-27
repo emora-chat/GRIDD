@@ -435,74 +435,92 @@ class ConceptGraph:
         return full_string.strip()
 
     def to_spanning_tree(self):
-        exclude = {'expr', 'def', 'ref', 'assert', 'type', 'link'}
-        root = SpanningNode('__root__')
-        ((assertion_node,_,_,_), ) = self.predicates(predicate_type='assert')
-        frontier = [(root, assertion_node, None, 'link')]
+        exclude = {'expr', 'def', 'ref', 'assert', 'type', 'link', 'is_type'}
+        roots = []
+        # main root is the asserted predicate
+        ((assertion_node, _, _, _),) = self.predicates(predicate_type='assert')
+        # get all span focus nodes as additional potential roots
+        ref_preds = self.predicates(predicate_type='ref')
+        additional_roots = [focal_node for _,_,focal_node,_ in ref_preds if focal_node != assertion_node]
+
         visited = set()
-        while len(frontier) > 0:
-            parent, id, node_type, label_type = frontier.pop(0)
-            if id not in visited:
-                visited.add(id)
-                if self.has(predicate_id=id):
-                    s, t, o, _ = self.predicate(id)
-                    if node_type == '_rev_': tmp = o; o = s; s = tmp;
-                    pred_node = SpanningNode(id, t, node_type)
-                    if parent.node_id != s:
-                        frontier.append((pred_node, s, None, 'arg0'))
-                    if o is not None:
-                        frontier.append((pred_node, o, None, 'arg1'))
-                else:
-                    pred_node = SpanningNode(id, None, node_type)
-                parent.children[label_type].append(pred_node)
-                for pred in self.predicates(id):
-                    if pred[1] not in exclude and pred[3] not in {id, parent.node_id}: frontier.append((pred_node, pred[3], None, 'link'))
-                for pred in self.predicates(object=id):
-                    if pred[1] not in exclude and pred[3] not in {id, parent.node_id}: frontier.append((pred_node, pred[3], '_rev_', 'link'))
-            else: # still need to attach node to parent if subj or obj, but do not need to process links or node's children
-                if label_type != 'link':
-                    if self.has(predicate_id=id):
-                        s, t, o, _ = self.predicate(id)
-                        pred_node = SpanningNode(id, t, node_type)
-                    else:
-                        pred_node = SpanningNode(id, None, node_type)
-                    parent.children[label_type].append(pred_node)
-        return root
+        for node in [assertion_node] + additional_roots:
+            if node not in visited:
+                root = SpanningNode('__root__', None)
+                roots.append(root)
+                frontier = [(root, node, None, 'link')]
+                while len(frontier) > 0:
+                    parent, id, node_type, label_type = frontier.pop(0)
+                    if id not in visited:
+                        visited.add(id)
+                        if self.has(predicate_id=id):
+                            s, t, o, _ = self.predicate(id)
+                            if node_type == '_rev_': tmp = o; o = s; s = tmp;
+                            pred_node = SpanningNode(id, parent, t, node_type)
+                            if parent.node_id != s:
+                                frontier.append((pred_node, s, None, 'arg0'))
+                            if o is not None:
+                                frontier.append((pred_node, o, None, 'arg1'))
+                        else:
+                            pred_node = SpanningNode(id, parent, None, node_type)
+                        parent.children[label_type].append(pred_node)
+                        if parent.pred_type != 'time': # do not get descendants of objects of `time` predicates
+                            for pred in self.predicates(id):
+                                if pred[1] not in exclude and pred[3] not in {id, parent.node_id}: frontier.append((pred_node, pred[3], None, 'link'))
+                            for pred in self.predicates(object=id):
+                                if pred[1] not in exclude and pred[3] not in {id, parent.node_id}: frontier.append((pred_node, pred[3], '_rev_', 'link'))
+                    else: # still need to attach node to parent if subj or obj of non-reversed predicate, but do not need to process links or node's children
+                        if label_type != 'link' and parent.type != '_rev_':
+                            if self.has(predicate_id=id):
+                                s, t, o, _ = self.predicate(id)
+                                pred_node = SpanningNode(id, parent, t, node_type)
+                            else:
+                                pred_node = SpanningNode(id, parent, None, node_type)
+                            parent.children[label_type].append(pred_node)
+                        elif parent.type == '_rev_': # remove the reverse predicate from spanning tree since it has already been handled
+                            parent.parent.children['link'].remove(parent)
+
+        return roots
 
     def print_spanning_tree(self, root=None, tab=1):
         s = ""
         if root is None:
-            root = self.to_spanning_tree().children['link'][0]
-            string = root.pred_type if root.pred_type is not None else root.node_id
-            expression = self._get_expr(string)
-            s += expression + '\n'
-        for label, nodes in root.children.items():
-            if label in {'arg0', 'arg1'}:
-                node = nodes[0]
-                string = node.pred_type if node.pred_type is not None else node.node_id
-                prefix = node.type + ' ' if node.type is not None else ''
-                expression = self._get_expr(string)
-                s += '%s%s%s: %s\n'%('\t'*tab, prefix, label, expression)
-                s += self.print_spanning_tree(node, tab+1)
-            elif label == 'link':
-                for node in nodes:
-                    string = node.pred_type if node.pred_type is not None else node.node_id
+            roots = self.to_spanning_tree()
+            for r in roots:
+                root = r.children['link'][0]
+                expression = self._get_expr(root)
+                s += expression + '\n'
+                s += self.print_spanning_tree(root, tab)
+        else:
+            for label, nodes in root.children.items():
+                if label in {'arg0', 'arg1'}:
+                    node = nodes[0]
                     prefix = node.type + ' ' if node.type is not None else ''
-                    expression = self._get_expr(string)
-                    if len(node.children) > 0:
-                        s += '%s%s%s:\n'%('\t'*tab, prefix, expression)
-                        s += self.print_spanning_tree(node, tab+1)
-                    else:
-                        s += '%s%s%s\n' % ('\t' * tab, prefix, expression)
+                    expression = self._get_expr(node)
+                    s += '%s%s%s: %s\n'%('\t'*tab, prefix, label, expression)
+                    s += self.print_spanning_tree(node, tab+1)
+                elif label == 'link':
+                    for node in nodes:
+                        prefix = node.type + ' ' if node.type is not None else ''
+                        expression = self._get_expr(node)
+                        if len(node.children) > 0:
+                            s += '%s%s%s:\n'%('\t'*tab, prefix, expression)
+                            s += self.print_spanning_tree(node, tab+1)
+                        else:
+                            s += '%s%s%s\n' % ('\t' * tab, prefix, expression)
         return s
 
-    def _get_expr(self, concept):
+    def _get_expr(self, node):
         # Return label of concept as one of the following, in priority order:
         #   (1) Definitions
         #   (2) Expressions
         #   (3) Types
         #   (4) Concept
         # SPECIAL CASES: return `user` or `bot` as label of those concepts
+        if isinstance(node, str):
+            concept = node
+        else:
+            concept = node.pred_type if node.pred_type is not None else node.node_id
         label = set()
         if concept in {'user','emora'}:
             label.add(concept)

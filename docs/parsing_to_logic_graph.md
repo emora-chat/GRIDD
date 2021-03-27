@@ -348,6 +348,15 @@ Two-argument predicates of the format `root(subject, object)`.
 	focus(p)
 	center(X)
 	;
+	
+	sbj(X/pstg(), Y/pstg())
+	obj(X, Z/pstg())
+	-> sbj_dobj_nonverb_head ->
+	is_type(X)
+	p/X(Y,Z)
+	focus(p)
+	center(X)
+	;
 
  </details>
 

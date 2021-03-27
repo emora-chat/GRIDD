@@ -73,16 +73,32 @@ def init_response_selection():
     response_expansion = c(ResponseExpansion())
     return Pipeline(
         ('wm_after_inference', 'iterations') > feature_propogation > ('wm_after_prop'),
-        ('wm_after_prop') > response_selection > ('response_predicate'),
-        ('response_predicate', 'wm_after_prop') > response_expansion > ('main_response', 'supporting_predicates', 'wm_after_exp'),
-        outputs=['main_response', 'supporting_predicates', 'wm_after_exp']
+        ('aux_state', 'wm_after_prop') > response_selection > ('aux_state', 'response_predicates'),
+        ('response_predicates', 'wm_after_prop') > response_expansion > ('expanded_response_predicates', 'wm_after_exp'),
+        outputs=['aux_state', 'expanded_response_predicates', 'wm_after_exp']
+    )
+
+def init_response_acknowledgment():
+    from GRIDD.modules.response_acknowledgment import ResponseAcknowledgment
+    response_acknowledgment = c(ResponseAcknowledgment())
+    return Pipeline(
+        ('expanded_response_predicates', 'aux_state') > response_acknowledgment > ('ack_responses'),
+        outputs=['ack_responses']
     )
 
 def init_response_generation(nlg_model=None, device='cpu'):
     from GRIDD.modules.response_generation import ResponseGeneration
     response_generation = c(ResponseGeneration(nlg_model, device))
     return Pipeline(
-        ('main_response', 'supporting_predicates', 'aux_state') > response_generation > ('response'),
+        ('expanded_response_predicates') > response_generation > ('nlg_responses'),
+        outputs=['nlg_responses']
+    )
+
+def init_response_assembler():
+    from GRIDD.modules.response_assembler import ResponseAssembler
+    response_assembler = c(ResponseAssembler())
+    return Pipeline(
+        ('aux_state', 'ack_responses', 'nlg_responses') > response_assembler > ('response'),
         outputs=['response']
     )
 
@@ -100,12 +116,12 @@ def nlp_preprocessing_handler(pipeline, input_dict, local=False):
                                  data=json.dumps(input_dict),
                                  headers={'content-type': 'application/json'},
                                  timeout=3.0)
-        # elit_results = json.loads(response.json()["context_manager"]['elit_results'])
-        # print(input_dict["text"][0])
-        # print(elit_results['lem'])
-        # print(elit_results['pos'])
-        # print(elit_results['tok'])
-        # print(elit_results['dep'])
+        elit_results = json.loads(response.json()["context_manager"]['elit_results'])
+        print(input_dict["text"][0])
+        print(elit_results['lem'])
+        print(elit_results['pos'])
+        print(elit_results['tok'])
+        print(elit_results['dep'])
         return response.json()["context_manager"]
     else:
         input = {"utter": input_dict.get("utter",[None])[0].strip(), "aux_state": input_dict.get("aux_state",[None])[1]}
@@ -147,14 +163,24 @@ def dialogue_inference_handler(pipeline, input_dict, KB):
     return save(wm=wm_after_inference, aux_state=aux_state_update)
 
 def response_selection_handler(pipeline, input_dict, KB):
-    input = {"wm": input_dict.get("wm",[None])[0]}
+    input = {"aux_state": input_dict.get("aux_state", [{}])[0],
+             "wm": input_dict.get("wm",[None])[0]}
     input = load(input, KB)
     input["iterations"] = 2
-    main_response, supporting_predicates, wm_after_exp = pipeline(wm_after_inference=input["wm"], iterations=input["iterations"])
-    return save(main_response=main_response, supporting_predicates=list(supporting_predicates), wm=wm_after_exp)
+    aux_state, expanded_response_predicates, wm_after_exp = pipeline(aux_state=input["aux_state"],
+                                                          wm_after_inference=input["wm"],
+                                                          iterations=input["iterations"])
+    return save(aux_state=aux_state, expanded_response_predicates=expanded_response_predicates, wm=wm_after_exp)
+
+def response_acknowledgment_handler(pipeline, input_dict):
+    input = {"aux_state": input_dict.get("aux_state", [{}])[0],
+            "expanded_response_predicates": input_dict.get("expanded_response_predicates", [[(None, [])]])[0]}
+    input = load(input)
+    ack_responses = pipeline(aux_state=input["aux_state"], expanded_response_predicates=input["expanded_response_predicates"])
+    return save(ack_responses=ack_responses)
 
 def response_generation_handler(pipeline, input_dict, local=False):
-    if local:
+    if False: #local:
         # print('Connecting to remote NLG model...')
         input_dict["conversationId"] = 'local'
         response = requests.post('http://cobot-LoadB-1L3YPB9TGV71P-1610005595.us-east-1.elb.amazonaws.com',
@@ -167,12 +193,18 @@ def response_generation_handler(pipeline, input_dict, local=False):
             del response["error"]
         return response
     else:
-        input = {"main_response": input_dict.get("main_response", [None])[0],
-                 "supporting_predicates": input_dict.get("supporting_predicates", [[]])[0],
-                 "aux_state": input_dict.get("aux_state", [{}])[0]}
+        input = {"expanded_response_predicates": input_dict.get("expanded_response_predicates", [[(None,[])]])[0]}
         input = load(input)
-        response = pipeline(main_response=input["main_response"], supporting_predicates=input["supporting_predicates"], aux_state=input["aux_state"])
-        return save(response=response)
+        nlg_responses = pipeline(expanded_response_predicates=input["expanded_response_predicates"])
+        return save(nlg_responses=nlg_responses)
+
+def response_assembler_handler(pipeline, input_dict):
+    input = {"aux_state": input_dict.get("aux_state", [{}])[0],
+             "ack_responses": input_dict.get("ack_responses", [[None]])[0],
+             "nlg_responses": input_dict.get("nlg_responses", [[None]])[0],}
+    input = load(input)
+    response = pipeline(aux_state=input["aux_state"], ack_responses=input["ack_responses"], nlg_responses=input["nlg_responses"])
+    return save(response=response)
 
 ##############################
 # Serialization functions
@@ -218,7 +250,7 @@ def load(json_dict, KB=None):
                 json_dict[key] = json.loads(value) if isinstance(value, str) else value
                 if 'tok' in json_dict[key]:
                     json_dict[key]['tok'] = [Span.from_string(t) for t in json_dict[key]['tok']]
-            elif key in {'main_response', 'supporting_predicates', 'response'}:
+            elif key in {'expanded_response_predicates', 'ack_responses', 'nlg_responses', 'response'}:
                 json_dict[key] = json.loads(value) if isinstance(value, str) else value
             elif key == 'dp_mentions':
                 value = json.loads(value) if isinstance(value, str) else value
@@ -261,7 +293,9 @@ class ChatbotServer:
         self.utter_integration = init_utter_integration()
         self.dialogue_inference = init_dialogue_inference(rules)
         self.response_selection = init_response_selection()
+        self.response_acknowledgment = init_response_acknowledgment()
         self.response_generation = init_response_generation()
+        self.response_assembler = init_response_assembler()
 
     def initialize_nlu(self, kb_files, device='cpu', local=False):
         self.local = local
@@ -360,14 +394,22 @@ class ChatbotServer:
             msg = response_selection_handler(self.response_selection, self.convert_state(current_state), self.kb)
             self.update_current_turn_state(current_state, msg)
             print('Selections:')
-            print('\t', msg["main_response"])
-            for support in json.loads(msg["supporting_predicates"]):
-                print('\t', support)
+            for selection in json.loads(msg["expanded_response_predicates"]):
+                print('\t', selection[0])
+                for support in selection[1]:
+                    print('\t', support)
+                print()
+
+            msg = response_acknowledgment_handler(self.response_acknowledgment, self.convert_state(current_state))
+            self.update_current_turn_state(current_state, msg)
 
             msg = response_generation_handler(self.response_generation, self.convert_state(current_state), local=self.local)
             self.update_current_turn_state(current_state, msg)
 
-            print('NLG Output:')
+            msg = response_assembler_handler(self.response_assembler, self.convert_state(current_state))
+            self.update_current_turn_state(current_state, msg)
+
+            print('Response:')
             if "response" in msg:
                 print('\t', msg["response"])
             else:

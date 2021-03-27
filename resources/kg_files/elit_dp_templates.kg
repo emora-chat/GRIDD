@@ -229,6 +229,15 @@ focus(p)
 center(X)
 ;
 
+sbj(X/pstg(), Y/pstg())
+obj(X, Z/pstg())
+-> sbj_dobj_nonverb_head ->
+is_type(X)
+p/X(Y,Z)
+focus(p)
+center(X)
+;
+
 
 sbj(X/noun(), Y/pstg())
 det(X, A/dt())

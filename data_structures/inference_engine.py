@@ -41,6 +41,8 @@ class InferenceEngine:
                 if 'c' in pre.features[p]:
                     confidence = pre.features[p]['c']
                     confidences[p] = confidence
+            for c in pre.concepts(): # was missing
+                attributes[c] = pre.supertypes(c)
             for s, t, o, i in pre.predicates(predicate_type='type'):
                 pre.remove(predicate_id=i)
                 types.add(o)
