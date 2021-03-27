@@ -16,12 +16,10 @@ class IntelligenceCoreSpec:
         Create an Intelligence Core
         """
         core = IntelligenceCore('''
-        animal<entity>
-        dog<animal>
-        cat<animal>
-        scared<predicate>
-        happy<predicate>
-        fido=dog()
+        animal = (entity)
+        [dog, cat] = (animal)
+        [scared, happy] = (predicate)
+        fido = dog()
         happy(fido)
         ''')
         return core
@@ -31,8 +29,8 @@ class IntelligenceCoreSpec:
         Add predicates to the knowledge base.
         """
         core.know('''
-        chase<predicate>;
-        z/chase(x/animal(), y/animal()) => scared(y) cause(c{c/predicate(x)}, z);
+        chase = (predicate);
+        z/chase(x/animal(), y/animal()) => scared(y) cause(c:<c/predicate(x)>, z);
         ''')
 
     def consider(core, knowledge):
@@ -69,12 +67,6 @@ class IntelligenceCoreSpec:
         """
         resolutions = core.resolve()
 
-    def apply_resolutions(core, resolutions=None):
-        """
-        Merge references with their referents if able.
-        """
-        core.apply_resolutions(core.resolve())
-
     def logical_merge(core):
         """
         Merge isomorphic concepts in working memory.
@@ -94,18 +86,11 @@ class IntelligenceCoreSpec:
         """
         core.consider(core.pull_knowledge())
 
-    def prune_attended(core, feature=None):
+    def pull_expressions(core):
         """
-        Remove concepts from working memory according to salience feature.
+        Pull all expressions of working memory concepts.
         """
-        core.decay_salience()
-        core.prune_attended()
-
-    def operate(core, operations=None):
-        """
-        Update operation predicates (e.g. `max`, `add`).
-        """
-        core.operate()
+        core.pull_expressions()
 
     def update_confidences(core, feature=None):
         """
@@ -124,6 +109,18 @@ class IntelligenceCoreSpec:
         Decay salience
         """
         core.decay_salience()
+
+    def prune_attended(core, feature=None):
+        """
+        Remove concepts from working memory according to salience feature.
+        """
+        core.prune_attended()
+
+    def operate(core, operations=None):
+        """
+        Update operation predicates (e.g. `max`, `add`).
+        """
+        core.operate()
 
     def display(core, verbosity=1):
         """
