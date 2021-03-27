@@ -29,7 +29,7 @@ class IntelligenceCoreSpec:
         Add predicates to the knowledge base.
         """
         core.know('''
-        chase = (predicate);
+        cause = (predicate);
         z/chase(x/animal(), y/animal()) => scared(y) cause(c:<c/predicate(x)>, z);
         ''')
         print(core.knowledge_base.pretty_print())
@@ -41,6 +41,8 @@ class IntelligenceCoreSpec:
         core.consider('''
         chase(fido, fluffy=cat())
         ''')
+        print()
+        print(core.working_memory.pretty_print())
 
     def infer(core, rules=None):
         """

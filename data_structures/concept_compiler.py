@@ -15,7 +15,7 @@ class ConceptCompiler:
     })
     _default_types = frozenset({
         'object', 'entity', 'predicate',
-        'number', 'expression', 'imp_rule'
+        'number', 'expression', 'imp_rule', 'type'
     })
     _default_predicates = frozenset({
         'type', 'expr', 'predicate'

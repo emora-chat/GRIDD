@@ -19,7 +19,7 @@ from itertools import chain
 
 class ConceptGraph:
 
-    def __init__(self, predicates=None, concepts=None, namespace=None, feature_cls=GRIDD.globals.FEATURE_CLS):
+    def __init__(self, predicates=None, concepts=None, namespace=None, metadata=None, feature_cls=GRIDD.globals.FEATURE_CLS):
         if namespace is not None:
             namespace = namespace
         if isinstance(namespace, IdMap):
@@ -36,15 +36,28 @@ class ConceptGraph:
             for concept in concepts:
                 self.add(concept)
         if predicates is not None:
-            if isinstance(predicates, str) or \
+            ConceptGraph.construct(self, predicates, metadata)
+
+    @classmethod
+    def construct(cls, cg, predicates, metadata=None, compiler=None):
+        if isinstance(predicates, str) or \
                 (isinstance(predicates, list) and len(predicates) > 0 and isinstance(predicates[0], str)):
+            if compiler is None:
                 predicates, metadatas = compile_concepts(predicates, namespace='__c__')
-                pred_cg = ConceptGraph(predicates=predicates, namespace='__c__')
-                pred_cg.features.update(metadatas)
-                self.concatenate(pred_cg)
             else:
-                for predicate in predicates:
-                    self.add(*predicate)
+                predicates, metadatas = compiler.compile(predicates)
+            pred_cg = ConceptGraph(predicates=predicates, namespace='__c__')
+            pred_cg.features.update(metadatas)
+            cg.concatenate(pred_cg)
+        elif (isinstance(predicates, list) or isinstance(predicates, tuple)) \
+                and len(predicates) > 0 \
+                and (isinstance(predicates[0], list) or (isinstance(predicates[0], tuple))):
+            for predicate in predicates:
+                cg.add(*predicate)
+        else:  # ConceptGraph
+            cg.concatenate(predicates)
+        if metadata is not None:
+            cg.features.update(metadata)
 
     def add(self, concept, predicate_type=None, object=None, predicate_id=None):
         self._bipredicates_graph.add(concept)
