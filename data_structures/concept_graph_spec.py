@@ -30,7 +30,7 @@ class ConceptGraphSpec:
             ('Peter', 'happy'),
             ('Jack', 'happy'),
             ('Peter', 'dislikes', 'Mary')
-        ], namespace='x_', feature_cls=NodeFeatures)
+        ], namespace='x_')
         return concept_graph
 
     def has(concept_graph, concept=None, predicate_type=None, object=None, predicate_id=None):
@@ -219,6 +219,8 @@ class ConceptGraphSpec:
             `concept_a`'s is the maintained id.
 
         If both concepts are a predicate instance, ValueError is raised.
+
+        Returns the remaining concept after merge.
         """
         concept_graph.features['pjl_1']['cover'] = 0
         concept_graph.features['Sarah']['cover'] = 1
@@ -354,48 +356,23 @@ class ConceptGraphSpec:
         assert b == '1_4'
         return concept_graph
 
-    def pretty_print(concept_graph, predicate_exclusions=None):
+    @specification.init
+    def pretty_print(ConceptGraph, exclusions=None):
         """
         Prints the predicates of concept_graph in a human-readable format,
         defined by the knowledge base text file format.
         """
-        concept_graph.add('dog', 'type', 'entity')
-        concept_graph.add(concept_graph.id_map().get(), 'type', 'dog')
-        concept_graph.add(concept_graph.id_map().get(), 'type', 'dog')
-        concept_graph.add('polly', 'type', 'dog')
-
-        pi = concept_graph.add('polly','hiss')
-        concept_graph.add(pi, 'volume', 'loud')
-
-        print_collection = set(concept_graph.pretty_print().split('\n'))
-        assert print_collection == {
-            '',
-            'ph/hiss(princess)',
-            'pvl/volume(ph,loud)',
-            'fb/bark(fluffy)',
-            'pff/friend(princess,fluffy)',
-            'ffp/friend(fluffy,princess)',
-            'dte/type(dog,entity)',
-            'ptd/type(polly,dog)',
-            'dtd/type(dog_1,dog)',
-            'dtd_2/type(dog_2,dog)',
-            'ph_2/hiss(polly)',
-            'pvl_2/volume(ph_2,loud)'
-        }
-
-        print_collection = set(concept_graph.pretty_print(exclusions={'friend'}).split('\n'))
-        assert print_collection == {
-            '',
-            'ph/hiss(princess)',
-            'pvl/volume(ph,loud)',
-            'fb/bark(fluffy)',
-            'dte/type(dog,entity)',
-            'ptd/type(polly,dog)',
-            'dtd/type(dog_1,dog)',
-            'dtd_2/type(dog_2,dog)',
-            'ph_2/hiss(polly)',
-            'pvl_2/volume(ph_2,loud)'
-        }
+        cg = ConceptGraph('''
+        dog = (animal)
+        animal = (entity)
+        ;
+        r/reason(chase(fido/dog(), fluffy=dog()), hungry(fido))
+        s/scared(fluffy)
+        reason(s, r)
+        happy(fluffy, r)
+        ;
+        ''', namespace='wm_')
+        print(cg.pretty_print(exclusions=[], typeinfo=True))
 
     @specification.init
     def to_spanning_tree(ConceptGraph):
@@ -502,12 +479,12 @@ class ConceptGraphSpec:
 
         s = time.time()
         span_tree_root = cg.to_spanning_tree()
-        print('to spanning tree: %.5f sec'%(time.time()-s))
+        # print('to spanning tree: %.5f sec'%(time.time()-s))
         assert root.equal(span_tree_root)
 
         s = time.time()
-        print(cg.print_spanning_tree())
-        print('print spanning tree: %.5f sec'%(time.time()-s))
+        # print(cg.print_spanning_tree())
+        # print('print spanning tree: %.5f sec'%(time.time()-s))
 
         cg = ConceptGraph(predicates=[
             ('d', 'type', 'dog', 'dtd'),
@@ -528,7 +505,7 @@ class ConceptGraphSpec:
             ('"sally"', 'expr', 'sally'),
             ('dlb', 'assert')
         ])
-        print(cg.print_spanning_tree())
+        # print(cg.print_spanning_tree())
 
     @specification.init
     def graph_component_siblings(ConceptGraph, source, target):
@@ -557,7 +534,21 @@ class ConceptGraphSpec:
         assert cg1.graph_component_siblings('tom', 'bob')
 
 
+@specification
+class ConceptGraphFromLogicSpec:
 
+    @specification.satisfies(ConceptGraphSpec.CONCEPT_GRAPH)
+    def CONCEPT_GRAPH_FROM_LOGIC_STRING(ConceptGraph, predicates):
+        concept_graph = ConceptGraph('''
+                likes(John, Mary)
+                dislikes(Mary, Peter)
+                pjl_1=likes(Peter, John)
+                likes(Peter, Sarah)
+                happy(Peter)
+                happy(Jack)
+                dislikes(Peter, Mary)
+                ''', namespace='x_')
+        return concept_graph
 
 
 

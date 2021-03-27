@@ -65,5 +65,24 @@ class Counter:
     def __int__(self):
         return self.value
 
+def uniquify(collection):
+    ids = {}
+    for item in collection:
+        ids[id(item)] = item
+    return list(ids.values())
+
+def combinations(*itemsets):
+    c = [[]]
+    for itemset in list(itemsets):
+        if itemset:
+            cn = []
+            for item in list(itemset):
+                ce = [list(e) for e in c]
+                for sol in ce:
+                    sol.append(item)
+                cn.extend(ce)
+            c = cn
+    return c
+
 if __name__ == '__main__':
     pass
