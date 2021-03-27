@@ -15,13 +15,13 @@ class IntelligenceCoreSpec:
         """
         Create an Intelligence Core
         """
-        core = IntelligenceCore('''
+        core = IntelligenceCore(['''
         animal = (entity)
         [dog, cat] = (animal)
         [scared, happy] = (predicate)
         fido = dog()
         happy(fido)
-        ''')
+        ''', 'GRIDD/resources/kg_files/intcore.kg'])
         return core
 
     def know(core, knowledge):

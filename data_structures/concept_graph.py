@@ -36,7 +36,8 @@ class ConceptGraph:
             for concept in concepts:
                 self.add(concept)
         if predicates is not None:
-            if isinstance(predicates, str):
+            if isinstance(predicates, str) or \
+                (isinstance(predicates, list) and len(predicates) > 0 and isinstance(predicates[0], str)):
                 predicates, metadatas = compile_concepts(predicates, namespace='__c__')
                 pred_cg = ConceptGraph(predicates=predicates, namespace='__c__')
                 pred_cg.features.update(metadatas)

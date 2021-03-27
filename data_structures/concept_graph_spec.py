@@ -1,9 +1,8 @@
 
 from structpy import specification
-import json, time
+import time
 from os.path import join
 import GRIDD.globals
-from GRIDD.data_structures.node_features import NodeFeatures
 from GRIDD.data_structures.spanning_node import SpanningNode
 
 checkpoints = join('GRIDD', 'resources', 'checkpoints')

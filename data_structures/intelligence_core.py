@@ -1,4 +1,6 @@
 
+from GRIDD.data_structures.intelligence_core_spec import IntelligenceCoreSpec
+
 
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.inference_engine import InferenceEngine
@@ -8,13 +10,21 @@ from GRIDD.utilities.utilities import uniquify
 class IntelligenceCore:
 
     def __init__(self, knowledge_base=None, working_memory=None, inference_engine=None):
-        self.knowledge_base = ConceptGraph(knowledge_base)  # Todo: concept graph loading
-        self.working_memory = ConceptGraph(working_memory)  # Todo: concept graph loading
-        self.inference_engine = inference_engine if inference_engine is not None else InferenceEngine()
+        if isinstance(knowledge_base, ConceptGraph):
+            self.knowledge_base = knowledge_base
+        else:
+            self.knowledge_base = ConceptGraph(knowledge_base, namespace='kb')
+        if isinstance(working_memory, ConceptGraph):
+            self.working_memory = working_memory
+        else:
+            self.working_memory = ConceptGraph(working_memory, namespace='wm')
+        if inference_engine is None:
+            inference_engine = InferenceEngine()
+        self.inference_engine = inference_engine
         self.operators = {}
 
     def know(self, knowledge):
-        self.knowledge_base.concatenate(ConceptGraph(knowledge))
+        self.knowledge_base.concatenate(ConceptGraph(knowledge, namespace='_tmp_'))
 
     def consider(self, knowledge):
         considered = ConceptGraph(knowledge)
@@ -69,6 +79,9 @@ class IntelligenceCore:
         return
 
     # Todo: integrate pull from WorkingMemory
+
+if __name__ == '__main__':
+    print(IntelligenceCoreSpec.verify(IntelligenceCore))
 
 
 
