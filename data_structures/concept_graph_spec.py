@@ -371,7 +371,7 @@ class ConceptGraphSpec:
         happy(fluffy, r)
         ;
         ''', namespace='wm_')
-        print(cg.pretty_print(exclusions=[], typeinfo=True))
+        print(cg.pretty_print(exclusions=[]))
 
     @specification.init
     def to_spanning_tree(ConceptGraph):

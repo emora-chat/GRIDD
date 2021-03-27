@@ -625,6 +625,7 @@ class ConceptGraph:
                 returner = returner.replace(i, i[1:-1])
             else:
                 returner = returner.replace('#'+i+'/', '')
+        returner = returner.replace('#', '').replace('$', '')
         return returner
 
 if __name__ == '__main__':
