@@ -14,6 +14,7 @@ from collections import defaultdict, deque
 import json
 from GRIDD.utilities import Counter
 import GRIDD.globals
+from itertools import chain
 
 
 class ConceptGraph:
@@ -433,67 +434,6 @@ class ConceptGraph:
         full_string = '\n'.join([''.join(value) for value in strings.values()])
         return full_string.strip()
 
-    def pretty_print(self, exclusions=None):
-        name_counter = defaultdict(int)
-        id_map = {}
-        visited = set()
-        type_string = ""
-        bi_string = ""
-        mono_string = ""
-        for sig in self.predicates():
-            type_string, bi_string, mono_string = self._get_representation(sig, id_map, name_counter, visited,
-                                                                           type_string, bi_string, mono_string,
-                                                                           exclusions)
-        full_string = type_string + '\n' + mono_string + '\n' + bi_string
-        return full_string.strip()
-
-    def _get_representation(self, predicate_signature, id_map, name_counter, visited,
-                            type_string, bi_string, mono_string, exclusions):
-        if predicate_signature not in visited:
-            s, t, o, i = predicate_signature
-            if exclusions is None or (t not in exclusions and s not in exclusions and o not in exclusions):
-                id_map[t] = t
-                concepts = [s, o] if o is not None else [s]
-                for concept in concepts:
-                    if concept not in id_map:
-                        if isinstance(concept, str) and concept.startswith(self.id_map().namespace):
-                            if self.has(predicate_id=concept):
-                                type_string, bi_string, mono_string = self._get_representation(self.predicate(concept),
-                                                                                               id_map, name_counter, visited,
-                                                                                               type_string, bi_string, mono_string,
-                                                                                               exclusions)
-                            else:
-                                types = self.predicates(concept, 'type')
-                                if len(types) > 0:
-                                    ctype = types[0][2]
-                                    name_counter[ctype] += 1
-                                    id_map[concept] = '%s_%d' % (ctype, name_counter[ctype])
-                                else:
-                                    id_map[concept] = concept
-                        elif isinstance(concept, Span):
-                            id_map[concept] = concept.string
-                        else:
-                            id_map[concept] = concept
-                if o is not None:
-                    pname = id_map[s].replace('_', '')[0] + id_map[t].replace('_', '')[0] + id_map[o].replace('_', '')[0]
-                else:
-                    pname = id_map[s].replace('_', '')[0] + id_map[t].replace('_', '')[0]
-                name_counter[pname] += 1
-                if name_counter[pname] == 1:
-                    id_map[i] = pname
-                else:
-                    id_map[i] = '%s_%d' % (pname, name_counter[pname])
-                if o is not None:
-                    to_add = '%s/%s(%s,%s)\n' % (id_map[i], id_map[t], id_map[s], id_map[o])
-                    if id_map[t] == 'type':
-                        type_string += to_add
-                    else:
-                        bi_string += to_add
-                else:
-                    mono_string += '%s/%s(%s)\n' % (id_map[i], id_map[t], id_map[s])
-                visited.add(predicate_signature)
-        return type_string, bi_string, mono_string
-
     def to_spanning_tree(self):
         exclude = {'expr', 'def', 'ref', 'assert', 'type', 'link'}
         root = SpanningNode('__root__')
@@ -588,6 +528,85 @@ class ConceptGraph:
 
     def __repr__(self):
         return str(self)
+
+    def _was_autonamed(self, concept):
+        return self._ids.namespace is not None and concept.startswith(self._ids.namespace)
+
+    def pretty_print(self, exclusions=None, typeinfo=False):
+        display = deque()
+        todo = set(self.concepts())
+        for e in list(todo):
+            if exclusions is not None and self.has(predicate_id=e) and self.predicate(e)[1] in exclusions:
+                todo.discard(e)
+
+        class counter(dict):
+            def setdefault(self, key, default):
+                r = dict.setdefault(self, key, default)
+                self[key] += 1
+                return r
+
+        ids = {}
+        nums = counter()
+
+        def cstr(c):
+            string = ''
+            todo.discard(c)
+            if c in ids:
+                return ids[c]
+            if self.has(predicate_id=c):
+                s, t, o, i = self.predicate(c)
+                ids.setdefault(c, '$' + c + '$' if not self._was_autonamed(c) \
+                    else '$' + t + '_' + str(nums.setdefault(t, 0)) + '$')
+                string += '#' + ids[c] + ('/' if self._was_autonamed(c) else '=')
+                todo.discard(t)
+                string += t + '('
+                string += cstr(s)
+                if o is not None:
+                    string += ', ' + cstr(o)
+                string += ')'
+            else:
+                types = list(self.objects(c, 'type'))
+                if len(types) > 0:
+                    t = types[0]
+                    ids.setdefault(c, '$' + c + '$' if not self._was_autonamed(c) \
+                        else '$' + t + '_' + str(nums.setdefault(t, 0)) + '$')
+                    string += '#' + ids[c] + ('/' if self._was_autonamed(c) else '=') + types[0] + '()'
+                    todo.discard(types[0])
+                else:
+                    string += c
+            return string
+
+        roots = set(todo) - set(chain(*[(s, o) for s, _, o, _ in self.predicates()]))
+        roots.difference_update(self.predicates(predicate_type='type'))
+        for root in [root for root in roots if self.has(predicate_id=root) and self.type(root) != 'type']:
+            display.append(cstr(root))
+        preds = [self.predicate(c) for c in todo if self.has(predicate_id=c)]
+        type_preds = [(s, t, o, i) for s, t, o, i in preds if t == 'type']
+        todo -= set(chain(*type_preds))
+        while todo:
+            predstodo = [t for t in todo if self.has(predicate_id=t)]
+            if predstodo:
+                left = predstodo[0]
+            else:
+                left = todo.pop()
+            todo.discard(left)
+        if typeinfo:
+            types = {}
+            for s, t, o, i in type_preds:
+                types.setdefault(s, set()).add(o)
+            for c, v in types.items():
+                c = ids.get(c, c)
+                v = [ids.get(x, x) for x in v]
+                display.appendleft(c + ':  ' + ', '.join(v))
+
+        returner = '\n'.join(display)
+        for i in ids.values():
+            if returner.count(i) > 1:
+                returner = returner.replace('#'+i, i[1:-1])
+                returner = returner.replace(i, i[1:-1])
+            else:
+                returner = returner.replace('#'+i+'/', '')
+        return returner
 
 if __name__ == '__main__':
     print(ConceptGraphSpec.verify(ConceptGraph))

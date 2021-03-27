@@ -65,6 +65,9 @@ class IntelligenceCore:
         # Todo: logical merge
         return
 
+    def update_salience(self):
+        return
+
     # Todo: integrate pull from WorkingMemory
 
 
