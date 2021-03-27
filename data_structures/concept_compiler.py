@@ -8,7 +8,6 @@ from itertools import chain
 from GRIDD.utilities.utilities import combinations
 
 
-
 class ConceptCompiler:
 
     _default_instances = frozenset({
@@ -28,25 +27,30 @@ class ConceptCompiler:
         self.types = set(types) if types is not None else None
         self.predicates = set(predicates) if predicates is not None else None
         self.namespace = namespace
+        self.visitor = None
 
     def compile(self, string, instances=_default_instances, types=_default_types, predicates=_default_predicates, namespace=None):
         if not string.strip().endswith(';'):
             string = string + ';'
         parse_tree = self.parser.parse(string)
-        visitor = ConceptVisitor(
+        self.visitor = ConceptVisitor(
             set(instances | self.instances) if instances is not None else None,
             set(types | self.types) if types is not None else None,
             set(predicates | self.predicates) if predicates is not None else None,
             namespace if namespace is not None else self.namespace
         )
-        visitor.visit(parse_tree)
-        return visitor.entries, visitor.metadatas
+        self.visitor.visit(parse_tree)
+        return self.visitor.entries, self.visitor.metadatas
 
-    def compile_and_update(self):
+    def compile_and_update(self, string, instances=_default_instances, types=_default_types, predicates=_default_predicates, namespace=None):
         """
         compile and update types, instances, and predicates to reflect new definitions
         """
-        raise NotImplementedError()
+        results = self.compile(string, instances, types, predicates, namespace)
+        self.instances.update(self.visitor.instances)
+        self.types.update(self.visitor.types)
+        self.predicates.update(self.visitor.predicates)
+        return results
 
     _grammar = r'''
         start: block*
