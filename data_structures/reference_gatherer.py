@@ -19,8 +19,7 @@ def gather(reference_node, constraints_as_spans, concept_graph):
             focal_nodes.add(focus)
     # expand constraint spans into constraint predicates
     for focal_node in focal_nodes:
-        components = [focal_node] if concept_graph.has(predicate_id=focal_node) else []
-        components += concept_graph.features[focal_node]['comps']
+        components = concept_graph.features[focal_node]['comps']
         # constraint found if constraint predicate is connected to reference node
         for component in components:
             if (not concept_graph.has(predicate_id=component) or

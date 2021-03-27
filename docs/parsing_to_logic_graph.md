@@ -658,11 +658,7 @@ Have you bought a house
 
 Auxiliary verbs modify the tense of their parent verb.
 
-TODO - properly update tense of main verb using auxiliaries, right now we have both a `time` predicate and an `aux_time` predicate
-
 TODO - missing 'go' auxiliary
-
-TODO - make auxiliaries that change tense have a common ancestor, then don't need to have rules for each auxiliary type
 
  <details>
   <summary>Conversions</summary>
@@ -830,7 +826,7 @@ TODO - make better
 Captures definite and indefinite specifications of concepts.
 
 `det` dependency relation specifies instances of a concept, where
-definite instances exist in a `referential` predicate and ndefinite instances exist in an `instantiative` predicate.
+definite instances are used to construct reference links and indefinite instances aren't.
 
 Determiners which are not a part of a `det` dependency relation are `object` instances, following the same predicate structure as above. 
 
@@ -842,7 +838,6 @@ Determiners which are not a part of a `det` dependency relation are `object` ins
 	-> ref_concept_determiner ->
 	is_type(X)
 	focus(inst/X())
-	referential(inst)
 	center(X)
 	cover(Y)
 	;
@@ -852,7 +847,6 @@ Determiners which are not a part of a `det` dependency relation are `object` ins
 	-> inst_concept_determiner ->
 	is_type(X)
 	focus(inst/X())
-	instantiative(inst)
 	center(X)
 	cover(Y)
 	;
@@ -869,7 +863,6 @@ Determiners which are not a part of a `det` dependency relation are `object` ins
 	ltype(X, ref_det)
 	-> ref_determiner ->
 	focus(o/object())
-	referential(o)
 	center(X)
 	;
 	
@@ -877,7 +870,6 @@ Determiners which are not a part of a `det` dependency relation are `object` ins
 	ltype(X, inst_det)
 	-> inst_determiner ->
 	focus(o/object())
-	instantiative(o)
 	center(X)
 	;
 
@@ -1229,7 +1221,9 @@ Represented as predicates where the speaker is the subject and the dialogue part
 
 Recognize all pronouns that exist as concepts in the KG.
 
-If pronoun is referential (e.g. `it`), then it has a `referential` predicate. 
+If pronoun is referential (e.g. `it`), then it uses the reference linking (?)
+
+TODO - not currently set up as references
 
 <details>
   <summary>Conversions</summary>
@@ -1238,7 +1232,6 @@ If pronoun is referential (e.g. `it`), then it has a `referential` predicate.
 	ltype(X, ref_det)
 	-> ref_pron ->
 	focus(o/object())
-	referential(o)
 	center(X)
 	;
 

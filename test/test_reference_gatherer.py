@@ -26,10 +26,10 @@ class ReferenceGathererSpec:
         The returned predicates should enumerate the contentful predicates defining the reference,
         and exclude the framework primitives (`focus`, `center`, `is_type`, `cover`, `question`, `var`)
         """
-        my_span = Span('my', 2, 3, 0, 0, 1)
-        very_span = Span('very', 3, 4, 0, 0, 1)
-        red_span = Span('red', 4, 5, 0, 0, 1)
-        car_span = Span('car', 5, 6, 0, 0, 1)
+        my_span = Span('my', 'my', 2, 3, 0, 0, 1)
+        very_span = Span('very', 'very', 3, 4, 0, 0, 1)
+        red_span = Span('red', 'red', 4, 5, 0, 0, 1)
+        car_span = Span('car', 'car', 5, 6, 0, 0, 1)
         graph = ConceptGraph(predicates=[
             ('user', 'possess', 'c1', 'upc'),
             ('c1', 'type', 'car', 'ctc'),

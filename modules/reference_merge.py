@@ -14,12 +14,7 @@ class ReferenceMerge:
             for constraint in constraints:
                 if concept_graph.has(predicate_id=constraint):
                     constraint_predicates.add(concept_graph.predicate(constraint))
-                    constraint_predicates.add((constraint, 'var', None))
-                else:
-                    print('Reference: ', reference)
-                    print('Constraints: ', constraints)
-                    print('Current: ', constraint)
-                    raise Exception('Found non-predicate reference link')
+                constraint_predicates.add((constraint, 'var', None))
             reference_preconditions[reference] = ConceptGraph(predicates=constraint_predicates,
                                                               namespace='reference_')
         return reference_preconditions

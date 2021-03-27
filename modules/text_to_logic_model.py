@@ -9,6 +9,18 @@ import torch, gc
 
 LOCALDEBUG = False
 
+def ENTITY_INSTANCES_BY_RULE(rule_name, focus_node, cg, comps):
+    # get the newly instantiated concept that is the question subject
+    if rule_name in {'q_aux_adv', 'q_adv', 'qdet_copula_present', 'qdet_copula_past', 'dat_question'}:
+        ((s,_,_,_), ) = cg.predicates(predicate_type='question')
+        comps.append(s)
+    # only focal nodes which are newly instantiated entities are considered components
+    if rule_name in {'obj_question', 'sbj_question', 'q_aux_det', 'q_det',
+                     'ref_concept_determiner', 'inst_concept_determiner',
+                     'other_concept_determiner', 'ref_determiner', 'inst_determiner',
+                     'obj_of_possessive', 'ref_pron', 'single_word'}:
+        comps.append(focus_node)
+
 class ParseToLogic:
 
     def __init__(self, knowledge_base, *template_file_names, device='cpu'):
@@ -175,9 +187,9 @@ class ParseToLogic:
                             # when it should be the target of the question predicate instance
                             focus_node = cg.predicate(focus_node)[0] # todo - update with new bipredicate request representation
                         cg.features[focus_node]['refsp'] = REFERENCES_BY_RULE[rule_name](center, ewm)
-                        cg.features[focus_node]['comps'] = [pred[3] for pred in cg.predicates()]
-                    else:
-                        cg.features[focus_node]['comps'] = [pred[3] for pred in cg.predicates()]
+                    comps = [pred[3] for pred in cg.predicates()]
+                    ENTITY_INSTANCES_BY_RULE(rule_name, focus_node, cg, comps)
+                    cg.features[focus_node]['comps'] = comps
                     if ewm.has(center, 'assert'): # if center is asserted, add assertion to focus node
                         cg.add(focus_node, 'assert')
                     mentions[center] = cg

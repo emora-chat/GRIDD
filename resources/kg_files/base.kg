@@ -19,6 +19,8 @@ pre<predicate>
 post<predicate>
 var<predicate>
 
+indirect_obj<predicate>
+
 possess<predicate>
 possess[possess]
 

@@ -552,7 +552,6 @@ ltype(Y, ref_det)
 -> ref_concept_determiner ->
 is_type(X)
 focus(inst/X())
-referential(inst)
 center(X)
 cover(Y)
 ;
@@ -562,7 +561,6 @@ ltype(Y, inst_det)
 -> inst_concept_determiner ->
 is_type(X)
 focus(inst/X())
-instantiative(inst)
 center(X)
 cover(Y)
 ;
@@ -579,7 +577,6 @@ X/dt()
 ltype(X, ref_det)
 -> ref_determiner ->
 focus(o/object())
-referential(o)
 center(X)
 ;
 
@@ -587,7 +584,6 @@ X/dt()
 ltype(X, inst_det)
 -> inst_determiner ->
 focus(o/object())
-instantiative(o)
 center(X)
 ;
 
@@ -799,7 +795,6 @@ X/pron()
 ltype(X, ref_det)
 -> ref_pron ->
 focus(o/object())
-referential(o)
 center(X)
 ;
 

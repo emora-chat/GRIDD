@@ -3,12 +3,12 @@ from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.reference_identifier import REFERENCES_BY_RULE
 
 def test_referential_alignment():
-    i_span = Span('i', 0, 1, 0, 0, 1)
-    like_span = Span('like', 1, 2, 0, 0, 1)
-    my_span = Span('my', 2, 3, 0, 0, 1)
-    very_span = Span('very', 3, 4, 0, 0, 1)
-    red_span = Span('red', 4, 5, 0, 0, 1)
-    car_span = Span('car', 5, 6, 0, 0, 1)
+    i_span = Span('i', 'i', 0, 1, 0, 0, 1)
+    like_span = Span('like', 'like', 1, 2, 0, 0, 1)
+    my_span = Span('my', 'my', 2, 3, 0, 0, 1)
+    very_span = Span('very', 'very', 3, 4, 0, 0, 1)
+    red_span = Span('red', 'red', 4, 5, 0, 0, 1)
+    car_span = Span('car', 'car', 5, 6, 0, 0, 1)
     cg = ConceptGraph(predicates=[
         (like_span.to_string(), 'nsbj', i_span.to_string()),
         (like_span.to_string(), 'obj', car_span.to_string()),
