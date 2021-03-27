@@ -23,34 +23,48 @@ class ConceptCompiler:
 
     def __init__(self, instances=_default_instances, types=_default_types, predicates=_default_predicates, namespace='c_'):
         self.parser = Lark(ConceptCompiler._grammar, parser='earley')
-        self.instances = set(instances) if instances is not None else None
-        self.types = set(types) if types is not None else None
-        self.predicates = set(predicates) if predicates is not None else None
-        self.namespace = namespace
-        self.visitor = None
+        self.visitor = ConceptVisitor(instances, types, predicates, namespace)
 
-    def compile(self, string, instances=_default_instances, types=_default_types, predicates=_default_predicates, namespace=None):
+    def _compile(self, string, instances=_default_instances, types=_default_types, predicates=_default_predicates):
         if not string.strip().endswith(';'):
             string = string + ';'
         parse_tree = self.parser.parse(string)
-        self.visitor = ConceptVisitor(
-            set(instances | self.instances) if instances is not None else None,
-            set(types | self.types) if types is not None else None,
-            set(predicates | self.predicates) if predicates is not None else None,
-            namespace if namespace is not None else self.namespace
-        )
+        if instances is not None: self.visitor.instances.update(instances)
+        if types is not None: self.visitor.types.update(types)
+        if predicates is not None: self.visitor.predicates.update(predicates)
         self.visitor.visit(parse_tree)
         return self.visitor.entries, self.visitor.metadatas
 
-    def compile_and_update(self, string, instances=_default_instances, types=_default_types, predicates=_default_predicates, namespace=None):
+    def compile(self, logic_strings, instances=_default_instances, types=_default_types, predicates=_default_predicates, namespace=None):
         """
         compile and update types, instances, and predicates to reflect new definitions
         """
-        results = self.compile(string, instances, types, predicates, namespace)
-        self.instances.update(self.visitor.instances)
-        self.types.update(self.visitor.types)
-        self.predicates.update(self.visitor.predicates)
-        return results
+        entries, metas = [], {}
+        if isinstance(logic_strings, str):
+            logic_strings = [logic_strings]
+        for string in logic_strings:
+            if len(string) < 300 and string.endswith('.kg'):
+                with open(string) as f:
+                    string = f.read()
+            e, m = self._compile(string, instances, types, predicates)
+            entries.extend(e)
+            metas.update(m)
+            self.instances.update(self.visitor.instances)
+            self.types.update(self.visitor.types)
+            self.predicates.update(self.visitor.predicates)
+        return entries, metas
+
+    @property
+    def namespace(self): return self.visitor.globals.namespace
+
+    @property
+    def instances(self): return self.visitor.instances
+
+    @property
+    def types(self): return self.visitor.types
+
+    @property
+    def predicates(self): return self.visitor.predicates
 
     _grammar = r'''
         start: block*
@@ -351,8 +365,8 @@ class ConceptVisitor(Visitor_Recursive):
         tree.data = tree.children[0].data
 
 
-def compile_concepts(logic_string, instances=None, types=None, predicates=None, namespace='c_'):
-    return ConceptCompiler().compile(logic_string, instances, types, predicates, namespace)
+def compile_concepts(logic_strings, instances=None, types=None, predicates=None, namespace='c_'):
+    return ConceptCompiler().compile(logic_strings, instances, types, predicates, namespace)
 
 
 if __name__ == '__main__':
