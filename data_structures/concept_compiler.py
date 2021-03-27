@@ -34,9 +34,9 @@ class ConceptCompiler:
             string = string + ';'
         parse_tree = self.parser.parse(string)
         visitor = ConceptVisitor(
-            (instances | self.instances) if instances is not None else None,
-            (types | self.types) if types is not None else None,
-            (predicates | self.predicates) if predicates is not None else None,
+            set(instances | self.instances) if instances is not None else None,
+            set(types | self.types) if types is not None else None,
+            set(predicates | self.predicates) if predicates is not None else None,
             namespace if namespace is not None else self.namespace
         )
         visitor.visit(parse_tree)
@@ -125,7 +125,8 @@ class ConceptVisitor(Visitor_Recursive):
     def precondition(self, tree):
         preinst = set(chain(*[t.refs for t in tree.iter_subtrees() if hasattr(t, 'refs')]))
         preinst = {self.locals.get(str(i), str(i)) for i in preinst}
-        variables = {self.locals.get(str(i), str(i)) for i in self.linstances}
+        variables = set(chain(*[t.inits for t in tree.iter_subtrees() if hasattr(t, 'inits')]))
+        variables = {self.locals.get(str(i), str(i)) for i in variables}
         tree.data = (preinst, variables)
         self.linstances = set()
 
@@ -194,13 +195,16 @@ class ConceptVisitor(Visitor_Recursive):
             self.instances.update(newconcepts)
         self.check_mismatched_multiplicity(newconcepts, types)
         self.linstances.update(newconcepts)
-        #tree.children[-1].refs = []
+        tree.children[-1].refs = [str(r) for r in tree.children[-1].children]
+        tree.children[-1].inits = []
         for i, type in enumerate(types):
             typeinst = self.globals.get()
             self.lentries.append((newconcepts[i], 'type', type, typeinst))
-            #tree.children[-1].refs.append(typeinst)  # Duct tape add type instance
+            tree.children[-1].refs.extend([typeinst, 'type'])  # Duct tape add type instance
+            tree.children[-1].inits.append(typeinst)
             self.plinstances.add(typeinst)
         tree.refs = newconcepts
+        tree.inits = newconcepts
 
     def monopred_init(self, tree):
         types = [str(c) for c in tree.children[-2].children]
@@ -222,10 +226,12 @@ class ConceptVisitor(Visitor_Recursive):
             self.instances.update(newconcepts)
         self.check_mismatched_multiplicity(newconcepts, type_arg)
         self.linstances.update(newconcepts)
+        tree.children[-2].refs = types
         for i, (type, arg) in enumerate(type_arg):
             self.lentries.append((arg, type, None, newconcepts[i]))
             self.plinstances.add(newconcepts[i])
         tree.refs = newconcepts
+        tree.inits = newconcepts
 
     def bipred_init(self, tree):
         types = [str(c) for c in tree.children[-3].children]
@@ -248,17 +254,26 @@ class ConceptVisitor(Visitor_Recursive):
             self.instances.update(newconcepts)
         self.check_mismatched_multiplicity(newconcepts, type_args)
         self.linstances.update(newconcepts)
+        tree.children[-3].refs = types
         for i, (type, arg0, arg1) in enumerate(type_args):
             self.lentries.append((arg0, type, arg1, newconcepts[i]))
             self.plinstances.add(newconcepts[i])
         tree.refs = newconcepts
+        tree.inits = newconcepts
 
     def ref_init(self, tree):
+        tree.refs = tree.children[0].children
+        tree.inits = tree.children[0].children
+        ref_tree = tree.children[1]
+        constraints = set(chain(*[t.refs for t in ref_tree.iter_subtrees() if hasattr(t, 'refs')]))
+        constraints = {self.locals.get(str(i), str(i)) for i in constraints}
+        variables = set(chain(*[t.inits for t in ref_tree.iter_subtrees() if hasattr(t, 'inits')]))
+        variables = {self.locals.get(str(i), str(i)) for i in variables}
         for i in tree.children[0].children:
             if 'ref' in self.metadatas.get(i, {}):
                 raise ValueError('Reference defined twice for concept {}'.format(i))
-            self.lmetadatas.setdefault(i, {}).setdefault('ref', set()).update(tree.children[1].refs)
-        tree.refs = tree.children[0].children
+            self.lmetadatas.setdefault(i, {}).setdefault('ref', set()).update(constraints)
+            self.lmetadatas[i].setdefault('vars', set()).update(variables)
 
     def string_init(self, tree):
         inits = ['"'+s.strip()+'"' for s in tree.children[0].children[0][1:-1].split(',')]

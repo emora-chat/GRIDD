@@ -43,7 +43,7 @@ class ConceptCompilerSpec:
         
         g/group()
         
-        members(g, [mary, dave=person(), sue:<sue/person() happy(sue)>])
+        members(g, [mary, dave=person(), sue:<sue=person() happy(sue)>])
         
         heppy([mary, [dave, sue]])
         
@@ -53,6 +53,7 @@ class ConceptCompilerSpec:
         x/dog() chase(x, y/dog())
         =>
         happy(x) scared(y)
+        chase(y, d=dog())
         ;
             
         '''
