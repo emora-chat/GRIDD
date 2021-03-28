@@ -7,6 +7,9 @@ from GRIDD.data_structures.inference_engine import InferenceEngine
 from GRIDD.data_structures.concept_compiler import ConceptCompiler
 from GRIDD.utilities.utilities import uniquify
 
+SENSORY_SALIENCE = 1
+ASSOCIATION_DECAY = 0.1
+TIME_DECAY = 0.1
 
 class IntelligenceCore:
 
@@ -32,8 +35,13 @@ class IntelligenceCore:
         ConceptGraph.construct(cg, knowledge, compiler=self.compiler)
         self.knowledge_base.concatenate(cg)
 
-    def consider(self, knowledge):
-        considered = ConceptGraph(knowledge, namespace='_tmp_')
+    def consider(self, concepts, associations=None, salience=None):
+        considered = ConceptGraph(concepts, namespace='_tmp_')
+        if associations is None:
+            considered.metagraph.features.update({c: {'salience': salience*SENSORY_SALIENCE}
+                                                  for c in considered.concepts()})
+        else:
+            pass
         self.working_memory.concatenate(considered)
 
     def infer(self, rules=None):
