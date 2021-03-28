@@ -1,7 +1,7 @@
 
 from math import log
 import os
-from structpy.map import Bimap
+from inspect import getmembers, isfunction
 
 CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -84,5 +84,18 @@ def combinations(*itemsets):
             c = cn
     return c
 
-if __name__ == '__main__':
-    pass
+def operators(module):
+    d = dict(getmembers(module, isfunction))
+    for v in list(d.values()):
+        if hasattr(v, 'aliases'):
+            for alias in v.aliases:
+                d[alias] = v
+    return {k: v for k, v in d.items() if not k.startswith('_')}
+
+class aliases:
+    def __init__(self, *aliases):
+        self.aliases = aliases
+    def __call__(self, fn):
+        fn.aliases = self.aliases
+        return fn
+

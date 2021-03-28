@@ -5,11 +5,17 @@ from GRIDD.data_structures.intelligence_core_spec import IntelligenceCoreSpec
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.inference_engine import InferenceEngine
 from GRIDD.data_structures.concept_compiler import ConceptCompiler
-from GRIDD.utilities.utilities import uniquify
+from GRIDD.utilities.utilities import uniquify, operators
+
+import GRIDD.data_structures.intelligence_core_operators as intcoreops
 
 SENSORY_SALIENCE = 1
 ASSOCIATION_DECAY = 0.1
 TIME_DECAY = 0.1
+NONASSERT = 'nonassert'
+SALIENCE = 'salience'
+CONFIDENCE = 'confidence'
+
 
 class IntelligenceCore:
 
@@ -28,7 +34,7 @@ class IntelligenceCore:
         if inference_engine is None:
             inference_engine = InferenceEngine()
         self.inference_engine = inference_engine
-        self.operators = {}
+        self.operators = operators(intcoreops)
 
     def know(self, knowledge):
         cg = ConceptGraph(namespace='_tmp_')
@@ -38,10 +44,13 @@ class IntelligenceCore:
     def consider(self, concepts, associations=None, salience=None):
         considered = ConceptGraph(concepts, namespace='_tmp_')
         if associations is None:
-            considered.metagraph.features.update({c: {'salience': salience*SENSORY_SALIENCE}
+            considered.features.update({c: {'salience': salience*SENSORY_SALIENCE}
                                                   for c in considered.concepts()})
         else:
-            pass
+            s = min([self.working_memory.features.get(c, {}).get('salience', 0)
+                            for c in associations]) - ASSOCIATION_DECAY
+            considered.features.update({c: {'salience': s*salience}
+                                        for c in considered.concepts()})
         self.working_memory.concatenate(considered)
 
     def infer(self, rules=None):
@@ -52,7 +61,8 @@ class IntelligenceCore:
         return solutions
 
     def apply_inferences(self, inferences=None):
-        self.inference_engine.apply(inferences)
+        cg = self.inference_engine.apply(inferences)
+        # do something
 
     def merge(self, concept_sets):
         sets = {}
@@ -78,20 +88,50 @@ class IntelligenceCore:
         # Todo: collect references for IntCore resolution
         return self.inference_engine.infer(references, cached=False)
 
-    def apply_resolutions(self, resolutions=None):
-        for reference, referents in resolutions: # Todo: standardize resolution result format
-            if len(referents) == 1:
-                self.merge([[reference, referents[0]]])
-        # Done?
-
     def logical_merge(self):
         # Todo: logical merge
         return
 
+    def pull_types(self):
+        pass
+
+    def pull_knowledge(self):
+        pass
+
+    def pull_expressions(self):
+        pass
+
+    def update_confidence(self):
+        wm = self.working_memory
+        for c in wm:
+            if 'c' not in wm.features.get(c, {}):
+                # get types (IMPLEMENT IN ConceptGraph)
+                if wm.has(predicate_id=c):
+                    pass
+
     def update_salience(self):
         return
 
-    # Todo: integrate pull from WorkingMemory
+    def decay_salience(self):
+        pass
+
+    def prune_attended(self):
+        pass
+
+    def operate(self, cg=None):
+        if cg is None:
+            cg = self.working_memory
+        for opname, opfunc in self.operators.items():
+            for _, _, _, i in list(cg.predicates(predicate_type=opname)):
+                if cg.has(predicate_id=i): # within-loop-mutation check
+                    opfunc(cg, i)
+
+    def display(self):
+        s = '#'*30 + ' Working Memory ' + '#'*30
+        s += self.working_memory.pretty_print()
+        s += '#'*(60+len(' working memory '))
+        return s
+
 
 if __name__ == '__main__':
     print(IntelligenceCoreSpec.verify(IntelligenceCore))

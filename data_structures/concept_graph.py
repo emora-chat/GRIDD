@@ -261,24 +261,53 @@ class ConceptGraph:
         neighbors.update(self.objects(concept, type))
         return neighbors
 
-    def subtypes(self, concept):
-        subtypes = set()
-        for predicate in self.predicates(predicate_type='type', object=concept):
-            subtype = predicate[0]
-            subtypes.add(subtype)
-            subtypes.update(self.subtypes(subtype))
-        return subtypes
+    def subtypes(self, concept=None, memo=None):
+        if memo is None:
+            memo = {}
+        if concept is not None:
+            if concept not in memo:
+                types = {concept}
+                for predicate in self.predicates(predicate_type='type', object=concept):
+                    subtype = predicate[0]
+                    types.update(self.subtypes(subtype, memo))
+                for _, _, _, instance in self.predicates(predicate_type=concept):
+                    types.update(self.subtypes(instance, memo))
+                memo[concept] = types
+            return memo[concept]
+        else:
+            todo = set(self.concepts())
+            while todo:
+                concept = todo.pop()
+                self.subtypes(concept, memo)
+                todo.difference_update(set(memo.keys()))
+            return memo
 
-    # todo - efficiency check
-    #  if multiple paths to same ancestor,
-    #  it will pull ancestor's ancestor-chain multiple times
-    def supertypes(self, concept):
-        types = set()
-        for predicate in self.predicates(subject=concept, predicate_type='type'):
-            supertype = predicate[2]
-            types.add(supertype)
-            types.update(self.supertypes(supertype))
-        return types
+    def supertypes(self, concept=None, memo=None):
+        if memo is None:
+            memo = {}
+        if concept is not None:
+            if concept not in memo:
+                if self.has(predicate_id=concept):
+                    inst = concept
+                    concept = self.type(concept)
+                else:
+                    inst = None
+                types = {concept}
+                for predicate in self.predicates(subject=concept, predicate_type='type'):
+                    supertype = predicate[2]
+                    types.update(self.supertypes(supertype, memo))
+                memo[concept] = types
+                if inst is not None:
+                    memo[inst] = types | {inst}
+                    return memo[inst]
+            return memo[concept]
+        else:
+            todo = set(self.concepts())
+            while todo:
+                concept = todo.pop()
+                self.supertypes(concept, memo)
+                todo.difference_update(set(memo.keys()))
+            return memo
 
     def id_map(self, other=None):
         if other is None:
