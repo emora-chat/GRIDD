@@ -341,22 +341,37 @@ class ConceptGraph:
                 del self._bipredicate_instances[(subject, predicate_type, object)]
 
     def concatenate(self, concept_graph, predicate_exclusions=None, concepts=None, id_map=None):
+        """
+        :param concepts - list of predicate instance ids to be concatenated from concept_graph into self
+            * only used by KnowledgeParser._extract_rules_from_graph()
+        """
         if id_map is None:
             id_map = self.id_map(concept_graph)
+        all_added_concepts = None
+        if concepts is not None:
+            all_added_concepts = set()
         for s, t, o, i in concept_graph.predicates():
             if (predicate_exclusions is None or t not in predicate_exclusions) and (concepts is None or i in concepts):
                 self.add(*(id_map.get(x) if x is not None else None for x in (s, t, o, i)))
+                if concepts is not None:
+                    all_added_concepts.update({x for x in (s,t,o,i) if x is not None})
         for concept in concept_graph.concepts():
             if concept not in id_map:
                 if predicate_exclusions is None:
                     if concepts is None or concept in concepts:
                         self.add(id_map.get(concept))
+                        if concepts is not None:
+                            all_added_concepts.add(concept)
                 else:
                     if concept not in predicate_exclusions and (concepts is None or concept in concepts):
                         if not concept_graph.has(predicate_id=concept) \
                            or concept_graph.type(concept) not in predicate_exclusions:
                             self.add(id_map.get(concept))
-        self.metagraph.update(concept_graph.metagraph, concept_graph.metagraph.features, id_map)
+                            if concepts is not None:
+                                all_added_concepts.add(concept)
+
+        self.metagraph.update(concept_graph.metagraph, concept_graph.metagraph.features,
+                              id_map=id_map, concepts=all_added_concepts)
         return id_map
 
     def graph_component_siblings(self, source, target):

@@ -20,18 +20,22 @@ class MetaGraph(Graph):
             Graph.remove(self, concept_b)
         self.features.merge(concept_a, concept_b)
 
-    def update(self, graph=None, features=None, id_map=None):
+    def update(self, graph=None, features=None, id_map=None, concepts=None):
         if features is not None:
             if id_map is not None:
-                features = {id_map[k]: v for k, v in features.items()}
-            self.features.update(features)
+                features = {id_map[k]: v for k, v in features.items() if concepts is None or k in concepts}
+                self.features.update(features)
+            else:
+                self.features.update({k:v for k,v in features.items() if concepts is None or k in concepts})
         if graph is not None:
             for n in graph.nodes():
-                self.add(n if id_map is None else id_map[n])
+                if concepts is None or n in concepts:
+                    self.add(n if id_map is None else id_map[n])
             for s,t,l in graph.edges():
                 if id_map is not None:
                     s, t, l = id_map[s], id_map[t], id_map[l]
-                self.add(s, t, l)
+                if concepts is None or s in concepts:
+                    self.add(s, t, l)
 
     def remove(self, node, target=None, label=None):
         Graph.remove(node, target, label)
