@@ -9,6 +9,7 @@ from structpy.map.index.index import Index
 from GRIDD.data_structures.span import Span
 from GRIDD.data_structures.spanning_node import SpanningNode
 from GRIDD.data_structures.concept_compiler import compile_concepts
+from GRIDD.data_structures.meta_graph import MetaGraph
 CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 from collections import defaultdict, deque
 import json
@@ -31,7 +32,8 @@ class ConceptGraph:
         self._bipredicate_instances = Index()
         self._monopredicates_map = Map()
         self._monopredicate_instances = Index()
-        self.features = feature_cls()
+        self._feature_cls = feature_cls
+        self.metagraph = MetaGraph(feature_cls)
         if concepts is not None:
             for concept in concepts:
                 self.add(concept)
@@ -58,6 +60,10 @@ class ConceptGraph:
             cg.concatenate(predicates)
         if metadata is not None:
             cg.features.update(metadata)
+
+    @property
+    def features(self):
+        return self.metagraph.features
 
     def add(self, concept, predicate_type=None, object=None, predicate_id=None):
         self._bipredicates_graph.add(concept)
@@ -319,7 +325,7 @@ class ConceptGraph:
             self.add(s, t, o, concept_a)
             self._detach(s, t, o, i)
         self.remove(concept_b)
-        self.features.merge(concept_a, concept_b)
+        self.metagraph.merge(concept_a, concept_b)
         return concept_a
 
     def _detach(self, subject, predicate_type, object, predicate_id):
@@ -350,7 +356,7 @@ class ConceptGraph:
                         if not concept_graph.has(predicate_id=concept) \
                            or concept_graph.type(concept) not in predicate_exclusions:
                             self.add(id_map.get(concept))
-        self.features.update(concept_graph.features, id_map)
+        self.metagraph.update(concept_graph.metagraph, concept_graph.metagraph.features, id_map)
         return id_map
 
     def graph_component_siblings(self, source, target):
@@ -379,7 +385,7 @@ class ConceptGraph:
             namespace = self._ids.namespace
         cp = ConceptGraph(namespace=namespace)
         cp.concatenate(self)
-        cp.features = self.features.copy()
+        cp.metagraph = self.metagraph.copy()
         return cp
 
     def save(self, json_filepath=None):
@@ -387,7 +393,7 @@ class ConceptGraph:
             'namespace': self._ids.namespace,
             'next_id': int(self._ids.index),
             'predicates': [],
-            'features': self.features.to_json()
+            'features': self.metagraph.to_json()
         }
         for item in self.predicates():
             item = [e.to_string() if hasattr(e, 'to_string') else str(e) for e in item]
@@ -415,7 +421,7 @@ class ConceptGraph:
                 if o == 'None':
                     o = None
                 self.add(*(id_map.get(x) if x is not None else None for x in (s, t, o ,i)))
-                self.features.from_json(d['features'], id_map=id_map)
+                self.metagraph.from_json(d['features'], id_map=id_map)
         else:
             for item in d['predicates']:
                 s, t, o, i = item
@@ -423,7 +429,7 @@ class ConceptGraph:
                     o = None
                 self.add(s, t, o, i)
             self._ids.index = Counter(d['next_id'])
-            self.features.from_json(d['features'])
+            self.metagraph.from_json(d['features'])
 
     def ugly_print(self, exclusions=None):
         strings = defaultdict(list)

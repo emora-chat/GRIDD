@@ -16,9 +16,13 @@
     ]
   ],
   "features": {
-    "princess": {
-      "salience": 0.75,
-      "cover": 0.25
-    }
+    "features": {
+      "princess": {
+        "salience": 0.75,
+        "cover": 0.25
+      }
+    },
+    "concepts": [],
+    "edges": []
   }
 }

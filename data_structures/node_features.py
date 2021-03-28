@@ -31,20 +31,23 @@ class NodeFeatures(defaultdict):
                         self[node]['span_data'] = features['span_data']
 
     def merge(self, kept, replaced):
-        if 'salience' in self[kept] or 'salience' in self[replaced]:
-            self[kept]['salience'] = max(self[kept].get('salience', 0.0), self[replaced].get('salience', 0.0))
-        if 'cover' in self[kept] or 'cover' in self[replaced]:
-            self[kept]['cover'] = max(self[kept].get('cover', 0.0), self[replaced].get('cover', 0.0))
-        if 'coldstart' in self[kept] or 'coldstart' in self[replaced]:
-            self[kept]['coldstart'] = max(self[kept].get('coldstart', 0.0), self[replaced].get('coldstart', 0.0))
-        if 'span_data' in self[replaced]:
-            if 'span_data' in self[kept]:
-                print('Replaced: ', self[replaced]['span_data'])
-                print('Kept: ', self[kept]['span_data'])
-                raise Exception('Cannot merge two span nodes!')
-            else:
-                self[kept]['span_data'] = self[replaced]['span_data']
-        del self[replaced]
+        if replaced in self:
+            if kept not in self:
+                self[kept] = {}
+            if 'salience' in self[kept] or 'salience' in self[replaced]:
+                self[kept]['salience'] = max(self[kept].get('salience', 0.0), self[replaced].get('salience', 0.0))
+            if 'cover' in self[kept] or 'cover' in self[replaced]:
+                self[kept]['cover'] = max(self[kept].get('cover', 0.0), self[replaced].get('cover', 0.0))
+            if 'coldstart' in self[kept] or 'coldstart' in self[replaced]:
+                self[kept]['coldstart'] = max(self[kept].get('coldstart', 0.0), self[replaced].get('coldstart', 0.0))
+            if 'span_data' in self[replaced]:
+                if 'span_data' in self[kept]:
+                    print('Replaced: ', self[replaced]['span_data'])
+                    print('Kept: ', self[kept]['span_data'])
+                    raise Exception('Cannot merge two span nodes!')
+                else:
+                    self[kept]['span_data'] = self[replaced]['span_data']
+            del self[replaced]
 
     def update_from_ontology(self, elements):
         for e in elements:
