@@ -56,7 +56,7 @@ class MetaGraph(Graph):
 
     def from_json(self, data, id_map=None):
         mg = MetaGraph(self._features_cls)
-        mg.features.update(data['features'])
+        mg.features.from_json(data['features'])
         for c in data['concepts']:
             mg.add(c)
         for s,t,l in data['edges']:
