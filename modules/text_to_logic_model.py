@@ -183,6 +183,7 @@ class ParseToLogic:
                             else:
                                 cg.merge(ewm_node, cg_node, strict_order=True)
                             self._add_unknowns_to_cg(ewm_node, ewm, cg_node, cg)
+                        cg.add(center)
                         cg.features.update(ewm.features, concepts={center})
 
         for aux in auxes: # replaces `time` of head predicate of aux-span with `aux_time`

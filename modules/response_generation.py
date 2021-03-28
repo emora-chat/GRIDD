@@ -1,5 +1,6 @@
 
 from GRIDD.data_structures.concept_graph import ConceptGraph
+from GRIDD.utilities.utilities import spanning_tree_linearized
 from collections import defaultdict
 import re
 
@@ -33,44 +34,6 @@ class ResponseGeneration:
         self.nlg_model = nlg_model
         self.device = device
 
-    def convert(self, main_predicate, supporting_predicates):
-        mx = conversiondict({
-            'emora': 'bot'
-        })
-        cg = ConceptGraph(predicates=[main_predicate]+list(supporting_predicates))
-        strings = defaultdict(str)
-        preds = ['type', 'instantiative', 'referential', 'question']
-        pred = preds[0]
-        for s, t, o, i in cg.predicates(predicate_type=pred):
-            if s not in exclusions and o not in exclusions:
-                if (s == 'user' and o == 'person') or (s == 'emora' and o == 'bot'):
-                    pass
-                elif o is not None:
-                    type_preds = set(cg.predicates(predicate_type='type', object=s))
-                    if len(cg.predicates(predicate_type=s)) == 0 and len(type_preds) == 0:
-                        strings[pred] += '%s / %s ( %s , %s ) ' % (i, mx.get(t), mx.get(s), mx.get(o))
-                else:
-                    raise Exception('Type predicates must have an object!')
-        for pred in preds[1:]:
-            if exclusions is None or pred not in exclusions:
-                for s, t, o, i in cg.predicates(predicate_type=pred):
-                    if s not in exclusions and o not in exclusions:
-                        if o is not None:
-                            strings[pred] += '%s / %s ( %s , %s ) ' % (i, mx.get(t), mx.get(s), mx.get(o))
-                        else:
-                            strings[pred] += '%s / %s ( %s ) ' % (i, mx.get(t), mx.get(s))
-        strings['mono'] = ''
-        strings['bi'] = ''
-        for s, t, o, i in cg.predicates():
-            if (exclusions is None or (
-                    t not in exclusions and s not in exclusions and o not in exclusions)) and t not in preds:
-                if o is not None:
-                    strings['bi'] += '%s / %s ( %s , %s ) ' % (i, mx.get(t), mx.get(s), mx.get(o))
-                else:
-                    strings['mono'] += '%s / %s ( %s ) ' % (i, mx.get(t), mx.get(s))
-        full_string = ' '.join(strings.values())
-        return full_string.strip()
-
     def __call__(self, expanded_response_predicates):
         generations = []
         for selection in expanded_response_predicates:
@@ -82,7 +45,9 @@ class ResponseGeneration:
 
     def generate(self, main_predicate, supporting_predicates):
         if main_predicate is not None:
-            output = self.convert(main_predicate, supporting_predicates)
+            cg = ConceptGraph(predicates=[main_predicate] + list(supporting_predicates))
+            cg.add(main_predicate[3], 'assert')
+            output = spanning_tree_linearized(cg)
             if self.nlg_model is not None:
                 print('Running NLG model...')
                 try:
