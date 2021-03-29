@@ -1,11 +1,11 @@
 
 from GRIDD.data_structures.intelligence_core_spec import IntelligenceCoreSpec
 
-
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.inference_engine import InferenceEngine
 from GRIDD.data_structures.concept_compiler import ConceptCompiler
 from GRIDD.utilities.utilities import uniquify, operators
+from itertools import chain
 
 import GRIDD.data_structures.intelligence_core_operators as intcoreops
 
@@ -41,6 +41,12 @@ class IntelligenceCore:
         ConceptGraph.construct(cg, knowledge, compiler=self.compiler)
         self._loading_options(cg, options)
         self._assertions(cg)
+        rules = cg.rules()
+        for rule, (pre, post, vars) in rules.items():
+            for concept in set(chain(pre.concepts(), post.concepts())):
+                cg.remove(concept)
+            cg.remove(rule)
+        self.inference_engine.add(rules)
         self.knowledge_base.concatenate(cg)
 
     def consider(self, concepts, associations=None, salience=None, **options):

@@ -320,16 +320,34 @@ class ConceptGraph:
         rules = {}
         rule_instances = self.subtypes('implication') - {'implication'}
         for rule in rule_instances:
-            pre = self.features.get(rule, {}).get('precondition', [])
-            post = self.features.get(rule, {}).get('postcondition', [])
+            pre = self.metagraph.targets(rule, 'pre')
+            post = self.metagraph.targets(rule, 'post')
+            vars = set(self.metagraph.targets(rule, 'var'))
             if pre and post:
                 pre = self.subgraph(pre)
                 post = self.subgraph(post)
-                rules[rule] = (pre, post)
+                rules[rule] = (pre, post, vars)
         return rules
 
+    def references(self):
+        references = {}
+        ref_instances = {s for s, t, l in self.metagraph.edges(label='ref')}
+        for ref in ref_instances:
+            pre = self.metagraph.targets(ref, 'ref')
+            vars = set(self.metagraph.targets(ref, 'var'))
+            if pre:
+                pre = self.subgraph(pre)
+                references[ref] = (pre, vars)
+        return references
+
     def subgraph(self, concepts):
-        pass
+        graph = ConceptGraph(namespace=self._ids)
+        for c in concepts:
+            if self.has(predicate_id=c):
+                graph.add(*self.predicate(c))
+            else:
+                graph.add(c)
+        return graph
 
     def id_map(self, other=None):
         if other is None:
