@@ -309,6 +309,21 @@ class ConceptGraph:
                 todo.difference_update(set(memo.keys()))
             return memo
 
+    def rules(self):
+        rules = {}
+        rule_instances = self.subtypes('implication') - {'implication'}
+        for rule in rule_instances:
+            pre = self.features.get(rule, {}).get('precondition', [])
+            post = self.features.get(rule, {}).get('postcondition', [])
+            if pre and post:
+                pre = self.subgraph(pre)
+                post = self.subgraph(post)
+                rules[rule] = (pre, post)
+        return rules
+
+    def subgraph(self, concepts):
+        pass
+
     def id_map(self, other=None):
         if other is None:
             return self._ids

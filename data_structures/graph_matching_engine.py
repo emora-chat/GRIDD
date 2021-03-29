@@ -361,7 +361,7 @@ def row_membership(a, b):
 def display(x, *ids, label=None):
     """
     Print edge assignments in readable form for Nx5 tensor
-    where 5d entries represent (qs, qt, ds, dt, label).
+    where 5d predicates represent (qs, qt, ds, dt, label).
     """
     if DEBUG:
         if label is not None:

@@ -447,6 +447,8 @@ class ConceptGraphSpec:
         assert all_subtypes['fluffy'] == {'fluffy'}
         assert all_subtypes['happy'] == {'happy', 'uh'}
 
+
+
 @specification
 class ConceptGraphFromLogicSpec:
 

@@ -36,12 +36,14 @@ class IntelligenceCore:
         self.inference_engine = inference_engine
         self.operators = operators(intcoreops)
 
-    def know(self, knowledge):
+    def know(self, knowledge, **options):
         cg = ConceptGraph(namespace='_tmp_')
         ConceptGraph.construct(cg, knowledge, compiler=self.compiler)
+        self._loading_options(cg, options)
+        self._assertions(cg)
         self.knowledge_base.concatenate(cg)
 
-    def consider(self, concepts, associations=None, salience=None):
+    def consider(self, concepts, associations=None, salience=None, **options):
         considered = ConceptGraph(concepts, namespace='_tmp_')
         if associations is None:
             considered.features.update({c: {'salience': salience*SENSORY_SALIENCE}
@@ -51,6 +53,8 @@ class IntelligenceCore:
                             for c in associations]) - ASSOCIATION_DECAY
             considered.features.update({c: {'salience': s*salience}
                                         for c in considered.concepts()})
+        self._loading_options(concepts, options)
+        self._assertions(considered)
         self.working_memory.concatenate(considered)
 
     def infer(self, rules=None):
@@ -102,12 +106,8 @@ class IntelligenceCore:
         pass
 
     def update_confidence(self):
-        wm = self.working_memory
-        for c in wm:
-            if 'c' not in wm.features.get(c, {}):
-                # get types (IMPLEMENT IN ConceptGraph)
-                if wm.has(predicate_id=c):
-                    pass
+        # set up confidence graph
+        pass
 
     def update_salience(self):
         return
@@ -131,6 +131,33 @@ class IntelligenceCore:
         s += self.working_memory.pretty_print()
         s += '#'*(60+len(' working memory '))
         return s
+
+    def _assertions(self, cg):
+        """
+        Set confidence of predicates to 1.0 if they don't already
+        have a confidence AND they are not an argument of a NONASSERT.
+        """
+        types = cg.supertypes()
+        predicates = set()
+        not_asserted = set()
+        for s, _, o, pred in cg.predicates():
+            if 'c' not in cg.features.get(pred, {}):
+                predicates.add(pred)
+            if NONASSERT in types[pred]:
+                if cg.has(predicate_id=s):
+                    not_asserted.add(s)
+                if cg.has(predicate_id=o):
+                    not_asserted.add(o)
+        for a in predicates - not_asserted:
+            cg.features.setdefault(a, {})['c'] = 1.0
+        for na in predicates & not_asserted:
+            cg.features.setdefault(na, {})['c'] = 0.0
+
+    def _loading_options(self, cg, options):
+        if 'commonsense' in options:
+            pass
+        elif 'attention_shift' in options:
+            pass
 
 
 if __name__ == '__main__':

@@ -15,7 +15,7 @@ class ConceptCompiler:
     })
     _default_types = frozenset({
         'object', 'entity', 'predicate',
-        'number', 'expression', 'imp_rule', 'type'
+        'number', 'expression', 'implication', 'type'
     })
     _default_predicates = frozenset({
         'type', 'expr', 'predicate'
@@ -30,7 +30,7 @@ class ConceptCompiler:
             string = string + ';'
         parse_tree = self.parser.parse(string)
         self.visitor.visit(parse_tree)
-        return self.visitor.entries, self.visitor.metadatas
+        return self.visitor.entries, self.visitor.links, self.visitor.metadatas
 
     def compile(self, logic_strings):
         """
@@ -47,7 +47,7 @@ class ConceptCompiler:
                 string = string + ';'
             parse_tree = self.parser.parse(string)
             self.visitor.visit(parse_tree)
-        return self.visitor.entries, self.visitor.metadatas
+        return self.visitor.entries, self.visitor.links, self.visitor.metadatas
 
     @property
     def namespace(self): return self.visitor.globals.namespace
@@ -104,10 +104,12 @@ class ConceptVisitor(Visitor_Recursive):
     def __init__(self, instances=None, types=None, predicates=None, namespace='c_'):
         Visitor_Recursive.__init__(self)
         self.entries = []               # quadruples to output
+        self.links = []                 # metagraph links between concepts
         self.rules = set()
         self.lentries = []              # quadruples of block
-        self.metadatas = {}             # concept: json metadata entries
-        self.lmetadatas = {}            # concept: json entries for local block
+        self.llinks = []                # metagraph links within block
+        self.metadatas = {}             # concept: json metadata predicates
+        self.lmetadatas = {}            # concept: json predicates for local block
         self.globals = IdMap(namespace=namespace)   # global id generator
         self.locals = {}                # mapping of local_id : global_id
         self.linstances = set()         # all instances (for rule collection)
@@ -134,11 +136,15 @@ class ConceptVisitor(Visitor_Recursive):
             rid = self.globals.get()
         self.check_double_init([rid], self.instances)
         self.instances.add(rid)
-        self.lentries.append((rid, 'type', 'imp_rule', self.globals.get()))
+        self.lentries.append((rid, 'type', 'implication', self.globals.get()))
         precondition, variables = tree.children[0].data
         postcondition = tree.children[-1].data
-        self.metadatas.setdefault(rid, {}).update(
-            {'precondition': precondition, 'postcondition': postcondition, 'vars': variables})
+        for c in precondition:
+            self.links.append((rid, 'pre', c))
+        for c in postcondition:
+            self.links.append((rid, 'post', c))
+        for c in variables:
+            self.links.append((rid, 'var', c))
 
     def precondition(self, tree):
         preinst = set(chain(*[t.refs for t in tree.iter_subtrees() if hasattr(t, 'refs')]))
@@ -178,7 +184,9 @@ class ConceptVisitor(Visitor_Recursive):
                     raise ValueError('Predicate initialization with non-predicate `{}`'.format(e))
         self.entries.extend(entries)
         self.metadatas.update({self.locals.get(k, k): v for k, v in self.lmetadatas.items()})
+        self.links.extend([(self.locals.get(s, s), l, self.locals.get(t, t)) for s, l, t in self.llinks])
         self.lentries = []
+        self.llinks = []
         self.lmetadatas = {}
         self.locals = {}
         self.plinstances = set()
@@ -288,10 +296,13 @@ class ConceptVisitor(Visitor_Recursive):
         variables = set(chain(*[t.inits for t in ref_tree.iter_subtrees() if hasattr(t, 'inits')]))
         variables = {self.locals.get(str(i), str(i)) for i in variables}
         for i in tree.children[0].children:
+            i = str(i)
             if 'ref' in self.metadatas.get(i, {}):
                 raise ValueError('Reference defined twice for concept {}'.format(i))
-            self.lmetadatas.setdefault(i, {}).setdefault('ref', set()).update(constraints)
-            self.lmetadatas[i].setdefault('vars', set()).update(variables)
+            for c in constraints:
+                self.llinks.append((i, 'ref', c))
+            for c in variables:
+                self.llinks.append((i, 'var', c))
 
     def string_init(self, tree):
         inits = ['"'+s.strip()+'"' for s in tree.children[0].children[0][1:-1].split(',')]
