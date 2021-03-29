@@ -19,7 +19,8 @@ from itertools import chain
 
 class ConceptGraph:
 
-    def __init__(self, predicates=None, concepts=None, namespace=None, metadata=None, feature_cls=GRIDD.globals.FEATURE_CLS):
+    def __init__(self, predicates=None, concepts=None, namespace=None,
+                 metalinks=None, metadata=None, feature_cls=GRIDD.globals.FEATURE_CLS):
         if namespace is not None:
             namespace = namespace
         if isinstance(namespace, IdMap):
@@ -37,27 +38,33 @@ class ConceptGraph:
             for concept in concepts:
                 self.add(concept)
         if predicates is not None:
-            ConceptGraph.construct(self, predicates, metadata)
+            ConceptGraph.construct(self, predicates, metalinks, metadata)
 
     @classmethod
-    def construct(cls, cg, predicates, metadata=None, compiler=None):
+    def construct(cls, cg, predicates, metalinks=None, metadata=None, compiler=None):
         if isinstance(predicates, str) or \
-                (isinstance(predicates, list) and len(predicates) > 0 and isinstance(predicates[0], str)):
+                (isinstance(predicates, list) and len(predicates) > 0
+                 and isinstance(predicates[0], str)):
             if compiler is None:
-                predicates, metadatas = compile_concepts(predicates, namespace='__c__')
+                predicates, metalinks, metadatas = compile_concepts(predicates, namespace='__c__')
             else:
-                predicates, metadatas = compiler.compile(predicates)
+                predicates, metalinks, metadatas = compiler.compile(predicates)
             pred_cg = ConceptGraph(predicates=predicates, namespace='__c__')
             pred_cg.features.update(metadatas)
+            for s, l, t in metalinks:
+                pred_cg.metagraph.add(s, t, l)
             cg.concatenate(pred_cg)
         elif (isinstance(predicates, (list, tuple, set)) and len(predicates) > 0
               and (isinstance(next(iter(predicates)), (list, tuple)))):
             for predicate in predicates:
                 cg.add(*predicate)
-        elif isinstance(predicates, (list, tuple, set, str)) and len(predicates) == 0: # no predicates to add to cg
-            pass
+        elif isinstance(predicates, (list, tuple, set, str)) and len(predicates) == 0:
+            pass # no predicates to add to cg
         else:  # ConceptGraph
             cg.concatenate(predicates)
+        if metalinks is not None:
+            for s, l, t in metalinks:
+                cg.metagraph.add(s, t, l)
         if metadata is not None:
             cg.features.update(metadata)
 
