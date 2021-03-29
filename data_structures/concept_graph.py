@@ -19,7 +19,8 @@ from itertools import chain
 
 class ConceptGraph:
 
-    def __init__(self, predicates=None, concepts=None, namespace=None, metadata=None, feature_cls=GRIDD.globals.FEATURE_CLS):
+    def __init__(self, predicates=None, concepts=None, namespace=None,
+                 metalinks=None, metadata=None, feature_cls=GRIDD.globals.FEATURE_CLS):
         if namespace is not None:
             namespace = namespace
         if isinstance(namespace, IdMap):
@@ -37,27 +38,33 @@ class ConceptGraph:
             for concept in concepts:
                 self.add(concept)
         if predicates is not None:
-            ConceptGraph.construct(self, predicates, metadata)
+            ConceptGraph.construct(self, predicates, metalinks, metadata)
 
     @classmethod
-    def construct(cls, cg, predicates, metadata=None, compiler=None):
+    def construct(cls, cg, predicates, metalinks=None, metadata=None, compiler=None):
         if isinstance(predicates, str) or \
-                (isinstance(predicates, list) and len(predicates) > 0 and isinstance(predicates[0], str)):
+                (isinstance(predicates, list) and len(predicates) > 0
+                 and isinstance(predicates[0], str)):
             if compiler is None:
-                predicates, metadatas = compile_concepts(predicates, namespace='__c__')
+                predicates, metalinks, metadatas = compile_concepts(predicates, namespace='__c__')
             else:
-                predicates, metadatas = compiler.compile(predicates)
+                predicates, metalinks, metadatas = compiler.compile(predicates)
             pred_cg = ConceptGraph(predicates=predicates, namespace='__c__')
             pred_cg.features.update(metadatas)
+            for s, l, t in metalinks:
+                pred_cg.metagraph.add(s, t, l)
             cg.concatenate(pred_cg)
         elif (isinstance(predicates, (list, tuple, set)) and len(predicates) > 0
               and (isinstance(next(iter(predicates)), (list, tuple)))):
             for predicate in predicates:
                 cg.add(*predicate)
-        elif isinstance(predicates, (list, tuple, set, str)) and len(predicates) == 0: # no predicates to add to cg
-            pass
+        elif isinstance(predicates, (list, tuple, set, str)) and len(predicates) == 0:
+            pass # no predicates to add to cg
         else:  # ConceptGraph
             cg.concatenate(predicates)
+        if metalinks is not None:
+            for s, l, t in metalinks:
+                cg.metagraph.add(s, t, l)
         if metadata is not None:
             cg.features.update(metadata)
 
@@ -261,24 +268,68 @@ class ConceptGraph:
         neighbors.update(self.objects(concept, type))
         return neighbors
 
-    def subtypes(self, concept):
-        subtypes = set()
-        for predicate in self.predicates(predicate_type='type', object=concept):
-            subtype = predicate[0]
-            subtypes.add(subtype)
-            subtypes.update(self.subtypes(subtype))
-        return subtypes
+    def subtypes(self, concept=None, memo=None):
+        if memo is None:
+            memo = {}
+        if concept is not None:
+            if concept not in memo:
+                types = {concept}
+                for predicate in self.predicates(predicate_type='type', object=concept):
+                    subtype = predicate[0]
+                    types.update(self.subtypes(subtype, memo))
+                for _, _, _, instance in self.predicates(predicate_type=concept):
+                    types.update(self.subtypes(instance, memo))
+                memo[concept] = types
+            return memo[concept]
+        else:
+            todo = set(self.concepts())
+            while todo:
+                concept = todo.pop()
+                self.subtypes(concept, memo)
+                todo.difference_update(set(memo.keys()))
+            return memo
 
-    # todo - efficiency check
-    #  if multiple paths to same ancestor,
-    #  it will pull ancestor's ancestor-chain multiple times
-    def supertypes(self, concept):
-        types = set()
-        for predicate in self.predicates(subject=concept, predicate_type='type'):
-            supertype = predicate[2]
-            types.add(supertype)
-            types.update(self.supertypes(supertype))
-        return types
+    def supertypes(self, concept=None, memo=None):
+        if memo is None:
+            memo = {}
+        if concept is not None:
+            if concept not in memo:
+                if self.has(predicate_id=concept):
+                    inst = concept
+                    concept = self.type(concept)
+                else:
+                    inst = None
+                types = {concept}
+                for predicate in self.predicates(subject=concept, predicate_type='type'):
+                    supertype = predicate[2]
+                    types.update(self.supertypes(supertype, memo))
+                memo[concept] = types
+                if inst is not None:
+                    memo[inst] = types | {inst}
+                    return memo[inst]
+            return memo[concept]
+        else:
+            todo = set(self.concepts())
+            while todo:
+                concept = todo.pop()
+                self.supertypes(concept, memo)
+                todo.difference_update(set(memo.keys()))
+            return memo
+
+    def rules(self):
+        rules = {}
+        rule_instances = self.subtypes('implication') - {'implication'}
+        for rule in rule_instances:
+            pre = self.features.get(rule, {}).get('precondition', [])
+            post = self.features.get(rule, {}).get('postcondition', [])
+            if pre and post:
+                pre = self.subgraph(pre)
+                post = self.subgraph(post)
+                rules[rule] = (pre, post)
+        return rules
+
+    def subgraph(self, concepts):
+        pass
 
     def id_map(self, other=None):
         if other is None:

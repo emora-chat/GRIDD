@@ -399,6 +399,55 @@ class ConceptGraphSpec:
         assert cg1.graph_component_siblings('bob', 'tom')
         assert cg1.graph_component_siblings('tom', 'bob')
 
+    @specification.init
+    def CONCEPT_GRAPH_TYPED(ConceptGraph):
+        cg = ConceptGraph('''
+        entity = (object)
+        animal = (entity)
+        person = (animal)
+        dog = (animal, pet)
+        pet = (entity)
+        german_shepard = (dog)
+        golden_retriever = (dog);
+        chase = (predicate)
+        emotion = (predicate)
+        pursue = (chase)
+        [happy, excited] = (emotion);
+        fido = german_shepard()
+        fluffy = golden_retriever()
+        user = person();
+        uh=happy(user) excited(fido) excited(fluffy);
+        ''', namespace='cg_')
+        return cg
+
+    def supertypes(cg, concept=None):
+        """
+        Get all supertypes of a concept.
+
+        If no concept is provided, returns a dictionary where
+        keys are concepts and values are the set of their types.
+        """
+        assert cg.supertypes('fluffy') == {'fluffy', 'golden_retriever',
+                              'pet', 'dog', 'entity', 'object', 'animal'}
+        assert cg.supertypes('uh') == {'uh', 'happy', 'emotion', 'predicate'}
+        all_supertypes = cg.supertypes()
+        assert all_supertypes['animal'] == {'animal', 'entity', 'object'}
+        assert all_supertypes['user'] == {'person', 'animal', 'entity', 'object', 'user'}
+
+    def subtypes(cg, concept=None):
+        """
+        Get all subtypes of a concept.
+
+        If no concept is provided, returns a dictionary where
+        keys are concepts and values are the set of their subtypes.
+        """
+        assert cg.subtypes('animal') == {'fluffy', 'fido', 'user', 'dog', 'person',
+                                         'animal', 'golden_retriever', 'german_shepard'}
+        all_subtypes = cg.subtypes()
+        assert all_subtypes['fluffy'] == {'fluffy'}
+        assert all_subtypes['happy'] == {'happy', 'uh'}
+
+
 
 @specification
 class ConceptGraphFromLogicSpec:

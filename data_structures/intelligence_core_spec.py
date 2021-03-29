@@ -95,11 +95,11 @@ class IntelligenceCoreSpec:
         """
         core.pull_expressions()
 
-    def update_confidences(core, feature=None):
+    def update_confidence(core, feature=None):
         """
         Update confidence scores based on confidence links.
         """
-        core.update_confidences()
+        core.update_confidence()
 
     def update_salience(core, feature=None):
         """

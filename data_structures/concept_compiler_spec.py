@@ -7,7 +7,7 @@ class ConceptCompilerSpec:
 
     @specification.init
     def CONCEPT_COMPILER(ConceptCompiler):
-        parser = ConceptCompiler(set(), {'predicate', 'object', 'type', 'expression', 'imp_rule'}, {'predicate', 'type'})
+        parser = ConceptCompiler()
         return parser
 
     def compile(compiler, logic_string):
@@ -71,9 +71,13 @@ class ConceptCompilerSpec:
         ;
         
         '''
-        preds, metas = compiler.compile(test)
+        preds, links, metas = compiler.compile(test)
         # preds, metas = compiler.compile(rules)
         for pred in preds:
             print(pred)
+        print('----')
+        for link in links:
+            print(link)
+        print('----')
         for k, v in metas.items():
             print(k, ':', v)
