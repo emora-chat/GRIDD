@@ -104,27 +104,20 @@ class InferenceEngine:
         sols = {rule_id: (rules[rule_id][0], rules[rule_id][1], sol_ls) for rule_id, sol_ls in sols.items()}
         return sols
 
-    def apply(self, facts=None, *rules, solutions=None):
-        # Todo: refactor signature to mimic IntelligenceCore's apply_inferences
-        if facts is not None:
-            solutions = self.infer(facts, *rules)
+    def apply(self, inferences):
         implications = {}
-        for rid, (pre, post, sols) in solutions.items():
+        for rid, (pre, post, sols) in inferences.items():
             for sol in sols:
-                cg = ConceptGraph(namespace='implied')
-                id_map = cg.id_map(post)
+                solution_swap = ConceptGraph(namespace=post._ids)
+                final_implication = ConceptGraph(namespace='implied')
                 for pred in post.predicates():
                     pred = [sol.get(x, x) for x in pred]
-                    pred = [id_map.get(x) if x is not None else None for x in pred]
-                    cg.add(*pred)
+                    solution_swap.add(*pred)
                 for concept in post.concepts():
-                    concept = id_map.get(sol.get(concept, concept))
-                    cg.add(concept)
-                implications.setdefault(rid, []).append(cg)
-                mapped_features = {new_node: post.features[old_node] for old_node, new_node in id_map.items()}
-                for node, features in mapped_features.items():
-                    if len(features) > 0:
-                        cg.features[node].update(features)
+                    concept = sol.get(concept, concept)
+                    solution_swap.add(concept)
+                final_implication.concatenate(solution_swap)
+                implications.setdefault(rid, []).append((sol, final_implication))
         return implications
 
 if __name__ == '__main__':

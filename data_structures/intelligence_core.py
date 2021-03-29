@@ -65,8 +65,16 @@ class IntelligenceCore:
         return solutions
 
     def apply_inferences(self, inferences=None):
-        cg = self.inference_engine.apply(inferences)
-        # do something
+        """
+        :param inferences: {rule: (pre, post, [solution_dict, ...]),
+                            ...}
+        """
+        if inferences is None:
+            inferences = self.infer()
+        result_dict = self.inference_engine.apply(inferences)
+        for rule, results in result_dict.items():
+            for evidence, implication in results:
+                self.consider(implication, associations=evidence.values())
 
     def merge(self, concept_sets):
         sets = {}
