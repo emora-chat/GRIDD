@@ -114,6 +114,26 @@ class GraphMatchingEngineSpec:
                 {'G': 'tom', 'H': 'mary'}
             ])
 
+    def match_predicate(matcher):
+        data = Graph([
+            ('wm0', 'fido', 's'), ('wm0', 'fluffy', 'o'), ('wm0', 'chase', 't')
+        ], nodes={
+            'wm0': dict(attributes={'wm0', 'chase', 'predicate'}),
+            'fido': dict(attributes={'fido', 'dog', 'animal'}),
+            'fluffy': dict(attributes={'fluffy', 'cat', 'animal'}),
+            'chase': dict(attributes={'chase'})
+        })
+        query = Graph([
+            ('I', 'X', 's'), ('I', 'Y', 'o'), ('I', 'chase', 't'),
+        ], nodes={
+            'I': dict(attributes={'chase'}, var=True),
+            'X': dict(attributes={'animal'}, var=True),
+            'Y': dict(attributes={'animal'}, var=True),
+            'chase': dict(attributes={'chase'})
+        })
+        solutions = matcher.match(data, query)
+        assert solutions_equal(solutions[query], [{'I': 'wm0', 'X': 'fido', 'Y': 'fluffy'}])
+
 def solutions_equal(a, b):
     a_cmp = sorted([sorted(e.items()) for e in a])
     b_cmp = sorted([sorted(e.items()) for e in b])

@@ -15,7 +15,7 @@ class MergeLogical:
         Todo: Should be able to filter pairs to only include new instances.
         """
         all_pairs = []
-        types = working_memory.supertypes()                     # node : set<types>
+        types = working_memory.types()                     # node : set<types>
         new = set(working_memory.concepts())
         while new:
             ref = new.pop()

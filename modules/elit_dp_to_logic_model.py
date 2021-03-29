@@ -107,7 +107,7 @@ class ElitDPToLogic(ParseToLogic):
             expression = span.expression
             pos = pos_tags[token_idx].lower().replace('$','ds')
             pos = POS_MAP.get(pos, pos)
-            if 'pstg' not in cg.supertypes(pos): # todo - optimization by dynamic programming
+            if 'pstg' not in cg.types(pos): # todo - optimization by dynamic programming
                 cg.add(pos, 'type', 'pstg')
             span_node = span.to_string()
             if expression in TENSEFUL_AUX:

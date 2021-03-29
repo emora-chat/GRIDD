@@ -44,11 +44,18 @@ class IntelligenceCoreSpec:
         print()
         print(core.working_memory.pretty_print())
 
+    def pull_types(core):
+        """
+        Pull type hierarchy of all working memory concepts into working memory.
+        """
+        core.pull_types()
+
     def infer(core, rules=None):
         """
         Find solutions to inference rule preconditions.
         """
         inferences = core.infer()
+        return
 
     def apply_inferences(core, inferences=None):
         """
@@ -76,12 +83,6 @@ class IntelligenceCoreSpec:
         """
         core.consider('scared(fluffy)')
         core.logical_merge()
-
-    def pull_types(core):
-        """
-        Pull type hierarchy of all working memory concepts into working memory.
-        """
-        core.pull_types()
 
     def pull_knowledge(core, k=1):
         """

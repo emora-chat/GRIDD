@@ -21,6 +21,9 @@ class IntelligenceCore:
 
     def __init__(self, knowledge_base=None, working_memory=None, inference_engine=None):
         self.compiler = ConceptCompiler(namespace='__c__')
+        if inference_engine is None:
+            inference_engine = InferenceEngine()
+        self.inference_engine = inference_engine
         if isinstance(knowledge_base, ConceptGraph):
             self.knowledge_base = knowledge_base
         else:
@@ -31,9 +34,6 @@ class IntelligenceCore:
         else:
             self.working_memory = ConceptGraph(namespace='wm')
             self.consider(working_memory)
-        if inference_engine is None:
-            inference_engine = InferenceEngine()
-        self.inference_engine = inference_engine
         self.operators = operators(intcoreops)
 
     def know(self, knowledge, **options):
@@ -49,7 +49,7 @@ class IntelligenceCore:
         self.inference_engine.add(rules)
         self.knowledge_base.concatenate(cg)
 
-    def consider(self, concepts, associations=None, salience=None, **options):
+    def consider(self, concepts, associations=None, salience=1, **options):
         considered = ConceptGraph(concepts, namespace='_tmp_')
         if associations is None:
             considered.features.update({c: {'salience': salience*SENSORY_SALIENCE}
@@ -103,7 +103,9 @@ class IntelligenceCore:
         return
 
     def pull_types(self):
-        pass
+        type_predicates = list(self.knowledge_base.type_predicates(self.working_memory.concepts()))
+        for pred in type_predicates:
+            self.working_memory.add(*pred)
 
     def pull_knowledge(self):
         pass
@@ -143,7 +145,7 @@ class IntelligenceCore:
         Set confidence of predicates to 1.0 if they don't already
         have a confidence AND they are not an argument of a NONASSERT.
         """
-        types = cg.supertypes()
+        types = cg.types()
         predicates = set()
         not_asserted = set()
         for s, _, o, pred in cg.predicates():

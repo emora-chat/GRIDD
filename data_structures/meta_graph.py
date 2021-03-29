@@ -33,14 +33,20 @@ class MetaGraph(Graph):
                     self.add(n if id_map is None else id_map[n])
             for s,t,l in graph.edges():
                 if id_map is not None:
-                    s, t, l = id_map[s], id_map[t], id_map[l]
+                    s, t, l = id_map[s], id_map[t], l
                 if concepts is None or s in concepts:
                     self.add(s, t, l)
 
     def remove(self, node, target=None, label=None):
-        Graph.remove(node, target, label)
+        Graph.remove(self, node, target, label)
         if target is None and label is None:
             self.features.remove(node)
+
+    def discard(self, node, target=None, label=None):
+        if Graph.has(self, node, target, label):
+            Graph.remove(self, node, target, label)
+        if target is None and label is None:
+            self.features.discard(node)
 
     def copy(self):
         mg = MetaGraph(self._features_cls)

@@ -34,6 +34,8 @@ class GraphMatchingEngine:
         quants = quants.get('num', torch.empty(0, 2)).to(self.device)
         thresholds = {k: v.to(self.device) for k, v in thresholds.items()}
         compatible_nodes = joined_subset(query_attr, data_attr)
+        display(compatible_nodes, query_ids, data_ids,
+                label='Node compatibility matrix:')
         compatible_nodes = quantitative_filter(compatible_nodes, quants, thresholds)
         query_nodes = torch.arange(0, query_attr.size(0), dtype=torch.long, device=self.device)
         floating_node_filter = ~row_membership(query_nodes.unsqueeze(1),
@@ -161,10 +163,11 @@ def graph_to_entries(*graphs, edge_ids=None, attribute_ids=None, with_disambigua
                       for s, t, l in graph.edges()]
         adjacencies.append(edges)
         for node in graph.nodes():
+            to_append = set(graph.data(node)['attributes']) if 'attributes' in graph.data(node) else set()
             if not ('var' in graph.data(node) and graph.data(node)['var'] is True):
-                attrs.append((get_id(node), attribute_ids[node]))
+                to_append.add(node)
             if 'attributes' in graph.data(node):
-                for attr in graph.data(node)['attributes']:
+                for attr in to_append:
                     attrs.append((get_id(node), attribute_ids[attr]))
     quantities = {k: torch.tensor(v) for k, v in quantities.items()}
     return adjacencies, attrs, node_ids, edge_ids, attribute_ids, quantities

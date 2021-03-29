@@ -46,12 +46,12 @@ class ConceptGraph:
                 (isinstance(predicates, list) and len(predicates) > 0
                  and isinstance(predicates[0], str)):
             if compiler is None:
-                predicates, metalinks, metadatas = compile_concepts(predicates, namespace='__c__')
+                p, ml, md = compile_concepts(predicates, namespace='__c__')
             else:
-                predicates, metalinks, metadatas = compiler.compile(predicates)
-            pred_cg = ConceptGraph(predicates=predicates, namespace='__c__')
-            pred_cg.features.update(metadatas)
-            for s, l, t in metalinks:
+                p, ml, md = compiler.compile(predicates)
+            pred_cg = ConceptGraph(predicates=p, namespace='__c__')
+            pred_cg.features.update(md)
+            for s, l, t in ml:
                 pred_cg.metagraph.add(s, t, l)
             cg.concatenate(pred_cg)
         elif (isinstance(predicates, (list, tuple, set)) and len(predicates) > 0
@@ -129,6 +129,7 @@ class ConceptGraph:
             if self._bipredicates_graph.has(concept):
                 self._bipredicates_graph.remove(concept)
             del self._monopredicates_map[concept]
+            self.metagraph.discard(concept)
 
     def has(self, concept=None, predicate_type=None, object=None, predicate_id=None):
         if predicate_id is not None:                                    # Check predicate by id
@@ -289,10 +290,10 @@ class ConceptGraph:
                 todo.difference_update(set(memo.keys()))
             return memo
 
-    def supertypes(self, concept=None, memo=None):
+    def types(self, concept=None, memo=None):
         if memo is None:
             memo = {}
-        if concept is not None:
+        if concept is not None and not isinstance(concept, (list, set, tuple)):
             if concept not in memo:
                 if self.has(predicate_id=concept):
                     inst = concept
@@ -302,19 +303,55 @@ class ConceptGraph:
                 types = {concept}
                 for predicate in self.predicates(subject=concept, predicate_type='type'):
                     supertype = predicate[2]
-                    types.update(self.supertypes(supertype, memo))
+                    types.update(self.types(supertype, memo))
                 memo[concept] = types
                 if inst is not None:
                     memo[inst] = types | {inst}
                     return memo[inst]
             return memo[concept]
         else:
-            todo = set(self.concepts())
+            if isinstance(concept, (list, set, tuple)):
+                todo = set(concept)
+            else:
+                todo = set(self.concepts())
             while todo:
                 concept = todo.pop()
-                self.supertypes(concept, memo)
+                self.types(concept, memo)
                 todo.difference_update(set(memo.keys()))
             return memo
+
+    def type_predicates(self, concepts=None, memo=None):
+        if memo is None:
+            memo = {}
+        if concepts is not None and not isinstance(concepts, (list, set, tuple)):
+            if concepts not in memo:
+                if self.has(predicate_id=concepts):
+                    inst = concepts
+                    concepts = self.type(concepts)
+                else:
+                    inst = None
+                types = {concepts}
+                for predicate in self.predicates(subject=concepts, predicate_type='type'):
+                    supertype = predicate[2]
+                    supertypes = list(self.type_predicates(supertype, memo))
+                    types.update([o for s,t,o,i in supertypes])
+                    yield from supertypes
+                    yield predicate
+                memo[concepts] = types
+                if inst is not None:
+                    memo[inst] = types | {inst}
+                    return
+            return
+        else:
+            if isinstance(concepts, (list, set, tuple)):
+                todo = set(concepts)
+            else:
+                todo = set(self.concepts())
+            while todo:
+                concepts = todo.pop()
+                yield from self.type_predicates(concepts, memo)
+                todo.difference_update(set(memo.keys()))
+            return
 
     def rules(self):
         rules = {}

@@ -95,7 +95,7 @@ class ParseToLogic:
             references = ewm.objects(expression, 'expr')
             if len(references) == 0:
                 unk_node = ewm.add(ewm.id_map().get())
-                types = ewm.supertypes(span_node)
+                types = ewm.types(span_node)
                 pos_type = 'other'
                 for n in ['verb', 'noun', 'pron', 'adj', 'adv']:
                     if n in types:
