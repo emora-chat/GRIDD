@@ -22,6 +22,8 @@ var<predicate>
 possess<predicate>
 possess[possess]
 
+indirect_obj<predicate>
+
 person<entity>
 person[person]
 bot<entity>

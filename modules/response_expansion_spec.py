@@ -29,6 +29,7 @@ class ResponseExpansionSpec:
         bs=shower(bot)
         sba=be(bs, annoying)
         sbs=but(sbj, sba)
+        sbp=be(sky,pretty)
         '''
         wm = WorkingMemory(KnowledgeBase(), logicstring)
         selections = [
@@ -39,6 +40,7 @@ class ResponseExpansionSpec:
         print('%.3f sec'%(time.time()-s))
         for pred in ['sbb', 'sib', 'bta', 'sbj', 'isb', 'bs', 'sba']:
             assert wm.predicate(pred) in responses[0][1]
+        assert 'sbp' not in responses[0][1]
         for type_pred in wm.predicates('bot', 'type'):
             assert type_pred in responses[0][1]
 
