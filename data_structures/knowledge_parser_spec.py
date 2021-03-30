@@ -76,6 +76,8 @@ class KnowledgeParserSpec:
             -> cat_rule ->
             meow(X)
             ;
+            
+            /* my comment */
 
             /* my comment */
 

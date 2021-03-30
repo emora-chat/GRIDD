@@ -23,9 +23,13 @@ REF_DET = ['the', 'those', 'these', 'that', 'this']
 INST_DET = ['a', 'an']
 QUEST = ['wdt', 'wp', 'wpds', 'wrb']
 INTERJ = ['uh']
-ALLOW_SINGLE = ['dt', 'ex', 'adj', 'noun', 'pron', 'adv', 'interj', 'verb', 'question_word']
+ALLOW_SINGLE = ['rp', 'fw', 'cd', 'dt', 'ex', 'adj', 'noun', 'pron', 'adv', 'interj', 'verb', 'question_word']
 
 TENSEFUL_AUX = ['go', 'goes', 'went', 'do', 'does', 'did', 'be', 'is', 'are', 'were', 'was'] # use lemma instead from elit
+
+ADVCL_INDICATOR = ['adv', 'aux', 'mark', 'case']
+ACL_INDICATOR = ['aux', 'mark', 'case']
+SUBJECTS = ['nsbj', 'csbj']
 
 NODES = ['focus', 'center', 'pstg', 'ref', 'type', 'ltype']
 
@@ -76,8 +80,12 @@ class ElitDPToLogic(ParseToLogic):
             ewm.add(POS_MAP.get(n, n), 'type', 'interj')
         for n in ALLOW_SINGLE:
             ewm.add(POS_MAP.get(n, n), 'type', 'allow_single')
-        ewm.add('nsbj', 'type', 'sbj')
-        ewm.add('csbj', 'type', 'sbj')
+        for n in ADVCL_INDICATOR:
+            ewm.add(POS_MAP.get(n, n), 'type', 'advcl_indicator')
+        for n in ACL_INDICATOR:
+            ewm.add(POS_MAP.get(n, n), 'type', 'acl_indicator')
+        for n in SUBJECTS:
+            ewm.add(POS_MAP.get(n, n), 'type', 'sbj')
         self.convert(*args, ewm)
         return ewm
 
@@ -88,9 +96,9 @@ class ElitDPToLogic(ParseToLogic):
         :param elit_results: dictionary of elit model results
         :param cg: the concept graph being created
         """
-        tokens = elit_results["tok"]
-        pos_tags = elit_results["pos"]
-        dependencies = elit_results["dep"]
+        tokens = elit_results.get("tok", [])
+        pos_tags = elit_results.get("pos", [])
+        dependencies = elit_results.get("dep", [])
         precede_token_idx = [idx for idx, (head_idx, label) in enumerate(dependencies)
                              if label.lower() in PRECEDE_LABELS or pos_tags[idx].lower().replace('$','ds') in QUEST]
         for token_idx in range(len(tokens)):
@@ -135,7 +143,7 @@ class ElitDPToLogic(ParseToLogic):
                     new_source = source.to_string()
                     cg.features[new_source]["span_data"] = source
                     self.spans[original_source_span_idx] = new_source
-                    cg.add(new_source, 'ref', '"%s"'%source.string) # add updated condensed expression
+                    cg.add(new_source, 'ref', '"%s"'%source.expression) # add updated condensed expression
                     cg.merge(new_source, original_source)
                     cg.merge(new_source, original_target)
                 else:

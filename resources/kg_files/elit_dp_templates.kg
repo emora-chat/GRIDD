@@ -239,6 +239,15 @@ focus(p)
 center(X)
 ;
 
+sbj(X/pstg(), Y/pstg())
+obj(X, Z/pstg())
+-> sbj_dobj_nonverb_head ->
+is_type(X)
+p/X(Y,Z)
+focus(p)
+center(X)
+;
+
 
 sbj(X/noun(), Y/pstg())
 det(X, A/dt())
@@ -291,6 +300,8 @@ focus(p)
 center(X)
 cover(U)
 ;
+
+
 
 
 sbj(X/noun(), Y/pstg())
@@ -358,6 +369,24 @@ comp(X, Z/pstg())
 is_type(X)
 p/X(Y,Z)
 time(p, now)
+focus(p)
+center(X)
+;
+
+comp(X/past_tense(), Z/pstg())
+-> missing_outer_sbj_comp_past ->
+is_type(X)
+p/X(object(),Z)
+time(p,past)
+focus(p)
+center(X)
+;
+
+comp(X/present_tense(), Z/pstg())
+-> missing_outer_sbj_comp_present ->
+is_type(X)
+p/X(object(),Z)
+time(p,past)
 focus(p)
 center(X)
 ;
@@ -541,9 +570,9 @@ center(X)
 
 relcl(X/pstg(), Y/pstg())
 -> relative_clause ->
-p/qualifier(X, Y)
+p/property(X, Y)
 focus(p)
-center(Y)
+link(Y)
 ;
 
 
@@ -605,10 +634,18 @@ center(Y)
 
 
 acl(X/pstg(), Y/pstg())
+acl_indicator(Y, Z/pstg())
+-> acl_with_mention ->
+p/Z(X, Y)
+focus(p)
+center(Z)
+;
+
+acl(X/pstg(), Y/pstg())
 -> acl ->
 p/property(X, Y)
 focus(p)
-center(Y)
+link(Y)
 ;
 
 
@@ -631,12 +668,12 @@ advnp(X/pstg(), Y/pstg())
 -> advnp ->
 p/qualifier(X, Y)
 focus(p)
-center(Y)
+link(Y)
 ;
 
 advcl(X/pstg(), Y/pstg())
-adv(Y, Z/pstg())
--> advcl_adv ->
+advcl_indicator(Y, Z/pstg())
+-> advcl_with_mention ->
 is_type(Z)
 p/Z(X,Y)
 focus(p)
@@ -647,14 +684,14 @@ advcl(X/pstg(), Y/pstg())
 -> advcl ->
 p/qualifier(X, Y)
 focus(p)
-center(Y)
+link(Y)
 ;
 
 adv(X/pstg(), Y/pstg())
 -> adv ->
 p/qualifier(X, Y)
 focus(p)
-center(Y)
+link(Y)
 ;
 
 
@@ -669,6 +706,13 @@ center(Y)
 conj(X/pstg(), Y/pstg())
 -> conjunct ->
 p/conjunct(X, Y)
+focus(p)
+link(Y)
+;
+
+cc(X/pstg(), Y/pstg())
+-> cc ->
+p/conjunct_type(X, Y)
 focus(p)
 center(Y)
 ;
@@ -694,7 +738,7 @@ appo(X/pstg(), Y/pstg())
 -> appositive ->
 p/appositive(X, Y)
 focus(p)
-center(Y)
+link(Y)
 ;
 
 

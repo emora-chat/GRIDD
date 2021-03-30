@@ -22,11 +22,16 @@ class MentionBridge:
         mega_mention_graph = ConceptGraph(namespace=namespace)
         for span, mention_graph in mentions.items():
             ((focus,t,o,i,),) = mention_graph.predicates(predicate_type='focus')
-            ((center, t, o, i,),) = mention_graph.predicates(predicate_type='center')
+            center_pred = mention_graph.predicates(predicate_type='center')
+            if len(center_pred) > 0:
+                ((center, t, o, i,),) = center_pred
+            else:
+                ((center, t, o, i,),) = mention_graph.predicates(predicate_type='link')
             mega_mention_graph.concatenate(mention_graph, predicate_exclusions={'focus','center','cover'})
             mega_mention_graph.add(span, 'ref', focus)
-            mega_mention_graph.add(span, 'def', center)
             mega_mention_graph.add(span, 'type', 'span')
+            if not span.startswith('__linking__'):
+                working_memory.add(span, 'def', center)
         mapped_ids = working_memory.concatenate(mega_mention_graph)
         working_memory.features.update_from_mentions(mapped_ids.values(), working_memory)
         working_memory.pull_ontology(mapped_ids.values())

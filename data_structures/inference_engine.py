@@ -19,12 +19,29 @@ class InferenceEngine:
             pre = pre.copy()
             varset = set()
             attributes = {}
+            confidences = {}
+            numbers = {}    # {concept: {comparator: threshold}}
+            comparators = set()
+            thresholds = set()
             types = set()
             for s, t, o, i in pre.predicates(predicate_type='var'):
                 varset.add(s)
                 pre.remove(predicate_id=i)
             pre.remove('var')
-            for c in pre.concepts():
+            for cmp in ['gt', 'lt', 'ge', 'le', 'ne', 'eq']:
+                for s, t, o, i in pre.predicates(predicate_type=cmp):
+                    numbers.setdefault(s, {})[cmp] = t if isinstance(t, int) or isinstance(t, float) else 0
+                    comparators.add(i)
+                    thresholds.add(t)
+            for ci in comparators:
+                pre.remove(predicate_id=ci)
+            for tc in thresholds:
+                pre.remove(tc)
+            for p in pre.predicates():
+                if 'c' in pre.features[p]:
+                    confidence = pre.features[p]['c']
+                    confidences[p] = confidence
+            for c in pre.concepts(): # was missing
                 attributes[c] = pre.supertypes(c)
             for s, t, o, i in pre.predicates(predicate_type='type'):
                 pre.remove(predicate_id=i)
@@ -37,15 +54,33 @@ class InferenceEngine:
                 precondition.data(var)['var'] = True
             for node, types in attributes.items():
                 precondition.data(node)['attributes'] = types
+            for node, conf in confidences.items():
+                if conf > 0:
+                    precondition.data(node)['ge'] = conf
+                elif conf < 0:
+                    precondition.data(node)['le'] = conf
+            for node, threshs in numbers.items():
+                for comp, thresh in threshs.items():
+                    precondition.data(node)[cmp] = thresh
             converted_rules[rid] = precondition
         return converted_rules
 
-    def infer(self, facts, *rules):
+    def infer(self, facts, *rules, cached=True):
+        # Todo: allow inference using only provided rules (not cached rules)
         facts_concept_graph = KnowledgeParser.from_data(facts, namespace='facts_').copy()
         attributes = {}
+        confidences = {}
+        quantities = set()
         types = set()
         for c in facts_concept_graph.concepts():
             attributes[c] = facts_concept_graph.supertypes(c)
+            if isinstance(c, int) or isinstance(c, float):
+                quantities.add(c)
+        for s, t, o, i in facts_concept_graph.predicates():
+            if 'c' in facts_concept_graph.features[i]:
+                confidences[i] = facts_concept_graph.features[i]['c']
+            else:
+                confidences[i] = 0
         for s, t, o, i in facts_concept_graph.predicates(predicate_type='type'):
             facts_concept_graph.remove(predicate_id=i)
             types.add(o)
@@ -56,6 +91,10 @@ class InferenceEngine:
         facts_graph = facts_concept_graph.to_graph()
         for node, types in attributes.items():
             facts_graph.data(node)['attributes'] = types
+        for node, conf in confidences.items():
+            facts_graph.data(node)['num'] = conf
+        for node in quantities:
+            facts_graph.data(node)['num'] = node
         dynamic_rules = KnowledgeParser.rules(*rules)
         rules = Bimap({**self.rules, **dynamic_rules})
         dynamic_converted_rules = self._convert_rules(dynamic_rules)
@@ -66,6 +105,7 @@ class InferenceEngine:
         return sols
 
     def apply(self, facts=None, *rules, solutions=None):
+        # Todo: refactor signature to mimic IntelligenceCore's apply_inferences
         if facts is not None:
             solutions = self.infer(facts, *rules)
         implications = {}

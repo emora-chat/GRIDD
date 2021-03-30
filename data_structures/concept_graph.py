@@ -1,5 +1,5 @@
 
-from GRIDD.data_structures.concept_graph_spec import ConceptGraphSpec
+from GRIDD.data_structures.concept_graph_spec import ConceptGraphSpec, ConceptGraphFromLogicSpec
 
 from structpy.graph.directed.labeled.multilabeled_parallel_digraph_networkx import MultiLabeledParallelDigraphNX
 from structpy.graph.directed.labeled.data.multilabeled_digraph_data import MultiLabeledDigraphDataNX as Graph
@@ -8,15 +8,18 @@ from GRIDD.data_structures.id_map import IdMap
 from structpy.map.index.index import Index
 from GRIDD.data_structures.span import Span
 from GRIDD.data_structures.spanning_node import SpanningNode
+from GRIDD.data_structures.concept_compiler import compile_concepts
 CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 from collections import defaultdict, deque
-import json, copy
-from GRIDD.utilities import Counter, collect
+import json
+from GRIDD.utilities import Counter
 import GRIDD.globals
+from itertools import chain
+
 
 class ConceptGraph:
 
-    def __init__(self, predicates=None, concepts=None, namespace=None, feature_cls=GRIDD.globals.FEATURE_CLS):
+    def __init__(self, predicates=None, concepts=None, namespace=None, metadata=None, feature_cls=GRIDD.globals.FEATURE_CLS):
         if namespace is not None:
             namespace = namespace
         if isinstance(namespace, IdMap):
@@ -28,13 +31,33 @@ class ConceptGraph:
         self._bipredicate_instances = Index()
         self._monopredicates_map = Map()
         self._monopredicate_instances = Index()
+        self.features = feature_cls()
         if concepts is not None:
             for concept in concepts:
                 self.add(concept)
         if predicates is not None:
+            ConceptGraph.construct(self, predicates, metadata)
+
+    @classmethod
+    def construct(cls, cg, predicates, metadata=None, compiler=None):
+        if isinstance(predicates, str) or \
+                (isinstance(predicates, list) and len(predicates) > 0 and isinstance(predicates[0], str)):
+            if compiler is None:
+                predicates, metadatas = compile_concepts(predicates, namespace='__c__')
+            else:
+                predicates, metadatas = compiler.compile(predicates)
+            pred_cg = ConceptGraph(predicates=predicates, namespace='__c__')
+            pred_cg.features.update(metadatas)
+            cg.concatenate(pred_cg)
+        elif (isinstance(predicates, list) or isinstance(predicates, tuple)) \
+                and len(predicates) > 0 \
+                and (isinstance(predicates[0], list) or (isinstance(predicates[0], tuple))):
             for predicate in predicates:
-                self.add(*predicate)
-        self.features = feature_cls()
+                cg.add(*predicate)
+        else:  # ConceptGraph
+            cg.concatenate(predicates)
+        if metadata is not None:
+            cg.features.update(metadata)
 
     def add(self, concept, predicate_type=None, object=None, predicate_id=None):
         self._bipredicates_graph.add(concept)
@@ -43,7 +66,7 @@ class ConceptGraph:
         elif object is None:        # Add monopredicate
             if predicate_id is None:
                 predicate_id = self._ids.get()
-            elif self.has(predicate_id=predicate_id): #todo - check signature
+            elif self.has(predicate_id=predicate_id):
                 if self.predicate(predicate_id) != (concept, predicate_type, object, predicate_id):
                     raise ValueError("Predicate id '%s' already exists!" % str(predicate_id))
                 else:
@@ -56,7 +79,7 @@ class ConceptGraph:
         else:                       # Add bipredicate
             if predicate_id is None:
                 predicate_id = self._ids.get()
-            elif self.has(predicate_id=predicate_id): #todo - check signature
+            elif self.has(predicate_id=predicate_id):
                 if self.predicate(predicate_id) != (concept, predicate_type, object, predicate_id):
                     raise ValueError("Predicate id '%s' already exists!" % str(predicate_id))
                 else:
@@ -440,158 +463,110 @@ class ConceptGraph:
         full_string = '\n'.join([''.join(value) for value in strings.values()])
         return full_string.strip()
 
-    def pretty_print(self, exclusions=None):
-        name_counter = defaultdict(int)
-        id_map = {}
-        visited = set()
-        type_string = ""
-        bi_string = ""
-        mono_string = ""
-        for sig in self.predicates():
-            type_string, bi_string, mono_string = self._get_representation(sig, id_map, name_counter, visited,
-                                                                           type_string, bi_string, mono_string,
-                                                                           exclusions)
-        full_string = type_string + '\n' + mono_string + '\n' + bi_string
-        return full_string.strip()
-
-    def _get_representation(self, predicate_signature, id_map, name_counter, visited,
-                            type_string, bi_string, mono_string, exclusions):
-        if predicate_signature not in visited:
-            s, t, o, i = predicate_signature
-            if exclusions is None or (t not in exclusions and s not in exclusions and o not in exclusions):
-                id_map[t] = t
-                concepts = [s, o] if o is not None else [s]
-                for concept in concepts:
-                    if concept not in id_map:
-                        if isinstance(concept, str) and concept.startswith(self.id_map().namespace):
-                            if self.has(predicate_id=concept):
-                                type_string, bi_string, mono_string = self._get_representation(self.predicate(concept),
-                                                                                               id_map, name_counter,
-                                                                                               visited,
-                                                                                               type_string, bi_string,
-                                                                                               mono_string,
-                                                                                               exclusions)
-                            else:
-                                types = self.predicates(concept, 'type')
-                                if len(types) > 0:
-                                    ctype = types[0][2]
-                                    name_counter[ctype] += 1
-                                    id_map[concept] = '%s_%d' % (ctype, name_counter[ctype])
-                                else:
-                                    id_map[concept] = concept
-                        elif isinstance(concept, Span):
-                            id_map[concept] = concept.string
-                        else:
-                            id_map[concept] = concept
-                if o is not None:
-                    pname = id_map[s].replace('_', '')[0] + id_map[t].replace('_', '')[0] + id_map[o].replace('_', '')[
-                        0]
-                else:
-                    pname = id_map[s].replace('_', '')[0] + id_map[t].replace('_', '')[0]
-                name_counter[pname] += 1
-                if name_counter[pname] == 1:
-                    id_map[i] = pname
-                else:
-                    id_map[i] = '%s_%d' % (pname, name_counter[pname])
-                if o is not None:
-                    to_add = '%s/%s(%s,%s)\n' % (id_map[i], id_map[t], id_map[s], id_map[o])
-                    if id_map[t] == 'type':
-                        type_string += to_add
-                    else:
-                        bi_string += to_add
-                else:
-                    mono_string += '%s/%s(%s)\n' % (id_map[i], id_map[t], id_map[s])
-                visited.add(predicate_signature)
-        return type_string, bi_string, mono_string
-
     def to_spanning_tree(self):
-        exclude = {'expr', 'def', 'ref', 'assert', 'type'}
-        root = SpanningNode('__root__')
-        ((assertion_node,_,_,_), ) = self.predicates(predicate_type='assert')
-        frontier = [(root, assertion_node, None, 'link')]
+        exclude = {'expr', 'def', 'ref', 'assert', 'type', 'link', 'is_type'}
+        roots = []
+        # main root is the asserted predicate
+        ((assertion_node, _, _, _),) = self.predicates(predicate_type='assert')
+        # get all span focus nodes as additional potential roots
+        ref_preds = self.predicates(predicate_type='ref')
+        additional_roots = [focal_node for _,_,focal_node,_ in ref_preds if focal_node != assertion_node]
         visited = set()
-        while len(frontier) > 0:
-            parent, id, node_type, label_type = frontier.pop(0)
-            if id not in visited:
-                visited.add(id)
-                if self.has(predicate_id=id):
-                    s, t, o, _ = self.predicate(id)
-                    if node_type == '_rev_': tmp = o; o = s; s = tmp;
-                    pred_node = SpanningNode(id, t, node_type)
-                    if parent.node_id != s:
-                        frontier.append((pred_node, s, None, 'arg0'))
-                    if o is not None:
-                        frontier.append((pred_node, o, None, 'arg1'))
-                else:
-                    pred_node = SpanningNode(id, None, node_type)
-                parent.children[label_type].append(pred_node)
-                for pred in self.predicates(id):
-                    if pred[1] not in exclude and pred[3] not in {id, parent.node_id}: frontier.append((pred_node, pred[3], None, 'link'))
-                for pred in self.predicates(object=id):
-                    if pred[1] not in exclude and pred[3] not in {id, parent.node_id}: frontier.append((pred_node, pred[3], '_rev_', 'link'))
-            else: # still need to attach node to parent if subj or obj, but do not need to process links or node's children
-                if label_type != 'link':
-                    if self.has(predicate_id=id):
-                        s, t, o, _ = self.predicate(id)
-                        pred_node = SpanningNode(id, t, node_type)
-                    else:
-                        pred_node = SpanningNode(id, None, node_type)
-                    parent.children[label_type].append(pred_node)
-        return root
+        for node in [assertion_node] + additional_roots:
+            if node not in visited:
+                root = SpanningNode('__root__', None)
+                roots.append(root)
+                frontier = [(root, node, None, 'link')]
+                while len(frontier) > 0:
+                    parent, id, node_type, label_type = frontier.pop(0)
+                    if id not in visited:
+                        visited.add(id)
+                        if self.has(predicate_id=id):
+                            s, t, o, _ = self.predicate(id)
+                            if node_type == '_rev_': tmp = o; o = s; s = tmp;
+                            pred_node = SpanningNode(id, parent, t, node_type)
+                            if parent.node_id != s:
+                                frontier.append((pred_node, s, None, 'arg0'))
+                            if o is not None:
+                                frontier.append((pred_node, o, None, 'arg1'))
+                        else:
+                            pred_node = SpanningNode(id, parent, None, node_type)
+                        parent.children[label_type].append(pred_node)
+                        if parent.pred_type != 'time': # do not get descendants of objects of `time` predicates
+                            for pred in self.predicates(id):
+                                if pred[1] not in exclude and pred[3] not in {id, parent.node_id}: frontier.append((pred_node, pred[3], None, 'link'))
+                            for pred in self.predicates(object=id):
+                                if pred[1] not in exclude and pred[3] not in {id, parent.node_id}: frontier.append((pred_node, pred[3], '_rev_', 'link'))
+                    else: # still need to attach node to parent if subj or obj of non-reversed predicate, but do not need to process links or node's children
+                        if label_type != 'link' and parent.type != '_rev_':
+                            if self.has(predicate_id=id):
+                                s, t, o, _ = self.predicate(id)
+                                pred_node = SpanningNode(id, parent, t, node_type)
+                            else:
+                                pred_node = SpanningNode(id, parent, None, node_type)
+                            parent.children[label_type].append(pred_node)
+                        elif parent.type == '_rev_': # remove the reverse predicate from spanning tree since it has already been handled
+                            parent.parent.children['link'].remove(parent)
+        return roots
 
     def print_spanning_tree(self, root=None, tab=1):
         s = ""
         if root is None:
-            root = self.to_spanning_tree().children['link'][0]
-            string = root.pred_type if root.pred_type is not None else root.node_id
-            expression = self._get_expr(string)
-            s += expression + '\n'
-        for label, nodes in root.children.items():
-            if label in {'arg0', 'arg1'}:
-                node = nodes[0]
-                string = node.pred_type if node.pred_type is not None else node.node_id
-                prefix = node.type + ' ' if node.type is not None else ''
-                expression = self._get_expr(string)
-                s += '%s%s%s: %s\n'%('\t'*tab, prefix, label, expression)
-                s += self.print_spanning_tree(node, tab+1)
-            elif label == 'link':
-                for node in nodes:
-                    string = node.pred_type if node.pred_type is not None else node.node_id
+            roots = self.to_spanning_tree()
+            for r in roots:
+                root = r.children['link'][0]
+                expression = self._get_expr(root)
+                s += expression + '\n'
+                s += self.print_spanning_tree(root, tab)
+        else:
+            for label, nodes in root.children.items():
+                if label in {'arg0', 'arg1'}:
+                    node = nodes[0]
                     prefix = node.type + ' ' if node.type is not None else ''
-                    expression = self._get_expr(string)
-                    if len(node.children) > 0:
-                        s += '%s%s%s:\n'%('\t'*tab, prefix, expression)
-                        s += self.print_spanning_tree(node, tab+1)
-                    else:
-                        s += '%s%s%s\n' % ('\t' * tab, prefix, expression)
+                    expression = self._get_expr(node)
+                    s += '%s%s%s: %s\n'%('\t'*tab, prefix, label, expression)
+                    s += self.print_spanning_tree(node, tab+1)
+                elif label == 'link':
+                    for node in nodes:
+                        prefix = node.type + ' ' if node.type is not None else ''
+                        expression = self._get_expr(node)
+                        if len(node.children) > 0:
+                            s += '%s%s%s:\n'%('\t'*tab, prefix, expression)
+                            s += self.print_spanning_tree(node, tab+1)
+                        else:
+                            s += '%s%s%s\n' % ('\t' * tab, prefix, expression)
         return s
 
-    def _get_expr(self, concept):
+    def _get_expr(self, node):
         # Return label of concept as one of the following, in priority order:
         #   (1) Definitions
         #   (2) Expressions
         #   (3) Types
         #   (4) Concept
         # SPECIAL CASES: return `user` or `bot` as label of those concepts
-        label = ''
+        if isinstance(node, str):
+            concept = node
+        else:
+            concept = node.pred_type if node.pred_type is not None else node.node_id
+        label = set()
         if concept in {'user','emora'}:
-            label += concept
+            label.add(concept)
         else:
             definitions = self.subjects(concept, 'def')
             if len(definitions) > 0:
                 for def_expression in definitions:
                     expression = self.features[def_expression]['span_data'].expression
-                    label += expression + ' '
+                    label.add(expression)
             else:
                 for expression in self.subjects(concept, 'expr'):
-                    label += expression.replace('"', '') + ' '
+                    label.add(expression.replace('"', ''))
                     break
             if len(label) == 0:
                 for _, _, supertype, predinst in self.predicates(concept, 'type'):
-                    label += self._get_expr(supertype) + ' '
+                    label.add(self._get_expr(supertype))
             if len(label) == 0:
                 return concept.strip()
-        return label.strip()
+        return ' '.join(label)
 
     def __str__(self):
         return 'CG<%s>' % (str(id(self))[-5:])
@@ -599,9 +574,89 @@ class ConceptGraph:
     def __repr__(self):
         return str(self)
 
+    def _was_autonamed(self, concept):
+        return self._ids.namespace is not None and concept.startswith(self._ids.namespace)
+
+    def pretty_print(self, exclusions=None, typeinfo=False):
+        display = deque()
+        todo = set(self.concepts())
+        for e in list(todo):
+            if exclusions is not None and self.has(predicate_id=e) and self.predicate(e)[1] in exclusions:
+                todo.discard(e)
+
+        class counter(dict):
+            def setdefault(self, key, default):
+                r = dict.setdefault(self, key, default)
+                self[key] += 1
+                return r
+
+        ids = {}
+        nums = counter()
+
+        def cstr(c):
+            string = ''
+            todo.discard(c)
+            if c in ids:
+                return ids[c]
+            if self.has(predicate_id=c):
+                s, t, o, i = self.predicate(c)
+                ids.setdefault(c, '$' + c + '$' if not self._was_autonamed(c) \
+                    else '$' + t + '_' + str(nums.setdefault(t, 0)) + '$')
+                string += '#' + ids[c] + ('/' if self._was_autonamed(c) else '=')
+                todo.discard(t)
+                string += t + '('
+                string += cstr(s)
+                if o is not None:
+                    string += ', ' + cstr(o)
+                string += ')'
+            else:
+                types = list(self.objects(c, 'type'))
+                if len(types) > 0:
+                    t = types[0]
+                    ids.setdefault(c, '$' + c + '$' if not self._was_autonamed(c) \
+                        else '$' + t + '_' + str(nums.setdefault(t, 0)) + '$')
+                    string += '#' + ids[c] + ('/' if self._was_autonamed(c) else '=') + types[0] + '()'
+                    todo.discard(types[0])
+                else:
+                    string += c
+            return string
+
+        roots = set(todo) - set(chain(*[(s, o) for s, _, o, _ in self.predicates()]))
+        roots.difference_update(self.predicates(predicate_type='type'))
+        for root in [root for root in roots if self.has(predicate_id=root) and self.type(root) != 'type']:
+            display.append(cstr(root))
+        preds = [self.predicate(c) for c in todo if self.has(predicate_id=c)]
+        type_preds = [(s, t, o, i) for s, t, o, i in preds if t == 'type']
+        todo -= set(chain(*type_preds))
+        while todo:
+            predstodo = [t for t in todo if self.has(predicate_id=t)]
+            if predstodo:
+                left = predstodo[0]
+            else:
+                left = todo.pop()
+            todo.discard(left)
+        if typeinfo:
+            types = {}
+            for s, t, o, i in type_preds:
+                types.setdefault(s, set()).add(o)
+            for c, v in types.items():
+                c = ids.get(c, c)
+                v = [ids.get(x, x) for x in v]
+                display.appendleft(c + ':  ' + ', '.join(v))
+
+        returner = '\n'.join(display)
+        for i in ids.values():
+            if returner.count(i) > 1:
+                returner = returner.replace('#'+i, i[1:-1])
+                returner = returner.replace(i, i[1:-1])
+            else:
+                returner = returner.replace('#'+i+'/', '')
+        returner = returner.replace('#', '').replace('$', '')
+        return returner
+
 if __name__ == '__main__':
     print(ConceptGraphSpec.verify(ConceptGraph))
-
+    # print(ConceptGraphFromLogicSpec.verify(ConceptGraph))
 
 
 
