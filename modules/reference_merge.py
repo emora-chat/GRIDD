@@ -21,7 +21,9 @@ class ReferenceMerge:
 
     def __call__(self, concept_graph):
         compatible_pairs = []
-        references = concept_graph.features.get_reference_links()
+        references = {}
+        for s, t, _ in concept_graph.edges(label='refl'):
+            references.setdefault(s, set()).add(t)
         if len(references) > 0:
             reference_preconditions = self._get_reference_preconditions(references, concept_graph)
             match_dict = self.inference_engine.infer(concept_graph, *[(precondition, None, reference_node)
