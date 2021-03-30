@@ -9,9 +9,9 @@ class MetaGraph(Graph):
         self.features = feature_cls()
         self.concept_graph = cg
         if supports is None:
-            self.supports = {}
+            self._supports = {}
         else:
-            self.supports = supports
+            self._supports = supports
 
     def merge(self, concept_a, concept_b):
         out_edges = self.out_edges(concept_b)
@@ -65,8 +65,8 @@ class MetaGraph(Graph):
                 if not self.concept_graph.has(target):
                     self.remove(target)
 
-    def copy(self):
-        mg = MetaGraph(self._features_cls)
+    def copy(self, cg):
+        mg = MetaGraph(self._features_cls, cg)
         mg.features = self.features.copy()
         for n in self.nodes():
             mg.add(n)

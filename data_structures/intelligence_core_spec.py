@@ -63,6 +63,13 @@ class IntelligenceCoreSpec:
         core.apply_inferences(core.infer())
         return
 
+    def update_confidence(core, feature=None):
+        """
+        Update confidence scores based on confidence links.
+        """
+        core.update_confidence()
+        return
+
     def merge(core, concept_sets):
         """
         Merge together each group of concepts in working memory.
@@ -95,12 +102,6 @@ class IntelligenceCoreSpec:
         Pull all expressions of working memory concepts.
         """
         core.pull_expressions()
-
-    def update_confidence(core, feature=None):
-        """
-        Update confidence scores based on confidence links.
-        """
-        core.update_confidence()
 
     def update_salience(core, feature=None):
         """

@@ -91,6 +91,10 @@ class IntelligenceCore:
                     if self.working_memory.has(predicate_id=n):
                         self.working_memory.metagraph.add(and_node, SUFFICIENT, n)
 
+    def update_confidence(self):
+        # set up confidence graph
+        pass
+
     def merge(self, concept_sets):
         sets = {}
         for cs in concept_sets:
@@ -128,10 +132,6 @@ class IntelligenceCore:
         pass
 
     def pull_expressions(self):
-        pass
-
-    def update_confidence(self):
-        # set up confidence graph
         pass
 
     def update_salience(self):

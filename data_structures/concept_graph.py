@@ -20,7 +20,8 @@ from itertools import chain
 class ConceptGraph:
 
     def __init__(self, predicates=None, concepts=None, namespace=None,
-                 metalinks=None, metadata=None, feature_cls=GRIDD.globals.FEATURE_CLS):
+                 metalinks=None, metadata=None, supports=None,
+                 feature_cls=GRIDD.globals.FEATURE_CLS):
         if namespace is not None:
             namespace = namespace
         if isinstance(namespace, IdMap):
@@ -33,7 +34,7 @@ class ConceptGraph:
         self._monopredicates_map = Map()
         self._monopredicate_instances = Index()
         self._feature_cls = feature_cls
-        self.metagraph = MetaGraph(feature_cls)
+        self.metagraph = MetaGraph(feature_cls, self, supports)
         if concepts is not None:
             for concept in concepts:
                 self.add(concept)
@@ -506,7 +507,7 @@ class ConceptGraph:
             namespace = self._ids.namespace
         cp = ConceptGraph(namespace=namespace)
         cp.concatenate(self)
-        cp.metagraph = self.metagraph.copy()
+        cp.metagraph = self.metagraph.copy(cp)
         return cp
 
     def save(self, json_filepath=None):
