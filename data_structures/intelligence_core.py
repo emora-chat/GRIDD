@@ -93,6 +93,7 @@ class IntelligenceCore:
 
     def update_confidence(self):
         # set up confidence graph
+
         pass
 
     def merge(self, concept_sets):
