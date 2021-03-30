@@ -28,6 +28,7 @@ class MetaGraph(Graph):
         if self.has(concept_b):
             Graph.remove(self, concept_b)
         self.features.merge(concept_a, concept_b)
+        # todo - remove refl links from concept_b if concept_a is not a reference (reference resolved)
 
     def update(self, graph=None, features=None, id_map=None, concepts=None):
         if features is not None:

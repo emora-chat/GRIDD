@@ -92,18 +92,6 @@ class NodeFeatures(defaultdict):
         if node in self:
             del self[node]
 
-    def get_reference_links(self, element=None):
-        if element is not None:
-            if element in self:
-                return self[element].get('refl', None)
-            return None
-        else:
-            references = {}
-            for item, features in self.items():
-                if 'refl' in features:
-                    references[item] = features['refl']
-            return references
-
     def copy(self):
         return NodeFeatures(self)
 
