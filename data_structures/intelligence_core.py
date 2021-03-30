@@ -8,8 +8,7 @@ from GRIDD.utilities.utilities import uniquify, operators
 from itertools import chain
 from functools import reduce
 from GRIDD.data_structures.update_graph import UpdateGraph
-from GRIDD.globals import SENSORY_SALIENCE, NECESSARY, SUFFICIENT, \
-                            ASSOCIATION_DECAY, CONFIDENCE, NONASSERT
+from GRIDD.globals import *
 
 import GRIDD.data_structures.intelligence_core_operators as intcoreops
 
@@ -29,7 +28,7 @@ class IntelligenceCore:
         if isinstance(working_memory, ConceptGraph):
             self.working_memory = working_memory
         else:
-            self.working_memory = ConceptGraph(namespace='wm', supports={NECESSARY: False})
+            self.working_memory = ConceptGraph(namespace='wm', supports={AND_LINK: False})
             self.accept(working_memory)
         self.operators = operators(intcoreops)
 
@@ -58,7 +57,7 @@ class IntelligenceCore:
                                         for c in considered.concepts()})
         self._loading_options(concepts, options)
         mapping = self.working_memory.concatenate(considered)
-        return mapping.values()
+        return mapping
 
     def accept(self, concepts, associations=None, salience=1, **options):
         considered = ConceptGraph(concepts, namespace='_tmp_')
@@ -87,7 +86,6 @@ class IntelligenceCore:
         :param inferences: {rule: (pre, post, [solution_dict, ...]),
                             ...}
         """
-        # todo - types are absolute knowledge (either you have it or you don't)
         # todo - think about type-based evidence
         #  (type predicates not found in solutions explicitly right now)
         if inferences is None:
@@ -95,37 +93,48 @@ class IntelligenceCore:
         result_dict = self.inference_engine.apply(inferences)
         for rule, results in result_dict.items():
             for evidence, implication in results:
+                implication_strengths = {}
+                for n in implication.concepts():
+                    if implication.has(predicate_id=n):
+                        implication_strengths[n] = implication.features.get(n, {}).get(CONFIDENCE, 1)
+                        if n in implication.features and CONFIDENCE in implication.features[n]:
+                            del implication.features[n][CONFIDENCE]
                 implied_nodes = self.consider(implication)
                 and_node = self.working_memory.id_map().get()
-                for e in evidence.values():
-                    if self.working_memory.has(predicate_id=e):
-                        self.working_memory.metagraph.add(e, and_node, NECESSARY)
-                for n in implied_nodes:
-                    if self.working_memory.has(predicate_id=n):
-                        self.working_memory.metagraph.add(and_node, n, SUFFICIENT)
+                for pre_node, evidence_node in evidence.items():
+                    if self.working_memory.has(predicate_id=evidence_node):
+                        strength = inferences[rule][0].features.get(pre_node, {}).get(CONFIDENCE, 1)
+                        self.working_memory.metagraph.add(evidence_node, and_node, (AND_LINK, strength))
+                for imp_node, strength in implication_strengths.items():
+                    self.working_memory.metagraph.add(and_node, implied_nodes[imp_node], (OR_LINK, strength))
 
     def update_confidence(self):
-        # todo - distinguish between sensory assertions and derived confidence;
-        #  set self-loops on sensory assertions
         mg = self.working_memory.metagraph
-        necessaries = mg.edges(label=NECESSARY)
-        sufficients = mg.edges(label=SUFFICIENT)
-        def and_fn(sources):
-            sources, _ = list(zip(*sources))
-            return reduce(lambda a, b: a*b, sources)
-        def or_fn(sources):
-            sources, _ = list(zip(*sources))
-            return reduce(lambda a, b: a+b, sources) - reduce(lambda a, b: a*b, sources)
+        and_links = [edge for edge in mg.edges() if isinstance(edge[2], tuple) and AND_LINK == edge[2][0]]
+        or_links = [edge for edge in mg.edges() if isinstance(edge[2], tuple) and OR_LINK == edge[2][0]]
+        def and_fn(node, sources):
+            product = 1
+            for value, (label, weight) in sources:
+                product *= weight * value
+            return product
+        def or_fn(node, sources):
+            sum = node
+            product = node
+            for value, (label, weight) in sources:
+                sum += value * weight
+                product *= value * weight
+            return sum - product
         update_graph = UpdateGraph(
-            edges=[*necessaries, *sufficients],
-            nodes={c: mg.features.get(c, {}).get(CONFIDENCE, 0) for c in mg.nodes()},
+            edges=[*and_links, *or_links],
+            nodes={c: mg.features.get(c, {}).get(CONFIDENCE, 0) if mg.features.get(c, {}).get(BASE, False) else 0
+                   for c in mg.nodes()},
             updaters={
-                **{n: and_fn for _,n,_ in necessaries},
-                **{n: or_fn for _,n,_ in sufficients}},
+                **{n: and_fn for _,n,_ in and_links},
+                **{n: or_fn for _,n,_ in or_links}},
             default=0,
             set_fn=(lambda n, v: mg.features.setdefault(n, {}).__setitem__(CONFIDENCE, v))
         )
-        update_graph.update(push=True)
+        update_graph.update(iteration=10, push=True)
 
     def merge(self, concept_sets):
         sets = {}
@@ -207,6 +216,7 @@ class IntelligenceCore:
                     not_asserted.add(o)
         for a in predicates - not_asserted:
             cg.features.setdefault(a, {})[CONFIDENCE] = 1.0
+            cg.features[a][BASE] = True
         for na in predicates & not_asserted:
             cg.features.setdefault(na, {})[CONFIDENCE] = 0.0
 

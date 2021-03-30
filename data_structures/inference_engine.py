@@ -105,16 +105,20 @@ class InferenceEngine:
         implications = {}
         for rid, (pre, post, sols) in inferences.items():
             for sol in sols:
-                solution_swap = ConceptGraph(namespace=post._ids)
-                final_implication = ConceptGraph(namespace='implied')
+                implied = ConceptGraph(namespace=post._ids)
                 for pred in post.predicates():
                     pred = [sol.get(x, x) for x in pred]
-                    solution_swap.add(*pred)
+                    implied.add(*pred)
                 for concept in post.concepts():
                     concept = sol.get(concept, concept)
-                    solution_swap.add(concept)
-                final_implication.concatenate(solution_swap)
-                implications.setdefault(rid, []).append((sol, final_implication))
+                    implied.add(concept)
+                for s, t, l in post.metagraph.edges():
+                    implied.metagraph.add(sol.get(s, s), sol.get(t, t), l)
+                for s in post.metagraph.nodes():
+                    implied.metagraph.add(sol.get(s, s))
+                features = {sol.get(k, k): v for k, v in post.features.items()}
+                implied.features.update(features)
+                implications.setdefault(rid, []).append((sol, implied))
         return implications
 
 if __name__ == '__main__':
