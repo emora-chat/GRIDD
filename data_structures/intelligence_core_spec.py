@@ -55,13 +55,13 @@ class IntelligenceCoreSpec:
         Find solutions to inference rule preconditions.
         """
         inferences = core.infer()
-        return
 
     def apply_inferences(core, inferences=None):
         """
         Add instantiated postconditions to working memory based on inference solutions.
         """
         core.apply_inferences(core.infer())
+        return
 
     def merge(core, concept_sets):
         """

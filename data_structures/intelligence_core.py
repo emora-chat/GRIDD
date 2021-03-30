@@ -15,7 +15,8 @@ TIME_DECAY = 0.1
 NONASSERT = 'nonassert'
 SALIENCE = 'salience'
 CONFIDENCE = 'confidence'
-
+NECESSARY = 'nec'
+SUFFICIENT = 'suf'
 
 class IntelligenceCore:
 
@@ -32,7 +33,7 @@ class IntelligenceCore:
         if isinstance(working_memory, ConceptGraph):
             self.working_memory = working_memory
         else:
-            self.working_memory = ConceptGraph(namespace='wm')
+            self.working_memory = ConceptGraph(namespace='wm', supports={NECESSARY: False})
             self.consider(working_memory)
         self.operators = operators(intcoreops)
 
@@ -61,7 +62,8 @@ class IntelligenceCore:
                                         for c in considered.concepts()})
         self._loading_options(concepts, options)
         self._assertions(considered)
-        self.working_memory.concatenate(considered)
+        mapping = self.working_memory.concatenate(considered)
+        return mapping.values()
 
     def infer(self, rules=None):
         if rules is None:
@@ -80,7 +82,14 @@ class IntelligenceCore:
         result_dict = self.inference_engine.apply(inferences)
         for rule, results in result_dict.items():
             for evidence, implication in results:
-                self.consider(implication, associations=evidence.values())
+                implied_nodes = self.consider(implication)
+                and_node = self.working_memory.id_map().get()
+                for e in evidence.values():
+                    if self.working_memory.has(predicate_id=e):
+                        self.working_memory.metagraph.add(e, NECESSARY, and_node)
+                for n in implied_nodes:
+                    if self.working_memory.has(predicate_id=n):
+                        self.working_memory.metagraph.add(and_node, SUFFICIENT, n)
 
     def merge(self, concept_sets):
         sets = {}

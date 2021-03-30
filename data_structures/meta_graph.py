@@ -1,13 +1,17 @@
 
 from structpy.graph.directed.labeled.multilabeled_digraph_networkx import MultiLabeledDigraphNX as Graph
 
-
 class MetaGraph(Graph):
 
-    def __init__(self, feature_cls):
+    def __init__(self, feature_cls, cg, supports=None):
         Graph.__init__(self)
         self._features_cls = feature_cls
         self.features = feature_cls()
+        self.concept_graph = cg
+        if supports is None:
+            self.supports = {}
+        else:
+            self.supports = supports
 
     def merge(self, concept_a, concept_b):
         out_edges = self.out_edges(concept_b)
@@ -38,15 +42,28 @@ class MetaGraph(Graph):
                     self.add(s, t, l)
 
     def remove(self, node, target=None, label=None):
-        Graph.remove(self, node, target, label)
         if target is None and label is None:
             self.features.remove(node)
+            self._remove_supports(node)
+        Graph.remove(self, node, target, label)
 
     def discard(self, node, target=None, label=None):
-        if Graph.has(self, node, target, label):
-            Graph.remove(self, node, target, label)
         if target is None and label is None:
             self.features.discard(node)
+            if Graph.has(self, node):
+                self._remove_supports(node)
+        if Graph.has(self, node, target, label):
+            Graph.remove(self, node, target, label)
+
+    def _remove_supports(self, node):
+        for label, reverse in self._supports.items():
+            if reverse:
+                collection = self.sources(node, label)
+            else:
+                collection = self.targets(node, label)
+            for target in collection:
+                if not self.concept_graph.has(target):
+                    self.remove(target)
 
     def copy(self):
         mg = MetaGraph(self._features_cls)
