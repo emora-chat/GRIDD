@@ -28,7 +28,7 @@ class ParseToLogic:
         rules = KnowledgeParser.rules(*template_file_names)
         for rule_id, rule in rules.items():
             self._reference_expansion(rule[0])
-        self.inference_engine = InferenceEngine(*[(*rule, rule_id) for rule_id, rule in rules.items()], device=device)
+        self.inference_engine = InferenceEngine([(*rule, rule_id) for rule_id, rule in rules.items()], device=device)
         self.spans = []
 
     def _reference_expansion(self, pregraph):
@@ -108,7 +108,7 @@ class ParseToLogic:
             references = ewm.objects(expression, 'expr')
             if len(references) == 0:
                 unk_node = ewm.add(ewm.id_map().get())
-                types = ewm.supertypes(span_node)
+                types = ewm.types(span_node)
                 pos_type = 'other'
                 for n in ['verb', 'noun', 'pron', 'adj', 'adv']:
                     if n in types:
@@ -222,6 +222,7 @@ class ParseToLogic:
                             else:
                                 cg.merge(ewm_node, cg_node, strict_order=True)
                             self._add_unknowns_to_cg(ewm_node, ewm, cg_node, cg)
+                        cg.add(center)
                         cg.features.update(ewm.features, concepts={center})
 
         for aux in auxes: # replaces `time` of head predicate of aux-span with `aux_time`

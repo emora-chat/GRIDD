@@ -2,6 +2,7 @@
 from collections import defaultdict
 from GRIDD.data_structures.node_features_spec import NodeFeaturesSpec
 from GRIDD.data_structures.span import Span
+from GRIDD.globals import CONFIDENCE
 
 class NodeFeatures(defaultdict):
 
@@ -14,74 +15,46 @@ class NodeFeatures(defaultdict):
         for node, features in other.items():
             if concepts is None or node in concepts:
                 if id_map is not None:
-                    node = id_map.get(node) if node in id_map else node
-                if 'salience' in self[node] or 'salience' in features:
-                    self[node]['salience'] = max(self[node].get('salience', 0.0), features.get('salience', 0.0))
-                if 'cover' in self[node] or 'cover' in features:
-                    self[node]['cover'] = max(self[node].get('cover', 0.0), features.get('cover', 0.0))
-                if 'coldstart' in self[node] or 'coldstart' in features:
-                    self[node]['coldstart'] = max(self[node].get('coldstart', 0.0), features.get('coldstart', 0.0))
-                if 'span_data' in features:
-                    if 'span_data' in self[node]:
-                        print('Node: ', str(node))
-                        print('Span Exists: ', self[node]['span_data'])
-                        print('Span Update: ', features['span_data'])
-                        raise Exception('Node already has span info!') #todo - get rid of before deployment
+                    node = id_map.get(node)
+                for feature, other_value in features.items():
+                    if feature in {'salience', 'cover', 'coldstart'}:
+                        if feature in self[node]:
+                            self[node][feature] = max(self[node][feature], other_value)
+                        else:
+                            self[node][feature] = other_value
+                    elif feature == CONFIDENCE:
+                        if feature in self[node]:
+                            print(f'WARNING: Existing confidence value of {node} is being updated!')
+                        self[node][feature] = other_value
+                    elif feature == 'span_data':
+                        if 'span_data' in self[node]:
+                            print('Node: ', str(node))
+                            print('Span Exists: ', self[node]['span_data'])
+                            print('Span Update: ', features['span_data'])
+                            raise RuntimeError('Node already has span info!') #todo - get rid of before deployment
+                        else:
+                            self[node]['span_data'] = features['span_data']
                     else:
-                        self[node]['span_data'] = features['span_data']
-                if 'comps' in self[node] and 'comps' in features:
-                    self[node]['comps'] = list(set(self[node]['comps']).union(set([id_map.get(comp)
-                                                                                   if comp in id_map else comp
-                                                                                   for comp in features['comps']])))
-                elif 'comps' in features:
-                    self[node]['comps'] = [id_map.get(comp) if comp in id_map else comp for comp in features['comps']]
-                if 'refl' in self[node] and 'refl' in features:
-                    self[node]['refl'] = list(set(self[node]['refl']).union(set(features['refl'])))
-                elif 'refl' in features:
-                    self[node]['refl'] = features['refl']
-                if 'refsp' in self[node] and 'refsp' in features:
-                    self[node]['refsp'] = list(set(self[node]['refsp']).union(set(features['refsp'])))
-                elif 'refsp' in features:
-                    self[node]['refsp'] = features['refsp']
+                        self[node][feature] = other_value
 
-    def merge(self, kept, replaced):
-        if 'salience' in self[kept] or 'salience' in self[replaced]:
-            self[kept]['salience'] = max(self[kept].get('salience', 0.0), self[replaced].get('salience', 0.0))
-        if 'cover' in self[kept] or 'cover' in self[replaced]:
-            self[kept]['cover'] = max(self[kept].get('cover', 0.0), self[replaced].get('cover', 0.0))
-        if 'coldstart' in self[kept] or 'coldstart' in self[replaced]:
-            self[kept]['coldstart'] = max(self[kept].get('coldstart', 0.0), self[replaced].get('coldstart', 0.0))
-        if 'span_data' in self[replaced]:
-            if 'span_data' in self[kept]:
-                print('Replaced: ', self[replaced]['span_data'])
-                print('Kept: ', self[kept]['span_data'])
-                raise Exception('Cannot merge two span nodes!')
-            else:
-                self[kept]['span_data'] = self[replaced]['span_data']
-        if 'comps' in self[kept] and 'comps' in self[replaced]:
-            self[kept]['comps'] = list(set(self[kept]['comps']).union(self[replaced]['comps']))
-        elif 'comps' in self[replaced]:
-            self[kept]['comps'] = self[replaced]['comps']
-        for node, features in self.items(): # todo - more efficient way of doing this - keep record of all nodes with `comps` feature
-            if 'comps' in features and replaced in features['comps']:
-                features['comps'].remove(replaced)
-                features['comps'].append(kept)
-
-        # resolve ref links once ref merges with non-ref
-        if 'refl' in self[replaced] and 'refl' not in self[kept]:
-            del self[replaced]['refl']
-        if 'refl' in self[kept] and 'refl' not in self[replaced]:
-            del self[kept]['refl']
-
-        if 'refl' in self[kept] and 'refl' in self[replaced]:
-            self[kept]['refl'] = list(set(self[kept]['refl']).union(set(self[replaced]['refl'])))
-        elif 'refl' in self[replaced]:
-            self[kept]['refl'] = self[replaced]['refl']
-        if 'refsp' in self[kept] and 'refsp' in self[replaced]:
-            self[kept]['refsp'] = list(set(self[kept]['refsp']).union(set(self[replaced]['refsp'])))
-        elif 'refsp' in self[replaced]:
-            self[kept]['refsp'] = self[replaced]['refsp']
-        del self[replaced]
+    def merge(self, kept, replaced): # todo - add confidence?
+        if replaced in self:
+            if kept not in self:
+                self[kept] = {}
+            if 'salience' in self[kept] or 'salience' in self[replaced]:
+                self[kept]['salience'] = max(self[kept].get('salience', 0.0), self[replaced].get('salience', 0.0))
+            if 'cover' in self[kept] or 'cover' in self[replaced]:
+                self[kept]['cover'] = max(self[kept].get('cover', 0.0), self[replaced].get('cover', 0.0))
+            if 'coldstart' in self[kept] or 'coldstart' in self[replaced]:
+                self[kept]['coldstart'] = max(self[kept].get('coldstart', 0.0), self[replaced].get('coldstart', 0.0))
+            if 'span_data' in self[replaced]:
+                if 'span_data' in self[kept]:
+                    print('Replaced: ', self[replaced]['span_data'])
+                    print('Kept: ', self[kept]['span_data'])
+                    raise Exception('Cannot merge two span nodes!')
+                else:
+                    self[kept]['span_data'] = self[replaced]['span_data']
+            del self[replaced]
 
     def update_from_ontology(self, elements):
         for e in elements:
@@ -111,6 +84,13 @@ class NodeFeatures(defaultdict):
         for pred in expansion_predicates:
             self[pred[3]]['salience'] = 1.0
             self[pred[3]]['cover'] = 1.0
+
+    def remove(self, node):
+        del self[node]
+
+    def discard(self, node):
+        if node in self:
+            del self[node]
 
     def get_reference_links(self, element=None):
         if element is not None:

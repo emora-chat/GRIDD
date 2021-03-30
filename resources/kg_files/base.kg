@@ -24,6 +24,8 @@ indirect_obj<predicate>
 possess<predicate>
 possess[possess]
 
+indirect_obj<predicate>
+
 person<entity>
 person[person]
 socialbot<entity>

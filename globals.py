@@ -1,4 +1,10 @@
 DEBUG = False
 
-from GRIDD.data_structures.node_features import NodeFeatures
-FEATURE_CLS = NodeFeatures
+SENSORY_SALIENCE = 1
+ASSOCIATION_DECAY = 0.1
+TIME_DECAY = 0.1
+NONASSERT = 'nonassert'
+SALIENCE = 'salience'
+CONFIDENCE = 'confidence'
+NECESSARY = 'nec'
+SUFFICIENT = 'suf'

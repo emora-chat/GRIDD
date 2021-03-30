@@ -33,15 +33,21 @@ class IntelligenceCoreSpec:
         z/chase(x/animal(), y/animal()) => scared(y) cause(c:<c/predicate(x)>, z);
         ''')
 
-    def consider(core, knowledge):
+    def accept(core, knowledge):
         """
-        Add predicates to working memory.
+        Add predicates to working memory with confidence assumed.
         """
-        core.consider('''
+        core.accept('''
         chase(fido, fluffy=cat())
         ''')
         print()
         print(core.working_memory.pretty_print())
+
+    def pull_types(core):
+        """
+        Pull type hierarchy of all working memory concepts into working memory.
+        """
+        core.pull_types()
 
     def infer(core, rules=None):
         """
@@ -54,6 +60,14 @@ class IntelligenceCoreSpec:
         Add instantiated postconditions to working memory based on inference solutions.
         """
         core.apply_inferences(core.infer())
+        return
+
+    def update_confidence(core, feature=None):
+        """
+        Update confidence scores based on confidence links.
+        """
+        core.update_confidence()
+        return
 
     def merge(core, concept_sets):
         """
@@ -76,12 +90,6 @@ class IntelligenceCoreSpec:
         core.consider('scared(fluffy)')
         core.logical_merge()
 
-    def pull_types(core):
-        """
-        Pull type hierarchy of all working memory concepts into working memory.
-        """
-        core.pull_types()
-
     def pull_knowledge(core, k=1):
         """
         Pull knowledge of semantic neighbors of working memory concepts from knowledge base.
@@ -93,12 +101,6 @@ class IntelligenceCoreSpec:
         Pull all expressions of working memory concepts.
         """
         core.pull_expressions()
-
-    def update_confidences(core, feature=None):
-        """
-        Update confidence scores based on confidence links.
-        """
-        core.update_confidences()
 
     def update_salience(core, feature=None):
         """
