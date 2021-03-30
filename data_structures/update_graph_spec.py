@@ -6,7 +6,7 @@ class UpdateGraphSpec:
 
     @specification.init
     def UPDATE_GRAPH(UpdateGraph, edges=None, nodes=None, updaters=None,
-                     get_fn=None, set_fn=None, default=0):
+                     get_fn=None, set_fn=None, default=None):
         graph = UpdateGraph(
             [
                 ('a', 'd', '+'),

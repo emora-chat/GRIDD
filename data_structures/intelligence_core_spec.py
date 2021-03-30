@@ -34,11 +34,11 @@ class IntelligenceCoreSpec:
         ''')
         print(core.knowledge_base.pretty_print())
 
-    def consider(core, knowledge):
+    def accept(core, knowledge):
         """
-        Add predicates to working memory.
+        Add predicates to working memory with confidence assumed.
         """
-        core.consider('''
+        core.accept('''
         chase(fido, fluffy=cat())
         ''')
         print()

@@ -2,7 +2,6 @@
 from structpy import specification
 import time
 from os.path import join
-import GRIDD.globals
 from GRIDD.data_structures.spanning_node import SpanningNode
 
 checkpoints = join('GRIDD', 'resources', 'checkpoints')
@@ -18,7 +17,7 @@ class ConceptGraphSpec:
     """
 
     @specification.init
-    def CONCEPT_GRAPH(ConceptGraph, predicates=None, concepts=None, namespace=None,  feature_cls=GRIDD.globals.FEATURE_CLS):
+    def CONCEPT_GRAPH(ConceptGraph, predicates=None, concepts=None, namespace=None):
         """
         """
         concept_graph = ConceptGraph(predicates=[

@@ -2,6 +2,7 @@
 from collections import defaultdict
 from GRIDD.data_structures.node_features_spec import NodeFeaturesSpec
 from GRIDD.data_structures.span import Span
+from GRIDD.globals import CONFIDENCE
 
 class NodeFeatures(defaultdict):
 
@@ -15,20 +16,26 @@ class NodeFeatures(defaultdict):
             if concepts is None or node in concepts:
                 if id_map is not None:
                     node = id_map.get(node)
-                if 'salience' in self[node] or 'salience' in features:
-                    self[node]['salience'] = max(self[node].get('salience', 0.0), features.get('salience', 0.0))
-                if 'cover' in self[node] or 'cover' in features:
-                    self[node]['cover'] = max(self[node].get('cover', 0.0), features.get('cover', 0.0))
-                if 'coldstart' in self[node] or 'coldstart' in features:
-                    self[node]['coldstart'] = max(self[node].get('coldstart', 0.0), features.get('coldstart', 0.0))
-                if 'span_data' in features:
-                    if 'span_data' in self[node]:
-                        print('Node: ', str(node))
-                        print('Span Exists: ', self[node]['span_data'])
-                        print('Span Update: ', features['span_data'])
-                        raise Exception('Node already has span info!') #todo - get rid of before deployment
+                for feature, other_value in features.items():
+                    if feature in {'salience', 'cover', 'coldstart'}:
+                        if feature in self[node]:
+                            self[node][feature] = max(self[node][feature], other_value)
+                        else:
+                            self[node][feature] = other_value
+                    elif feature == CONFIDENCE:
+                        if feature in self[node]:
+                            print(f'WARNING: Existing confidence value of {node} is being updated!')
+                        self[node][feature] = other_value
+                    elif feature == 'span_data':
+                        if 'span_data' in self[node]:
+                            print('Node: ', str(node))
+                            print('Span Exists: ', self[node]['span_data'])
+                            print('Span Update: ', features['span_data'])
+                            raise RuntimeError('Node already has span info!') #todo - get rid of before deployment
+                        else:
+                            self[node]['span_data'] = features['span_data']
                     else:
-                        self[node]['span_data'] = features['span_data']
+                        self[node][feature] = other_value
 
     def merge(self, kept, replaced):
         if replaced in self:

@@ -9,6 +9,7 @@ from structpy.map.index.index import Index
 from GRIDD.data_structures.span import Span
 from GRIDD.data_structures.concept_compiler import compile_concepts
 from GRIDD.data_structures.meta_graph import MetaGraph
+
 CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 from collections import defaultdict, deque
 import json
@@ -20,8 +21,7 @@ from itertools import chain
 class ConceptGraph:
 
     def __init__(self, predicates=None, concepts=None, namespace=None,
-                 metalinks=None, metadata=None, supports=None,
-                 feature_cls=GRIDD.globals.FEATURE_CLS):
+                 metalinks=None, metadata=None, supports=None):
         if namespace is not None:
             namespace = namespace
         if isinstance(namespace, IdMap):
@@ -33,8 +33,7 @@ class ConceptGraph:
         self._bipredicate_instances = Index()
         self._monopredicates_map = Map()
         self._monopredicate_instances = Index()
-        self._feature_cls = feature_cls
-        self.metagraph = MetaGraph(feature_cls, self, supports)
+        self.metagraph = MetaGraph(self, supports)
         if concepts is not None:
             for concept in concepts:
                 self.add(concept)

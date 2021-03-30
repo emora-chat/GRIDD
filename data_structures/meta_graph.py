@@ -1,12 +1,13 @@
 
 from structpy.graph.directed.labeled.multilabeled_digraph_networkx import MultiLabeledDigraphNX as Graph
+from GRIDD.data_structures.node_features import NodeFeatures
+
 
 class MetaGraph(Graph):
 
-    def __init__(self, feature_cls, cg, supports=None):
+    def __init__(self, cg, supports=None):
         Graph.__init__(self)
-        self._features_cls = feature_cls
-        self.features = feature_cls()
+        self.features = NodeFeatures()
         self.concept_graph = cg
         if supports is None:
             self._supports = {}
@@ -66,7 +67,7 @@ class MetaGraph(Graph):
                     self.remove(target)
 
     def copy(self, cg):
-        mg = MetaGraph(self._features_cls, cg)
+        mg = MetaGraph(cg)
         mg.features = self.features.copy()
         for n in self.nodes():
             mg.add(n)

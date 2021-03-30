@@ -6,17 +6,13 @@ from GRIDD.data_structures.inference_engine import InferenceEngine
 from GRIDD.data_structures.concept_compiler import ConceptCompiler
 from GRIDD.utilities.utilities import uniquify, operators
 from itertools import chain
+from functools import reduce
+from GRIDD.data_structures.update_graph import UpdateGraph
+from GRIDD.globals import SENSORY_SALIENCE, NECESSARY, SUFFICIENT, \
+                            ASSOCIATION_DECAY, CONFIDENCE, NONASSERT
 
 import GRIDD.data_structures.intelligence_core_operators as intcoreops
 
-SENSORY_SALIENCE = 1
-ASSOCIATION_DECAY = 0.1
-TIME_DECAY = 0.1
-NONASSERT = 'nonassert'
-SALIENCE = 'salience'
-CONFIDENCE = 'confidence'
-NECESSARY = 'nec'
-SUFFICIENT = 'suf'
 
 class IntelligenceCore:
 
@@ -34,7 +30,7 @@ class IntelligenceCore:
             self.working_memory = working_memory
         else:
             self.working_memory = ConceptGraph(namespace='wm', supports={NECESSARY: False})
-            self.consider(working_memory)
+            self.accept(working_memory)
         self.operators = operators(intcoreops)
 
     def know(self, knowledge, **options):
@@ -61,6 +57,20 @@ class IntelligenceCore:
             considered.features.update({c: {'salience': s*salience}
                                         for c in considered.concepts()})
         self._loading_options(concepts, options)
+        mapping = self.working_memory.concatenate(considered)
+        return mapping.values()
+
+    def accept(self, concepts, associations=None, salience=1, **options):
+        considered = ConceptGraph(concepts, namespace='_tmp_')
+        if associations is None:
+            considered.features.update({c: {'salience': salience*SENSORY_SALIENCE}
+                                                  for c in considered.concepts()})
+        else:
+            s = min([self.working_memory.features.get(c, {}).get('salience', 0)
+                            for c in associations]) - ASSOCIATION_DECAY
+            considered.features.update({c: {'salience': s*salience}
+                                        for c in considered.concepts()})
+        self._loading_options(concepts, options)
         self._assertions(considered)
         mapping = self.working_memory.concatenate(considered)
         return mapping.values()
@@ -77,6 +87,9 @@ class IntelligenceCore:
         :param inferences: {rule: (pre, post, [solution_dict, ...]),
                             ...}
         """
+        # todo - types are absolute knowledge (either you have it or you don't)
+        # todo - think about type-based evidence
+        #  (type predicates not found in solutions explicitly right now)
         if inferences is None:
             inferences = self.infer()
         result_dict = self.inference_engine.apply(inferences)
@@ -86,15 +99,33 @@ class IntelligenceCore:
                 and_node = self.working_memory.id_map().get()
                 for e in evidence.values():
                     if self.working_memory.has(predicate_id=e):
-                        self.working_memory.metagraph.add(e, NECESSARY, and_node)
+                        self.working_memory.metagraph.add(e, and_node, NECESSARY)
                 for n in implied_nodes:
                     if self.working_memory.has(predicate_id=n):
-                        self.working_memory.metagraph.add(and_node, SUFFICIENT, n)
+                        self.working_memory.metagraph.add(and_node, n, SUFFICIENT)
 
     def update_confidence(self):
-        # set up confidence graph
-
-        pass
+        # todo - distinguish between sensory assertions and derived confidence;
+        #  set self-loops on sensory assertions
+        mg = self.working_memory.metagraph
+        necessaries = mg.edges(label=NECESSARY)
+        sufficients = mg.edges(label=SUFFICIENT)
+        def and_fn(sources):
+            sources, _ = list(zip(*sources))
+            return reduce(lambda a, b: a*b, sources)
+        def or_fn(sources):
+            sources, _ = list(zip(*sources))
+            return reduce(lambda a, b: a+b, sources) - reduce(lambda a, b: a*b, sources)
+        update_graph = UpdateGraph(
+            edges=[*necessaries, *sufficients],
+            nodes={c: mg.features.get(c, {}).get(CONFIDENCE, 0) for c in mg.nodes()},
+            updaters={
+                **{n: and_fn for _,n,_ in necessaries},
+                **{n: or_fn for _,n,_ in sufficients}},
+            default=0,
+            set_fn=(lambda n, v: mg.features.setdefault(n, {}).__setitem__(CONFIDENCE, v))
+        )
+        update_graph.update(push=True)
 
     def merge(self, concept_sets):
         sets = {}
@@ -167,7 +198,7 @@ class IntelligenceCore:
         predicates = set()
         not_asserted = set()
         for s, _, o, pred in cg.predicates():
-            if 'c' not in cg.features.get(pred, {}):
+            if CONFIDENCE not in cg.features.get(pred, {}):
                 predicates.add(pred)
             if NONASSERT in types[pred]:
                 if cg.has(predicate_id=s):
@@ -175,9 +206,9 @@ class IntelligenceCore:
                 if cg.has(predicate_id=o):
                     not_asserted.add(o)
         for a in predicates - not_asserted:
-            cg.features.setdefault(a, {})['c'] = 1.0
+            cg.features.setdefault(a, {})[CONFIDENCE] = 1.0
         for na in predicates & not_asserted:
-            cg.features.setdefault(na, {})['c'] = 0.0
+            cg.features.setdefault(na, {})[CONFIDENCE] = 0.0
 
     def _loading_options(self, cg, options):
         if 'commonsense' in options:

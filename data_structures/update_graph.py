@@ -39,7 +39,8 @@ class UpdateGraph(Graph):
     def push(self):
         if self._set_fn:
             for node in self.nodes():
-                self._set_fn(node)
+                if node in self.values:
+                    self._set_fn(node, self.values[node])
 
     def set_updaters(self, updaters):
         self.updaters.update(updaters)
