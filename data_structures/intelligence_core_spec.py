@@ -32,7 +32,6 @@ class IntelligenceCoreSpec:
         cause = (predicate);
         z/chase(x/animal(), y/animal()) => scared(y) cause(c:<c/predicate(x)>, z);
         ''')
-        print(core.knowledge_base.pretty_print())
 
     def consider(core, knowledge):
         """
