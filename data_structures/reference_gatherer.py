@@ -3,10 +3,13 @@ PRIMITIVES = {'focus', 'center', 'is_type', 'cover', 'question', 'var'}
 
 def gather_all_references(working_memory):
     # convert reference spans to reference predicates
-    for node, features in working_memory.features.items():
-        if 'refsp' in features:
-            features['refl'] = gather(node, features['refsp'], working_memory)
-            del features['refsp']
+    node_to_refsp = {}
+    for s, t, _ in working_memory.metagraph.edges(label='refsp'):
+        node_to_refsp.setdefault(s, []).append(t)
+    for node, refsp in node_to_refsp.items():
+        working_memory.metagraph.add_links(node, gather(node, refsp, working_memory), 'refl')
+        for t in refsp:
+            working_memory.metagraph.remove(node, t, 'refsp')
     return working_memory
 
 def gather(reference_node, constraints_as_spans, concept_graph):
@@ -19,7 +22,7 @@ def gather(reference_node, constraints_as_spans, concept_graph):
             focal_nodes.add(focus)
     # expand constraint spans into constraint predicates
     for focal_node in focal_nodes:
-        components = concept_graph.features[focal_node]['comps']
+        components = concept_graph.metagraph.targets(focal_node, 'comps')
         # constraint found if constraint predicate is connected to reference node
         for component in components:
             if (not concept_graph.has(predicate_id=component) or

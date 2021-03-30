@@ -14,6 +14,10 @@ class MetaGraph(Graph):
         else:
             self._supports = supports
 
+    def add_links(self, source, targets, label):
+        for t in targets:
+            self.add(source, t, label)
+
     def merge(self, concept_a, concept_b):
         out_edges = self.out_edges(concept_b)
         in_edges = self.in_edges(concept_b)

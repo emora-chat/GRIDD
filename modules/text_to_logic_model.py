@@ -178,7 +178,7 @@ class ParseToLogic:
                     self._update_centers(centers_handled, post, center, solution)
                     post_to_ewm_map = {node: self._get_concept_of_span(solution[node], ewm)
                                        for node in post.concepts()
-                                       if node in solution and node in [center_var,expression_var,concept_var]}
+                                       if node in solution and node in maintain_in_mention_graph}
                     cg = ConceptGraph(namespace=mention_ids)
                     post_to_cg_map = cg.concatenate(post)
                     for post_node, ewm_node in post_to_ewm_map.items():
@@ -197,10 +197,10 @@ class ParseToLogic:
                             # some questions have focus node as the question predicate instance,
                             # when it should be the target of the question predicate instance
                             focus_node = cg.predicate(focus_node)[0] # todo - update with new bipredicate request representation
-                        cg.features[focus_node]['refsp'] = REFERENCES_BY_RULE[rule_name](center, ewm)
+                        cg.metagraph.add_links(focus_node, REFERENCES_BY_RULE[rule_name](center, ewm), 'refsp')
                     comps = [pred[3] for pred in cg.predicates()]
                     ENTITY_INSTANCES_BY_RULE(rule_name, focus_node, cg, comps)
-                    cg.features[focus_node]['comps'] = comps
+                    cg.metagraph.add_links(focus_node, comps, 'comps')
                     if ewm.has(center, 'assert'): # if center is asserted, add assertion to focus node
                         cg.add(focus_node, 'assert')
                     mentions[center] = cg
