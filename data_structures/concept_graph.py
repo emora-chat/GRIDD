@@ -513,7 +513,6 @@ class ConceptGraph:
                     frontier.extend(self.related(node))
         return False
 
-
     def copy(self, namespace=None):
         if namespace is None:
             namespace = self._ids.namespace

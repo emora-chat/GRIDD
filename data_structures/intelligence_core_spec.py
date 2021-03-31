@@ -30,7 +30,7 @@ class IntelligenceCoreSpec:
         """
         core.know('''
         cause = (predicate);
-        z/chase(x/animal(), y/animal()) => scared(y) cause(c:<c/predicate(x)>, z);
+        z/chase(x/animal(), y/animal()) => scared(y);
         ''')
 
     def accept(core, knowledge):
@@ -39,6 +39,16 @@ class IntelligenceCoreSpec:
         """
         core.accept('''
         chase(fido, fluffy=cat())
+        ''')
+        print()
+        print(core.working_memory.pretty_print())
+
+    def consider(core, knowledge):
+        """
+        Add predicates to working memory.
+        """
+        core.consider('''
+        cref:<chase(fido, cref=cat())>
         ''')
         print()
         print(core.working_memory.pretty_print())
@@ -76,6 +86,15 @@ class IntelligenceCoreSpec:
         core.update_salience()
         return
 
+    def resolve(core, references=None):
+        """
+        Resolve all references in working memory to their referents.
+        """
+        resolutions = core.resolve()
+        assert len(resolutions) == 2
+        assert ('fluffy', 'cref') in resolutions
+        return
+
     def merge(core, concept_sets):
         """
         Merge together each group of concepts in working memory.
@@ -83,12 +102,6 @@ class IntelligenceCoreSpec:
         Automatically merges groups with overlap.
         """
         core.merge([])
-
-    def resolve(core, references=None):
-        """
-        Resolve all references in working memory to their referents.
-        """
-        resolutions = core.resolve()
 
     def logical_merge(core):
         """

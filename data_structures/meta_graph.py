@@ -33,17 +33,17 @@ class MetaGraph(Graph):
     def update(self, graph=None, features=None, id_map=None, concepts=None):
         if features is not None:
             if id_map is not None:
-                features = {id_map[k]: v for k, v in features.items() if concepts is None or k in concepts}
+                features = {id_map.get(k): v for k, v in features.items() if concepts is None or k in concepts}
                 self.features.update(features)
             else:
                 self.features.update({k:v for k,v in features.items() if concepts is None or k in concepts})
         if graph is not None:
             for n in graph.nodes():
                 if concepts is None or n in concepts:
-                    self.add(n if id_map is None else id_map[n])
+                    self.add(n if id_map is None else id_map.get(n))
             for s,t,l in graph.edges():
                 if id_map is not None:
-                    s, t, l = id_map[s], id_map[t], l
+                    s, t, l = id_map.get(s), id_map.get(t), l
                 if concepts is None or s in concepts:
                     self.add(s, t, l)
 

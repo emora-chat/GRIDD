@@ -156,9 +156,15 @@ class IntelligenceCore:
                     a = self.working_memory.merge(a, b)
 
     def resolve(self, references=None):
-        references = []
-        # Todo: collect references for IntCore resolution
-        return self.inference_engine.infer(references, cached=False)
+        if references is None:
+            references = self.working_memory.references()
+        inferences = self.inference_engine.infer(self.working_memory, references, cached=False)
+        compatible_pairs = []
+        for reference_node, (pre, matches) in inferences.items():
+            for match in matches:
+                pairs = [(match[node], node) for node in match] if reference_node != match[reference_node] else []
+                compatible_pairs.extend(pairs)
+        return compatible_pairs
 
     def logical_merge(self):
         # Todo: logical merge

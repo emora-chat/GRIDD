@@ -7,7 +7,7 @@ def gather_all_references(working_memory):
     for s, t, _ in working_memory.metagraph.edges(label='refsp'):
         node_to_refsp.setdefault(s, []).append(t)
     for node, refsp in node_to_refsp.items():
-        working_memory.metagraph.add_links(node, gather(node, refsp, working_memory), 'refl')
+        working_memory.metagraph.add_links(node, gather(node, refsp, working_memory), 'ref')
         for t in refsp:
             working_memory.metagraph.remove(node, t, 'refsp')
     return working_memory

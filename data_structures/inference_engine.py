@@ -26,7 +26,11 @@ class InferenceEngine:
 
     def _convert_rules(self, rules):
         converted_rules = {}
-        for rid, (pre, post, vars) in rules.items():
+        for rid, structure in rules.items():
+            if len(structure) == 3:
+                pre, _, vars = structure
+            else:
+                pre, vars = structure
             pre = pre.copy()
             attributes = {}
             types_to_remove = set()
@@ -93,13 +97,22 @@ class InferenceEngine:
             dynamic_rules = ConceptGraph(dynamic_rules).rules()
         elif dynamic_rules is None:
             dynamic_rules = {}
-        all_rules = {**self.rules, **dynamic_rules}
         dynamic_converted_rules = self._convert_rules(dynamic_rules)
-        converted_rules = Bimap({**self._preloaded_rules, **dynamic_converted_rules})
+        if cached:
+            all_rules = {**self.rules, **dynamic_rules}
+            converted_rules = Bimap({**self._preloaded_rules, **dynamic_converted_rules})
+        else:
+            all_rules = dynamic_rules
+            converted_rules = Bimap(dynamic_converted_rules)
         sols = self.matcher.match(facts_graph, *list(converted_rules.values()))
         sols = {converted_rules.reverse()[precondition]: sols for precondition, sols in sols.items()}
-        sols = {rule_id: (all_rules[rule_id][0], all_rules[rule_id][1], sol_ls) for rule_id, sol_ls in sols.items()}
-        return sols
+        final_sols = {}
+        for rule_id, sol_ls in sols.items():
+            if len(all_rules[rule_id]) == 3:
+                final_sols[rule_id] = (all_rules[rule_id][0], all_rules[rule_id][1], sol_ls)
+            else:
+                final_sols[rule_id] = (all_rules[rule_id][0], sol_ls)
+        return final_sols
 
     def apply(self, inferences):
         implications = {}
