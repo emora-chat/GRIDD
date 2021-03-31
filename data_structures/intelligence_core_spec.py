@@ -70,6 +70,13 @@ class IntelligenceCoreSpec:
         core.update_confidence()
         return
 
+    def update_salience(core, feature=None):
+        """
+        Update salience scores based on semantic relatedness.
+        """
+        core.update_salience()
+        return
+
     def merge(core, concept_sets):
         """
         Merge together each group of concepts in working memory.
@@ -102,12 +109,6 @@ class IntelligenceCoreSpec:
         Pull all expressions of working memory concepts.
         """
         core.pull_expressions()
-
-    def update_salience(core, feature=None):
-        """
-        Update salience scores based on semantic relatedness.
-        """
-        core.update_salience()
 
     def decay_salience(core, feature=None):
         """

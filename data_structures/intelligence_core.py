@@ -99,7 +99,7 @@ class IntelligenceCore:
                         implication_strengths[n] = implication.features.get(n, {}).get(CONFIDENCE, 1)
                         if n in implication.features and CONFIDENCE in implication.features[n]:
                             del implication.features[n][CONFIDENCE]
-                implied_nodes = self.consider(implication)
+                implied_nodes = self.consider(implication, associations=evidence.values())
                 and_node = self.working_memory.id_map().get()
                 for pre_node, evidence_node in evidence.items():
                     if self.working_memory.has(predicate_id=evidence_node):
@@ -175,8 +175,31 @@ class IntelligenceCore:
     def pull_expressions(self):
         pass
 
-    def update_salience(self):
-        return
+    def update_salience(self, iterations=10):
+        wm = self.working_memory
+        edges = wm.to_graph().edges()
+        redges = [(t, s, l) for s, t, l in edges]
+        def moderated_salience(salience, connectivity):
+            return salience / connectivity
+        def update_instance_salience(val, args):
+            ms = [val[0]]
+            for (sal, con), lnk in args:
+                if lnk == SALIENCE_IN_LINK:
+                    ms.append(moderated_salience(sal, con) - ASSOCIATION_DECAY)
+                else:
+                    ms.append(sal)
+            return (max(ms), val[1])
+        updater = UpdateGraph(
+            [*[(s, t, SALIENCE_OUT_LINK) for s, t, _ in edges],
+             *[(s, t, SALIENCE_IN_LINK) for s, t, _ in redges]],
+            nodes={
+                c: (wm.features.get(c, {}).get(SALIENCE, 0),
+                    wm.features.get(c, {}).get(CONNECTIVITY, 1))
+                for c in wm.concepts()},
+            updaters={c: update_instance_salience for c in wm.concepts()},
+            default=(0, 1)
+        )
+        updater.update(iterations)
 
     def decay_salience(self):
         pass
