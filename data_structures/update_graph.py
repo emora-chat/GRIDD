@@ -21,14 +21,15 @@ class UpdateGraph(Graph):
         if get_fn is not None:
             self.pull()
 
-    def update(self, pull=False, push=False):
+    def update(self, iteration=1, pull=False, push=False):
         if pull: self.pull()
-        newvalues = {}
-        for node, fn in self.updaters.items():
-            args = [(self.values.get(s, self.default), l)
-                    for s, t, l in self.in_edges(node)]
-            newvalues[node] = fn(args)
-        self.set_values(newvalues)
+        for i in range(iteration):
+            newvalues = {}
+            for node, fn in self.updaters.items():
+                args = [(self.values.get(s, self.default), l)
+                        for s, t, l in self.in_edges(node)]
+                newvalues[node] = fn(self.values.get(node, self.default), args)
+            self.set_values(newvalues)
         if push: self.push()
 
     def pull(self):
