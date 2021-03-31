@@ -37,7 +37,7 @@ class NodeFeatures(defaultdict):
                     else:
                         self[node][feature] = other_value
 
-    def merge(self, kept, replaced):
+    def merge(self, kept, replaced): # todo - add confidence?
         if replaced in self:
             if kept not in self:
                 self[kept] = {}
@@ -91,18 +91,6 @@ class NodeFeatures(defaultdict):
     def discard(self, node):
         if node in self:
             del self[node]
-
-    def get_reference_links(self, element=None):
-        if element is not None:
-            if element in self:
-                return self[element].get('refl', None)
-            return None
-        else:
-            references = {}
-            for item, features in self.items():
-                if 'refl' in features:
-                    references[item] = features['refl']
-            return references
 
     def copy(self):
         return NodeFeatures(self)

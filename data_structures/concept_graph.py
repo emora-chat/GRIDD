@@ -411,8 +411,6 @@ class ConceptGraph:
         return graph
 
     def merge(self, concept_a, concept_b, strict_order=False):
-        if self.has(predicate_id=concept_a) and self.has(predicate_id=concept_b):
-            raise ValueError("Cannot merge two predicate instances!")
         if not strict_order and concept_a.startswith(self._ids.namespace) and not concept_b.startswith(self._ids.namespace):
             tmp = concept_a
             concept_a = concept_b
@@ -426,7 +424,22 @@ class ConceptGraph:
         for s, t, o, i in self.predicates(predicate_type=concept_b):
             self._detach(s, t, o, i)
             self.add(s, concept_a, o, i)
-        if self.has(predicate_id=concept_b):
+        if self.has(predicate_id=concept_a) and self.has(predicate_id=concept_b):
+            # merge all arguments, if not the same
+            subj_a, type_a, obj_a, inst_a = self.predicate(concept_a)
+            subj_b, type_b, obj_b, inst_b = self.predicate(concept_b)
+            if subj_a != subj_b:
+                subj_a = self.merge(subj_a, subj_b, strict_order=strict_order)
+            if type_a != type_b:
+                type_a = self.merge(type_a, type_b, strict_order=strict_order)
+            if obj_a is not None and obj_b is not None and obj_a != obj_b:
+                obj_a = self.merge(obj_a, obj_b, strict_order=strict_order)
+            elif obj_b is not None:
+                # promote to argument structure of higher ordered predicate (monopredicate < bipredicate)
+                self._detach(subj_a, type_a, obj_a, inst_a)
+                self.add(subj_a, type_a, obj_b, inst_a)
+            self._detach(*self.predicate(inst_b))
+        elif self.has(predicate_id=concept_b) and not self.has(predicate_id=concept_a):
             s, t, o, i = self.predicate(concept_b)
             self.add(s, t, o, concept_a)
             self._detach(s, t, o, i)
@@ -475,7 +488,7 @@ class ConceptGraph:
                             self.add(id_map.get(concept))
                             if concepts is not None:
                                 all_added_concepts.add(concept)
-
+        self.id_map().index = id_map.index # todo - is this necessary?
         self.metagraph.update(concept_graph.metagraph, concept_graph.metagraph.features,
                               id_map=id_map, concepts=all_added_concepts)
         return id_map

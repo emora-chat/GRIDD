@@ -36,7 +36,7 @@ def init_utter_conversion(device, KB):
         outputs=['dp_mentions', 'dp_merges']
     )
 
-def init_utter_integration():
+def init_intra_utter_integration():
     from GRIDD.modules.merge_span_to_merge_concept import MergeSpanToMergeConcept
     from GRIDD.modules.mention_bridge import MentionBridge
     from GRIDD.modules.merge_coreference import MergeCoreference
@@ -49,18 +49,32 @@ def init_utter_integration():
         ('dp_mentions', 'wm') > mention_bridge > ('wm_after_mentions'),
         ('dp_merges', 'wm_after_mentions') > merge_dp > ('dp_node_merges'),
         ('elit_results', 'wm_after_mentions') > merge_coref > ('coref_merges'),
-        ('wm_after_mentions', 'dp_node_merges') > merge_bridge > ('wm_after_merges'),
-        outputs=['wm_after_merges']
+        ('wm_after_mentions', 'dp_node_merges') > merge_bridge > ('wm_after_intra_merges'),
+        outputs=['wm_after_intra_merges']
+    )
+
+def init_inter_utter_integration():
+    from GRIDD.modules.reference_merge import ReferenceMerge
+    from GRIDD.modules.merge_bridge import MergeBridge
+    reference_merge = c(ReferenceMerge())
+    merge_bridge = c(MergeBridge(threshold_score=0.2))
+    return Pipeline(
+        ('wm_after_intra_merges') > reference_merge > ('reference_merges'),
+        ('wm_after_intra_merges', 'reference_merges') > merge_bridge > ('wm_after_inter_merges'),
+        outputs=['wm_after_inter_merges']
     )
 
 def init_dialogue_inference(rules):
     from GRIDD.modules.inference_rule_based import InferenceRuleBased
     from GRIDD.modules.inference_bridge import InferenceBridge
+    from GRIDD.data_structures.reference_gatherer import gather_all_references
     inference_rulebased = c(InferenceRuleBased(*rules))
     inference_bridge = c(InferenceBridge())
+    reference_gatherer = c(gather_all_references)
     return Pipeline(
-        ('wm_after_merges', 'aux_state') > inference_rulebased > ('implications', 'aux_state_update'),
-        ('implications', 'wm_after_merges') > inference_bridge > ('wm_after_inference'),
+        ('wm_after_inter_merges', 'aux_state') > inference_rulebased > ('implications', 'aux_state_update'),
+        ('wm_after_inter_merges') > reference_gatherer > ('wm_after_reference_gather'),
+        ('implications', 'wm_after_reference_gather') > inference_bridge > ('wm_after_inference'),
         outputs=['wm_after_inference', 'aux_state_update']
     )
 
@@ -142,24 +156,30 @@ def utter_conversion_handler(pipeline, input_dict):
         dp_mentions, dp_merges = pipeline(elit_results=input["elit_results"])
     return save(dp_mentions=dp_mentions, dp_merges=dp_merges)
 
-def utter_integration_handler(pipeline, input_dict, KB, load_coldstarts=True):
+def intra_utter_integration_handler(pipeline, input_dict, KB, load_coldstarts=True):
     input = {"dp_mentions": input_dict.get("dp_mentions",[{}])[0], "dp_merges": input_dict.get("dp_merges",[[]])[0],
              "elit_results": input_dict.get("elit_results",[{}])[0],
-             "wm": input_dict.get("wm",[None])[1]}
+             "wm": input_dict.get("wm",[None,None])[1]}
     input = load(input, KB)
     if input["wm"] is None:
         if load_coldstarts:
             input["wm"] = WorkingMemory(KB, join('GRIDD', 'resources', 'kg_files', 'wm'))
         else:
             input["wm"] = WorkingMemory(KB)
-    wm_after_merges = pipeline(dp_mentions=input["dp_mentions"], wm=input["wm"],
-                               dp_merges=input["dp_merges"], elit_results=input["elit_results"])
-    return save(wm=wm_after_merges)
+    wm_after_intra_merges = pipeline(dp_mentions=input["dp_mentions"], wm=input["wm"],
+                                     dp_merges=input["dp_merges"], elit_results=input["elit_results"])
+    return save(wm=wm_after_intra_merges)
+
+def inter_utter_integration_handler(pipeline, input_dict, KB):
+    input = {"wm": input_dict.get("wm",[None])[0]}
+    input = load(input, KB)
+    wm_after_inter_merges = pipeline(wm_after_intra_merges=input["wm"])
+    return save(wm=wm_after_inter_merges)
 
 def dialogue_inference_handler(pipeline, input_dict, KB):
     input = {"wm": input_dict.get("wm",[None])[0], "aux_state": input_dict.get("aux_state",[{}])[0]}
-    input = load(input, KB)
-    wm_after_inference, aux_state_update = pipeline(wm_after_merges=input["wm"], aux_state=input["aux_state"])
+    input = load(input, KB) #todo - if there is an error in earlier parts that causes wm to not be saved, this module will also break
+    wm_after_inference, aux_state_update = pipeline(wm_after_inter_merges=input["wm"], aux_state=input["aux_state"])
     return save(wm=wm_after_inference, aux_state=aux_state_update)
 
 def response_selection_handler(pipeline, input_dict, KB):
@@ -290,7 +310,8 @@ class ChatbotServer:
         if not self.local:
             self.nlp_processing = init_nlp_preprocessing()
         self.utter_conversion = init_utter_conversion(device, self.kb)
-        self.utter_integration = init_utter_integration()
+        self.intra_utter_integration = init_intra_utter_integration()
+        self.inter_utter_integration = init_inter_utter_integration()
         self.dialogue_inference = init_dialogue_inference(rules)
         self.response_selection = init_response_selection()
         self.response_acknowledgment = init_response_acknowledgment()
@@ -304,7 +325,8 @@ class ChatbotServer:
         if not self.local:
             self.nlp_processing = init_nlp_preprocessing()
         self.utter_conversion = init_utter_conversion(device, self.kb)
-        self.utter_integration = init_utter_integration()
+        self.intra_utter_integration = init_intra_utter_integration()
+        self.inter_utter_integration = init_inter_utter_integration()
 
     def run_nlu(self, utterance, display=True):
         if display:
@@ -319,8 +341,14 @@ class ChatbotServer:
         msg = utter_conversion_handler(self.utter_conversion, self.convert_state(current_state))
         self.update_current_turn_state(current_state, msg)
 
-        msg = utter_integration_handler(self.utter_integration, self.convert_state(current_state),
-                                        self.kb, load_coldstarts=False)
+        msg = intra_utter_integration_handler(self.intra_utter_integration,
+                                              self.convert_state(current_state),
+                                              self.kb, load_coldstarts=False)
+        self.update_current_turn_state(current_state, msg)
+
+        msg = inter_utter_integration_handler(self.inter_utter_integration,
+                                              self.convert_state(current_state),
+                                              self.kb)
         self.update_current_turn_state(current_state, msg)
 
         saved_wm = json.loads(msg["wm"])
@@ -347,7 +375,7 @@ class ChatbotServer:
         converted = {key: values[0:history_turns+1] for key, values in current_state.items()}
         return converted
 
-    def chat(self, static_utter=None, load_coldstarts=True):
+    def chat(self, iteration=1, static_utter=None, load_coldstarts=True):
         current_state = {'utter': [None,None], 'wm': [None,None], 'aux_state': [None,None]}
 
         while True:
@@ -366,30 +394,40 @@ class ChatbotServer:
             msg = utter_conversion_handler(self.utter_conversion, self.convert_state(current_state))
             self.update_current_turn_state(current_state, msg)
 
-            msg = utter_integration_handler(self.utter_integration, self.convert_state(current_state),
-                                            self.kb, load_coldstarts=load_coldstarts)
+            msg = intra_utter_integration_handler(self.intra_utter_integration,
+                                                  self.convert_state(current_state),
+                                                  self.kb, load_coldstarts=load_coldstarts)
             self.update_current_turn_state(current_state, msg)
 
-            if self.debug:
-                print('\nWorking Memory after Utterance Integration:')
-                saved_wm = json.loads(msg["wm"])
-                working_memory = WorkingMemory(self.kb)
-                ConceptGraph.load(working_memory, saved_wm)
-                print(working_memory.ugly_print(exclusions={'is_type', 'object', 'predicate', 'entity', 'post', 'pre',
-                                                            'def', 'span', 'datetime'}))
-                print()
+            for d in range(iteration):
+                print('\n ## ITER %d ## \n'%d)
+                msg = inter_utter_integration_handler(self.inter_utter_integration,
+                                                      self.convert_state(current_state),
+                                                      self.kb)
+                self.update_current_turn_state(current_state, msg)
 
-            msg = dialogue_inference_handler(self.dialogue_inference, self.convert_state(current_state), self.kb)
-            self.update_current_turn_state(current_state, msg)
+                if self.debug:
+                    print('\n<< Working Memory after Utterance Integration >>\n')
+                    saved_wm = json.loads(msg["wm"])
+                    working_memory = WorkingMemory(self.kb)
+                    ConceptGraph.load(working_memory, saved_wm)
+                    print(working_memory.ugly_print(exclusions={'is_type', 'object', 'predicate', 'entity', 'post', 'pre',
+                                                                'def', 'span', 'datetime',
+                                                                'type', 'ref'}))
+                    print()
 
-            if self.debug:
-                print('\nWorking Memory after Inference:')
-                saved_wm = json.loads(msg["wm"])
-                working_memory = WorkingMemory(self.kb)
-                ConceptGraph.load(working_memory, saved_wm)
-                print(working_memory.ugly_print(exclusions={'is_type', 'object', 'predicate', 'entity', 'post', 'pre',
-                                                            'def', 'span', 'datetime'}))
-                print()
+                msg = dialogue_inference_handler(self.dialogue_inference, self.convert_state(current_state), self.kb)
+                self.update_current_turn_state(current_state, msg)
+
+                if self.debug:
+                    print('\n<< Working Memory after Inference >>\n')
+                    saved_wm = json.loads(msg["wm"])
+                    working_memory = WorkingMemory(self.kb)
+                    ConceptGraph.load(working_memory, saved_wm)
+                    print(working_memory.ugly_print(exclusions={'is_type', 'object', 'predicate', 'entity', 'post', 'pre',
+                                                                'def', 'span', 'datetime',
+                                                                'type', 'ref'}))
+                    print()
 
             msg = response_selection_handler(self.response_selection, self.convert_state(current_state), self.kb)
             self.update_current_turn_state(current_state, msg)
@@ -426,8 +464,10 @@ if __name__ == '__main__':
     kb = [kb_dir]
     rules_dir = join('GRIDD', 'resources', 'kg_files', 'rules')
     rules = [rules_dir]
+    ITERATION = 2
 
     chatbot = ChatbotServer()
-    chatbot.initialize_full_pipeline(kb_files=kb, rules=rules, device='cpu',
-                                     local=True, debug=True)
-    chatbot.chat(load_coldstarts=True)
+
+    chatbot.initialize_full_pipeline(kb_files=kb, rules=rules, device='cpu', local=True, debug=True)
+    chatbot.chat(iteration=ITERATION, load_coldstarts=False)
+

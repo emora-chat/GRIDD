@@ -19,6 +19,8 @@ pre<predicate>
 post<predicate>
 var<predicate>
 
+indirect_obj<predicate>
+
 possess<predicate>
 possess[possess]
 
@@ -26,13 +28,13 @@ indirect_obj<predicate>
 
 person<entity>
 person[person]
-bot<entity>
-bot[bot]
+socialbot<entity>
+socialbot[socialbot]
 
 user=person()
 user[i,me,my,mine]
-emora=bot()
-emora[you,your,yours]
+bot=socialbot()
+bot[you,your,yours]
 
 datetime<entity>
 datetime[datetime]

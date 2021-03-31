@@ -216,9 +216,15 @@ class ConceptGraphSpec:
         Otherwise,
             `concept_a`'s is the maintained id.
 
+<<<<<<< HEAD
+        If both concepts are a predicate instance,
+            merge all arguments before merging the predicate instances and
+            promote the lower predicate (e.g. monopredicate) to the higher one, if not the same type of predicate.
+=======
         If both concepts are a predicate instance, ValueError is raised.
 
         Returns the remaining concept after merge.
+>>>>>>> main
         """
         concept_graph.features['pjl_1']['cover'] = 0
         concept_graph.features['Sarah']['cover'] = 1
@@ -226,6 +232,27 @@ class ConceptGraphSpec:
         assert concept_graph.has('Peter', 'likes', 'pjl_1')
         assert concept_graph.has('Peter', 'likes', 'John', 'pjl_1')
         assert concept_graph.features['pjl_1']['cover'] == 1
+
+        concept_graph.add('user', 'go', 'store', 'p1')
+        concept_graph.add('user', 'go', 'store', 'p2')
+        concept_graph.merge('p1', 'p2')
+        assert concept_graph.has('p1') and not concept_graph.has('p2')
+        assert concept_graph.predicate('p1') == ('user', 'go', 'store', 'p1')
+
+        concept_graph.add('user', 'go', None, 'p3')
+        concept_graph.merge('p3', 'p1')
+        assert concept_graph.has('p3') and not concept_graph.has('p1')
+        assert concept_graph.predicate('p3') == ('user', 'go', 'store', 'p3')
+
+        concept_graph.add('john', 'travel', 'kroger', 'p4')
+        concept_graph.merge('p4', 'p3')
+        assert concept_graph.has('p4') and not concept_graph.has('p3')
+        assert concept_graph.predicate('p4') == ('john', 'travel', 'kroger', 'p4')
+
+        concept_graph.add('john', 'travel', 'x_100000', 'p5')
+        concept_graph.merge('p5', 'p4')
+        assert concept_graph.has('p5') and not concept_graph.has('p4')
+        assert concept_graph.predicate('p5') == ('john', 'travel', 'kroger', 'p5')
 
     @specification.init
     def id_map(ConceptGraph, other):
@@ -355,7 +382,7 @@ class ConceptGraphSpec:
         return concept_graph
 
     @specification.init
-    def pretty_print(ConceptGraph, exclusions=None):
+    def pretty_print(ConceptGraph, exclusions):
         """
         Prints the predicates of concept_graph in a human-readable format,
         defined by the knowledge base text file format.
@@ -371,6 +398,7 @@ class ConceptGraphSpec:
         ;
         ''', namespace='wm_')
         print(cg.pretty_print(exclusions=[]))
+
 
     @specification.init
     def graph_component_siblings(ConceptGraph, source, target):

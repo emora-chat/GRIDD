@@ -1,10 +1,9 @@
 
 from GRIDD.modules.text_to_logic_model import ParseToLogic
-from GRIDD.data_structures.span import Span
 from GRIDD.data_structures.concept_graph import ConceptGraph
-from GRIDD.data_structures.knowledge_base import KnowledgeBase
 import GRIDD.data_structures.knowledge_base as knowledge_base_file
 from GRIDD.data_structures.working_memory import WorkingMemory
+from GRIDD.modules.elit_dp_to_logic_spec import ElitDPSpec
 
 import os
 from os.path import join
@@ -155,22 +154,4 @@ class ElitDPToLogic(ParseToLogic):
 
 
 if __name__ == '__main__':
-    kb = KnowledgeBase(join('data_structures', 'kg_files', 'framework_test.kg'))
-    template_starter_predicates = [(n, 'is_type') for n in NODES]
-    template_file = join('data_structures', 'kg_files', 'elit_dp_templates.kg')
-    ttl = ElitDPToLogic("elit dp", kb, template_starter_predicates, template_file)
-
-    sentence = input('Sentence: ')
-    while sentence != 'q':
-        mentions,merges = ttl.translate([sentence])
-        for mention, cg in mentions.items():
-            print('#'*30)
-            print(mention)
-            print('#' * 30)
-            print(cg.pretty_print())
-        print()
-        for merge in merges:
-            print(merge)
-        print()
-        sentence = input('Sentence: ')
-    test = 1
+    print(ElitDPSpec.verify(ElitDPToLogic))

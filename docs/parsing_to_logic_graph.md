@@ -17,12 +17,22 @@ The mapping between question word and semantic concept is:
 	sbj(X, A/pstg())
 	precede(Y, Z)
 	precede(Z, A)
-	-> q_adv ->
+	-> q_aux_adv ->
 	p/Y(X, o/object())
 	question(o)
 	focus(p)
 	center(Y)
 	cover(Z)
+	;
+	
+	adv(X/pstg(), Y/question_word())
+	sbj(X, A/pstg())
+	precede(Y, A)
+	-> q_adv ->
+	p/Y(X, o/object())
+	question(o)
+	focus(p)
+	center(Y)
 	;
   
 </details>
@@ -119,16 +129,16 @@ Represented by wrapping the subject/object/dative with the `question` predicate.
   
 	obj(X/pstg(), Y/question_word())
 	-> obj_question ->
-	q/question(object())
+	question(o/object())
 	center(Y)
-	focus(q)
+	focus(o)
 	;
 	
 	sbj(X/pstg(), Y/question_word())
 	-> sbj_question ->
-	q/question(object())
+	question(o/object())
 	center(Y)
-	focus(q)
+	focus(o)
 	;
 	
 	dat(X/pstg(), Y/question_word())
@@ -136,7 +146,7 @@ Represented by wrapping the subject/object/dative with the `question` predicate.
 	sbj(X, A/pstg())
 	precede(Y, Z)
 	precede(Z, A)
-	-> q_dat ->
+	-> dat_question ->
 	p/indirect_obj(X, o/object())
 	question(o)
 	center(Y)
@@ -576,6 +586,14 @@ John made a call.
 
  </details>
 
+#### Examples
+
+I thought John bought a house.
+
+I thought that John did buy a house.
+
+I like buying a house.
+
 ## Verbs without Objects
 
 Captures expressions where the verb only has a subject.
@@ -669,7 +687,7 @@ Have you bought a house
 
 Auxiliary verbs modify the tense of their parent verb.
 
-TODO - properly update tense of main verb using auxiliaries, right now we have both a `time` predicate and an `aux_time` predicate
+TODO - missing 'go' auxiliary
 
  <details>
   <summary>Conversions</summary>
@@ -837,7 +855,7 @@ TODO - make better
 Captures definite and indefinite specifications of concepts.
 
 `det` dependency relation specifies instances of a concept, where
-definite instances exist in a `referential` predicate and ndefinite instances exist in an `instantiative` predicate.
+definite instances are used to construct reference links and indefinite instances aren't.
 
 Determiners which are not a part of a `det` dependency relation are `object` instances, following the same predicate structure as above. 
 
@@ -849,7 +867,6 @@ Determiners which are not a part of a `det` dependency relation are `object` ins
 	-> ref_concept_determiner ->
 	is_type(X)
 	focus(inst/X())
-	referential(inst)
 	center(X)
 	cover(Y)
 	;
@@ -859,7 +876,6 @@ Determiners which are not a part of a `det` dependency relation are `object` ins
 	-> inst_concept_determiner ->
 	is_type(X)
 	focus(inst/X())
-	instantiative(inst)
 	center(X)
 	cover(Y)
 	;
@@ -876,7 +892,6 @@ Determiners which are not a part of a `det` dependency relation are `object` ins
 	ltype(X, ref_det)
 	-> ref_determiner ->
 	focus(o/object())
-	referential(o)
 	center(X)
 	;
 	
@@ -884,7 +899,6 @@ Determiners which are not a part of a `det` dependency relation are `object` ins
 	ltype(X, inst_det)
 	-> inst_determiner ->
 	focus(o/object())
-	instantiative(o)
 	center(X)
 	;
 
@@ -1251,7 +1265,9 @@ Represented as predicates where the speaker is the subject and the dialogue part
 
 Recognize all pronouns that exist as concepts in the KG.
 
-If pronoun is referential (e.g. `it`), then it has a `referential` predicate. 
+If pronoun is referential (e.g. `it`), then it uses the reference linking (?)
+
+TODO - not currently set up as references
 
 <details>
   <summary>Conversions</summary>
@@ -1260,7 +1276,6 @@ If pronoun is referential (e.g. `it`), then it has a `referential` predicate.
 	ltype(X, ref_det)
 	-> ref_pron ->
 	focus(o/object())
-	referential(o)
 	center(X)
 	;
 

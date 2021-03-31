@@ -3,10 +3,23 @@ from abc import abstractmethod
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.knowledge_parser import KnowledgeParser
 from GRIDD.data_structures.inference_engine import InferenceEngine
+from GRIDD.data_structures.id_map import IdMap
+from GRIDD.data_structures.reference_identifier import REFERENCES_BY_RULE, QUESTION_INST_REF
 import torch, gc
-from GRIDD.utilities import collect
 
 LOCALDEBUG = False
+
+def ENTITY_INSTANCES_BY_RULE(rule_name, focus_node, cg, comps):
+    # get the newly instantiated concept that is the question subject
+    if rule_name in {'q_aux_adv', 'q_adv', 'qdet_copula_present', 'qdet_copula_past', 'dat_question'}:
+        ((s,_,_,_), ) = cg.predicates(predicate_type='question')
+        comps.append(s)
+    # only focal nodes which are newly instantiated entities are considered components
+    if rule_name in {'obj_question', 'sbj_question', 'q_aux_det', 'q_det',
+                     'ref_concept_determiner', 'inst_concept_determiner',
+                     'other_concept_determiner', 'ref_determiner', 'inst_determiner',
+                     'obj_of_possessive', 'ref_pron', 'single_word'}:
+        comps.append(focus_node)
 
 class ParseToLogic:
 
@@ -15,7 +28,7 @@ class ParseToLogic:
         rules = KnowledgeParser.rules(*template_file_names)
         for rule_id, rule in rules.items():
             self._reference_expansion(rule[0])
-        self.inference_engine = InferenceEngine(*[(*rule, rule_id) for rule_id, rule in rules.items()], device=device)
+        self.inference_engine = InferenceEngine([(*rule, rule_id) for rule_id, rule in rules.items()], device=device)
         self.spans = []
 
     def _reference_expansion(self, pregraph):
@@ -59,7 +72,7 @@ class ParseToLogic:
         """
         pass
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args):
         """
         Run the text to logic algorithm using *args as input to translate()
         """
@@ -142,10 +155,11 @@ class ParseToLogic:
         """
         centers_handled = set()
         mentions = {}
+        mention_ids = IdMap(namespace='ment_')
         auxes = set()
         for rule, solutions in assignments.items():
             link = False
-            pre, post = rule[0], rule[1]
+            pre, post, rule_name = rule[0], rule[1], rule[2]
             center_pred = post.predicates(predicate_type='center')
             if len(center_pred) > 0:
                 ((center_var, _, _, _),) = center_pred
@@ -161,9 +175,34 @@ class ParseToLogic:
                 if link:
                     center = '__linking__%s' % center
                 if center not in centers_handled:
-                    cg = ConceptGraph(namespace='ment_')
-                    post_to_cg_map = cg.concatenate(post)
                     self._update_centers(centers_handled, post, center, solution)
+                    post_to_ewm_map = {node: self._get_concept_of_span(solution[node], ewm)
+                                       for node in post.concepts()
+                                       if node in solution and node in maintain_in_mention_graph}
+                    cg = ConceptGraph(namespace=mention_ids)
+                    post_to_cg_map = cg.concatenate(post)
+                    for post_node, ewm_node in post_to_ewm_map.items():
+                        cg_node = post_to_cg_map[post_node]
+                        cg.add(ewm_node)
+                        cg.features.update(ewm.features, concepts={center})
+                        if ewm_node.startswith(ewm.id_map().namespace):
+                            cg.merge(cg_node, ewm_node, strict_order=True)
+                        else:
+                            cg.merge(ewm_node, cg_node, strict_order=True)
+                        self._add_unknowns_to_cg(ewm_node, ewm, cg_node, cg)
+                    # get focus node of mention
+                    ((focus_node, _, _, _),) = cg.predicates(predicate_type='focus')
+                    if rule_name in REFERENCES_BY_RULE: # identify reference spans
+                        if rule_name in QUESTION_INST_REF:
+                            # some questions have focus node as the question predicate instance,
+                            # when it should be the target of the question predicate instance
+                            focus_node = cg.predicate(focus_node)[0] # todo - update with new bipredicate request representation
+                        cg.metagraph.add_links(focus_node, REFERENCES_BY_RULE[rule_name](center, ewm), 'refsp')
+                    comps = [pred[3] for pred in cg.predicates()]
+                    ENTITY_INSTANCES_BY_RULE(rule_name, focus_node, cg, comps)
+                    cg.metagraph.add_links(focus_node, comps, 'comps')
+                    if ewm.has(center, 'assert'): # if center is asserted, add assertion to focus node
+                        cg.add(focus_node, 'assert')
                     mentions[center] = cg
                     if not center.startswith('__linking__'):
                         post_to_ewm_map = {node: self._get_concept_of_span(solution[node], ewm)

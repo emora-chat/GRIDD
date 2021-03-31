@@ -4,12 +4,22 @@ aux(X, Z/pstg())
 sbj(X, A/pstg())
 precede(Y, Z)
 precede(Z, A)
--> q_adv ->
+-> q_aux_adv ->
 p/Y(X, o/object())
 question(o)
 focus(p)
 center(Y)
 cover(Z)
+;
+
+adv(X/pstg(), Y/question_word())
+sbj(X, A/pstg())
+precede(Y, A)
+-> q_adv ->
+p/Y(X, o/object())
+question(o)
+focus(p)
+center(Y)
 ;
 
 
@@ -66,16 +76,16 @@ center(X)
 
 obj(X/pstg(), Y/question_word())
 -> obj_question ->
-q/question(object())
+question(o/object())
 center(Y)
-focus(q)
+focus(o)
 ;
 
 sbj(X/pstg(), Y/question_word())
 -> sbj_question ->
-q/question(object())
+question(o/object())
 center(Y)
-focus(q)
+focus(o)
 ;
 
 dat(X/pstg(), Y/question_word())
@@ -83,7 +93,7 @@ aux(X, Z/pstg())
 sbj(X, A/pstg())
 precede(Y, Z)
 precede(Z, A)
--> q_dat ->
+-> dat_question ->
 p/indirect_obj(X, o/object())
 question(o)
 center(Y)
@@ -571,7 +581,6 @@ ltype(Y, ref_det)
 -> ref_concept_determiner ->
 is_type(X)
 focus(inst/X())
-referential(inst)
 center(X)
 cover(Y)
 ;
@@ -581,7 +590,6 @@ ltype(Y, inst_det)
 -> inst_concept_determiner ->
 is_type(X)
 focus(inst/X())
-instantiative(inst)
 center(X)
 cover(Y)
 ;
@@ -598,7 +606,6 @@ X/dt()
 ltype(X, ref_det)
 -> ref_determiner ->
 focus(o/object())
-referential(o)
 center(X)
 ;
 
@@ -606,7 +613,6 @@ X/dt()
 ltype(X, inst_det)
 -> inst_determiner ->
 focus(o/object())
-instantiative(o)
 center(X)
 ;
 
@@ -833,7 +839,6 @@ X/pron()
 ltype(X, ref_det)
 -> ref_pron ->
 focus(o/object())
-referential(o)
 center(X)
 ;
 

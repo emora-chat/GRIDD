@@ -148,7 +148,6 @@ if __name__ == '__main__':
     rules_dir = join('GRIDD', 'resources', 'kg_files', 'rules')
     rules = [rules_dir]
     starting_wm = join('GRIDD', 'resources', 'kg_files', 'wm')
-    # rules = [join(rules_dir, file) for file in os.listdir(rules_dir) if file.endswith('.kg')]
 
     if interactive:
         chatbot = Chatbot(kb, rules=rules, starting_wm=starting_wm)

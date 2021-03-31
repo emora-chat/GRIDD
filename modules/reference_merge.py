@@ -14,26 +14,29 @@ class ReferenceMerge:
             for constraint in constraints:
                 if concept_graph.has(predicate_id=constraint):
                     constraint_predicates.add(concept_graph.predicate(constraint))
-                    constraint_predicates.add((constraint, 'var', None))
-                else:
-                    print('Reference: ', reference)
-                    print('Constraints: ', constraints)
-                    print('Current: ', constraint)
-                    raise Exception('Found non-predicate reference link')
+                constraint_predicates.add((constraint, 'var', None))
             reference_preconditions[reference] = ConceptGraph(predicates=constraint_predicates,
                                                               namespace='reference_')
         return reference_preconditions
 
     def __call__(self, concept_graph):
-        references = concept_graph.features.get_reference_links()
-        reference_preconditions = self._get_reference_preconditions(references, concept_graph)
-        match_dict = self.inference_engine.infer(concept_graph, *[(precondition, None, reference_node)
-                                                                 for reference_node, precondition
-                                                                 in reference_preconditions.items()])
-        compatible_pairs = [(reference_node, match[reference_node])
-                            for reference_node, (pre,post,matches) in match_dict.items()
-                            for match in matches
-                            if reference_node != match[reference_node]]
+        compatible_pairs = []
+        references = {}
+        for s, t, _ in concept_graph.edges(label='refl'):
+            references.setdefault(s, set()).add(t)
+        if len(references) > 0:
+            reference_preconditions = self._get_reference_preconditions(references, concept_graph)
+            match_dict = self.inference_engine.infer(concept_graph, *[(precondition, None, reference_node)
+                                                                     for reference_node, precondition
+                                                                     in reference_preconditions.items()])
+            compatible_pairs = []
+            for reference_node, (pre,post,matches) in match_dict.items():
+                if len(matches) == 2:
+                    # todo - what to do on reference ambiguity; for now, don't merge
+                    # one match of the 2 is the reference itself, so only one real match is found
+                    for match in matches:
+                        pairs = [(match[node], node) for node in match] if reference_node != match[reference_node] else []
+                        compatible_pairs.extend(pairs)
         return compatible_pairs
 
 

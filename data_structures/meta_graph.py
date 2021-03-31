@@ -14,6 +14,10 @@ class MetaGraph(Graph):
         else:
             self._supports = supports
 
+    def add_links(self, source, targets, label):
+        for t in targets:
+            self.add(source, t, label)
+
     def merge(self, concept_a, concept_b):
         out_edges = self.out_edges(concept_b)
         in_edges = self.in_edges(concept_b)
@@ -24,6 +28,7 @@ class MetaGraph(Graph):
         if self.has(concept_b):
             Graph.remove(self, concept_b)
         self.features.merge(concept_a, concept_b)
+        # todo - remove refl links from concept_b if concept_a is not a reference (reference resolved)
 
     def update(self, graph=None, features=None, id_map=None, concepts=None):
         if features is not None:
