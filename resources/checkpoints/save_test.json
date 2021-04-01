@@ -27,6 +27,19 @@
       "1_3"
     ]
   ],
+  "concepts": [
+    "bark",
+    "fluffy",
+    "1_1",
+    "1_0",
+    "1_2",
+    "volume",
+    "princess",
+    "hiss",
+    "loud",
+    "1_3",
+    "friend"
+  ],
   "features": {
     "features": {
       "princess": {

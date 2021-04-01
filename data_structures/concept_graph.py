@@ -264,10 +264,33 @@ class ConceptGraph:
         return set([predicate[2] for predicate in self.predicates(subject=concept,predicate_type=type)
                     if predicate[2] is not None])
 
-    def related(self, concept, type=None):
-        neighbors = self.subjects(concept, type)
-        neighbors.update(self.objects(concept, type))
-        return neighbors
+    def structure(self, concept, essential_modifiers=None):
+        visited = {None}
+        s = []
+        stack = [concept]
+        while stack:
+            concept = stack.pop()
+            visited.add(concept)
+            if self.has(predicate_id=concept):
+                pred = self.predicate(concept)
+                s.append(pred)
+                stack.extend({pred[0], pred[2]} - visited)
+            s.extend(self.predicates(concept, predicate_type='type'))
+            if essential_modifiers:
+                for em in essential_modifiers:
+                    for mp in chain(self.predicates(concept, predicate_type=em),
+                                    self.predicates(object=concept, predicate_type=em)):
+                        if mp[3] not in visited:
+                            stack.append(mp[3])
+        return s
+
+    def related(self, concept, types=None):
+        rel = set()
+        if self.has(predicate_id=concept):
+            rel.update(*self.predicate(concept))
+        rel.update([i for _, t, _, i in self.predicates(concept) if types is None or t in types])
+        rel.update([i for _, t, _, i in self.predicates(object=concept) if types is None or t in types])
+        return rel
 
     def subtypes(self, concept=None, memo=None):
         if memo is None:
@@ -443,8 +466,8 @@ class ConceptGraph:
             s, t, o, i = self.predicate(concept_b)
             self.add(s, t, o, concept_a)
             self._detach(s, t, o, i)
-        self.remove(concept_b)
         self.metagraph.merge(concept_a, concept_b)
+        self.remove(concept_b)
         return concept_a
 
     def _detach(self, subject, predicate_type, object, predicate_id):

@@ -15,6 +15,14 @@
       "1_1"
     ]
   ],
+  "concepts": [
+    "1_1",
+    "1_0",
+    "volume",
+    "princess",
+    "hiss",
+    "loud"
+  ],
   "features": {
     "features": {
       "princess": {

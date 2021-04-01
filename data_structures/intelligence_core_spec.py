@@ -95,6 +95,31 @@ class IntelligenceCoreSpec:
         assert ('fluffy', 'cref') in resolutions
         return
 
+    def decay_salience(core, feature=None):
+        """
+        Decay salience
+        """
+        core.decay_salience()
+
+    def prune_attended(core, feature=None):
+        """
+        Remove concepts from working memory according to salience feature.
+        """
+        core.prune_attended()
+
+    def pull_knowledge(core, k=1):
+        """
+        Pull knowledge of semantic neighbors of working memory concepts from knowledge base.
+        """
+        core.consider(core.pull_knowledge())
+        return
+
+    def pull_expressions(core):
+        """
+        Pull all expressions of working memory concepts.
+        """
+        core.pull_expressions()
+
     def merge(core, concept_sets):
         """
         Merge together each group of concepts in working memory.
@@ -109,30 +134,6 @@ class IntelligenceCoreSpec:
         """
         core.consider('scared(fluffy)')
         core.logical_merge()
-
-    def pull_knowledge(core, k=1):
-        """
-        Pull knowledge of semantic neighbors of working memory concepts from knowledge base.
-        """
-        core.consider(core.pull_knowledge())
-
-    def pull_expressions(core):
-        """
-        Pull all expressions of working memory concepts.
-        """
-        core.pull_expressions()
-
-    def decay_salience(core, feature=None):
-        """
-        Decay salience
-        """
-        core.decay_salience()
-
-    def prune_attended(core, feature=None):
-        """
-        Remove concepts from working memory according to salience feature.
-        """
-        core.prune_attended()
 
     def operate(core, operations=None):
         """

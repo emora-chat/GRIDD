@@ -6,6 +6,7 @@ TIME_DECAY = 0.1
 NONASSERT = 'nonassert'
 SALIENCE = 'salience'
 CONFIDENCE = 'confidence'
+ESSENTIAL = 'essential'
 CONNECTIVITY = 'conn'
 AND_LINK = 'and'
 OR_LINK = 'or'

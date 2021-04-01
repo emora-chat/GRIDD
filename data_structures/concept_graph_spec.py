@@ -138,7 +138,8 @@ class ConceptGraphSpec:
         Return an iterable of related concepts to `concept`, where each element of the
         iterable appears in a predicate with `concept`.
         """
-        assert set(concept_graph.related('Peter')) == {'John', 'Sarah', 'Mary'}
+        rel = set(concept_graph.related('Peter'))
+        assert rel == {'pjl_1', 'x_1', 'x_2', 'x_3', 'x_5'}
 
     def to_graph(concept_graph):
         """
@@ -216,15 +217,11 @@ class ConceptGraphSpec:
         Otherwise,
             `concept_a`'s is the maintained id.
 
-<<<<<<< HEAD
         If both concepts are a predicate instance,
             merge all arguments before merging the predicate instances and
             promote the lower predicate (e.g. monopredicate) to the higher one, if not the same type of predicate.
-=======
-        If both concepts are a predicate instance, ValueError is raised.
 
         Returns the remaining concept after merge.
->>>>>>> main
         """
         concept_graph.features['pjl_1']['cover'] = 0
         concept_graph.features['Sarah']['cover'] = 1
@@ -439,25 +436,29 @@ class ConceptGraphSpec:
         chase = (predicate)
         emotion = (predicate)
         pursue = (chase)
+        [reason, time, should] = (predicate)
+        now = (entity)
         [happy, excited] = (emotion);
         fido = german_shepard()
         fluffy = golden_retriever()
         user = person();
         uh=happy(user) excited(fido) excited(fluffy);
+        time(my_reason=reason(cff=chase(fido, fluffy), ef=excited(fido)), now);
+        should(my_reason);
         ''', namespace='cg_')
         return cg
 
-    def supertypes(cg, concept=None):
+    def types(cg, concept=None):
         """
         Get all supertypes of a concept.
 
         If no concept is provided, returns a dictionary where
         keys are concepts and values are the set of their types.
         """
-        assert cg.supertypes('fluffy') == {'fluffy', 'golden_retriever',
+        assert cg.types('fluffy') == {'fluffy', 'golden_retriever',
                               'pet', 'dog', 'entity', 'object', 'animal'}
-        assert cg.supertypes('uh') == {'uh', 'happy', 'emotion', 'predicate'}
-        all_supertypes = cg.supertypes()
+        assert cg.types('uh') == {'uh', 'happy', 'emotion', 'predicate'}
+        all_supertypes = cg.types()
         assert all_supertypes['animal'] == {'animal', 'entity', 'object'}
         assert all_supertypes['user'] == {'person', 'animal', 'entity', 'object', 'user'}
 
@@ -474,7 +475,14 @@ class ConceptGraphSpec:
         assert all_subtypes['fluffy'] == {'fluffy'}
         assert all_subtypes['happy'] == {'happy', 'uh'}
 
-
+    def structure(cg, concept, essential_modifiers=None):
+        structs = cg.structure('my_reason', {'time'})
+        struct_sigs = {(s, t, o) for s, t, o, i in structs}
+        assert ('fido', 'chase', 'fluffy') in struct_sigs
+        assert ('fido', 'excited', None) in struct_sigs
+        assert ('cff', 'reason', 'ef') in struct_sigs
+        assert ('my_reason', 'time', 'now') in struct_sigs
+        assert ('should', 'my_reason', None) not in struct_sigs
 
 @specification
 class ConceptGraphFromLogicSpec:
