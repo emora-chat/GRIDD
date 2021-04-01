@@ -174,14 +174,14 @@ class IntelligenceCore:
         for pred in type_predicates:
             self.working_memory.add(*pred)
 
-    def pull_knowledge(self, limit, num_pullers, degree=1): # todo
+    def pull_knowledge(self, limit, num_pullers, assocation_limit=None, subtype_limit=None, degree=1):
         kb = self.knowledge_base
-        essential_types = [i for i in kb.subtypes(ESSENTIAL) if not kb.has(predicate_id=i)]
+        essential_types = [i for i in kb.subtypes_of(ESSENTIAL) if not kb.has(predicate_id=i)]
         pullers = sorted(self.working_memory.concepts(),
                          key=lambda c: self.working_memory.features.get(c, {}).get(SALIENCE, 0),
                          reverse=True)
         pullers = pullers[:num_pullers]
-        neighbors = {p: kb.related(p) for p in pullers}
+        neighbors = {p: kb.related(p, limit=assocation_limit) for p in pullers}
 
         for length in range(3, 0, -1):
             combos = combinations(pullers, length)

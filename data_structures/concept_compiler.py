@@ -6,6 +6,7 @@ from lark.visitors import Visitor_Recursive
 from GRIDD.data_structures.id_map import IdMap
 from itertools import chain
 from GRIDD.utilities.utilities import combinations
+from GRIDD.globals import *
 
 
 class ConceptCompiler:
@@ -201,6 +202,8 @@ class ConceptVisitor(Visitor_Recursive):
             self.types.update(newtype)
         if any([st in self.predicates for st in supertypes]):
             self.predicates.update(newtype)
+        for n in chain(newtype, supertypes):
+            self.lmetadatas.setdefault(n, {})[IS_TYPE] = True
         tree.refs = newtype
 
     def concept_init(self, tree):

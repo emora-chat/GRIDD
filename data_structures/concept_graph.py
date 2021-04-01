@@ -14,7 +14,7 @@ CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 from collections import defaultdict, deque
 import json
 from GRIDD.utilities import Counter
-import GRIDD.globals
+from GRIDD.globals import *
 from itertools import chain
 
 
@@ -279,34 +279,59 @@ class ConceptGraph:
                             stack.append(mp[3])
         return s
 
-    def related(self, concept, types=None):
-        rel = set()
+    def related(self, concept, types=None, limit=None):
         if self.has(predicate_id=concept):
-            rel.update(*self.predicate(concept))
-        rel.update([i for _, t, _, i in self.predicates(concept) if types is None or t in types])
-        rel.update([i for _, t, _, i in self.predicates(object=concept) if types is None or t in types])
-        return rel
+            yield from self.predicate(concept)
+        num = 0
+        for _, t, _, i in self.predicates(concept):
+            if types is None or t in types:
+                if limit is None or num < limit:
+                    yield i
+                    num += 1
+                else: break
+        for _, t, _, i in self.predicates(object=concept):
+            if types is None or t in types:
+                if limit is None or num < limit:
+                    yield i
+                    num += 1
+                else: break
 
-    def subtypes(self, concept=None, memo=None):
+    def subtypes_of(self, concept, memo=None):
         if memo is None:
             memo = {}
         if concept is not None:
             if concept not in memo:
                 types = {concept}
+                yield concept
+                for _, _, _, instance in self.predicates(predicate_type=concept):
+                    for st in self.subtypes_of(instance, memo):
+                        yield st
+                        types.add(st)
                 for predicate in self.predicates(predicate_type='type', object=concept):
                     subtype = predicate[0]
-                    types.update(self.subtypes(subtype, memo))
-                for _, _, _, instance in self.predicates(predicate_type=concept):
-                    types.update(self.subtypes(instance, memo))
+                    for st in self.subtypes_of(subtype, memo):
+                        yield st
+                        types.add(st)
                 memo[concept] = types
-            return memo[concept]
-        else:
-            todo = set(self.concepts())
-            while todo:
-                concept = todo.pop()
-                self.subtypes(concept, memo)
-                todo.difference_update(set(memo.keys()))
-            return memo
+            else:
+                yield from memo[concept]
+
+    def subtypes(self, memo=None):
+        if memo is None:
+            memo = {}
+        todo = set(self.concepts())
+        while todo:
+            concept = todo.pop()
+            todo.difference_update(self.subtypes_of(concept, memo))
+        return memo
+
+    def instances(self, concept=None, memo=None, limit=None):
+        count = 0
+        for subtype in self.subtypes_of(concept, memo):
+            if self.metagraph.features.get(subtype, {}).get(IS_TYPE, False):
+                if count < limit:
+                    yield subtype
+                else: break
 
     def types(self, concept=None, memo=None):
         if memo is None:
@@ -373,7 +398,7 @@ class ConceptGraph:
 
     def rules(self):
         rules = {}
-        rule_instances = self.subtypes('implication') - {'implication'}
+        rule_instances = self.subtypes_of('implication') - {'implication'}
         for rule in rule_instances:
             pre = self.metagraph.targets(rule, 'pre')
             post = self.metagraph.targets(rule, 'post')

@@ -1,6 +1,6 @@
 
 from structpy import specification
-import time
+import time, json
 from os.path import join
 from GRIDD.data_structures.spanning_node import SpanningNode
 
@@ -462,16 +462,18 @@ class ConceptGraphSpec:
         assert all_supertypes['animal'] == {'animal', 'entity', 'object'}
         assert all_supertypes['user'] == {'person', 'animal', 'entity', 'object', 'user'}
 
-    def subtypes(cg, concept=None):
+    def subtypes_of(cg, concept=None):
         """
         Get all subtypes of a concept.
 
         If no concept is provided, returns a dictionary where
         keys are concepts and values are the set of their subtypes.
         """
-        assert cg.subtypes('animal') == {'fluffy', 'fido', 'user', 'dog', 'person',
+        assert set(cg.subtypes_of('animal')) == {'fluffy', 'fido', 'user', 'dog', 'person',
                                          'animal', 'golden_retriever', 'german_shepard'}
         all_subtypes = cg.subtypes()
+        for k, v in all_subtypes.items():
+            print(k, v)
         assert all_subtypes['fluffy'] == {'fluffy'}
         assert all_subtypes['happy'] == {'happy', 'uh'}
 
