@@ -174,30 +174,19 @@ class IntelligenceCore:
         for pred in type_predicates:
             self.working_memory.add(*pred)
 
-    def pull_knowledge(self): # todo
-        pullers = [c for c in self.working_memory.concepts()
-                   if self.working_memory.features.get(c, {}).get(SALIENCE, 0) > 0.5]
-        neighbors = {p: self.knowledge_base.related(p) for p in pullers}
-        for p in pullers:
-            r = self.knowledge_base.related(p)
-            for ri in list(r):
-                if self.knowledge_base.has(predicate_id=ri):
-                    r.update(*(self.knowledge_base.predicate(ri)))
-        memo_inter = {}
-        to_pull = []
-        for i in range(3, 0, -1):
-            options = combinations(pullers, i)
-            for option in options:
-                inter = neighbors[option[0]]
-                considered = [option[0]]
-                for element in option[1:]:
-                    considered.append(element)
-                    if tuple(considered) in memo_inter:
-                        inter = memo_inter[tuple(considered)]
-                    else:
-                        inter = inter.intersection(neighbors[element])
-                        memo_inter[tuple(considered)] = inter
-                to_pull.extend(inter)
+    def pull_knowledge(self, limit, num_pullers, degree=1): # todo
+        kb = self.knowledge_base
+        essential_types = [i for i in kb.subtypes(ESSENTIAL) if not kb.has(predicate_id=i)]
+        pullers = sorted(self.working_memory.concepts(),
+                         key=lambda c: self.working_memory.features.get(c, {}).get(SALIENCE, 0),
+                         reverse=True)
+        pullers = pullers[:num_pullers]
+        neighbors = {p: kb.related(p) for p in pullers}
+
+        for length in range(3, 0, -1):
+            combos = combinations(pullers, length)
+
+
 
     def pull_expressions(self):
         pass

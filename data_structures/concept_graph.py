@@ -118,13 +118,15 @@ class ConceptGraph:
                     del self._monopredicate_instances[(concept, predicate_type)]
             self.remove(concept=predicate_id)
         elif predicate_type is not None:    # Remove predicates by type and signature
-            for s, t, o, i in self.predicates(concept, predicate_type, object):
+            for s, t, o, i in list(self.predicates(concept, predicate_type, object)):
                 self.remove(predicate_id=i)
         elif object is not None:            # Remove predicates between subject and object
-            for s, t, o, i in self.predicates(subject=concept, object=object):
+            for s, t, o, i in list(self.predicates(subject=concept, object=object)):
                 self.remove(predicate_id=i)
         else:                               # Remove concept
-            for s, t, o, i in self.predicates(subject=concept) + self.predicates(object=concept):
+            for s, t, o, i in list(self.predicates(subject=concept)):
+                self.remove(predicate_id=i)
+            for s, t, o, i in list(self.predicates(object=concept)):
                 self.remove(predicate_id=i)
             if self._bipredicates_graph.has(concept):
                 self._bipredicates_graph.remove(concept)
@@ -201,60 +203,53 @@ class ConceptGraph:
                 if object is not None:      # Predicates by (subject, type, object)
                     sig = (subject, predicate_type, object)
                     if sig in self._bipredicate_instances:
-                        return [(*sig, id) for id in self._bipredicate_instances[sig]]
+                        for id in self._bipredicate_instances[sig]:
+                            yield (*sig, id)
                 else:                       # Predicates by (subject, type)
                     sig = (subject, predicate_type)
                     if sig in self._monopredicate_instances:
-                        monos = [(*sig, None, id) for id in self._monopredicate_instances[sig]]
-                    else:
-                        monos = []
+                        for id in self._monopredicate_instances[sig]:
+                            yield (*sig, None, id)
                     if self._bipredicates_graph.has(subject, label=predicate_type):
-                        es = self._bipredicates_graph.out_edges(subject, predicate_type)
-                        bis = [(s, l, t, i) for s, t, l, i in es]
-                    else:
-                        bis = []
-                    return monos + bis
+                        for s, t, l, i in self._bipredicates_graph.out_edges(subject, predicate_type):
+                            yield s, l, t, i
             else:
                 if object is not None:      # Predicates by (subject, object)
                     if self._bipredicates_graph.has(subject, object):
-                        es = self._bipredicates_graph.edges(subject, object)
-                        return [(s, l, t, i) for s, t, l, i in es]
+                        for s, t, l, i in self._bipredicates_graph.edges(subject, object):
+                            yield s, l, t, i
                 else:                       # Predicates by (subject)
                     if self._bipredicates_graph.has(subject):
-                        es = self._bipredicates_graph.out_edges(subject)
-                        bis = [(s, l, t, i) for s, t, l, i in es]
-                    else:
-                        bis = []
+                        for s, t, l, i in self._bipredicates_graph.out_edges(subject):
+                            yield s, l, t, i
                     if subject in self._monopredicates_map:
-                        ms = self._monopredicates_map[subject]
-                        monos = [(subject, m, None, i) for m in ms for i in self._monopredicate_instances[subject, m]]
-                    else:
-                        monos = []
-                    return monos + bis
+                        for m in self._monopredicates_map[subject]:
+                            for i in self._monopredicate_instances[subject, m]:
+                                yield (subject, m, None, i)
         else:
             if predicate_type is not None:
                 if object is not None:      # Predicates by (type, object)
-                    es = self._bipredicates_graph.in_edges(object, predicate_type)
-                    return [(s, l, t, i) for s, t, l, i in es]
+                    for s, t, l, i in self._bipredicates_graph.in_edges(object, predicate_type):
+                        yield s, l, t, i
                 else:                       # Predicates by (type)
-                    es = self._bipredicates_graph.edges(label=predicate_type)
-                    bis = [(s, l, t, i) for s, t, l, i in es]
+                    for s, t, l, i in self._bipredicates_graph.edges(label=predicate_type):
+                        yield s, l, t, i
                     if predicate_type in self._monopredicates_map.reverse():
-                        ss = self._monopredicates_map.reverse()[predicate_type]
-                        monos = [(s, predicate_type, None, i) for s in ss for i in self._monopredicate_instances[s, predicate_type]]
-                        return monos + bis
-                    else:
-                        return bis
+                        for s in self._monopredicates_map.reverse()[predicate_type]:
+                            for i in self._monopredicate_instances[s, predicate_type]:
+                                yield (s, predicate_type, None, i)
             else:
                 if object is not None:      # Predicates by (object)
                     if self._bipredicates_graph.has(object):
-                        es = self._bipredicates_graph.in_edges(object)
-                        return [(s, l, t, i) for s, t, l, i in es]
+                        for s, t, l, i in self._bipredicates_graph.in_edges(object):
+                            yield s, l, t, i
                 else:                       # All predicates
-                    bis = [(*sig, i) for sig, id in self._bipredicate_instances.items() for i in id]
-                    monos = [(*sig, None, i) for sig, id in self._monopredicate_instances.items() for i in id]
-                    return monos + bis
-        return []
+                    for sig, id in self._bipredicate_instances.items():
+                        for i in id:
+                            yield (*sig, i)
+                    for sig, id in self._monopredicate_instances.items():
+                        for i in id:
+                            yield (*sig, None, i)
 
     def subjects(self, concept, type=None):
         return set([predicate[0] for predicate in self.predicates(predicate_type=type,

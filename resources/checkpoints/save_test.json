@@ -4,6 +4,18 @@
   "predicates": [
     [
       "princess",
+      "friend",
+      "fluffy",
+      "1_1"
+    ],
+    [
+      "1_2",
+      "volume",
+      "loud",
+      "1_3"
+    ],
+    [
+      "princess",
       "hiss",
       "None",
       "1_0"
@@ -12,31 +24,19 @@
       "fluffy",
       "bark",
       "None",
-      "1_1"
-    ],
-    [
-      "princess",
-      "friend",
-      "fluffy",
       "1_2"
-    ],
-    [
-      "1_1",
-      "volume",
-      "loud",
-      "1_3"
     ]
   ],
   "concepts": [
     "bark",
+    "princess",
+    "1_0",
+    "loud",
     "fluffy",
     "1_1",
-    "1_0",
-    "1_2",
     "volume",
-    "princess",
     "hiss",
-    "loud",
+    "1_2",
     "1_3",
     "friend"
   ],

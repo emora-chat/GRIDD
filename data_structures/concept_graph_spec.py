@@ -297,7 +297,7 @@ class ConceptGraphSpec:
         assert cg1.has('princess', 'hiss')
         assert cg1.predicate('1_1') in [('fluffy', 'bark', None, '1_1'),
                                         ('princess' , 'friend', 'fluffy', '1_1')]
-        fb_merge = cg1.predicates('fluffy', 'bark', None)[0][3]
+        fb_merge = list(cg1.predicates('fluffy', 'bark', None))[0][3]
         assert cg1.has(fb_merge, 'volume', 'loud')
 
         assert cg1.features['princess']['salience'] == 0.75
@@ -322,15 +322,15 @@ class ConceptGraphSpec:
         assert new_cg.predicate('1_1') == concept_graph.predicate('1_1')
         assert new_cg.predicate('1_2') == concept_graph.predicate('1_2')
         assert new_cg.predicate('1_3') == concept_graph.predicate('1_3')
-        assert new_cg.predicates() == concept_graph.predicates()
+        assert set(new_cg.predicates()) == set(concept_graph.predicates())
 
-        final_pred_subj = concept_graph.predicates('fluffy', 'bark', None)[0][3]
+        final_pred_subj = list(concept_graph.predicates('fluffy', 'bark', None))[0][3]
         assert new_cg.has(final_pred_subj, 'volume', 'loud')
 
         namespace_cg = concept_graph.copy(namespace="new_")
-        assert namespace_cg.predicates('fluffy', 'bark', None)[0][3].startswith("new")
-        assert namespace_cg.predicates('princess' , 'friend', 'fluffy')[0][3].startswith("new")
-        assert namespace_cg.predicates('princess', 'hiss', None)[0][3].startswith("new")
+        assert list(namespace_cg.predicates('fluffy', 'bark', None))[0][3].startswith("new")
+        assert list(namespace_cg.predicates('princess' , 'friend', 'fluffy'))[0][3].startswith("new")
+        assert list(namespace_cg.predicates('princess', 'hiss', None))[0][3].startswith("new")
         for i in range(4):
             assert not namespace_cg.has(predicate_id='1_%d'%i)
             assert namespace_cg.has(predicate_id='new_%d'%i)
@@ -370,7 +370,7 @@ class ConceptGraphSpec:
 
         assert concept_graph.has('fluffy', 'bark')
         assert concept_graph.has('princess', 'friend', 'fluffy')
-        assert concept_graph.predicates('princess', 'friend', 'fluffy')[0][3].startswith('1')
+        assert list(concept_graph.predicates('princess', 'friend', 'fluffy'))[0][3].startswith('1')
         assert concept_graph.features['princess']['salience'] == 0.75
         assert concept_graph.features['princess']['cover'] == 0.25
 
@@ -480,6 +480,7 @@ class ConceptGraphSpec:
         struct_sigs = {(s, t, o) for s, t, o, i in structs}
         assert ('fido', 'chase', 'fluffy') in struct_sigs
         assert ('fido', 'excited', None) in struct_sigs
+        assert ('fido', 'type', 'german_shepard') in struct_sigs
         assert ('cff', 'reason', 'ef') in struct_sigs
         assert ('my_reason', 'time', 'now') in struct_sigs
         assert ('should', 'my_reason', None) not in struct_sigs
