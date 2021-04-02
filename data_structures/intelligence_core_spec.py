@@ -91,7 +91,7 @@ class IntelligenceCoreSpec:
         Resolve all references in working memory to their referents.
         """
         resolutions = core.resolve()
-        assert len(resolutions) == 2
+        assert len(resolutions) == 3
         assert ('fluffy', 'cref') in resolutions
         return
 
@@ -111,7 +111,9 @@ class IntelligenceCoreSpec:
         """
         Pull knowledge of semantic neighbors of working memory concepts from knowledge base.
         """
-        core.consider(core.pull_knowledge())
+        additions = core.pull_knowledge(10, 10)
+        assert len(additions) == 1
+        core.consider(additions)
         return
 
     def pull_expressions(core):

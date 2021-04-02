@@ -398,7 +398,7 @@ class ConceptGraph:
 
     def rules(self):
         rules = {}
-        rule_instances = self.subtypes_of('implication') - {'implication'}
+        rule_instances = set(self.subtypes_of('implication')) - {'implication'}
         for rule in rule_instances:
             pre = self.metagraph.targets(rule, 'pre')
             post = self.metagraph.targets(rule, 'post')

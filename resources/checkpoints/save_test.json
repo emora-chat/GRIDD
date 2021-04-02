@@ -28,17 +28,17 @@
     ]
   ],
   "concepts": [
-    "1_0",
-    "1_1",
-    "loud",
-    "fluffy",
-    "friend",
     "volume",
-    "bark",
     "princess",
-    "hiss",
+    "1_1",
+    "fluffy",
     "1_2",
-    "1_3"
+    "bark",
+    "friend",
+    "hiss",
+    "1_0",
+    "1_3",
+    "loud"
   ],
   "features": {
     "features": {

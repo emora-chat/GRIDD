@@ -16,12 +16,12 @@
     ]
   ],
   "concepts": [
-    "2_1",
-    "fluffy",
-    "friend",
-    "bark",
     "princess",
-    "2_0"
+    "fluffy",
+    "2_1",
+    "bark",
+    "2_0",
+    "friend"
   ],
   "features": {
     "features": {},

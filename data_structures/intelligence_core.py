@@ -4,7 +4,7 @@ from GRIDD.data_structures.intelligence_core_spec import IntelligenceCoreSpec
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.inference_engine import InferenceEngine
 from GRIDD.data_structures.concept_compiler import ConceptCompiler
-from GRIDD.utilities.utilities import uniquify, operators
+from GRIDD.utilities.utilities import uniquify, operators, interleave
 from itertools import chain, combinations
 from GRIDD.data_structures.update_graph import UpdateGraph
 from GRIDD.globals import *
@@ -176,17 +176,55 @@ class IntelligenceCore:
 
     def pull_knowledge(self, limit, num_pullers, assocation_limit=None, subtype_limit=None, degree=1):
         kb = self.knowledge_base
-        essential_types = [i for i in kb.subtypes_of(ESSENTIAL) if not kb.has(predicate_id=i)]
         pullers = sorted(self.working_memory.concepts(),
                          key=lambda c: self.working_memory.features.get(c, {}).get(SALIENCE, 0),
                          reverse=True)
         pullers = pullers[:num_pullers]
-        neighbors = {p: kb.related(p, limit=assocation_limit) for p in pullers}
-
-        for length in range(3, 0, -1):
+        neighbors = {}
+        backptrs = {}
+        for p in pullers:
+            neighborhood = set(self.knowledge_base.related(p, limit=assocation_limit))
+            arguments = set()
+            for n in neighborhood:
+                if self.knowledge_base.has(predicate_id=n):
+                    s, _, o, _ = self.knowledge_base.predicate(n)
+                    other_arg = o if s == p else s
+                    if other_arg is not None:
+                        arguments.add(other_arg)
+                        backptrs.setdefault(other_arg, set()).add(n)
+            neighborhood.update(arguments)
+            neighbors[p] = neighborhood
+        pulling = set()
+        wmp = set(self.working_memory.predicates())
+        memo = {}
+        essential_types = [i for i in kb.subtypes_of(ESSENTIAL) if not kb.has(predicate_id=i)]
+        for length in range(2, 0, -1): # todo - inefficient; identify combinations -> empty intersection and ignore in further processing
             combos = combinations(pullers, length)
-
-
+            for combo in combos:
+                related = set(neighbors[combo[0]])
+                concepts = [combo[0]]
+                for c in combo[1:]:
+                    concepts.append(c)
+                    tconcepts = tuple(concepts)
+                    if tconcepts in memo:
+                        related = memo[tconcepts]
+                    else:
+                        related.intersection_update(neighbors[c])
+                        memo[tconcepts] = set(related)
+                    if len(related) == 0:
+                        break
+                for r in related:
+                    to_add = set(self.knowledge_base.structure(r, essential_types))
+                    for inst in backptrs.get(r, r):
+                        to_add.update(self.knowledge_base.structure(inst, essential_types))
+                    to_add.difference_update(wmp)
+                    to_add.difference_update(pulling)
+                    if len(to_add) <= limit:
+                        limit -= len(to_add)
+                        pulling.update(to_add)
+                    else:
+                        return pulling
+        return pulling
 
     def pull_expressions(self):
         pass
@@ -231,7 +269,7 @@ class IntelligenceCore:
                 if cg.has(predicate_id=i): # within-loop-mutation check
                     opfunc(cg, i)
 
-    def display(self):
+    def display(self, verbosity=1):
         s = '#'*30 + ' Working Memory ' + '#'*30
         s += self.working_memory.pretty_print()
         s += '#'*(60+len(' working memory '))
