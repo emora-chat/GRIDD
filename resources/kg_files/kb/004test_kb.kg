@@ -1,9 +1,9 @@
-buy<predicate>
-buy[buy,buys,bought]
-house<entity>
-house[house,houses]
-car<entity>
-car[car,cars]
-location<entity>
-state<location>
+buy=(predicate)
+expr("buy", buy)
+house=(entity)
+expr("house", house)
+car=(entity)
+expr("car", car)
+location=(entity)
+state=(location)
 ;
