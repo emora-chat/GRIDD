@@ -1,6 +1,6 @@
 
 from structpy import specification
-
+from GRIDD.globals import *
 
 @specification
 class IntelligenceCoreSpec:
@@ -95,18 +95,6 @@ class IntelligenceCoreSpec:
         assert ('fluffy', 'cref') in resolutions
         return
 
-    def decay_salience(core, feature=None):
-        """
-        Decay salience
-        """
-        core.decay_salience()
-
-    def prune_attended(core, feature=None):
-        """
-        Remove concepts from working memory according to salience feature.
-        """
-        core.prune_attended()
-
     def pull_knowledge(core, k=1):
         """
         Pull knowledge of semantic neighbors of working memory concepts from knowledge base.
@@ -114,6 +102,24 @@ class IntelligenceCoreSpec:
         additions = core.pull_knowledge(10, 10)
         assert len(additions) == 1
         core.consider(additions)
+        return
+
+    def decay_salience(core, feature=None):
+        """
+        Decay salience
+        """
+        core.consider('''
+        ht=happy(taylor=dog()){"%s": 0.1}
+        '''%SALIENCE)
+        core.decay_salience()
+        assert core.working_memory.features['ht'][SALIENCE] == 0.0
+
+    def prune_attended(core, keep, feature=None):
+        """
+        Remove concepts from working memory according to salience feature.
+        """
+        core.prune_attended(2)
+        assert not core.working_memory.has(predicate_id='ht')
         return
 
     def pull_expressions(core):

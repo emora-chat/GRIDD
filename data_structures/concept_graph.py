@@ -104,6 +104,10 @@ class ConceptGraph:
             return predicate_id
 
     def remove(self, concept=None, predicate_type=None, object=None, predicate_id=None):
+        if concept is not None and predicate_type is None and object is None \
+                and predicate_id is None and self.has(predicate_id=concept):
+            predicate_id = concept
+            concept = None
         if predicate_id is not None:        # Remove predicate by id
             concept, predicate_type, object, predicate_id = self.predicate(predicate_id)
             if object is not None:

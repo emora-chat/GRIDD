@@ -30,6 +30,9 @@ class IntelligenceCore:
             self.working_memory = ConceptGraph(namespace='wm', supports={AND_LINK: False})
             self.accept(working_memory)
         self.operators = operators(intcoreops)
+        self.essential_types = {i for i in self.knowledge_base.subtypes_of(ESSENTIAL)
+                                if not self.knowledge_base.has(predicate_id=i)}
+
 
     def know(self, knowledge, **options):
         cg = ConceptGraph(namespace='_tmp_')
@@ -47,12 +50,16 @@ class IntelligenceCore:
     def consider(self, concepts, associations=None, salience=1, **options):
         considered = ConceptGraph(concepts, namespace='_tmp_')
         if associations is None:
-            considered.features.update({c: {'salience': salience*SENSORY_SALIENCE}
-                                                  for c in considered.concepts()})
+            considered.features.update({c: {'salience': (salience*SENSORY_SALIENCE
+                                        if not c in considered.features or not SALIENCE in considered.features[c]
+                                        else considered.features[c][SALIENCE])}
+                                        for c in considered.concepts()})
         else:
             s = min([self.working_memory.features.get(c, {}).get('salience', 0)
                             for c in associations]) - ASSOCIATION_DECAY
-            considered.features.update({c: {'salience': s*salience}
+            considered.features.update({c: {'salience': (salience*s
+                                        if not c in considered.features or not SALIENCE in considered.features[c]
+                                        else considered.features[c][SALIENCE])}
                                         for c in considered.concepts()})
         self._loading_options(concepts, options)
         mapping = self.working_memory.concatenate(considered)
@@ -61,12 +68,16 @@ class IntelligenceCore:
     def accept(self, concepts, associations=None, salience=1, **options):
         considered = ConceptGraph(concepts, namespace='_tmp_')
         if associations is None:
-            considered.features.update({c: {'salience': salience*SENSORY_SALIENCE}
-                                                  for c in considered.concepts()})
+            considered.features.update({c: {'salience': (salience*SENSORY_SALIENCE
+                                        if not c in considered.features or not SALIENCE in considered.features[c]
+                                        else considered.features[c][SALIENCE])}
+                                        for c in considered.concepts()})
         else:
             s = min([self.working_memory.features.get(c, {}).get('salience', 0)
                             for c in associations]) - ASSOCIATION_DECAY
-            considered.features.update({c: {'salience': s*salience}
+            considered.features.update({c: {'salience': (salience*s
+                                        if not c in considered.features or not SALIENCE in considered.features[c]
+                                        else considered.features[c][SALIENCE])}
                                         for c in considered.concepts()})
         self._loading_options(concepts, options)
         self._assertions(considered)
@@ -197,7 +208,6 @@ class IntelligenceCore:
         pulling = set()
         wmp = set(self.working_memory.predicates())
         memo = {}
-        essential_types = [i for i in kb.subtypes_of(ESSENTIAL) if not kb.has(predicate_id=i)]
         for length in range(2, 0, -1): # todo - inefficient; identify combinations -> empty intersection and ignore in further processing
             combos = combinations(pullers, length)
             for combo in combos:
@@ -214,9 +224,9 @@ class IntelligenceCore:
                     if len(related) == 0:
                         break
                 for r in related:
-                    to_add = set(self.knowledge_base.structure(r, essential_types))
+                    to_add = set(self.knowledge_base.structure(r, self.essential_types))
                     for inst in backptrs.get(r, r):
-                        to_add.update(self.knowledge_base.structure(inst, essential_types))
+                        to_add.update(self.knowledge_base.structure(inst, self.essential_types))
                     to_add.difference_update(wmp)
                     to_add.difference_update(pulling)
                     if len(to_add) <= limit:
@@ -256,10 +266,27 @@ class IntelligenceCore:
         updater.update(iterations)
 
     def decay_salience(self):
-        pass
+        for c in self.working_memory.concepts():
+            if not self.working_memory.features.get(c, {}).get(COLDSTART, False):
+                sal = self.working_memory.features.setdefault(c, {}).setdefault(SALIENCE, 0)
+                self.working_memory.features[c][SALIENCE] = sal - TIME_DECAY
 
-    def prune_attended(self):
-        pass
+    def prune_attended(self, keep):
+        options = set()
+        for s, t, o, i in self.working_memory.predicates():
+            if t == 'type':
+                if not self.working_memory.features.get(s, {}).get(IS_TYPE, False):
+                    preds = {pred for pred in self.working_memory.related(s) if pred[1] != 'type'}
+                    if not preds:
+                        options.add(i)
+            elif t not in self.essential_types:
+                options.add(i)
+
+        sconcepts = sorted(options,
+                           key=lambda x: self.working_memory.features.get(x, {}).get(SALIENCE, 0),
+                           reverse=True)
+        for c in sconcepts[keep:]:
+            self.working_memory.remove(c) # todo: uh oh - short term memory loss
 
     def operate(self, cg=None):
         if cg is None:
