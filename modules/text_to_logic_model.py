@@ -23,12 +23,8 @@ def ENTITY_INSTANCES_BY_RULE(rule_name, focus_node, cg, comps):
 
 class ParseToLogic:
 
-    def __init__(self, knowledge_base, *template_file_names, device='cpu'):
-        self.knowledge_base = knowledge_base
-        rules = KnowledgeParser.rules(*template_file_names)
-        for rule_id, rule in rules.items():
-            self._reference_expansion(rule[0])
-        self.inference_engine = InferenceEngine([(*rule, rule_id) for rule_id, rule in rules.items()], device=device)
+    def __init__(self, intcore):
+        self.intcore = intcore
         self.spans = []
 
     def _reference_expansion(self, pregraph):
@@ -80,24 +76,21 @@ class ParseToLogic:
         return self.translate(*args)
 
     def translate(self, *args):
-        ewm = self.text_to_graph(*args)
-        self._expression_pull(ewm)
-        self._unknown_expression_identification(ewm)
-        rule_assignments = {(pre, post, rule): sols for rule, (pre, post, sols) in self._inference(ewm).items()}
-        mentions = self._get_mentions(rule_assignments, ewm)
-        merges = self._get_merges(rule_assignments, ewm)
+        wm = self.intcore.working_memory
+        self.intcore.prune_attended(0)
+        parse_graph = self.text_to_graph(*args)
+        wm.consider(parse_graph)
+        expr_preds = self.intcore.pull_expressions(parse_graph)
+        wm.consider(expr_preds)
+        self._unknown_expression_identification(wm)
+        rule_assignments = {(pre, post, rule): sols
+                            for rule, (pre, post, sols) in self.intcore.infer().items()}
+        mentions = self._get_mentions(rule_assignments, wm)
+        merges = self._get_merges(rule_assignments, wm)
         if LOCALDEBUG:
-            self.display_mentions(mentions, ewm)
-            self.display_merges(merges, ewm)
+            self.display_mentions(mentions, wm)
+            self.display_merges(merges, wm)
         return mentions, merges
-
-    def _expression_pull(self, ewm):
-        """
-        Pull expressions from KB into the expression working_memory
-        """
-        ewm.pull(order=1,
-                 concepts=['"%s"'%ewm.features[span_node]["span_data"].expression for span_node in self.spans],
-                 exclude_on_pull={'type'})
 
     def _unknown_expression_identification(self, ewm):
         """

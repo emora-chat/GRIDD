@@ -237,7 +237,11 @@ class IntelligenceCore:
         return pulling
 
     def pull_expressions(self):
-        pass
+        to_add = set()
+        for c in self.working_memory.concepts():
+            to_add.update(self.knowledge_base.predicates(c, 'expr'))
+            to_add.update(self.knowledge_base.predicates(predicate_type='expr', object=c))
+        return to_add
 
     def update_salience(self, iterations=10):
         wm = self.working_memory
