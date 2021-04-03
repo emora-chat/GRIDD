@@ -486,13 +486,13 @@ class ConceptGraph:
             tmp = concept_a
             concept_a = concept_b
             concept_b = tmp
-        for s, t, o, i in self.predicates(subject=concept_b):
+        for s, t, o, i in list(self.predicates(subject=concept_b)):
             self._detach(s, t, o, i)
             self.add(concept_a, t, o, i)
-        for s, t, o, i in self.predicates(object=concept_b):
+        for s, t, o, i in list(self.predicates(object=concept_b)):
             self._detach(s, t, o, i)
             self.add(s, t, concept_a, i)
-        for s, t, o, i in self.predicates(predicate_type=concept_b):
+        for s, t, o, i in list(self.predicates(predicate_type=concept_b)):
             self._detach(s, t, o, i)
             self.add(s, concept_a, o, i)
         if self.has(predicate_id=concept_a) and self.has(predicate_id=concept_b):

@@ -21,12 +21,12 @@ class MentionBridge:
             namespace = list(mentions.items())[0][1].id_map()
         mega_mention_graph = ConceptGraph(namespace=namespace)
         for span, mention_graph in mentions.items():
-            ((focus,t,o,i,),) = mention_graph.predicates(predicate_type='focus')
-            center_pred = mention_graph.predicates(predicate_type='center')
+            ((focus,t,o,i,),) = list(mention_graph.predicates(predicate_type='focus'))
+            center_pred = list(mention_graph.predicates(predicate_type='center'))
             if len(center_pred) > 0:
                 ((center, t, o, i,),) = center_pred
             else:
-                ((center, t, o, i,),) = mention_graph.predicates(predicate_type='link')
+                ((center, t, o, i,),) = list(mention_graph.predicates(predicate_type='link'))
             mega_mention_graph.concatenate(mention_graph, predicate_exclusions={'focus','center','cover'})
             mega_mention_graph.add(span, 'ref', focus)
             mega_mention_graph.add(span, 'type', 'span')

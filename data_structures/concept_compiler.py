@@ -124,6 +124,7 @@ class ConceptVisitor(Visitor_Recursive):
         self.predgen = predicates is None
         predicates = set() if predicates is None else set(predicates)
         self.predicates = predicates    # set of all declared predicate types
+        self.rule_iter = 0              # incrementing rule order index
 
     def reset(self):
         self.entries = []
@@ -146,6 +147,8 @@ class ConceptVisitor(Visitor_Recursive):
             self.links.append((rid, 'post', c))
         for c in variables:
             self.links.append((rid, 'var', c))
+        self.metadatas.setdefault(rid, {})['rindex'] = self.rule_iter
+        self.rule_iter += 1
 
     def precondition(self, tree):
         preinst = set(chain(*[t.refs for t in tree.iter_subtrees() if hasattr(t, 'refs')]))

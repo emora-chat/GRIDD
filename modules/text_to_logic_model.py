@@ -13,7 +13,7 @@ LOCALDEBUG = False
 def ENTITY_INSTANCES_BY_RULE(rule_name, focus_node, cg, comps):
     # get the newly instantiated concept that is the question subject
     if rule_name in {'q_aux_adv', 'q_adv', 'qdet_copula_present', 'qdet_copula_past', 'dat_question'}:
-        ((s,_,_,_), ) = cg.predicates(predicate_type='question')
+        ((s,_,_,_), ) = list(cg.predicates(predicate_type='question'))
         comps.append(s)
     # only focal nodes which are newly instantiated entities are considered components
     if rule_name in {'obj_question', 'sbj_question', 'q_aux_det', 'q_det',
@@ -25,7 +25,9 @@ def ENTITY_INSTANCES_BY_RULE(rule_name, focus_node, cg, comps):
 class ParseToLogic:
 
     def __init__(self, kb, template_file):
-        rules = ConceptGraph(collect(template_file)).rules()
+        cg = ConceptGraph(collect(template_file))
+        rules = cg.rules()
+        rules = dict(sorted(rules.items(), key=lambda item: cg.features[item[0]]['rindex']))
         for rule_id, rule in rules.items():
             self._reference_expansion(rule[0], rule[2])
         parse_inference = InferenceEngine(rules)
@@ -143,7 +145,7 @@ class ParseToLogic:
 
     def _update_centers(self, centers_handled, post, center, solution):
         centers_handled.add(center)
-        covered = post.predicates(predicate_type='cover')
+        covered = list(post.predicates(predicate_type='cover'))
         if len(covered) > 0:
             for cover_var, _, _, _ in covered:
                 centers_handled.add(solution[cover_var])
@@ -185,7 +187,6 @@ class ParseToLogic:
                     for post_node, ewm_node in post_to_ewm_map.items():
                         cg_node = post_to_cg_map[post_node]
                         cg.add(ewm_node)
-                        cg.features.update(ewm.features, concepts={center})
                         if ewm_node.startswith(ewm.id_map().namespace):
                             cg.merge(cg_node, ewm_node, strict_order=True)
                         else:
