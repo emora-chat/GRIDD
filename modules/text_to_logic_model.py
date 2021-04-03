@@ -1,9 +1,10 @@
 
 from abc import abstractmethod
 from GRIDD.data_structures.concept_graph import ConceptGraph
-from GRIDD.data_structures.knowledge_parser import KnowledgeParser
 from GRIDD.data_structures.inference_engine import InferenceEngine
+from GRIDD.data_structures.intelligence_core import IntelligenceCore
 from GRIDD.data_structures.id_map import IdMap
+from GRIDD.utilities import collect
 from GRIDD.data_structures.reference_identifier import REFERENCES_BY_RULE, QUESTION_INST_REF
 import torch, gc
 
@@ -23,11 +24,16 @@ def ENTITY_INSTANCES_BY_RULE(rule_name, focus_node, cg, comps):
 
 class ParseToLogic:
 
-    def __init__(self, intcore):
-        self.intcore = intcore
+    def __init__(self, kb, template_file):
+        rules = ConceptGraph(collect(template_file)).rules()
+        for rule_id, rule in rules.items():
+            self._reference_expansion(rule[0], rule[2])
+        parse_inference = InferenceEngine(rules)
+        self.intcore = IntelligenceCore(knowledge_base=kb,
+                                        inference_engine=parse_inference)
         self.spans = []
 
-    def _reference_expansion(self, pregraph):
+    def _reference_expansion(self, pregraph, vars):
         """
         Expand vars in precondition to include expression and reference links.
 
@@ -36,29 +42,30 @@ class ParseToLogic:
         If var has a logical supertype (denoted by 'ltype' predicate), add a type predicate
         between referred concept and the supertype.
         """
+        original_vars = set(vars)
         for concept in pregraph.concepts():
-            if pregraph.has(concept, 'var') and not pregraph.has(predicate_id=concept) \
-                and len(pregraph.predicates(concept, 'ref')) == 0 and len(pregraph.predicates(concept, 'expr')) == 0:
+            if concept in original_vars and not pregraph.has(predicate_id=concept) \
+                and len(list(pregraph.predicates(concept, 'ref'))) == 0 and \
+                    len(list(pregraph.predicates(concept, 'expr'))) == 0:
                 # found variable entity instance that does not already have expression defined as part of rule
                 found_supertype = False
                 for supertype in pregraph.objects(concept, 'ltype'):
                     found_supertype = True
-                    self._expand_references(pregraph, concept, supertype)
+                    expression_var = pregraph.id_map().get()
+                    ref = pregraph.add(concept, 'ref', expression_var)
+                    concept_var = pregraph.id_map().get()
+                    expr = pregraph.add(expression_var, 'expr', concept_var)
+                    concept_type = pregraph.add(concept_var, 'type', supertype)
+                    to_remove = [pred[3] for pred in pregraph.predicates(concept, 'ltype', supertype)]
+                    pregraph.remove(concept, 'ltype', supertype)
+                    vars.update([expression_var, ref, concept_var, expr, concept_type])
+                    vars.difference_update(to_remove)
                 if not found_supertype:
-                    self._expand_references(pregraph, concept)
-
-    def _expand_references(self, pregraph, concept, supertype=None):
-        expression_var = pregraph.id_map().get()
-        ref = pregraph.add(concept, 'ref', expression_var)
-        concept_var = pregraph.id_map().get()
-        expr = pregraph.add(expression_var, 'expr', concept_var)
-        new_nodes = [expression_var, ref, concept_var, expr]
-        if supertype is not None:
-            concept_type = pregraph.add(concept_var, 'type', supertype)
-            pregraph.remove(concept, 'ltype', supertype)
-            new_nodes.append(concept_type)
-        for n in new_nodes:
-            pregraph.add(n, 'var')
+                    expression_var = pregraph.id_map().get()
+                    ref = pregraph.add(concept, 'ref', expression_var)
+                    concept_var = pregraph.id_map().get()
+                    expr = pregraph.add(expression_var, 'expr', concept_var)
+                    vars.update([expression_var, ref, concept_var, expr])
 
     @abstractmethod
     def text_to_graph(self, *args):
@@ -79,10 +86,11 @@ class ParseToLogic:
         wm = self.intcore.working_memory
         self.intcore.prune_attended(0)
         parse_graph = self.text_to_graph(*args)
-        wm.consider(parse_graph)
-        expr_preds = self.intcore.pull_expressions(parse_graph)
-        wm.consider(expr_preds)
+        self.intcore.consider(parse_graph)
+        expr_preds = self.intcore.pull_expressions()
+        self.intcore.consider(expr_preds)
         self._unknown_expression_identification(wm)
+        self.intcore.pull_types()
         rule_assignments = {(pre, post, rule): sols
                             for rule, (pre, post, sols) in self.intcore.infer().items()}
         mentions = self._get_mentions(rule_assignments, wm)
@@ -153,14 +161,14 @@ class ParseToLogic:
         for rule, solutions in assignments.items():
             link = False
             pre, post, rule_name = rule[0], rule[1], rule[2]
-            center_pred = post.predicates(predicate_type='center')
+            center_pred = list(post.predicates(predicate_type='center'))
             if len(center_pred) > 0:
                 ((center_var, _, _, _),) = center_pred
                 (expression_var,) = pre.objects(center_var, 'ref')
                 (concept_var,) = pre.objects(expression_var, 'expr')
                 maintain_in_mention_graph = [center_var, expression_var, concept_var]
             else: # center-less parse2logic rules specify linking structures but are not defining a specific token mention
-                ((center_var, _, _, _),) = post.predicates(predicate_type='link')
+                ((center_var, _, _, _),) = list(post.predicates(predicate_type='link'))
                 link = True
                 maintain_in_mention_graph = []
             for solution in solutions:
@@ -184,7 +192,7 @@ class ParseToLogic:
                             cg.merge(ewm_node, cg_node, strict_order=True)
                         self._add_unknowns_to_cg(ewm_node, ewm, cg_node, cg)
                     # get focus node of mention
-                    ((focus_node, _, _, _),) = cg.predicates(predicate_type='focus')
+                    ((focus_node, _, _, _),) = list(cg.predicates(predicate_type='focus'))
                     if rule_name in REFERENCES_BY_RULE: # identify reference spans
                         if rule_name in QUESTION_INST_REF:
                             # some questions have focus node as the question predicate instance,
@@ -203,9 +211,9 @@ class ParseToLogic:
                                            if node in solution and node in maintain_in_mention_graph}
                         if ewm.has(center, 'assert'):
                             # if center is asserted, add assertion to focus node
-                            ((focus, _, _, _),) = cg.predicates(predicate_type='focus')
+                            ((focus, _, _, _),) = list(cg.predicates(predicate_type='focus'))
                             cg.add(focus, 'assert')
-                        if len(cg.predicates(predicate_type='aux_time')) > 0:
+                        if len(list(cg.predicates(predicate_type='aux_time'))) > 0:
                             auxes.add(center)
                         for post_node, ewm_node in post_to_ewm_map.items():
                             cg_node = post_to_cg_map[post_node]
@@ -222,16 +230,16 @@ class ParseToLogic:
             heads_of_aux = ewm.subjects(aux, 'aux')
             for head in heads_of_aux:
                 aux_cg = mentions[aux]
-                preds = aux_cg.predicates(predicate_type='aux_time')
+                preds = list(aux_cg.predicates(predicate_type='aux_time'))
                 if len(preds) > 0:
                     ((_, _, aux_time, _), ) = preds
                     head_cg = mentions[head]
-                    preds = head_cg.predicates(predicate_type='time')
+                    preds = list(head_cg.predicates(predicate_type='time'))
                     if len(preds) > 0:
                         ((s,t,o,i), ) = preds
                         head_cg.remove(s,t,o,i)
                     else: #todo - update comps/reference links???
-                        ((s,_,_,_), ) = head_cg.predicates(predicate_type='focus')
+                        ((s,_,_,_), ) = list(head_cg.predicates(predicate_type='focus'))
                         i = head_cg.id_map().get()
                     head_cg.add(s, 'time', aux_time, i)
             del mentions[aux]
@@ -255,12 +263,12 @@ class ParseToLogic:
         for rule, solutions in assignments.items():
             pre, post = rule[0], rule[1]
             link = False
-            ((focus_var,t,o,i),) = post.predicates(predicate_type='focus')
-            center_pred = post.predicates(predicate_type='center')
+            ((focus_var,t,o,i),) = list(post.predicates(predicate_type='focus'))
+            center_pred = list(post.predicates(predicate_type='center'))
             if len(center_pred) > 0:
                 ((center_var, t, o, i),) = center_pred
             else:
-                ((center_var, _, _, _),) = post.predicates(predicate_type='link')
+                ((center_var, _, _, _),) = list(post.predicates(predicate_type='link'))
                 link = True
             for solution in solutions:
                 focus = solution.get(focus_var, focus_var)

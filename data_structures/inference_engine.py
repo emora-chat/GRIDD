@@ -16,7 +16,7 @@ class InferenceEngine:
 
     def add(self, rules):
         if not isinstance(rules, dict):
-            rules = ConceptGraph(rules).rules()
+            rules = ConceptGraph(rules, namespace='r_').rules()
         for rule in rules:
             if rule in self.rules:
                 raise ValueError(f'Rule by name {rule} already exists!')
@@ -38,7 +38,8 @@ class InferenceEngine:
             for c in pre.concepts():
                 attributes[c] = pre.types(c)
             for s, t, o, i in pre.predicates(predicate_type='type'):
-                nr = pre.related(i)
+                nr = pre.subjects(i)
+                nr.update(pre.objects(i))
                 if not nr:
                     pre.remove(predicate_id=i)
                     attributes.pop(i)
@@ -71,7 +72,9 @@ class InferenceEngine:
             if isinstance(c, int) or isinstance(c, float):
                 quantities.add(c)
         for s, t, o, i in facts.predicates(predicate_type='type'):
-            if not facts.related(i):
+            nr = facts.subjects(i)
+            nr.update(facts.objects(i))
+            if not nr:
                 facts.remove(predicate_id=i)
                 attributes.pop(i)
                 types_to_remove.add(o)

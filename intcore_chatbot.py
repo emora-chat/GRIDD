@@ -5,6 +5,7 @@ from GRIDD.data_structures.inference_engine import InferenceEngine
 from GRIDD.data_structures.working_memory import WorkingMemory
 from GRIDD.modules.elit_dp_to_logic_model import ElitDPToLogic
 
+from GRIDD.chatbot_server import load
 from GRIDD.data_structures.pipeline import Pipeline
 c = Pipeline.component
 from GRIDD.data_structures.span import Span
@@ -19,7 +20,7 @@ class Chatbot:
     """
 
     def __init__(self, *knowledge_base, inference_rules, starting_wm=None, device='cpu'):
-        knowledge_base = ConceptGraph(collect(*knowledge_base))
+        knowledge_base = ConceptGraph(collect(*knowledge_base), namespace='kb')
         dialogue_inference = InferenceEngine(collect(*inference_rules))
         working_memory = None
         if starting_wm is not None:
@@ -29,32 +30,28 @@ class Chatbot:
                                             inference_engine=dialogue_inference)
 
         template_file = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
-        parse_inference = InferenceEngine(template_file)
-        parse_intcore = IntelligenceCore(knowledge_base=knowledge_base,
-                                         inference_engine=parse_inference)
-
-        elit_dp = c(ElitDPToLogic(parse_intcore))
+        elit_dp = c(ElitDPToLogic(knowledge_base, template_file))
 
         self.pipeline = Pipeline(
             ('parse_dict') > elit_dp > ('dp_mentions', 'dp_merges'),
             tags ={},
-            outputs=[]
+            outputs=['dp_mentions', 'dp_merges']
         )
 
         self.auxiliary_state = {'turn_index': 0}
 
     def respond(self, user_utterance):
         input_dict = {"text": [user_utterance, None],
+                      "aux_state": [None, None],
                       "conversationId": 'local'}
         response = requests.post('http://cobot-LoadB-2W3OCXJ807QG-1571077302.us-east-1.elb.amazonaws.com',
                                  data=json.dumps(input_dict),
                                  headers={'content-type': 'application/json'},
                                  timeout=3.0)
-        parse_dict = json.loads(response.json()["context_manager"]['elit_results'])
+        parse_dict = load(response.json()["context_manager"])['elit_results']
 
         outputs = self.pipeline(
-            parse_dict,
-            2
+            parse_dict
         )
 
         return outputs

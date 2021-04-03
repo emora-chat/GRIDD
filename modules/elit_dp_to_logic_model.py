@@ -52,42 +52,41 @@ class ElitDPToLogic(ParseToLogic):
         args[0,1,2] - tok, pos, dp
         :return dependency parse cg
         """
-        cg = ConceptGraph(concepts=list(knowledge_base_file.BASE_NODES) + NODES)
-        ewm = WorkingMemory(self.knowledge_base)
-        ewm.concatenate(cg)
+        cg = ConceptGraph(concepts=list(knowledge_base_file.BASE_NODES) + NODES,
+                          namespace='p_')
 
         for n in ['verb', 'noun', 'adj', 'pron', 'adv', 'question_word', 'interj']:
-            ewm.add(n, 'type', 'pstg')
+            cg.add(n, 'type', 'pstg')
 
-        ewm.add('prp', 'type', 'noun')
+        cg.add('prp', 'type', 'noun')
         for n in ['past_tense', 'present_tense']:
-            ewm.add(POS_MAP.get(n, n), 'type', 'verb')
+            cg.add(POS_MAP.get(n, n), 'type', 'verb')
         for n in PAST_VB:
-            ewm.add(POS_MAP.get(n, n), 'type', 'past_tense')
+            cg.add(POS_MAP.get(n, n), 'type', 'past_tense')
         for n in PRES_VB:
-            ewm.add(POS_MAP.get(n, n), 'type', 'present_tense')
+            cg.add(POS_MAP.get(n, n), 'type', 'present_tense')
         for n in ADJ:
-            ewm.add(POS_MAP.get(n, n), 'type', 'adj')
+            cg.add(POS_MAP.get(n, n), 'type', 'adj')
         for n in NOUN:
-            ewm.add(POS_MAP.get(n, n), 'type', 'noun')
+            cg.add(POS_MAP.get(n, n), 'type', 'noun')
         for n in PRONOUN:
-            ewm.add(POS_MAP.get(n, n), 'type', 'pron')
+            cg.add(POS_MAP.get(n, n), 'type', 'pron')
         for n in ADV:
-            ewm.add(POS_MAP.get(n, n), 'type', 'adv')
+            cg.add(POS_MAP.get(n, n), 'type', 'adv')
         for n in QUEST:
-            ewm.add(POS_MAP.get(n, n), 'type', 'question_word')
+            cg.add(POS_MAP.get(n, n), 'type', 'question_word')
         for n in INTERJ:
-            ewm.add(POS_MAP.get(n, n), 'type', 'interj')
+            cg.add(POS_MAP.get(n, n), 'type', 'interj')
         for n in ALLOW_SINGLE:
-            ewm.add(POS_MAP.get(n, n), 'type', 'allow_single')
+            cg.add(POS_MAP.get(n, n), 'type', 'allow_single')
         for n in ADVCL_INDICATOR:
-            ewm.add(POS_MAP.get(n, n), 'type', 'advcl_indicator')
+            cg.add(POS_MAP.get(n, n), 'type', 'advcl_indicator')
         for n in ACL_INDICATOR:
-            ewm.add(POS_MAP.get(n, n), 'type', 'acl_indicator')
+            cg.add(POS_MAP.get(n, n), 'type', 'acl_indicator')
         for n in SUBJECTS:
-            ewm.add(POS_MAP.get(n, n), 'type', 'sbj')
-        self.convert(*args, ewm)
-        return ewm
+            cg.add(POS_MAP.get(n, n), 'type', 'sbj')
+        self.convert(*args, cg)
+        return cg
 
     # todo - verify that POS tags and DP labels are disjoint
     def convert(self, elit_results, cg):

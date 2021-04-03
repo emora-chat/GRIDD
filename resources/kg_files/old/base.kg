@@ -1,30 +1,13 @@
-is_type(object)
-object[object]
 
-entity<object>
-entity[entity]
-predicate<object>
-predicate[predicate]
-expression<object>
 unknown<object>
 unknown[unknown]
 
-expr<predicate>
-type<predicate>
-type[type]
-is_type<predicate>
 time<predicate>
 time[time,when]
-pre<predicate>
-post<predicate>
-var<predicate>
-
 indirect_obj<predicate>
 
 possess<predicate>
 possess[possess]
-
-indirect_obj<predicate>
 
 person<entity>
 person[person]
@@ -53,7 +36,6 @@ future[future]
 
 property<predicate>
 property[property]
-attachment<predicate>
 
 inst_det<object>
 a<inst_det>

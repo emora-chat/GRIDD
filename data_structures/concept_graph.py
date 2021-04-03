@@ -403,13 +403,24 @@ class ConceptGraph:
     def rules(self):
         rules = {}
         rule_instances = set(self.subtypes_of('implication')) - {'implication'}
+
+        rule_links = {}
+        instance_exclusions = set()
         for rule in rule_instances:
-            pre = self.metagraph.targets(rule, 'pre')
-            post = self.metagraph.targets(rule, 'post')
-            vars = set(self.metagraph.targets(rule, 'var'))
+            pre_inst = self.metagraph.out_edges(rule, 'pre')
+            pre = [edge[1] for edge in pre_inst]
+            post_inst = self.metagraph.out_edges(rule, 'post')
+            post = [edge[1] for edge in post_inst]
+            vars_inst = self.metagraph.out_edges(rule, 'var')
+            vars = {edge[1] for edge in vars_inst}
             if pre and post:
-                pre = self.subgraph(pre)
-                post = self.subgraph(post)
+                instance_exclusions.update(chain(pre_inst, post_inst, vars_inst))
+                rule_links[rule] = (pre, post, vars)
+
+        for rule, (pre, post, vars) in rule_links.items():
+            if pre and post:
+                pre = self.subgraph(pre, meta_exclusions=instance_exclusions)
+                post = self.subgraph(post, meta_exclusions=instance_exclusions)
                 rules[rule] = (pre, post, vars)
         return rules
 
@@ -424,13 +435,26 @@ class ConceptGraph:
                 references[ref] = (pre, vars)
         return references
 
-    def subgraph(self, concepts):
+    def subgraph(self, concepts, meta_exclusions=None):
+        if meta_exclusions is None:
+            meta_exclusions = set()
         graph = ConceptGraph(namespace=self._ids)
+        to_add = set()
         for c in concepts:
             if self.has(predicate_id=c):
-                graph.add(*self.predicate(c))
+                pred = self.predicate(c)
+                graph.add(*pred)
+                to_add.update(pred)
             else:
                 graph.add(c)
+                to_add.add(c)
+        for e in to_add:
+            fd = dict(self.features.get(e, {}))
+            if fd:
+                graph.features[e] = fd
+            for ml in chain(self.metagraph.in_edges(e), self.metagraph.out_edges(e)):
+                if ml not in meta_exclusions:
+                    graph.metagraph.add(*ml)
         return graph
 
     def id_map(self, other=None):

@@ -80,7 +80,7 @@ class ConceptCompiler:
         number_init: number
         reference: ID
         ID: /[a-zA-Z_.0-9]+/
-        rule: precondition "=>" (ID "=>")? postcondition
+        rule: precondition "->" (ID "->")? postcondition
         precondition: declaration+
         postcondition: declaration+
         json: dict
