@@ -31,7 +31,7 @@ class MentionBridge:
             mega_mention_graph.add(span, 'ref', focus)
             mega_mention_graph.add(span, 'type', 'span')
             if not span.startswith('__linking__'):
-                working_memory.add(span, 'def', center)
+                mega_mention_graph.add(span, 'def', center)
         mapped_ids = working_memory.concatenate(mega_mention_graph)
         working_memory.features.update_from_mentions(mapped_ids.values(), working_memory)
         working_memory.pull_ontology(mapped_ids.values())
