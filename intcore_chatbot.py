@@ -85,9 +85,14 @@ class Chatbot:
                 del merge_sets[n2]
 
         self.dialogue_intcore.merge(merge_sets.values())
+        knowledge = self.dialogue_intcore.pull_knowledge(limit=100, num_pullers=100, association_limit=10, subtype_limit=10)
+        self.dialogue_intcore.consider(knowledge)
+        types = self.dialogue_intcore.pull_types()
+        self.dialogue_intcore.consider(types)
 
-        # intcore pull_knowledge() and pull_types()
-        # inference
+        inferences = self.dialogue_intcore.infer()
+        self.dialogue_intcore.apply_inferences(inferences)
+
         # salience and confidence propogation
         # response selection
         # response expansion

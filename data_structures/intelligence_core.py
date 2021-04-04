@@ -48,7 +48,10 @@ class IntelligenceCore:
         self.knowledge_base.concatenate(cg)
 
     def consider(self, concepts, associations=None, salience=1, **options):
-        considered = ConceptGraph(concepts, namespace='_tmp_')
+        if isinstance(concepts, ConceptGraph):
+            considered = ConceptGraph(concepts, namespace=concepts._ids)
+        else:
+            considered = ConceptGraph(concepts, namespace='_tmp_')
         if associations is None:
             considered.features.update({c: {'salience': (salience*SENSORY_SALIENCE
                                         if not c in considered.features or not SALIENCE in considered.features[c]
@@ -182,11 +185,12 @@ class IntelligenceCore:
         return
 
     def pull_types(self):
-        type_predicates = list(self.knowledge_base.type_predicates(self.working_memory.concepts()))
-        for pred in type_predicates:
-            self.working_memory.add(*pred)
+        return set(self.knowledge_base.type_predicates(self.working_memory.concepts()))
 
-    def pull_knowledge(self, limit, num_pullers, assocation_limit=None, subtype_limit=None, degree=1):
+
+    def pull_knowledge(self, limit, num_pullers, association_limit=None, subtype_limit=None, degree=1):
+        # todo - not everything in working memory > 1 salience should be a puller (predicate_types? essentials?)
+        # todo - pulls types and expr predicates too, even though we have explicit functions for them
         kb = self.knowledge_base
         pullers = sorted(self.working_memory.concepts(),
                          key=lambda c: self.working_memory.features.get(c, {}).get(SALIENCE, 0),
@@ -195,7 +199,7 @@ class IntelligenceCore:
         neighbors = {}
         backptrs = {}
         for p in pullers:
-            neighborhood = set(kb.related(p, limit=assocation_limit))
+            neighborhood = set(kb.related(p, limit=association_limit))
             arguments = set()
             for n in neighborhood:
                 if kb.has(predicate_id=n):

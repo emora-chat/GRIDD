@@ -94,7 +94,8 @@ class ParseToLogic:
         expr_preds = self.intcore.pull_expressions()
         self.intcore.consider(expr_preds)
         self._unknown_expression_identification(wm)
-        self.intcore.pull_types()
+        types = self.intcore.pull_types()
+        self.intcore.consider(types)
         rule_assignments = {(pre, post, rule): sols
                             for rule, (pre, post, sols) in self.intcore.infer().items()}
         mentions = self._get_mentions(rule_assignments, wm)
@@ -124,21 +125,21 @@ class ParseToLogic:
                     ewm.add('unknown_%s' % pos_type, 'type', 'object')
                 ewm.add(expression, 'expr', unk_node)
 
-    def _inference(self, ewm, retry=None):
-        """
-        Apply the template rules to the current expression working_memory
-        and get the variable assignments of the solutions
-        """
-        try:
-            solutions = self.inference_engine.infer(ewm)
-            return solutions
-        except RuntimeError as e:
-            print('\n' + str(e))
-            if retry == 4:
-                return {}
-            gc.collect()
-            torch.cuda.empty_cache()
-            return self._inference(ewm, retry=retry+1 if retry is not None else 1)
+    # def _inference(self, ewm, retry=None):
+    #     """
+    #     Apply the template rules to the current expression working_memory
+    #     and get the variable assignments of the solutions
+    #     """
+    #     try:
+    #         solutions = self.inference_engine.infer(ewm)
+    #         return solutions
+    #     except RuntimeError as e:
+    #         print('\n' + str(e))
+    #         if retry == 4:
+    #             return {}
+    #         gc.collect()
+    #         torch.cuda.empty_cache()
+    #         return self._inference(ewm, retry=retry+1 if retry is not None else 1)
 
 
         # Parse templates are priority-ordered, such that the highest-priority matching template

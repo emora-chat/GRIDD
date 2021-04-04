@@ -1305,6 +1305,13 @@ This captures non-referential pronouns, nouns, etc.
     center(X)
     ;  
     
+    obj(Y/pstg(), X/allow_single())
+    ltype(X, object)
+    -> obj_recog ->
+    focus(X)
+    center(X)
+    ;
+    
     X/allow_single()
     ltype(X, object)
     -> single_word ->

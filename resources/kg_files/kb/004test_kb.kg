@@ -6,4 +6,11 @@ car=(entity)
 expr("car", car)
 location=(entity)
 state=(location)
+
+[dog, color] = (entity)
+fluffy = dog()
+expr("fluffy", fluffy)
+red = color()
+expr("red", red)
+property(fluffy, red)
 ;
