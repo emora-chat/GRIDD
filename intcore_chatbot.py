@@ -12,6 +12,7 @@ from GRIDD.utilities import collect
 
 from os.path import join
 import json, requests, time
+from collections import defaultdict
 
 class Chatbot:
     """
@@ -46,7 +47,7 @@ class Chatbot:
 
         wm = self.dialogue_intcore.working_memory
 
-        mentions, merges  = self.elit_dp(parse_dict)
+        mentions, merges = self.elit_dp(parse_dict)
 
         namespace = list(mentions.items())[0][1].id_map() if len(mentions) > 0 else "ment_"
         mega_mention_graph = ConceptGraph(namespace=namespace)
@@ -73,8 +74,18 @@ class Chatbot:
                 concept2 = self._follow_path(concept2, pos2, wm)
                 node_merges.append((concept1, concept2))
 
-        # gather sets of merging nodes where nodes that merge together are in the same set
-        # intcore merge()
+        merge_sets = defaultdict(set)
+        for n1, n2 in node_merges:
+            n2_set = {n2}
+            if n2 in merge_sets:
+                n2_set = merge_sets[n2]
+            merge_sets[n1].update(n2_set)
+            merge_sets[n1].add(n1)
+            if n2 in merge_sets:
+                del merge_sets[n2]
+
+        self.dialogue_intcore.merge(merge_sets.values())
+
         # intcore pull_knowledge() and pull_types()
         # inference
         # salience and confidence propogation

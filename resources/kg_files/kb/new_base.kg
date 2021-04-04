@@ -1,5 +1,4 @@
-
-unknown = (object)
+[entity, predicate, unknown] = (object)
 expr(["unknown"], unknown)
 
 time = (predicate)

@@ -25,7 +25,7 @@ def ENTITY_INSTANCES_BY_RULE(rule_name, focus_node, cg, comps):
 class ParseToLogic:
 
     def __init__(self, kb, template_file):
-        cg = ConceptGraph(collect(template_file))
+        cg = ConceptGraph(collect(template_file), namespace='r_')
         rules = cg.rules()
         rules = dict(sorted(rules.items(), key=lambda item: cg.features[item[0]]['rindex']))
         for rule_id, rule in rules.items():
@@ -42,7 +42,8 @@ class ParseToLogic:
         Vars are expressions of some canonical expression which refers to some concept.
 
         If var has a logical supertype (denoted by 'ltype' predicate), add a type predicate
-        between referred concept and the supertype.
+        between referred concept and the supertype. And remove the `ltype` predicate from the
+        pregraph and from the vars.
         """
         original_vars = set(vars)
         for concept in pregraph.concepts():
@@ -62,6 +63,7 @@ class ParseToLogic:
                     pregraph.remove(concept, 'ltype', supertype)
                     vars.update([expression_var, ref, concept_var, expr, concept_type])
                     vars.difference_update(to_remove)
+                    original_vars.difference_update(to_remove) # remove ltype predicate instance from vars; otherwise, it will be added as constraint with ref and expression
                 if not found_supertype:
                     expression_var = pregraph.id_map().get()
                     ref = pregraph.add(concept, 'ref', expression_var)

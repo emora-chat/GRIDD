@@ -160,6 +160,7 @@ class IntelligenceCore:
         sets = uniquify(sets.values())
         for s in sets:
             if s:
+                s = list(s)
                 a = s[0]
                 for i in range(1, len(s)):
                     b = s[i]
@@ -194,11 +195,11 @@ class IntelligenceCore:
         neighbors = {}
         backptrs = {}
         for p in pullers:
-            neighborhood = set(self.knowledge_base.related(p, limit=assocation_limit))
+            neighborhood = set(kb.related(p, limit=assocation_limit))
             arguments = set()
             for n in neighborhood:
-                if self.knowledge_base.has(predicate_id=n):
-                    s, _, o, _ = self.knowledge_base.predicate(n)
+                if kb.has(predicate_id=n):
+                    s, _, o, _ = kb.predicate(n)
                     other_arg = o if s == p else s
                     if other_arg is not None:
                         arguments.add(other_arg)
@@ -224,9 +225,9 @@ class IntelligenceCore:
                     if len(related) == 0:
                         break
                 for r in related:
-                    to_add = set(self.knowledge_base.structure(r, self.essential_types))
+                    to_add = set(kb.structure(r, self.essential_types))
                     for inst in backptrs.get(r, r):
-                        to_add.update(self.knowledge_base.structure(inst, self.essential_types))
+                        to_add.update(kb.structure(inst, self.essential_types))
                     to_add.difference_update(wmp)
                     to_add.difference_update(pulling)
                     if len(to_add) <= limit:

@@ -93,7 +93,6 @@ class InferenceEngine:
         return facts_graph
 
     def infer(self, facts, dynamic_rules=None, cached=True):
-        # Todo: allow inference using only provided rules (not cached rules)
         facts_concept_graph = ConceptGraph(facts, namespace=(facts._ids if isinstance(facts, ConceptGraph) else "facts_"))
         facts_graph = self._convert_facts(facts_concept_graph)
         if dynamic_rules is not None and not isinstance(dynamic_rules, dict):
