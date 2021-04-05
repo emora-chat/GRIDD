@@ -109,7 +109,7 @@ class Chatbot:
         responses = []
         for predicate, generation_type in selections:
             if generation_type == 'nlg':
-                expansions = wm.structure(predicate)
+                expansions = wm.structure(predicate[3])
                 responses.append((predicate, expansions, generation_type))
             elif generation_type in {"ack_conf", "ack_emo"}:
                 responses.append((predicate, [], generation_type))

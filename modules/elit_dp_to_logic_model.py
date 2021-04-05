@@ -50,7 +50,8 @@ class ElitDPToLogic(ParseToLogic):
         args[0,1,2] - tok, pos, dp
         :return dependency parse cg
         """
-        cg = ConceptGraph(namespace='p_')
+        cg = ConceptGraph(concepts=NODES,
+                          namespace='p_')
 
         for n in ['verb', 'noun', 'adj', 'pron', 'adv', 'question_word', 'interj']:
             cg.add(n, 'type', 'pstg')
