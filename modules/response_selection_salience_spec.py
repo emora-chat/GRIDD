@@ -1,6 +1,5 @@
 from structpy import specification
-from GRIDD.data_structures.working_memory import WorkingMemory
-from GRIDD.data_structures.knowledge_base import KnowledgeBase
+from GRIDD.data_structures.concept_graph import ConceptGraph
 
 @specification
 class ResponseSelectionSalienceSpec:
@@ -29,8 +28,8 @@ class ResponseSelectionSalienceSpec:
         abs=ack_conf(bs)
         abs{"salience": 0.95}
         '''
-        wm = WorkingMemory(KnowledgeBase(), logicstring)
-        main_predicates = response_selector(wm)
+        cg = ConceptGraph(logicstring)
+        main_predicates = response_selector(cg)
         assert main_predicates[0][0][3] == 'abs'
         assert main_predicates[0][1] == 'ack_conf'
         assert main_predicates[1][0][3] == 'bs'

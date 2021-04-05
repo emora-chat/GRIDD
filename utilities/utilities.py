@@ -120,7 +120,7 @@ def interleave(*iterables):
 from GRIDD.data_structures.spanning_node import SpanningNode
 
 def spanning_tree_of(cg):
-    exclude = {'expr', 'def', 'ref', 'assert', 'type', 'link', 'is_type'}
+    exclude = {'expr', 'def', 'ref', 'assert', 'type', 'link'}
     roots = []
     # main root is the asserted predicate
     ((assertion_node, _, _, _),) = cg.predicates(predicate_type='assert')

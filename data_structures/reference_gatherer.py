@@ -1,5 +1,5 @@
 
-PRIMITIVES = {'focus', 'center', 'is_type', 'cover', 'question', 'var'}
+PRIMITIVES = {'focus', 'center', 'cover', 'question', 'var'}
 
 def gather_all_references(working_memory):
     # convert reference spans to reference predicates

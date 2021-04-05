@@ -1,5 +1,3 @@
-from GRIDD.data_structures.knowledge_base import KnowledgeBase
-from GRIDD.data_structures.working_memory import WorkingMemory
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.pipeline import Pipeline
 c = Pipeline.component
@@ -355,7 +353,7 @@ class ChatbotServer:
         working_memory = WorkingMemory(self.kb)
         ConceptGraph.load(working_memory, saved_wm)
         if display:
-            print(working_memory.ugly_print(exclusions={'is_type', 'object', 'predicate', 'entity', 'post', 'pre',
+            print(working_memory.ugly_print(exclusions={'object', 'predicate', 'entity', 'post', 'pre',
                                                         'def', 'span', 'datetime'}))
             print()
         return working_memory
@@ -411,7 +409,7 @@ class ChatbotServer:
                     saved_wm = json.loads(msg["wm"])
                     working_memory = WorkingMemory(self.kb)
                     ConceptGraph.load(working_memory, saved_wm)
-                    print(working_memory.ugly_print(exclusions={'is_type', 'object', 'predicate', 'entity', 'post', 'pre',
+                    print(working_memory.ugly_print(exclusions={'object', 'predicate', 'entity', 'post', 'pre',
                                                                 'def', 'span', 'datetime',
                                                                 'type', 'ref'}))
                     print()
@@ -424,7 +422,7 @@ class ChatbotServer:
                     saved_wm = json.loads(msg["wm"])
                     working_memory = WorkingMemory(self.kb)
                     ConceptGraph.load(working_memory, saved_wm)
-                    print(working_memory.ugly_print(exclusions={'is_type', 'object', 'predicate', 'entity', 'post', 'pre',
+                    print(working_memory.ugly_print(exclusions={'object', 'predicate', 'entity', 'post', 'pre',
                                                                 'def', 'span', 'datetime',
                                                                 'type', 'ref'}))
                     print()

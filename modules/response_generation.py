@@ -5,7 +5,7 @@ from collections import defaultdict
 import re
 
 prefix = 'translate Graph to English: '
-exclusions={'var', 'is_type', 'ref', 'def', 'span', 'datetime', 'predicate', 'unknown_verb', 'unknown_noun',
+exclusions={'var', 'ref', 'def', 'span', 'datetime', 'predicate', 'unknown_verb', 'unknown_noun',
             'unknown_pron', 'unknown_adj', 'unknown_adv', 'unknown_other'}
 
 class conversiondict:

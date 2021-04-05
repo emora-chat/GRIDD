@@ -1,8 +1,6 @@
 
 from structpy import specification
-
-from GRIDD.data_structures.knowledge_parser import KnowledgeParser
-import time
+from GRIDD.data_structures.concept_graph import ConceptGraph
 
 @specification
 class InferenceEngineSpec:
@@ -133,7 +131,7 @@ class InferenceEngineSpec:
 
         assert concept_graphs_equal(
             implications['trans_like'][0],
-            KnowledgeParser.from_data('''
+            ConceptGraph('''
             like(john, sally);
             ''')
         )

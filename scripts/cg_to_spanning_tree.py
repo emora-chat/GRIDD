@@ -34,7 +34,7 @@ if __name__ == '__main__':
         print('-'*10)
         print(spanning_tree_linearized(cg))
         print('-'*10)
-        print(cg.ugly_print(exclusions={'is_type', 'object', 'predicate', 'entity', 'post', 'pre', 'def', 'span', 'datetime', 'expr'}))
+        print(cg.ugly_print(exclusions={'object', 'predicate', 'entity', 'post', 'pre', 'def', 'span', 'datetime', 'expr'}))
         print()
         utter = input('>>> ').strip()
 

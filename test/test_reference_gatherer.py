@@ -24,7 +24,7 @@ class ReferenceGathererSpec:
         based on the `concept_graph`.
 
         The returned predicates should enumerate the contentful predicates defining the reference,
-        and exclude the framework primitives (`focus`, `center`, `is_type`, `cover`, `question`, `var`)
+        and exclude the framework primitives (`focus`, `center`, `cover`, `question`, `var`)
         """
         my_span = Span('my', 'my', 2, 3, 0, 0, 1)
         very_span = Span('very', 'very', 3, 4, 0, 0, 1)

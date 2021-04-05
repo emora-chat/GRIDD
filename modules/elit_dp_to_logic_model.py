@@ -1,8 +1,6 @@
 
 from GRIDD.modules.text_to_logic_model import ParseToLogic
 from GRIDD.data_structures.concept_graph import ConceptGraph
-import GRIDD.data_structures.knowledge_base as knowledge_base_file
-from GRIDD.data_structures.working_memory import WorkingMemory
 from GRIDD.modules.elit_dp_to_logic_spec import ElitDPSpec
 
 import os
@@ -52,8 +50,7 @@ class ElitDPToLogic(ParseToLogic):
         args[0,1,2] - tok, pos, dp
         :return dependency parse cg
         """
-        cg = ConceptGraph(concepts=list(knowledge_base_file.BASE_NODES) + NODES,
-                          namespace='p_')
+        cg = ConceptGraph(namespace='p_')
 
         for n in ['verb', 'noun', 'adj', 'pron', 'adv', 'question_word', 'interj']:
             cg.add(n, 'type', 'pstg')

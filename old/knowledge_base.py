@@ -4,7 +4,7 @@ from GRIDD.data_structures.knowledge_parser import KnowledgeParser
 from GRIDD.utilities import collect
 from os.path import join
 
-BASE_NODES = {'object', 'type', 'is_type', 'expression', 'expr', 'pre', 'post', 'var', 'property', 'focus'}
+BASE_NODES = {'object', 'type', 'expression', 'expr', 'pre', 'post', 'var', 'property', 'focus'}
 
 
 class KnowledgeBase:

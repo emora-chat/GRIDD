@@ -1,20 +1,19 @@
 from GRIDD.modules.response_selection_salience_spec import ResponseSelectionSalienceSpec
+from GRIDD.data_structures.concept_graph import ConceptGraph
 
-from GRIDD.data_structures.knowledge_parser import KnowledgeParser
-
-q_play_sports = KnowledgeParser.from_data('''
+q_play_sports = ConceptGraph('''
 p/play(user, s/sport())
 time(p, now)
 question(s)
-''')
+''', namespace='bu_')
 
-q_school_subject = KnowledgeParser.from_data('''
+q_school_subject = ConceptGraph('''
 b/be(s/school_subject(), o/school_subject())
 time(b, now)
 possess(user, s)
 property(s, favorite)
 question(o)
-''')
+''', namespace='bu_')
 
 backup_topics = {
     'sports': (list(q_play_sports.predicates(predicate_type='play'))[0], q_play_sports.predicates()),

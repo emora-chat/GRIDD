@@ -2,7 +2,6 @@
 from GRIDD.data_structures.intelligence_core import IntelligenceCore
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.inference_engine import InferenceEngine
-from GRIDD.data_structures.working_memory import WorkingMemory
 from GRIDD.modules.elit_dp_to_logic_model import ElitDPToLogic
 from GRIDD.modules.response_selection_salience import ResponseSelectionSalience
 from GRIDD.modules.response_acknowledgment import ResponseAcknowledgment
@@ -30,7 +29,7 @@ class Chatbot:
         dialogue_inference = InferenceEngine(collect(*inference_rules))
         working_memory = None
         if starting_wm is not None:
-            working_memory = WorkingMemory(starting_wm)
+            working_memory = ConceptGraph(starting_wm)
         self.dialogue_intcore = IntelligenceCore(knowledge_base=knowledge_base,
                                             working_memory=working_memory,
                                             inference_engine=dialogue_inference)
@@ -122,6 +121,8 @@ class Chatbot:
                 exp_preds = [mapped_ids[pred[3]] for pred in predicate[1]]
                 exp_pred_sigs = [wm.predicate(pred) for pred in exp_preds if pred != main_pred]
                 responses.append((main_pred_sig, exp_pred_sigs, generation_type))
+
+        # todo - how to update salience and user_confidence of thing Emora says
 
         ack_results = self.produce_acknowledgment(aux_state, responses)
         gen_results = self.produce_generic(responses)

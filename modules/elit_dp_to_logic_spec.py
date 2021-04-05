@@ -1,8 +1,8 @@
 
 from structpy import specification
 from GRIDD.data_structures.span import Span
-from GRIDD.data_structures.knowledge_base import KnowledgeBase
 from GRIDD.data_structures.id_map import IdMap
+from GRIDD.data_structures.concept_graph import ConceptGraph
 import os
 
 @specification
@@ -17,7 +17,7 @@ class ElitDPSpec:
         """
         kb_dir = os.path.join('GRIDD', 'resources', 'kg_files', 'kb')
         template_file = os.path.join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
-        elit_dp_to_logic = ElitDPToLogic(KnowledgeBase(kb_dir), template_file, device=device)
+        elit_dp_to_logic = ElitDPToLogic(ConceptGraph(kb_dir), template_file, device=device)
         return elit_dp_to_logic
 
     def __call__(elit_dp_to_logic, args):
