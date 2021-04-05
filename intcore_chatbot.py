@@ -72,7 +72,7 @@ class Chatbot:
 
         self.dialogue_intcore.accept(mega_mention_graph)
 
-        # todo - no acknowledgement predicates found on second turn even though svo structure recognized (i bought a house, i love it)
+        # todo - no acknowledgement predicates found (i bought a house, i love it)
 
         # todo - missing 'cover' of what user said
 

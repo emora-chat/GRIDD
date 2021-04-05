@@ -1,5 +1,7 @@
 from structpy import specification
 from GRIDD.data_structures.id_map import IdMap
+from GRIDD.globals import *
+
 
 @specification
 class NodeFeaturesSpec:
@@ -25,31 +27,31 @@ class NodeFeaturesSpec:
         """
         node_features = NodeFeatures(
             {'A': {
-                    'salience': 0.65,
+                    SALIENCE: 0.65,
                     'cover': 0.60,
                     'comps': {'orig', 'D'}
                 },
             'B': {
-                    'salience': 0.5,
+                    SALIENCE: 0.5,
                     'cover': 0.5
                 },
             'D': {
-                    'salience': 0.01,
+                    SALIENCE: 0.01,
                     'cover': 0.4
                 },
             }
         )
         node_features_2 = NodeFeatures(
             {'A': {
-                    'salience': 0.5,
+                    SALIENCE: 0.5,
                     'cover': 0.5
                 },
             'B': {
-                    'salience': 0.75,
+                    SALIENCE: 0.75,
                     'cover': 0.85
                 },
             'C': {
-                    'salience': 0.1,
+                    SALIENCE: 0.1,
                     'cover': 0.2
                 },
             'X': {
@@ -65,13 +67,13 @@ class NodeFeaturesSpec:
             id_map[key] = value
 
         node_features.update(node_features_2, id_map=id_map)
-        assert node_features['A']['salience'] == 0.65
+        assert node_features['A'][SALIENCE] == 0.65
         assert node_features['A']['cover'] == 0.60
-        assert node_features['B']['salience'] == 0.75
+        assert node_features['B'][SALIENCE] == 0.75
         assert node_features['B']['cover'] == 0.85
-        assert node_features['C']['salience'] == 0.1
+        assert node_features['C'][SALIENCE] == 0.1
         assert node_features['C']['cover'] == 0.2
-        assert node_features['D']['salience'] == 0.01
+        assert node_features['D'][SALIENCE] == 0.01
         assert node_features['D']['cover'] == 0.4
         assert 'Z' not in node_features
         assert node_features['A']['comps'] == {'orig', 'D', 'a', 'aa'}
@@ -85,7 +87,7 @@ class NodeFeaturesSpec:
         """
         node_features.merge('C', 'D')
         assert 'D' not in node_features
-        assert node_features['C']['salience'] == 0.1
+        assert node_features['C'][SALIENCE] == 0.1
         assert node_features['C']['cover'] == 0.4
         assert node_features['A']['comps'] == {'orig', 'C', 'a', 'aa'}
 
@@ -142,7 +144,7 @@ class NodeFeaturesSpec:
         node_features = NodeFeatures(
             {'A': {'refl': ['a', 'aa']},
              'B': {'refl': ['b']},
-             'C': {'salience': 1.0}
+             'C': {SALIENCE: 1.0}
             }
         )
         assert node_features.get_reference_links() == {

@@ -53,14 +53,14 @@ class IntelligenceCore:
         else:
             considered = ConceptGraph(concepts, namespace='_tmp_')
         if associations is None:
-            considered.features.update({c: {'salience': (salience*SENSORY_SALIENCE
+            considered.features.update({c: {SALIENCE: (salience*SENSORY_SALIENCE
                                         if not c in considered.features or not SALIENCE in considered.features[c]
                                         else considered.features[c][SALIENCE])}
                                         for c in considered.concepts()})
         else:
-            s = min([self.working_memory.features.get(c, {}).get('salience', 0)
+            s = min([self.working_memory.features.get(c, {}).get(SALIENCE, 0)
                             for c in associations]) - ASSOCIATION_DECAY
-            considered.features.update({c: {'salience': (salience*s
+            considered.features.update({c: {SALIENCE: (salience*s
                                         if not c in considered.features or not SALIENCE in considered.features[c]
                                         else considered.features[c][SALIENCE])}
                                         for c in considered.concepts()})
@@ -71,14 +71,14 @@ class IntelligenceCore:
     def accept(self, concepts, associations=None, salience=1, **options):
         considered = ConceptGraph(concepts, namespace='_tmp_')
         if associations is None:
-            considered.features.update({c: {'salience': (salience*SENSORY_SALIENCE
+            considered.features.update({c: {SALIENCE: (salience*SENSORY_SALIENCE
                                         if not c in considered.features or not SALIENCE in considered.features[c]
                                         else considered.features[c][SALIENCE])}
                                         for c in considered.concepts()})
         else:
-            s = min([self.working_memory.features.get(c, {}).get('salience', 0)
+            s = min([self.working_memory.features.get(c, {}).get(SALIENCE, 0)
                             for c in associations]) - ASSOCIATION_DECAY
-            considered.features.update({c: {'salience': (salience*s
+            considered.features.update({c: {SALIENCE: (salience*s
                                         if not c in considered.features or not SALIENCE in considered.features[c]
                                         else considered.features[c][SALIENCE])}
                                         for c in considered.concepts()})

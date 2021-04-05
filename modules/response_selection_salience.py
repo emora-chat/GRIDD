@@ -1,5 +1,6 @@
 from GRIDD.modules.response_selection_salience_spec import ResponseSelectionSalienceSpec
 from GRIDD.data_structures.concept_graph import ConceptGraph
+from GRIDD.globals import *
 
 q_play_sports = ConceptGraph('''
 p/play(user, s/sport())
@@ -27,7 +28,7 @@ class ResponseSelectionSalience:
         return aux_state, responses
 
     def select_acknowledgment(self, working_memory):
-        options = [(ack[3], working_memory.features.get(ack[3], {}).get('salience', 0.0))
+        options = [(ack[3], working_memory.features.get(ack[3], {}).get(SALIENCE, 0.0))
                    for ack in working_memory.predicates(predicate_type='ack_conf')
                    if working_memory.features.get(ack[3], {}).get('cover', 0.0) != 1.0]
         salience_order = sorted(options, key=lambda x: x[1], reverse=True)
@@ -38,9 +39,9 @@ class ResponseSelectionSalience:
             return None, None
 
     def select_followup(self, working_memory, aux_state):
-        options = [(node,features['salience']) for node,features in working_memory.features.items()
+        options = [(node,features[SALIENCE]) for node,features in working_memory.features.items()
                    if features.get('cover', 0.0) != 1.0
-                   and features.get('salience', 0) > 0.0
+                   and features.get(SALIENCE, 0) > 0.0
                    and working_memory.has(predicate_id=node)
                    and working_memory.type(node) not in {'type', 'possess', 'referential', 'instantiative', 'ack_conf',
                                                          'ref', 'def', 'assert', 'time'}]

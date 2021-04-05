@@ -1,6 +1,7 @@
 from structpy import specification
 from GRIDD.data_structures.working_memory import WorkingMemory
 from GRIDD.data_structures.knowledge_base import KnowledgeBase
+from GRIDD.globals import *
 
 E = 0.0001
 
@@ -18,37 +19,37 @@ class FeaturePropogationSpec:
         """
         working_memory = WorkingMemory(KnowledgeBase())
         working_memory.add('john', 'likes', 'avengers', 'wm_0')
-        working_memory.features['wm_0']['salience'] = 1.0
-        working_memory.features['john']['salience'] = 1.0
-        working_memory.features['avengers']['salience'] = 1.0
-        working_memory.features['likes']['salience'] = 1.0
+        working_memory.features['wm_0'][SALIENCE] = 1.0
+        working_memory.features['john'][SALIENCE] = 1.0
+        working_memory.features['avengers'][SALIENCE] = 1.0
+        working_memory.features['likes'][SALIENCE] = 1.0
         working_memory.add('avengers', 'genre', 'action', 'wm_1')
         working_memory.add('sally', 'eat', 'cake', 'wm_2')
-        working_memory.features['wm_2']['salience'] = 1.0
-        working_memory.features['wm_2']['coldstart'] = 1.0
+        working_memory.features['wm_2'][SALIENCE] = 1.0
+        working_memory.features['wm_2'][COLDSTART] = 1.0
 
         feature_propogation(working_memory, iterations=1)
-        assert 0.9 - E <= working_memory.features['wm_0']['salience'] <= 0.9 + E
-        assert 0.9 - E <= working_memory.features['john']['salience'] <= 0.9 + E
-        assert 0.9 - E <= working_memory.features['avengers']['salience'] <= 0.9 + E
-        assert 0.9 - E <= working_memory.features['likes']['salience'] <= 0.9 + E
-        assert 0.4 - E <= working_memory.features['wm_1']['salience'] <= 0.4 + E
-        assert 0.0 - E <= working_memory.features['action']['salience'] <= 0.0 + E
-        assert working_memory.features['wm_2']['salience'] == 1.0
+        assert 0.9 - E <= working_memory.features['wm_0'][SALIENCE] <= 0.9 + E
+        assert 0.9 - E <= working_memory.features['john'][SALIENCE] <= 0.9 + E
+        assert 0.9 - E <= working_memory.features['avengers'][SALIENCE] <= 0.9 + E
+        assert 0.9 - E <= working_memory.features['likes'][SALIENCE] <= 0.9 + E
+        assert 0.4 - E <= working_memory.features['wm_1'][SALIENCE] <= 0.4 + E
+        assert 0.0 - E <= working_memory.features['action'][SALIENCE] <= 0.0 + E
+        assert working_memory.features['wm_2'][SALIENCE] == 1.0
 
         working_memory = WorkingMemory(KnowledgeBase())
         working_memory.add('john', 'likes', 'avengers', 'wm_0')
-        working_memory.features['wm_0']['salience'] = 1.0
-        working_memory.features['john']['salience'] = 1.0
-        working_memory.features['avengers']['salience'] = 1.0
-        working_memory.features['likes']['salience'] = 1.0
+        working_memory.features['wm_0'][SALIENCE] = 1.0
+        working_memory.features['john'][SALIENCE] = 1.0
+        working_memory.features['avengers'][SALIENCE] = 1.0
+        working_memory.features['likes'][SALIENCE] = 1.0
         working_memory.add('avengers', 'genre', 'action', 'wm_1')
 
         feature_propogation(working_memory, iterations=2)
-        assert 0.9 - E <= working_memory.features['wm_0']['salience'] <= 0.9 + E
-        assert 0.9 - E <= working_memory.features['john']['salience'] <= 0.9 + E
-        assert 0.9 - E <= working_memory.features['avengers']['salience'] <= 0.9 + E
-        assert 0.9 - E <= working_memory.features['likes']['salience'] <= 0.9 + E
-        assert 0.6 - E <= working_memory.features['wm_1']['salience'] <= 0.6 + E
-        assert 0.15 - E <= working_memory.features['action']['salience'] <= 0.15 + E
+        assert 0.9 - E <= working_memory.features['wm_0'][SALIENCE] <= 0.9 + E
+        assert 0.9 - E <= working_memory.features['john'][SALIENCE] <= 0.9 + E
+        assert 0.9 - E <= working_memory.features['avengers'][SALIENCE] <= 0.9 + E
+        assert 0.9 - E <= working_memory.features['likes'][SALIENCE] <= 0.9 + E
+        assert 0.6 - E <= working_memory.features['wm_1'][SALIENCE] <= 0.6 + E
+        assert 0.15 - E <= working_memory.features['action'][SALIENCE] <= 0.15 + E
 

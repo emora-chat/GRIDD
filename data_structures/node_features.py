@@ -2,7 +2,7 @@
 from collections import defaultdict
 from GRIDD.data_structures.node_features_spec import NodeFeaturesSpec
 from GRIDD.data_structures.span import Span
-from GRIDD.globals import CONFIDENCE
+from GRIDD.globals import *
 
 class NodeFeatures(defaultdict):
 
@@ -17,7 +17,7 @@ class NodeFeatures(defaultdict):
                 if id_map is not None:
                     node = id_map.get(node)
                 for feature, other_value in features.items():
-                    if feature in {'salience', 'cover', 'coldstart'}:
+                    if feature in {SALIENCE, 'cover', COLDSTART}:
                         if feature in self[node]:
                             self[node][feature] = max(self[node][feature], other_value)
                         else:
@@ -41,12 +41,12 @@ class NodeFeatures(defaultdict):
         if replaced in self:
             if kept not in self:
                 self[kept] = {}
-            if 'salience' in self[kept] or 'salience' in self[replaced]:
-                self[kept]['salience'] = max(self[kept].get('salience', 0.0), self[replaced].get('salience', 0.0))
+            if SALIENCE in self[kept] or SALIENCE in self[replaced]:
+                self[kept][SALIENCE] = max(self[kept].get(SALIENCE, 0.0), self[replaced].get(SALIENCE, 0.0))
             if 'cover' in self[kept] or 'cover' in self[replaced]:
                 self[kept]['cover'] = max(self[kept].get('cover', 0.0), self[replaced].get('cover', 0.0))
-            if 'coldstart' in self[kept] or 'coldstart' in self[replaced]:
-                self[kept]['coldstart'] = max(self[kept].get('coldstart', 0.0), self[replaced].get('coldstart', 0.0))
+            if COLDSTART in self[kept] or COLDSTART in self[replaced]:
+                self[kept][COLDSTART] = max(self[kept].get(COLDSTART, 0.0), self[replaced].get(COLDSTART, 0.0))
             if 'span_data' in self[replaced]:
                 if 'span_data' in self[kept]:
                     print('Replaced: ', self[replaced]['span_data'])
@@ -58,15 +58,15 @@ class NodeFeatures(defaultdict):
 
     def update_from_ontology(self, elements):
         for e in elements:
-            self[e]['salience'] = self[e].get('salience', 0.0)
+            self[e][SALIENCE] = self[e].get(SALIENCE, 0.0)
 
     def update_from_kb(self, elements):
         for e in elements:
-            self[e]['salience'] = self[e].get('salience', 0.0)
+            self[e][SALIENCE] = self[e].get(SALIENCE, 0.0)
 
     def update_from_mentions(self, elements, wm):
         for id in elements:
-            self[id]['salience'] = 1.0
+            self[id][SALIENCE] = 1.0
             if wm.has(predicate_id=id):
                 self[id]['cover'] = 1.0
 
@@ -74,15 +74,15 @@ class NodeFeatures(defaultdict):
         inference_salience = 0.75  # todo - how to set inference salience???
         for id in elements:
             if wm.has(predicate_id=id) and wm.type(id) == 'question':
-                self[id]['salience'] = inference_salience * 1.5
+                self[id][SALIENCE] = inference_salience * 1.5
             else:
-                self[id]['salience'] = max(inference_salience, self[id].get('salience', 0.0))
+                self[id][SALIENCE] = max(inference_salience, self[id].get(SALIENCE, 0.0))
 
     def update_from_response(self, main_predicate, expansion_predicates):
-        self[main_predicate[3]]['salience'] = 1.0
+        self[main_predicate[3]][SALIENCE] = 1.0
         self[main_predicate[3]]['cover'] = 1.0
         for pred in expansion_predicates:
-            self[pred[3]]['salience'] = 1.0
+            self[pred[3]][SALIENCE] = 1.0
             self[pred[3]]['cover'] = 1.0
 
     def remove(self, node):

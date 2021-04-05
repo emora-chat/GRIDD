@@ -1,5 +1,6 @@
 from GRIDD.data_structures.score_graph import ScoreGraph
 from GRIDD.modules.feature_propogation_spec import FeaturePropogationSpec
+from GRIDD.globals import *
 
 class FeaturePropogation:
 
@@ -14,8 +15,8 @@ class FeaturePropogation:
         Update the features of the nodes in working memory
         """
         for key, features in working_memory.features.items():
-            if features.get('coldstart', 0.0) == 0.0 and features.get('cover', 0.0) == 0.0:
-                working_memory.features[key]['salience'] = max(0.0, working_memory.features[key].get('salience', 0.0) - self.turn_decrement)
+            if features.get(COLDSTART, 0.0) == 0.0 and features.get('cover', 0.0) == 0.0:
+                working_memory.features[key][SALIENCE] = max(0.0, working_memory.features[key].get(SALIENCE, 0.0) - self.turn_decrement)
 
         edges = [(*edge, 'spread') for s, t, o, i in working_memory.predicates()
                                     for edge in [(s, i), (i, s), (o, i), (i, o)]
@@ -32,19 +33,19 @@ class FeaturePropogation:
                                          if x is not None and y is not None and x - self.propogation_decrement >= y
                                          else 0))
             },
-            get_fn=lambda x: working_memory.features[x].get('salience', 0.0),
-            set_fn=lambda x, y: working_memory.features[x].__setitem__('salience', y),
+            get_fn=lambda x: working_memory.features[x].get(SALIENCE, 0.0),
+            set_fn=lambda x, y: working_memory.features[x].__setitem__(SALIENCE, y),
             maximum=self.max_score
         )
 
         score_graph.update(iterations=iterations, push=True)
 
         # to_remove = set()
-        # for key in working_memory.features['salience']:
-        #     if working_memory.features['salience'][key] <= 0.0:
+        # for key in working_memory.features[SALIENCE]:
+        #     if working_memory.features[SALIENCE][key] <= 0.0:
         #         to_remove.add(key)
         # for key in to_remove:
-        #     del working_memory.features['salience'][key]
+        #     del working_memory.features[SALIENCE][key]
         #     working_memory.remove(key)
 
         return working_memory

@@ -1,4 +1,5 @@
 from GRIDD.data_structures.knowledge_parser import KnowledgeParser
+from GRIDD.globals import *
 
 def test_parse_metadata():
     with_metadata = '''
@@ -17,9 +18,9 @@ def test_parse_metadata():
     cg = KnowledgeParser.from_data(with_metadata)
     assert cg.has('user', 'favorite', 'a')
     assert cg.has('a', 'type', 'animal')
-    assert 'coldstart' in cg.features['ufa'] and cg.features['ufa']['coldstart'] == 1
+    assert COLDSTART in cg.features['ufa'] and cg.features['ufa'][COLDSTART] == 1
     assert 'cover' in cg.features['ufa'] and cg.features['ufa']['cover'] == 1
     assert cg.has('user', 'drive', 'c')
     assert cg.has('user', 'like', 'udc')
-    assert 'coldstart' in cg.features['uld'] and cg.features['uld']['coldstart'] == 1
+    assert COLDSTART in cg.features['uld'] and cg.features['uld'][COLDSTART] == 1
     assert 'cover' in cg.features['udc'] and cg.features['udc']['cover'] == 1
