@@ -24,6 +24,8 @@ class MetaGraph(Graph):
         in_edges = self.in_edges(concept_b)
         for s,t,l in out_edges:
             if not remove_ref or (l not in {REF, VAR}):
+                if t == concept_b:
+                    t = concept_a
                 self.add(concept_a, t, l)
         for s,t,l in in_edges:
             self.add(s, concept_a, l)
