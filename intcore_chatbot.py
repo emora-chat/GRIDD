@@ -45,7 +45,7 @@ class Chatbot:
 
     def respond(self, user_utterance):
         input_dict = {"text": [user_utterance, None],
-                      "aux_state": [None, None],
+                      "aux_state": [self.auxiliary_state, self.auxiliary_state],
                       "conversationId": 'local'}
         response = requests.post('http://cobot-LoadB-2W3OCXJ807QG-1571077302.us-east-1.elb.amazonaws.com',
                                  data=json.dumps(input_dict),
@@ -71,6 +71,10 @@ class Chatbot:
                 mega_mention_graph.add(span, 'def', center)
 
         self.dialogue_intcore.accept(mega_mention_graph)
+
+        # todo - no acknowledgement predicates found on second turn even though svo structure recognized (i bought a house, i love it)
+
+        # todo - missing 'cover' of what user said
 
         node_merges = []
         for (span1, pos1), (span2, pos2) in merges:
