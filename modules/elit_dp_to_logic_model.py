@@ -127,7 +127,7 @@ class ElitDPToLogic(ParseToLogic):
                     original_source = source.to_string()
                     original_target = target.to_string()
 
-                    for tuple in cg.predicates(original_target, 'ref') + cg.predicates(original_source, 'ref'):
+                    for tuple in list(cg.predicates(original_target, 'ref')) + list(cg.predicates(original_source, 'ref')):
                         cg.remove(tuple[2]) # remove non-condensed expressions
                     self.spans.remove(original_target)
                     original_source_span_idx = self.spans.index(original_source)

@@ -169,15 +169,48 @@ class IntelligenceCore:
                     b = s[i]
                     a = self.working_memory.merge(a, b)
 
+    def gather_all_nlu_references(self):
+        # convert reference spans to reference predicates
+        node_to_refsp = {}
+        for s, t, _ in self.working_memory.metagraph.edges(label='refsp'):
+            node_to_refsp.setdefault(s, []).append(t)
+        for node, refsp in node_to_refsp.items():
+            constraints = self.gather(node, refsp)
+            self.working_memory.metagraph.add_links(node, constraints, 'ref')
+            self.working_memory.metagraph.add_links(node, constraints + [node], 'var')
+            for t in refsp:
+                self.working_memory.metagraph.remove(node, t, 'refsp')
+
+    def gather(self, reference_node, constraints_as_spans):
+        PRIMITIVES = {'focus', 'center', 'cover', 'question', 'var'}
+        constraints = set()
+        focal_nodes = {reference_node}
+        for constraint_span in constraints_as_spans:
+            if self.working_memory.has(constraint_span):
+                foci = self.working_memory.objects(constraint_span, 'ref')
+                focus = next(iter(foci))  # todo - could be more than one focal node in disambiguation situation?
+                focal_nodes.add(focus)
+        # expand constraint spans into constraint predicates
+        for focal_node in focal_nodes:
+            components = self.working_memory.metagraph.targets(focal_node, 'comps')
+            # constraint found if constraint predicate is connected to reference node
+            for component in components:
+                if (not self.working_memory.has(predicate_id=component) or
+                    self.working_memory.type(component) not in PRIMITIVES) and \
+                        self.working_memory.graph_component_siblings(component, reference_node):
+                    constraints.add(component)
+        return list(constraints)
+
     def resolve(self, references=None):
         if references is None:
             references = self.working_memory.references()
-        inferences = self.inference_engine.infer(self.working_memory, references, cached=False)
         compatible_pairs = []
-        for reference_node, (pre, matches) in inferences.items():
-            for match in matches:
-                pairs = [(match[node], node) for node in match] if reference_node != match[reference_node] else []
-                compatible_pairs.extend(pairs)
+        if len(references) > 0:
+            inferences = self.inference_engine.infer(self.working_memory, references, cached=False)
+            for reference_node, (pre, matches) in inferences.items():
+                for match in matches:
+                    pairs = [(match[node], node) for node in match] if reference_node != match[reference_node] else []
+                    compatible_pairs.extend(pairs)
         return compatible_pairs
 
     def logical_merge(self):

@@ -1,7 +1,7 @@
 
 from structpy.graph.directed.labeled.multilabeled_digraph_networkx import MultiLabeledDigraphNX as Graph
 from GRIDD.data_structures.node_features import NodeFeatures
-
+from GRIDD.globals import *
 
 class MetaGraph(Graph):
 
@@ -19,16 +19,18 @@ class MetaGraph(Graph):
             self.add(source, t, label)
 
     def merge(self, concept_a, concept_b):
+        remove_ref = True if not (self.out_edges(concept_a, REF) and self.out_edges(concept_b, REF)) else False
         out_edges = self.out_edges(concept_b)
         in_edges = self.in_edges(concept_b)
         for s,t,l in out_edges:
-            self.add(concept_a, t, l)
+            if not remove_ref or (l not in {REF, VAR}):
+                self.add(concept_a, t, l)
         for s,t,l in in_edges:
             self.add(s, concept_a, l)
         if self.has(concept_b):
             Graph.remove(self, concept_b)
         self.features.merge(concept_a, concept_b)
-        # todo - remove refl links from concept_b if concept_a is not a reference (reference resolved)
+
 
     def update(self, graph=None, features=None, id_map=None, concepts=None):
         if features is not None:

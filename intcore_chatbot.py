@@ -55,8 +55,14 @@ class Chatbot:
 
         wm = self.dialogue_intcore.working_memory
 
+        #########################
+        ### Dialogue Pipeline ###
+        #########################
+
+        # NLU Preprocessing
         mentions, merges = self.elit_dp(parse_dict)
 
+        # Mentions
         namespace = list(mentions.items())[0][1].id_map() if len(mentions) > 0 else "ment_"
         mega_mention_graph = ConceptGraph(namespace=namespace)
         for span, mention_graph in mentions.items():
@@ -69,13 +75,13 @@ class Chatbot:
             mega_mention_graph.add(span, 'type', 'span')
             if not span.startswith('__linking__'):
                 mega_mention_graph.add(span, 'def', center)
-
         self.dialogue_intcore.accept(mega_mention_graph)
 
         # todo - no acknowledgement predicates found (i bought a house, i love it)
 
         # todo - missing 'cover' of what user said
 
+        # Merges
         node_merges = []
         for (span1, pos1), (span2, pos2) in merges:
             # if no mention for span, no merge possible
@@ -85,29 +91,30 @@ class Chatbot:
                 (concept2,) = wm.objects(span2, 'ref')
                 concept2 = self._follow_path(concept2, pos2, wm)
                 node_merges.append((concept1, concept2))
-
-        merge_sets = defaultdict(set)
-        for n1, n2 in node_merges:
-            n2_set = {n2}
-            if n2 in merge_sets:
-                n2_set = merge_sets[n2]
-            merge_sets[n1].update(n2_set)
-            merge_sets[n1].add(n1)
-            if n2 in merge_sets:
-                del merge_sets[n2]
-
+        merge_sets = self.get_merge_sets_from_pairs(node_merges)
         self.dialogue_intcore.merge(merge_sets.values())
+
+        # Knowledge pull
         knowledge = self.dialogue_intcore.pull_knowledge(limit=100, num_pullers=100, association_limit=10, subtype_limit=10)
         self.dialogue_intcore.consider(knowledge)
         types = self.dialogue_intcore.pull_types()
         self.dialogue_intcore.consider(types)
 
+        # Inferences
         inferences = self.dialogue_intcore.infer()
         self.dialogue_intcore.apply_inferences(inferences)
+        self.dialogue_intcore.gather_all_nlu_references()
 
+        # Feature update
         self.dialogue_intcore.update_confidence()
         self.dialogue_intcore.update_salience()
 
+        # Reference resolution
+        reference_pairs = self.dialogue_intcore.resolve() # todo - what if there is more than one matching reference??
+        reference_sets = self.get_merge_sets_from_pairs(reference_pairs)
+        self.dialogue_intcore.merge(reference_sets.values())
+
+        # Response selection
         aux_state, selections = self.response_selection(self.auxiliary_state, wm)
 
         responses = []
@@ -144,6 +151,18 @@ class Chatbot:
         elif pos == 'type':
             return working_memory.type(concept)
         return concept
+
+    def get_merge_sets_from_pairs(self, pairs):
+        merge_sets = defaultdict(set)
+        for n1, n2 in pairs:
+            n2_set = {n2}
+            if n2 in merge_sets:
+                n2_set = merge_sets[n2]
+            merge_sets[n1].update(n2_set)
+            merge_sets[n1].add(n1)
+            if n2 in merge_sets:
+                del merge_sets[n2]
+        return merge_sets
 
     def chat(self):
         utterance = input('User: ')

@@ -13,4 +13,8 @@ expr("fluffy", fluffy)
 red = color()
 expr("red", red)
 property(fluffy, red)
+like=(predicate)
+expr("like", like)
+bone=(entity)
+like(fluffy, b/bone())
 ;
