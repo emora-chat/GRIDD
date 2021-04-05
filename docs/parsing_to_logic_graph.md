@@ -60,8 +60,6 @@ Represented as `copula(sbj, question(question_concept))`.
 	sbj(X, Z/pstg())
 	det(X, D/question_word())
 	-> qdet_copula_present ->
-	is_type(Y)
-	is_type(X)
 	p/Y(Z, inst/X())
 	question(inst)
 	time(p, now)
@@ -74,8 +72,6 @@ Represented as `copula(sbj, question(question_concept))`.
 	sbj(X, Z/pstg())
 	det(X, D/question_word())
 	-> qdet_copula_past ->
-	is_type(Y)
-	is_type(X)
 	p/Y(Z, inst/X())
 	question(inst)
 	time(p, past)
@@ -87,7 +83,6 @@ Represented as `copula(sbj, question(question_concept))`.
 	cop(X/question_word(), Y/present_tense())
 	sbj(X, Z/pstg())
 	-> qw_copula_present ->
-	is_type(Y)
 	p/Y(Z, X)
 	question(X)
 	time(p, now)
@@ -98,7 +93,6 @@ Represented as `copula(sbj, question(question_concept))`.
 	cop(X/question_word(), Y/past_tense())
 	sbj(X, Z/pstg())
 	-> qw_copula_past ->
-	is_type(Y)
 	p/Y(Z, X)
 	question(X)
 	time(p, past)
@@ -181,7 +175,6 @@ Overrules the auxiliary question rule, which would cause an incorrect interpreta
 	obj(Z/pstg(), X)
 	aux(Z, A/pstg())
 	-> q_aux_det ->
-	is_type(X)
 	inst/X()
 	question(inst)
 	focus(inst)
@@ -209,7 +202,6 @@ Overrules the auxiliary question rule, which would cause an incorrect interpreta
 	
 	det(X/pstg(), Y/question_word())
 	-> q_det ->
-	is_type(X)
 	inst/X()
 	question(inst)
 	focus(inst)
@@ -236,7 +228,6 @@ Copula constructions are in interrogative form when the copula precedes the subj
 	sbj(X, Z/pstg())
 	precede(Y, Z)
 	-> q_sbj_copula_present ->
-	is_type(Y)
 	p/Y(Z,X)
 	q/question(p)
 	time(p, now)
@@ -248,7 +239,6 @@ Copula constructions are in interrogative form when the copula precedes the subj
 	sbj(X, Z/pstg())
 	precede(Y, Z)
 	-> q_sbj_copula_past ->
-	is_type(Y)
 	p/Y(Z,X)
 	q/question(p)
 	time(p, past)
@@ -278,7 +268,6 @@ predicate.
 	det(X, D/dt())
 	sbj(X, Z/pstg())
 	-> sbj_det_copula_present ->
-	is_type(Y)
 	p/Y(Z,X)
 	time(p, now)
 	focus(p)
@@ -290,7 +279,6 @@ predicate.
 	det(X, D/dt())
 	sbj(X, Z/pstg())
 	-> sbj_det_copula_past ->
-	is_type(Y)
 	p/Y(Z,X)
 	time(p,past)
 	focus(p)
@@ -301,7 +289,6 @@ predicate.
 	cop(X/pstg(), Y/present_tense())
 	sbj(X, Z/pstg())
 	-> sbj_copula_present ->
-	is_type(Y)
 	p/Y(Z,X)
 	time(p, now)
 	focus(p)
@@ -311,7 +298,6 @@ predicate.
 	cop(X/pstg(), Y/past_tense())
 	sbj(X, Z/pstg())
 	-> sbj_copula_past ->
-	is_type(Y)
 	p/Y(Z,X)
 	time(p,past)
 	focus(p)
@@ -342,7 +328,6 @@ Two-argument predicates of the format `root(subject, object)`.
 	sbj(X/past_tense(), Y/pstg())
 	obj(X, Z/pstg())
 	-> sbj_dobj_past ->
-	is_type(X)
 	p/X(Y,Z)
 	time(p, past)
 	focus(p)
@@ -352,7 +337,6 @@ Two-argument predicates of the format `root(subject, object)`.
 	sbj(X/present_tense(), Y/pstg())
 	obj(X, Z/pstg())
 	-> sbj_dobj_present ->
-	is_type(X)
 	p/X(Y,Z)
 	time(p, now)
 	focus(p)
@@ -362,7 +346,6 @@ Two-argument predicates of the format `root(subject, object)`.
 	sbj(X/pstg(), Y/pstg())
 	obj(X, Z/pstg())
 	-> sbj_dobj_nonverb_head ->
-	is_type(X)
 	p/X(Y,Z)
 	focus(p)
 	center(X)
@@ -383,7 +366,6 @@ Two-argument predicates of the format `root(subject, object)`. The light verb is
 	obj(X, Z/pstg())
 	lv(X, U/past_tense())
 	-> sbj_obj_det_light_verb_past ->
-	is_type(X)
 	p/X(Y,Z)
 	time(p, past)
 	focus(p)
@@ -397,7 +379,6 @@ Two-argument predicates of the format `root(subject, object)`. The light verb is
 	obj(X, Z/pstg())
 	lv(X, U/present_tense())
 	-> sbj_obj_det_light_verb_present ->
-	is_type(X)
 	p/X(Y,Z)
 	time(p, now)
 	focus(p)
@@ -410,7 +391,6 @@ Two-argument predicates of the format `root(subject, object)`. The light verb is
 	obj(X, Z/pstg())
 	lv(X, U/past_tense())
 	-> sbj_obj_light_verb_past ->
-	is_type(X)
 	p/X(Y,Z)
 	time(p, past)
 	focus(p)
@@ -422,7 +402,6 @@ Two-argument predicates of the format `root(subject, object)`. The light verb is
 	obj(X, Z/pstg())
 	lv(X, U/present_tense())
 	-> sbj_obj_light_verb_present ->
-	is_type(X)
 	p/X(Y,Z)
 	time(p, now)
 	focus(p)
@@ -451,7 +430,6 @@ One-argument predicates of the format `root(subject)`. The light verb is dropped
 	det(X, A/dt())
 	lv(X, U/past_tense())
 	-> sbj_det_light_verb_past ->
-	is_type(X)
 	p/X(Y)
 	time(p, past)
 	focus(p)
@@ -464,7 +442,6 @@ One-argument predicates of the format `root(subject)`. The light verb is dropped
 	det(X, A/dt())
 	lv(X, U/present_tense())
 	-> sbj_det_light_verb_present ->
-	is_type(X)
 	p/X(Y)
 	time(p, now)
 	focus(p)
@@ -476,7 +453,6 @@ One-argument predicates of the format `root(subject)`. The light verb is dropped
 	sbj(X/noun(), Y/pstg())
 	lv(X, U/past_tense())
 	-> sbj_light_verb_past ->
-	is_type(X)
 	p/X(Y)
 	time(p, past)
 	focus(p)
@@ -487,7 +463,6 @@ One-argument predicates of the format `root(subject)`. The light verb is dropped
 	sbj(X/noun(), Y/pstg())
 	lv(X, U/present_tense())
 	-> sbj_light_verb_present ->
-	is_type(X)
 	p/X(Y)
 	time(p, now)
 	focus(p)
@@ -509,7 +484,6 @@ John made a call.
 	sbj(X/past_tense(), Y/pstg())
 	comp(X, Z/pstg())
 	-> sbj_outer_comp_past ->
-	is_type(X)
 	p/X(Y,Z)
 	time(p,past)
 	focus(p)
@@ -519,7 +493,6 @@ John made a call.
 	sbj(X/present_tense(), Y/pstg())
 	comp(X, Z/pstg())
 	-> sbj_outer_comp_present ->
-	is_type(X)
 	p/X(Y,Z)
 	time(p, now)
 	focus(p)
@@ -528,7 +501,6 @@ John made a call.
 	
 	comp(X/past_tense(), Z/pstg())
 	-> missing_outer_sbj_comp_past ->
-	is_type(X)
 	p/X(object(),Z)
 	time(p,past)
 	focus(p)
@@ -537,7 +509,6 @@ John made a call.
 		
 	comp(X/present_tense(), Z/pstg())
 	-> missing_outer_sbj_comp_present ->
-	is_type(X)
 	p/X(object(),Z)
 	time(p,past)
 	focus(p)
@@ -549,7 +520,6 @@ John made a call.
 	sbj(Z, B/pstg())
 	obj(Z, A/pstg())
 	-> sbj_sbj_inner_comp_with_obj ->
-	is_type(Z)
 	p/Z(B,A)
 	focus(p)
 	center(Z)
@@ -559,7 +529,6 @@ John made a call.
 	comp(X, Z/pstg())
 	sbj(Z, A/pstg())
 	-> sbj_sbj_inner_comp ->
-	is_type(Z)
 	p/Z(A)
 	focus(p)
 	center(Z)
@@ -569,7 +538,6 @@ John made a call.
 	comp(X, Z/pstg())
 	obj(Z, A/pstg())
 	-> sbj_inner_comp_with_obj ->
-	is_type(Z)
 	p/Z(Y,A)
 	focus(p)
 	center(Z)
@@ -578,7 +546,6 @@ John made a call.
 	sbj(X/verb(), Y/pstg())
 	comp(X, Z/pstg())
 	-> sbj_inner_comp ->
-	is_type(Z)
 	p/Z(Y)
 	focus(p)
 	center(Z)
@@ -603,7 +570,6 @@ Captures expressions where the verb only has a subject.
 
 	sbj(X/past_tense(), Y/pstg())
 	-> sbj_no_obj_past ->
-	is_type(X)
 	p/X(Y)
 	time(p, past)
 	focus(p)
@@ -612,7 +578,6 @@ Captures expressions where the verb only has a subject.
 	
 	sbj(X/present_tense(), Y/pstg())
 	-> sbj_no_obj_present ->
-	is_type(X)
 	p/X(Y)
 	time(p, now)
 	focus(p)
@@ -784,7 +749,6 @@ Captures prepositional phrases by converting the preposition into a predicate of
 	ppmod(X/pstg(), Y/pstg())
 	case(Y, Z/pstg())
 	-> preposition_phrase ->
-	is_type(Z)
 	p/Z(X,Y)
 	focus(p)
 	center(Z)
@@ -809,7 +773,6 @@ Captures sentences with passive voice.
 	obj(X, Z/pstg())
 	precede(Z, X)
 	-> sbj_obj_passive_voice ->
-	is_type(X)
 	p/X(Y, Z)
 	focus(p)
 	center(X)
@@ -818,7 +781,6 @@ Captures sentences with passive voice.
 	obj(X/pstg(), Y/pstg())
 	precede(Y, X)
 	-> obj_passive_voice ->
-	is_type(X)
 	p/X(Y)
 	focus(p)
 	center(X)
@@ -865,7 +827,6 @@ Determiners which are not a part of a `det` dependency relation are `object` ins
 	det(X/pstg(), Y/dt())
 	ltype(Y, ref_det)
 	-> ref_concept_determiner ->
-	is_type(X)
 	focus(inst/X())
 	center(X)
 	cover(Y)
@@ -874,7 +835,6 @@ Determiners which are not a part of a `det` dependency relation are `object` ins
 	det(X/pstg(), Y/dt())
 	ltype(Y, inst_det)
 	-> inst_concept_determiner ->
-	is_type(X)
 	focus(inst/X())
 	center(X)
 	cover(Y)
@@ -882,7 +842,6 @@ Determiners which are not a part of a `det` dependency relation are `object` ins
 	
 	det(X/pstg(), Y/dt())
 	-> other_concept_determiner ->
-	is_type(X)
 	focus(X())
 	center(X)
 	cover(Y)
@@ -978,7 +937,6 @@ Captures possessive phrases by constructing a `possess` predicate between the po
 	  
 	poss(X/pstg(), Y/pstg())
 	-> obj_of_possessive ->
-	is_type(X)
 	focus(X())
 	center(X)
 	;
@@ -1013,7 +971,6 @@ John's sister
 	advcl(X/pstg(), Y/pstg())
 	advcl_indicator(Y, Z/pstg())
 	-> advcl_with_mention ->
-	is_type(Z)
 	p/Z(X,Y)
 	focus(p)
 	center(Z)
