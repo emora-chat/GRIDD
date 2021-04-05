@@ -5,7 +5,7 @@ from GRIDD.globals import *
 q_play_sports = ConceptGraph('''
 p/play(user, s/sport())
 time(p, now)
-question(s)
+question(emora, s)
 ''', namespace='bu_')
 
 q_school_subject = ConceptGraph('''
@@ -13,7 +13,7 @@ b/be(s/school_subject(), o/school_subject())
 time(b, now)
 possess(user, s)
 property(s, favorite)
-question(o)
+question(emora, o)
 ''', namespace='bu_')
 
 backup_topics = {
@@ -40,11 +40,11 @@ class ResponseSelectionSalience:
 
     def select_followup(self, working_memory, aux_state):
         options = [(node,features[SALIENCE]) for node,features in working_memory.features.items()
-                   if features.get('cover', 0.0) != 1.0
-                   and features.get(SALIENCE, 0) > 0.0
+                   if features.get(SALIENCE, 0) > 0.0
                    and working_memory.has(predicate_id=node)
+                   and (working_memory.type(node) == 'question' or features.get('cover', 0.0) != 1.0)
                    and working_memory.type(node) not in {'type', 'possess', 'referential', 'instantiative', 'ack_conf',
-                                                         'ref', 'def', 'assert', 'time'}]
+                                                         'ref', 'def', 'assert', 'time', 'expr'}]
         salience_order = sorted(options, key=lambda x: x[1], reverse=True)
         if len(salience_order) > 0:
             return working_memory.predicate(salience_order[0][0]), 'nlg'

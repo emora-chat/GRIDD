@@ -57,10 +57,8 @@ REFERENCES_BY_RULE = {
     'ref_determiner': subtree_dependencies,
     'q_sbj_copula_past': subtree_dependencies,
     'q_sbj_copula_present': subtree_dependencies,
-    'q_aux_do_past': parent_subtree_dependencies,
-    'q_aux_do_present': parent_subtree_dependencies,
-    'q_aux_be_past': parent_subtree_dependencies,
-    'q_aux_be_present': parent_subtree_dependencies,
+    'q_aux_past': parent_subtree_dependencies,
+    'q_aux_present': parent_subtree_dependencies,
     'q_aux_have': parent_subtree_dependencies,
     'q_modal': parent_subtree_dependencies,
     'q_aux_det': parent_subtree_dependencies,
@@ -76,5 +74,4 @@ REFERENCES_BY_RULE = {
     'q_adv': parent_subtree_dependencies
 }
 
-QUESTION_INST_REF = {'q_aux_do_past', 'q_aux_do_present', 'q_aux_be_past', 'q_aux_be_present',
-                     'q_aux_have'}
+QUESTION_INST_REF = {'q_aux_past', 'q_aux_present', 'q_aux_have'}

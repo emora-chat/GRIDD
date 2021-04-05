@@ -8,23 +8,23 @@ time(p,past)
 -> buy_house ->
 yll/locate(Y, l/location())
 time(yll, now)
-question(l)
+question(emora,  l)
 ;
 
 buy(X/person(), Y/house())
 locate(Y, Z/state())
 -> live_state ->
 xlz/live(X,Z)
-question(like.v.01(X,xlz))
+question(emora,  like.v.01(X,xlz))
 ;
 
 buy(X/person(), Y/car())
 -> buy_car ->
-question(xlc/like.v.01(X, Y))
+question(emora,  xlc/like.v.01(X, Y))
 time(xlc, now)
 
 xdc/drive(X,Y)
 xdc{"cover": 1}
-question(xld/like.v.01(X, xdc))
+question(emora,  xld/like.v.01(X, xdc))
 time(xld, now)
 ;

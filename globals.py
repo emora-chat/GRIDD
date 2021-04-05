@@ -7,6 +7,7 @@ NONASSERT = 'nonassert'         # predicate type indicating arguments that are u
 COLDSTART = 'coldstart'         # metadata bool feature preventing salience decay until selected
 SALIENCE = 'salience'           # metadata float feature representing attention w.r.t. emora
 CONFIDENCE = 'confidence'       # metadata float feature representing truth value w.r.t emora
+COVER = 'cover'                 # metadata float feature representing emora's confidence of the user's confidence
 ESSENTIAL = 'essential'         # predicate type indicating required attachments for predicate instance definition
 CONNECTIVITY = 'conn'           # metadata integer feature representing neighborhood cardinality
 AND_LINK = 'and'                # metagraph link for confidence propagation

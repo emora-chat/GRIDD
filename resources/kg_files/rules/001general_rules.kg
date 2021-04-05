@@ -1,5 +1,5 @@
 xlo/like(x/person(), o/object())
 -> cause_of_like ->
 cause(xlo, p/predicate())
-question(p)
+question(emora, p)
 ;

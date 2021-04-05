@@ -47,7 +47,7 @@ class ResponseExpansionSpec:
         # Entity Question  test
         logicstring = '''
         dpc=property(d=dog(), c=color())
-        cq=question(c)
+        cq=question(user, c)
         sba=be(d, annoying)
         sld=locate(sba, dreams)
         '''
@@ -69,7 +69,7 @@ class ResponseExpansionSpec:
         # todo - fix (?) bc currently if entity question is focus, does not pull in all predicates...
         logicstring = '''
         dpc=property(d=dog(), c=color())
-        cq=question(c)
+        cq=question(user, c)
         sba=be(d, annoying)
         sld=locate(sba, dreams)
         '''

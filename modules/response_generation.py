@@ -58,5 +58,7 @@ class ResponseGeneration:
                     output = self.nlg_model.test_step(encoding)[0]
                 except Exception as e:
                     print('FAILED! %s' % e)
+            else:
+                output = '\n' + cg.pretty_print()
             return output
         return "I've never thought of that. What else would you like to talk about?"

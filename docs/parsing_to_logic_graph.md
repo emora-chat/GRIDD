@@ -3,7 +3,7 @@
 
 Captures questions that start with `When`, `Where`, `Why`, and `How` in the adverb role.
 
-Represented as `question_concept(main_predicate, question(object()))`.
+Represented as `question_concept(main_predicate, question(user, object()))`.
 
 The mapping between question word and semantic concept is:
 
@@ -19,7 +19,7 @@ The mapping between question word and semantic concept is:
 	precede(Z, A)
 	-> q_aux_adv ->
 	p/Y(X, o/object())
-	question(o)
+	question(user, o)
 	focus(p)
 	center(Y)
 	cover(Z)
@@ -30,7 +30,7 @@ The mapping between question word and semantic concept is:
 	precede(Y, A)
 	-> q_adv ->
 	p/Y(X, o/object())
-	question(o)
+	question(user, o)
 	focus(p)
 	center(Y)
 	;
@@ -51,7 +51,7 @@ When did you start reading
 
 Captures questions that start with `How`, `What`, and `Who` as the root of a copular construction or as the determiner of the root. 
 
-Represented as `copula(sbj, question(question_concept))`.
+Represented as `copula(sbj, question(user, question_concept))`.
 
 <details>
   <summary>Conversions</summary>
@@ -61,7 +61,7 @@ Represented as `copula(sbj, question(question_concept))`.
 	det(X, D/question_word())
 	-> qdet_copula_present ->
 	p/Y(Z, inst/X())
-	question(inst)
+	question(user, inst)
 	time(p, now)
 	focus(p)
 	center(X)
@@ -73,7 +73,7 @@ Represented as `copula(sbj, question(question_concept))`.
 	det(X, D/question_word())
 	-> qdet_copula_past ->
 	p/Y(Z, inst/X())
-	question(inst)
+	question(user, inst)
 	time(p, past)
 	focus(p)
 	center(X)
@@ -84,7 +84,7 @@ Represented as `copula(sbj, question(question_concept))`.
 	sbj(X, Z/pstg())
 	-> qw_copula_present ->
 	p/Y(Z, X)
-	question(X)
+	question(user, X)
 	time(p, now)
 	focus(p)
 	center(X)
@@ -94,7 +94,7 @@ Represented as `copula(sbj, question(question_concept))`.
 	sbj(X, Z/pstg())
 	-> qw_copula_past ->
 	p/Y(Z, X)
-	question(X)
+	question(user, X)
 	time(p, past)
 	focus(p)
 	center(X)
@@ -123,14 +123,14 @@ Represented by wrapping the subject/object/dative with the `question` predicate.
   
 	obj(X/pstg(), Y/question_word())
 	-> obj_question ->
-	question(o/object())
+	question(user, o/object())
 	center(Y)
 	focus(o)
 	;
 	
 	sbj(X/pstg(), Y/question_word())
 	-> sbj_question ->
-	question(o/object())
+	question(user, o/object())
 	center(Y)
 	focus(o)
 	;
@@ -142,7 +142,7 @@ Represented by wrapping the subject/object/dative with the `question` predicate.
 	precede(Z, A)
 	-> dat_question ->
 	p/indirect_obj(X, o/object())
-	question(o)
+	question(user, o)
 	center(Y)
 	cover(Z)
 	focus(p)
@@ -176,7 +176,7 @@ Overrules the auxiliary question rule, which would cause an incorrect interpreta
 	aux(Z, A/pstg())
 	-> q_aux_det ->
 	inst/X()
-	question(inst)
+	question(user, inst)
 	focus(inst)
 	center(X)
 	cover(Y)
@@ -203,7 +203,7 @@ Overrules the auxiliary question rule, which would cause an incorrect interpreta
 	det(X/pstg(), Y/question_word())
 	-> q_det ->
 	inst/X()
-	question(inst)
+	question(user, inst)
 	focus(inst)
 	center(X)
 	cover(Y)
@@ -229,7 +229,7 @@ Copula constructions are in interrogative form when the copula precedes the subj
 	precede(Y, Z)
 	-> q_sbj_copula_present ->
 	p/Y(Z,X)
-	q/question(p)
+	q/question(user, p)
 	time(p, now)
 	focus(p)
 	center(X)
@@ -240,7 +240,7 @@ Copula constructions are in interrogative form when the copula precedes the subj
 	precede(Y, Z)
 	-> q_sbj_copula_past ->
 	p/Y(Z,X)
-	q/question(p)
+	q/question(user, p)
 	time(p, past)
 	focus(p)
 	center(X)
@@ -606,7 +606,7 @@ The overall tense of the question is also affected by the aux verb.
 	sbj(X, Z/pstg())
 	precede(Y,Z)
 	-> q_aux_past ->
-	q/question(X)
+	q/question(user, X)
 	aux_time(X, past)
 	center(Y)
 	focus(q)
@@ -617,7 +617,7 @@ The overall tense of the question is also affected by the aux verb.
 	sbj(X, Z/pstg())
 	precede(Y,Z)
 	-> q_aux_present ->
-	q/question(X)
+	q/question(user, X)
 	aux_time(X, now)
 	center(Y)
 	focus(q)
@@ -629,7 +629,7 @@ The overall tense of the question is also affected by the aux verb.
 	sbj(X, Z/pstg())
 	precede(Y,Z)
 	-> q_aux_have ->
-	q/question(X)
+	q/question(user, X)
 	center(Y)
 	focus(q)
 	;
@@ -689,7 +689,7 @@ The overall meaning of the verb is also modified by the modal.
 	precede(Y, Z)
 	-> q_modal ->
 	m/mode(X, Y)
-	q/question(m)
+	q/question(user, m)
 	center(Y)
 	focus(m)
 	;

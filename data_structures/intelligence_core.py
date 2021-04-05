@@ -177,7 +177,7 @@ class IntelligenceCore:
         for node, refsp in node_to_refsp.items():
             constraints = self.gather(node, refsp)
             self.working_memory.metagraph.add_links(node, constraints, 'ref')
-            self.working_memory.metagraph.add_links(node, constraints + [node], 'var')
+            self.working_memory.metagraph.add_links(node, constraints, 'var')
             for t in refsp:
                 self.working_memory.metagraph.remove(node, t, 'refsp')
 

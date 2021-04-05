@@ -201,7 +201,7 @@ class ParseToLogic:
                         if rule_name in QUESTION_INST_REF:
                             # some questions have focus node as the question predicate instance,
                             # when it should be the target of the question predicate instance
-                            focus_node = cg.predicate(focus_node)[0] # todo - update with new bipredicate request representation
+                            focus_node = cg.predicate(focus_node)[2]
                         cg.metagraph.add_links(focus_node, REFERENCES_BY_RULE[rule_name](center, ewm), 'refsp')
                     comps = [pred[3] for pred in cg.predicates() if pred[1] not in {'focus', 'center', 'cover'}]
                     ENTITY_INSTANCES_BY_RULE(rule_name, focus_node, cg, comps)
@@ -213,10 +213,6 @@ class ParseToLogic:
                         post_to_ewm_map = {node: self._get_concept_of_span(solution[node], ewm)
                                            for node in post.concepts()
                                            if node in solution and node in maintain_in_mention_graph}
-                        if ewm.has(center, 'assert'):
-                            # if center is asserted, add assertion to focus node
-                            ((focus, _, _, _),) = list(cg.predicates(predicate_type='focus'))
-                            cg.add(focus, 'assert')
                         if len(list(cg.predicates(predicate_type='aux_time'))) > 0:
                             auxes.add(center)
                         for post_node, ewm_node in post_to_ewm_map.items():
@@ -236,17 +232,19 @@ class ParseToLogic:
                 aux_cg = mentions[aux]
                 preds = list(aux_cg.predicates(predicate_type='aux_time'))
                 if len(preds) > 0:
-                    ((_, _, aux_time, _), ) = preds
+                    ((a, at, aux_time, ai), ) = preds
                     head_cg = mentions[head]
                     preds = list(head_cg.predicates(predicate_type='time'))
                     if len(preds) > 0:
                         ((s,t,o,i), ) = preds
                         head_cg.remove(s,t,o,i)
-                    else: #todo - update comps/reference links???
+                    else:
+                        #todo - update comps/reference links???
                         ((s,_,_,_), ) = list(head_cg.predicates(predicate_type='focus'))
                         i = head_cg.id_map().get()
                     head_cg.add(s, 'time', aux_time, i)
-            del mentions[aux]
+                    aux_cg.remove(a, at, aux_time, ai)
+            # del mentions[aux]
         return mentions
 
     def _add_unknowns_to_cg(self, source_node, source, cg_node, cg):

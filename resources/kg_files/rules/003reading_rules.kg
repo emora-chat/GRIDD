@@ -1,21 +1,21 @@
 read(x/person(), y/book())
 -> person_read_book ->
 yig/is(y, g/genre())
-question(g)
+question(emora,  g)
 time(yig,now)
 
 xlr/like(x, xr/read(x))
 time(xr,now)
 xr{"cover": 1}
 time(xlr,now)
-question(xlr)
+question(emora,  xlr)
 
 xfc/be(fc/character(), c/object())
 property(fc, favorite)
 possess(x, fc)
 ciy/in(c, y)
 ciy{"cover": 1}
-question(c)
+question(emora,  c)
 time(xfc, now)
 
 xfe/be(fe/event(), e/object())
@@ -23,7 +23,7 @@ property(fe, favorite)
 possess(x, fe)
 eiy/in(e, y)
 eiy{"cover": 1}
-question(e)
+question(emora,  e)
 time(xfe, now)
 ;
 
@@ -33,7 +33,7 @@ time(xlr,now)
 xfa/be(fa/author(), a/object())
 property(fa, favorite)
 possess(x, fa)
-question(a)
+question(emora,  a)
 ;
 
 a/like.v.01(x/person(), b/book())
@@ -41,7 +41,7 @@ property(b, g/genre())
 -> person_likes_genre_books ->
 xrb/read(x, sb/book())
 property(sb, g)
-question(sb)
+question(emora,  sb)
 time(xrb, past)
 ;
 
@@ -49,7 +49,7 @@ a/like.v.01(x/person(), g/genre())
 -> person_likes_genre ->
 xrb/read(x, b/book())
 property(b,g)
-question(b)
+question(emora,  b)
 time(xrb, past)
 ;
 

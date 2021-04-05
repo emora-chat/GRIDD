@@ -11,7 +11,7 @@ def test_parse_metadata():
     like<predicate>
     udc=drive(user,c=car())
     uld=like(user, udc)
-    question(uld)
+    question(user, uld)
     udc{"cover": 1}
     uld{"coldstart": 1}
     '''

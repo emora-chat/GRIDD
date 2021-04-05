@@ -727,16 +727,15 @@ class ConceptGraph:
         type_preds = [(s, t, o, i) for s, t, o, i in preds if t == 'type']
         todo -= set(chain(*type_preds))
         while todo:
-            predstodo = [t for t in todo if self.has(predicate_id=t)]
-            if predstodo:
-                left = predstodo[0]
-            else:
-                left = todo.pop()
-            todo.discard(left)
+            left = todo.pop()
+            if self.has(predicate_id=left):
+                display.append(cstr(left))
+
         if typeinfo:
             types = {}
             for s, t, o, i in type_preds:
-                types.setdefault(s, set()).add(o)
+                if exclusions is None or (s not in exclusions and o not in exclusions):
+                    types.setdefault(s, set()).add(o)
             for c, v in types.items():
                 c = ids.get(c, c)
                 v = [ids.get(x, x) for x in v]

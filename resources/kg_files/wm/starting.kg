@@ -7,7 +7,7 @@ bbh{"cover":1}
 bun/call(bot, what)
 indirect_obj(bun,user)
 mode(bun,should)
-question(what)
+question(emora,  what)
 time(bun,now)
 bun{"cover":1}
 
@@ -17,13 +17,13 @@ cbb{"coldstart": 1, "salience": 0.999}
 
 b/be(user,q/qualifier())
 qualifier(b, today)
-question(q)
+question(emora,  q)
 time(b,now)
 b{"coldstart": 1, "salience": 0.998}
 ;
 
 udw/do(user,what)
-question(what)
+question(emora,  what)
 time(udw,past)
 qualifier(udw,today)
 udw{"coldstart": 1, "salience": 0.3}

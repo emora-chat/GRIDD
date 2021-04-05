@@ -12,6 +12,7 @@ from GRIDD.chatbot_server import load
 from GRIDD.data_structures.pipeline import Pipeline
 c = Pipeline.component
 from GRIDD.utilities import collect
+from GRIDD.globals import *
 
 from os.path import join
 import json, requests, time
@@ -55,12 +56,26 @@ class Chatbot:
 
         wm = self.dialogue_intcore.working_memory
 
+        exclusions = {'expr', 'def', 'ref',
+                      'span', 'expression', 'predicate', 'datetime'}
+
         #########################
         ### Dialogue Pipeline ###
         #########################
 
         # NLU Preprocessing
         mentions, merges = self.elit_dp(parse_dict)
+
+        print()
+        for span, graph in mentions.items():
+            print(span)
+            print('-'*10)
+            print(graph.pretty_print())
+            print()
+
+        print()
+        for merge in merges:
+            print(merge)
 
         # Mentions
         namespace = list(mentions.items())[0][1].id_map() if len(mentions) > 0 else "ment_"
@@ -75,11 +90,15 @@ class Chatbot:
             mega_mention_graph.add(span, 'type', 'span')
             if not span.startswith('__linking__'):
                 mega_mention_graph.add(span, 'def', center)
+        self.assign_cover(mega_mention_graph)
         self.dialogue_intcore.accept(mega_mention_graph)
 
-        # todo - no acknowledgement predicates found (i bought a house, i love it)
+        print('\n' + '#'*10)
+        print('After Mentions')
+        print('#' * 10)
+        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=exclusions, typeinfo=True))
 
-        # todo - missing 'cover' of what user said
+        # todo - no acknowledgement predicates found (i bought a house, i love it)
 
         # Merges
         node_merges = []
@@ -94,33 +113,70 @@ class Chatbot:
         merge_sets = self.get_merge_sets_from_pairs(node_merges)
         self.dialogue_intcore.merge(merge_sets.values())
 
+        print('\n' + '#'*10)
+        print('After Merges')
+        print('#' * 10)
+        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=exclusions, typeinfo=True))
+
         # Knowledge pull
         knowledge = self.dialogue_intcore.pull_knowledge(limit=100, num_pullers=100, association_limit=10, subtype_limit=10)
         self.dialogue_intcore.consider(knowledge)
         types = self.dialogue_intcore.pull_types()
         self.dialogue_intcore.consider(types)
 
+        print('\n' + '#'*10)
+        print('After Knowledge Pull')
+        print('#' * 10)
+        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=exclusions, typeinfo=True))
+
         # Inferences
         inferences = self.dialogue_intcore.infer()
         self.dialogue_intcore.apply_inferences(inferences)
         self.dialogue_intcore.gather_all_nlu_references()
 
+        print('\n' + '#'*10)
+        print('After Inferences')
+        print('#' * 10)
+        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=exclusions, typeinfo=True))
+
         # Feature update
         self.dialogue_intcore.update_confidence()
         self.dialogue_intcore.update_salience()
+
+        print('\n' + '#'*10)
+        print('After Feature Update')
+        print('#' * 10)
+        for concept, features in self.dialogue_intcore.working_memory.features.items():
+            if wm.has(predicate_id=concept) and wm.type(concept) not in {'expr', 'ref', 'def'}:
+                sig = wm.predicate(concept)
+                if sig[0] not in exclusions and sig[1] not in exclusions and sig[2] not in exclusions:
+                    print(f'{sig}: s({features.get(SALIENCE, 0)}) c({features.get(CONFIDENCE, 0)}) cv({features.get(COVER, 0)})')
 
         # Reference resolution
         reference_pairs = self.dialogue_intcore.resolve() # todo - what if there is more than one matching reference??
         reference_sets = self.get_merge_sets_from_pairs(reference_pairs)
         self.dialogue_intcore.merge(reference_sets.values())
 
+        print('\n' + '#'*10)
+        print('After Reference Resolution')
+        print('#' * 10)
+        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=exclusions, typeinfo=True))
+        print()
+
         # Response selection
         aux_state, selections = self.response_selection(self.auxiliary_state, wm)
+
+        print('\n' + '#'*10)
+        print('Response Selections')
+        print('#' * 10)
+        for selection in selections:
+            print(selection)
+        print()
 
         responses = []
         for predicate, generation_type in selections:
             if generation_type == 'nlg':
-                expansions = wm.structure(predicate[3])
+                expansions = wm.structure(predicate[3], essential_modifiers={'time', 'question', 'mode'})
                 responses.append((predicate, expansions, generation_type))
             elif generation_type in {"ack_conf", "ack_emo"}:
                 responses.append((predicate, [], generation_type))
@@ -132,8 +188,10 @@ class Chatbot:
                 exp_preds = [mapped_ids[pred[3]] for pred in predicate[1]]
                 exp_pred_sigs = [wm.predicate(pred) for pred in exp_preds if pred != main_pred]
                 responses.append((main_pred_sig, exp_pred_sigs, generation_type))
-
-        # todo - how to update salience and user_confidence of thing Emora says
+        spoken_predicates = set()
+        for main, exps, _ in responses:
+            spoken_predicates.update([main[3]] + [pred[3] for pred in exps])
+        self.assign_cover(wm, concepts=spoken_predicates)
 
         ack_results = self.produce_acknowledgment(aux_state, responses)
         gen_results = self.produce_generic(responses)
@@ -164,13 +222,20 @@ class Chatbot:
                 del merge_sets[n2]
         return merge_sets
 
+    def assign_cover(self, graph, concepts=None):
+        if concepts is None:
+            concepts = graph.concepts()
+        for concept in concepts:
+            if graph.has(predicate_id=concept):
+                graph.features[concept][COVER] = 1.0
+
     def chat(self):
         utterance = input('User: ')
         while utterance != 'q':
             s = time.time()
             response = self.respond(utterance)
             elapsed = time.time() - s
-            print('[%.6f s] %s' % (elapsed, response))
+            print('[%.6f s] %s\n' % (elapsed, response))
             utterance = input('User: ')
             self.auxiliary_state['turn_index'] += 1
 

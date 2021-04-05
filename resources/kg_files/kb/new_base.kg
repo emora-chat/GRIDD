@@ -84,7 +84,7 @@ expr(["why"], cause)
 qualifier = (predicate)
 expr(["how"], qualifier)
 
-question = (predicate)
+question = (predicate, nonassert)
 expr(["question"], question)
 
 what = (entity)
