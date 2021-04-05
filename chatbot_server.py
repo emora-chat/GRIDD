@@ -80,10 +80,10 @@ def init_dialogue_inference(rules):
 
 def init_response_selection():
     from GRIDD.modules.feature_propogation import FeaturePropogation
-    from GRIDD.modules.response_selection_salience import SalienceResponseSelection
+    from GRIDD.modules.response_selection_salience import ResponseSelectionSalience
     from GRIDD.modules.response_expansion import ResponseExpansion
     feature_propogation = c(FeaturePropogation(max_score=1.0, turn_decrement=0.1, propogation_rate=0.5, propogation_decrement=0.1))
-    response_selection = c(SalienceResponseSelection())
+    response_selection = c(ResponseSelectionSalience())
     response_expansion = c(ResponseExpansion())
     return Pipeline(
         ('wm_after_inference', 'iterations') > feature_propogation > ('wm_after_prop'),
@@ -96,7 +96,7 @@ def init_response_acknowledgment():
     from GRIDD.modules.response_acknowledgment import ResponseAcknowledgment
     response_acknowledgment = c(ResponseAcknowledgment())
     return Pipeline(
-        ('expanded_response_predicates', 'aux_state') > response_acknowledgment > ('ack_responses'),
+        ('aux_state', 'expanded_response_predicates') > response_acknowledgment > ('ack_responses'),
         outputs=['ack_responses']
     )
 

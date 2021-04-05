@@ -21,10 +21,8 @@ class ResponseExpansion:
                 p, e = self.get_expansions(predicate, working_memory)
                 responses.append((p, list(e), generation_type))
                 if p is not None:
-                    working_memory.features.update_from_response(responses[-1][0], responses[-1][1])
             elif generation_type in {"ack_conf", "ack_emo"}:
                 responses.append((predicate, [], generation_type))
-                working_memory.features.update_from_response(responses[-1][0], responses[-1][1])
             elif generation_type == "backup":
                 cg = ConceptGraph(namespace='default_', predicates=predicate[1])
                 mapped_ids = working_memory.concatenate(cg)
@@ -33,7 +31,6 @@ class ResponseExpansion:
                 exp_preds = [mapped_ids[pred[3]] for pred in predicate[1]]
                 exp_pred_sigs = [working_memory.predicate(pred) for pred in exp_preds if pred != main_pred]
                 responses.append((main_pred_sig, exp_pred_sigs, generation_type))
-                working_memory.features.update_from_response(responses[-1][0], responses[-1][1])
         return responses, working_memory
 
     def get_expansions(self, main_predicate, wm):

@@ -203,7 +203,7 @@ class ParseToLogic:
                             # when it should be the target of the question predicate instance
                             focus_node = cg.predicate(focus_node)[0] # todo - update with new bipredicate request representation
                         cg.metagraph.add_links(focus_node, REFERENCES_BY_RULE[rule_name](center, ewm), 'refsp')
-                    comps = [pred[3] for pred in cg.predicates()]
+                    comps = [pred[3] for pred in cg.predicates() if pred[1] not in {'focus', 'center', 'cover'}]
                     ENTITY_INSTANCES_BY_RULE(rule_name, focus_node, cg, comps)
                     cg.metagraph.add_links(focus_node, comps, 'comps')
                     if ewm.has(center, 'assert'): # if center is asserted, add assertion to focus node

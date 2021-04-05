@@ -4,7 +4,7 @@ neutral = ['Yeah', 'Gotcha', 'Sure', 'I see', 'Interesting', 'Hmm', 'Oh', 'Okay'
 
 class ResponseAcknowledgment:
 
-    def __call__(self, expanded_response_predicates, aux_state):
+    def __call__(self, aux_state, expanded_response_predicates):
         generations = []
         turn_idx = aux_state.get('turn_index', None)
         for selection in expanded_response_predicates:

@@ -4,6 +4,10 @@ from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.inference_engine import InferenceEngine
 from GRIDD.data_structures.working_memory import WorkingMemory
 from GRIDD.modules.elit_dp_to_logic_model import ElitDPToLogic
+from GRIDD.modules.response_selection_salience import ResponseSelectionSalience
+from GRIDD.modules.response_acknowledgment import ResponseAcknowledgment
+from GRIDD.modules.response_generation import ResponseGeneration
+from GRIDD.modules.response_assembler import ResponseAssembler
 
 from GRIDD.chatbot_server import load
 from GRIDD.data_structures.pipeline import Pipeline
@@ -33,6 +37,11 @@ class Chatbot:
 
         template_file = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
         self.elit_dp = ElitDPToLogic(knowledge_base, template_file)
+
+        self.response_selection = ResponseSelectionSalience()
+        self.produce_acknowledgment = ResponseAcknowledgment()
+        self.produce_generic = ResponseGeneration()
+        self.response_assembler = ResponseAssembler()
 
 
     def respond(self, user_utterance):
@@ -93,12 +102,34 @@ class Chatbot:
         inferences = self.dialogue_intcore.infer()
         self.dialogue_intcore.apply_inferences(inferences)
 
-        # salience and confidence propogation
-        # response selection
-        # response expansion
-        # response generation
+        self.dialogue_intcore.update_confidence()
+        self.dialogue_intcore.update_salience()
 
-        return
+        aux_state, selections = self.response_selection(self.auxiliary_state, wm)
+
+        responses = []
+        for predicate, generation_type in selections:
+            if generation_type == 'nlg':
+                expansions = wm.structure(predicate)
+                responses.append((predicate, expansions, generation_type))
+            elif generation_type in {"ack_conf", "ack_emo"}:
+                responses.append((predicate, [], generation_type))
+            elif generation_type == "backup":
+                cg = ConceptGraph(namespace='default_', predicates=predicate[1])
+                mapped_ids = wm.concatenate(cg)
+                main_pred = mapped_ids[predicate[0][3]]
+                main_pred_sig = wm.predicate(main_pred)
+                exp_preds = [mapped_ids[pred[3]] for pred in predicate[1]]
+                exp_pred_sigs = [wm.predicate(pred) for pred in exp_preds if pred != main_pred]
+                responses.append((main_pred_sig, exp_pred_sigs, generation_type))
+
+        ack_results = self.produce_acknowledgment(aux_state, responses)
+        gen_results = self.produce_generic(responses)
+        response = self.response_assembler(aux_state, ack_results, gen_results)
+
+        self.auxiliary_state = aux_state
+
+        return response
 
     def _follow_path(self, concept, pos, working_memory):
         if pos == 'subject':
@@ -117,6 +148,7 @@ class Chatbot:
             elapsed = time.time() - s
             print('[%.6f s] %s' % (elapsed, response))
             utterance = input('User: ')
+            self.auxiliary_state['turn_index'] += 1
 
 if __name__ == '__main__':
     kb_dir = join('GRIDD', 'resources', 'kg_files', 'kb')

@@ -17,11 +17,11 @@ question(o)
 ''')
 
 backup_topics = {
-    'sports': (q_play_sports.predicates(predicate_type='play')[0], q_play_sports.predicates()),
-    'school': (q_school_subject.predicates(predicate_type='be')[0], q_school_subject.predicates())
+    'sports': (list(q_play_sports.predicates(predicate_type='play'))[0], q_play_sports.predicates()),
+    'school': (list(q_school_subject.predicates(predicate_type='be'))[0], q_school_subject.predicates())
 }
 
-class SalienceResponseSelection:
+class ResponseSelectionSalience:
 
     def __call__(self, aux_state, working_memory):
         responses = [self.select_acknowledgment(working_memory), self.select_followup(working_memory, aux_state)]
@@ -41,7 +41,7 @@ class SalienceResponseSelection:
     def select_followup(self, working_memory, aux_state):
         options = [(node,features['salience']) for node,features in working_memory.features.items()
                    if features.get('cover', 0.0) != 1.0
-                   and features['salience'] > 0.0
+                   and features.get('salience', 0) > 0.0
                    and working_memory.has(predicate_id=node)
                    and working_memory.type(node) not in {'type', 'possess', 'referential', 'instantiative', 'ack_conf'}]
         salience_order = sorted(options, key=lambda x: x[1], reverse=True)
@@ -62,4 +62,4 @@ class SalienceResponseSelection:
                 return None, 'nlg'
 
 if __name__ == '__main__':
-    print(ResponseSelectionSalienceSpec.verify(SalienceResponseSelection))
+    print(ResponseSelectionSalienceSpec.verify(ResponseSelectionSalience))
