@@ -203,7 +203,7 @@ class ParseToLogic:
                             # when it should be the target of the question predicate instance
                             focus_node = cg.predicate(focus_node)[2]
                         cg.metagraph.add_links(focus_node, REFERENCES_BY_RULE[rule_name](center, ewm), 'refsp')
-                    comps = [pred[3] for pred in cg.predicates() if pred[1] not in {'focus', 'center', 'cover'}]
+                    comps = [pred[3] for pred in cg.predicates() if pred[1] not in {'focus', 'center', 'cover'}] # todo - why isn't time predicate in comps?
                     ENTITY_INSTANCES_BY_RULE(rule_name, focus_node, cg, comps)
                     cg.metagraph.add_links(focus_node, comps, 'comps')
                     if ewm.has(center, 'assert'): # if center is asserted, add assertion to focus node
@@ -239,10 +239,10 @@ class ParseToLogic:
                         ((s,t,o,i), ) = preds
                         head_cg.remove(s,t,o,i)
                     else:
-                        #todo - update comps/reference links???
                         ((s,_,_,_), ) = list(head_cg.predicates(predicate_type='focus'))
                         i = head_cg.id_map().get()
                     head_cg.add(s, 'time', aux_time, i)
+                    head_cg.metagraph.add(s, i, 'comps')
                     aux_cg.remove(a, at, aux_time, ai)
             # del mentions[aux]
         return mentions
