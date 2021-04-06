@@ -5,7 +5,7 @@ from GRIDD.data_structures.inference_engine import InferenceEngine
 from GRIDD.data_structures.intelligence_core import IntelligenceCore
 from GRIDD.data_structures.id_map import IdMap
 from GRIDD.utilities import collect
-from GRIDD.data_structures.reference_identifier import REFERENCES_BY_RULE, QUESTION_INST_REF
+from GRIDD.data_structures.reference_identifier import REFERENCES_BY_RULE, QUESTION_INST_REF, subtree_dependencies
 import torch, gc
 
 LOCALDEBUG = False
@@ -203,11 +203,12 @@ class ParseToLogic:
                             # when it should be the target of the question predicate instance
                             focus_node = cg.predicate(focus_node)[2]
                         cg.metagraph.add_links(focus_node, REFERENCES_BY_RULE[rule_name](center, ewm), 'refsp')
-                    comps = [pred[3] for pred in cg.predicates() if pred[1] not in {'focus', 'center', 'cover'}] # todo - why isn't time predicate in comps?
+                    comps = [pred[3] for pred in cg.predicates() if pred[1] not in {'focus', 'center', 'cover'}]
                     ENTITY_INSTANCES_BY_RULE(rule_name, focus_node, cg, comps)
                     cg.metagraph.add_links(focus_node, comps, 'comps')
                     if ewm.has(center, 'assert'): # if center is asserted, add assertion to focus node
                         cg.add(focus_node, 'assert')
+                        cg.metagraph.add_links(focus_node, subtree_dependencies(center, ewm), 'dp_sub')
                     mentions[center] = cg
                     if not center.startswith('__linking__'):
                         post_to_ewm_map = {node: self._get_concept_of_span(solution[node], ewm)

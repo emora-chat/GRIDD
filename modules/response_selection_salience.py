@@ -17,8 +17,8 @@ question(emora, o)
 ''', namespace='bu_')
 
 backup_topics = {
-    'sports': (list(q_play_sports.predicates(predicate_type='play'))[0], q_play_sports.predicates()),
-    'school': (list(q_school_subject.predicates(predicate_type='be'))[0], q_school_subject.predicates())
+    'sports': (list(q_play_sports.predicates(predicate_type='play'))[0], list(q_play_sports.predicates())),
+    'school': (list(q_school_subject.predicates(predicate_type='be'))[0], list(q_school_subject.predicates()))
 }
 
 class ResponseSelectionSalience:

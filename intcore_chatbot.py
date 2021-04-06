@@ -91,7 +91,7 @@ class Chatbot:
             if not span.startswith('__linking__'):
                 mega_mention_graph.add(span, 'def', center)
         self.assign_cover(mega_mention_graph)
-        self.dialogue_intcore.accept(mega_mention_graph)
+        self.dialogue_intcore.consider(mega_mention_graph)
 
         print('\n' + '#'*10)
         print('After Mentions')
@@ -110,8 +110,8 @@ class Chatbot:
                 (concept2,) = wm.objects(span2, 'ref')
                 concept2 = self._follow_path(concept2, pos2, wm)
                 node_merges.append((concept1, concept2))
-        merge_sets = self.get_merge_sets_from_pairs(node_merges)
-        self.dialogue_intcore.merge(merge_sets.values())
+        # merge_sets = self.get_merge_sets_from_pairs(node_merges)
+        self.dialogue_intcore.merge(node_merges)
 
         print('\n' + '#'*10)
         print('After Merges')
@@ -123,6 +123,7 @@ class Chatbot:
         self.dialogue_intcore.consider(knowledge)
         types = self.dialogue_intcore.pull_types()
         self.dialogue_intcore.consider(types)
+        self.dialogue_intcore.operate()
 
         print('\n' + '#'*10)
         print('After Knowledge Pull')
@@ -132,7 +133,9 @@ class Chatbot:
         # Inferences
         inferences = self.dialogue_intcore.infer()
         self.dialogue_intcore.apply_inferences(inferences)
+        self.dialogue_intcore.operate()
         self.dialogue_intcore.gather_all_nlu_references()
+        self.dialogue_intcore.gather_all_assertion_links()
 
         print('\n' + '#'*10)
         print('After Inferences')
@@ -154,8 +157,8 @@ class Chatbot:
 
         # Reference resolution
         reference_pairs = self.dialogue_intcore.resolve() # todo - what if there is more than one matching reference??
-        reference_sets = self.get_merge_sets_from_pairs(reference_pairs)
-        self.dialogue_intcore.merge(reference_sets.values())
+        # reference_sets = self.get_merge_sets_from_pairs(reference_pairs)
+        self.dialogue_intcore.merge(reference_pairs)
 
         print('\n' + '#'*10)
         print('After Reference Resolution')
@@ -181,7 +184,7 @@ class Chatbot:
             elif generation_type in {"ack_conf", "ack_emo"}:
                 responses.append((predicate, [], generation_type))
             elif generation_type == "backup":
-                cg = ConceptGraph(namespace='default_', predicates=predicate[1])
+                cg = ConceptGraph(namespace='bu_', predicates=predicate[1])
                 mapped_ids = wm.concatenate(cg)
                 main_pred = mapped_ids[predicate[0][3]]
                 main_pred_sig = wm.predicate(main_pred)
@@ -211,15 +214,15 @@ class Chatbot:
         return concept
 
     def get_merge_sets_from_pairs(self, pairs):
-        merge_sets = defaultdict(set)
-        for n1, n2 in pairs:
-            n2_set = {n2}
-            if n2 in merge_sets:
-                n2_set = merge_sets[n2]
-            merge_sets[n1].update(n2_set)
-            merge_sets[n1].add(n1)
-            if n2 in merge_sets:
-                del merge_sets[n2]
+        merge_sets = {}
+        for a, b in pairs:
+            existing = {a, b}
+            if a in merge_sets:
+                existing.update(merge_sets[a])
+            if b in merge_sets:
+                existing.update(merge_sets[b])
+            for n in existing:
+                merge_sets[n] = existing
         return merge_sets
 
     def assign_cover(self, graph, concepts=None):

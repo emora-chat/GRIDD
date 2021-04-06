@@ -28,7 +28,7 @@ class IntelligenceCore:
             self.working_memory = working_memory
         else:
             self.working_memory = ConceptGraph(namespace='wm', supports={AND_LINK: False})
-            self.accept(working_memory)
+            self.consider(working_memory)
         self.operators = operators(intcoreops)
         self.essential_types = {i for i in self.knowledge_base.subtypes_of(ESSENTIAL)
                                 if not self.knowledge_base.has(predicate_id=i)}
@@ -68,30 +68,11 @@ class IntelligenceCore:
         mapping = self.working_memory.concatenate(considered)
         return mapping
 
-    def accept(self, concepts, associations=None, salience=1, **options):
-        considered = ConceptGraph(concepts, namespace='_tmp_')
-        if associations is None:
-            considered.features.update({c: {SALIENCE: (salience*SENSORY_SALIENCE
-                                        if not c in considered.features or not SALIENCE in considered.features[c]
-                                        else considered.features[c][SALIENCE])}
-                                        for c in considered.concepts()})
-        else:
-            s = min([self.working_memory.features.get(c, {}).get(SALIENCE, 0)
-                            for c in associations]) - ASSOCIATION_DECAY
-            considered.features.update({c: {SALIENCE: (salience*s
-                                        if not c in considered.features or not SALIENCE in considered.features[c]
-                                        else considered.features[c][SALIENCE])}
-                                        for c in considered.concepts()})
-        self._loading_options(concepts, options)
-        self._assertions(considered)
-        mapping = self.working_memory.concatenate(considered)
-        return mapping.values()
-
     def infer(self, rules=None):
         if rules is None:
             solutions = self.inference_engine.infer(self.working_memory)
         else:
-            solutions = self.inference_engine.infer(self.working_memory, rules=rules)
+            solutions = self.inference_engine.infer(self.working_memory, dynamic_rules=rules)
         return solutions
 
     def apply_inferences(self, inferences=None):
@@ -125,6 +106,23 @@ class IntelligenceCore:
         mg = self.working_memory.metagraph
         and_links = [edge for edge in mg.edges() if isinstance(edge[2], tuple) and AND_LINK == edge[2][0]]
         or_links = [edge for edge in mg.edges() if isinstance(edge[2], tuple) and OR_LINK == edge[2][0]]
+        types = self.working_memory.types()
+        unasserted = {}
+        ass_links = set()
+        ass_link_edges = list(mg.edges(label=ASS_LINK))
+        for s, t, l in ass_link_edges:
+            if self.working_memory.has(predicate_id=t):
+                ass_links.add((s, t))
+                if NONASSERT in types[t]:
+                    unasserted.setdefault(s, set()).add(self.working_memory.predicate(t)[2])
+            if NONASSERT in types[s]:
+                unasserted.setdefault(s, set()).add(self.working_memory.predicate(s)[2])
+        for s, t, l in ass_link_edges:
+            if t in unasserted.get(s, set()):
+                ass_links.discard((s, t))
+        for s, t in ass_links:
+            if t not in unasserted:
+                or_links.append((s, t, (OR_LINK, 1.0)))
         def and_fn(node, sources):
             product = 1
             for value, (label, weight) in sources:
@@ -152,14 +150,12 @@ class IntelligenceCore:
     def merge(self, concept_sets):
         sets = {}
         for cs in concept_sets:
-            s = set()
+            s = set(cs)
             for c in cs:
-                ns = sets.setdefault(c, s)
-                if ns is not s:
-                    ns.update(s)
-                    for n in s:
-                        sets[n] = ns
-                ns.add(c)
+                if c in sets:
+                    s.update(sets[c])
+            for c in s:
+                sets[c] = s
         sets = uniquify(sets.values())
         for s in sets:
             if s:
@@ -180,6 +176,17 @@ class IntelligenceCore:
             self.working_memory.metagraph.add_links(node, constraints, 'var')
             for t in refsp:
                 self.working_memory.metagraph.remove(node, t, 'refsp')
+
+    def gather_all_assertion_links(self):
+        # convert assertion subtree spans to predicates
+        node_to_spans = {}
+        for s, t, _ in self.working_memory.metagraph.edges(label='dp_sub'):
+            node_to_spans.setdefault(s, []).append(t)
+        for node, spans in node_to_spans.items():
+            constraints = self.gather(node, spans)
+            self.working_memory.metagraph.add_links(node, constraints, 'ass')
+            for t in spans:
+                self.working_memory.metagraph.remove(node, t, 'dp_sub')
 
     def gather(self, reference_node, constraints_as_spans):
         PRIMITIVES = {'focus', 'center', 'cover', 'question', 'var'}
@@ -333,7 +340,7 @@ class IntelligenceCore:
     def operate(self, cg=None):
         if cg is None:
             cg = self.working_memory
-        for opname, opfunc in self.operators.items():
+        for opname, opfunc in self.operators.items(): # todo - some operators should be run only once and then deleted
             for _, _, _, i in list(cg.predicates(predicate_type=opname)):
                 if cg.has(predicate_id=i): # within-loop-mutation check
                     opfunc(cg, i)

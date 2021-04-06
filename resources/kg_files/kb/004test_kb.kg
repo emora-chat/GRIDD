@@ -23,3 +23,7 @@ expr("eat", eat)
 time(eat(fluffy, b2/bone()), past)
 expr("sally", sally)
 ;
+
+hope = (predicate, nonassert)
+expr("hope", hope)
+;
