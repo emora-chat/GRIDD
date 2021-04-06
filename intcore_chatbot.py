@@ -1,6 +1,7 @@
 
 from GRIDD.data_structures.intelligence_core import IntelligenceCore
 from GRIDD.data_structures.concept_graph import ConceptGraph
+from GRIDD.data_structures.concept_compiler import ConceptCompiler
 from GRIDD.data_structures.inference_engine import InferenceEngine
 from GRIDD.modules.elit_dp_to_logic_model import ElitDPToLogic
 from GRIDD.modules.response_selection_salience import ResponseSelectionSalience
@@ -26,7 +27,10 @@ class Chatbot:
     def __init__(self, *knowledge_base, inference_rules, starting_wm=None, device='cpu'):
         self.auxiliary_state = {'turn_index': 0}
 
-        knowledge_base = ConceptGraph(collect(*knowledge_base), namespace='kb')
+        compiler = ConceptCompiler()
+        predicates, metalinks, metadatas = compiler.compile(collect(*knowledge_base))
+        knowledge_base = ConceptGraph(predicates, metalinks=metalinks, metadata=metadatas,
+                                      namespace='kb')
         dialogue_inference = InferenceEngine(collect(*inference_rules))
         working_memory = None
         if starting_wm is not None:

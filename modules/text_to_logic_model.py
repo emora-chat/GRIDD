@@ -91,9 +91,10 @@ class ParseToLogic:
         self.intcore.prune_attended(0)
         parse_graph = self.text_to_graph(*args)
         self.intcore.consider(parse_graph)
-        expr_preds = self.intcore.pull_expressions()
-        self.intcore.consider(expr_preds)
-        self._unknown_expression_identification(wm)
+        # expr_preds = self.intcore.pull_expressions()
+        # self.intcore.consider(expr_preds)
+        self._span_to_concepts()
+        # self._unknown_expression_identification(wm)
         types = self.intcore.pull_types()
         self.intcore.consider(types)
         rule_assignments = {(pre, post, rule): sols
@@ -105,25 +106,58 @@ class ParseToLogic:
             self.display_merges(merges, wm)
         return mentions, merges
 
-    def _unknown_expression_identification(self, ewm):
-        """
-        Create "UNK" expression nodes for all nodes with no expr references.
-        """
-        for span_node in self.spans:
-            expression = '"%s"' % ewm.features[span_node]["span_data"].expression
-            references = ewm.objects(expression, 'expr')
-            if len(references) == 0:
-                unk_node = ewm.add(ewm.id_map().get())
-                types = ewm.types(span_node)
+    def _span_to_concepts(self):
+        wm = self.intcore.working_memory
+        kb = self.intcore.knowledge_base
+        for span_node in wm.subjects('span', 'type'):
+            data = wm.features[span_node]['span_data']
+            surface_form = data.string
+            lemma = data.expression
+            sf_concepts = kb.objects(f'"{surface_form}"', 'expr')
+            if len(sf_concepts) > 0:
+                c = next(iter(sf_concepts))
+                wm.add(span_node, 'ref', f'"{surface_form}"')
+                wm.add(f'"{surface_form}"', 'expr', c)
+            l_concepts = None
+            if len(sf_concepts) == 0:
+                l_concepts = kb.objects(f'"{lemma}"', 'expr')
+                if len(l_concepts) > 0:
+                    c = next(iter(l_concepts))
+                    wm.add(span_node, 'ref', f'"{lemma}"')
+                    wm.add(f'"{lemma}"', 'expr', c)
+            if not sf_concepts and not l_concepts:
+                # Create "UNK" expression nodes for all nodes with no expr references.
+                unk_node = wm.add(wm.id_map().get())
+                types = wm.types(span_node)
                 pos_type = 'other'
                 for n in ['verb', 'noun', 'pron', 'adj', 'adv']:
                     if n in types:
                         pos_type = n
                         break
-                ewm.add(unk_node, 'type', 'unknown_%s'%pos_type)
-                if not ewm.has('unknown_%s'%pos_type, 'type', 'object'):
-                    ewm.add('unknown_%s' % pos_type, 'type', 'object')
-                ewm.add(expression, 'expr', unk_node)
+                wm.add(unk_node, 'type', 'unknown_%s' % pos_type)
+                if not wm.has('unknown_%s' % pos_type, 'type', 'object'):
+                    wm.add('unknown_%s' % pos_type, 'type', 'object')
+                wm.add(f'"{surface_form}"', 'expr', unk_node)
+
+    # def _unknown_expression_identification(self, ewm):
+    #     """
+    #     Create "UNK" expression nodes for all nodes with no expr references.
+    #     """
+    #     for span_node in self.spans:
+    #         expression = '"%s"' % ewm.features[span_node]["span_data"].expression
+    #         references = ewm.objects(expression, 'expr')
+    #         if len(references) == 0:
+    #             unk_node = ewm.add(ewm.id_map().get())
+    #             types = ewm.types(span_node)
+    #             pos_type = 'other'
+    #             for n in ['verb', 'noun', 'pron', 'adj', 'adv']:
+    #                 if n in types:
+    #                     pos_type = n
+    #                     break
+    #             ewm.add(unk_node, 'type', 'unknown_%s'%pos_type)
+    #             if not ewm.has('unknown_%s'%pos_type, 'type', 'object'):
+    #                 ewm.add('unknown_%s' % pos_type, 'type', 'object')
+    #             ewm.add(expression, 'expr', unk_node)
 
     # def _inference(self, ewm, retry=None):
     #     """

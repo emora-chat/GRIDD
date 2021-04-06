@@ -1,8 +1,4 @@
-movie=(entity)
 m:<time(ulm/like(user, m/movie()), now)>
-question(m)
+question(emora, m)
 ulm{"coldstart": 1, "salience": 0.999}
-
-avengers=movie()
-expr("avengers", avengers)
 ;

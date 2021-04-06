@@ -21,9 +21,15 @@ like(fluffy, b/bone())
 eat=(predicate)
 expr("eat", eat)
 time(eat(fluffy, b2/bone()), past)
+sally = person()
 expr("sally", sally)
 ;
 
 hope = (predicate, nonassert)
 expr("hope", hope)
+;
+
+movie=(entity)
+avengers = movie()
+expr("avengers", avengers)
 ;

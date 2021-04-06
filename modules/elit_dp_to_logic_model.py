@@ -111,9 +111,10 @@ class ElitDPToLogic(ParseToLogic):
             cg.features[span_node]["span_data"] = span
             cg.add(span_node)
             self.spans.append(span_node)
-            expression = '"%s"' % expression
-            cg.add(span_node, 'ref', expression)
+            # expression = '"%s"' % expression
+            # cg.add(span_node, 'ref', expression)
             cg.add(span_node, 'type', pos)
+            cg.add(span_node, 'type', 'span')
             if token_idx > 0:
                 for pti in precede_token_idx:
                     if pti < token_idx:
@@ -127,8 +128,8 @@ class ElitDPToLogic(ParseToLogic):
                     original_source = source.to_string()
                     original_target = target.to_string()
 
-                    for tuple in list(cg.predicates(original_target, 'ref')) + list(cg.predicates(original_source, 'ref')):
-                        cg.remove(tuple[2]) # remove non-condensed expressions
+                    # for tuple in list(cg.predicates(original_target, 'ref')) + list(cg.predicates(original_source, 'ref')):
+                    #     cg.remove(tuple[2]) # remove non-condensed expressions
                     self.spans.remove(original_target)
                     original_source_span_idx = self.spans.index(original_source)
                     del cg.features[original_source]
@@ -140,7 +141,7 @@ class ElitDPToLogic(ParseToLogic):
                     new_source = source.to_string()
                     cg.features[new_source]["span_data"] = source
                     self.spans[original_source_span_idx] = new_source
-                    cg.add(new_source, 'ref', '"%s"'%source.expression) # add updated condensed expression
+                    # cg.add(new_source, 'ref', '"%s"'%source.expression) # add updated condensed expression
                     cg.merge(new_source, original_source)
                     cg.merge(new_source, original_target)
                 else:
