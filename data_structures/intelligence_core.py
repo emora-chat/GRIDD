@@ -211,13 +211,17 @@ class IntelligenceCore:
     def resolve(self, references=None):
         if references is None:
             references = self.working_memory.references()
-        compatible_pairs = []
+        compatible_pairs = {}
         if len(references) > 0:
             inferences = self.inference_engine.infer(self.working_memory, references, cached=False)
             for reference_node, (pre, matches) in inferences.items():
+                compatible_pairs[reference_node] = {}
                 for match in matches:
-                    pairs = [(match[node], node) for node in match] if reference_node != match[reference_node] else []
-                    compatible_pairs.extend(pairs)
+                    if reference_node != match[reference_node]:
+                        compatible_pairs[reference_node][match[reference_node]] = []
+                        for node in match:
+                            if node != reference_node:
+                                compatible_pairs[reference_node][match[reference_node]].append((match[node],node))
         return compatible_pairs
 
     def logical_merge(self):

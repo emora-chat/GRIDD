@@ -15,8 +15,8 @@ expr(["socialbot"], socialbot)
 
 user=person()
 expr(["i", "me", "my", "mine"], user)
-bot=socialbot()
-expr(["you", "your", "yours"], bot)
+emora=socialbot()
+expr(["you", "your", "yours"], emora)
 
 datetime = (entity)
 expr(["datetime"], datetime)

@@ -114,7 +114,6 @@ class Chatbot:
                 (concept2,) = wm.objects(span2, 'ref')
                 concept2 = self._follow_path(concept2, pos2, wm)
                 node_merges.append((concept1, concept2))
-        # merge_sets = self.get_merge_sets_from_pairs(node_merges)
         self.dialogue_intcore.merge(node_merges)
 
         print('\n' + '#'*10)
@@ -161,9 +160,9 @@ class Chatbot:
                     print(f'{sig}: s({features.get(SALIENCE, 0)}) c({features.get(CONFIDENCE, 0)}) cv({features.get(COVER, 0)})')
 
         # Reference resolution
-        reference_pairs = self.dialogue_intcore.resolve() # todo - what if there is more than one matching reference??
-        # reference_sets = self.get_merge_sets_from_pairs(reference_pairs)
-        self.dialogue_intcore.merge(reference_pairs)
+        reference_sets = self.dialogue_intcore.resolve() # todo - what if there is more than one matching reference??
+        references = self.reference_merge_model(reference_sets)
+        self.dialogue_intcore.merge(references)
 
         print('\n' + '#'*10)
         print('After Reference Resolution')
@@ -231,6 +230,23 @@ class Chatbot:
                 merge_sets[n] = existing
         return merge_sets
 
+    def reference_merge_model(self, reference_dict):
+        pairs_to_merge = []
+        resolution_options = []
+        for ref_node, compatibilities in reference_dict.items():
+            for ref_match, constraint_matches in compatibilities.items():
+                if self.dialogue_intcore.working_memory.metagraph.out_edges(ref_match, REF):
+                    # found other references that match; merge all
+                    pairs_to_merge.extend([(ref_match, ref_node)] + constraint_matches)
+                else:
+                    # found resolution to reference; merge only one
+                    resolution_options.append(ref_match)
+            if len(resolution_options) > 0:
+                salient_resol = max(resolution_options,
+                                    key=lambda x: self.dialogue_intcore.working_memory.features.get(x, {}).get(SALIENCE, 0))
+                pairs_to_merge.extend([(salient_resol, ref_node)] + compatibilities[salient_resol])
+        return pairs_to_merge
+
     def assign_cover(self, graph, concepts=None):
         if concepts is None:
             concepts = graph.concepts()
@@ -256,5 +272,5 @@ if __name__ == '__main__':
     wm = [join('GRIDD', 'resources', 'kg_files', 'wm')]
     ITERATION = 2
 
-    chatbot = Chatbot(*kb, inference_rules=rules, starting_wm=wm)
+    chatbot = Chatbot(*kb, inference_rules=rules) #, starting_wm=wm)
     chatbot.chat()

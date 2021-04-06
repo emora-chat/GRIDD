@@ -137,6 +137,7 @@ class ParseToLogic:
                 wm.add(unk_node, 'type', 'unknown_%s' % pos_type)
                 if not wm.has('unknown_%s' % pos_type, 'type', 'object'):
                     wm.add('unknown_%s' % pos_type, 'type', 'object')
+                wm.add(span_node, 'ref', f'"{surface_form}"')
                 wm.add(f'"{surface_form}"', 'expr', unk_node)
 
     # def _unknown_expression_identification(self, ewm):
@@ -279,7 +280,8 @@ class ParseToLogic:
                     head_cg.add(s, 'time', aux_time, i)
                     head_cg.metagraph.add(s, i, 'comps')
                     aux_cg.remove(a, at, aux_time, ai)
-            # del mentions[aux]
+            if not list(mentions[aux].predicates(predicate_type='focus')):
+                del mentions[aux]
         return mentions
 
     def _add_unknowns_to_cg(self, source_node, source, cg_node, cg):
