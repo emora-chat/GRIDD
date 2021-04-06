@@ -20,7 +20,6 @@ class ResponseExpansion:
             if generation_type == 'nlg':
                 p, e = self.get_expansions(predicate, working_memory)
                 responses.append((p, list(e), generation_type))
-                if p is not None:
             elif generation_type in {"ack_conf", "ack_emo"}:
                 responses.append((predicate, [], generation_type))
             elif generation_type == "backup":

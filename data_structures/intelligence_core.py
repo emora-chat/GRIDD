@@ -250,9 +250,9 @@ class IntelligenceCore:
                         backptrs.setdefault(other_arg, set()).add(n)
             neighborhood.update(arguments)
             neighbors[p] = neighborhood
-        pulling = set()
         wmp = set(self.working_memory.predicates())
         memo = {}
+        new_concepts_by_source = {}
         for length in range(2, 0, -1): # todo - inefficient; identify combinations -> empty intersection and ignore in further processing
             combos = combinations(pullers, length)
             for combo in combos:
@@ -273,13 +273,13 @@ class IntelligenceCore:
                     for inst in backptrs.get(r, r):
                         to_add.update(kb.structure(inst, self.essential_types))
                     to_add.difference_update(wmp)
-                    to_add.difference_update(pulling)
                     if len(to_add) <= limit:
                         limit -= len(to_add)
-                        pulling.update(to_add)
+                        for sig in to_add:
+                            new_concepts_by_source.setdefault(sig, set()).update(combo)
                     else:
-                        return pulling
-        return pulling
+                        return new_concepts_by_source
+        return new_concepts_by_source
 
     def pull_expressions(self):
         to_add = set()

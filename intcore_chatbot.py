@@ -30,7 +30,7 @@ class Chatbot:
         dialogue_inference = InferenceEngine(collect(*inference_rules))
         working_memory = None
         if starting_wm is not None:
-            working_memory = ConceptGraph(starting_wm)
+            working_memory = ConceptGraph(collect(*starting_wm), namespace='wm', supports={AND_LINK: False})
         self.dialogue_intcore = IntelligenceCore(knowledge_base=knowledge_base,
                                             working_memory=working_memory,
                                             inference_engine=dialogue_inference)
@@ -119,8 +119,9 @@ class Chatbot:
         print(self.dialogue_intcore.working_memory.pretty_print(exclusions=exclusions, typeinfo=True))
 
         # Knowledge pull
-        knowledge = self.dialogue_intcore.pull_knowledge(limit=100, num_pullers=100, association_limit=10, subtype_limit=10)
-        self.dialogue_intcore.consider(knowledge)
+        knowledge_by_source = self.dialogue_intcore.pull_knowledge(limit=100, num_pullers=100, association_limit=10, subtype_limit=10)
+        for pred, sources in knowledge_by_source.items():
+            self.dialogue_intcore.consider([pred], associations=sources)
         types = self.dialogue_intcore.pull_types()
         self.dialogue_intcore.consider(types)
         self.dialogue_intcore.operate()
@@ -179,7 +180,8 @@ class Chatbot:
         responses = []
         for predicate, generation_type in selections:
             if generation_type == 'nlg':
-                expansions = wm.structure(predicate[3], essential_modifiers={'time', 'question', 'mode'})
+                expansions = wm.structure(predicate[3],
+                                          subj_emodifiers={'time', 'question', 'mode'}, obj_emodifiers={'possess'})
                 responses.append((predicate, expansions, generation_type))
             elif generation_type in {"ack_conf", "ack_emo"}:
                 responses.append((predicate, [], generation_type))
@@ -247,7 +249,8 @@ if __name__ == '__main__':
     kb = [kb_dir]
     rules_dir = join('GRIDD', 'resources', 'kg_files', 'rules')
     rules = [rules_dir]
+    wm = [join('GRIDD', 'resources', 'kg_files', 'wm')]
     ITERATION = 2
 
-    chatbot = Chatbot(*kb, inference_rules=rules)
+    chatbot = Chatbot(*kb, inference_rules=rules, starting_wm=wm)
     chatbot.chat()

@@ -263,7 +263,7 @@ class ConceptGraph:
         return set([predicate[2] for predicate in self.predicates(subject=concept,predicate_type=type)
                     if predicate[2] is not None])
 
-    def structure(self, concept, essential_modifiers=None):
+    def structure(self, concept, subj_emodifiers=None, obj_emodifiers=None):
         visited = {None}
         s = []
         stack = [concept]
@@ -275,10 +275,14 @@ class ConceptGraph:
                 s.append(pred)
                 stack.extend({pred[0], pred[2]} - visited)
             s.extend(self.predicates(concept, predicate_type='type'))
-            if essential_modifiers:
-                for em in essential_modifiers:
-                    for mp in chain(self.predicates(concept, predicate_type=em),
-                                    self.predicates(object=concept, predicate_type=em)):
+            if subj_emodifiers:
+                for em in subj_emodifiers:
+                    for mp in self.predicates(concept, predicate_type=em):
+                        if mp[3] not in visited:
+                            stack.append(mp[3])
+            if obj_emodifiers:
+                for em in obj_emodifiers:
+                    for mp in self.predicates(object=concept, predicate_type=em):
                         if mp[3] not in visited:
                             stack.append(mp[3])
         return s
