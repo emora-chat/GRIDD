@@ -44,10 +44,10 @@ class ConceptCompiler:
             if len(string) < 300 and string.endswith('.kg'):
                 with open(string) as f:
                     string = f.read()
-            if not string.strip().endswith(';'):
-                string = string + ';'
-            parse_tree = self.parser.parse(string)
-            self.visitor.visit(parse_tree)
+            for block in string.split(';'):
+                if block.strip():
+                    parse_tree = self.parser.parse(block + ';')
+                    self.visitor.visit(parse_tree)
         return self.visitor.entries, self.visitor.links, self.visitor.metadatas
 
     @property

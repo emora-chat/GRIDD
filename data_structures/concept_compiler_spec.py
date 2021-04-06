@@ -51,7 +51,7 @@ class ConceptCompilerSpec:
         ;
         
         x/dog() chase(x, y/dog())
-        =>
+        ->
         happy(x) scared(y)
         chase(y, d=dog())
         ;
@@ -66,7 +66,7 @@ class ConceptCompilerSpec:
 
         
         x/dog()
-        =>
+        ->
         scared(fido)
         ;
         
