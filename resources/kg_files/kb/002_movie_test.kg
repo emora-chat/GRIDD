@@ -7,4 +7,6 @@ property(avengers, action)
 expr("avengers", avengers)
 terminator = movie()
 expr("terminator", terminator)
+
+time(like(emora, terminator), now)
 ;

@@ -161,8 +161,9 @@ class Chatbot:
 
         # Reference resolution
         reference_sets = self.dialogue_intcore.resolve()
-        references = self.reference_merge_model(reference_sets)
-        self.dialogue_intcore.merge(references)
+        reference_pairs = self.identify_reference_merges(reference_sets)
+        if len(reference_pairs) > 0:
+            self.merge_references(reference_pairs)
 
         print('\n' + '#'*10)
         print('After Reference Resolution')
@@ -198,7 +199,9 @@ class Chatbot:
                 responses.append((main_pred_sig, exp_pred_sigs, generation_type))
         spoken_predicates = set()
         for main, exps, _ in responses:
-            spoken_predicates.update([main[3]] + [pred[3] for pred in exps])
+            # expansions contains main predicate too
+            spoken_predicates.update([pred[3] for pred in exps])
+            self.identify_request_resolutions(exps)
         self.assign_cover(wm, concepts=spoken_predicates)
 
         ack_results = self.produce_acknowledgment(aux_state, responses)
@@ -230,7 +233,7 @@ class Chatbot:
                 merge_sets[n] = existing
         return merge_sets
 
-    def reference_merge_model(self, reference_dict):
+    def identify_reference_merges(self, reference_dict):
         pairs_to_merge = []
         for ref_node, compatibilities in reference_dict.items():
             resolution_options = []
@@ -246,6 +249,20 @@ class Chatbot:
                                     key=lambda x: self.dialogue_intcore.working_memory.features.get(x, {}).get(SALIENCE, 0))
                 pairs_to_merge.extend([(salient_resol, ref_node)] + compatibilities[salient_resol])
         return pairs_to_merge
+
+    def merge_references(self, reference_pairs):
+        for match_node, ref_node in reference_pairs:
+            # identify user answers to emora requests and remove request bipredicate
+            if self.dialogue_intcore.working_memory.has('emora', 'question', ref_node) \
+                    and not self.dialogue_intcore.working_memory.metagraph.out_edges(match_node, REF):
+                self.dialogue_intcore.working_memory.remove('emora', 'question', ref_node)
+        self.dialogue_intcore.merge(reference_pairs)
+
+    def identify_request_resolutions(self, spoken_predicates):
+        # identify emora answers to user requests and remove request bipredicate
+        for s, t, o, i in spoken_predicates:
+            if s == 'user' and t == 'question':
+                self.dialogue_intcore.working_memory.remove(s, t, o, i)
 
     def assign_cover(self, graph, concepts=None):
         if concepts is None:
