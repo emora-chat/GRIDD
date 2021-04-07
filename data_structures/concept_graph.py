@@ -278,6 +278,12 @@ class ConceptGraph:
                 pred = self.predicate(concept)
                 s.append(pred)
                 stack.extend({pred[0], pred[2]} - visited)
+                if pred[1] == 'question':
+                    # if concept is a request predicate, retrieve all attachments to object for full definition
+                    obj = pred[2]
+                    for mp in chain(self.predicates(obj), self.predicates(object=obj)):
+                        if mp[1] not in {'ref', 'def', 'expr'} and mp[3] not in visited:
+                            stack.append(mp[3])
             s.extend(self.predicates(concept, predicate_type='type'))
             if subj_emodifiers:
                 for em in subj_emodifiers:
