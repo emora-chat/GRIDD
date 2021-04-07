@@ -116,6 +116,23 @@ class Chatbot:
                 node_merges.append((concept1, concept2))
         self.dialogue_intcore.merge(node_merges)
 
+        # Fragment Request Resolution:
+        #   most salient type-compatible user concept fills most salient emora request
+        emora_requests = [pred for pred in wm.predicates('emora', 'question') if wm.features.get(pred[3], {}).get(COVER, 0) == 1.0]
+        if len(emora_requests) > 0:
+            salient_emora_request = max(emora_requests,
+                                        key=lambda pred: wm.features.get(pred[3], {}).get(SALIENCE, 0))
+            types = wm.types()
+            request_focus = salient_emora_request[2]
+            request_focus_types = types[request_focus] - {request_focus}
+            salient_concepts = sorted(wm.concepts(), key=lambda c: wm.features.get(c, {}).get(SALIENCE, 0), reverse=True)
+            fragment_request_merges = []
+            for c in salient_concepts:
+                if request_focus_types.issubset(types[c]):
+                    fragment_request_merges.append((c, request_focus))
+                    break
+            self.merge_references(fragment_request_merges)
+
         print('\n' + '#'*10)
         print('After Merges')
         print('#' * 10)
@@ -208,6 +225,7 @@ class Chatbot:
         gen_results = self.produce_generic(responses)
         response = self.response_assembler(aux_state, ack_results, gen_results)
 
+        self.dialogue_intcore.decay_salience()
         self.auxiliary_state = aux_state
 
         return response
