@@ -88,7 +88,7 @@ class ParseToLogic:
 
     def translate(self, *args):
         wm = self.intcore.working_memory
-        self.intcore.prune_attended(0)
+        self.intcore.working_memory.clear()
         parse_graph = self.text_to_graph(*args)
         self.intcore.consider(parse_graph)
         # expr_preds = self.intcore.pull_expressions()

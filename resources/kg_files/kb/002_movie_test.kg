@@ -1,0 +1,10 @@
+movie=(entity)
+expr("movie", movie)
+avengers = movie()
+genre=(entity)
+action=genre()
+property(avengers, action)
+expr("avengers", avengers)
+terminator = movie()
+expr("terminator", terminator)
+;

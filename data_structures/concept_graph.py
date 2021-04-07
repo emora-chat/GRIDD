@@ -137,6 +137,10 @@ class ConceptGraph:
             del self._monopredicates_map[concept]
             self.metagraph.discard(concept)
 
+    def clear(self):
+        for _,_,_,i in list(self.predicates()):
+            self.remove(i)
+
     def has(self, concept=None, predicate_type=None, object=None, predicate_id=None):
         if predicate_id is not None:                                    # Check predicate by id
             if predicate_id in self._bipredicate_instances.reverse():
@@ -457,7 +461,7 @@ class ConceptGraph:
             if fd:
                 graph.features[e] = fd
             for ml in chain(self.metagraph.in_edges(e), self.metagraph.out_edges(e)):
-                if ml not in meta_exclusions:
+                if ml not in meta_exclusions and graph.has(ml[0]):
                     graph.metagraph.add(*ml)
         return graph
 

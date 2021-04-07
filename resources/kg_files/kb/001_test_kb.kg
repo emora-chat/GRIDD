@@ -28,14 +28,3 @@ expr("sally", sally)
 hope = (predicate, nonassert)
 expr("hope", hope)
 ;
-
-movie=(entity)
-expr("movie", movie)
-avengers = movie()
-expr("avengers", avengers)
-terminator = movie()
-expr("terminator", terminator)
-
-time(like(emora, avengers), now)
-time(like(emora, terminator), now)
-;

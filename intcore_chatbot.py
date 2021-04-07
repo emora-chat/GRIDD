@@ -62,7 +62,7 @@ class Chatbot:
 
         exclusions = {'expr', 'def', 'ref',
                       'span', 'expression', 'predicate', 'datetime'}
-
+        typeinfo = False
         #########################
         ### Dialogue Pipeline ###
         #########################
@@ -100,7 +100,7 @@ class Chatbot:
         print('\n' + '#'*10)
         print('After Mentions')
         print('#' * 10)
-        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=exclusions, typeinfo=True))
+        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=exclusions, typeinfo=typeinfo))
 
         # todo - no acknowledgement predicates found (i bought a house, i love it)
 
@@ -119,7 +119,7 @@ class Chatbot:
         print('\n' + '#'*10)
         print('After Merges')
         print('#' * 10)
-        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=exclusions, typeinfo=True))
+        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=exclusions, typeinfo=typeinfo))
 
         # Knowledge pull
         knowledge_by_source = self.dialogue_intcore.pull_knowledge(limit=100, num_pullers=100, association_limit=10, subtype_limit=10)
@@ -132,7 +132,7 @@ class Chatbot:
         print('\n' + '#'*10)
         print('After Knowledge Pull')
         print('#' * 10)
-        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=exclusions, typeinfo=True))
+        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=exclusions, typeinfo=typeinfo))
 
         # Inferences
         inferences = self.dialogue_intcore.infer()
@@ -144,7 +144,7 @@ class Chatbot:
         print('\n' + '#'*10)
         print('After Inferences')
         print('#' * 10)
-        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=exclusions, typeinfo=True))
+        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=exclusions, typeinfo=typeinfo))
 
         # Feature update
         self.dialogue_intcore.update_confidence()
@@ -160,14 +160,14 @@ class Chatbot:
                     print(f'{sig}: s({features.get(SALIENCE, 0)}) c({features.get(CONFIDENCE, 0)}) cv({features.get(COVER, 0)})')
 
         # Reference resolution
-        reference_sets = self.dialogue_intcore.resolve() # todo - what if there is more than one matching reference??
+        reference_sets = self.dialogue_intcore.resolve()
         references = self.reference_merge_model(reference_sets)
         self.dialogue_intcore.merge(references)
 
         print('\n' + '#'*10)
         print('After Reference Resolution')
         print('#' * 10)
-        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=exclusions, typeinfo=True))
+        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=exclusions, typeinfo=typeinfo))
         print()
 
         # Response selection
@@ -232,8 +232,8 @@ class Chatbot:
 
     def reference_merge_model(self, reference_dict):
         pairs_to_merge = []
-        resolution_options = []
         for ref_node, compatibilities in reference_dict.items():
+            resolution_options = []
             for ref_match, constraint_matches in compatibilities.items():
                 if self.dialogue_intcore.working_memory.metagraph.out_edges(ref_match, REF):
                     # found other references that match; merge all
@@ -272,5 +272,5 @@ if __name__ == '__main__':
     wm = [join('GRIDD', 'resources', 'kg_files', 'wm')]
     ITERATION = 2
 
-    chatbot = Chatbot(*kb, inference_rules=rules) #, starting_wm=wm)
+    chatbot = Chatbot(*kb, inference_rules=rules, starting_wm=wm)
     chatbot.chat()
