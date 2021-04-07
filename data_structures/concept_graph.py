@@ -291,18 +291,18 @@ class ConceptGraph:
                             stack.append(mp[3])
         return s
 
-    def related(self, concept, types=None, limit=None):
+    def related(self, concept, types=None, exclusions=None, limit=None):
         if self.has(predicate_id=concept):
-            yield from self.predicate(concept)
+            yield from [x for x in self.predicate(concept) if exclusions is None or x not in exclusions]
         num = 0
         for _, t, _, i in self.predicates(concept):
-            if types is None or t in types:
+            if (types is None or t in types) and (exclusions is None or t not in exclusions):
                 if limit is None or num < limit:
                     yield i
                     num += 1
                 else: break
         for _, t, _, i in self.predicates(object=concept):
-            if types is None or t in types:
+            if (types is None or t in types) and (exclusions is None or t not in exclusions):
                 if limit is None or num < limit:
                     yield i
                     num += 1

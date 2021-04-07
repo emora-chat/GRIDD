@@ -233,17 +233,20 @@ class IntelligenceCore:
 
 
     def pull_knowledge(self, limit, num_pullers, association_limit=None, subtype_limit=None, degree=1):
-        # todo - not everything in working memory > 1 salience should be a puller (predicate_types? essentials?)
-        # todo - pulls types and expr predicates too, even though we have explicit functions for them
         kb = self.knowledge_base
-        pullers = sorted(self.working_memory.concepts(),
+        wm = self.working_memory
+        # only consider concepts that are arguments of non-type/expr/ref/def predicates
+        pullers = [c for c in wm.concepts()
+                   if not (wm.subjects(c,'type') or wm.objects(c,'expr') or wm.objects(c,'ref') or wm.objects(c,'def'))
+                   and (wm.subjects(c) or wm.objects(c))]
+        pullers = sorted(pullers,
                          key=lambda c: self.working_memory.features.get(c, {}).get(SALIENCE, 0),
                          reverse=True)
         pullers = pullers[:num_pullers]
         neighbors = {}
         backptrs = {}
         for p in pullers:
-            neighborhood = set(kb.related(p, limit=association_limit))
+            neighborhood = set(kb.related(p, exclusions={'type', 'expr', 'ref', 'def'}, limit=association_limit))
             arguments = set()
             for n in neighborhood:
                 if kb.has(predicate_id=n):

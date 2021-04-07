@@ -154,7 +154,7 @@ class Chatbot:
         print('After Feature Update')
         print('#' * 10)
         for concept, features in self.dialogue_intcore.working_memory.features.items():
-            if wm.has(predicate_id=concept) and wm.type(concept) not in {'expr', 'ref', 'def'}:
+            if wm.has(predicate_id=concept) and wm.type(concept) not in {'expr', 'ref', 'def', 'type'}:
                 sig = wm.predicate(concept)
                 if sig[0] not in exclusions and sig[1] not in exclusions and sig[2] not in exclusions:
                     print(f'{sig}: s({features.get(SALIENCE, 0)}) c({features.get(CONFIDENCE, 0)}) cv({features.get(COVER, 0)})')
@@ -184,7 +184,7 @@ class Chatbot:
         for predicate, generation_type in selections:
             if generation_type == 'nlg':
                 expansions = wm.structure(predicate[3],
-                                          subj_emodifiers={'time', 'question', 'mode'}, obj_emodifiers={'possess'})
+                                          subj_emodifiers={'time', 'mode'}, obj_emodifiers={'possess', 'question'})
                 responses.append((predicate, expansions, generation_type))
             elif generation_type in {"ack_conf", "ack_emo"}:
                 responses.append((predicate, [], generation_type))
