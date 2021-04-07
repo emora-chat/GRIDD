@@ -32,7 +32,7 @@ if __name__ == '__main__':
         cg = nlu_pipeline.run_nlu(utter, display=False)
         cg.pull_expressions()
         print('-'*10)
-        print(spanning_tree_linearized(cg))
+        print(spanning_tree_linearized(cg, nlg_training_mode=False))
         print('-'*10)
         print(cg.ugly_print(exclusions={'object', 'predicate', 'entity', 'post', 'pre', 'def', 'span', 'datetime', 'expr'}))
         print()
@@ -136,7 +136,7 @@ if __name__ == '__main__':
     property(apd, illegal)
     assert(dlb)
     ''')
-    print(spanning_tree_linearized(cg))
+    print(spanning_tree_linearized(cg, nlg_training_mode=False))
 
     print("\nJohn's aunt likes to buy a gift for him")
     cg = KnowledgeParser.from_data('''
@@ -146,7 +146,7 @@ if __name__ == '__main__':
     alb/like(a, abg)
     assert(alb)
     ''')
-    print(spanning_tree_linearized(cg))
+    print(spanning_tree_linearized(cg, nlg_training_mode=False))
 
     print("\nShowering brings me joy but showering is annoying")
     cg = KnowledgeParser.from_data('''
@@ -157,5 +157,5 @@ if __name__ == '__main__':
     sbs/but(sbj, sba)
     assert(sbs)
     ''')
-    print(spanning_tree_linearized(cg))
+    print(spanning_tree_linearized(cg, nlg_training_mode=False))
 
