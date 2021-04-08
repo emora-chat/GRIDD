@@ -47,11 +47,13 @@ class IntelligenceCore:
         self.inference_engine.add(rules)
         self.knowledge_base.concatenate(cg)
 
-    def consider(self, concepts, associations=None, salience=1, **options):
+    def consider(self, concepts, namespace=None, associations=None, salience=1, **options):
         if isinstance(concepts, ConceptGraph):
             considered = ConceptGraph(concepts, namespace=concepts._ids)
         else:
-            considered = ConceptGraph(concepts, namespace='_tmp_')
+            if namespace is None:
+                namespace = '_tmp_'
+            considered = ConceptGraph(concepts, namespace=namespace)
         if associations is None:
             considered.features.update({c: {SALIENCE: (salience*SENSORY_SALIENCE
                                         if not c in considered.features or not SALIENCE in considered.features[c]
@@ -238,7 +240,8 @@ class IntelligenceCore:
         # only consider concepts that are arguments of non-type/expr/ref/def predicates
         pullers = [c for c in wm.concepts()
                    if not (wm.subjects(c,'type') or wm.objects(c,'expr') or wm.objects(c,'ref') or wm.objects(c,'def'))
-                   and (wm.subjects(c) or wm.objects(c))]
+                   and (wm.subjects(c) or wm.objects(c))
+                   and wm.features.get(c, {}).get(SALIENCE, 0) > 0.0]
         pullers = sorted(pullers,
                          key=lambda c: self.working_memory.features.get(c, {}).get(SALIENCE, 0),
                          reverse=True)
@@ -325,7 +328,7 @@ class IntelligenceCore:
         for c in self.working_memory.concepts():
             if not self.working_memory.features.get(c, {}).get(COLDSTART, False):
                 sal = self.working_memory.features.setdefault(c, {}).setdefault(SALIENCE, 0)
-                self.working_memory.features[c][SALIENCE] = sal - TIME_DECAY
+                self.working_memory.features[c][SALIENCE] = max(0, sal - TIME_DECAY)
 
     def prune_attended(self, keep):
         options = set()
