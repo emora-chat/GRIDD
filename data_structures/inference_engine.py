@@ -52,7 +52,8 @@ class InferenceEngine:
                 attributes.pop(type)
                 vars.discard(type)
             pre.remove('type')
-            attributes.pop('type')
+            if 'type' in attributes:
+                attributes.pop('type')
             precondition = pre.to_graph()
             for node, types in attributes.items():
                 precondition.data(node)['attributes'] = types

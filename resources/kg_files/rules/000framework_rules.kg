@@ -1,6 +1,4 @@
-pt/object()
-pred_inst/pt(X/object(), Y/object())
-assert(pred_inst)
+assert(P/predicate())
 -> assign_ack ->
-ack_conf(pred_inst)
+ack_conf(P)
 ;

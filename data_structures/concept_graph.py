@@ -137,6 +137,10 @@ class ConceptGraph:
             del self._monopredicates_map[concept]
             self.metagraph.discard(concept)
 
+    def clear(self):
+        for _,_,_,i in list(self.predicates()):
+            self.remove(i)
+
     def has(self, concept=None, predicate_type=None, object=None, predicate_id=None):
         if predicate_id is not None:                                    # Check predicate by id
             if predicate_id in self._bipredicate_instances.reverse():
@@ -274,6 +278,12 @@ class ConceptGraph:
                 pred = self.predicate(concept)
                 s.append(pred)
                 stack.extend({pred[0], pred[2]} - visited)
+                if pred[1] == 'question':
+                    # if concept is a request predicate, retrieve all attachments to object for full definition
+                    obj = pred[2]
+                    for mp in chain(self.predicates(obj), self.predicates(object=obj)):
+                        if mp[1] not in {'ref', 'def', 'expr'} and mp[3] not in visited:
+                            stack.append(mp[3])
             s.extend(self.predicates(concept, predicate_type='type'))
             if subj_emodifiers:
                 for em in subj_emodifiers:
@@ -287,18 +297,18 @@ class ConceptGraph:
                             stack.append(mp[3])
         return s
 
-    def related(self, concept, types=None, limit=None):
+    def related(self, concept, types=None, exclusions=None, limit=None):
         if self.has(predicate_id=concept):
-            yield from self.predicate(concept)
+            yield from [x for x in self.predicate(concept) if exclusions is None or x not in exclusions]
         num = 0
         for _, t, _, i in self.predicates(concept):
-            if types is None or t in types:
+            if (types is None or t in types) and (exclusions is None or t not in exclusions):
                 if limit is None or num < limit:
                     yield i
                     num += 1
                 else: break
         for _, t, _, i in self.predicates(object=concept):
-            if types is None or t in types:
+            if (types is None or t in types) and (exclusions is None or t not in exclusions):
                 if limit is None or num < limit:
                     yield i
                     num += 1
@@ -354,6 +364,8 @@ class ConceptGraph:
                 types = {concept}
                 for predicate in self.predicates(subject=concept, predicate_type='type'):
                     supertype = predicate[2]
+                    if concept == supertype: # todo - this should not be possible, right?
+                        raise Exception('Concept has self-loop type predicate which causes types() to crash on recursion error!')
                     types.update(self.types(supertype, memo))
                 memo[concept] = types
                 if inst is not None:
@@ -457,7 +469,7 @@ class ConceptGraph:
             if fd:
                 graph.features[e] = fd
             for ml in chain(self.metagraph.in_edges(e), self.metagraph.out_edges(e)):
-                if ml not in meta_exclusions:
+                if ml not in meta_exclusions and graph.has(ml[0]):
                     graph.metagraph.add(*ml)
         return graph
 

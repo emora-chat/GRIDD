@@ -1,0 +1,16 @@
+like(X/person(), M/movie())
+property(M, G/genre())
+-> movie_to_fave_genre ->
+fg:<
+fg/be(Y/genre(), G)
+time(fg, now)
+property(Y, favorite)
+possess(X, Y)
+>
+question(emora, fg)
+;
+
+like(X/person(), avengers)
+-> like_avengers ->
+time(like(emora, avengers), now)
+;

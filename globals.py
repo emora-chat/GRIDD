@@ -22,3 +22,5 @@ PRE = 'pre'                     # metagraph precondition link
 POST = 'post'                   # metagraph postcondition link
 REF = 'ref'                     # metagraph reference link
 VAR = 'var'                     # var reference variable link
+AFFIRM = 'affirm'               # predicate type indicating affirmative/yes statement
+REJECT = 'reject'               # predicate type indicating rejective/no statement

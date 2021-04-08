@@ -1138,56 +1138,29 @@ If a target of the indication is not explicitly provided, then it is a variable.
 <details>
   <summary>Conversions</summary>
 
-	disc(X/pstg(), Y/pstg())
-	ref(Y, E/expression())
-	expr(E, affirm)
-	-> affirm_disc ->
-	p/affirm(user, X)
-	focus(p)
-	center(Y)
-	;
-	
-	ref(Y/interj(), E/expression())
-	expr(E, affirm)
-	-> affirm_interj ->
-	p/affirm(user, object())
-	focus(p)
-	center(Y)
-	;
-	
-	disc(X/pstg(), Y/pstg())
-	ref(Y, E/expression())
-	expr(E, reject)
-	-> reject_disc ->
-	p/reject(user, X)
-	focus(p)
-	center(Y)
-	;
-	
-	ref(Y/interj(), E/expression())
-	expr(E, reject)
-	-> reject_interj ->
-	p/reject(user, object())
-	focus(p)
-	center(Y)
-	;
-	
-	disc(X/pstg(), Y/pstg())
-	ref(Y, E/expression())
-	expr(E, acknowledge)
-	-> acknowledge_disc ->
-	p/acknowledge(user, X)
-	focus(p)
-	center(Y)
-	;
-	
-	ref(Y/interj(), E/expression())
-	expr(E, acknowledge)
-	-> acknowledge_interj ->
-	p/acknowledge(user, object())
-	focus(p)
-	center(Y)
-	;
+	ref(Y/pstg(), E/expression())
+    expr(E, affirm)
+    -> affirm_interj ->
+    p/affirm(user, predicate())
+    focus(p)
+    center(Y)
+    ;
+    
+    ref(Y/pstg(), E/expression())
+    expr(E, reject)
+    -> reject_interj ->
+    p/reject(user, predicate())
+    focus(p)
+    center(Y)
+    ;
+    
+    ref(Y/pstg(), E/expression())
+    expr(E, acknowledge)
+    -> acknowledge_interj ->
+    p/acknowledge(user, predicate())
+    focus(p)
+    center(Y)
+    ;
 
 </details>
 

@@ -722,54 +722,26 @@ focus(p)
 center(Y)
 ;
 
-
-disc(X/pstg(), Y/pstg())
-ref(Y, E/expression())
-expr(E, affirm)
--> affirm_disc ->
-p/affirm(user, X)
-focus(p)
-center(Y)
-;
-
-ref(Y/interj(), E/expression())
+ref(Y/pstg(), E/expression())
 expr(E, affirm)
 -> affirm_interj ->
-p/affirm(user, object())
+p/affirm(user, predicate())
 focus(p)
 center(Y)
 ;
 
-disc(X/pstg(), Y/pstg())
-ref(Y, E/expression())
-expr(E, reject)
--> reject_disc ->
-p/reject(user, X)
-focus(p)
-center(Y)
-;
-
-ref(Y/interj(), E/expression())
+ref(Y/pstg(), E/expression())
 expr(E, reject)
 -> reject_interj ->
-p/reject(user, object())
+p/reject(user, predicate())
 focus(p)
 center(Y)
 ;
 
-disc(X/pstg(), Y/pstg())
-ref(Y, E/expression())
-expr(E, acknowledge)
--> acknowledge_disc ->
-p/acknowledge(user, X)
-focus(p)
-center(Y)
-;
-
-ref(Y/interj(), E/expression())
+ref(Y/pstg(), E/expression())
 expr(E, acknowledge)
 -> acknowledge_interj ->
-p/acknowledge(user, object())
+p/acknowledge(user, predicate())
 focus(p)
 center(Y)
 ;
@@ -827,4 +799,5 @@ ltype(X, object)
 focus(X())
 center(X)
 ;
+
 

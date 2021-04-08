@@ -224,10 +224,10 @@ def _get_expr(cg, node):
             return concept.strip()
     return ' '.join(label)
 
-def spanning_tree_linearized(wm, convert_to_nlg=False):
+def spanning_tree_linearized(wm, nlg_training_mode=True):
     rep = spanning_tree_string_of(wm)
     rep = rep.replace('\n', ' ').replace('\t', '').replace(':',' :')
-    if convert_to_nlg:
+    if nlg_training_mode:
         rep = rep.replace('user', 'EMORA').replace('emora', 'USER')
     else:
         rep = rep.replace('user', 'USER').replace('emora', 'EMORA')

@@ -47,11 +47,13 @@ class IntelligenceCore:
         self.inference_engine.add(rules)
         self.knowledge_base.concatenate(cg)
 
-    def consider(self, concepts, associations=None, salience=1, **options):
+    def consider(self, concepts, namespace=None, associations=None, salience=1, **options):
         if isinstance(concepts, ConceptGraph):
             considered = ConceptGraph(concepts, namespace=concepts._ids)
         else:
-            considered = ConceptGraph(concepts, namespace='_tmp_')
+            if namespace is None:
+                namespace = '_tmp_'
+            considered = ConceptGraph(concepts, namespace=namespace)
         if associations is None:
             considered.features.update({c: {SALIENCE: (salience*SENSORY_SALIENCE
                                         if not c in considered.features or not SALIENCE in considered.features[c]
@@ -233,17 +235,21 @@ class IntelligenceCore:
 
 
     def pull_knowledge(self, limit, num_pullers, association_limit=None, subtype_limit=None, degree=1):
-        # todo - not everything in working memory > 1 salience should be a puller (predicate_types? essentials?)
-        # todo - pulls types and expr predicates too, even though we have explicit functions for them
         kb = self.knowledge_base
-        pullers = sorted(self.working_memory.concepts(),
+        wm = self.working_memory
+        # only consider concepts that are arguments of non-type/expr/ref/def predicates
+        pullers = [c for c in wm.concepts()
+                   if not (wm.subjects(c,'type') or wm.objects(c,'expr') or wm.objects(c,'ref') or wm.objects(c,'def'))
+                   and (wm.subjects(c) or wm.objects(c))
+                   and wm.features.get(c, {}).get(SALIENCE, 0) > 0.0]
+        pullers = sorted(pullers,
                          key=lambda c: self.working_memory.features.get(c, {}).get(SALIENCE, 0),
                          reverse=True)
         pullers = pullers[:num_pullers]
         neighbors = {}
         backptrs = {}
         for p in pullers:
-            neighborhood = set(kb.related(p, limit=association_limit))
+            neighborhood = set(kb.related(p, exclusions={'type', 'expr', 'ref', 'def'}, limit=association_limit))
             arguments = set()
             for n in neighborhood:
                 if kb.has(predicate_id=n):
@@ -322,7 +328,7 @@ class IntelligenceCore:
         for c in self.working_memory.concepts():
             if not self.working_memory.features.get(c, {}).get(COLDSTART, False):
                 sal = self.working_memory.features.setdefault(c, {}).setdefault(SALIENCE, 0)
-                self.working_memory.features[c][SALIENCE] = sal - TIME_DECAY
+                self.working_memory.features[c][SALIENCE] = max(0, sal - TIME_DECAY)
 
     def prune_attended(self, keep):
         options = set()
@@ -340,6 +346,11 @@ class IntelligenceCore:
                            reverse=True)
         for c in sconcepts[keep:]:
             self.working_memory.remove(c) # todo: uh oh - short term memory loss
+
+    def prune_predicates_of_type(self, types):
+        for s, t, o, i in list(self.working_memory.predicates()):
+            if t in types:
+                self.working_memory.remove(s, t, o, i)
 
     def operate(self, cg=None):
         if cg is None:

@@ -8,10 +8,10 @@ class Span:
     def __init__(self, string, start, end, sentence, turn, speaker, expression):
         self.string = string
         self.expression = expression if expression not in ['#crd#', '#ord#'] else string
-        self.start = start
-        self.end = end
-        self.sentence = sentence
-        self.turn = turn
+        self.start = int(start)
+        self.end = int(end)
+        self.sentence = int(sentence)
+        self.turn = int(turn)
         self.speaker = speaker
 
     def __repr__(self):
