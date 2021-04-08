@@ -265,6 +265,7 @@ class Chatbot:
             self.auxiliary_state['turn_index'] += 1
 
 if __name__ == '__main__':
+
     kb_dir = join('GRIDD', 'resources', 'kg_files', 'kb')
     kb = [kb_dir]
     rules_dir = join('GRIDD', 'resources', 'kg_files', 'rules')
