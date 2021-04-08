@@ -25,7 +25,7 @@ class Chatbot:
     """
 
     def __init__(self, *knowledge_base, inference_rules, starting_wm=None, device='cpu'):
-        self.auxiliary_state = {'turn_index': 0}
+        self.auxiliary_state = {'turn_index': -1}
 
         compiler = ConceptCompiler()
         predicates, metalinks, metadatas = compiler.compile(collect(*knowledge_base))
@@ -58,8 +58,9 @@ class Chatbot:
                                  data=json.dumps(input_dict),
                                  headers={'content-type': 'application/json'},
                                  timeout=3.0)
-        parse_dict = load(response.json()["context_manager"])['elit_results']
-
+        results = load(response.json()["context_manager"])
+        parse_dict = results['elit_results']
+        self.auxiliary_state = results["aux_state"]
         wm = self.dialogue_intcore.working_memory
 
         exclusions = {'expr', 'def', 'ref',
@@ -167,7 +168,7 @@ class Chatbot:
             self.merge_references(reference_pairs)
 
         # Fragment Request Resolution:
-        #   most salient type-compatible user concept fills most salient emora request
+        #   most salient type-compatible user concept from current turn fills most salient emora request
         emora_requests = [pred for pred in wm.predicates('emora', 'question') if wm.features.get(pred[3], {}).get(COVER, 0) == 1.0]
         if len(emora_requests) > 0:
             salient_emora_request = max(emora_requests,
@@ -175,16 +176,19 @@ class Chatbot:
             request_focus = salient_emora_request[2]
             fragment_request_merges = []
             special_case_satisfied = False
+            current_user_spans = [s for s in wm.subtypes_of("span") if s != "span" and int(wm.features[s]["span_data"].turn) == self.auxiliary_state["turn_index"]]
+            current_user_concepts = {o for s in current_user_spans for o in wm.objects(s, "ref")}
             if wm.has(predicate_id=request_focus): # special case - y/n question prioritizes yes/no answer
-                indicator_preds = list(wm.predicates('user', AFFIRM)) + list(wm.predicates('user', REJECT))
+                indicator_preds = [p[3] for p in list(wm.predicates('user', AFFIRM)) + list(wm.predicates('user', REJECT))]
+                options = set(indicator_preds).intersection(current_user_concepts)
                 if len(indicator_preds) > 0:
-                    max_indicator = max(indicator_preds, key=lambda p: wm.features.get(p[3], {}).get(SALIENCE, 0))
-                    fragment_request_merges.append((max_indicator[2], request_focus))
+                    max_indicator = max(options, key=lambda p: wm.features.get(p[3], {}).get(SALIENCE, 0))
+                    fragment_request_merges.append((wm.object(max_indicator), request_focus))
                     special_case_satisfied = True
             if not special_case_satisfied:
                 types = wm.types()
                 request_focus_types = types[request_focus] - {request_focus}
-                salient_concepts = sorted(wm.concepts(), key=lambda c: wm.features.get(c, {}).get(SALIENCE, 0), reverse=True)
+                salient_concepts = sorted(current_user_concepts, key=lambda c: wm.features.get(c, {}).get(SALIENCE, 0), reverse=True)
                 for c in salient_concepts:
                     if c != request_focus and request_focus_types.issubset(types[c] - {c}):
                         fragment_request_merges.append((c, request_focus))
@@ -309,7 +313,7 @@ class Chatbot:
             elapsed = time.time() - s
             print('[%.6f s] %s\n' % (elapsed, response))
             utterance = input('User: ')
-            self.auxiliary_state['turn_index'] += 1
+            # self.auxiliary_state['turn_index'] += 1
 
 if __name__ == '__main__':
     kb_dir = join('GRIDD', 'resources', 'kg_files', 'kb')
