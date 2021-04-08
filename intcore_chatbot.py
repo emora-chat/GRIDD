@@ -172,16 +172,25 @@ class Chatbot:
         if len(emora_requests) > 0:
             salient_emora_request = max(emora_requests,
                                         key=lambda pred: wm.features.get(pred[3], {}).get(SALIENCE, 0))
-            types = wm.types()
             request_focus = salient_emora_request[2]
-            request_focus_types = types[request_focus] - {request_focus}
-            salient_concepts = sorted(wm.concepts(), key=lambda c: wm.features.get(c, {}).get(SALIENCE, 0), reverse=True)
             fragment_request_merges = []
-            for c in salient_concepts:
-                if c != request_focus and request_focus_types.issubset(types[c] - {c}):
-                    fragment_request_merges.append((c, request_focus))
-                    break
+            special_case_satisfied = False
+            if wm.has(predicate_id=request_focus): # special case - y/n question prioritizes yes/no answer
+                indicator_preds = list(wm.predicates('user', AFFIRM)) + list(wm.predicates('user', REJECT))
+                if len(indicator_preds) > 0:
+                    max_indicator = max(indicator_preds, key=lambda p: wm.features.get(p[3], {}).get(SALIENCE, 0))
+                    fragment_request_merges.append((max_indicator[2], request_focus))
+                    special_case_satisfied = True
+            if not special_case_satisfied:
+                types = wm.types()
+                request_focus_types = types[request_focus] - {request_focus}
+                salient_concepts = sorted(wm.concepts(), key=lambda c: wm.features.get(c, {}).get(SALIENCE, 0), reverse=True)
+                for c in salient_concepts:
+                    if c != request_focus and request_focus_types.issubset(types[c] - {c}):
+                        fragment_request_merges.append((c, request_focus))
+                        break
             self.merge_references(fragment_request_merges)
+            self.dialogue_intcore.operate()
 
         print('\n' + '#'*10)
         print('After Reference Resolution')
@@ -227,7 +236,8 @@ class Chatbot:
         response = self.response_assembler(aux_state, ack_results, gen_results)
 
         self.dialogue_intcore.decay_salience()
-        self.dialogue_intcore.prune_attended(keep=100)
+        self.dialogue_intcore.prune_predicates_of_type({AFFIRM, REJECT})
+        self.dialogue_intcore.prune_attended(keep=200)
         self.auxiliary_state = aux_state
 
         return response

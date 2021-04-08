@@ -1,0 +1,2 @@
+hike=(predicate)
+expr("hike", hike)

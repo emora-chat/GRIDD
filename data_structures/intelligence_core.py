@@ -347,6 +347,11 @@ class IntelligenceCore:
         for c in sconcepts[keep:]:
             self.working_memory.remove(c) # todo: uh oh - short term memory loss
 
+    def prune_predicates_of_type(self, types):
+        for s, t, o, i in list(self.working_memory.predicates()):
+            if t in types:
+                self.working_memory.remove(s, t, o, i)
+
     def operate(self, cg=None):
         if cg is None:
             cg = self.working_memory

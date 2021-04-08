@@ -1,4 +1,9 @@
 m:<time(ulm/like(user, m/movie()), now)>
 question(emora, m)
-ulm{"coldstart": 1, "salience": 0.999}
+ulm{"coldstart": 1, "salience": 0.998, "confidence": 1.0}
+;
+
+ulm:<time(ulm/like(user, hike(user)), now)>
+question(emora, ulm)
+ulm{"coldstart": 1, "salience": 0.999, "confidence": 0.0}
 ;

@@ -16,3 +16,13 @@ def _assert(cg, i):
     sub = cg.predicate(i)[0]
     cg.features.setdefault(sub, {})[CONFIDENCE] = 1.0
     cg.features[sub][BASE] = True
+
+def affirm(cg, i):
+    sub = cg.predicate(i)[2]
+    cg.features.setdefault(sub, {})[CONFIDENCE] = 1.0
+    cg.features[sub][BASE] = True
+
+def reject(cg, i):
+    sub = cg.predicate(i)[2]
+    cg.features.setdefault(sub, {})[CONFIDENCE] = -1.0
+    cg.features[sub][BASE] = True
