@@ -95,14 +95,24 @@ class IntelligenceCore:
                         implication_strengths[n] = implication.features.get(n, {}).get(CONFIDENCE, 1)
                         if n in implication.features and CONFIDENCE in implication.features[n]:
                             del implication.features[n][CONFIDENCE]
-                implied_nodes = self.consider(implication, associations=evidence.values())
-                and_node = self.working_memory.id_map().get()
-                for pre_node, evidence_node in evidence.items():
-                    if self.working_memory.has(predicate_id=evidence_node):
-                        strength = inferences[rule][0].features.get(pre_node, {}).get(CONFIDENCE, 1)
-                        self.working_memory.metagraph.add(evidence_node, and_node, (AND_LINK, strength))
-                for imp_node, strength in implication_strengths.items():
-                    self.working_memory.metagraph.add(and_node, implied_nodes[imp_node], (OR_LINK, strength))
+                # check whether rule has already been applied with the given evidence
+                old_solution = False
+                for node, features in self.working_memory.features.items():
+                    if 'origin_rule' in features and features['origin_rule'] == rule:
+                        prev_evidence = {s for s, _, l in self.working_memory.metagraph.in_edges(node) if AND_LINK in l}
+                        if prev_evidence == set(evidence.values()):
+                            old_solution = True
+                            break
+                if not old_solution:
+                    implied_nodes = self.consider(implication, associations=evidence.values())
+                    and_node = self.working_memory.id_map().get()
+                    self.working_memory.features[and_node]['origin_rule'] = rule # store the implication rule that resulted in this and_node as metadata
+                    for pre_node, evidence_node in evidence.items():
+                        if self.working_memory.has(predicate_id=evidence_node):
+                            strength = inferences[rule][0].features.get(pre_node, {}).get(CONFIDENCE, 1)
+                            self.working_memory.metagraph.add(evidence_node, and_node, (AND_LINK, strength))
+                    for imp_node, strength in implication_strengths.items():
+                        self.working_memory.metagraph.add(and_node, implied_nodes[imp_node], (OR_LINK, strength))
 
     def update_confidence(self):
         mg = self.working_memory.metagraph
