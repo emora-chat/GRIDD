@@ -1,2 +1,14 @@
+
+event = (predicate)
+go = (event)
+expr("go", go)
+
+;
+
 hike=(predicate)
 expr("hike", hike)
+
+;
+
+
+
