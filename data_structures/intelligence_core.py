@@ -335,7 +335,7 @@ class IntelligenceCore:
         for s, t, o, i in self.working_memory.predicates():
             if t == 'type':
                 if not self.working_memory.features.get(s, {}).get(IS_TYPE, False):
-                    preds = {pred for pred in self.working_memory.related(s) if pred[1] != 'type'}
+                    preds = {pred for pred in self.working_memory.related(s) if self.working_memory.has(predicate_id=pred) and pred[1] != 'type'}
                     if not preds:
                         options.add(i)
             elif t not in self.essential_types:

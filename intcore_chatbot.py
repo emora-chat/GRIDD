@@ -5,8 +5,8 @@ from GRIDD.data_structures.concept_compiler import ConceptCompiler
 from GRIDD.data_structures.inference_engine import InferenceEngine
 from GRIDD.modules.elit_dp_to_logic_model import ElitDPToLogic
 from GRIDD.modules.response_selection_salience import ResponseSelectionSalience
-from GRIDD.modules.response_acknowledgment import ResponseAcknowledgment
-from GRIDD.modules.response_generation import ResponseGeneration
+from GRIDD.modules.responsegen_by_rules import ResponseRules
+from GRIDD.modules.responsegen_by_model import ResponseGeneration
 from GRIDD.modules.response_assembler import ResponseAssembler
 
 from GRIDD.chatbot_server import load
@@ -45,7 +45,7 @@ class Chatbot:
         print('Parse2Logic load: %.2f'%(time.time()-s))
 
         self.response_selection = ResponseSelectionSalience()
-        self.produce_acknowledgment = ResponseAcknowledgment()
+        self.produce_acknowledgment = ResponseRules()
         self.produce_generic = ResponseGeneration()
         self.response_assembler = ResponseAssembler()
 
@@ -159,7 +159,7 @@ class Chatbot:
             if wm.has(predicate_id=concept) and wm.type(concept) not in {'expr', 'ref', 'def', 'type'}:
                 sig = wm.predicate(concept)
                 if sig[0] not in exclusions and sig[1] not in exclusions and sig[2] not in exclusions:
-                    print(f'{sig}: s({features.get(SALIENCE, 0)}) c({features.get(CONFIDENCE, 0)}) cv({features.get(COVER, 0)})')
+                    print(f'{sig}: s({features.get(SALIENCE, 0):.2f}) c({features.get(CONFIDENCE, 0):.2f}) cv({features.get(COVER, 0):.2f})')
 
         # Reference resolution
         reference_sets = self.dialogue_intcore.resolve()
@@ -175,22 +175,20 @@ class Chatbot:
                                         key=lambda pred: wm.features.get(pred[3], {}).get(SALIENCE, 0))
             request_focus = salient_emora_request[2]
             fragment_request_merges = []
-            special_case_satisfied = False
             current_user_spans = [s for s in wm.subtypes_of("span") if s != "span" and int(wm.features[s]["span_data"].turn) == self.auxiliary_state["turn_index"]]
             current_user_concepts = {o for s in current_user_spans for o in wm.objects(s, "ref")}
-            if wm.has(predicate_id=request_focus): # special case - y/n question prioritizes yes/no answer
+            if wm.has(predicate_id=request_focus): # special case - y/n question requires yes/no fragment as answer (or full resolution from earlier in pipeline)
                 indicator_preds = [p[3] for p in list(wm.predicates('user', AFFIRM)) + list(wm.predicates('user', REJECT))]
                 options = set(indicator_preds).intersection(current_user_concepts)
                 if len(indicator_preds) > 0:
                     max_indicator = max(options, key=lambda p: wm.features.get(p[3], {}).get(SALIENCE, 0))
                     fragment_request_merges.append((wm.object(max_indicator), request_focus))
-                    special_case_satisfied = True
-            if not special_case_satisfied:
+            else:
                 types = wm.types()
                 request_focus_types = types[request_focus] - {request_focus}
                 salient_concepts = sorted(current_user_concepts, key=lambda c: wm.features.get(c, {}).get(SALIENCE, 0), reverse=True)
                 for c in salient_concepts:
-                    if c != request_focus and request_focus_types.issubset(types[c] - {c}):
+                    if c != request_focus and request_focus_types.issubset(types[c] - {c}) and not wm.metagraph.out_edges(c): # if user concept is a reference, dont treat as answer fragment
                         fragment_request_merges.append((c, request_focus))
                         break
             self.merge_references(fragment_request_merges)
@@ -217,8 +215,19 @@ class Chatbot:
             if generation_type == 'nlg':
                 expansions = wm.structure(predicate[3],
                                           subj_emodifiers={'time', 'mode'}, obj_emodifiers={'possess', 'question'})
-                responses.append((predicate, expansions, generation_type))
-            elif generation_type in {"ack_conf", "ack_emo"}:
+
+                # check for unresolved user request
+                emora_idk = False
+                for s, t, o, i in expansions:
+                    if s == 'user' and t == 'question' and wm.metagraph.out_edges(o, REF):
+                        emora_idk = True
+                        break
+
+                if emora_idk:
+                    responses.append((predicate, expansions, 'idk'))
+                else:
+                    responses.append((predicate, expansions, generation_type))
+            elif generation_type in {'ack_conf'}:
                 responses.append((predicate, [], generation_type))
             elif generation_type == "backup":
                 cg = ConceptGraph(namespace='bu_', predicates=predicate[1])
