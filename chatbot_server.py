@@ -200,7 +200,7 @@ def response_acknowledgment_handler(pipeline, input_dict):
     return save(ack_responses=ack_responses)
 
 def response_generation_handler(pipeline, input_dict, local=False):
-    if False: #local:
+    if local:
         # print('Connecting to remote NLG model...')
         input_dict["conversationId"] = 'local'
         response = requests.post('http://cobot-LoadB-1L3YPB9TGV71P-1610005595.us-east-1.elb.amazonaws.com',

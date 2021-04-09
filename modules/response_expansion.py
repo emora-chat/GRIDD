@@ -4,6 +4,9 @@ from GRIDD.globals import *
 
 class ResponseExpansion:
 
+    def __init__(self, kb):
+        self.knowledge_base = kb
+
     def __call__(self, main_predicates, working_memory):
         """
         Select the supporting predicates for the main predicates.
@@ -19,6 +22,12 @@ class ResponseExpansion:
                                           subj_emodifiers={'time', 'mode', 'qualifier', 'property',
                                                            'indirect_obj', 'negate'},
                                           obj_emodifiers={'possess', 'question'})
+                expansions = set(expansions) # todo - fix this list to set to list conversion
+                for pred in list(expansions):
+                    for c in pred:
+                        expansions.update(self.knowledge_base.predicates(c, 'expr'))
+                        expansions.update(self.knowledge_base.predicates(predicate_type='expr', object=c))
+                expansions = list(expansions)
                 # check for unresolved user request
                 emora_idk = False
                 for s, t, o, i in expansions:

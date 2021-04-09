@@ -46,7 +46,7 @@ class Chatbot:
         print('Parse2Logic load: %.2f'%(time.time()-s))
 
         self.response_selection = ResponseSelectionSalience()
-        self.response_expansion = ResponseExpansion()
+        self.response_expansion = ResponseExpansion(knowledge_base)
         self.produce_acknowledgment = ResponseRules()
         self.produce_generic = ResponseGeneration()
         self.response_assembler = ResponseAssembler()
@@ -127,10 +127,12 @@ class Chatbot:
         # Knowledge pull
         knowledge_by_source = self.dialogue_intcore.pull_knowledge(limit=100, num_pullers=100, association_limit=10, subtype_limit=10)
         for pred, sources in knowledge_by_source.items():
-            self.dialogue_intcore.consider([pred], namespace=self.dialogue_intcore.knowledge_base._ids, associations=sources)
+            if not wm.has(*pred):
+                self.dialogue_intcore.consider([pred], namespace=self.dialogue_intcore.knowledge_base._ids, associations=sources)
         types = self.dialogue_intcore.pull_types()
         for type in types:
-            self.dialogue_intcore.consider([type], associations=type[0])
+            if not wm.has(*type):
+                self.dialogue_intcore.consider([type], associations=type[0])
         self.dialogue_intcore.operate()
 
         print('\n' + '#'*10)
@@ -171,6 +173,7 @@ class Chatbot:
 
         # Fragment Request Resolution:
         #   most salient type-compatible user concept from current turn fills most salient emora request
+        # todo - only look for answer to emora request in the next user utterance; otherwise merges things in given less specified emora request?
         emora_requests = [pred for pred in wm.predicates('emora', 'question') if wm.features.get(pred[3], {}).get(COVER, 0) == 1.0]
         if len(emora_requests) > 0:
             salient_emora_request = max(emora_requests,
@@ -215,7 +218,23 @@ class Chatbot:
         responses, updated_wm = self.response_expansion(selections, wm)
 
         ack_results = self.produce_acknowledgment(aux_state, responses)
+
         gen_results = self.produce_generic(responses)
+        try: # use remote nlg module
+            input_dict = {"expanded_response_predicates": [responses, None],
+                          "conversationId":  'local'}
+            response = requests.post('http://cobot-LoadB-1L3YPB9TGV71P-1610005595.us-east-1.elb.amazonaws.com',
+                                     data=json.dumps(input_dict),
+                                     headers={'content-type': 'application/json'},
+                                     timeout=3.0)
+            response = response.json()
+            if "performance" in response:
+                del response["performance"]
+                del response["error"]
+            gen_results = json.loads(response["nlg_responses"])
+        except Exception as e:
+            print('Failed! %s'%e)
+
         response = self.response_assembler(aux_state, ack_results, gen_results)
 
         self.dialogue_intcore.decay_salience()

@@ -48,6 +48,7 @@ class ResponseGeneration:
             cg = ConceptGraph(predicates=[main_predicate] + list(supporting_predicates))
             cg.add(main_predicate[3], 'assert')
             output = spanning_tree_linearized(cg, nlg_training_mode=False)
+            print('NLG input: %s'%output)
             if self.nlg_model is not None:
                 print('Running NLG model...')
                 try:
