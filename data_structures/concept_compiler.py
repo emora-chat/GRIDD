@@ -23,7 +23,7 @@ class ConceptCompiler:
     })
 
     def __init__(self, instances=_default_instances, types=_default_types, predicates=_default_predicates, namespace='c_'):
-        self.parser = Lark(ConceptCompiler._grammar, parser='earley')
+        self.parser = Lark(ConceptCompiler._grammar, parser='lalr')
         self.visitor = ConceptVisitor(instances, types, predicates, namespace)
 
     def _compile(self, string):

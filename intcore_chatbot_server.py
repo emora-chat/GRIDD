@@ -1,6 +1,4 @@
 from GRIDD.data_structures.concept_graph import ConceptGraph
-from GRIDD.data_structures.working_memory import WorkingMemory
-from GRIDD.data_structures.knowledge_base import KnowledgeBase
 from GRIDD.data_structures.pipeline import Pipeline
 c = Pipeline.component
 
@@ -36,32 +34,63 @@ def init_utter_conversion(device, KB):
         outputs=['dp_mentions', 'dp_merges']
     )
 
-def init_intra_utter_integration():
-    from GRIDD.modules.merge_span_to_merge_concept import MergeSpanToMergeConcept
+def init_mention_bridge():
     from GRIDD.modules.mention_bridge import MentionBridge
-    from GRIDD.modules.merge_coreference import MergeCoreference
-    from GRIDD.modules.merge_bridge import MergeBridge
     mention_bridge = c(MentionBridge())
-    merge_dp = c(MergeSpanToMergeConcept())
-    merge_coref = c(MergeCoreference())
-    merge_bridge = c(MergeBridge(threshold_score=0.2))
     return Pipeline(
         ('dp_mentions', 'wm') > mention_bridge > ('wm_after_mentions'),
+        outputs=['wm_after_mentions']
+    )
+
+def init_merge_dp():
+    from GRIDD.modules.merge_span_to_merge_concept import MergeSpanToMergeConcept
+    merge_dp = c(MergeSpanToMergeConcept())
+    return Pipeline(
         ('dp_merges', 'wm_after_mentions') > merge_dp > ('dp_node_merges'),
+        outputs=['dp_node_merges']
+    )
+
+def init_merge_coref():
+    from GRIDD.modules.merge_coreference import MergeCoreference
+    merge_coref = c(MergeCoreference())
+    return Pipeline(
         ('elit_results', 'wm_after_mentions') > merge_coref > ('coref_merges'),
+        outputs=['coref_merges']
+    )
+
+def init_merge_bridge(threshold):
+    from GRIDD.modules.merge_bridge import MergeBridge
+    merge_bridge = c(MergeBridge(threshold_score=threshold))
+    return Pipeline(
         ('wm_after_mentions', 'dp_node_merges') > merge_bridge > ('wm_after_intra_merges'),
         outputs=['wm_after_intra_merges']
     )
 
-def init_inter_utter_integration():
+def init_reference_merge():
     from GRIDD.modules.reference_merge import ReferenceMerge
-    from GRIDD.modules.merge_bridge import MergeBridge
     reference_merge = c(ReferenceMerge())
-    merge_bridge = c(MergeBridge(threshold_score=0.2))
     return Pipeline(
         ('wm_after_intra_merges') > reference_merge > ('reference_merges'),
+        outputs=['reference_merges']
+    )
+
+def init_reference_merge_bridge(threshold):
+    from GRIDD.modules.merge_bridge import MergeBridge
+    merge_bridge = c(MergeBridge(threshold_score=threshold))
+    return Pipeline(
         ('wm_after_intra_merges', 'reference_merges') > merge_bridge > ('wm_after_inter_merges'),
         outputs=['wm_after_inter_merges']
+    )
+
+def init_inference_rules():
+    pass
+
+def init_reference_gatherer():
+    pass
+
+def init_inference_bridge():
+    return Pipeline(
+        outputs=['']
     )
 
 def init_dialogue_inference(rules):
@@ -93,15 +122,15 @@ def init_response_selection():
     )
 
 def init_response_acknowledgment():
-    from GRIDD.modules.responsegen_by_rules import ResponseRules
-    response_rules = c(ResponseRules())
+    from GRIDD.modules.response_acknowledgment import ResponseAcknowledgment
+    response_acknowledgment = c(ResponseAcknowledgment())
     return Pipeline(
-        ('aux_state', 'expanded_response_predicates') > response_rules > ('ack_responses'),
+        ('aux_state', 'expanded_response_predicates') > response_acknowledgment > ('ack_responses'),
         outputs=['ack_responses']
     )
 
 def init_response_generation(nlg_model=None, device='cpu'):
-    from GRIDD.modules.responsegen_by_model import ResponseGeneration
+    from GRIDD.modules.response_generation import ResponseGeneration
     response_generation = c(ResponseGeneration(nlg_model, device))
     return Pipeline(
         ('expanded_response_predicates') > response_generation > ('nlg_responses'),
@@ -254,7 +283,7 @@ def load(json_dict, KB=None):
         if value is not None:
             if isinstance(key, str) and key.startswith('wm'):
                 value = json.loads(value) if isinstance(value, str) else value
-                working_memory = WorkingMemory(KB)
+                working_memory = ConceptGraph(KB)
                 ConceptGraph.load(working_memory, value)
                 json_dict[key] = working_memory
             elif key == 'aux_state':

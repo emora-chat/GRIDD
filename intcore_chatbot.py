@@ -5,6 +5,7 @@ from GRIDD.data_structures.concept_compiler import ConceptCompiler
 from GRIDD.data_structures.inference_engine import InferenceEngine
 from GRIDD.modules.elit_dp_to_logic_model import ElitDPToLogic
 from GRIDD.modules.response_selection_salience import ResponseSelectionSalience
+from GRIDD.modules.response_expansion import ResponseExpansion
 from GRIDD.modules.responsegen_by_rules import ResponseRules
 from GRIDD.modules.responsegen_by_model import ResponseGeneration
 from GRIDD.modules.response_assembler import ResponseAssembler
@@ -45,6 +46,7 @@ class Chatbot:
         print('Parse2Logic load: %.2f'%(time.time()-s))
 
         self.response_selection = ResponseSelectionSalience()
+        self.response_expansion = ResponseExpansion()
         self.produce_acknowledgment = ResponseRules()
         self.produce_generic = ResponseGeneration()
         self.response_assembler = ResponseAssembler()
@@ -210,39 +212,7 @@ class Chatbot:
             print(selection)
         print()
 
-        responses = []
-        for predicate, generation_type in selections:
-            if generation_type == 'nlg':
-                expansions = wm.structure(predicate[3],
-                                          subj_emodifiers={'time', 'mode'}, obj_emodifiers={'possess', 'question'})
-
-                # check for unresolved user request
-                emora_idk = False
-                for s, t, o, i in expansions:
-                    if s == 'user' and t == 'question' and wm.metagraph.out_edges(o, REF):
-                        emora_idk = True
-                        break
-
-                if emora_idk:
-                    responses.append((predicate, expansions, 'idk'))
-                else:
-                    responses.append((predicate, expansions, generation_type))
-            elif generation_type in {'ack_conf'}:
-                responses.append((predicate, [], generation_type))
-            elif generation_type == "backup":
-                cg = ConceptGraph(namespace='bu_', predicates=predicate[1])
-                mapped_ids = wm.concatenate(cg)
-                main_pred = mapped_ids[predicate[0][3]]
-                main_pred_sig = wm.predicate(main_pred)
-                exp_preds = [mapped_ids[pred[3]] for pred in predicate[1]]
-                exp_pred_sigs = [wm.predicate(pred) for pred in exp_preds if pred != main_pred]
-                responses.append((main_pred_sig, exp_pred_sigs, generation_type))
-        spoken_predicates = set()
-        for main, exps, _ in responses:
-            # expansions contains main predicate too
-            spoken_predicates.update([pred[3] for pred in exps])
-            self.identify_request_resolutions(exps)
-        self.assign_cover(wm, concepts=spoken_predicates)
+        responses, updated_wm = self.response_expansion(selections, wm)
 
         ack_results = self.produce_acknowledgment(aux_state, responses)
         gen_results = self.produce_generic(responses)
