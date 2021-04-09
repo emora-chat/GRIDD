@@ -57,7 +57,8 @@ it = (ref_det)
 expr(["it"], it)
 
 affirm = (predicate)
-expr(["yes", "yeah", "yea", "sure", "yep", "yup"], affirm)
+expr(["yes", "yeah", "yea", "sure", "yep", "yup",
+      "exactly", "course", "definitely", "right", "absolutely"], affirm)
 reject = (predicate)
 expr(["no", "nope", "nah"], reject)
 acknowledge = (predicate)

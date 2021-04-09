@@ -1,0 +1,7 @@
+
+g/go(user, object())
+->
+p:<with(g, p/person())>
+question(emora, p)
+;
+
