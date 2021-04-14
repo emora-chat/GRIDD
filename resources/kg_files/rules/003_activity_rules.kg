@@ -1,0 +1,38 @@
+
+g/go(user, object())
+->
+p:<with(g, p/person())>
+question(emora, p)
+;
+
+buy(A/person(), B/entity())
+-> ownership ->
+possess(A, B)
+;
+
+time(buy(A/person(), B/house()), past)
+-> house_purchase ->
+C:<time(where(B, C/location()), now)>
+question(emora, C)
+
+D:<time(be(B, D/size()), now)>
+question(emora, D)
+;
+
+possess(A/person(), B/house())
+where(B, C/state())
+-> emora_visit ->
+time(ewv/want(emora, evg/visit(emora, C)), past)
+evg{"cover": 1.0}
+mode(ewv, always)
+;
+
+possess(A/person(), B/house())
+be(B, small())
+-> emora_appreciate_size ->
+sbg/be(C, good)
+time(sbg, now)
+sbg{"cover": 1.0}
+time(think(emora, sbg), now)
+;
+

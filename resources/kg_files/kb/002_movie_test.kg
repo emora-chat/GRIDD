@@ -4,10 +4,7 @@ avengers = movie()
 genre=(entity)
 action=genre()
 expr("action", action)
-be(avengers, action)
 expr("avengers", avengers)
 terminator = movie()
 expr("terminator", terminator)
-
-time(like(emora, terminator), now)
 ;

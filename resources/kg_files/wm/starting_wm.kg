@@ -1,14 +1,7 @@
-bun/call(emora, n/name())
-indirect_obj(bun,user)
-mode(bun,should)
-question(emora, n)
-time(bun,now)
-bun{"coldstart": 1, "salience": 0.999}
-;
 
-b/be(user,q/qualifier())
+b/be(user, q/qualifier())
 qualifier(b, today)
+time(b, now)
 question(emora,  q)
-time(b,now)
 b{"coldstart": 1, "salience": 0.998}
 ;

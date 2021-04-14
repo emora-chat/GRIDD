@@ -1,0 +1,59 @@
+
+attribute=(object)
+
+;
+
+event = (predicate)
+go = (event)
+expr("go", go)
+
+;
+
+hike=(predicate)
+expr("hike, hiking", hike)
+
+;
+
+buy=(predicate)
+expr("buy", buy)
+building=(entity)
+expr("building", building)
+house=(building)
+expr("house", house)
+size = (attribute)
+[big, small, average] = (size)
+expr("big, large, huge, spacious", big)
+expr("small, tiny", small)
+expr("average, normal, typical", average)
+expensive=(attribute)
+expr("expensive, costly, pricey", expensive)
+
+location=(entity)
+expr("location, place", location)
+[state,city] = (location)
+expr("state", state)
+expr("city, town", city)
+[georgia, washington] = (state)
+expr("georgia", georgia)
+expr("washington", washington)
+[atlanta, seattle] = (city)
+expr("atlanta", atlanta)
+expr("seattle", seattle)
+
+[want, visit] = (predicate)
+expr("want", want)
+expr("visit", visit)
+always = (attribute)
+expr("always", always)
+
+think = (predicate)
+expr("think", think)
+;
+
+die=(predicate)
+expr("die", die)
+
+;
+
+
+

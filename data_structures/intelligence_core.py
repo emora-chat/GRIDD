@@ -97,10 +97,11 @@ class IntelligenceCore:
                             del implication.features[n][CONFIDENCE]
                 # check whether rule has already been applied with the given evidence
                 old_solution = False
+                current_evidence = set([x for x in evidence.values() if self.working_memory.has(predicate_id=x)])  # AND links only set up from predicate instances
                 for node, features in self.working_memory.features.items():
                     if 'origin_rule' in features and features['origin_rule'] == rule:
                         prev_evidence = {s for s, _, l in self.working_memory.metagraph.in_edges(node) if AND_LINK in l}
-                        if prev_evidence == set(evidence.values()):
+                        if prev_evidence == current_evidence:
                             old_solution = True
                             break
                 if not old_solution:
