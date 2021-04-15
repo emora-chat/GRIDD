@@ -9,14 +9,16 @@
 7. [Possessive](#poss)
 8. [Prepositional Phrase](#pp)
 9. [Adverbial](#adv)
-10. [Generics](#g)
-11. [Groups](#gr)
-12. [Habitual](#h)
-13. [Superlative](#s)
-14. [Modality](#m)
-15. [Negation](#n)
-16. [Question](#q)
+10. [Modality](#m)
+11. [Habitual](#h)
+12. [Negation](#n)
+13. [Question](#q)
+14. [Plurals](#pl)
+15. [Groups](#gr)
+16. [Generics](#g)
+17. [Superlative](#s)
 
+NOTE: In the following documentation, pronoun concepts (`me`, `you`, etc.) are used as placeholders within predicate structures. In practice, concept ids of valid concepts should be used instead, since pronouns have no actual meaning as concept ids. For example, in a human-computer interaction, a `user` concept would be appropriate to represent the user. 
 
 <a name="ii"></a>
 ### Instantiative Instance 
@@ -172,7 +174,7 @@ In this case, the adjective construction represents a subject relationship betwe
 *"The house"*
 
 ```
-h:<h/house()>
+&h<h/house()>
 ```
 
 This representation is used to construct a logical reference to an existing concept. The inference process of reference resolution is used to resolve a reference to its referent, at which point the reference and referent concepts merge. 
@@ -182,7 +184,7 @@ Upon instantiation of the reference, the reference is unresolved. It may be the 
 *"The great bridge in London"*
 
 ```
-b:<in(b/bridge(), London) property(b, great)>
+&b<in(b/bridge(), London) property(b, great)>
 ```
 
 References may have many constraints. All constraints must be true for referents to be valid and must be specified within the angled brackets.
@@ -190,7 +192,7 @@ References may have many constraints. All constraints must be true for referents
 *"The great bridge in London is falling"*
 
 ```
-f/fall(b:<in(b/bridge(), London) property(b, great)>)
+f/fall(&b<in(b/bridge(), London) property(b, great)>)
 time(f, now)
 ```
 
@@ -199,7 +201,7 @@ References are valid subjects and objects of other predicates. Note that constra
 *"The fall"*
 
 ```
-f:<f/fall()>
+&f<f/fall()>
 ```
 
 Event predicates can be references too.
@@ -210,7 +212,7 @@ Event predicates can be references too.
 *"Mary's dog"*
 
 ```
-d:<own(Mary, d/dog())
+&d<own(Mary, d/dog())>
 ```
 
 This possessive expression denotes ownership between Mary and the dog. Since all possessive expressions are referential, we construct a logical reference to allow later reference resolution.
@@ -218,7 +220,7 @@ This possessive expression denotes ownership between Mary and the dog. Since all
 *"My aunt"*
 
 ```
-p:<aunt(p/person(), me)>
+&p<aunt(p/person(), me)>
 ```
 
 Possessive expressions often do not denote ownership. In this case, the possessive expression indicates a relationship between two people.
@@ -226,7 +228,7 @@ Possessive expressions often do not denote ownership. In this case, the possessi
 *"Georgia's weather"*
 
 ```
-w:<in(w/weather(), Georgia)>
+&w<in(w/weather(), Georgia)>
 ```
 
 There is a lot of variety in the relationships between concepts introduced by possessive language.
@@ -326,83 +328,290 @@ location(f, l)
 
 Adverbs can denote specific relationships between predicates.
 
+<a name="m"></a>
+### Modality 
 
-<a name="gr"></a>
-### Groups
-
-*""*
-
-<a name="g"></a>
-### Generics 
-
-*"I like dogs."*
+*"Sally should buy a house."*
 
 ```
-g/group() 
-type(g, dog)
-
-member_of(x, g) -> like(me, x)
+b/buy(Sally, house())
+should(b)
 ```
 
-
-
-*"Puppies are cute."*
-
-```
-x/puppy() -> cute(x)
-```
-
-*"I like hiking in Atlanta."*
-
-```
-h/hike(me)
-location(h, Atlanta)
-->
-like(me, h)
-```
+Expressions of modality impose some manner of existence on the predicate that they are describing. In the given example, it is not indicating that Sally has bought or even will buy a house in the future; rather, it is meant to suggest the benefit or obligation that exists between Sally and her decision to purchase a house. 
 
 
 <a name="h"></a>
 ### Habituals 
 
-*"I swim every day."*
-
 *"He runs."*
+
+```
+r/run(he)
+time(r, present_habitual)
+```
+
+Habitual expressions indicate the frequently recurring occurrence of an event. Such expressions are grounded in the habitual-specific time `present_habitual`.
+
+*"He used to swim."*
+
+```
+r/run(he)
+time(r, past_habitual)
+```
+
+Habitual expressions do not necessarily indicate currently recurring events; instead, they can express events that were habitual in the past. For these cases, the `past_habitual` time is used.
+
+
+*"He swims every day."*
+
+```
+r/swim(he)
+time(r, every_day)
+```
+
+Habitual expressions can be more concretely defined, which is reflected in the `time` expression.
+
+
+<a name="n"></a>
+### Negation 
+
+*"Sally didn't buy a house."*
+
+```
+b/buy(Sally, house())
+not(b)
+time(b, past)
+```
+
+Predicates can be negated directly. `not` is the frequent indication of negation, especially for predicates that exist in one specific timepoint (past, future, etc.). 
+ 
+ *"Sally is never happy."*
+
+```
+b/happy(Sally)
+not(b)
+time(b, always)
+```
+
+Predicates can also be negated through specific adverbs which indicate the lack of existence, such as `never`. These adverbs operate over more than a specific timepoint, unlike `not`. As a result, such negation interacts with time specifications to produce the desired representation. In the above example, the `not` predicate negates the `happy(Sally)` event such that it means Sally is not happy. The time specification of `always` then transforms the meaning to Sally is always not happy (i.e. Sally is never happy).
+
+*"Sally is not always happy."*
+
+```
+b/happy(Sally)
+t/time(b, always)
+not(t)
+```
+
+Different configurations of `not` and time specifications result in varied meanings. In this case, the `time` specification is negated, instead of the `happy` event. This results in the desired meaning of Sally not always being happy, which is distinct from the previous example.
+ 
+
+<a name="q"></a>
+### Questions 
+
+*"Did you watch Avengers"*
+
+```
+&w<w/watch(you, Avengers) time(w, past)>
+request_truth(me, w)
+```
+
+Questions are represented as references with a request predicate denoting the question as an explicit dialogue action. `request_truth` request predicates are used to signal a request made by the subject for the truth value of the predicate in the object position.
+
+*"Do you like big dogs"*
+
+```
+&l <
+  @big_dog<big_dog/dog() big(big_dog)>
+  l/like(you, big_dog)
+>
+request_truth(me, l)
+```
+
+Questions can involve generic concepts, such as groups. The entire representation of the group and the claims made on the group is defined within the question reference. This allows the reference to resolve to the appropriate generic knowledge, if it exists.
+
+*"What musical instrument do you play"*
+
+```
+&m<play(you, m/musical_instrument())>
+request(me, m)
+```
+
+Questions can also refer to a specific argument of a predicate structure. In this case, the request is not for the truth value of a constructed predicate, but rather for the concept that fills the argument in the given predicate structure. In this example, there is a request to resolve a `musical_instrument` argument with a `play` predicate as a constraint.
+
+*"Where did you go last weekend"*
+
+```
+&l<go(you, l/location()) time(g, &w<last(w/weekend())>)>
+request(me, l)
+```
+
+Where questions typically involves requesting a location resolution.
+
+*"Why did you call me"*
+
+```
+&p<c/call(you, me) cause(p/predicate(), c)>
+request(me, p)
+```
+
+Why questions request causes of predicates, represented using a `cause` predicate.
+
+*"When do you want to leave"*
+
+```
+&t<w/want(you, leave(you)) time(w, t/timepoint())>
+request(me, t)
+```
+
+When questions request resolution of the object of a `time` predicate.
+
+*"How did you do on the test"*
+
+```
+&o<d/do(you) on(d, &t<t/test()>) quality(d, o/object()) time(d, past)>
+request(me, o)
+```
+
+How questions request resolution of the object of a `quality` predicate.
+
+<a name="pl"></a>
+### Plurals
+
+*"brown dogs"*
+
+```
+@brown_dog<brown(brown_dog/dog())>
+```
+
+This language expresses a group of concepts. The group is defined by a set of constraints. In this case, members satisfy group membership by being both `brown` and type `dog`.
+
+```
+brown_dog = (class);
+brown(x/dog()) -> type(x, brown_dog);
+```
+
+This is the equivalent, fully expanded form of the above.
+
+
+*"Brown dogs are cute."*
+
+```
+< 
+  @brown_dog<brown(brown_dog/dog())>
+  cute(brown_dog)
+>
+```
+
+In this example, `brown_dog` represents the set of all dogs that are brown as specified by the group syntax. There is also a proposition that all dogs in this group are cute, represented by the `cute` monopredicate with `brown_dog` as its argument. 
+
+Note that all propositions operating on groups must be declared within angled braces `<...>` along with the group definitions themselves. This is necessary to constrain what information is attributed to members of the group.
+
+```
+brown_dog = (member);
+brown(x/dog()) -> type(x, brown_dog);
+x/brown_dog() -> cute(x);
+```
+
+The above syntax is equivalent to the original syntax for representing *"Brown dogs are cute"*. It is the expanded form of the original group representation and demonstrates how a group representation can be obtained using implication rules. 
+
+*"Big dogs chase scared cats."*
+
+```
+<
+	@d<d/dog() big(d)>
+	@c<c/cat() scared(c)>
+	chase(d, c)
+>
+```
+
+Sometimes a proposition involves multiple groups. All groups need to be declared in order to define such a proposition. 
+
+*"Big dogs are fast and dangerous."*
+
+```
+<
+	@d<d/dog() big(d)>
+	fast(d)
+	dangerous(d)
+>
+```
+
+Multiple propositions can be specified at once for a single group or set of groups.
+
+<a name="gr"></a>
+### Groups 
+
+*"I like Sally and John"*
+
+```
+sally_and_john = (group)
+type(sally, sally_and_john)
+type(john, sally_and_john)
+
+<l/like(me, sally_and_john)>
+```
+
+When multiple concepts are an argument to a single predicate, they form a group and the group is used as the argument. Groups are logically equivalent to types. In this example, there is one `like`-ing relationship between `me` and the group `sally` and `john`. 
+
+Note that this is distinct from having separate `like`-ing relationships to `sally` and `john` each. However, both `sally` and `john` are considered objects of the single `like`-ing event. Representing `sally` and `john` as a group allows the group to be referenced again and any modifications to the predicates the group is involved in will appropriately affect `john` and `sally` synchronously.
+
+*"People are destroying Earth."*
+
+```
+<
+  d/destroy(person, Earth)
+  time(d, now)
+>
+```
+
+In this example, the `destroy` event is not generic. Only a single `destroy` event is being expressed, which everyone in the class `person` is participating in. Thus, the logical form for this example is similar to the previous case. Type `person` represents the group of all people who are collectively participating in the single `destroy` event.
+
+<a name="g"></a>
+### Generics 
+
+*"I like hiking in Atlanta."*
+
+```
+<
+  @atl_hike<atl_hike/hike(me) location(atl_hike, Atlanta)>
+  like(me, atl_hike)
+>
+```
+
+Generic verb usage is represented similarly to generalizations of entities made using plurals. In this example, *"hiking in Atlanta"* is represented as a type of event where the type definition includes a location constraint (`Atlanta`) and a subject constraint (`me`). The `like` predicate thus acts as a relationship between `me` and all events that satisfy the `atl_hike` type definition.
+
+Similar to the expanded forms of plural expressions, the above example would be expanded as:
+
+```
+h/hike(me) location(h, Atlanta) -> type(h, atl_hike);
+type(h, atl_hike) -> like(me, h);
+```
 
 <a name="s"></a>
 ### Superlatives 
 
 *"My favorite color is red."*
 
-<a name="m"></a>
-### Modality 
+```
+<
+  f/favorite(me, red) 
+  out_of(f, color)
+>
+```
 
-*"You should buy a house."*
+Superlatives represent a single item that compares uniformly to a group that it is a part of. The property of being superlative is represented using a property or relationship predicate on the outstanding item, such as `favorite(me, red)` representing the special quality of `red` in the example. The `out_of` predicate denotes the relationship between the outstanding quality and the group. As with all group representation, groups are represented using type concepts.
 
-*"I can read."*
+*"John is the fastest runner on the team."*
 
-*"She is always happy."*
+```
+<
+  f/fastest(John) 
+  out_of(f, runner_on_team)
+  @runner_on_team<on(runner_on_team/runner(), &t<t/team()>>
+>
+```
 
-<a name="n"></a>
-### Negation 
+In this example, the superlative is declared with respect to a more complex group. By constructing a type definition to represent the group `runner_on_team`, the appropriate `out_of` relationship can be defined between the `fastest` property and the group.
 
-*"I didnt buy a house."*
-
-*"She is never happy."*
-
-<a name="q"></a>
-### Questions 
-
-*"What color is your favorite"*
-
-*"Where did you go last weekend"*
-
-*"Why did you call me"*
-
-*"When do you want to leave"*
-
-*"How did you do on the test"*
-
-*"Did you watch Avengers"*
-
-*"Are you sure"*
