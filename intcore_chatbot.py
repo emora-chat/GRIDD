@@ -197,7 +197,7 @@ class Chatbot:
 
             # Fragment Request Resolution:
             #   most salient type-compatible user concept from current turn fills most salient emora request
-            # todo - only look for answer to emora request in the next user utterance; otherwise merges things in given less specified emora request?
+            # todo - only look for answer to emora request in the next user utterance; otherwise can merge emora-initiated concepts as resolution
             # todo - bug -> small isnt merging in size question of demo
             emora_requests = [pred for pred in wm.predicates('emora', 'question') if wm.features.get(pred[3], {}).get(COVER, 0) == 1.0]
             if len(emora_requests) > 0:
@@ -218,7 +218,7 @@ class Chatbot:
                     request_focus_types = types[request_focus] - {request_focus}
                     salient_concepts = sorted(current_user_concepts, key=lambda c: wm.features.get(c, {}).get(SALIENCE, 0), reverse=True)
                     for c in salient_concepts:
-                        if c != request_focus and request_focus_types.issubset(types[c] - {c}) and not wm.metagraph.out_edges(c): # if user concept is a reference, dont treat as answer fragment
+                        if c != request_focus and request_focus_types.issubset(types[c] - {c}) and not wm.metagraph.out_edges(c, REF): # if user concept is a reference, dont treat as answer fragment
                             fragment_request_merges.append((c, request_focus))
                             break
                 self.merge_references(fragment_request_merges)

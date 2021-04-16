@@ -30,7 +30,7 @@ mode(ewv, always)
 possess(A/person(), B/house())
 be(B, small())
 -> emora_appreciate_size ->
-sbg/be(C, good)
+sbg/be(B, good)
 time(sbg, now)
 sbg{"cover": 1.0}
 time(think(emora, sbg), now)
