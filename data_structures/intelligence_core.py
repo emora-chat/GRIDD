@@ -116,6 +116,7 @@ class IntelligenceCore:
                         self.working_memory.metagraph.add(and_node, implied_nodes[imp_node], (OR_LINK, strength))
 
     def update_confidence(self):
+        # todo - we currently arent using the strength element of the implication links?
         mg = self.working_memory.metagraph
         and_links = [edge for edge in mg.edges() if isinstance(edge[2], tuple) and AND_LINK == edge[2][0]]
         or_links = [edge for edge in mg.edges() if isinstance(edge[2], tuple) and OR_LINK == edge[2][0]]
@@ -320,6 +321,11 @@ class IntelligenceCore:
         wm = self.working_memory
         edges = wm.to_graph().edges()
         redges = [(t, s, l) for s, t, l in edges]
+        and_links = [edge for edge in wm.metagraph.edges() if isinstance(edge[2], tuple) and AND_LINK == edge[2][0]]
+        for evidence, and_node, _ in and_links:
+            or_links = [edge for edge in wm.metagraph.out_edges(and_node) if isinstance(edge[2], tuple) and OR_LINK == edge[2][0]]
+            for _, implication, _ in or_links:
+                redges.append((evidence, implication, None))
         def moderated_salience(salience, connectivity):
             return salience / connectivity
         def update_instance_salience(val, args):

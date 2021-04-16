@@ -198,6 +198,7 @@ class Chatbot:
             # Fragment Request Resolution:
             #   most salient type-compatible user concept from current turn fills most salient emora request
             # todo - only look for answer to emora request in the next user utterance; otherwise merges things in given less specified emora request?
+            # todo - bug -> small isnt merging in size question of demo
             emora_requests = [pred for pred in wm.predicates('emora', 'question') if wm.features.get(pred[3], {}).get(COVER, 0) == 1.0]
             if len(emora_requests) > 0:
                 salient_emora_request = max(emora_requests,
