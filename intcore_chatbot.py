@@ -21,6 +21,9 @@ import json, requests, time
 from collections import defaultdict
 
 DEBUG = True
+EXCL = {'expr', 'def', 'ref',
+              'span', 'expression', 'predicate', 'datetime'}
+TYPEINFO = False
 
 class Chatbot:
     """
@@ -67,9 +70,6 @@ class Chatbot:
         self.auxiliary_state = results["aux_state"]
         wm = self.dialogue_intcore.working_memory
 
-        exclusions = {'expr', 'def', 'ref',
-                      'span', 'expression', 'predicate', 'datetime'}
-        typeinfo = False
         #########################
         ### Dialogue Pipeline ###
         #########################
@@ -109,7 +109,7 @@ class Chatbot:
             print('\n' + '#'*10)
             print('After Mentions')
             print('#' * 10)
-            print(self.dialogue_intcore.working_memory.pretty_print(exclusions=exclusions, typeinfo=typeinfo))
+            print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=TYPEINFO))
 
         # Merges
         node_merges = []
@@ -127,7 +127,7 @@ class Chatbot:
             print('\n' + '#'*10)
             print('After Merges')
             print('#' * 10)
-            print(self.dialogue_intcore.working_memory.pretty_print(exclusions=exclusions, typeinfo=typeinfo))
+            print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=TYPEINFO))
 
         # Knowledge pull
         knowledge_by_source = self.dialogue_intcore.pull_knowledge(limit=100, num_pullers=100, association_limit=10, subtype_limit=10)
@@ -144,12 +144,12 @@ class Chatbot:
             print('\n' + '#'*10)
             print('After Knowledge Pull')
             print('#' * 10)
-            print(self.dialogue_intcore.working_memory.pretty_print(exclusions=exclusions, typeinfo=typeinfo))
+            print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=TYPEINFO))
 
         print('\n' + '#'*10)
         print('Before Inference')
         print('#' * 10)
-        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=exclusions, typeinfo=typeinfo))
+        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=TYPEINFO))
         print()
 
         for iteration in range(2):
@@ -166,28 +166,15 @@ class Chatbot:
                 print('\n' + '#'*10)
                 print('After Inferences')
                 print('#' * 10)
-                print(self.dialogue_intcore.working_memory.pretty_print(exclusions=exclusions, typeinfo=typeinfo))
+                print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=TYPEINFO))
 
             # Feature update
             self.dialogue_intcore.update_confidence()
             self.dialogue_intcore.update_salience()
 
             if DEBUG:
-                print('\n' + '#'*10)
-                print('After Feature Update')
-                print('#' * 10)
-                for concept, features in self.dialogue_intcore.working_memory.features.items():
-                    if wm.has(predicate_id=concept) and wm.type(concept) not in {'expr', 'ref', 'def', 'type', 'link', 'assert'}:
-                        sig = wm.predicate(concept)
-                        if sig[0] not in exclusions and sig[1] not in exclusions and sig[2] not in exclusions:
-                            sa = features.get(SALIENCE, 0)
-                            cf = features.get(CONFIDENCE, 0)
-                            cv = features.get(COVER, 0)
-                            if sig[2] is not None:
-                                rep = f'{sig[3]}/{sig[1]}({sig[0]},{sig[2]})'
-                            else:
-                                rep = f'{sig[3]}/{sig[1]}({sig[0]})'
-                            print(f'{rep:40}: s({sa:.2f}) c({cf:.2f}) cv({cv:.2f})')
+                print('\n' + '#'*10 + '\nAfter Feature Update\n' + '#' * 10)
+                self.print_features()
 
             # Reference resolution
             reference_sets = self.dialogue_intcore.resolve()
@@ -228,14 +215,23 @@ class Chatbot:
                 print('\n' + '#'*10)
                 print('After Reference Resolution')
                 print('#' * 10)
-                print(self.dialogue_intcore.working_memory.pretty_print(exclusions=exclusions, typeinfo=typeinfo))
+                print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=TYPEINFO))
                 print()
 
         print('\n' + '#'*10)
         print('After Inference')
         print('#' * 10)
-        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=exclusions, typeinfo=typeinfo))
+        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=TYPEINFO))
         print()
+
+        # End of user turn -> decay salience
+        self.dialogue_intcore.decay_salience()
+
+        if DEBUG:
+            print('\n' + '#' * 10 + '\nEnd User Turn\n' + '#' * 10)
+            self.print_features()
+
+        # Start of emora turn
 
         # Response selection
         aux_state, selections = self.response_selection(self.auxiliary_state, wm)
@@ -269,9 +265,15 @@ class Chatbot:
 
         response = self.response_assembler(aux_state, ack_results, gen_results)
 
+        # end of emora turn -> decay salience and prune
         self.dialogue_intcore.decay_salience()
         self.dialogue_intcore.prune_predicates_of_type({AFFIRM, REJECT})
         self.dialogue_intcore.prune_attended(keep=200)
+
+        if DEBUG:
+            print('\n' + '#' * 10 + '\nEnd Emora Turn\n' + '#' * 10)
+            self.print_features()
+
         self.auxiliary_state = aux_state
 
         return response
@@ -335,6 +337,20 @@ class Chatbot:
             if graph.has(predicate_id=concept):
                 graph.features[concept][COVER] = 1.0
 
+    def print_features(self):
+        wm = self.dialogue_intcore.working_memory
+        for concept, features in wm.features.items():
+            if wm.has(predicate_id=concept) and wm.type(concept) not in {'expr', 'ref', 'def', 'type', 'link',
+                                                                         'assert'}:
+                sig = wm.predicate(concept)
+                if sig[0] not in EXCL and sig[1] not in EXCL and sig[2] not in EXCL:
+                    sa, cf, cv = features.get(SALIENCE, 0), features.get(CONFIDENCE, 0), features.get(COVER, 0)
+                    if sig[2] is not None:
+                        rep = f'{sig[3]}/{sig[1]}({sig[0]},{sig[2]})'
+                    else:
+                        rep = f'{sig[3]}/{sig[1]}({sig[0]})'
+                    print(f'{rep:40}: s({sa:.2f}) c({cf:.2f}) cv({cv:.2f})')
+
     def chat(self):
         utterance = input('User: ')
         while utterance != 'q':
@@ -354,5 +370,5 @@ if __name__ == '__main__':
     wm = [join('GRIDD', 'resources', 'kg_files', 'wm')]
     ITERATION = 2
 
-    chatbot = Chatbot(*kb, inference_rules=rules, starting_wm=wm)
+    chatbot = Chatbot(*kb, inference_rules=rules, starting_wm=None)
     chatbot.chat()

@@ -1,6 +1,6 @@
 DEBUG = False
 
-SENSORY_SALIENCE = 1            # salience value for predicates that are considered via sensations
+SENSORY_SALIENCE = 1.0          # salience value for predicates that are considered via sensations
 ASSOCIATION_DECAY = 0.1         # decrease in salience for concepts pulled into attention by neighbors
 TIME_DECAY = 0.1                # decrease in salience for working memory concepts per timestep
 NONASSERT = 'nonassert'         # predicate type indicating arguments that are unasserted

@@ -54,8 +54,7 @@ class ResponseExpansion:
             # expansions contains main predicate too
             spoken_predicates.update([pred[3] for pred in exps])
             self.identify_request_resolutions(exps, wm)
-        self.assign_cover(wm, concepts=spoken_predicates)
-
+        self.assign_cover_and_salience(wm, concepts=spoken_predicates)
         return responses, working_memory
 
     def identify_request_resolutions(self, spoken_predicates, wm):
@@ -64,12 +63,13 @@ class ResponseExpansion:
             if s == 'user' and t == 'question':
                 wm.remove(s, t, o, i)
 
-    def assign_cover(self, graph, concepts=None):
+    def assign_cover_and_salience(self, graph, concepts=None):
         if concepts is None:
             concepts = graph.concepts()
         for concept in concepts:
             if graph.has(predicate_id=concept):
                 graph.features[concept][COVER] = 1.0
+                graph.features[concept][SALIENCE] = SENSORY_SALIENCE
 
 if __name__ == '__main__':
     print(ResponseExpansionSpec.verify(ResponseExpansion))

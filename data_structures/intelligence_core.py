@@ -344,9 +344,10 @@ class IntelligenceCore:
                     wm.features.get(c, {}).get(CONNECTIVITY, 1))
                 for c in wm.concepts()},
             updaters={c: update_instance_salience for c in wm.concepts()},
-            default=(0, 1)
+            default=(0, 1),
+            set_fn=(lambda n, v: wm.features.setdefault(n, {}).__setitem__(SALIENCE, v[0]))
         )
-        updater.update(iterations)
+        updater.update(iterations, push=True)
 
     def decay_salience(self):
         for c in self.working_memory.concepts():
