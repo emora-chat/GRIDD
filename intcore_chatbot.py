@@ -20,7 +20,7 @@ from os.path import join
 import json, requests, time
 from collections import defaultdict
 
-DEBUG = False
+DEBUG = True
 
 class Chatbot:
     """
@@ -177,10 +177,17 @@ class Chatbot:
                 print('After Feature Update')
                 print('#' * 10)
                 for concept, features in self.dialogue_intcore.working_memory.features.items():
-                    if wm.has(predicate_id=concept) and wm.type(concept) not in {'expr', 'ref', 'def', 'type'}:
+                    if wm.has(predicate_id=concept) and wm.type(concept) not in {'expr', 'ref', 'def', 'type', 'link', 'assert'}:
                         sig = wm.predicate(concept)
                         if sig[0] not in exclusions and sig[1] not in exclusions and sig[2] not in exclusions:
-                            print(f'{sig}: s({features.get(SALIENCE, 0):.2f}) c({features.get(CONFIDENCE, 0):.2f}) cv({features.get(COVER, 0):.2f})')
+                            sa = features.get(SALIENCE, 0)
+                            cf = features.get(CONFIDENCE, 0)
+                            cv = features.get(COVER, 0)
+                            if sig[2] is not None:
+                                rep = f'{sig[3]}/{sig[1]}({sig[0]},{sig[2]})'
+                            else:
+                                rep = f'{sig[3]}/{sig[1]}({sig[0]})'
+                            print(f'{rep:40}: s({sa:.2f}) c({cf:.2f}) cv({cv:.2f})')
 
             # Reference resolution
             reference_sets = self.dialogue_intcore.resolve()

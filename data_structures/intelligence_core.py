@@ -140,14 +140,21 @@ class IntelligenceCore:
             product = 1
             for value, (label, weight) in sources:
                 product *= weight * value
-            return product
+            if product >= 0:
+                return min(product, 1.0)
+            else:
+                return max(product, -1.0)
         def or_fn(node, sources):
-            sum = node
+            sum = node # todo - why do we set sum and product to node value ; as iterations occur, the value will keep increasing to max
             product = node
             for value, (label, weight) in sources:
                 sum += value * weight
                 product *= value * weight
-            return sum - product
+            diff = sum - product
+            if diff >= 0:
+                return min(diff, 1.0)
+            else:
+                return max(diff, -1.0)
         update_graph = UpdateGraph(
             edges=[*and_links, *or_links],
             nodes={c: mg.features.get(c, {}).get(CONFIDENCE, 0) if mg.features.get(c, {}).get(BASE, False) else 0
