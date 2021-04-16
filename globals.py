@@ -24,3 +24,8 @@ REF = 'ref'                     # metagraph reference link
 VAR = 'var'                     # var reference variable link
 AFFIRM = 'affirm'               # predicate type indicating affirmative/yes statement
 REJECT = 'reject'               # predicate type indicating rejective/no statement
+TIME = 'time'                   # predicate type indicating time specification
+SPAN_REF = 'ref'                # predicate type linking span nodes to the concepts they refer to
+SPAN_DEF = 'def'                # predicate type linking span nodes to the concept their language defines
+
+PRIM = {ASSERT, NONASSERT, AFFIRM, REJECT, TIME, SPAN_DEF, SPAN_REF}    # Primitive predicate types that do not propogate salience to subtypes

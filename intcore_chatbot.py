@@ -57,7 +57,7 @@ class Chatbot:
         self.response_assembler = ResponseAssembler()
 
 
-    def respond(self, user_utterance):
+    def respond(self, user_utterance, debug):
         input_dict = {"text": [user_utterance, None],
                       "aux_state": [self.auxiliary_state, self.auxiliary_state],
                       "conversationId": 'local'}
@@ -77,7 +77,7 @@ class Chatbot:
         # NLU Preprocessing
         mentions, merges = self.elit_dp(parse_dict)
 
-        if DEBUG:
+        if debug:
             print()
             for span, graph in mentions.items():
                 print(span)
@@ -105,7 +105,7 @@ class Chatbot:
         self.assign_cover(mega_mention_graph)
         self.dialogue_intcore.consider(mega_mention_graph)
 
-        if DEBUG:
+        if debug:
             print('\n' + '#'*10)
             print('After Mentions')
             print('#' * 10)
@@ -123,7 +123,7 @@ class Chatbot:
                 node_merges.append((concept1, concept2))
         self.dialogue_intcore.merge(node_merges)
 
-        if DEBUG:
+        if debug:
             print('\n' + '#'*10)
             print('After Merges')
             print('#' * 10)
@@ -140,7 +140,7 @@ class Chatbot:
                 self.dialogue_intcore.consider([type], associations=type[0])
         self.dialogue_intcore.operate()
 
-        if DEBUG:
+        if debug:
             print('\n' + '#'*10)
             print('After Knowledge Pull')
             print('#' * 10)
@@ -153,7 +153,7 @@ class Chatbot:
         print()
 
         for iteration in range(2):
-            if DEBUG:
+            if debug:
                 print('\n<< INFERENCE ITERATION %d >> '%iteration)
             # Inferences
             inferences = self.dialogue_intcore.infer()
@@ -162,7 +162,7 @@ class Chatbot:
             self.dialogue_intcore.gather_all_nlu_references()
             self.dialogue_intcore.gather_all_assertion_links()
 
-            if DEBUG:
+            if debug:
                 print('\n' + '#'*10)
                 print('After Inferences')
                 print('#' * 10)
@@ -172,7 +172,7 @@ class Chatbot:
             self.dialogue_intcore.update_confidence()
             self.dialogue_intcore.update_salience()
 
-            if DEBUG:
+            if debug:
                 print('\n' + '#'*10 + '\nAfter Feature Update\n' + '#' * 10)
                 self.print_features()
 
@@ -185,7 +185,6 @@ class Chatbot:
             # Fragment Request Resolution:
             #   most salient type-compatible user concept from current turn fills most salient emora request
             # todo - only look for answer to emora request in the next user utterance; otherwise can merge emora-initiated concepts as resolution
-            # todo - bug -> small isnt merging in size question of demo
             emora_requests = [pred for pred in wm.predicates('emora', 'question') if wm.features.get(pred[3], {}).get(COVER, 0) == 1.0]
             if len(emora_requests) > 0:
                 salient_emora_request = max(emora_requests,
@@ -211,7 +210,7 @@ class Chatbot:
                 self.merge_references(fragment_request_merges)
                 self.dialogue_intcore.operate()
 
-            if DEBUG:
+            if debug:
                 print('\n' + '#'*10)
                 print('After Reference Resolution')
                 print('#' * 10)
@@ -227,7 +226,7 @@ class Chatbot:
         # End of user turn -> decay salience
         self.dialogue_intcore.decay_salience()
 
-        if DEBUG:
+        if debug:
             print('\n' + '#' * 10 + '\nEnd User Turn\n' + '#' * 10)
             self.print_features()
 
@@ -265,12 +264,13 @@ class Chatbot:
 
         response = self.response_assembler(aux_state, ack_results, gen_results)
 
-        # end of emora turn -> decay salience and prune
+        # end of emora turn -> update salience, then decay and prune
+        self.dialogue_intcore.update_salience()
         self.dialogue_intcore.decay_salience()
         self.dialogue_intcore.prune_predicates_of_type({AFFIRM, REJECT})
         self.dialogue_intcore.prune_attended(keep=200)
 
-        if DEBUG:
+        if debug:
             print('\n' + '#' * 10 + '\nEnd Emora Turn\n' + '#' * 10)
             self.print_features()
 
@@ -339,6 +339,7 @@ class Chatbot:
 
     def print_features(self):
         wm = self.dialogue_intcore.working_memory
+        ls = []
         for concept, features in wm.features.items():
             if wm.has(predicate_id=concept) and wm.type(concept) not in {'expr', 'ref', 'def', 'type', 'link',
                                                                          'assert'}:
@@ -349,13 +350,15 @@ class Chatbot:
                         rep = f'{sig[3]}/{sig[1]}({sig[0]},{sig[2]})'
                     else:
                         rep = f'{sig[3]}/{sig[1]}({sig[0]})'
-                    print(f'{rep:40}: s({sa:.2f}) c({cf:.2f}) cv({cv:.2f})')
+                    ls.append((f'{rep:40}: s({sa:.2f}) c({cf:.2f}) cv({cv:.2f})', sa))
+        for pr, sa in sorted(ls, key=lambda x: x[1], reverse=True):
+            print(pr)
 
-    def chat(self):
+    def chat(self, debug):
         utterance = input('User: ')
         while utterance != 'q':
             s = time.time()
-            response = self.respond(utterance)
+            response = self.respond(utterance, debug=debug)
             elapsed = time.time() - s
             print('[%.6f s] %s\n' % (elapsed, response))
             utterance = input('User: ')
@@ -371,4 +374,4 @@ if __name__ == '__main__':
     ITERATION = 2
 
     chatbot = Chatbot(*kb, inference_rules=rules, starting_wm=None)
-    chatbot.chat()
+    chatbot.chat(debug=DEBUG)

@@ -319,7 +319,7 @@ class IntelligenceCore:
 
     def update_salience(self, iterations=10):
         wm = self.working_memory
-        edges = wm.to_graph().edges()
+        edges = [e for e in wm.to_graph().edges() if not (e[1] in PRIM and e[2] == 't')]
         redges = [(t, s, l) for s, t, l in edges]
         and_links = [edge for edge in wm.metagraph.edges() if isinstance(edge[2], tuple) and AND_LINK == edge[2][0]]
         for evidence, and_node, _ in and_links:
