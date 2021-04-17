@@ -16,7 +16,7 @@
 14. [Plurals](#pl)
 15. [Groups](#gr)
 16. [Generics](#g)
-17. [Superlative](#s)
+17. [Comparatives](#s)
 
 NOTE: In the following documentation, pronoun concepts (`me`, `you`, etc.) are used as placeholders within predicate structures. In practice, concept ids of valid concepts should be used instead, since pronouns have no actual meaning as concept ids. For example, in a human-computer interaction, a `user` concept would be appropriate to represent the user. 
 
@@ -184,7 +184,7 @@ Upon instantiation of the reference, the reference is unresolved. It may be the 
 *"The great bridge in London"*
 
 ```
-&b<in(b/bridge(), London) property(b, great)>
+&b<in(b/bridge(), London) great(b)>
 ```
 
 References may have many constraints. All constraints must be true for referents to be valid and must be specified within the angled brackets.
@@ -192,7 +192,7 @@ References may have many constraints. All constraints must be true for referents
 *"The great bridge in London is falling"*
 
 ```
-f/fall(&b<in(b/bridge(), London) property(b, great)>)
+f/fall(&b<in(b/bridge(), London) great(b)>)
 time(f, now)
 ```
 
@@ -302,7 +302,7 @@ This is yet another example of the variety of relationship predicates that a sin
 ```
 r/run(me)
 time(r, past)
-qualifier(r, quick)
+quick(r)
 ```
 
 Adverbial statements indicate some quality of the concept they are modifying.
@@ -419,18 +419,6 @@ request_truth(me, w)
 
 Questions are represented as references with a request predicate denoting the question as an explicit dialogue action. `request_truth` request predicates are used to signal a request made by the subject for the truth value of the predicate in the object position.
 
-*"Do you like big dogs"*
-
-```
-&l <
-  @big_dog<big_dog/dog() big(big_dog)>
-  l/like(you, big_dog)
->
-request_truth(me, l)
-```
-
-Questions can involve generic concepts, such as groups. The entire representation of the group and the claims made on the group is defined within the question reference. This allows the reference to resolve to the appropriate generic knowledge, if it exists.
-
 *"What musical instrument do you play"*
 
 ```
@@ -509,7 +497,7 @@ In this example, `brown_dog` represents the set of all dogs that are brown as sp
 Note that all propositions operating on groups must be declared within angled braces `<...>` along with the group definitions themselves. This is necessary to constrain what information is attributed to members of the group.
 
 ```
-brown_dog = (member);
+brown_dog = (class);
 brown(x/dog()) -> type(x, brown_dog);
 x/brown_dog() -> cute(x);
 ```
@@ -539,6 +527,19 @@ Sometimes a proposition involves multiple groups. All groups need to be declared
 ```
 
 Multiple propositions can be specified at once for a single group or set of groups.
+
+*"Do you like big dogs"*
+
+```
+&l <
+  @big_dog<big_dog/dog() big(big_dog)>
+  l/like(you, big_dog)
+>
+request_truth(me, l)
+```
+
+Questions can involve generic concepts, such as groups. The entire representation of the group and the claims made on the group is defined within the question reference. This allows the reference to resolve to the appropriate generic knowledge, if it exists.
+
 
 <a name="gr"></a>
 ### Groups 
@@ -590,7 +591,7 @@ type(h, atl_hike) -> like(me, h);
 ```
 
 <a name="s"></a>
-### Superlatives 
+### Comparatives 
 
 *"My favorite color is red."*
 
@@ -601,7 +602,9 @@ type(h, atl_hike) -> like(me, h);
 >
 ```
 
-Superlatives represent a single item that compares uniformly to a group that it is a part of. The property of being superlative is represented using a property or relationship predicate on the outstanding item, such as `favorite(me, red)` representing the special quality of `red` in the example. The `out_of` predicate denotes the relationship between the outstanding quality and the group. As with all group representation, groups are represented using type concepts.
+One common form of comparison is a superlative. 
+Superlatives represent a single item that compares uniformly to a group that it is a part of.
+The property of being superlative is represented using a property or relationship predicate on the outstanding item, such as `favorite(me, red)` representing the special quality of `red` in the example. The `out_of` predicate denotes the relationship between the outstanding quality and the group. As with all group representation, groups are represented using type concepts.
 
 *"John is the fastest runner on the team."*
 
@@ -615,3 +618,13 @@ Superlatives represent a single item that compares uniformly to a group that it 
 
 In this example, the superlative is declared with respect to a more complex group. By constructing a type definition to represent the group `runner_on_team`, the appropriate `out_of` relationship can be defined between the `fastest` property and the group.
 
+*"John is faster than Tom."*
+
+```
+f/faster(John)
+than(f, Tom)
+```
+
+Comparisons can also be made between two entities, rather than involving a group. In this case,
+there is no group definition that the comparison is relative to. Instead, the direct comparative
+is made from one entity to the other through the `than` predicate.
