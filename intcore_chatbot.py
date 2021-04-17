@@ -207,6 +207,12 @@ class Chatbot:
                         if c != request_focus and request_focus_types.issubset(types[c] - {c}) and not wm.metagraph.out_edges(c, REF): # if user concept is a reference, dont treat as answer fragment
                             fragment_request_merges.append((c, request_focus))
                             break
+                if len(fragment_request_merges) > 0:
+                    # set salience of all request predicates to salience of fragment
+                    fragment = fragment_request_merges[0][0]
+                    ref_links = [e for e in wm.metagraph.out_edges(request_focus) if e[2] == REF and wm.has(predicate_id=e[1])]
+                    for s, t, l in ref_links:
+                        wm.features.setdefault(t, {})[SALIENCE] = wm.features.setdefault(fragment, {}).get(SALIENCE, 0)
                 self.merge_references(fragment_request_merges)
                 self.dialogue_intcore.operate()
 

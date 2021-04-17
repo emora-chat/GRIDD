@@ -329,13 +329,15 @@ class IntelligenceCore:
         def moderated_salience(salience, connectivity):
             return salience / connectivity
         def update_instance_salience(val, args):
-            ms = [val[0]]
+            in_ms = [val[0]]
+            out_ms = []
             for (sal, con), lnk in args:
                 if lnk == SALIENCE_IN_LINK:
-                    ms.append(moderated_salience(sal, con) - ASSOCIATION_DECAY)
+                    in_ms.append(moderated_salience(sal, con) - ASSOCIATION_DECAY)
                 else:
-                    ms.append(sal)
-            return (max(ms), val[1])
+                    out_ms.append(sal)
+            avg = sum(in_ms) / len(in_ms)
+            return (max(out_ms + [avg]), val[1])
         updater = UpdateGraph(
             [*[(s, t, SALIENCE_OUT_LINK) for s, t, _ in edges],
              *[(s, t, SALIENCE_IN_LINK) for s, t, _ in redges]],
