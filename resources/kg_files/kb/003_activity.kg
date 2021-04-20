@@ -48,6 +48,9 @@ expr("always", always)
 
 think = (predicate)
 expr("think", think)
+
+ehh/has(emora, house())
+time(ehh, now)
 ;
 
 die=(predicate)

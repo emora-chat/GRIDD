@@ -280,11 +280,13 @@ class ConceptGraph:
                     s.append(pred)
                     stack.extend({pred[0], pred[2]} - visited)
                     if pred[1] == 'question':
-                        # if concept is a request predicate, retrieve all attachments to object for full definition
+                        # if concept is a request predicate, retrieve all ref metalinks to object for full definition
                         obj = pred[2]
-                        for mp in chain(self.predicates(obj), self.predicates(object=obj)):
-                            if mp[1] not in {'ref', 'def', 'expr'} and mp[3] not in visited:
-                                stack.append(mp[3])
+                        for _, constraint, _ in self.metagraph.out_edges(obj, REF):
+                            if self.has(predicate_id=constraint):
+                                mp = self.predicate(constraint)
+                                if mp[1] not in {'ref', 'def', 'expr'} and mp[3] not in visited:
+                                    stack.append(mp[3])
                 for p in self.predicates(concept, predicate_type='type'):
                     if p[3] not in visited:
                         s.append(p)
