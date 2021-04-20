@@ -1,14 +1,48 @@
 from GRIDD.modules.responsegen_by_templates_spec import ResponseTemplatesSpec
+from GRIDD.data_structures.concept_compiler import TemplateConceptCompiler
+from GRIDD.data_structures.concept_graph import ConceptGraph
+from GRIDD.utilities.utilities import collect
 
-class ResponseTemplates:
+"""
+These two classes work in conjunction with the service-implementation of the InferenceEngine
+in order to find appropriate template matches for a given concept graph and properly fill in the 
+templates for each match.
 
-    def __call__(self, match_dict, string_spec_ls, wm):
+Execution Sequence:
+    ResponseTemplateFinder
+    InferenceEngine
+    ResponseTemplateFiller
+"""
+
+class ResponseTemplateFinder:
+    """
+    Loads the template rules from template_dir upon initialization and returns them when called.
+    """
+
+    def __init__(self, template_dir):
+        compiler = TemplateConceptCompiler(predicates=None, types=None, namespace='c_')
+        predicates, metalinks, metadatas = compiler.compile(collect(template_dir))
+        template_cg = ConceptGraph(predicates, metalinks=metalinks, metadata=metadatas,
+                                      namespace='t_')
+        self.template_rules = template_cg.rules()
+
+    def __call__(self):
+        return self.template_rules
+
+class ResponseTemplateFiller:
+    """
+    Fills out a template based on the provided variable matches and concept expressions.
+    """
+
+    def __call__(self, matches, wm):
         expr_dict = {}
         for s, t, o, i in wm.predicates(predicate_type='expr'):
             if o not in expr_dict:
                 expr_dict[o] = s.replace('"', '')
-        s = self.fill_string(match_dict, expr_dict, string_spec_ls)
-        return s
+        candidates = []
+        for match_dict, string_spec_ls in matches:
+            candidates.append(self.fill_string(match_dict, expr_dict, string_spec_ls))
+        return candidates
 
     def fill_string(self, match_dict, expr_dict, string_spec_ls):
         fillers = {}
@@ -64,4 +98,4 @@ if spec:
 
 
 if __name__ == '__main__':
-    print(ResponseTemplatesSpec.verify(ResponseTemplates))
+    print(ResponseTemplatesSpec.verify(ResponseTemplateFiller))

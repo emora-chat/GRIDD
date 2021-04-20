@@ -6,8 +6,8 @@ from GRIDD.data_structures.concept_graph import ConceptGraph
 class ResponseTemplatesSpec:
 
     @specification.init
-    def ResponseTemplates(ResponseTemplates):
-        response_templates = ResponseTemplates()
+    def ResponseTemplateFiller(ResponseTemplateFiller):
+        response_templates = ResponseTemplateFiller()
         return response_templates
 
     def fill_string(response_templates, match_dict, expr_dict, string_spec_ls):
@@ -30,7 +30,7 @@ class ResponseTemplatesSpec:
         }
         string_spec_ls = ['X', ('hike',{'t': 'present', 's': 'X'}), '.']
         filled = response_templates.fill_string(match_dict, expr_dict, string_spec_ls)
-        # assert filled == 'I hike.'
+        assert filled == 'I hike.'
 
         match_dict = {
             'X': 'Mary'

@@ -1,5 +1,5 @@
 time(hike(X/person()), past)
 -> person_hiked ->
-X hike{t:"past", p:"X"}
+X hike{t:"past", s:"X"}
 ;
 
