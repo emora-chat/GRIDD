@@ -1,4 +1,5 @@
-time(hike(X/person()), past)
+time(h/hike(X/person()), past)
+assert(h)
 -> person_hiked ->
 X hike{t:"past", s:"X"}
 ;
