@@ -8,7 +8,6 @@ ASSERT = 'assert'               # monopredicate indicating argument is asserted
 COLDSTART = 'coldstart'         # metadata bool feature preventing salience decay until selected
 SALIENCE = 'salience'           # metadata float feature representing attention w.r.t. emora
 CONFIDENCE = 'confidence'       # metadata float feature representing truth value w.r.t emora
-COVER = 'cover'                 # metadata float feature representing emora's confidence of the user's confidence
 USER_AWARE = 'user_aware'       # monopredicate indicating user is aware of the concept
 ESSENTIAL = 'essential'         # predicate type indicating required attachments for predicate instance definition
 GROUP = 'group'                 # entity type indicating subtypes are groups
@@ -31,4 +30,6 @@ TIME = 'time'                   # predicate indicating time specification
 SPAN_REF = 'ref'                # predicate linking span nodes to the concepts they refer to
 SPAN_DEF = 'def'                # predicate linking span nodes to the concept their language defines
 
-PRIM = {ASSERT, NONASSERT, AFFIRM, REJECT, TIME, SPAN_DEF, SPAN_REF}    # Primitive predicate types that do not propogate salience to subtypes
+PRIM = {ASSERT, NONASSERT, AFFIRM,
+        REJECT, TIME, SPAN_DEF,
+        SPAN_REF, USER_AWARE}    # Primitive predicate types that do not propogate salience to subtypes and whose salience does not decrease

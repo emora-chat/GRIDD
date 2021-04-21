@@ -67,9 +67,9 @@ class ResponseExpansion:
         if concepts is None:
             concepts = graph.concepts()
         for concept in concepts:
+            graph.add(concept, USER_AWARE)
             if graph.has(predicate_id=concept):
-                graph.features[concept][COVER] = 1.0
-                graph.features[concept][SALIENCE] = SENSORY_SALIENCE
+                graph.features[concept][SALIENCE] = SENSORY_SALIENCE # todo - does this need to be only applied to predicates?
 
 if __name__ == '__main__':
     print(ResponseExpansionSpec.verify(ResponseExpansion))

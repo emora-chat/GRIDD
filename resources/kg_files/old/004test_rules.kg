@@ -24,7 +24,7 @@ question(emora,  xlc/like.v.01(X, Y))
 time(xlc, now)
 
 xdc/drive(X,Y)
-xdc{"cover": 1}
+user_aware(xdc)
 question(emora,  xld/like.v.01(X, xdc))
 time(xld, now)
 ;

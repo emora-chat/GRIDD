@@ -210,7 +210,7 @@ class IntelligenceCore:
                 self.working_memory.metagraph.remove(node, t, 'dp_sub')
 
     def gather(self, reference_node, constraints_as_spans):
-        PRIMITIVES = {'focus', 'center', 'cover', 'question', 'var'}
+        PRIMITIVES = {'focus', 'center', 'question', 'var'}
         constraints = set()
         focal_nodes = {reference_node}
         for constraint_span in constraints_as_spans:
@@ -319,7 +319,11 @@ class IntelligenceCore:
 
     def update_salience(self, iterations=10):
         wm = self.working_memory
-        edges = [e for e in wm.to_graph().edges() if not (e[1] in PRIM and e[2] == 't')]
+        edges = []
+        for e in wm.to_graph().edges():
+            if e[0] not in PRIM and e[1] not in PRIM:
+                if not wm.has(predicate_id=e[0]) or wm.type(e[0]) not in PRIM:
+                    edges.append(e)
         redges = [(t, s, l) for s, t, l in edges]
         and_links = [edge for edge in wm.metagraph.edges() if isinstance(edge[2], tuple) and AND_LINK == edge[2][0]]
         for evidence, and_node, _ in and_links:
@@ -352,10 +356,11 @@ class IntelligenceCore:
         updater.update(iterations, push=True)
 
     def decay_salience(self):
-        for c in self.working_memory.concepts():
-            if not self.working_memory.features.get(c, {}).get(COLDSTART, False):
-                sal = self.working_memory.features.setdefault(c, {}).setdefault(SALIENCE, 0)
-                self.working_memory.features[c][SALIENCE] = max(0, sal - TIME_DECAY)
+        wm = self.working_memory
+        for c in wm.concepts():
+            if not wm.features.get(c, {}).get(COLDSTART, False) and (not wm.has(predicate_id=c) or wm.type(c) not in PRIM):
+                sal = wm.features.setdefault(c, {}).setdefault(SALIENCE, 0)
+                wm.features[c][SALIENCE] = max(0, sal - TIME_DECAY)
 
     def prune_attended(self, keep):
         options = set()

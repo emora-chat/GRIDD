@@ -223,12 +223,9 @@ class ConceptGraphSpec:
 
         Returns the remaining concept after merge.
         """
-        concept_graph.features['pjl_1']['cover'] = 0
-        concept_graph.features['Sarah']['cover'] = 1
         concept_graph.merge('pjl_1', 'Sarah')
         assert concept_graph.has('Peter', 'likes', 'pjl_1')
         assert concept_graph.has('Peter', 'likes', 'John', 'pjl_1')
-        assert concept_graph.features['pjl_1']['cover'] == 1
 
         concept_graph.add('user', 'go', 'store', 'p1')
         concept_graph.add('user', 'go', 'store', 'p2')
@@ -278,14 +275,12 @@ class ConceptGraphSpec:
         cg1 = ConceptGraph(concepts=['princess', 'hiss'], namespace='1_')
         cg1.add('princess', 'hiss')
         cg1.features['princess'][SALIENCE] = 0.5
-        cg1.features['princess']['cover'] = 0.5
 
         cg2 = ConceptGraph(concepts=['fluffy', 'bark', 'princess', 'friend'], namespace='2_')
         fb = cg2.add('fluffy', 'bark')
         cg2.add('princess', 'friend', 'fluffy')
         cg2.add(fb, 'volume', 'loud')
         cg2.features['princess'][SALIENCE] = 0.75
-        cg2.features['princess']['cover'] = 0.25
 
         assert not cg1.has('fluffy')
         assert not cg2.has('hiss')
@@ -301,7 +296,6 @@ class ConceptGraphSpec:
         assert cg1.has(fb_merge, 'volume', 'loud')
 
         assert cg1.features['princess'][SALIENCE] == 0.75
-        assert cg1.features['princess']['cover'] == 0.5
 
         return cg1
 
@@ -348,7 +342,6 @@ class ConceptGraphSpec:
         a = cg1.add('princess', 'hiss')
         cg1.add(a, 'volume', 'loud')
         cg1.features['princess'][SALIENCE] = 0.75
-        cg1.features['princess']['cover'] = 0.25
         cg1_file = join(checkpoints, 'load_test_cg1.json')
         cg1.save(cg1_file)
 
@@ -364,7 +357,6 @@ class ConceptGraphSpec:
         assert concept_graph.has('princess', 'hiss')
         assert concept_graph.predicate(a) == ('princess', 'hiss', None, a)
         assert concept_graph.features['princess'][SALIENCE] == 0.75
-        assert concept_graph.features['princess']['cover'] == 0.25
 
         concept_graph.load(cg2_file)
 
@@ -372,7 +364,6 @@ class ConceptGraphSpec:
         assert concept_graph.has('princess', 'friend', 'fluffy')
         assert list(concept_graph.predicates('princess', 'friend', 'fluffy'))[0][3].startswith('1')
         assert concept_graph.features['princess'][SALIENCE] == 0.75
-        assert concept_graph.features['princess']['cover'] == 0.25
 
         b = concept_graph.add('fluffy', 'friend', 'princess')
         assert b == '1_4'

@@ -17,7 +17,7 @@ class NodeFeatures(defaultdict):
                 if id_map is not None:
                     node = id_map.get(node)
                 for feature, other_value in features.items():
-                    if feature in {SALIENCE, 'cover', COLDSTART}:
+                    if feature in {SALIENCE, COLDSTART}:
                         if feature in self[node]:
                             self[node][feature] = max(self[node][feature], other_value)
                         else:
@@ -42,7 +42,7 @@ class NodeFeatures(defaultdict):
             if kept not in self:
                 self[kept] = {}
             for feature, other_value in self[replaced].items():
-                if feature in {SALIENCE, 'cover', COLDSTART}:
+                if feature in {SALIENCE, COLDSTART}:
                     if feature in self[kept]:
                         self[kept][feature] = max(self[kept][feature], other_value)
                     else:
@@ -62,35 +62,6 @@ class NodeFeatures(defaultdict):
                 else:
                     self[kept][feature] = other_value
             del self[replaced]
-
-    def update_from_ontology(self, elements):
-        for e in elements:
-            self[e][SALIENCE] = self[e].get(SALIENCE, 0.0)
-
-    def update_from_kb(self, elements):
-        for e in elements:
-            self[e][SALIENCE] = self[e].get(SALIENCE, 0.0)
-
-    def update_from_mentions(self, elements, wm):
-        for id in elements:
-            self[id][SALIENCE] = 1.0
-            if wm.has(predicate_id=id):
-                self[id]['cover'] = 1.0
-
-    def update_from_inference(self, elements, wm):
-        inference_salience = 0.75  # todo - how to set inference salience???
-        for id in elements:
-            if wm.has(predicate_id=id) and wm.type(id) == 'question':
-                self[id][SALIENCE] = inference_salience * 1.5
-            else:
-                self[id][SALIENCE] = max(inference_salience, self[id].get(SALIENCE, 0.0))
-
-    def update_from_response(self, main_predicate, expansion_predicates):
-        self[main_predicate[3]][SALIENCE] = 1.0
-        self[main_predicate[3]]['cover'] = 1.0
-        for pred in expansion_predicates:
-            self[pred[3]][SALIENCE] = 1.0
-            self[pred[3]]['cover'] = 1.0
 
     def remove(self, node):
         del self[node]

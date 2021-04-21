@@ -21,8 +21,8 @@ import json, requests, time
 from collections import defaultdict
 
 DEBUG = True
-EXCL = {'expr', 'def', 'ref',
-              'span', 'expression', 'predicate', 'datetime'}
+EXCL = {'expr', SPAN_REF, SPAN_DEF, USER_AWARE,
+        'span', 'expression', 'predicate', 'datetime'}
 TYPEINFO = False
 
 class Chatbot:
@@ -185,7 +185,7 @@ class Chatbot:
             # Fragment Request Resolution:
             #   most salient type-compatible user concept from current turn fills most salient emora request
             # todo - only look for answer to emora request in the next user utterance; otherwise can merge emora-initiated concepts as resolution
-            emora_requests = [pred for pred in wm.predicates('emora', 'question') if wm.features.get(pred[3], {}).get(COVER, 0) == 1.0]
+            emora_requests = [pred for pred in wm.predicates('emora', 'question') if wm.has(pred[3], USER_AWARE)]
             if len(emora_requests) > 0:
                 salient_emora_request = max(emora_requests,
                                             key=lambda pred: wm.features.get(pred[3], {}).get(SALIENCE, 0))
@@ -340,18 +340,18 @@ class Chatbot:
         if concepts is None:
             concepts = graph.concepts()
         for concept in concepts:
-            if graph.has(predicate_id=concept):
-                graph.features[concept][COVER] = 1.0
+            graph.add(concept, USER_AWARE)
 
     def print_features(self):
         wm = self.dialogue_intcore.working_memory
         ls = []
+        excl = set(EXCL)
+        excl.add('type')
         for concept, features in wm.features.items():
-            if wm.has(predicate_id=concept) and wm.type(concept) not in {'expr', 'ref', 'def', 'type', 'link',
-                                                                         'assert'}:
+            if wm.has(predicate_id=concept):
                 sig = wm.predicate(concept)
-                if sig[0] not in EXCL and sig[1] not in EXCL and sig[2] not in EXCL:
-                    sa, cf, cv = features.get(SALIENCE, 0), features.get(CONFIDENCE, 0), features.get(COVER, 0)
+                if sig[0] not in excl and sig[1] not in excl and sig[2] not in excl:
+                    sa, cf, cv = features.get(SALIENCE, 0), features.get(CONFIDENCE, 0), wm.has(concept, USER_AWARE)
                     if sig[2] is not None:
                         rep = f'{sig[3]}/{sig[1]}({sig[0]},{sig[2]})'
                     else:
