@@ -98,11 +98,13 @@ class ResponseTemplateFiller:
                 to_remove = set()
                 if 't' in spec:
                     clause.setVerb(surface_form)
-                    if spec['t'] == 'past':
+                    tense = match_dict.get(spec['t'], spec['t'])
+                    tense = expr_dict.get(tense, tense)
+                    if tense == 'past':
                         clause.setFeature(Feature.TENSE, Tense.PAST)
-                    elif spec['t'] == 'present':
+                    elif tense == 'present' or tense == 'now':
                         clause.setFeature(Feature.TENSE, Tense.PRESENT)
-                    elif spec['t'] == 'future':
+                    elif tense == 'future':
                         clause.setFeature(Feature.TENSE, Tense.FUTURE)
                     else:
                         print('WARNING! You specified an nlg `tense` parameter that is not handled (%s).'%spec['t'])
@@ -120,93 +122,6 @@ class ResponseTemplateFiller:
 
         final_str = [realizations.get(str(e), str(e)) for e in string_spec_ls]
         return ' '.join(final_str)
-
-    def test(self):
-
-        # Plurality & Determiner Object Agreement
-
-        s = time.time()
-        np = self.nlgFactory.createNounPhrase()
-        np.setDeterminer('the')
-        noun = self.nlgFactory.createNLGElement('cat', LexicalCategory.NOUN)
-        noun.setFeature(Feature.NUMBER, NumberAgreement.SINGULAR)
-        np.setNoun(noun)
-        print('[%.2f] %s'%(time.time() - s, self.realiser.realiseSentence(np)))
-
-        s = time.time()
-        np = self.nlgFactory.createNounPhrase()
-        np.setDeterminer('the')
-        noun = self.nlgFactory.createNLGElement('cat', LexicalCategory.NOUN)
-        noun.setFeature(Feature.NUMBER, NumberAgreement.PLURAL)
-        np.setNoun(noun)
-        print('[%.2f] %s'%(time.time() - s, self.realiser.realiseSentence(np)))
-
-        s = time.time()
-        np = self.nlgFactory.createNounPhrase()
-        np.setDeterminer('a')
-        noun = self.nlgFactory.createNLGElement('cat', LexicalCategory.NOUN)
-        noun.setFeature(Feature.NUMBER, NumberAgreement.SINGULAR)
-        np.setNoun(noun)
-        print('[%.2f] %s'%(time.time() - s, self.realiser.realiseSentence(np)))
-
-        s = time.time()
-        np = self.nlgFactory.createNounPhrase()
-        np.setDeterminer('a')
-        noun = self.nlgFactory.createNLGElement('cat', LexicalCategory.NOUN)
-        noun.setFeature(Feature.NUMBER, NumberAgreement.PLURAL)
-        np.setNoun(noun)
-        print('[%.2f] %s'%(time.time() - s, self.realiser.realiseSentence(np)))
-
-        # Verb Tense and Subject Person Agreement
-
-        s = time.time()
-        clause = self.nlgFactory.createClause()
-        clause.setSubject('Mark')
-        clause.setVerb('sing')
-        clause.setFeature(Feature.TENSE, Tense.PRESENT)
-        print('[%.2f] %s' % (time.time() - s, self.realiser.realiseSentence(clause)))
-
-        s = time.time()
-        clause = self.nlgFactory.createClause()
-        clause.setSubject('Mark')
-        clause.setVerb('sing')
-        clause.setFeature(Feature.TENSE, Tense.PAST)
-        print('[%.2f] %s' % (time.time() - s, self.realiser.realiseSentence(clause)))
-
-        s = time.time()
-        clause = self.nlgFactory.createClause()
-        clause.setSubject('Mark')
-        clause.setVerb('sing')
-        clause.setFeature(Feature.TENSE, Tense.FUTURE)
-        print('[%.2f] %s' % (time.time() - s, self.realiser.realiseSentence(clause)))
-
-        s = time.time()
-        clause = self.nlgFactory.createClause()
-        clause.setSubject('I')
-        clause.setVerb('sing')
-        clause.setFeature(Feature.TENSE, Tense.PRESENT)
-        print('[%.2f] %s' % (time.time() - s, self.realiser.realiseSentence(clause)))
-
-        s = time.time()
-        clause = self.nlgFactory.createClause()
-        clause.setSubject('I')
-        clause.setVerb('sing')
-        clause.setFeature(Feature.TENSE, Tense.PAST)
-        print('[%.2f] %s' % (time.time() - s, self.realiser.realiseSentence(clause)))
-
-        s = time.time()
-        clause = self.nlgFactory.createClause()
-        clause.setSubject('I')
-        clause.setVerb('sing')
-        clause.setFeature(Feature.TENSE, Tense.FUTURE)
-        print('[%.2f] %s' % (time.time() - s, self.realiser.realiseSentence(clause)))
-
-
-
-
-
-
-
 
 
 if __name__ == '__main__':

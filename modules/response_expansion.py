@@ -67,7 +67,8 @@ class ResponseExpansion:
         if concepts is None:
             concepts = graph.concepts()
         for concept in concepts:
-            graph.add(concept, USER_AWARE)
+            if not graph.has(predicate_id=concept) or graph.type(concept) not in PRIM:
+                graph.add(concept, USER_AWARE)
             if graph.has(predicate_id=concept):
                 graph.features[concept][SALIENCE] = SENSORY_SALIENCE # todo - does this need to be only applied to predicates?
 

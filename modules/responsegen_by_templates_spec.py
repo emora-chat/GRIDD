@@ -48,12 +48,14 @@ class ResponseTemplatesSpec:
         cg = ConceptGraph()
         ConceptGraph.construct(cg, 'time(hike(Mary), now)')
         match_dict = {
-            'X': 'Mary'
+            'X': 'Mary',
+            'Y': 'now'
         }
         expr_dict = {
-            'Mary': 'Mary'
+            'Mary': 'Mary',
+            'now': 'now'
         }
-        string_spec_ls = ['X', ('hike',{'t': 'present', 's': 'X'}), '.']
+        string_spec_ls = ['X', ('hike',{'t': 'Y', 's': 'X'}), '.']
         filled = response_template_filler.fill_string(match_dict, expr_dict, string_spec_ls, cg)
         assert filled == 'Mary hikes .'
 
@@ -91,8 +93,12 @@ class ResponseTemplatesSpec:
         ((s,t,o,i),) = cg.predicates('c', 'type', 'cat')
         cg.add(i, USER_AWARE)
         match_dict = {
-            'X': 'c'
+            'X': 'c',
+            'Y': 'past'
         }
-        string_spec_ls = ['X', ('be',{'t': 'present', 's': 'X'}), 'cute', '.']
+        expr_dict = {
+            'past': 'past'
+        }
+        string_spec_ls = ['X', ('be',{'t': 'Y', 's': 'X'}), 'cute', '.']
         filled = response_template_filler.fill_string(match_dict, expr_dict, string_spec_ls, cg)
-        assert filled == 'The cats are cute .'
+        assert filled == 'The cats were cute .'

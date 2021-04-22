@@ -18,6 +18,7 @@ from GRIDD.globals import *
 
 from os.path import join
 import json, requests, time
+from itertools import chain
 from collections import defaultdict
 
 DEBUG = True
@@ -184,7 +185,6 @@ class Chatbot:
 
             # Fragment Request Resolution:
             #   most salient type-compatible user concept from current turn fills most salient emora request
-            # todo - only look for answer to emora request in the next user utterance; otherwise can merge emora-initiated concepts as resolution
             emora_requests = [pred for pred in wm.predicates('emora', 'question') if wm.has(pred[3], USER_AWARE)]
             if len(emora_requests) > 0:
                 salient_emora_request = max(emora_requests,
@@ -192,7 +192,7 @@ class Chatbot:
                 request_focus = salient_emora_request[2]
                 fragment_request_merges = []
                 current_user_spans = [s for s in wm.subtypes_of("span") if s != "span" and int(wm.features[s]["span_data"].turn) == self.auxiliary_state["turn_index"]]
-                current_user_concepts = {o for s in current_user_spans for o in wm.objects(s, "ref")}
+                current_user_concepts = {o for s in current_user_spans for o in chain(wm.objects(s, SPAN_REF), wm.objects(s, SPAN_DEF))}
                 if wm.has(predicate_id=request_focus): # special case - y/n question requires yes/no fragment as answer (or full resolution from earlier in pipeline)
                     indicator_preds = [p[3] for p in list(wm.predicates('user', AFFIRM)) + list(wm.predicates('user', REJECT))]
                     options = set(indicator_preds).intersection(current_user_concepts)
@@ -213,6 +213,7 @@ class Chatbot:
                     ref_links = [e for e in wm.metagraph.out_edges(request_focus) if e[2] == REF and wm.has(predicate_id=e[1])]
                     for s, t, l in ref_links:
                         wm.features.setdefault(t, {})[SALIENCE] = wm.features.setdefault(fragment, {}).get(SALIENCE, 0)
+                        wm.features[t][BASE] = True
                 self.merge_references(fragment_request_merges)
                 self.dialogue_intcore.operate()
 
@@ -340,7 +341,8 @@ class Chatbot:
         if concepts is None:
             concepts = graph.concepts()
         for concept in concepts:
-            graph.add(concept, USER_AWARE)
+            if not graph.has(predicate_id=concept) or graph.type(concept) not in PRIM:
+                graph.add(concept, USER_AWARE)
 
     def print_features(self):
         wm = self.dialogue_intcore.working_memory

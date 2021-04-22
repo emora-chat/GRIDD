@@ -1,7 +1,8 @@
 DEBUG = False
 
 SENSORY_SALIENCE = 1.0          # salience value for predicates that are considered via sensations
-ASSOCIATION_DECAY = 0.1         # decrease in salience for concepts pulled into attention by neighbors
+ASSOCIATION_DECAY = 0.3         # decrease in salience for concepts pulled into attention by neighbors
+EVIDENCE_DECAY = 0.1            # decrease in salience for concepts added to attention by inference
 TIME_DECAY = 0.1                # decrease in salience for working memory concepts per timestep
 NONASSERT = 'nonassert'         # predicate type indicating arguments that are unasserted
 ASSERT = 'assert'               # monopredicate indicating argument is asserted
@@ -30,6 +31,10 @@ TIME = 'time'                   # predicate indicating time specification
 SPAN_REF = 'ref'                # predicate linking span nodes to the concepts they refer to
 SPAN_DEF = 'def'                # predicate linking span nodes to the concept their language defines
 
-PRIM = {ASSERT, NONASSERT, AFFIRM,
-        REJECT, TIME, SPAN_DEF,
-        SPAN_REF, USER_AWARE}    # Primitive predicate types that do not propogate salience to subtypes and whose salience does not decrease
+SAL_FREE = {ASSERT, NONASSERT, AFFIRM,
+            REJECT, TIME, SPAN_DEF,
+            SPAN_REF, USER_AWARE}    # Predicate types that do not propogate salience to subtypes and whose salience does not decrease
+
+PRIM = {SPAN_DEF, SPAN_REF,
+        ASSERT, NONASSERT,
+        USER_AWARE, 'expr'}             # Predicate types that are primitive

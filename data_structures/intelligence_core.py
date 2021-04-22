@@ -47,21 +47,28 @@ class IntelligenceCore:
         self.inference_engine.add(rules)
         self.knowledge_base.concatenate(cg)
 
-    def consider(self, concepts, namespace=None, associations=None, salience=1, **options):
+    def consider(self, concepts, namespace=None, associations=None, evidence=None, salience=1, **options):
         if isinstance(concepts, ConceptGraph):
             considered = ConceptGraph(concepts, namespace=concepts._ids)
         else:
             if namespace is None:
                 namespace = '_tmp_'
             considered = ConceptGraph(concepts, namespace=namespace)
-        if associations is None:
+        if associations is None and evidence is None:
             considered.features.update({c: {SALIENCE: (salience*SENSORY_SALIENCE
                                         if not c in considered.features or not SALIENCE in considered.features[c]
                                         else considered.features[c][SALIENCE])}
                                         for c in considered.concepts()})
-        else:
+        elif evidence is None:
             s = min([self.working_memory.features.get(c, {}).get(SALIENCE, 0)
                             for c in associations]) - ASSOCIATION_DECAY
+            considered.features.update({c: {SALIENCE: (salience*s
+                                        if not c in considered.features or not SALIENCE in considered.features[c]
+                                        else considered.features[c][SALIENCE])}
+                                        for c in considered.concepts()})
+        elif associations is None:
+            s = min([self.working_memory.features.get(c, {}).get(SALIENCE, 0)
+                            for c in evidence]) - EVIDENCE_DECAY
             considered.features.update({c: {SALIENCE: (salience*s
                                         if not c in considered.features or not SALIENCE in considered.features[c]
                                         else considered.features[c][SALIENCE])}
@@ -105,7 +112,7 @@ class IntelligenceCore:
                             old_solution = True
                             break
                 if not old_solution:
-                    implied_nodes = self.consider(implication, associations=evidence.values())
+                    implied_nodes = self.consider(implication, evidence=evidence.values())
                     and_node = self.working_memory.id_map().get()
                     self.working_memory.features[and_node]['origin_rule'] = rule # store the implication rule that resulted in this and_node as metadata
                     for pre_node, evidence_node in evidence.items():
@@ -321,8 +328,8 @@ class IntelligenceCore:
         wm = self.working_memory
         edges = []
         for e in wm.to_graph().edges():
-            if e[0] not in PRIM and e[1] not in PRIM:
-                if not wm.has(predicate_id=e[0]) or wm.type(e[0]) not in PRIM:
+            if e[0] not in SAL_FREE and e[1] not in SAL_FREE:
+                if not wm.has(predicate_id=e[0]) or wm.type(e[0]) not in SAL_FREE:
                     edges.append(e)
         redges = [(t, s, l) for s, t, l in edges]
         and_links = [edge for edge in wm.metagraph.edges() if isinstance(edge[2], tuple) and AND_LINK == edge[2][0]]
@@ -333,14 +340,14 @@ class IntelligenceCore:
         def moderated_salience(salience, connectivity):
             return salience / connectivity
         def update_instance_salience(val, args):
-            in_ms = [val[0]]
-            out_ms = []
+            in_ms = []
+            out_ms = [val[0]]
             for (sal, con), lnk in args:
                 if lnk == SALIENCE_IN_LINK:
                     in_ms.append(moderated_salience(sal, con) - ASSOCIATION_DECAY)
                 else:
                     out_ms.append(sal)
-            avg = sum(in_ms) / len(in_ms)
+            avg = sum(in_ms) / len(in_ms) if len(in_ms) > 0 else 0
             return (max(out_ms + [avg]), val[1])
         updater = UpdateGraph(
             [*[(s, t, SALIENCE_OUT_LINK) for s, t, _ in edges],
@@ -358,7 +365,7 @@ class IntelligenceCore:
     def decay_salience(self):
         wm = self.working_memory
         for c in wm.concepts():
-            if not wm.features.get(c, {}).get(COLDSTART, False) and (not wm.has(predicate_id=c) or wm.type(c) not in PRIM):
+            if not wm.features.get(c, {}).get(COLDSTART, False) and (not wm.has(predicate_id=c) or wm.type(c) not in SAL_FREE):
                 sal = wm.features.setdefault(c, {}).setdefault(SALIENCE, 0)
                 wm.features[c][SALIENCE] = max(0, sal - TIME_DECAY)
 
@@ -370,7 +377,7 @@ class IntelligenceCore:
                     preds = {pred for pred in self.working_memory.related(s) if self.working_memory.has(predicate_id=pred) and pred[1] != 'type'}
                     if not preds:
                         options.add(i)
-            elif t not in self.essential_types:
+            elif t not in self.essential_types and t not in PRIM:
                 options.add(i)
 
         sconcepts = sorted(options,
