@@ -160,8 +160,8 @@ class Chatbot:
             inferences = self.dialogue_intcore.infer()
             self.dialogue_intcore.apply_inferences(inferences)
             self.dialogue_intcore.operate()
-            self.dialogue_intcore.gather_all_nlu_references()
-            self.dialogue_intcore.gather_all_assertion_links()
+            self.dialogue_intcore.convert_metagraph_span_links('refsp', ['ref', 'var'])
+            self.dialogue_intcore.convert_metagraph_span_links('dp_sub', ['ass'])
 
             if debug:
                 print('\n' + '#'*10)

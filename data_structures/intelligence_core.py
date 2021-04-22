@@ -193,28 +193,20 @@ class IntelligenceCore:
                     b = s[i]
                     a = self.working_memory.merge(a, b)
 
-    def gather_all_nlu_references(self):
-        # convert reference spans to reference predicates
-        node_to_refsp = {}
-        for s, t, _ in self.working_memory.metagraph.edges(label='refsp'):
-            node_to_refsp.setdefault(s, []).append(t)
-        for node, refsp in node_to_refsp.items():
-            constraints = self.gather(node, refsp)
-            self.working_memory.metagraph.add_links(node, constraints, 'ref')
-            self.working_memory.metagraph.add_links(node, constraints, 'var')
-            for t in refsp:
-                self.working_memory.metagraph.remove(node, t, 'refsp')
-
-    def gather_all_assertion_links(self):
-        # convert assertion subtree spans to predicates
+    def convert_metagraph_span_links(self, gather_link, promote_links):
+        """
+        Convert `gather_link` predicate instances, which point to spans, to new predicate instances
+        of types `promote_links` (list of predicate types), which will now point to the predicate components of the span
+        """
         node_to_spans = {}
-        for s, t, _ in self.working_memory.metagraph.edges(label='dp_sub'):
+        for s, t, _ in self.working_memory.metagraph.edges(label=gather_link):
             node_to_spans.setdefault(s, []).append(t)
-        for node, spans in node_to_spans.items():
-            constraints = self.gather(node, spans)
-            self.working_memory.metagraph.add_links(node, constraints, 'ass')
-            for t in spans:
-                self.working_memory.metagraph.remove(node, t, 'dp_sub')
+        for node, span in node_to_spans.items():
+            constraints = self.gather(node, span)
+            for type in promote_links:
+                self.working_memory.metagraph.add_links(node, constraints, type)
+            for t in span:
+                self.working_memory.metagraph.remove(node, t, gather_link)
 
     def gather(self, reference_node, constraints_as_spans):
         PRIMITIVES = {'focus', 'center', 'question', 'var'}
