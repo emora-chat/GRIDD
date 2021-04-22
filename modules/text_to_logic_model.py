@@ -24,13 +24,13 @@ def ENTITY_INSTANCES_BY_RULE(rule_name, focus_node, cg, comps):
 
 class ParseToLogic:
 
-    def __init__(self, kb, template_file):
+    def __init__(self, kb, template_file, device='cpu'):
         cg = ConceptGraph(collect(template_file), namespace='r_')
         rules = cg.rules()
         rules = dict(sorted(rules.items(), key=lambda item: cg.features[item[0]]['rindex']))
         for rule_id, rule in rules.items():
             self._reference_expansion(rule[0], rule[2])
-        parse_inference = InferenceEngine(rules)
+        parse_inference = InferenceEngine(rules, device=device)
         self.intcore = IntelligenceCore(knowledge_base=kb,
                                         inference_engine=parse_inference)
         self.spans = []
@@ -91,10 +91,7 @@ class ParseToLogic:
         self.intcore.working_memory.clear()
         parse_graph = self.text_to_graph(*args)
         self.intcore.consider(parse_graph)
-        # expr_preds = self.intcore.pull_expressions()
-        # self.intcore.consider(expr_preds)
         self._span_to_concepts()
-        # self._unknown_expression_identification(wm)
         types = self.intcore.pull_types()
         self.intcore.consider(types)
         rule_assignments = {(pre, post, rule): sols
@@ -220,7 +217,7 @@ class ParseToLogic:
                     post_to_ewm_map = {node: self._get_concept_of_span(solution[node], ewm)
                                        for node in post.concepts()
                                        if node in solution and node in maintain_in_mention_graph}
-                    cg = ConceptGraph(namespace=mention_ids)
+                    cg = ConceptGraph(namespace=mention_ids, concepts={center})
                     post_to_cg_map = cg.concatenate(post)
                     for post_node, ewm_node in post_to_ewm_map.items():
                         cg_node = post_to_cg_map[post_node]
@@ -259,8 +256,9 @@ class ParseToLogic:
                             else:
                                 cg.merge(ewm_node, cg_node, strict_order=True)
                             self._add_unknowns_to_cg(ewm_node, ewm, cg_node, cg)
-                        cg.add(center)
                         cg.features.update(ewm.features, concepts={center})
+                    else:
+                        cg.features[center]["span_data"] = ewm.features[center.replace('__linking__','')]["span_data"]
 
         for aux in auxes: # replaces `time` of head predicate of aux-span with `aux_time`
             heads_of_aux = ewm.subjects(aux, 'aux')

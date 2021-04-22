@@ -5,6 +5,7 @@ from GRIDD.data_structures.concept_compiler import ConceptCompiler
 from GRIDD.data_structures.inference_engine import InferenceEngine
 from GRIDD.modules.elit_dp_to_logic_model import ElitDPToLogic
 from GRIDD.modules.response_selection_salience import ResponseSelectionSalience
+from GRIDD.modules.response_expansion import ResponseExpansion
 from GRIDD.modules.responsegen_by_rules import ResponseRules
 from GRIDD.modules.responsegen_by_model import ResponseGeneration
 from GRIDD.modules.response_assembler import ResponseAssembler
@@ -17,7 +18,13 @@ from GRIDD.globals import *
 
 from os.path import join
 import json, requests, time
+from itertools import chain
 from collections import defaultdict
+
+DEBUG = True
+EXCL = {'expr', SPAN_REF, SPAN_DEF, USER_AWARE,
+        'span', 'expression', 'predicate', 'datetime'}
+TYPEINFO = False
 
 class Chatbot:
     """
@@ -45,12 +52,13 @@ class Chatbot:
         print('Parse2Logic load: %.2f'%(time.time()-s))
 
         self.response_selection = ResponseSelectionSalience()
+        self.response_expansion = ResponseExpansion(knowledge_base)
         self.produce_acknowledgment = ResponseRules()
         self.produce_generic = ResponseGeneration()
         self.response_assembler = ResponseAssembler()
 
 
-    def respond(self, user_utterance):
+    def respond(self, user_utterance, debug):
         input_dict = {"text": [user_utterance, None],
                       "aux_state": [self.auxiliary_state, self.auxiliary_state],
                       "conversationId": 'local'}
@@ -63,9 +71,6 @@ class Chatbot:
         self.auxiliary_state = results["aux_state"]
         wm = self.dialogue_intcore.working_memory
 
-        exclusions = {'expr', 'def', 'ref',
-                      'span', 'expression', 'predicate', 'datetime'}
-        typeinfo = False
         #########################
         ### Dialogue Pipeline ###
         #########################
@@ -73,16 +78,17 @@ class Chatbot:
         # NLU Preprocessing
         mentions, merges = self.elit_dp(parse_dict)
 
-        print()
-        for span, graph in mentions.items():
-            print(span)
-            print('-'*10)
-            print(graph.pretty_print())
+        if debug:
             print()
+            for span, graph in mentions.items():
+                print(span)
+                print('-'*10)
+                print(graph.pretty_print())
+                print()
 
-        print()
-        for merge in merges:
-            print(merge)
+            print()
+            for merge in merges:
+                print(merge)
 
         # Mentions
         namespace = list(mentions.items())[0][1].id_map() if len(mentions) > 0 else "ment_"
@@ -100,10 +106,11 @@ class Chatbot:
         self.assign_cover(mega_mention_graph)
         self.dialogue_intcore.consider(mega_mention_graph)
 
-        print('\n' + '#'*10)
-        print('After Mentions')
-        print('#' * 10)
-        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=exclusions, typeinfo=typeinfo))
+        if debug:
+            print('\n' + '#'*10)
+            print('After Mentions')
+            print('#' * 10)
+            print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=TYPEINFO))
 
         # Merges
         node_merges = []
@@ -117,88 +124,120 @@ class Chatbot:
                 node_merges.append((concept1, concept2))
         self.dialogue_intcore.merge(node_merges)
 
-        print('\n' + '#'*10)
-        print('After Merges')
-        print('#' * 10)
-        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=exclusions, typeinfo=typeinfo))
+        if debug:
+            print('\n' + '#'*10)
+            print('After Merges')
+            print('#' * 10)
+            print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=TYPEINFO))
 
         # Knowledge pull
         knowledge_by_source = self.dialogue_intcore.pull_knowledge(limit=100, num_pullers=100, association_limit=10, subtype_limit=10)
         for pred, sources in knowledge_by_source.items():
-            self.dialogue_intcore.consider([pred], namespace=self.dialogue_intcore.knowledge_base._ids, associations=sources)
+            if not wm.has(*pred):
+                self.dialogue_intcore.consider([pred], namespace=self.dialogue_intcore.knowledge_base._ids, associations=sources)
         types = self.dialogue_intcore.pull_types()
         for type in types:
-            self.dialogue_intcore.consider([type], associations=type[0])
+            if not wm.has(*type):
+                self.dialogue_intcore.consider([type], associations=type[0])
         self.dialogue_intcore.operate()
 
-        print('\n' + '#'*10)
-        print('After Knowledge Pull')
-        print('#' * 10)
-        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=exclusions, typeinfo=typeinfo))
-
-        # Inferences
-        inferences = self.dialogue_intcore.infer()
-        self.dialogue_intcore.apply_inferences(inferences)
-        self.dialogue_intcore.operate()
-        self.dialogue_intcore.gather_all_nlu_references()
-        self.dialogue_intcore.gather_all_assertion_links()
+        if debug:
+            print('\n' + '#'*10)
+            print('After Knowledge Pull')
+            print('#' * 10)
+            print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=TYPEINFO))
 
         print('\n' + '#'*10)
-        print('After Inferences')
+        print('Before Inference')
         print('#' * 10)
-        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=exclusions, typeinfo=typeinfo))
-
-        # Feature update
-        self.dialogue_intcore.update_confidence()
-        self.dialogue_intcore.update_salience()
-
-        print('\n' + '#'*10)
-        print('After Feature Update')
-        print('#' * 10)
-        for concept, features in self.dialogue_intcore.working_memory.features.items():
-            if wm.has(predicate_id=concept) and wm.type(concept) not in {'expr', 'ref', 'def', 'type'}:
-                sig = wm.predicate(concept)
-                if sig[0] not in exclusions and sig[1] not in exclusions and sig[2] not in exclusions:
-                    print(f'{sig}: s({features.get(SALIENCE, 0):.2f}) c({features.get(CONFIDENCE, 0):.2f}) cv({features.get(COVER, 0):.2f})')
-
-        # Reference resolution
-        reference_sets = self.dialogue_intcore.resolve()
-        reference_pairs = self.identify_reference_merges(reference_sets)
-        if len(reference_pairs) > 0:
-            self.merge_references(reference_pairs)
-
-        # Fragment Request Resolution:
-        #   most salient type-compatible user concept from current turn fills most salient emora request
-        emora_requests = [pred for pred in wm.predicates('emora', 'question') if wm.features.get(pred[3], {}).get(COVER, 0) == 1.0]
-        if len(emora_requests) > 0:
-            salient_emora_request = max(emora_requests,
-                                        key=lambda pred: wm.features.get(pred[3], {}).get(SALIENCE, 0))
-            request_focus = salient_emora_request[2]
-            fragment_request_merges = []
-            current_user_spans = [s for s in wm.subtypes_of("span") if s != "span" and int(wm.features[s]["span_data"].turn) == self.auxiliary_state["turn_index"]]
-            current_user_concepts = {o for s in current_user_spans for o in wm.objects(s, "ref")}
-            if wm.has(predicate_id=request_focus): # special case - y/n question requires yes/no fragment as answer (or full resolution from earlier in pipeline)
-                indicator_preds = [p[3] for p in list(wm.predicates('user', AFFIRM)) + list(wm.predicates('user', REJECT))]
-                options = set(indicator_preds).intersection(current_user_concepts)
-                if len(indicator_preds) > 0:
-                    max_indicator = max(options, key=lambda p: wm.features.get(p[3], {}).get(SALIENCE, 0))
-                    fragment_request_merges.append((wm.object(max_indicator), request_focus))
-            else:
-                types = wm.types()
-                request_focus_types = types[request_focus] - {request_focus}
-                salient_concepts = sorted(current_user_concepts, key=lambda c: wm.features.get(c, {}).get(SALIENCE, 0), reverse=True)
-                for c in salient_concepts:
-                    if c != request_focus and request_focus_types.issubset(types[c] - {c}) and not wm.metagraph.out_edges(c): # if user concept is a reference, dont treat as answer fragment
-                        fragment_request_merges.append((c, request_focus))
-                        break
-            self.merge_references(fragment_request_merges)
-            self.dialogue_intcore.operate()
-
-        print('\n' + '#'*10)
-        print('After Reference Resolution')
-        print('#' * 10)
-        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=exclusions, typeinfo=typeinfo))
+        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=TYPEINFO))
         print()
+
+        for iteration in range(2):
+            if debug:
+                print('\n<< INFERENCE ITERATION %d >> '%iteration)
+            # Inferences
+            inferences = self.dialogue_intcore.infer()
+            self.dialogue_intcore.apply_inferences(inferences)
+            self.dialogue_intcore.operate()
+            self.dialogue_intcore.gather_all_nlu_references()
+            self.dialogue_intcore.gather_all_assertion_links()
+
+            if debug:
+                print('\n' + '#'*10)
+                print('After Inferences')
+                print('#' * 10)
+                print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=TYPEINFO))
+
+            # Feature update
+            self.dialogue_intcore.update_confidence()
+            self.dialogue_intcore.update_salience()
+
+            if debug:
+                print('\n' + '#'*10 + '\nAfter Feature Update\n' + '#' * 10)
+                self.print_features()
+
+            # Reference resolution
+            reference_sets = self.dialogue_intcore.resolve()
+            reference_pairs = self.identify_reference_merges(reference_sets)
+            if len(reference_pairs) > 0:
+                self.merge_references(reference_pairs)
+
+            # Fragment Request Resolution:
+            #   most salient type-compatible user concept from current turn fills most salient emora request
+            emora_requests = [pred for pred in wm.predicates('emora', 'question') if wm.has(pred[3], USER_AWARE)]
+            if len(emora_requests) > 0:
+                salient_emora_request = max(emora_requests,
+                                            key=lambda pred: wm.features.get(pred[3], {}).get(SALIENCE, 0))
+                request_focus = salient_emora_request[2]
+                fragment_request_merges = []
+                current_user_spans = [s for s in wm.subtypes_of("span") if s != "span" and int(wm.features[s]["span_data"].turn) == self.auxiliary_state["turn_index"]]
+                current_user_concepts = {o for s in current_user_spans for o in chain(wm.objects(s, SPAN_REF), wm.objects(s, SPAN_DEF))}
+                if wm.has(predicate_id=request_focus): # special case - y/n question requires yes/no fragment as answer (or full resolution from earlier in pipeline)
+                    indicator_preds = [p[3] for p in list(wm.predicates('user', AFFIRM)) + list(wm.predicates('user', REJECT))]
+                    options = set(indicator_preds).intersection(current_user_concepts)
+                    if len(indicator_preds) > 0:
+                        max_indicator = max(options, key=lambda p: wm.features.get(p[3], {}).get(SALIENCE, 0))
+                        fragment_request_merges.append((wm.object(max_indicator), request_focus))
+                else:
+                    types = wm.types()
+                    request_focus_types = types[request_focus] - {request_focus}
+                    salient_concepts = sorted(current_user_concepts, key=lambda c: wm.features.get(c, {}).get(SALIENCE, 0), reverse=True)
+                    for c in salient_concepts:
+                        if c != request_focus and request_focus_types.issubset(types[c] - {c}) and not wm.metagraph.out_edges(c, REF): # if user concept is a reference, dont treat as answer fragment
+                            fragment_request_merges.append((c, request_focus))
+                            break
+                if len(fragment_request_merges) > 0:
+                    # set salience of all request predicates to salience of fragment
+                    fragment = fragment_request_merges[0][0]
+                    ref_links = [e for e in wm.metagraph.out_edges(request_focus) if e[2] == REF and wm.has(predicate_id=e[1])]
+                    for s, t, l in ref_links:
+                        wm.features.setdefault(t, {})[SALIENCE] = wm.features.setdefault(fragment, {}).get(SALIENCE, 0)
+                        wm.features[t][BASE] = True
+                self.merge_references(fragment_request_merges)
+                self.dialogue_intcore.operate()
+
+            if debug:
+                print('\n' + '#'*10)
+                print('After Reference Resolution')
+                print('#' * 10)
+                print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=TYPEINFO))
+                print()
+
+        print('\n' + '#'*10)
+        print('After Inference')
+        print('#' * 10)
+        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=TYPEINFO))
+        print()
+
+        # End of user turn -> decay salience
+        self.dialogue_intcore.decay_salience()
+
+        if debug:
+            print('\n' + '#' * 10 + '\nEnd User Turn\n' + '#' * 10)
+            self.print_features()
+
+        # Start of emora turn
 
         # Response selection
         aux_state, selections = self.response_selection(self.auxiliary_state, wm)
@@ -210,47 +249,38 @@ class Chatbot:
             print(selection)
         print()
 
-        responses = []
-        for predicate, generation_type in selections:
-            if generation_type == 'nlg':
-                expansions = wm.structure(predicate[3],
-                                          subj_emodifiers={'time', 'mode'}, obj_emodifiers={'possess', 'question'})
-
-                # check for unresolved user request
-                emora_idk = False
-                for s, t, o, i in expansions:
-                    if s == 'user' and t == 'question' and wm.metagraph.out_edges(o, REF):
-                        emora_idk = True
-                        break
-
-                if emora_idk:
-                    responses.append((predicate, expansions, 'idk'))
-                else:
-                    responses.append((predicate, expansions, generation_type))
-            elif generation_type in {'ack_conf'}:
-                responses.append((predicate, [], generation_type))
-            elif generation_type == "backup":
-                cg = ConceptGraph(namespace='bu_', predicates=predicate[1])
-                mapped_ids = wm.concatenate(cg)
-                main_pred = mapped_ids[predicate[0][3]]
-                main_pred_sig = wm.predicate(main_pred)
-                exp_preds = [mapped_ids[pred[3]] for pred in predicate[1]]
-                exp_pred_sigs = [wm.predicate(pred) for pred in exp_preds if pred != main_pred]
-                responses.append((main_pred_sig, exp_pred_sigs, generation_type))
-        spoken_predicates = set()
-        for main, exps, _ in responses:
-            # expansions contains main predicate too
-            spoken_predicates.update([pred[3] for pred in exps])
-            self.identify_request_resolutions(exps)
-        self.assign_cover(wm, concepts=spoken_predicates)
+        responses, updated_wm = self.response_expansion(selections, wm)
 
         ack_results = self.produce_acknowledgment(aux_state, responses)
+
         gen_results = self.produce_generic(responses)
+        try: # use remote nlg module
+            input_dict = {"expanded_response_predicates": [responses, None],
+                          "conversationId":  'local'}
+            response = requests.post('http://cobot-LoadB-1L3YPB9TGV71P-1610005595.us-east-1.elb.amazonaws.com',
+                                     data=json.dumps(input_dict),
+                                     headers={'content-type': 'application/json'},
+                                     timeout=3.0)
+            response = response.json()
+            if "performance" in response:
+                del response["performance"]
+                del response["error"]
+            gen_results = json.loads(response["nlg_responses"])
+        except Exception as e:
+            print('Failed! %s'%e)
+
         response = self.response_assembler(aux_state, ack_results, gen_results)
 
+        # end of emora turn -> update salience, then decay and prune
+        self.dialogue_intcore.update_salience()
         self.dialogue_intcore.decay_salience()
         self.dialogue_intcore.prune_predicates_of_type({AFFIRM, REJECT})
         self.dialogue_intcore.prune_attended(keep=200)
+
+        if debug:
+            print('\n' + '#' * 10 + '\nEnd Emora Turn\n' + '#' * 10)
+            self.print_features()
+
         self.auxiliary_state = aux_state
 
         return response
@@ -311,14 +341,32 @@ class Chatbot:
         if concepts is None:
             concepts = graph.concepts()
         for concept in concepts:
-            if graph.has(predicate_id=concept):
-                graph.features[concept][COVER] = 1.0
+            if not graph.has(predicate_id=concept) or graph.type(concept) not in PRIM:
+                graph.add(concept, USER_AWARE)
 
-    def chat(self):
+    def print_features(self):
+        wm = self.dialogue_intcore.working_memory
+        ls = []
+        excl = set(EXCL)
+        excl.add('type')
+        for concept, features in wm.features.items():
+            if wm.has(predicate_id=concept):
+                sig = wm.predicate(concept)
+                if sig[0] not in excl and sig[1] not in excl and sig[2] not in excl:
+                    sa, cf, cv = features.get(SALIENCE, 0), features.get(CONFIDENCE, 0), wm.has(concept, USER_AWARE)
+                    if sig[2] is not None:
+                        rep = f'{sig[3]}/{sig[1]}({sig[0]},{sig[2]})'
+                    else:
+                        rep = f'{sig[3]}/{sig[1]}({sig[0]})'
+                    ls.append((f'{rep:40}: s({sa:.2f}) c({cf:.2f}) cv({cv:.2f})', sa))
+        for pr, sa in sorted(ls, key=lambda x: x[1], reverse=True):
+            print(pr)
+
+    def chat(self, debug):
         utterance = input('User: ')
         while utterance != 'q':
             s = time.time()
-            response = self.respond(utterance)
+            response = self.respond(utterance, debug=debug)
             elapsed = time.time() - s
             print('[%.6f s] %s\n' % (elapsed, response))
             utterance = input('User: ')
@@ -333,5 +381,5 @@ if __name__ == '__main__':
     wm = [join('GRIDD', 'resources', 'kg_files', 'wm')]
     ITERATION = 2
 
-    chatbot = Chatbot(*kb, inference_rules=rules, starting_wm=wm)
-    chatbot.chat()
+    chatbot = Chatbot(*kb, inference_rules=rules, starting_wm=None)
+    chatbot.chat(debug=DEBUG)

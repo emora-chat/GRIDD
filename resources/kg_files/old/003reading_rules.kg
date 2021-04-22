@@ -6,7 +6,7 @@ time(yig,now)
 
 xlr/like(x, xr/read(x))
 time(xr,now)
-xr{"cover": 1}
+user_aware(xr)
 time(xlr,now)
 question(emora,  xlr)
 
@@ -14,7 +14,7 @@ xfc/be(fc/character(), c/object())
 property(fc, favorite)
 possess(x, fc)
 ciy/in(c, y)
-ciy{"cover": 1}
+user_aware(ciy)
 question(emora,  c)
 time(xfc, now)
 
@@ -22,7 +22,7 @@ xfe/be(fe/event(), e/object())
 property(fe, favorite)
 possess(x, fe)
 eiy/in(e, y)
-eiy{"cover": 1}
+user_aware(eiy)
 question(emora,  e)
 time(xfe, now)
 ;

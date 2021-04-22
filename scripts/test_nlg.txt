@@ -1,0 +1,7 @@
+h/hike(emora)
+in(h, atlanta)
+time(h, yesterday)
+assert(h)
+;
+
+

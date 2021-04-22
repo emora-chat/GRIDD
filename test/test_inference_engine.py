@@ -69,7 +69,7 @@ def test_adv_question_parse_graph_matching():
 	question(user, o)
 	focus(p)
 	center(Y)
-	cover(Z)
+	user_aware(Z)
 	;
     '''
     pre_from_parse = KnowledgeParser.rules(l)

@@ -1,7 +1,8 @@
 DEBUG = False
 
-SENSORY_SALIENCE = 1            # salience value for predicates that are considered via sensations
-ASSOCIATION_DECAY = 0.1         # decrease in salience for concepts pulled into attention by neighbors
+SENSORY_SALIENCE = 1.0          # salience value for predicates that are considered via sensations
+ASSOCIATION_DECAY = 0.3         # decrease in salience for concepts pulled into attention by neighbors
+EVIDENCE_DECAY = 0.1            # decrease in salience for concepts added to attention by inference
 TIME_DECAY = 0.1                # decrease in salience for working memory concepts per timestep
 NONASSERT = 'nonassert'         # predicate type indicating arguments that are unasserted
 ASSERT = 'assert'               # monopredicate indicating argument is asserted
@@ -10,8 +11,10 @@ EXPR = 'expr'                   # bipredicate type indicating ARG0 is an express
 COLDSTART = 'coldstart'         # metadata bool feature preventing salience decay until selected
 SALIENCE = 'salience'           # metadata float feature representing attention w.r.t. emora
 CONFIDENCE = 'confidence'       # metadata float feature representing truth value w.r.t emora
-COVER = 'cover'                 # metadata float feature representing emora's confidence of the user's confidence
+USER_AWARE = 'user_aware'       # monopredicate indicating user is aware of the concept
 ESSENTIAL = 'essential'         # predicate type indicating required attachments for predicate instance definition
+GROUP = 'group'                 # entity type indicating subtypes are groups
+CLASS = 'class'                 # entity type indicating class definition
 CONNECTIVITY = 'conn'           # metadata integer feature representing neighborhood cardinality
 ASS_LINK = 'ass'                # metagraph link for propagating confidence from an assertion to syntactic children
 AND_LINK = 'and'                # metagraph link for confidence propagation
@@ -26,5 +29,16 @@ PRE = 'pre'                     # metagraph precondition link
 POST = 'post'                   # metagraph postcondition link
 REF = 'ref'                     # metagraph reference link
 VAR = 'var'                     # var reference variable link
-AFFIRM = 'affirm'               # predicate type indicating affirmative/yes statement
-REJECT = 'reject'               # predicate type indicating rejective/no statement
+AFFIRM = 'affirm'               # predicate indicating affirmative/yes statement
+REJECT = 'reject'               # predicate indicating rejective/no statement
+TIME = 'time'                   # predicate indicating time specification
+SPAN_REF = 'ref'                # predicate linking span nodes to the concepts they refer to
+SPAN_DEF = 'def'                # predicate linking span nodes to the concept their language defines
+
+SAL_FREE = {ASSERT, NONASSERT, AFFIRM,
+            REJECT, TIME, SPAN_DEF,
+            SPAN_REF, USER_AWARE}    # Predicate types that do not propogate salience to subtypes and whose salience does not decrease
+
+PRIM = {SPAN_DEF, SPAN_REF,
+        ASSERT, NONASSERT,
+        USER_AWARE, 'expr'}             # Predicate types that are primitive

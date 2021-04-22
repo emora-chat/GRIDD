@@ -13,7 +13,7 @@ class ResponseSelectionSalienceSpec:
         """
         Return a list of predicates and their generation types such that
         the selection is the highest salience acknowledgement and follow up
-        without any cover
+        that the user is unaware of
 
         Format: [(predicate_signature_tuple, str), ...]
         """

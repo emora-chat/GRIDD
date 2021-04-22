@@ -17,7 +17,7 @@ class NodeFeatures(defaultdict):
                 if id_map is not None:
                     node = id_map.get(node)
                 for feature, other_value in features.items():
-                    if feature in {SALIENCE, 'cover', COLDSTART}:
+                    if feature in {SALIENCE, COLDSTART}:
                         if feature in self[node]:
                             self[node][feature] = max(self[node][feature], other_value)
                         else:
@@ -30,60 +30,38 @@ class NodeFeatures(defaultdict):
                         if 'span_data' in self[node]:
                             print('Node: ', str(node))
                             print('Span Exists: ', self[node]['span_data'])
-                            print('Span Update: ', features['span_data'])
+                            print('Span Update: ', other_value)
                             raise RuntimeError('Node already has span info!') #todo - get rid of before deployment
                         else:
-                            self[node]['span_data'] = features['span_data']
+                            self[node]['span_data'] = other_value
                     else:
                         self[node][feature] = other_value
 
-    def merge(self, kept, replaced): # todo - add confidence?
+    def merge(self, kept, replaced):
         if replaced in self:
             if kept not in self:
                 self[kept] = {}
-            if SALIENCE in self[kept] or SALIENCE in self[replaced]:
-                self[kept][SALIENCE] = max(self[kept].get(SALIENCE, 0.0), self[replaced].get(SALIENCE, 0.0))
-            if 'cover' in self[kept] or 'cover' in self[replaced]:
-                self[kept]['cover'] = max(self[kept].get('cover', 0.0), self[replaced].get('cover', 0.0))
-            if COLDSTART in self[kept] or COLDSTART in self[replaced]:
-                self[kept][COLDSTART] = max(self[kept].get(COLDSTART, 0.0), self[replaced].get(COLDSTART, 0.0))
-            if 'span_data' in self[replaced]:
-                if 'span_data' in self[kept]:
-                    print('Replaced: ', self[replaced]['span_data'])
-                    print('Kept: ', self[kept]['span_data'])
-                    raise Exception('Cannot merge two span nodes!')
+            for feature, other_value in self[replaced].items():
+                if feature in {SALIENCE, COLDSTART}:
+                    if feature in self[kept]:
+                        self[kept][feature] = max(self[kept][feature], other_value)
+                    else:
+                        self[kept][feature] = other_value
+                elif feature == CONFIDENCE:
+                    if feature in self[kept]:
+                        print(f'WARNING: Existing confidence value of {kept} is being updated!')
+                    self[kept][feature] = other_value
+                elif feature == 'span_data':
+                    if 'span_data' in self[kept]:
+                        print('Node: ', str(kept))
+                        print('Span Exists: ', self[kept]['span_data'])
+                        print('Span Update: ', other_value)
+                        raise RuntimeError('Node already has span info!')  # todo - get rid of before deployment
+                    else:
+                        self[kept]['span_data'] = other_value
                 else:
-                    self[kept]['span_data'] = self[replaced]['span_data']
+                    self[kept][feature] = other_value
             del self[replaced]
-
-    def update_from_ontology(self, elements):
-        for e in elements:
-            self[e][SALIENCE] = self[e].get(SALIENCE, 0.0)
-
-    def update_from_kb(self, elements):
-        for e in elements:
-            self[e][SALIENCE] = self[e].get(SALIENCE, 0.0)
-
-    def update_from_mentions(self, elements, wm):
-        for id in elements:
-            self[id][SALIENCE] = 1.0
-            if wm.has(predicate_id=id):
-                self[id]['cover'] = 1.0
-
-    def update_from_inference(self, elements, wm):
-        inference_salience = 0.75  # todo - how to set inference salience???
-        for id in elements:
-            if wm.has(predicate_id=id) and wm.type(id) == 'question':
-                self[id][SALIENCE] = inference_salience * 1.5
-            else:
-                self[id][SALIENCE] = max(inference_salience, self[id].get(SALIENCE, 0.0))
-
-    def update_from_response(self, main_predicate, expansion_predicates):
-        self[main_predicate[3]][SALIENCE] = 1.0
-        self[main_predicate[3]]['cover'] = 1.0
-        for pred in expansion_predicates:
-            self[pred[3]][SALIENCE] = 1.0
-            self[pred[3]]['cover'] = 1.0
 
     def remove(self, node):
         del self[node]

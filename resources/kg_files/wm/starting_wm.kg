@@ -1,0 +1,7 @@
+
+b/be(user, q/qualifier())
+qualifier(b, today)
+time(b, now)
+question(emora,  q)
+b{"coldstart": 1, "salience": 0.998}
+;

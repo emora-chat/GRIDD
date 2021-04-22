@@ -47,21 +47,28 @@ class IntelligenceCore:
         self.inference_engine.add(rules)
         self.knowledge_base.concatenate(cg)
 
-    def consider(self, concepts, namespace=None, associations=None, salience=1, **options):
+    def consider(self, concepts, namespace=None, associations=None, evidence=None, salience=1, **options):
         if isinstance(concepts, ConceptGraph):
             considered = ConceptGraph(concepts, namespace=concepts._ids)
         else:
             if namespace is None:
                 namespace = '_tmp_'
             considered = ConceptGraph(concepts, namespace=namespace)
-        if associations is None:
+        if associations is None and evidence is None:
             considered.features.update({c: {SALIENCE: (salience*SENSORY_SALIENCE
                                         if not c in considered.features or not SALIENCE in considered.features[c]
                                         else considered.features[c][SALIENCE])}
                                         for c in considered.concepts()})
-        else:
+        elif evidence is None:
             s = min([self.working_memory.features.get(c, {}).get(SALIENCE, 0)
                             for c in associations]) - ASSOCIATION_DECAY
+            considered.features.update({c: {SALIENCE: (salience*s
+                                        if not c in considered.features or not SALIENCE in considered.features[c]
+                                        else considered.features[c][SALIENCE])}
+                                        for c in considered.concepts()})
+        elif associations is None:
+            s = min([self.working_memory.features.get(c, {}).get(SALIENCE, 0)
+                            for c in evidence]) - EVIDENCE_DECAY
             considered.features.update({c: {SALIENCE: (salience*s
                                         if not c in considered.features or not SALIENCE in considered.features[c]
                                         else considered.features[c][SALIENCE])}
@@ -96,16 +103,28 @@ class IntelligenceCore:
                         implication_strengths[n] = implication.features.get(n, {}).get(CONFIDENCE, 1)
                         if n in implication.features and CONFIDENCE in implication.features[n]:
                             del implication.features[n][CONFIDENCE]
-                implied_nodes = self.consider(implication, associations=evidence.values())
-                and_node = self.working_memory.id_map().get()
-                for pre_node, evidence_node in evidence.items():
-                    if self.working_memory.has(predicate_id=evidence_node):
-                        strength = inferences[rule][0].features.get(pre_node, {}).get(CONFIDENCE, 1)
-                        self.working_memory.metagraph.add(evidence_node, and_node, (AND_LINK, strength))
-                for imp_node, strength in implication_strengths.items():
-                    self.working_memory.metagraph.add(and_node, implied_nodes[imp_node], (OR_LINK, strength))
+                # check whether rule has already been applied with the given evidence
+                old_solution = False
+                current_evidence = set([x for x in evidence.values() if self.working_memory.has(predicate_id=x)])  # AND links only set up from predicate instances
+                for node, features in self.working_memory.features.items():
+                    if 'origin_rule' in features and features['origin_rule'] == rule:
+                        prev_evidence = {s for s, _, l in self.working_memory.metagraph.in_edges(node) if AND_LINK in l}
+                        if prev_evidence == current_evidence:
+                            old_solution = True
+                            break
+                if not old_solution:
+                    implied_nodes = self.consider(implication, evidence=evidence.values())
+                    and_node = self.working_memory.id_map().get()
+                    self.working_memory.features[and_node]['origin_rule'] = rule # store the implication rule that resulted in this and_node as metadata
+                    for pre_node, evidence_node in evidence.items():
+                        if self.working_memory.has(predicate_id=evidence_node):
+                            strength = inferences[rule][0].features.get(pre_node, {}).get(CONFIDENCE, 1)
+                            self.working_memory.metagraph.add(evidence_node, and_node, (AND_LINK, strength))
+                    for imp_node, strength in implication_strengths.items():
+                        self.working_memory.metagraph.add(and_node, implied_nodes[imp_node], (OR_LINK, strength))
 
     def update_confidence(self):
+        # todo - we currently arent using the strength element of the implication links?
         mg = self.working_memory.metagraph
         and_links = [edge for edge in mg.edges() if isinstance(edge[2], tuple) and AND_LINK == edge[2][0]]
         or_links = [edge for edge in mg.edges() if isinstance(edge[2], tuple) and OR_LINK == edge[2][0]]
@@ -130,14 +149,21 @@ class IntelligenceCore:
             product = 1
             for value, (label, weight) in sources:
                 product *= weight * value
-            return product
+            if product >= 0:
+                return min(product, 1.0)
+            else:
+                return max(product, -1.0)
         def or_fn(node, sources):
-            sum = node
+            sum = node # todo - why do we set sum and product to node value ; as iterations occur, the value will keep increasing to max
             product = node
             for value, (label, weight) in sources:
                 sum += value * weight
                 product *= value * weight
-            return sum - product
+            diff = sum - product
+            if diff >= 0:
+                return min(diff, 1.0)
+            else:
+                return max(diff, -1.0)
         update_graph = UpdateGraph(
             edges=[*and_links, *or_links],
             nodes={c: mg.features.get(c, {}).get(CONFIDENCE, 0) if mg.features.get(c, {}).get(BASE, False) else 0
@@ -192,7 +218,7 @@ class IntelligenceCore:
                 self.working_memory.metagraph.remove(node, t, 'dp_sub')
 
     def gather(self, reference_node, constraints_as_spans):
-        PRIMITIVES = {'focus', 'center', 'cover', 'question', 'var'}
+        PRIMITIVES = {'focus', 'center', 'question', 'var'}
         constraints = set()
         focal_nodes = {reference_node}
         for constraint_span in constraints_as_spans:
@@ -301,18 +327,29 @@ class IntelligenceCore:
 
     def update_salience(self, iterations=10):
         wm = self.working_memory
-        edges = wm.to_graph().edges()
+        edges = []
+        for e in wm.to_graph().edges():
+            if e[0] not in SAL_FREE and e[1] not in SAL_FREE:
+                if not wm.has(predicate_id=e[0]) or wm.type(e[0]) not in SAL_FREE:
+                    edges.append(e)
         redges = [(t, s, l) for s, t, l in edges]
+        and_links = [edge for edge in wm.metagraph.edges() if isinstance(edge[2], tuple) and AND_LINK == edge[2][0]]
+        for evidence, and_node, _ in and_links:
+            or_links = [edge for edge in wm.metagraph.out_edges(and_node) if isinstance(edge[2], tuple) and OR_LINK == edge[2][0]]
+            for _, implication, _ in or_links:
+                redges.append((evidence, implication, None))
         def moderated_salience(salience, connectivity):
             return salience / connectivity
         def update_instance_salience(val, args):
-            ms = [val[0]]
+            in_ms = []
+            out_ms = [val[0]]
             for (sal, con), lnk in args:
                 if lnk == SALIENCE_IN_LINK:
-                    ms.append(moderated_salience(sal, con) - ASSOCIATION_DECAY)
+                    in_ms.append(moderated_salience(sal, con) - ASSOCIATION_DECAY)
                 else:
-                    ms.append(sal)
-            return (max(ms), val[1])
+                    out_ms.append(sal)
+            avg = sum(in_ms) / len(in_ms) if len(in_ms) > 0 else 0
+            return (max(out_ms + [avg]), val[1])
         updater = UpdateGraph(
             [*[(s, t, SALIENCE_OUT_LINK) for s, t, _ in edges],
              *[(s, t, SALIENCE_IN_LINK) for s, t, _ in redges]],
@@ -321,15 +358,17 @@ class IntelligenceCore:
                     wm.features.get(c, {}).get(CONNECTIVITY, 1))
                 for c in wm.concepts()},
             updaters={c: update_instance_salience for c in wm.concepts()},
-            default=(0, 1)
+            default=(0, 1),
+            set_fn=(lambda n, v: wm.features.setdefault(n, {}).__setitem__(SALIENCE, v[0]))
         )
-        updater.update(iterations)
+        updater.update(iterations, push=True)
 
     def decay_salience(self):
-        for c in self.working_memory.concepts():
-            if not self.working_memory.features.get(c, {}).get(COLDSTART, False):
-                sal = self.working_memory.features.setdefault(c, {}).setdefault(SALIENCE, 0)
-                self.working_memory.features[c][SALIENCE] = max(0, sal - TIME_DECAY)
+        wm = self.working_memory
+        for c in wm.concepts():
+            if not wm.features.get(c, {}).get(COLDSTART, False) and (not wm.has(predicate_id=c) or wm.type(c) not in SAL_FREE):
+                sal = wm.features.setdefault(c, {}).setdefault(SALIENCE, 0)
+                wm.features[c][SALIENCE] = max(0, sal - TIME_DECAY)
 
     def prune_attended(self, keep):
         options = set()
@@ -339,7 +378,7 @@ class IntelligenceCore:
                     preds = {pred for pred in self.working_memory.related(s) if self.working_memory.has(predicate_id=pred) and pred[1] != 'type'}
                     if not preds:
                         options.add(i)
-            elif t not in self.essential_types:
+            elif t not in self.essential_types and t not in PRIM:
                 options.add(i)
 
         sconcepts = sorted(options,

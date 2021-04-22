@@ -28,31 +28,25 @@ class NodeFeaturesSpec:
         node_features = NodeFeatures(
             {'A': {
                     SALIENCE: 0.65,
-                    'cover': 0.60,
                     'comps': {'orig', 'D'}
                 },
             'B': {
                     SALIENCE: 0.5,
-                    'cover': 0.5
                 },
             'D': {
                     SALIENCE: 0.01,
-                    'cover': 0.4
                 },
             }
         )
         node_features_2 = NodeFeatures(
             {'A': {
                     SALIENCE: 0.5,
-                    'cover': 0.5
                 },
             'B': {
                     SALIENCE: 0.75,
-                    'cover': 0.85
                 },
             'C': {
                     SALIENCE: 0.1,
-                    'cover': 0.2
                 },
             'X': {
                     'comps': {'x'}
@@ -68,13 +62,9 @@ class NodeFeaturesSpec:
 
         node_features.update(node_features_2, id_map=id_map)
         assert node_features['A'][SALIENCE] == 0.65
-        assert node_features['A']['cover'] == 0.60
         assert node_features['B'][SALIENCE] == 0.75
-        assert node_features['B']['cover'] == 0.85
         assert node_features['C'][SALIENCE] == 0.1
-        assert node_features['C']['cover'] == 0.2
         assert node_features['D'][SALIENCE] == 0.01
-        assert node_features['D']['cover'] == 0.4
         assert 'Z' not in node_features
         assert node_features['A']['comps'] == {'orig', 'D', 'a', 'aa'}
         assert 'X' not in node_features
@@ -88,7 +78,6 @@ class NodeFeaturesSpec:
         node_features.merge('C', 'D')
         assert 'D' not in node_features
         assert node_features['C'][SALIENCE] == 0.1
-        assert node_features['C']['cover'] == 0.4
         assert node_features['A']['comps'] == {'orig', 'C', 'a', 'aa'}
 
     # todo - add tests for functions which perform feature updates after specific pipeline steps
