@@ -160,68 +160,36 @@ class ParseToLogic:
                     post_to_ewm_map = {node: self._get_concept_of_span(solution[node], ewm)
                                        for node in post.concepts()
                                        if node in solution and node in maintain_in_mention_graph}
-                    cg = ConceptGraph(namespace=mention_ids, concepts={center})
-                    post_to_cg_map = cg.concatenate(post)
+                    mention_cg = ConceptGraph(namespace=mention_ids, concepts={center})
+                    post_to_cg_map = mention_cg.concatenate(post)
                     for post_node, ewm_node in post_to_ewm_map.items():
                         cg_node = post_to_cg_map[post_node]
-                        cg.add(ewm_node)
+                        mention_cg.add(ewm_node)
                         if ewm_node.startswith(ewm.id_map().namespace):
-                            cg.merge(cg_node, ewm_node, strict_order=True)
+                            mention_cg.merge(cg_node, ewm_node, strict_order=True)
                         else:
-                            cg.merge(ewm_node, cg_node, strict_order=True)
-                        self._add_unknowns_to_cg(ewm_node, ewm, cg_node, cg)
-                    # get focus node of mention
-                    ((focus_node, _, _, _),) = list(cg.predicates(predicate_type='focus'))
-                    if rule_name in REFERENCES_BY_RULE: # identify reference spans
-                        if rule_name in QUESTION_INST_REF:
-                            # some questions have focus node as the question predicate instance,
-                            # when it should be the target of the question predicate instance
-                            focus_node = cg.predicate(focus_node)[2]
-                        cg.metagraph.add_links(focus_node, REFERENCES_BY_RULE[rule_name](center, ewm), 'refsp')
-                    comps = self._get_comps(rule_name, focus_node, cg)
-                    cg.metagraph.add_links(focus_node, comps, 'comps')
-                    if ewm.has(center, 'assert'): # if center is asserted, add assertion to focus node
-                        cg.add(focus_node, 'assert')
-                        cg.metagraph.add_links(focus_node, subtree_dependencies(center, ewm), 'dp_sub')
-                    mentions[center] = cg
+                            mention_cg.merge(ewm_node, cg_node, strict_order=True)
+                        self._add_unknowns_to_cg(ewm_node, ewm, cg_node, mention_cg)
+                    self._get_span_links(rule_name, mention_cg, center, ewm)
+                    mentions[center] = mention_cg
                     if not center.startswith('__linking__'):
                         post_to_ewm_map = {node: self._get_concept_of_span(solution[node], ewm)
                                            for node in post.concepts()
                                            if node in solution and node in maintain_in_mention_graph}
-                        if len(list(cg.predicates(predicate_type='aux_time'))) > 0:
+                        if len(list(mention_cg.predicates(predicate_type='aux_time'))) > 0:
                             auxes.add(center)
                         for post_node, ewm_node in post_to_ewm_map.items():
                             cg_node = post_to_cg_map[post_node]
-                            cg.add(ewm_node)
+                            mention_cg.add(ewm_node)
                             if ewm_node.startswith(ewm.id_map().namespace):
-                                cg.merge(cg_node, ewm_node, strict_order=True)
+                                mention_cg.merge(cg_node, ewm_node, strict_order=True)
                             else:
-                                cg.merge(ewm_node, cg_node, strict_order=True)
-                            self._add_unknowns_to_cg(ewm_node, ewm, cg_node, cg)
-                        cg.features.update(ewm.features, concepts={center})
+                                mention_cg.merge(ewm_node, cg_node, strict_order=True)
+                            self._add_unknowns_to_cg(ewm_node, ewm, cg_node, mention_cg)
+                        mention_cg.features.update(ewm.features, concepts={center})
                     else:
-                        cg.features[center]["span_data"] = ewm.features[center.replace('__linking__','')]["span_data"]
-
-        for aux in auxes: # replaces `time` of head predicate of aux-span with `aux_time`
-            heads_of_aux = ewm.subjects(aux, 'aux')
-            for head in heads_of_aux:
-                aux_cg = mentions[aux]
-                preds = list(aux_cg.predicates(predicate_type='aux_time'))
-                if len(preds) > 0:
-                    ((a, at, aux_time, ai), ) = preds
-                    head_cg = mentions[head]
-                    preds = list(head_cg.predicates(predicate_type='time'))
-                    if len(preds) > 0:
-                        ((s,t,o,i), ) = preds
-                        head_cg.remove(s,t,o,i)
-                    else:
-                        ((s,_,_,_), ) = list(head_cg.predicates(predicate_type='focus'))
-                        i = head_cg.id_map().get()
-                    head_cg.add(s, 'time', aux_time, i)
-                    head_cg.metagraph.add(s, i, 'comps')
-                    aux_cg.remove(a, at, aux_time, ai)
-            if not list(mentions[aux].predicates(predicate_type='focus')):
-                del mentions[aux]
+                        mention_cg.features[center]["span_data"] = ewm.features[center.replace('__linking__','')]["span_data"]
+        self._update_time_by_aux(auxes, ewm, mentions)
         return mentions
 
     def _add_unknowns_to_cg(self, source_node, source, cg_node, cg):
@@ -249,6 +217,45 @@ class ParseToLogic:
                          'obj_of_possessive', 'ref_pron', 'single_word'}:
             comps.append(focus_node)
         return comps
+
+    def _get_span_links(self, rule_name, mention_cg, center, ewm):
+        ((focus_node, _, _, _),) = list(mention_cg.predicates(predicate_type='focus'))
+
+        if rule_name in REFERENCES_BY_RULE:  # identify reference spans
+            if rule_name in QUESTION_INST_REF:
+                # some questions have focus node as the question predicate instance,
+                # but the reference links should attach to the target of the question predicate instance
+                focus_node = mention_cg.predicate(focus_node)[2]
+            mention_cg.metagraph.add_links(focus_node, REFERENCES_BY_RULE[rule_name](center, ewm), 'refsp')
+
+        comps = self._get_comps(rule_name, focus_node, mention_cg)
+        mention_cg.metagraph.add_links(focus_node, comps, 'comps')
+
+        if ewm.has(center, 'assert'):  # if center is asserted, add assertion to focus node
+            mention_cg.add(focus_node, 'assert')
+            mention_cg.metagraph.add_links(focus_node, subtree_dependencies(center, ewm), 'dp_sub')
+
+    def _update_time_by_aux(self, auxes, ewm, mentions):
+        for aux in auxes: # replaces `time` of head predicate of aux-span with `aux_time`
+            heads_of_aux = ewm.subjects(aux, 'aux')
+            for head in heads_of_aux:
+                aux_cg = mentions[aux]
+                preds = list(aux_cg.predicates(predicate_type='aux_time'))
+                if len(preds) > 0:
+                    ((a, at, aux_time, ai), ) = preds
+                    head_cg = mentions[head]
+                    preds = list(head_cg.predicates(predicate_type='time'))
+                    if len(preds) > 0:
+                        ((s,t,o,i), ) = preds
+                        head_cg.remove(s,t,o,i)
+                    else:
+                        ((s,_,_,_), ) = list(head_cg.predicates(predicate_type='focus'))
+                        i = head_cg.id_map().get()
+                    head_cg.add(s, 'time', aux_time, i)
+                    head_cg.metagraph.add(s, i, 'comps')
+                    aux_cg.remove(a, at, aux_time, ai)
+            if not list(mentions[aux].predicates(predicate_type='focus')):
+                del mentions[aux]
 
     def _get_merges(self, assignments, ewm):
         """
