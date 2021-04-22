@@ -88,6 +88,7 @@ class IntelligenceCore:
             inferences = self.infer()
         result_dict = self.inference_engine.apply(inferences)
         for rule, results in result_dict.items():
+            pre, post = inferences[rule][0], inferences[rule][1] # todo- assign neg conf links
             for evidence, implication in results:
                 implication_strengths = {}
                 for n in implication.concepts():
