@@ -1,7 +1,9 @@
 
+# https://emorynlp.github.io/ddr/doc/pages/overview.html
 from GRIDD.modules.text_to_logic_model import ParseToLogic
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.modules.elit_dp_to_logic_spec import ElitDPSpec
+from GRIDD.modules.elit_dp_to_logic_ontology import pos_mapper, generate_elit_dp_ontology, PRECEDE_LABELS, QUEST, TENSEFUL_AUX
 
 import os
 from os.path import join
@@ -9,84 +11,25 @@ from os.path import join
 import logging
 logging.basicConfig(level=os.environ.get("LOGLEVEL","ERROR"))
 
-# https://emorynlp.github.io/ddr/doc/pages/overview.html
-
-PAST_VB = ['vbd', 'vbn']
-PRES_VB = ['vbp', 'vbz', 'vbg', 'vb']
-ADJ = ['jj', 'jjr', 'jjs']
-NOUN = ['nn', 'nns', 'nnp', 'nnps']
-PRONOUN = ['prp', 'prpds']
-ADV = ['rb', 'rbr', 'rbs']
-REF_DET = ['the', 'those', 'these', 'that', 'this']
-INST_DET = ['a', 'an']
-QUEST = ['wdt', 'wp', 'wpds', 'wrb']
-INTERJ = ['uh']
-ALLOW_SINGLE = ['rp', 'fw', 'cd', 'dt', 'ex', 'adj', 'noun', 'pron', 'adv', 'interj', 'verb', 'question_word']
-
-TENSEFUL_AUX = ['go', 'goes', 'went', 'do', 'does', 'did', 'be', 'is', 'are', 'were', 'was'] # use lemma instead from elit
-
-ADVCL_INDICATOR = ['adv', 'aux', 'mark', 'case']
-ACL_INDICATOR = ['aux', 'mark', 'case']
-SUBJECTS = ['nsbj', 'csbj']
-
 NODES = ['focus', 'center', 'pstg', 'ref', 'type', 'ltype']
 
-POS_MAP = {'in': 'prepo',
-           'to': 'pos_to',
-           'uh': 'intrj'}
 
-PRECEDE_LABELS = ['aux', 'modal', 'obj', 'cop']
-
-# DP_LABELS = [x.strip()
-#              for x in open(join('GRIDD', 'resources', 'elit_dp_labels.txt'), 'r').readlines()
-#              if len(x.strip()) > 0]
+ont_cg = generate_elit_dp_ontology()
+label_ont = ont_cg.types()
 
 class ElitDPToLogic(ParseToLogic):
 
     def text_to_graph(self, *args):
         """
         Transform the ELIT Dependency Parse attachment list into a concept graph,
-        supported with the token and pos namespace lists
+        supported with the token and pos ontology
         args[0,1,2] - tok, pos, dp
         :return dependency parse cg
         """
-        cg = ConceptGraph(concepts=NODES,
-                          namespace='p_')
-
-        for n in ['verb', 'noun', 'adj', 'pron', 'adv', 'question_word', 'interj']:
-            cg.add(n, 'type', 'pstg')
-
-        cg.add('prp', 'type', 'noun')
-        for n in ['past_tense', 'present_tense']:
-            cg.add(POS_MAP.get(n, n), 'type', 'verb')
-        for n in PAST_VB:
-            cg.add(POS_MAP.get(n, n), 'type', 'past_tense')
-        for n in PRES_VB:
-            cg.add(POS_MAP.get(n, n), 'type', 'present_tense')
-        for n in ADJ:
-            cg.add(POS_MAP.get(n, n), 'type', 'adj')
-        for n in NOUN:
-            cg.add(POS_MAP.get(n, n), 'type', 'noun')
-        for n in PRONOUN:
-            cg.add(POS_MAP.get(n, n), 'type', 'pron')
-        for n in ADV:
-            cg.add(POS_MAP.get(n, n), 'type', 'adv')
-        for n in QUEST:
-            cg.add(POS_MAP.get(n, n), 'type', 'question_word')
-        for n in INTERJ:
-            cg.add(POS_MAP.get(n, n), 'type', 'interj')
-        for n in ALLOW_SINGLE:
-            cg.add(POS_MAP.get(n, n), 'type', 'allow_single')
-        for n in ADVCL_INDICATOR:
-            cg.add(POS_MAP.get(n, n), 'type', 'advcl_indicator')
-        for n in ACL_INDICATOR:
-            cg.add(POS_MAP.get(n, n), 'type', 'acl_indicator')
-        for n in SUBJECTS:
-            cg.add(POS_MAP.get(n, n), 'type', 'sbj')
+        cg = ConceptGraph(concepts=NODES, namespace='p_')
         self.convert(*args, cg)
         return cg
 
-    # todo - verify that POS tags and DP labels are disjoint
     def convert(self, elit_results, cg):
         """
         Add dependency parse links into the expression concept graph
@@ -97,24 +40,21 @@ class ElitDPToLogic(ParseToLogic):
         pos_tags = elit_results.get("pos", [])
         dependencies = elit_results.get("dep", [])
         precede_token_idx = [idx for idx, (head_idx, label) in enumerate(dependencies)
-                             if label.lower() in PRECEDE_LABELS or pos_tags[idx].lower().replace('$','ds') in QUEST]
+                             if label.lower() in PRECEDE_LABELS or pos_mapper(pos_tags[idx]) in QUEST]
         for token_idx in range(len(tokens)):
             span = tokens[token_idx]
-            expression = span.expression
-            pos = pos_tags[token_idx].lower().replace('$','ds')
-            pos = POS_MAP.get(pos, pos)
-            if 'pstg' not in cg.types(pos): # todo - optimization by dynamic programming
-                cg.add(pos, 'type', 'pstg')
             span_node = span.to_string()
-            if expression in TENSEFUL_AUX:
-                cg.add(span_node, 'type', 'tenseful_aux')
+            pos = pos_mapper(pos_tags[token_idx])
+            if not cg.has(pos):
+                add_ont_types = label_ont.get(pos, {'pstg'}) - {pos}
+                for t in add_ont_types | {'pstg'}:
+                    cg.add(pos, 'type', t)
             cg.features[span_node]["span_data"] = span
-            cg.add(span_node)
             self.spans.append(span_node)
-            # expression = '"%s"' % expression
-            # cg.add(span_node, 'ref', expression)
             cg.add(span_node, 'type', pos)
             cg.add(span_node, 'type', 'span')
+            if span.expression in TENSEFUL_AUX:
+                cg.add(span_node, 'type', 'tenseful_aux')
             if token_idx > 0:
                 for pti in precede_token_idx:
                     if pti < token_idx:
@@ -128,8 +68,6 @@ class ElitDPToLogic(ParseToLogic):
                     original_source = source.to_string()
                     original_target = target.to_string()
 
-                    # for tuple in list(cg.predicates(original_target, 'ref')) + list(cg.predicates(original_source, 'ref')):
-                    #     cg.remove(tuple[2]) # remove non-condensed expressions
                     self.spans.remove(original_target)
                     original_source_span_idx = self.spans.index(original_source)
                     del cg.features[original_source]
@@ -141,10 +79,13 @@ class ElitDPToLogic(ParseToLogic):
                     new_source = source.to_string()
                     cg.features[new_source]["span_data"] = source
                     self.spans[original_source_span_idx] = new_source
-                    # cg.add(new_source, 'ref', '"%s"'%source.expression) # add updated condensed expression
                     cg.merge(new_source, original_source)
                     cg.merge(new_source, original_target)
                 else:
+                    if not cg.has(label):
+                        add_ont_types = label_ont.get(label, set()) - {label}
+                        for t in add_ont_types:
+                            cg.add(label, 'type', t)
                     cg.add(source.to_string(), label, target.to_string())
             else:
                 # assert the root
