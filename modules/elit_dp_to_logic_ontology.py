@@ -4,7 +4,9 @@ from GRIDD.data_structures.concept_graph import ConceptGraph
 PAST_VB = ['vbd', 'vbn']
 PRES_VB = ['vbp', 'vbz', 'vbg', 'vb']
 ADJ = ['jj', 'jjr', 'jjs']
-NOUN = ['nn', 'nns', 'nnp', 'nnps', 'prp']
+NOUN = ['plural', 'singular', 'prp']
+PLURAL = ['nns', 'nnps']
+SINGULAR = ['nn', 'nnp']
 PRONOUN = ['prp', 'prpds']
 ADV = ['rb', 'rbr', 'rbs']
 QUEST = ['wdt', 'wp', 'wpds', 'wrb']
@@ -38,6 +40,10 @@ def generate_elit_dp_ontology():
         cg.add(pos_mapper(n), 'type', 'present_tense')
     for n in ADJ:
         cg.add(pos_mapper(n), 'type', 'adj')
+    for n in PLURAL:
+        cg.add(pos_mapper(n), 'type', 'plural')
+    for n in SINGULAR:
+        cg.add(pos_mapper(n), 'type', 'singular')
     for n in NOUN:
         cg.add(pos_mapper(n), 'type', 'noun')
     for n in PRONOUN:
