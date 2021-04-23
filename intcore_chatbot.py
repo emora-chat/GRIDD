@@ -162,6 +162,9 @@ class Chatbot:
             self.dialogue_intcore.operate()
             self.dialogue_intcore.convert_metagraph_span_links('refsp', ['ref', 'var'])
             self.dialogue_intcore.convert_metagraph_span_links('dp_sub', ['ass'])
+            self.dialogue_intcore.convert_metagraph_span_links(GROUP_DEF_SP, [GROUP_DEF, 'var'])
+            self.dialogue_intcore.convert_metagraph_span_links(GROUP_PROP_SP, [GROUP_PROP, 'var'])
+            self.dialogue_intcore.learn_generics()
 
             if debug:
                 print('\n' + '#'*10)

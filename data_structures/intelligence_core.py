@@ -245,6 +245,12 @@ class IntelligenceCore:
                                 compatible_pairs[reference_node][match[reference_node]].append((match[node],node))
         return compatible_pairs
 
+    def learn_generics(self, generics=None):
+        if generics is None:
+            generics = self.working_memory.generics()
+        # convert to implication rules
+
+
     def logical_merge(self):
         # Todo: logical merge
         return

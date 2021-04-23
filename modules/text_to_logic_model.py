@@ -5,7 +5,8 @@ from GRIDD.data_structures.inference_engine import InferenceEngine
 from GRIDD.data_structures.intelligence_core import IntelligenceCore
 from GRIDD.data_structures.id_map import IdMap
 from GRIDD.utilities import collect
-from GRIDD.data_structures.reference_identifier import REFERENCES_BY_RULE, QUESTION_INST_REF, subtree_dependencies
+from GRIDD.globals import *
+from GRIDD.data_structures.reference_identifier import REFERENCES_BY_RULE, QUESTION_INST_REF, subtree_dependencies, parent_subtree_dependencies
 
 class ParseToLogic:
 
@@ -234,6 +235,14 @@ class ParseToLogic:
         if ewm.has(center, 'assert'):  # if center is asserted, add assertion to focus node
             mention_cg.add(focus_node, 'assert')
             mention_cg.metagraph.add_links(focus_node, subtree_dependencies(center, ewm), 'dp_sub')
+
+        if 'plural' in ewm.types(center): # if mention is a plural => group specification (definitions and properties)
+            mention_cg.add(focus_node, TYPE, GROUP)
+            definitions = set(subtree_dependencies(center, ewm) + [center])
+            properties = set(parent_subtree_dependencies(center, ewm))
+            properties -= definitions
+            mention_cg.metagraph.add_links(focus_node, definitions, GROUP_DEF_SP)
+            mention_cg.metagraph.add_links(focus_node, properties, GROUP_PROP_SP)
 
     def _update_time_by_aux(self, auxes, ewm, mentions):
         for aux in auxes: # replaces `time` of head predicate of aux-span with `aux_time`

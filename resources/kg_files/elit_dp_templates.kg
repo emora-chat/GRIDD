@@ -771,7 +771,6 @@ focus(o/object())
 center(X)
 ;
 
-
 comp(X/pstg(), Y/pstg())
 -> lone_comp ->
 p/property(X, Y)
@@ -779,16 +778,16 @@ focus(p)
 center(Y)
 ;
 
-X/noun()
+X/singular()
 ltype(X, object)
--> noun ->
+-> singular_noun ->
 focus(X)
 center(X)
 ;
 
-obj(Y/pstg(), X/allow_single())
+X/pron()
 ltype(X, object)
--> obj_recog ->
+-> pronoun ->
 focus(X)
 center(X)
 ;

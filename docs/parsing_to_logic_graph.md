@@ -1227,17 +1227,17 @@ This captures non-referential pronouns, nouns, etc.
 	focus(p)
 	center(Y)
     ;
-
-    X/noun()
+    
+    X/singular()
     ltype(X, object)
-    -> noun ->
+    -> singular_noun ->
     focus(X)
     center(X)
-    ;  
+    ;
     
-    obj(Y/pstg(), X/allow_single())
+    X/pron()
     ltype(X, object)
-    -> obj_recog ->
+    -> pronoun ->
     focus(X)
     center(X)
     ;

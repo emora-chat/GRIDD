@@ -457,6 +457,11 @@ class ConceptGraph:
                 references[ref] = (pre, vars)
         return references
 
+    def generics(self):
+        generics = {}
+        # all groups that act as subjects of some predicate are generating generics
+        # certain predicate types are generics if object is group (like, enjoy, hate, ) -> i like cats (generic) vs i bought cats (non-generic)
+
     def subgraph(self, concepts, meta_exclusions=None):
         if meta_exclusions is None:
             meta_exclusions = set()
