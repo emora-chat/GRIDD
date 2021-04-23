@@ -34,6 +34,7 @@ REJECT = 'reject'               # predicate indicating rejective/no statement
 TIME = 'time'                   # predicate indicating time specification
 SPAN_REF = 'ref'                # predicate linking span nodes to the concepts they refer to
 SPAN_DEF = 'def'                # predicate linking span nodes to the concept their language defines
+OBJECT = 'object'               # base concept type
 
 SAL_FREE = {ASSERT, NONASSERT, AFFIRM,
             REJECT, TIME, SPAN_DEF,

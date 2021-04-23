@@ -2,6 +2,8 @@
 
 import lark, time
 from lark.visitors import Visitor_Recursive
+
+import globals
 from GRIDD.data_structures.id_map import IdMap
 from itertools import chain
 from GRIDD.globals import *
@@ -220,10 +222,33 @@ class ConceptVisitor(Visitor_Recursive):
                 concepts.update(ch.concepts)
         tree.concepts = concepts
 
+    def _init_rule(self, precondition, postcondition, rid=None):
+        if rid is None:
+            rid = self.globals.get()
+        for c in precondition:
+            self.llinks.append((rid, c, PRE))
+        for c in postcondition:
+            self.llinks.append((rid, c, POST))
+        return rid
+
+    def _collect_rule(self, tree):
+        rid = None
+        for i, ch in enumerate(tree.children):
+            if ch.data == 'rule' and rid is None:
+                precondition = [c.focus for c in tree.children[:i]]
+                postcondition = [c.focus for c in tree.children[i + 1:]]
+                rid = self._init_rule(precondition, postcondition)
+            elif rid is not None:
+                raise ValueError(f'Multiple rules declared in chunk {tree.pretty()}.')
+
     def block(self, tree):
+        self._collect_rule(tree)
         for entry in self.lentries:
-            entry = tuple((self.locals.get(e, e) for e in entry))
-            self.entries.append(entry)
+            self.entries.append(tuple((self.locals.get(e, e) for e in entry)))
+        for entry in self.llinks:
+            self.links.append(tuple((self.locals.get(e, e) for e in entry)))
+        for k, v in self.ldatas:
+            self.ldatas[self.locals.get(k, k)] = v
         self.lentries = []  # concepts within block
         self.llinks = []  # metalinks within block
         self.ldatas = {}  # metadata within block
@@ -239,6 +264,7 @@ class ConceptVisitor(Visitor_Recursive):
             tree.focus = tree.mark
             del tree.mark
         self._collect_concepts(tree)
+        self._collect_rule(tree)
 
     def identified(self, tree):
         id, init, type, args, expr = self._identified_tree_to_args(tree)
@@ -303,12 +329,17 @@ class ConceptVisitor(Visitor_Recursive):
         tree.focus = id
         if hasattr(tree, 'mark'):
             del tree.mark
+        for constraint in constraints:
+            self.llinks.append((id, constraint, REF))
 
     def type(self, tree):
-        id, constraints = self._constrained_concept_collect(tree)
-        tree.focus = id
+        variable, constraints = self._constrained_concept_collect(tree)
+        new_type = self.globals.get()
+        tree.focus = new_type
         if hasattr(tree, 'mark'):
             del tree.mark
+        postcondition = set(self._init(None, None, TYPE, [variable, new_type]))
+        self._init_rule(constraints, postcondition)
 
     def id(self, tree):
         tree.children[0] = str(tree.children[0])
@@ -365,10 +396,13 @@ if __name__ == '__main__':
     i = time.time()
     c = ConceptCompiler()
     p, l, d = c.compile(to_parse)
+    print('\nConcepts:')
     for e in p:
         print(e)
+    print('\nMetalinks:')
     for e in l:
         print(e)
+    print('\nMetadata:')
     for k, v in d.items():
         print(k, ':', v)
     f = time.time()
