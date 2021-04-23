@@ -1,19 +1,19 @@
 
-from GRIDD.data_structures.concept_compiler_spec import ConceptCompilerSpec
 
-from lark import Lark, Tree
+import lark, time
 from lark.visitors import Visitor_Recursive
+
+import globals
 from GRIDD.data_structures.id_map import IdMap
 from itertools import chain
-from GRIDD.utilities.utilities import combinations
 from GRIDD.globals import *
+from functools import reduce
 
 
 class ConceptCompiler:
 
-    _default_instances = frozenset({
+    _default_instances = frozenset({})
 
-    })
     _default_types = frozenset({
         'object', 'entity', 'predicate', 'expr',
         'number', 'expression', 'implication', 'type', 'nonassert', 'assert'
@@ -23,7 +23,7 @@ class ConceptCompiler:
     })
 
     def __init__(self, instances=_default_instances, types=_default_types, predicates=_default_predicates, namespace='c_'):
-        self.parser = Lark(ConceptCompiler._grammar, parser='earley')
+        self.parser = lark.Lark(ConceptCompiler._grammar, parser='lalr')
         self.visitor = ConceptVisitor(instances, types, predicates, namespace)
 
     def _compile(self, string):
@@ -31,7 +31,7 @@ class ConceptCompiler:
             string = string + ';'
         parse_tree = self.parser.parse(string)
         self.visitor.visit(parse_tree)
-        return self.visitor.entries, self.visitor.links, self.visitor.metadatas
+        return self.visitor.entries, self.visitor.links, self.visitor.datas
 
     def compile(self, logic_strings):
         """
@@ -48,7 +48,7 @@ class ConceptCompiler:
                 if block.strip():
                     parse_tree = self.parser.parse(block + ';')
                     self.visitor.visit(parse_tree)
-        return self.visitor.entries, self.visitor.links, self.visitor.metadatas
+        return self.visitor.entries, self.visitor.links, self.visitor.datas
 
     @property
     def namespace(self): return self.visitor.globals.namespace
@@ -63,328 +63,347 @@ class ConceptCompiler:
     def predicates(self): return self.visitor.predicates
 
     _grammar = r'''
-        start: block*
-        block: (rule | declaration+) ";"
-        declaration: _COMMENT? (reference | type_init | concept_init | monopred_init | bipred_init | ref_init | string_init | number_init | m_predicates | m_concepts) json? _COMMENT?     
-        m_predicates: "<" declaration (","? declaration)* ">"
-        m_concepts: "[" declaration (","? declaration)* "]"
-        identifiers: ID | "[" ID (","? ID)* "]"
-        global: "="
-        local: "/"
-        type_init: identifiers "=" "(" reference ("," reference)* ")"
-        concept_init: (identifiers (global | local))? identifiers "()"
-        monopred_init: (identifiers (global | local))? identifiers "(" declaration ")"
-        bipred_init: (identifiers (global | local))? identifiers "(" declaration "," declaration ")"
-        ref_init: identifiers ":" declaration
-        string_init: string
-        number_init: number
-        reference: ID
-        ID: /[a-zA-Z_.0-9]+/
-        rule: precondition "->" (ID "->")? postcondition
-        precondition: declaration+
-        postcondition: declaration+
-        json: dict
-        value: dict | list | string | number | constant
-        string: ESCAPED_STRING 
-        number: SIGNED_NUMBER
-        constant: CONSTANT
-        CONSTANT: "true" | "false" | "null"
-        list: "[" [value ("," value)*] "]"
-        dict: "{" [pair ("," pair)*] "}"
-        pair: ESCAPED_STRING ":" value
-        _COMMENT: "/*" /[^*]+/ "*/"
+    
+    start: block*
+    block: state* ";"
+    
+    state: mark? (identified | chunk | ref | type | rule | _COMMENT) json?
+    chunk: "<" state* ">"
+    identified: id (args | expr? ((global| local) id? args)?)
+    global: "="
+    local: "/"
+    args: "(" arg? ("," arg)* ")"
+    arg: mark? (identified | chunk | ref | type) json?
+    ref: "&" id? (args | ((global| local) id args) | chunk)
+    type: "@" id? (args | ((global| local) id args) | chunk)
+    mark: "*"
+    rule: "->"
+    expr: ESCAPED_STRING
+    id: ID
+    ID: /[a-zA-Z_.0-9]+/
+    _COMMENT: "/*" /[^*]+/ "*/"
+    
+    json: dict
+    value: dict | list | string | number | constant
+    string: ESCAPED_STRING 
+    number: SIGNED_NUMBER
+    constant: CONSTANT
+    CONSTANT: "true" | "false" | "null"
+    list: "[" [value ("," value)*] "]"
+    dict: "{" [pair ("," pair)*] "}"
+    pair: ESCAPED_STRING ":" value
+    
+    %import common.ESCAPED_STRING
+    %import common.SIGNED_NUMBER
+    %import common.WS    
+    %ignore WS
+    '''
 
-        %import common.ESCAPED_STRING
-        %import common.SIGNED_NUMBER
-        %import common.WS    
-        %ignore WS
-        '''
 
 class ConceptVisitor(Visitor_Recursive):
 
-    def __init__(self, instances=None, types=None, predicates=None, namespace='c_'):
+    def __init__(self, instances, types, predicates, namespace='c_'):
         Visitor_Recursive.__init__(self)
-        self.entries = []               # quadruples to output
-        self.links = []                 # metagraph links between concepts
-        self.rules = set()
-        self.lentries = []              # quadruples of block
-        self.llinks = []                # metagraph links within block
-        self.metadatas = {}             # concept: json metadata predicates
-        self.lmetadatas = {}            # concept: json predicates for local block
-        self.globals = IdMap(namespace=namespace)   # global id generator
-        self.locals = {}                # mapping of local_id : global_id
-        self.linstances = set()         # all instances (for rule collection)
-        self.plinstances = set()        # local predicate instances for predicate multiplicity
-        self.refgen = instances is None # whether references autogenerate concepts
-        instances = set() if instances is None else set(instances)
-        self.instances = instances      # set of all initialized concepts
+        self.refgen = instances is None
         self.typegen = types is None
-        types = set() if types is None else set(types)
-        self.types = types              # set of all declared types
         self.predgen = predicates is None
+        instances = set() if instances is None else set(instances)
         predicates = set() if predicates is None else set(predicates)
-        self.predicates = predicates    # set of all declared predicate types
-        self.rule_iter = 0              # incrementing rule order index
+        types = (set() if types is None else set(types)) | predicates
+        self.instances = instances                  # set of all initialized concepts
+        self.types = types                          # set of all declared types
+        self.predicates = predicates                # set of all declared predicate types
+        self.globals = IdMap(namespace=namespace)   # global id generator
+        self.entries = []                           # concepts to output
+        self.links = []                             # metalinks to output
+        self.datas = {}                             # metadata to output
+        self.lentries = []                          # concepts within block
+        self.llinks = []                            # metalinks within block
+        self.ldatas = {}                            # metadata within block
+        self.locals = {}                            # mapping of local_id : global_id
 
     def reset(self):
-        self.entries = []
-        self.rules = set()
-        self.metadatas = {}
+        self.entries = []  # concepts to output
+        self.links = []  # metalinks to output
+        self.datas = {}  # metadata to output
+        self.lentries = []  # concepts within block
+        self.llinks = []  # metalinks within block
+        self.ldatas = {}  # metadata within block
+        self.locals = {}  # mapping of local_id : global_id
 
-    def rule(self, tree):
-        if len(tree.children) > 2:
-            rid = tree.children[1]
+    def _identified_tree_to_args(self, tree):
+        id = None  # identifier of focal concept
+        init = None  # 'global' / 'local' initialization type
+        type = None  # type for initialization
+        args = None  # list of arguments
+        expr = None  # str of expressions
+        ch = tree.children
+        len_ch = len(tree.children)
+        if len_ch == 1:
+            id = ch[0].children[0]
+        elif len_ch == 2 and ch[1].data == 'args':
+            type = ch[0].children[0]
+            args = [a.focus for a in ch[1].children]
+        elif len_ch == 2 and ch[1].data == 'expr':
+            id = ch[0].children[0]
+            expr = ch[1].children[0]
+        elif len_ch == 3:
+            id = ch[0].children[0]
+            init = ch[1].data
+            args = [a.focus for a in ch[2].children]
+        elif len_ch == 4 and ch[1].data == 'expr':
+            id = ch[0].children[0]
+            expr = ch[1].children[0]
+            init = ch[2].data
+            args = [a.focus for a in ch[3].children]
+        elif len_ch == 4:
+            id = ch[0].children[0]
+            init = ch[1].data
+            type = ch[2].children[0]
+            args = [a.focus for a in ch[3].children]
+        elif len_ch == 5:
+            id = ch[0].children[0]
+            expr = ch[1].children[0]
+            init = ch[2].data
+            type = ch[3].children[0]
+            args = [a.focus for a in ch[4].children]
+        return id, init, type, args, expr
+
+    def _init(self, id=None, init=None, type=None, args=None):
+        concepts = []
+        if args is None:
+            id = self.locals.get(id, id)
         else:
+            if init == 'local':
+                if id in self.locals:
+                    raise ValueError(f'Local variable {id} already declared.')
+                self.locals[id] = self.globals.get()
+            if type is None: # type init
+                for arg in args:
+                    new_type_instance = self.globals.get()
+                    self.lentries.append((id, TYPE, arg, new_type_instance))
+                    concepts.append(new_type_instance)
+                self.types.add(id)
+            else: # instance init
+                if len(args) > 2:
+                    raise ValueError(f'Initializing {type} concept {id} with too many args: {args}')
+                elif len(args) == 0:
+                    self.lentries.append((None, type, None, id))
+                elif len(args) == 1:
+                    self.lentries.append((args[0], type, None, id))
+                elif len(args) == 2:
+                    self.lentries.append((args[0], type, args[1], id))
+                concepts.append(type)
+            concepts.extend(args)
+        concepts.append(id)
+        return concepts
+
+    def _add_exprs(self, id, expr):
+        exprs = expr.split(',')
+        exprs = reduce((
+            lambda x, y: x[:-1] + [x[-1][:-1] + y] if x[-1][-1] == '\\' else x + [y.strip()]
+        ), [[exprs[0].strip()], *exprs[1:]])
+        for expr in exprs:
+            new_expr_inst = self.globals.get()
+            self.lentries.append((expr, EXPR, id, new_expr_inst))
+
+    def _get_mark(self, tree):
+        for ch in tree.children:
+            if hasattr(ch, 'mark'):
+                if not hasattr(tree, 'mark'):
+                    tree.mark = ch.mark
+                else:
+                    raise ValueError(f'Double mark: {tree.mark} and {ch.mark}')
+
+    def _collect_concepts(self, tree):
+        concepts = set() if not hasattr(tree, 'concepts') else set(tree.concepts)
+        for ch in tree.children:
+            if hasattr(ch, 'concepts'):
+                concepts.update(ch.concepts)
+        tree.concepts = concepts
+
+    def _init_rule(self, precondition, postcondition, rid=None):
+        if rid is None:
             rid = self.globals.get()
-        self.check_double_init([rid], self.instances)
-        self.instances.add(rid)
-        self.lentries.append((rid, 'type', 'implication', self.globals.get()))
-        precondition, variables = tree.children[0].data
-        postcondition = tree.children[-1].data
         for c in precondition:
-            self.links.append((rid, 'pre', c))
+            self.llinks.append((rid, c, PRE))
         for c in postcondition:
-            self.links.append((rid, 'post', c))
-        for c in variables:
-            self.links.append((rid, 'var', c))
-        self.metadatas.setdefault(rid, {})['rindex'] = self.rule_iter
-        self.rule_iter += 1
+            self.llinks.append((rid, c, POST))
+        return rid
 
-    def precondition(self, tree):
-        preinst = set(chain(*[t.refs for t in tree.iter_subtrees() if hasattr(t, 'refs')]))
-        preinst = {self.locals.get(str(i), str(i)) for i in preinst}
-        variables = set(chain(*[t.inits for t in tree.iter_subtrees() if hasattr(t, 'inits')]))
-        variables = {self.locals.get(str(i), str(i)) for i in variables}
-        tree.data = (preinst, variables)
-        self.linstances = set()
+    def _collect_rule(self, tree):
+        rid = None
+        for i, ch in enumerate(tree.children):
+            if ch.data == 'rule' and rid is None:
+                precondition = [c.focus for c in tree.children[:i]]
+                postcondition = [c.focus for c in tree.children[i + 1:]]
+                rid = self._init_rule(precondition, postcondition)
+            elif rid is not None:
+                raise ValueError(f'Multiple rules declared in chunk {tree.pretty()}.')
 
-    def postcondition(self, tree):
-        postinst = set(chain(*[t.refs for t in tree.iter_subtrees() if hasattr(t, 'refs')]))
-        postinst = {self.locals.get(str(i), str(i)) for i in postinst}
-        tree.data = postinst
-        self.linstances = set()
+    def block(self, tree):
+        self._collect_rule(tree)
+        for entry in self.lentries:
+            self.entries.append(tuple((self.locals.get(e, e) for e in entry)))
+        for entry in self.llinks:
+            self.links.append(tuple((self.locals.get(e, e) for e in entry)))
+        for k, v in self.ldatas:
+            self.ldatas[self.locals.get(k, k)] = v
+        self.lentries = []  # concepts within block
+        self.llinks = []  # metalinks within block
+        self.ldatas = {}  # metadata within block
+        self.locals = {}  # mapping of local_id : global_id
 
-    def block(self, _):
-        entries = [[self.locals.get(c, c) for c in e] for e in self.lentries]
-        if not self.refgen:
-            refs = []
-            for s, t, o, _ in entries:
-                if t != 'type':
-                    refs.append(s)
-                    if o is not None:
-                        refs.append(o)
-            for e in refs:
-                if e not in self.instances and e not in self.types:
-                    raise ValueError('Reference to undeclared concept `{}`'.format(e))
-        predicate_types = [t for _, t, _, _ in entries]
-        if not self.typegen:
-            types = predicate_types + [o for _, t, o, _ in entries if t == 'type']
-            for e in types:
-                if e not in self.types:
-                    raise ValueError('Reference to unknown type `{}`'.format(e))
-        if not self.predgen:
-            for e in predicate_types:
-                if e not in self.predicates:
-                    raise ValueError('Predicate initialization with non-predicate `{}`'.format(e))
-        self.entries.extend(entries)
-        self.metadatas.update({self.locals.get(k, k): v for k, v in self.lmetadatas.items()})
-        self.links.extend([(self.locals.get(s, s), l, self.locals.get(t, t)) for s, l, t in self.llinks])
-        self.lentries = []
-        self.llinks = []
-        self.lmetadatas = {}
-        self.locals = {}
-        self.plinstances = set()
-        self.linstances = set()
+    def state(self, tree):
+        self._get_mark(tree)
+        self._collect_concepts(tree)
 
-    def type_init(self, tree):
-        newtype = [str(c) for c in tree.children[0].children]
-        supertypes = [str(c.children[0]) for c in tree.children[1:]]
-        for t, st in combinations(newtype, supertypes):
-            self.lentries.append((t, 'type', st, self.globals.get()))
-        if self.types is not None:
-            self.types.update(newtype)
-        if any([st in self.predicates for st in supertypes]):
-            self.predicates.update(newtype)
-        for n in chain(newtype, supertypes):
-            self.lmetadatas.setdefault(n, {})[IS_TYPE] = True
-        tree.refs = newtype
+    def chunk(self, tree):
+        self._get_mark(tree)
+        if hasattr(tree, 'mark'):
+            tree.focus = tree.mark
+            del tree.mark
+        self._collect_concepts(tree)
+        self._collect_rule(tree)
 
-    def concept_init(self, tree):
-        types = [str(c) for c in tree.children[-1].children]
-        if len(tree.children) > 1:
-            newconcepts = [str(c) for c in tree.children[0].children]
-            islocal = tree.children[1].data == 'local'
-            if islocal:
-                self.check_double_init(newconcepts, self.locals)
-                newmap = {nc: self.globals.get() for nc in newconcepts}
-                self.locals.update(newmap)
-                self.instances.update(newmap.values())
+    def identified(self, tree):
+        id, init, type, args, expr = self._identified_tree_to_args(tree)
+        concepts = self._init(id, init, type, args)
+        if expr is not None:
+            self._add_exprs(id, expr)
+        tree.focus = id
+        tree.concepts = concepts
+        self._collect_concepts(tree)
+        print('\n'.join(f'{k}: {v}' for k, v in {
+            'ident': id, 'expr': expr, 'init': init, 'type': type, 'args': args
+        }.items()))
+        print()
+        print(tree.pretty())
+        return concepts
+
+    def arg(self, tree):
+        self._get_mark(tree)
+        i = 0
+        if tree.children[0].data == 'mark':
+            i = 1
+            tree.mark = tree.children[i].focus
+        tree.focus = tree.children[i].focus
+        self._collect_concepts(tree)
+
+    def args(self, tree):
+        self._get_mark(tree)
+        self._collect_concepts(tree)
+
+    def _constrained_concept_collect(self, tree):
+        ident = None
+        constraints = None
+        ch = tree.children
+        len_ch = len(ch)
+        if len_ch == 1:
+            if ch[0].data == 'chunk':
+                if hasattr(ch[0], 'mark'):
+                    ident = ch[0].mark
+                    constraints = ch[0].concepts
+                else:
+                    raise ValueError(f'Constraint chunk {ch[0].focus} with no mark.')
             else:
-                self.check_double_init(newconcepts, self.instances)
-                self.instances.update(newconcepts)
-        else:
-            newconcepts = [self.globals.get() for _ in types]
-            self.instances.update(newconcepts)
-        self.check_mismatched_multiplicity(newconcepts, types)
-        self.linstances.update(newconcepts)
-        tree.children[-1].refs = [str(r) for r in tree.children[-1].children]
-        tree.children[-1].inits = []
-        for i, type in enumerate(types):
-            typeinst = self.globals.get()
-            self.lentries.append((newconcepts[i], 'type', type, typeinst))
-            tree.children[-1].refs.extend([typeinst, 'type'])  # Duct tape add type instance
-            tree.children[-1].inits.append(typeinst)
-            self.plinstances.add(typeinst)
-        tree.refs = newconcepts
-        tree.inits = newconcepts
+                raise ValueError(f'Invalid syntax for {ch}.')
+        elif len_ch == 2:
+            if ch[1].data == 'args':
+                self.identified(tree)
+                ident = tree.focus
+                constraints = tree.concepts
+            elif ch[1].data == 'chunk':
+                ident = ch[0].children[0]
+                constraints = ch[1].concepts
+        elif len_ch == 3:
+            raise ValueError(f'Invalid syntax for {ch}')
+        elif len_ch == 4:
+            self.identified(tree)
+            ident = tree.focus
+            constraints = tree.concepts
+        return ident, constraints
 
-    def monopred_init(self, tree):
-        types = [str(c) for c in tree.children[-2].children]
-        args = [str(c) for c in tree.children[-1].refs]
-        type_arg = combinations(types, args)
-        if len(tree.children) > 2:
-            newconcepts = [str(c) for c in tree.children[0].children]
-            islocal = tree.children[1].data == 'local'
-            if islocal:
-                self.check_double_init(newconcepts, self.locals)
-                newmap = {nc: self.globals.get() for nc in newconcepts}
-                self.locals.update(newmap)
-                self.instances.update(newmap.values())
-            else:
-                self.check_double_init(newconcepts, self.instances)
-                self.instances.update(newconcepts)
-        else:
-            newconcepts = [self.globals.get() for _ in type_arg]
-            self.instances.update(newconcepts)
-        self.check_mismatched_multiplicity(newconcepts, type_arg)
-        self.linstances.update(newconcepts)
-        tree.children[-2].refs = types
-        for i, (type, arg) in enumerate(type_arg):
-            self.lentries.append((arg, type, None, newconcepts[i]))
-            self.plinstances.add(newconcepts[i])
-        tree.refs = newconcepts
-        tree.inits = newconcepts
+    def ref(self, tree):
+        id, constraints = self._constrained_concept_collect(tree)
+        tree.focus = id
+        if hasattr(tree, 'mark'):
+            del tree.mark
+        for constraint in constraints:
+            self.llinks.append((id, constraint, REF))
 
-    def bipred_init(self, tree):
-        types = [str(c) for c in tree.children[-3].children]
-        arg0s = [str(c) for c in tree.children[-2].refs]
-        arg1s = [str(c) for c in tree.children[-1].refs]
-        type_args = combinations(types, arg0s, arg1s)
-        if len(tree.children) > 3:
-            newconcepts = [str(c) for c in tree.children[0].children]
-            islocal = tree.children[1].data == 'local'
-            if islocal:
-                self.check_double_init(newconcepts, self.locals)
-                newmap = {nc: self.globals.get() for nc in newconcepts}
-                self.locals.update(newmap)
-                self.instances.update(newmap.values())
-            else:
-                self.check_double_init(newconcepts, self.instances)
-                self.instances.update(newconcepts)
-        else:
-            newconcepts = [self.globals.get() for _ in type_args]
-            self.instances.update(newconcepts)
-        self.check_mismatched_multiplicity(newconcepts, type_args)
-        self.linstances.update(newconcepts)
-        tree.children[-3].refs = types
-        for i, (type, arg0, arg1) in enumerate(type_args):
-            self.lentries.append((arg0, type, arg1, newconcepts[i]))
-            self.plinstances.add(newconcepts[i])
-        tree.refs = newconcepts
-        tree.inits = newconcepts
+    def type(self, tree):
+        variable, constraints = self._constrained_concept_collect(tree)
+        new_type = self.globals.get()
+        tree.focus = new_type
+        if hasattr(tree, 'mark'):
+            del tree.mark
+        postcondition = set(self._init(None, None, TYPE, [variable, new_type]))
+        self._init_rule(constraints, postcondition)
 
-    def ref_init(self, tree):
-        tree.refs = tree.children[0].children
-        tree.inits = tree.children[0].children
-        ref_tree = tree.children[1]
-        constraints = set(chain(*[t.refs for t in ref_tree.iter_subtrees() if hasattr(t, 'refs')]))
-        constraints = {self.locals.get(str(i), str(i)) for i in constraints}
-        variables = set(chain(*[t.inits for t in ref_tree.iter_subtrees() if hasattr(t, 'inits')]))
-        variables = {self.locals.get(str(i), str(i)) for i in variables}
-        for i in tree.children[0].children:
-            i = str(i)
-            if 'ref' in self.metadatas.get(i, {}):
-                raise ValueError('Reference defined twice for concept {}'.format(i))
-            for c in constraints:
-                self.llinks.append((i, 'ref', c))
-            for c in variables:
-                self.llinks.append((i, 'var', c))
-
-    def string_init(self, tree):
-        inits = ['"'+s.strip()+'"' for s in tree.children[0].children[0][1:-1].split(',')]
-        for init in inits:
-            if init not in self.instances:
-                inst = self.globals.get()
-                self.lentries.append((init, 'type', 'expression', inst))
-                self.instances.add(init)
-        tree.refs = inits
-
-    def number_init(self, tree):
-        inits = tree.children[0].children
-        for init in inits:
-            if init not in self.instances:
-                inst = self.globals.get()
-                self.lentries.append((init, 'type', 'number', inst))
-                self.instances.add(init)
-        tree.refs = inits
-
-    def declaration(self, tree):
-        if len(tree.children) > 1:
-            for ident in tree.children[0].refs:
-                self.lmetadatas.setdefault(ident, {}).update(tree.children[1].children[0].data)
-        tree.refs = tree.children[0].refs
-
-    def reference(self, tree):
-        tree.refs = tree.children
-
-    def m_predicates(self, tree):
-        predicates = []
-        stack = [tree]
-        while stack:
-            t = stack.pop()
-            if isinstance(t, Tree):
-                if hasattr(t, 'refs'):
-                    predicates.extend(set(t.refs) & self.plinstances)
-                stack.extend(t.children)
-        tree.refs = predicates
-
-    def m_concepts(self, tree):
-        tree.refs = list(chain(*[c.refs for c in tree.children]))
-
-    def check_double_init(self, initialized, existing):
-        if len(set(initialized)) != len(initialized):
-            raise ValueError('Double instantiation within {}'.format(initialized))
-        doubles = set(initialized) & set(existing)
-        if doubles:
-            raise ValueError('Double instantiation of concepts {}'.format(doubles))
-
-    def check_mismatched_multiplicity(self, first, *lists):
-        for l in lists:
-            if len(first) != len(l):
-                raise ValueError('Mismatched multiplicity in init: |{}| != |{}|'.format(first, l))
+    def id(self, tree):
+        tree.children[0] = str(tree.children[0])
 
     def string(self, tree):
-        tree.data = str(tree.children[0][1:-1])
+        tree.value = str(tree.children[0][1:-1])
 
     def number(self, tree):
-        tree.data = float(tree.children[0])
+        tree.value = float(tree.children[0])
 
     def constant(self, tree):
-        tree.data = {'null': None, 'true': True, 'false': False}[tree.children[0]]
+        tree.value = {'null': None, 'true': True, 'false': False}[tree.children[0]]
 
     def list(self, tree):
-        tree.data = [c.data for c in tree.children]
+        tree.value = [c.value for c in tree.children]
 
     def dict(self, tree):
-        tree.data = {str(c.children[0])[1:-1]: c.children[1].data for c in tree.children}
+        tree.value = {str(c.children[0])[1:-1]: c.children[1].value for c in tree.children}
 
     def value(self, tree):
-        tree.data = tree.children[0].data
+        tree.value = tree.children[0].value
 
 
-def compile_concepts(logic_strings, instances=None, types=None, predicates=None, namespace='c_'):
-    return ConceptCompiler(instances, types, predicates, namespace).compile(logic_strings)
+parser = lark.Lark(ConceptCompiler._grammar, parser='lalr')
+
+to_parse = '''
+
+&o<d/do(you) on(d, &t<t/test()>) quality(d, o/object()) time(d, past)>
+request(me, o)
+;
+
+brown_dog = (member);
+brown(x/dog()) -> type(x, brown_dog);
+x/brown_dog() -> cute(x);
+
+sally_and_john = (group)
+type(sally, sally_and_john)
+type(john, sally_and_john)
+
+<l/like(me, sally_and_john)>
+
+<
+	@d<d/dog() big(d)>
+	@c<c/cat() scared(c)>
+	chase(d, c)
+>;
+
+
+
+'''
 
 
 if __name__ == '__main__':
-    print(ConceptCompilerSpec.verify(ConceptCompiler))
+    i = time.time()
+    c = ConceptCompiler()
+    p, l, d = c.compile(to_parse)
+    print('\nConcepts:')
+    for e in p:
+        print(e)
+    print('\nMetalinks:')
+    for e in l:
+        print(e)
+    print('\nMetadata:')
+    for k, v in d.items():
+        print(k, ':', v)
+    f = time.time()
+    print(f'\nElapsed time: {str(f - i)[:9]}')
