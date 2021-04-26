@@ -160,10 +160,10 @@ class Chatbot:
             inferences = self.dialogue_intcore.infer()
             self.dialogue_intcore.apply_inferences(inferences)
             self.dialogue_intcore.operate()
-            self.dialogue_intcore.convert_metagraph_span_links('refsp', ['ref', 'var'])
-            self.dialogue_intcore.convert_metagraph_span_links('dp_sub', ['ass'])
-            self.dialogue_intcore.convert_metagraph_span_links(GROUP_DEF_SP, [GROUP_DEF, 'var'])
-            self.dialogue_intcore.convert_metagraph_span_links(GROUP_PROP_SP, [GROUP_PROP, 'var'])
+            self.dialogue_intcore.convert_metagraph_span_links(REF_SP, [REF, VAR])
+            self.dialogue_intcore.convert_metagraph_span_links(DP_SUB, [ASS_LINK])
+            self.dialogue_intcore.convert_metagraph_span_links(GROUP_DEF_SP, [GROUP_DEF, VAR])
+            self.dialogue_intcore.convert_metagraph_span_links(GROUP_PROP_SP, [GROUP_PROP, VAR])
             self.dialogue_intcore.learn_generics()
 
             if debug:
@@ -173,7 +173,8 @@ class Chatbot:
                 print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=TYPEINFO))
 
             # Feature update
-            self.dialogue_intcore.update_confidence()
+            self.dialogue_intcore.update_confidence({'and': AND_LINK, 'or': OR_LINK, 'conf': CONFIDENCE})
+            self.dialogue_intcore.update_confidence({'and': UAND_LINK, 'or': UOR_LINK, 'conf': UCONFIDENCE})
             self.dialogue_intcore.update_salience()
 
             if debug:
@@ -356,12 +357,12 @@ class Chatbot:
             if wm.has(predicate_id=concept):
                 sig = wm.predicate(concept)
                 if sig[0] not in excl and sig[1] not in excl and sig[2] not in excl:
-                    sa, cf, cv = features.get(SALIENCE, 0), features.get(CONFIDENCE, 0), wm.has(concept, USER_AWARE)
+                    sa, cf, ucf, cv = features.get(SALIENCE, 0), features.get(CONFIDENCE, 0), features.get(UCONFIDENCE, 0), wm.has(concept, USER_AWARE)
                     if sig[2] is not None:
                         rep = f'{sig[3]}/{sig[1]}({sig[0]},{sig[2]})'
                     else:
                         rep = f'{sig[3]}/{sig[1]}({sig[0]})'
-                    ls.append((f'{rep:40}: s({sa:.2f}) c({cf:.2f}) cv({cv:.2f})', sa))
+                    ls.append((f'{rep:40}: s({sa:.2f}) c({cf:.2f}) uc({ucf:.2f}) cv({cv:.2f})', sa))
         for pr, sa in sorted(ls, key=lambda x: x[1], reverse=True):
             print(pr)
 

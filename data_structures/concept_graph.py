@@ -459,8 +459,17 @@ class ConceptGraph:
 
     def generics(self):
         generics = {}
+        group_instances = [g for g in self.subtypes_of(GROUP) if g != GROUP]
         # all groups that act as subjects of some predicate are generating generics
+        for group in group_instances:
+            preds = [p for p in self.predicates(group) if p[1] not in {TYPE, USER_AWARE, ASSERT, NONASSERT}]
+            if preds:
+                def_concepts = [e[1] for e in self.metagraph.out_edges(group, GROUP_DEF)
+                                if not self.has(predicate_id=e[1]) or self.predicate(e[1]) != (e[0], TYPE, GROUP, e[1])]
+                prop_concepts = [e[1] for e in self.metagraph.out_edges(group, GROUP_PROP)]
+                generics[group] = (def_concepts, prop_concepts)
         # certain predicate types are generics if object is group (like, enjoy, hate, ) -> i like cats (generic) vs i bought cats (non-generic)
+        return generics
 
     def subgraph(self, concepts, meta_exclusions=None):
         if meta_exclusions is None:

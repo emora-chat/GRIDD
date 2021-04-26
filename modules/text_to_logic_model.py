@@ -227,14 +227,7 @@ class ParseToLogic:
                 # some questions have focus node as the question predicate instance,
                 # but the reference links should attach to the target of the question predicate instance
                 focus_node = mention_cg.predicate(focus_node)[2]
-            mention_cg.metagraph.add_links(focus_node, REFERENCES_BY_RULE[rule_name](center, ewm), 'refsp')
-
-        comps = self._get_comps(rule_name, focus_node, mention_cg)
-        mention_cg.metagraph.add_links(focus_node, comps, 'comps')
-
-        if ewm.has(center, 'assert'):  # if center is asserted, add assertion to focus node
-            mention_cg.add(focus_node, 'assert')
-            mention_cg.metagraph.add_links(focus_node, subtree_dependencies(center, ewm), 'dp_sub')
+            mention_cg.metagraph.add_links(focus_node, REFERENCES_BY_RULE[rule_name](center, ewm) + [center], REF_SP)
 
         if 'plural' in ewm.types(center): # if mention is a plural => group specification (definitions and properties)
             mention_cg.add(focus_node, TYPE, GROUP)
@@ -243,6 +236,13 @@ class ParseToLogic:
             properties -= definitions
             mention_cg.metagraph.add_links(focus_node, definitions, GROUP_DEF_SP)
             mention_cg.metagraph.add_links(focus_node, properties, GROUP_PROP_SP)
+
+        comps = self._get_comps(rule_name, focus_node, mention_cg)
+        mention_cg.metagraph.add_links(focus_node, comps, COMPS)
+
+        if ewm.has(center, ASSERT):  # if center is asserted, add assertion to focus node
+            mention_cg.add('user', ASSERT, focus_node)
+            mention_cg.metagraph.add_links(focus_node, subtree_dependencies(center, ewm) + [center], DP_SUB)
 
     def _update_time_by_aux(self, auxes, ewm, mentions):
         for aux in auxes: # replaces `time` of head predicate of aux-span with `aux_time`
@@ -260,8 +260,8 @@ class ParseToLogic:
                     else:
                         ((s,_,_,_), ) = list(head_cg.predicates(predicate_type='focus'))
                         i = head_cg.id_map().get()
-                    head_cg.add(s, 'time', aux_time, i)
-                    head_cg.metagraph.add(s, i, 'comps')
+                    head_cg.add(s, TIME, aux_time, i)
+                    head_cg.metagraph.add(s, i, COMPS)
                     aux_cg.remove(a, at, aux_time, ai)
             if not list(mentions[aux].predicates(predicate_type='focus')):
                 del mentions[aux]

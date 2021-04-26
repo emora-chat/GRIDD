@@ -98,11 +98,15 @@ class IntelligenceCore:
             pre, post = inferences[rule][0], inferences[rule][1] # todo- assign neg conf links
             for evidence, implication in results:
                 implication_strengths = {}
+                uimplication_strengths = {}
                 for n in implication.concepts():
                     if implication.has(predicate_id=n):
                         implication_strengths[n] = implication.features.get(n, {}).get(CONFIDENCE, 1)
                         if n in implication.features and CONFIDENCE in implication.features[n]:
                             del implication.features[n][CONFIDENCE]
+                        uimplication_strengths[n] = implication.features.get(n, {}).get(UCONFIDENCE, 1)
+                        if n in implication.features and UCONFIDENCE in implication.features[n]:
+                            del implication.features[n][UCONFIDENCE]
                 # check whether rule has already been applied with the given evidence
                 old_solution = False
                 current_evidence = set([x for x in evidence.values() if self.working_memory.has(predicate_id=x)])  # AND links only set up from predicate instances
@@ -120,14 +124,26 @@ class IntelligenceCore:
                         if self.working_memory.has(predicate_id=evidence_node):
                             strength = inferences[rule][0].features.get(pre_node, {}).get(CONFIDENCE, 1)
                             self.working_memory.metagraph.add(evidence_node, and_node, (AND_LINK, strength))
+                            strength = inferences[rule][0].features.get(pre_node, {}).get(UCONFIDENCE, 1)
+                            self.working_memory.metagraph.add(evidence_node, and_node, (UAND_LINK, strength))
                     for imp_node, strength in implication_strengths.items():
                         self.working_memory.metagraph.add(and_node, implied_nodes[imp_node], (OR_LINK, strength))
+                    for imp_node, strength in uimplication_strengths.items():
+                        self.working_memory.metagraph.add(and_node, implied_nodes[imp_node], (UOR_LINK, strength))
 
-    def update_confidence(self):
+    def update_confidence(self, label_d):
+        """
+        label_d is a dictionary of label_type to label in order to update confidence w.r.t different populations
+        e.g. emora, user, etc.
+        label_d must contain a mapping for:
+            and
+            or
+            conf
+        """
         # todo - we currently arent using the strength element of the implication links?
         mg = self.working_memory.metagraph
-        and_links = [edge for edge in mg.edges() if isinstance(edge[2], tuple) and AND_LINK == edge[2][0]]
-        or_links = [edge for edge in mg.edges() if isinstance(edge[2], tuple) and OR_LINK == edge[2][0]]
+        and_links = [edge for edge in mg.edges() if isinstance(edge[2], tuple) and label_d['and'] == edge[2][0]]
+        or_links = [edge for edge in mg.edges() if isinstance(edge[2], tuple) and label_d['or'] == edge[2][0]]
         types = self.working_memory.types()
         unasserted = {}
         ass_links = set()
@@ -144,7 +160,7 @@ class IntelligenceCore:
                 ass_links.discard((s, t))
         for s, t in ass_links:
             if t not in unasserted:
-                or_links.append((s, t, (OR_LINK, 1.0)))
+                or_links.append((s, t, (label_d['or'], 1.0)))
         def and_fn(node, sources):
             product = 1
             for value, (label, weight) in sources:
@@ -166,13 +182,13 @@ class IntelligenceCore:
                 return max(diff, -1.0)
         update_graph = UpdateGraph(
             edges=[*and_links, *or_links],
-            nodes={c: mg.features.get(c, {}).get(CONFIDENCE, 0) if mg.features.get(c, {}).get(BASE, False) else 0
+            nodes={c: mg.features.get(c, {}).get(label_d['conf'], 0) if mg.features.get(c, {}).get(BASE, False) else 0
                    for c in mg.nodes()},
             updaters={
                 **{n: and_fn for _,n,_ in and_links},
                 **{n: or_fn for _,n,_ in or_links}},
             default=0,
-            set_fn=(lambda n, v: mg.features.setdefault(n, {}).__setitem__(CONFIDENCE, v))
+            set_fn=(lambda n, v: mg.features.setdefault(n, {}).__setitem__(label_d['conf'], v))
         )
         update_graph.update(iteration=10, push=True)
 
@@ -212,7 +228,7 @@ class IntelligenceCore:
     def gather(self, reference_node, constraints_as_spans):
         PRIMITIVES = {'focus', 'center', 'question', 'var'}
         constraints = set()
-        focal_nodes = {reference_node}
+        focal_nodes = set()
         for constraint_span in constraints_as_spans:
             if self.working_memory.has(constraint_span):
                 foci = self.working_memory.objects(constraint_span, 'ref')
@@ -220,7 +236,7 @@ class IntelligenceCore:
                 focal_nodes.add(focus)
         # expand constraint spans into constraint predicates
         for focal_node in focal_nodes:
-            components = self.working_memory.metagraph.targets(focal_node, 'comps')
+            components = self.working_memory.metagraph.targets(focal_node, COMPS)
             # constraint found if constraint predicate is connected to reference node
             for component in components:
                 if (not self.working_memory.has(predicate_id=component) or
@@ -249,6 +265,18 @@ class IntelligenceCore:
         if generics is None:
             generics = self.working_memory.generics()
         # convert to implication rules
+        for group, (def_concepts, prop_concepts) in generics.items():
+            imp_node = self.working_memory.id_map().get()
+            self.working_memory.add(imp_node, TYPE, 'implication')
+            self.working_memory.metagraph.add_links(imp_node, def_concepts, 'pre')
+            self.working_memory.metagraph.add_links(imp_node, def_concepts, 'var')
+            self.working_memory.metagraph.add_links(imp_node, prop_concepts, 'post')
+            self.working_memory.metagraph.add_links(imp_node, prop_concepts, 'var')
+            for t in def_concepts:
+                self.working_memory.metagraph.remove(group, t, GROUP_DEF)
+            for t in prop_concepts:
+                self.working_memory.metagraph.remove(group, t, GROUP_PROP)
+            self.working_memory.remove(group, TYPE, GROUP)
 
 
     def logical_merge(self):
@@ -411,10 +439,13 @@ class IntelligenceCore:
         """
         types = cg.types()
         predicates = set()
+        upredicates = set()
         not_asserted = set()
         for s, _, o, pred in cg.predicates():
             if CONFIDENCE not in cg.features.get(pred, {}):
                 predicates.add(pred)
+            if UCONFIDENCE not in cg.features.get(pred, {}):
+                upredicates.add(pred)
             if NONASSERT in types[pred]:
                 if cg.has(predicate_id=s):
                     not_asserted.add(s)
@@ -425,6 +456,11 @@ class IntelligenceCore:
             cg.features[a][BASE] = True
         for na in predicates & not_asserted:
             cg.features.setdefault(na, {})[CONFIDENCE] = 0.0
+        for a in upredicates - not_asserted:
+            cg.features.setdefault(a, {})[UCONFIDENCE] = 1.0
+            cg.features[a][BASE] = True
+        for na in upredicates & not_asserted:
+            cg.features.setdefault(na, {})[UCONFIDENCE] = 0.0
 
     def _loading_options(self, cg, options):
         if 'commonsense' in options:

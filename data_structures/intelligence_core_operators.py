@@ -4,25 +4,38 @@ from GRIDD.globals import *
 
 @aliases('not')
 def _negation(cg, i):
-    sub = cg.predicate(i)[0]
-    cg.features[sub][CONFIDENCE] = -1.0
+    wrt, _, sub, _ = cg.predicate(i)
+    if wrt == 'user':
+        cg.features[sub][UCONFIDENCE] = -1.0
+    elif wrt == 'emora':
+        cg.features[sub][CONFIDENCE] = -1.0
 
 def maybe(cg, i):
-    sub = cg.predicate(i)[0]
-    cg.features[sub][CONFIDENCE] = 0.0
+    wrt, _, sub, _ = cg.predicate(i)
+    if wrt == 'user':
+        cg.features[sub][UCONFIDENCE] = 0.0
+    elif wrt == 'emora':
+        cg.features[sub][CONFIDENCE] = 0.0
 
 @aliases('assert')
 def _assert(cg, i):
-    sub = cg.predicate(i)[0]
-    cg.features.setdefault(sub, {})[CONFIDENCE] = 1.0
+    wrt, _, sub, _ = cg.predicate(i)
+    cg.features[sub][UCONFIDENCE] = 1.0
+    cg.features[sub][CONFIDENCE] = 1.0
     cg.features[sub][BASE] = True
 
 def affirm(cg, i):
-    sub = cg.predicate(i)[2]
-    cg.features.setdefault(sub, {})[CONFIDENCE] = 1.0
+    wrt, _, sub, _ = cg.predicate(i)
+    if wrt == 'user':
+        cg.features[sub][UCONFIDENCE] = 1.0
+    elif wrt == 'emora':
+        cg.features[sub][CONFIDENCE] = 1.0
     cg.features[sub][BASE] = True
 
 def reject(cg, i):
-    sub = cg.predicate(i)[2]
-    cg.features.setdefault(sub, {})[CONFIDENCE] = -1.0
+    wrt, _, sub, _ = cg.predicate(i)
+    if wrt == 'user':
+        cg.features[sub][UCONFIDENCE] = -1.0
+    elif wrt == 'emora':
+        cg.features[sub][CONFIDENCE] = -1.0
     cg.features[sub][BASE] = True
