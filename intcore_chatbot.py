@@ -135,6 +135,9 @@ class Chatbot:
         for pred, sources in knowledge_by_source.items():
             if not wm.has(*pred):
                 self.dialogue_intcore.consider([pred], namespace=self.dialogue_intcore.knowledge_base._ids, associations=sources)
+                self.dialogue_intcore.working_memory.metagraph.update(self.dialogue_intcore.knowledge_base.metagraph,
+                                                                      self.dialogue_intcore.knowledge_base.metagraph.features,
+                                                                      concepts=[pred[3]])
         types = self.dialogue_intcore.pull_types()
         for type in types:
             if not wm.has(*type):
@@ -173,8 +176,8 @@ class Chatbot:
                 print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=TYPEINFO))
 
             # Feature update
-            self.dialogue_intcore.update_confidence({'and': AND_LINK, 'or': OR_LINK, 'conf': CONFIDENCE})
-            self.dialogue_intcore.update_confidence({'and': UAND_LINK, 'or': UOR_LINK, 'conf': UCONFIDENCE})
+            self.dialogue_intcore.update_confidence('user')
+            self.dialogue_intcore.update_confidence('emora')
             self.dialogue_intcore.update_salience()
 
             if debug:
@@ -217,7 +220,7 @@ class Chatbot:
                     ref_links = [e for e in wm.metagraph.out_edges(request_focus) if e[2] == REF and wm.has(predicate_id=e[1])]
                     for s, t, l in ref_links:
                         wm.features.setdefault(t, {})[SALIENCE] = wm.features.setdefault(fragment, {}).get(SALIENCE, 0)
-                        wm.features[t][BASE] = True
+                        # wm.features[t][BASE] = True todo - check if the BASE indication matters here
                 self.merge_references(fragment_request_merges)
                 self.dialogue_intcore.operate()
 
