@@ -137,9 +137,15 @@ class ConceptGraph:
             del self._monopredicates_map[concept]
             self.metagraph.discard(concept)
 
+
     def clear(self):
-        for _,_,_,i in list(self.predicates()):
-            self.remove(i)
+        self._ids = IdMap(namespace=self._ids.namespace, start_index=Counter(),
+                         contains=lambda x: self.has(x) or self.has(predicate_id=x))
+        self._bipredicates_graph = MultiLabeledParallelDigraphNX()
+        self._bipredicate_instances = Index()
+        self._monopredicates_map = Map()
+        self._monopredicate_instances = Index()
+        self.metagraph = MetaGraph(self)
 
     def has(self, concept=None, predicate_type=None, object=None, predicate_id=None):
         if predicate_id is not None:                                    # Check predicate by id
