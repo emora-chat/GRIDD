@@ -258,10 +258,13 @@ Was the book good?
 
 Copula constructions have different logical forms depending on the copular verb. 
 
-(A) The `be` copular verb takes one of three logical forms:
+(A) The `be` copular verb takes one of four logical forms:
 
-* Property specifiers take the form `property(subject)` as in `I am happy`. 
+* Cause-less property specifiers take the form `property(subject)` as in `I am happy`. 
 Properties are often specified as adjectives.
+
+* Property specifiers can also be specified with their causes as in `I am proud of her`. 
+In this case, the final logical form is `p/property(subject) cause(obj, p)`
 
 * Equivalence specifiers take the form `copula(subject, root)` as in `I am a student`.
  
@@ -298,6 +301,18 @@ merged into the predicate.
     center(X)
     cover(Y)
     ;
+    
+    cop(X/adj(), Y/verb())
+	sbj(X, Z/pstg())
+	obj(X, A/pstg())
+	case(A, B/pstg())
+	ref(Y, E/expression())
+	expr(E, be)
+	-> cause_of_be_adj_copula ->
+	p/cause(A, X)
+	focus(p)
+	center(B)
+	;
 	
     cop(X/prepo(), Y/present_tense())
 	sbj(X, Z/pstg())
@@ -378,6 +393,144 @@ merged into the predicate.
 John is a student.
 
 Sally became a doctor last year.
+
+## Interrogative Auxiliary with Passive Constructions
+
+Captures truth questions asked about sentences with passive voice.
+
+ <details>
+  <summary>Conversions</summary>
+
+	sbj(X/pstg(), Y/pstg())
+	obj(X, Z/pstg())
+	aux(X, A/past_tense())
+	precede(Z, X)
+	precede(A, Z)
+	-> q_sbj_obj_passive_voice_past ->
+	p/X(Y, Z)
+	time(p, past)
+	question(user, p)
+	focus(p)
+	center(X)
+	cover(A)
+	;
+
+	obj(X/pstg(), Z/pstg())
+	aux(X, A/past_tense())
+	precede(Z, X)
+	precede(A, Z)
+	-> q_obj_passive_voice_past ->
+	p/X(object(), Z)
+	time(p, past)
+	question(user, p)
+	focus(p)
+	center(X)
+	cover(A)
+	;
+
+	sbj(X/pstg(), Y/pstg())
+	obj(X, Z/pstg())
+	aux(X, A/present_tense())
+	precede(Z, X)
+	precede(A, Z)
+	-> q_sbj_obj_passive_voice_present ->
+	p/X(Y, Z)
+	time(p, now)
+	question(user, p)
+	focus(p)
+	center(X)
+	cover(A)
+	;
+
+	obj(X/pstg(), Z/pstg())
+	aux(X, A/present_tense())
+	precede(Z, X)
+	precede(A, Z)
+	-> q_obj_passive_voice_present ->
+	p/X(object(), Z)
+	time(p, now)
+	question(user, p)
+	focus(p)
+	center(X)
+	cover(A)
+	;
+
+</details>
+
+#### Examples
+
+Was the dog found
+
+Was the dog was found by the policeman
+
+Was I chosen
+
+## Passive Constructions
+
+Captures sentences with passive voice.
+
+ <details>
+  <summary>Conversions</summary>
+
+	sbj(X/pstg(), Y/pstg())
+	obj(X, Z/pstg())
+	aux(X, A/past_tense())
+	precede(Z, X)
+	precede(Z, A)
+	-> sbj_obj_passive_voice_past ->
+	p/X(Y, Z)
+	time(p, past)
+	focus(p)
+	center(X)
+	cover(A)
+	;
+	
+	sbj(X/pstg(), Y/pstg())
+	obj(X, Z/pstg())
+	aux(X, A/present_tense())
+	precede(Z, X)
+	precede(Z, A)
+	-> sbj_obj_passive_voice_present ->
+	p/X(Y, Z)
+	time(p, now)
+	focus(p)
+	center(X)
+	cover(A)
+	;
+
+	obj(X/pstg(), Y/pstg())
+	aux(X, A/past_tense())
+	precede(Y, X)
+	precede(Y, A)
+	-> obj_passive_voice_past ->
+	p/X(object(), Y)
+	time(p, past)
+	focus(p)
+	center(X)
+	cover(A)
+	;
+
+	obj(X/pstg(), Y/pstg())
+	aux(X, A/present_tense())
+	precede(Y, X)
+	precede(Y, A)
+	-> obj_passive_voice_present ->
+	p/X(object(), Y)
+	time(p, now)
+	focus(p)
+	center(X)
+	cover(A)
+	;
+
+</details>
+
+#### Examples
+
+The dog was found.
+
+The dog was found by the policeman.
+
+I was chosen.
 
 ## Subject-Verb-Object
 
@@ -822,40 +975,6 @@ Captures prepositional phrases by converting the preposition into a predicate of
 I walked in the door.
 
 The cat hid under the bed.
-
-## Passive Constructions
-
-Captures sentences with passive voice.
-
- <details>
-  <summary>Conversions</summary>
-
-	sbj(X/pstg(), Y/pstg())
-	obj(X, Z/pstg())
-	precede(Z, X)
-	-> sbj_obj_passive_voice ->
-	p/X(Y, Z)
-	focus(p)
-	center(X)
-	;
-
-	obj(X/pstg(), Y/pstg())
-	precede(Y, X)
-	-> obj_passive_voice ->
-	p/X(Y)
-	focus(p)
-	center(X)
-	;
-
-</details>
-
-#### Examples
-
-The dog was found.
-
-The dog was found by the policeman.
-
-I was chosen.
 
 ## Relative Clause
 

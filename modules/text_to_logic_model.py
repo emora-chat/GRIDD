@@ -1,5 +1,6 @@
 
 from abc import abstractmethod
+from itertools import chain
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.inference_engine import InferenceEngine
 from GRIDD.data_structures.intelligence_core import IntelligenceCore
@@ -246,7 +247,7 @@ class ParseToLogic:
 
     def _promote_time(self, promotions, ewm, mentions):
         for p in promotions: # replaces obj of `time` of head predicate of promotion with obj of `p_time`
-            heads = ewm.subjects(p)
+            heads = chain(ewm.subjects(p, 'aux'), ewm.subjects(p, 'raise'))
             for head in heads:
                 promotion_cg = mentions[p]
                 preds = list(promotion_cg.predicates(predicate_type='p_time'))
@@ -304,6 +305,15 @@ class ParseToLogic:
                             pair = ((center, 'type'),
                                     (solution[post.type(focus)], 'self'))
                             merges.append(pair)
+                        # if focus has attachments with variables, need to consider them too
+                        # for _, t, o, i in post.predicates(focus):
+                        #     if t not in {'focus', 'cover', 'center', 'assert'} and o in solution and solution[o] != center:
+                        #         pair = ((center, 'subject'),
+                        #                 (solution[o], 'self'))
+                        #         merges.append(pair)
+                        # for s, t, _, i in post.predicates(object=focus):
+                        #     if t not in {'focus', 'cover', 'center', 'assert'} and s in solution and solution[o] != center:
+                        #         pass
         return merges
 
     def _get_concept_of_span(self, span, ewm):

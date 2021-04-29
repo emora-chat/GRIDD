@@ -1,3 +1,4 @@
+-----------
 Not necessary
 -----------
 expl	- no logical form necessary, purely syntactical sugar
@@ -6,50 +7,7 @@ case	- no logical form necessary, purely syntactical sugar
 mark	- no logical form necessary, purely syntactical sugar
 meta    - not relevant?
 
-Handled
 -----------
-nsbj
-obj
-comp
-lv
-det
-attr
-adv
-poss
-ppmod
-
-Untested
------------
-csbj
-dat
-cop
-num
-appo
-neg
-advnp
-dep
-raise
-modal
-    modal and raise all do similar things????
-    why is
-    i should study -> modal should
-    but
-    i ought to study -> raise ought
-acl
-
-Handled but weird
------------
-conj
-com
-prt
-voc
-prn
-advcl
-    -> have general advcl but drops "if" information bc "if" is mark
-        so maybe need to have another rule for advcl + mark for this?
-disc
-    -> only handled when disc is to yes,no,ok
-
 Not handled!
 -----------
 relcl
@@ -58,20 +16,10 @@ r-*
     handle if relcl and r-* are present too
 
 
-TO DO
----------
-aux
-    use aux to determine time aspect for certain verb pos not currently handled, not as mode predicate!!
 
-vbp verb on its own means mode = habitual!!!
-
-need to have better question handling
-    -> insert relative ordering between spans (?) and check
-        if aux/modal/raise come before subject
-        if question word comes before aux/modal/raise
-
-
-***
+-------------
+Notes
+-------------
 
 (1) First sarah went to the store then she bought a banana
     -> Need sentence segmentation
@@ -145,13 +93,11 @@ two "being" spans map to same node, is this correct??
 can be solved by mapping "being" to "is" in ontology, but not sure if this is a deeper problem than that
 
 -------------
-Sentences to check
+Incorrect Dependency Parse?
 -------------
-the homework that was assigned
-what book are you reading
-did you buy a house
-I did buy a house
-I cant buy a house
+He was proud of her -> `her` should be ppmod, not obj
+
+
 
 
 

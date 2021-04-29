@@ -182,6 +182,18 @@ center(X)
 cover(Y)
 ;
 
+cop(X/adj(), Y/verb())
+sbj(X, Z/pstg())
+obj(X, A/pstg())
+case(A, B/pstg())
+ref(Y, E/expression())
+expr(E, be)
+-> cause_of_be_adj_copula ->
+p/cause(A, X)
+focus(p)
+center(B)
+;
+
 cop(X/prepo(), Y/present_tense())
 sbj(X, Z/pstg())
 obj(X, A/pstg())
@@ -252,6 +264,112 @@ cop(X/pstg(), Y/pstg())
 -> id_copula ->
 focus(Y)
 center(Y)
+;
+
+
+sbj(X/pstg(), Y/pstg())
+obj(X, Z/pstg())
+aux(X, A/past_tense())
+precede(Z, X)
+precede(A, Z)
+-> q_sbj_obj_passive_voice_past ->
+p/X(Y, Z)
+time(p, past)
+question(user, p)
+focus(p)
+center(X)
+cover(A)
+;
+
+obj(X/pstg(), Z/pstg())
+aux(X, A/past_tense())
+precede(Z, X)
+precede(A, Z)
+-> q_obj_passive_voice_past ->
+p/X(object(), Z)
+time(p, past)
+question(user, p)
+focus(p)
+center(X)
+cover(A)
+;
+
+sbj(X/pstg(), Y/pstg())
+obj(X, Z/pstg())
+aux(X, A/present_tense())
+precede(Z, X)
+precede(A, Z)
+-> q_sbj_obj_passive_voice_present ->
+p/X(Y, Z)
+time(p, now)
+question(user, p)
+focus(p)
+center(X)
+cover(A)
+;
+
+obj(X/pstg(), Z/pstg())
+aux(X, A/present_tense())
+precede(Z, X)
+precede(A, Z)
+-> q_obj_passive_voice_present ->
+p/X(object(), Z)
+time(p, now)
+question(user, p)
+focus(p)
+center(X)
+cover(A)
+;
+
+
+sbj(X/pstg(), Y/pstg())
+obj(X, Z/pstg())
+aux(X, A/past_tense())
+precede(Z, X)
+precede(Z, A)
+-> sbj_obj_passive_voice_past ->
+p/X(Y, Z)
+time(p, past)
+focus(p)
+center(X)
+cover(A)
+;
+
+sbj(X/pstg(), Y/pstg())
+obj(X, Z/pstg())
+aux(X, A/present_tense())
+precede(Z, X)
+precede(Z, A)
+-> sbj_obj_passive_voice_present ->
+p/X(Y, Z)
+time(p, now)
+focus(p)
+center(X)
+cover(A)
+;
+
+obj(X/pstg(), Y/pstg())
+aux(X, A/past_tense())
+precede(Y, X)
+precede(Y, A)
+-> obj_passive_voice_past ->
+p/X(object(), Y)
+time(p, past)
+focus(p)
+center(X)
+cover(A)
+;
+
+obj(X/pstg(), Y/pstg())
+aux(X, A/present_tense())
+precede(Y, X)
+precede(Y, A)
+-> obj_passive_voice_present ->
+p/X(object(), Y)
+time(p, now)
+focus(p)
+center(X)
+cover(A)
 ;
 
 
@@ -559,24 +677,6 @@ case(Y, Z/pstg())
 p/Z(X,Y)
 focus(p)
 center(Z)
-;
-
-
-sbj(X/pstg(), Y/pstg())
-obj(X, Z/pstg())
-precede(Z, X)
--> sbj_obj_passive_voice ->
-p/X(Y, Z)
-focus(p)
-center(X)
-;
-
-obj(X/pstg(), Y/pstg())
-precede(Y, X)
--> obj_passive_voice ->
-p/X(Y)
-focus(p)
-center(X)
 ;
 
 
