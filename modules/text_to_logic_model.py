@@ -138,7 +138,7 @@ class ParseToLogic:
         centers_handled = set()
         mentions = {}
         mention_ids = IdMap(namespace='ment_')
-        auxes = set()
+        time_promotions = set()
         for rule, solutions in assignments.items():
             link = False
             pre, post, rule_name = rule[0], rule[1], rule[2]
@@ -177,8 +177,8 @@ class ParseToLogic:
                         post_to_ewm_map = {node: self._get_concept_of_span(solution[node], ewm)
                                            for node in post.concepts()
                                            if node in solution and node in maintain_in_mention_graph}
-                        if len(list(mention_cg.predicates(predicate_type='aux_time'))) > 0:
-                            auxes.add(center)
+                        if len(list(mention_cg.predicates(predicate_type='p_time'))) > 0:
+                            time_promotions.add(center)
                         for post_node, ewm_node in post_to_ewm_map.items():
                             cg_node = post_to_cg_map[post_node]
                             mention_cg.add(ewm_node)
@@ -190,7 +190,7 @@ class ParseToLogic:
                         mention_cg.features.update(ewm.features, concepts={center})
                     else:
                         mention_cg.features[center]["span_data"] = ewm.features[center.replace('__linking__','')]["span_data"]
-        self._update_time_by_aux(auxes, ewm, mentions)
+        self._promote_time(time_promotions, ewm, mentions)
         return mentions
 
     def _add_unknowns_to_cg(self, source_node, source, cg_node, cg):
@@ -244,14 +244,14 @@ class ParseToLogic:
             mention_cg.add('user', ASSERT, focus_node)
             mention_cg.metagraph.add_links(focus_node, subtree_dependencies(center, ewm) + [center], DP_SUB)
 
-    def _update_time_by_aux(self, auxes, ewm, mentions):
-        for aux in auxes: # replaces `time` of head predicate of aux-span with `aux_time`
-            heads_of_aux = ewm.subjects(aux, 'aux')
-            for head in heads_of_aux:
-                aux_cg = mentions[aux]
-                preds = list(aux_cg.predicates(predicate_type='aux_time'))
+    def _promote_time(self, promotions, ewm, mentions):
+        for p in promotions: # replaces obj of `time` of head predicate of promotion with obj of `p_time`
+            heads = ewm.subjects(p)
+            for head in heads:
+                promotion_cg = mentions[p]
+                preds = list(promotion_cg.predicates(predicate_type='p_time'))
                 if len(preds) > 0:
-                    ((a, at, aux_time, ai), ) = preds
+                    (promotion_time_pred,) = preds
                     head_cg = mentions[head]
                     preds = list(head_cg.predicates(predicate_type='time'))
                     if len(preds) > 0:
@@ -260,11 +260,11 @@ class ParseToLogic:
                     else:
                         ((s,_,_,_), ) = list(head_cg.predicates(predicate_type='focus'))
                         i = head_cg.id_map().get()
-                    head_cg.add(s, TIME, aux_time, i)
+                    head_cg.add(s, TIME, promotion_time_pred[2], i)
                     head_cg.metagraph.add(s, i, COMPS)
-                    aux_cg.remove(a, at, aux_time, ai)
-            if not list(mentions[aux].predicates(predicate_type='focus')):
-                del mentions[aux]
+                    promotion_cg.remove(*promotion_time_pred)
+            if not list(mentions[p].predicates(predicate_type='focus')):
+                del mentions[p]
 
     def _get_merges(self, assignments, ewm):
         """

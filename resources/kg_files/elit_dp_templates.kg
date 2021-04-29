@@ -111,7 +111,7 @@ det(X/pstg(), Y/question_word())
 obj(Z/pstg(), X)
 aux(Z, A/present_tense())
 -> q_aux_det_pres ->
-p/aux_time(Z, now)
+p/p_time(Z, now)
 focus(p)
 center(A)
 ;
@@ -120,7 +120,7 @@ det(X/pstg(), Y/question_word())
 obj(Z/pstg(), X)
 aux(Z, A/past_tense())
 -> q_aux_det_past ->
-p/aux_time(Z, past)
+p/p_time(Z, past)
 focus(p)
 center(A)
 ;
@@ -158,11 +158,61 @@ center(X)
 ;
 
 
+cop(X/adj(), Y/present_tense())
+sbj(X, Z/pstg())
+ref(Y, E/expression())
+expr(E, be)
+-> be_adj_copula_present ->
+p/X(Z)
+time(p, now)
+focus(p)
+center(X)
+cover(Y)
+;
+
+cop(X/adj(), Y/past_tense())
+sbj(X, Z/pstg())
+ref(Y, E/expression())
+expr(E, be)
+-> be_adj_copula_past ->
+p/X(Z)
+time(p, now)
+focus(p)
+center(X)
+cover(Y)
+;
+
+cop(X/prepo(), Y/present_tense())
+sbj(X, Z/pstg())
+obj(X, A/pstg())
+ref(Y, E/expression())
+expr(E, be)
+-> be_prepo_copula_present ->
+p/X(Z, A)
+time(p, now)
+focus(p)
+center(X)
+cover(Y)
+;
+
+cop(X/prepo(), Y/past_tense())
+sbj(X, Z/pstg())
+obj(X, A/pstg())
+ref(Y, E/expression())
+expr(E, be)
+-> be_prepo_copula_past ->
+p/X(Z, A)
+time(p, now)
+focus(p)
+center(X)
+cover(Y)
+;
+
 cop(X/pstg(), Y/present_tense())
 det(X, D/dt())
 sbj(X, Z/pstg())
--> sbj_det_copula_present ->
-p/Y(Z,X)
+-> det_copula_present ->
+p/Y(Z,X())
 time(p, now)
 focus(p)
 center(X)
@@ -172,8 +222,8 @@ cover(D)
 cop(X/pstg(), Y/past_tense())
 det(X, D/dt())
 sbj(X, Z/pstg())
--> sbj_det_copula_past ->
-p/Y(Z,X)
+-> det_copula_past ->
+p/Y(Z,X())
 time(p,past)
 focus(p)
 center(X)
@@ -182,7 +232,7 @@ cover(D)
 
 cop(X/pstg(), Y/present_tense())
 sbj(X, Z/pstg())
--> sbj_copula_present ->
+-> copula_present ->
 p/Y(Z,X)
 time(p, now)
 focus(p)
@@ -191,7 +241,7 @@ center(X)
 
 cop(X/pstg(), Y/past_tense())
 sbj(X, Z/pstg())
--> sbj_copula_past ->
+-> copula_past ->
 p/Y(Z,X)
 time(p,past)
 focus(p)
@@ -199,7 +249,7 @@ center(X)
 ;
 
 cop(X/pstg(), Y/pstg())
--> id_copular_verb ->
+-> id_copula ->
 focus(Y)
 center(Y)
 ;
@@ -422,7 +472,7 @@ sbj(X, Z/pstg())
 precede(Y,Z)
 -> q_aux_past ->
 q/question(user, X)
-aux_time(X, past)
+p_time(X, past)
 center(Y)
 focus(q)
 ;
@@ -433,7 +483,7 @@ sbj(X, Z/pstg())
 precede(Y,Z)
 -> q_aux_present ->
 q/question(user, X)
-aux_time(X, now)
+p_time(X, now)
 center(Y)
 focus(q)
 ;
@@ -453,7 +503,7 @@ focus(q)
 aux(X/pstg(), Y/past_tense())
 type(Y, tenseful_aux)
 -> aux_past ->
-t/aux_time(X, past)
+t/p_time(X, past)
 center(Y)
 focus(t)
 ;
@@ -461,7 +511,7 @@ focus(t)
 aux(X/pstg(), Y/present_tense())
 type(Y, tenseful_aux)
 -> aux_present ->
-t/aux_time(X, now)
+t/p_time(X, now)
 center(Y)
 focus(t)
 ;
@@ -489,7 +539,7 @@ focus(m)
 raise(X/pstg(), Y/past_tense())
 -> raise_verb_past ->
 p/mode(X, Y)
-time(X, past)
+p_time(X, past)
 focus(p)
 center(Y)
 ;
@@ -497,7 +547,7 @@ center(Y)
 raise(X/pstg(), Y/present_tense())
 -> raise_verb_present ->
 p/mode(X, Y)
-time(X, now)
+p_time(X, now)
 focus(p)
 center(Y)
 ;
@@ -578,7 +628,7 @@ center(X)
 
 dat(X/pstg(), Y/pstg())
 -> indirect_obj ->
-p/indirect_obj(X, Y)
+p/beneficiary(X, Y)
 focus(p)
 center(Y)
 ;
@@ -586,7 +636,8 @@ center(Y)
 
 attr(X/pstg(), Y/pstg())
 -> general_attribute ->
-p/property(X,Y)
+p/Y(X)
+time(p, now)
 focus(p)
 center(Y)
 ;
@@ -722,6 +773,7 @@ focus(p)
 center(Y)
 ;
 
+
 ref(Y/pstg(), E/expression())
 expr(E, affirm)
 -> affirm_interj ->
@@ -771,6 +823,7 @@ focus(o/object())
 center(X)
 ;
 
+
 comp(X/pstg(), Y/pstg())
 -> lone_comp ->
 p/property(X, Y)
@@ -798,5 +851,4 @@ ltype(X, object)
 focus(X())
 center(X)
 ;
-
 
