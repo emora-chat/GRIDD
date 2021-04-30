@@ -1,5 +1,4 @@
 
-
 import lark, time
 from lark.visitors import Visitor_Recursive
 
@@ -21,7 +20,8 @@ class ConceptCompiler:
         'type', 'expr', 'predicate', 'nonassert', 'assert'
     })
 
-    def __init__(self, instances=_default_instances, types=_default_types, predicates=_default_predicates, namespace='c_'):
+    def __init__(self, instances=_default_instances, types=_default_types,
+                 predicates=_default_predicates, namespace='c_'):
         self.parser = lark.Lark(ConceptCompiler._grammar, parser='lalr')
         self.visitor = ConceptVisitor(instances, types, predicates, namespace)
 
@@ -62,10 +62,10 @@ class ConceptCompiler:
     def predicates(self): return self.visitor.predicates
 
     _grammar = r'''
-    
+
     start: block*
     block: state* ";"
-    
+
     state: mark? (identified | chunk | ref | type | rule | _COMMENT) json?
     chunk: "<" state* ">"
     identified: id (args | expr? ((global| local) id? args)?)
@@ -81,7 +81,7 @@ class ConceptCompiler:
     id: ID
     ID: /[a-zA-Z_.0-9]+/
     _COMMENT: "/*" /[^*]+/ "*/"
-    
+
     json: dict
     value: dict | list | string | number | constant
     string: ESCAPED_STRING 
@@ -91,7 +91,7 @@ class ConceptCompiler:
     list: "[" [value ("," value)*] "]"
     dict: "{" [pair ("," pair)*] "}"
     pair: ESCAPED_STRING ":" value
-    
+
     %import common.ESCAPED_STRING
     %import common.SIGNED_NUMBER
     %import common.WS    
@@ -172,7 +172,10 @@ class ConceptVisitor(Visitor_Recursive):
         concepts = []
         if args is None:
             id = self.locals.get(id, id)
-            self._check_generic(id, tree)
+            if tree is not None and id in self.types:
+                if not hasattr(tree, 'generics'):
+                    tree.generics = set()
+                tree.generics.add(id)
         else:
             if init == 'local':
                 if id in self.locals:
@@ -194,26 +197,22 @@ class ConceptVisitor(Visitor_Recursive):
                     concepts.append(type_inst)
                     self.lentries.append((id, TYPE, type, type_inst))
                 elif len(args) == 1:
-                    if type != TYPE and hasattr(tree, 'generics'):
-                        id = tree.generics.get(id, id)
                     self.lentries.append((args[0], type, None, id))
+                    if tree is not None and args[0] in self.types and type != TYPE:
+                        if not hasattr(tree, 'generics'):
+                            tree.generics = set()
+                        tree.generics.add(args[0])
                 elif len(args) == 2:
-                    if type != TYPE and hasattr(tree, 'generics'):
-                        for i in [0, 1]:
-                            args[i] = tree.generics.get(args[i], args[i])
                     self.lentries.append((args[0], type, args[1], id))
+                    for i in [0, 1]:
+                        if tree is not None and args[i] in self.types and type != TYPE:
+                            if not hasattr(tree, 'generics'):
+                                tree.generics = set()
+                            tree.generics.add(args[i])
                 concepts.append(type)
             concepts.extend(args)
         concepts.append(id)
         return concepts
-
-    def _check_generic(self, id, tree):
-        if tree is not None and id in self.types:
-            if not hasattr(tree, 'generics'):
-                tree.generics = {}
-            tree.generics[id] = self.globals.get()
-            return tree.generics[id]
-        return id
 
     def _add_exprs(self, id, expr):
         exprs = expr.split(',')
@@ -238,7 +237,7 @@ class ConceptVisitor(Visitor_Recursive):
             if hasattr(ch, 'concepts'):
                 concepts.update(ch.concepts)
         tree.concepts = concepts
-        generics = {} if not hasattr(tree, 'generics') else dict(tree.generics)
+        generics = set() if not hasattr(tree, 'generics') else set(tree.generics)
         for ch in tree.children:
             if hasattr(ch, 'generics'):
                 generics.update(ch.generics)
@@ -319,10 +318,9 @@ class ConceptVisitor(Visitor_Recursive):
             tree.focus = tree.mark
             del tree.mark
         self._collect_concepts(tree)
-        if hasattr(tree, 'generics') and tree.generics:
+        if hasattr(tree, 'generics'):
             generics = tree.generics
-            precondition = set(chain(*[self._init(generics[generic], 'global', generic, [])
-                                       for generic in generics]))
+            precondition = set(chain(*[self._init(None, None, generic, []) for generic in generics]))
             postcondition = set(tree.concepts)
             self._init_rule(precondition, postcondition)
         self._collect_rule(tree)
@@ -363,8 +361,8 @@ class ConceptVisitor(Visitor_Recursive):
         tree.concepts = {tree.focus}
         if tree.focus in self.types:            # is this real?
             if not hasattr(tree, 'generics'):
-                tree.generics = {}
-            tree.generics[tree.focus] = self.globals.get()
+                tree.generics = set()
+            tree.generics.add(tree.focus)
 
     def type(self, tree):
         variable, constraints = self._constrained_concept_collect(tree)
@@ -379,8 +377,8 @@ class ConceptVisitor(Visitor_Recursive):
         self._init_rule(constraints, postcondition)
         tree.concepts = {tree.focus}
         if not hasattr(tree, 'generics'):
-            tree.generics = {}
-        tree.generics[tree.focus] = self.globals.get()
+            tree.generics = set()
+        tree.generics.add(tree.focus)
 
     def id(self, tree):
         tree.children[0] = str(tree.children[0])
@@ -420,14 +418,12 @@ sally_and_john = (group)
 type(sally, sally_and_john)
 type(john, sally_and_john)
 
-<x/sally_and_john() -> like(me, x)>
+<l/like(me, sally_and_john)>
 
 <
-	big_dog = (dog)
-	scared_cat = (cat)
-	<big(d/dog()) -> type(d, big_dog)>
-	<scared(c/cat()) -> type(c, scared_cat)>
-	<d2/big_dog() c2/scared_cat() -> chase(d2, c2)>
+	@big_dog<big_dog/dog() big(big_dog)>
+	@scared_cat<scared_cat/cat() scared(scared_cat)>
+	chase(big_dog, scared_cat)
 >;
 
 
