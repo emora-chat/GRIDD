@@ -169,10 +169,14 @@ class ConceptVisitor(Visitor_Recursive):
             args = [a.focus for a in ch[4].children]
         return id, init, type, args, expr
 
-    def _init(self, id=None, init=None, type=None, args=None):
+    def _init(self, id=None, init=None, type=None, args=None, tree=None):
         concepts = []
         if args is None:
             id = self.locals.get(id, id)
+            if tree is not None and id in self.types:
+                if not hasattr(tree, 'generics'):
+                    tree.generics = set()
+                tree.generics.add(id)
         else:
             if init == 'local':
                 if id in self.locals:
@@ -185,14 +189,27 @@ class ConceptVisitor(Visitor_Recursive):
                     concepts.append(new_type_instance)
                 self.types.add(id)
             else: # instance init
+                if id is None:
+                    id = self.globals.get()
                 if len(args) > 2:
                     raise ValueError(f'Initializing {type} concept {id} with too many args: {args}')
                 elif len(args) == 0:
-                    self.lentries.append((None, type, None, id))
+                    type_inst = self.globals.get()
+                    concepts.append(type_inst)
+                    self.lentries.append((id, TYPE, type, type_inst))
                 elif len(args) == 1:
                     self.lentries.append((args[0], type, None, id))
+                    if tree is not None and args[0] in self.types and type != TYPE:
+                        if not hasattr(tree, 'generics'):
+                            tree.generics = set()
+                        tree.generics.add(args[0])
                 elif len(args) == 2:
                     self.lentries.append((args[0], type, args[1], id))
+                    for i in [0, 1]:
+                        if tree is not None and args[i] in self.types and type != TYPE:
+                            if not hasattr(tree, 'generics'):
+                                tree.generics = set()
+                            tree.generics.add(args[i])
                 concepts.append(type)
             concepts.extend(args)
         concepts.append(id)
@@ -221,6 +238,11 @@ class ConceptVisitor(Visitor_Recursive):
             if hasattr(ch, 'concepts'):
                 concepts.update(ch.concepts)
         tree.concepts = concepts
+        generics = set() if not hasattr(tree, 'generics') else set(tree.generics)
+        for ch in tree.children:
+            if hasattr(ch, 'generics'):
+                generics.update(ch.generics)
+        tree.generics = generics
 
     def _init_rule(self, precondition, postcondition, rid=None):
         if rid is None:
@@ -241,58 +263,8 @@ class ConceptVisitor(Visitor_Recursive):
             elif rid is not None:
                 raise ValueError(f'Multiple rules declared in chunk {tree.pretty()}.')
 
-    def block(self, tree):
-        self._collect_rule(tree)
-        for entry in self.lentries:
-            self.entries.append(tuple((self.locals.get(e, e) for e in entry)))
-        for entry in self.llinks:
-            self.links.append(tuple((self.locals.get(e, e) for e in entry)))
-        for k, v in self.ldatas:
-            self.ldatas[self.locals.get(k, k)] = v
-        self.lentries = []  # concepts within block
-        self.llinks = []  # metalinks within block
-        self.ldatas = {}  # metadata within block
-        self.locals = {}  # mapping of local_id : global_id
-
-    def state(self, tree):
-        self._get_mark(tree)
-        self._collect_concepts(tree)
-
-    def chunk(self, tree):
-        self._get_mark(tree)
-        if hasattr(tree, 'mark'):
-            tree.focus = tree.mark
-            del tree.mark
-        self._collect_concepts(tree)
-        self._collect_rule(tree)
-
-    def identified(self, tree):
-        id, init, type, args, expr = self._identified_tree_to_args(tree)
-        concepts = self._init(id, init, type, args)
-        if expr is not None:
-            self._add_exprs(id, expr)
-        tree.focus = id
-        tree.concepts = concepts
-        self._collect_concepts(tree)
-        print('\n'.join(f'{k}: {v}' for k, v in {
-            'ident': id, 'expr': expr, 'init': init, 'type': type, 'args': args
-        }.items()))
-        print()
-        print(tree.pretty())
-        return concepts
-
-    def arg(self, tree):
-        self._get_mark(tree)
-        i = 0
-        if tree.children[0].data == 'mark':
-            i = 1
-            tree.mark = tree.children[i].focus
-        tree.focus = tree.children[i].focus
-        self._collect_concepts(tree)
-
-    def args(self, tree):
-        self._get_mark(tree)
-        self._collect_concepts(tree)
+    def _globalize(self, ls, qualified):
+        return [tuple(((self.locals.get(e, e) if e in qualified else e) for e in entry)) for entry in ls]
 
     def _constrained_concept_collect(self, tree):
         ident = None
@@ -322,7 +294,63 @@ class ConceptVisitor(Visitor_Recursive):
             self.identified(tree)
             ident = tree.focus
             constraints = tree.concepts
-        return ident, constraints
+        return ident, set(constraints) - {None}
+
+    def block(self, tree):
+        self._collect_rule(tree)
+        for entry in self.lentries:
+            self.entries.append(tuple((self.locals.get(e, e) for e in entry)))
+        for entry in self.llinks:
+            self.links.append(tuple((self.locals.get(e, e) for e in entry)))
+        for k, v in self.ldatas:
+            self.ldatas[self.locals.get(k, k)] = v
+        self.lentries = []  # concepts within block
+        self.llinks = []  # metalinks within block
+        self.ldatas = {}  # metadata within block
+        self.locals = {}  # mapping of local_id : global_id
+
+    def state(self, tree):
+        self._get_mark(tree)
+        self._collect_concepts(tree)
+
+    def chunk(self, tree):
+        self._get_mark(tree)
+        if hasattr(tree, 'mark'):
+            tree.focus = tree.mark
+            del tree.mark
+        self._collect_concepts(tree)
+        if hasattr(tree, 'generics'):
+            generics = tree.generics
+            precondition = set(chain(*[self._init(None, None, generic, []) for generic in generics]))
+            postcondition = set(tree.concepts)
+            self._init_rule(precondition, postcondition)
+        self._collect_rule(tree)
+        self.lentries = self._globalize(self.lentries, tree.concepts)
+        self.llinks = self._globalize(self.llinks, tree.concepts)
+        self.ldatas = dict(self._globalize(list(self.ldatas.items()), tree.concepts))
+
+    def identified(self, tree):
+        id, init, type, args, expr = self._identified_tree_to_args(tree)
+        concepts = self._init(id, init, type, args, tree=tree)
+        if expr is not None:
+            self._add_exprs(id, expr)
+        tree.focus = id
+        tree.concepts = concepts
+        self._collect_concepts(tree)
+        return concepts
+
+    def arg(self, tree):
+        self._get_mark(tree)
+        i = 0
+        if tree.children[0].data == 'mark':
+            i = 1
+            tree.mark = tree.children[i].focus
+        tree.focus = tree.children[i].focus
+        self._collect_concepts(tree)
+
+    def args(self, tree):
+        self._get_mark(tree)
+        self._collect_concepts(tree)
 
     def ref(self, tree):
         id, constraints = self._constrained_concept_collect(tree)
@@ -331,15 +359,27 @@ class ConceptVisitor(Visitor_Recursive):
             del tree.mark
         for constraint in constraints:
             self.llinks.append((id, constraint, REF))
+        tree.concepts = {tree.focus}
+        if tree.focus in self.types:            # is this real?
+            if not hasattr(tree, 'generics'):
+                tree.generics = set()
+            tree.generics.add(tree.focus)
 
     def type(self, tree):
         variable, constraints = self._constrained_concept_collect(tree)
         new_type = self.globals.get()
+        tmp = self.locals.get(variable, variable)
+        self.locals[variable] = new_type
+        variable = tmp
         tree.focus = new_type
         if hasattr(tree, 'mark'):
             del tree.mark
         postcondition = set(self._init(None, None, TYPE, [variable, new_type]))
         self._init_rule(constraints, postcondition)
+        tree.concepts = {tree.focus}
+        if not hasattr(tree, 'generics'):
+            tree.generics = set()
+        tree.generics.add(tree.focus)
 
     def id(self, tree):
         tree.children[0] = str(tree.children[0])
@@ -382,9 +422,9 @@ type(john, sally_and_john)
 <l/like(me, sally_and_john)>
 
 <
-	@d<d/dog() big(d)>
-	@c<c/cat() scared(c)>
-	chase(d, c)
+	@big_dog<big_dog/dog() big(big_dog)>
+	@scared_cat<scared_cat/cat() scared(scared_cat)>
+	chase(big_dog, scared_cat)
 >;
 
 
