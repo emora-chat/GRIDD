@@ -1,0 +1,22 @@
+have(user, p/pet())
+-> user_own_pet ->
+possess(user, p)
+;
+
+time(have(user, d/dog()), now)
+-> user_pet_dog ->
+p:<
+    l/like(user, p2/do(user, p/predicate()))
+    with(p, d)
+    time(l, now)
+>
+user_aware(p2)
+request(emora, p)
+
+t:<time(know(d, t/trick()), now)>
+request(emora, t)
+
+loc:<time(w/walk(user, d), now) locate(w, loc/location())>
+user_aware(w)
+request(emora, loc)
+;

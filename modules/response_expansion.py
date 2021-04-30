@@ -21,7 +21,7 @@ class ResponseExpansion:
                 expansions = wm.structure(predicate[3],
                                           subj_emodifiers={'time', 'mode', 'qualifier', 'property',
                                                            'indirect_obj', 'negate'},
-                                          obj_emodifiers={'possess', 'question'})
+                                          obj_emodifiers={'possess', REQ_TRUTH, REQ_ARG})
                 expansions = set(expansions) # todo - fix this list to set to list conversion
                 for pred in list(expansions):
                     for c in pred:
@@ -31,7 +31,7 @@ class ResponseExpansion:
                 # check for unresolved user request
                 emora_idk = False
                 for s, t, o, i in expansions:
-                    if s == 'user' and t == 'question' and wm.metagraph.out_edges(o, REF):
+                    if s == 'user' and t in {REQ_TRUTH, REQ_ARG} and wm.metagraph.out_edges(o, REF):
                         emora_idk = True
                         break
 
@@ -61,7 +61,7 @@ class ResponseExpansion:
     def identify_request_resolutions(self, spoken_predicates, wm):
         # identify emora answers to user requests and remove request bipredicate
         for s, t, o, i in spoken_predicates:
-            if s == 'user' and t == 'question':
+            if s == 'user' and t in {REQ_TRUTH, REQ_ARG} :
                 wm.remove(s, t, o, i)
 
     def assign_cover_and_salience(self, graph, concepts=None):

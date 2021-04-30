@@ -210,7 +210,11 @@ class ParseToLogic:
         comps = [pred[3] for pred in mention_cg.predicates() if pred[1] not in {'focus', 'center', 'cover'}]
         # For argument questions, add the question subject
         if rule_name in {'q_aux_adv', 'q_adv', 'qdet_copula_present', 'qdet_copula_past', 'dat_question'}:
-            ((s, _, _, _),) = list(mention_cg.predicates(predicate_type='question'))
+            preds = list(mention_cg.predicates(predicate_type=REQ_ARG))
+            if preds:
+                ((s, _, _, _),) = preds
+            else:
+                ((s, _, _, _),) = list(mention_cg.predicates(predicate_type=REQ_TRUTH))
             comps.append(s)
         # For various rules, the focal node is not a predicate instance so it needs to be added manually
         if rule_name in {'obj_question', 'sbj_question', 'q_aux_det', 'q_det',

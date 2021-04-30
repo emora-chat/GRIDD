@@ -64,19 +64,29 @@ nested = [
     "I like being in Georgia"
 ]
 
+questions = [
+    "What is your name",
+    "What name is yours",
+    "What is her dog's color",
+    "What is the color of her dog",
+    "What color is her dog",
+    "What is your job",
+    "What animal is in trouble"
+]
+
+negation = [
+    'They are not studying',
+    'They never study',
+    "They no longer study"
+]
+
 bad_nlu_examples = [
     "You came to see me",
     "I came to swim",
     "I enjoy alcohol and being in nature",
     "I bought a house where I work",
-    "I am inspired because of you"
-]
-
-questions = [
-    "What is your name",
-    "What name is yours",
-    "What is her dog's color",
-    "What color is her dog"
+    "I am inspired because of you",
+    "The color of my car is red",
 ]
 
 def run(utterances):

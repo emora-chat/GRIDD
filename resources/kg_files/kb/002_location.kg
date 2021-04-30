@@ -1,0 +1,42 @@
+
+building=(entity)
+expr("building", building)
+house=(building)
+expr("house", house)
+
+;
+
+location=(entity)
+expr("location, place", location)
+[state,city] = (location)
+expr("state", state)
+expr("city, town", city)
+[georgia, washington] = (state)
+expr("georgia", georgia)
+expr("washington", washington)
+[atlanta, seattle] = (city)
+expr("atlanta", atlanta)
+expr("seattle", seattle)
+
+neighborhood = (location)
+expr("neighborhood", neighborhood)
+street = (location)
+expr("street, road", street)
+sidewalk = (location)
+expr("sidewalk", sidewalk)
+
+park = (location)
+expr("park", park)
+dog_park = (park)
+expr("dog park", dog_park)
+
+body_of_water = (location)
+lake = (body_of_water)
+expr("lake", lake)
+ocean = (body_of_water)
+expr("ocean", ocean)
+
+beach = (location)
+expr("beach", beach)
+
+;

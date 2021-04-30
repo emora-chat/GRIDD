@@ -96,7 +96,7 @@ class Chatbot:
                 ((center, t, o, i,),) = center_pred
             else:
                 ((center, t, o, i,),) = list(mention_graph.predicates(predicate_type='link'))
-            mega_mention_graph.concatenate(mention_graph, predicate_exclusions={'focus', 'center', 'cover'})
+            mega_mention_graph.concatenate(mention_graph, predicate_exclusions={'focus', 'center', 'cover', 'link'})
             mega_mention_graph.add(span, 'ref', focus)
             mega_mention_graph.add(span, 'type', 'span')
             if not span.startswith('__linking__'):
@@ -257,15 +257,37 @@ class Chatbot:
 
             # Fragment Request Resolution:
             #   most salient type-compatible user concept from current turn fills most salient emora request
-            emora_requests = [pred for pred in wm.predicates('emora', 'question') if wm.has(pred[3], USER_AWARE)]
-            if len(emora_requests) > 0:
-                salient_emora_request = max(emora_requests,
-                                            key=lambda pred: wm.features.get(pred[3], {}).get(SALIENCE, 0))
+            salient_emora_truth_request = None
+            salient_emora_arg_request = None
+            salient_emora_request = None
+            req_type = None
+            emora_truth_requests = [pred for pred in wm.predicates('emora', REQ_TRUTH) if wm.has(pred[3], USER_AWARE)]
+            if len(emora_truth_requests) > 0:
+                salient_emora_truth_request = max(emora_truth_requests, key=lambda pred: wm.features.get(pred[3], {}).get(SALIENCE, 0))
+                truth_sal = wm.features.get(salient_emora_truth_request[3], {}).get(SALIENCE, 0)
+            emora_arg_requests = [pred for pred in wm.predicates('emora', REQ_ARG) if wm.has(pred[3], USER_AWARE)]
+            if len(emora_arg_requests) > 0:
+                salient_emora_arg_request = max(emora_arg_requests, key=lambda pred: wm.features.get(pred[3], {}).get(SALIENCE, 0))
+                arg_sal = wm.features.get(salient_emora_arg_request[3], {}).get(SALIENCE, 0)
+            if salient_emora_arg_request and salient_emora_truth_request:
+                if truth_sal >= arg_sal:
+                    salient_emora_request = salient_emora_truth_request
+                    req_type = REQ_TRUTH
+                else:
+                    salient_emora_request = salient_emora_arg_request
+                    req_type = REQ_ARG
+            elif salient_emora_arg_request:
+                salient_emora_request = salient_emora_arg_request
+                req_type = REQ_ARG
+            elif salient_emora_truth_request:
+                salient_emora_request = salient_emora_truth_request
+                req_type = REQ_TRUTH
+            if salient_emora_request is not None:
                 request_focus = salient_emora_request[2]
                 fragment_request_merges = []
                 current_user_spans = [s for s in wm.subtypes_of("span") if s != "span" and int(wm.features[s]["span_data"].turn) == self.auxiliary_state["turn_index"]]
                 current_user_concepts = {o for s in current_user_spans for o in chain(wm.objects(s, SPAN_REF), wm.objects(s, SPAN_DEF))}
-                if wm.has(predicate_id=request_focus): # special case - y/n question requires yes/no fragment as answer (or full resolution from earlier in pipeline)
+                if req_type == REQ_TRUTH: # special case - y/n question requires yes/no fragment as answer (or full resolution from earlier in pipeline)
                     indicator_preds = [p[3] for p in list(wm.predicates('user', AFFIRM)) + list(wm.predicates('user', REJECT))]
                     options = set(indicator_preds).intersection(current_user_concepts)
                     if len(indicator_preds) > 0:
@@ -398,15 +420,17 @@ class Chatbot:
     def merge_references(self, reference_pairs):
         for match_node, ref_node in reference_pairs:
             # identify user answers to emora requests and remove request bipredicate
-            if self.dialogue_intcore.working_memory.has('emora', 'question', ref_node) \
-                    and not self.dialogue_intcore.working_memory.metagraph.out_edges(match_node, REF):
-                self.dialogue_intcore.working_memory.remove('emora', 'question', ref_node)
+            if not self.dialogue_intcore.working_memory.metagraph.out_edges(match_node, REF):
+                if self.dialogue_intcore.working_memory.has('emora', REQ_TRUTH, ref_node):
+                    self.dialogue_intcore.working_memory.remove('emora', REQ_TRUTH, ref_node)
+                elif self.dialogue_intcore.working_memory.has('emora', REQ_ARG, ref_node):
+                    self.dialogue_intcore.working_memory.remove('emora', REQ_ARG, ref_node)
         self.dialogue_intcore.merge(reference_pairs)
 
     def identify_request_resolutions(self, spoken_predicates):
         # identify emora answers to user requests and remove request bipredicate
         for s, t, o, i in spoken_predicates:
-            if s == 'user' and t == 'question':
+            if s == 'user' and t in {REQ_TRUTH, REQ_ARG}:
                 self.dialogue_intcore.working_memory.remove(s, t, o, i)
 
     def assign_cover(self, graph, concepts=None):
@@ -420,7 +444,7 @@ class Chatbot:
         wm = self.dialogue_intcore.working_memory
         ls = []
         excl = set(EXCL)
-        excl.add('type')
+        excl.update({TYPE, ASSERT, TIME})
         for concept, features in wm.features.items():
             if wm.has(predicate_id=concept):
                 sig = wm.predicate(concept)
@@ -454,10 +478,10 @@ if __name__ == '__main__':
     ITERATION = 2
 
     chatbot = Chatbot(*kb, inference_rules=rules, starting_wm=None)
-    # chatbot.chat(debug=DEBUG)
+    chatbot.chat(debug=DEBUG)
 
-    utter = input('>>> ').strip()
-    while utter != 'q':
-        chatbot.run_nlu(utter, debug=True)
-        print()
-        utter = input('>>> ').strip()
+    # utter = input('>>> ').strip()
+    # while utter != 'q':
+    #     chatbot.run_nlu(utter, debug=True)
+    #     print()
+    #     utter = input('>>> ').strip()

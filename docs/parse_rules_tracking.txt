@@ -97,6 +97,7 @@ Incorrect Dependency Parse?
 -------------
 He was proud of her -> `her` should be ppmod, not obj
 I like being in Georgia -> results in two roots `like` and `in`
+It's no good -> `no` should be neg, not det
 
 
 

@@ -3,7 +3,7 @@
 
 Captures questions that start with `When`, `Where`, `Why`, and `How` in the adverb role.
 
-Represented as `question_concept(main_predicate, question(user, object()))`.
+Represented as `question_concept(main_predicate, request(user, object()))`.
 
 The mapping between question word and semantic concept is:
 
@@ -19,7 +19,7 @@ The mapping between question word and semantic concept is:
 	precede(Z, A)
 	-> q_aux_adv ->
 	p/Y(X, o/object())
-	question(user, o)
+	request(user, o)
 	focus(p)
 	center(Y)
 	cover(Z)
@@ -32,7 +32,7 @@ The mapping between question word and semantic concept is:
 	precede(Z, A)
 	-> q_cop_adv ->
 	p/Y(X, o/object())
-	question(user, o)
+	request(user, o)
 	focus(p)
 	center(Y)
 	;
@@ -53,7 +53,7 @@ When did you start reading
 
 Captures questions that start with `How`, `What`, and `Who` as the root of a copular construction or as the determiner of the root. 
 
-Represented as `copula(sbj, question(user, question_concept))`.
+Represented as `copula(sbj, request(user, question_concept))`.
 
 <details>
   <summary>Conversions</summary>
@@ -63,7 +63,7 @@ Represented as `copula(sbj, question(user, question_concept))`.
 	det(X, D/question_word())
 	-> qdet_copula_present ->
 	p/Y(Z, inst/X())
-	question(user, inst)
+	request(user, inst)
 	time(p, now)
 	focus(p)
 	center(X)
@@ -75,7 +75,7 @@ Represented as `copula(sbj, question(user, question_concept))`.
 	det(X, D/question_word())
 	-> qdet_copula_past ->
 	p/Y(Z, inst/X())
-	question(user, inst)
+	request(user, inst)
 	time(p, past)
 	focus(p)
 	center(X)
@@ -86,7 +86,7 @@ Represented as `copula(sbj, question(user, question_concept))`.
 	sbj(X, Z/pstg())
 	-> qw_copula_present ->
 	p/Y(Z, X)
-	question(user, X)
+	request(user, X)
 	time(p, now)
 	focus(p)
 	center(X)
@@ -96,7 +96,7 @@ Represented as `copula(sbj, question(user, question_concept))`.
 	sbj(X, Z/pstg())
 	-> qw_copula_past ->
 	p/Y(Z, X)
-	question(user, X)
+	request(user, X)
 	time(p, past)
 	focus(p)
 	center(X)
@@ -118,21 +118,21 @@ What color was it
 
 Captures questions that contain `Who` and `What` as subjects, objects, or datives. 
 
-Represented by wrapping the subject/object/dative with the `question` predicate. 
+Represented by wrapping the subject/object/dative with the `request` predicate. 
 
 <details>
   <summary>Conversions</summary>
   
 	obj(X/pstg(), Y/question_word())
 	-> obj_question ->
-	question(user, o/object())
+	request(user, o/object())
 	center(Y)
 	focus(o)
 	;
 	
 	sbj(X/pstg(), Y/question_word())
 	-> sbj_question ->
-	question(user, o/object())
+	request(user, o/object())
 	center(Y)
 	focus(o)
 	;
@@ -143,8 +143,8 @@ Represented by wrapping the subject/object/dative with the `question` predicate.
 	precede(Y, Z)
 	precede(Z, A)
 	-> dat_question ->
-	p/indirect_obj(X, o/object())
-	question(user, o)
+	p/beneficiary(X, o/object())
+	request(user, o)
 	center(Y)
 	cover(Z)
 	focus(p)
@@ -178,7 +178,7 @@ Overrules the auxiliary question rule, which would cause an incorrect interpreta
 	aux(Z, A/pstg())
 	-> q_aux_det ->
 	inst/X()
-	question(user, inst)
+	request(user, inst)
 	focus(inst)
 	center(X)
 	cover(Y)
@@ -205,7 +205,7 @@ Overrules the auxiliary question rule, which would cause an incorrect interpreta
 	det(X/pstg(), Y/question_word())
 	-> q_det ->
 	inst/X()
-	question(user, inst)
+	request(user, inst)
 	focus(inst)
 	center(X)
 	cover(Y)
@@ -231,7 +231,7 @@ Copula constructions are in interrogative form when the copula precedes the subj
 	precede(Y, Z)
 	-> q_sbj_copula_present ->
 	p/Y(Z,X)
-	q/question(user, p)
+	q/request_truth(user, p)
 	time(p, now)
 	focus(p)
 	center(X)
@@ -242,7 +242,7 @@ Copula constructions are in interrogative form when the copula precedes the subj
 	precede(Y, Z)
 	-> q_sbj_copula_past ->
 	p/Y(Z,X)
-	q/question(user, p)
+	q/request_truth(user, p)
 	time(p, past)
 	focus(p)
 	center(X)
@@ -273,7 +273,7 @@ In this case, the final logical form is `p/property(subject) cause(obj, p)`
 * Prepositional specifiers take the form `root(subject, object)` as in `I am in Georgia`.
 
 (B) All other copular verbs are maintained and result in the logical form `copula(subject, root)`, 
-just like the second case of the `be` copular verb. 
+just like the third case of the `be` copular verb. It may have a `cause` attachment, if one is given.
 For these cases, the specific copular verb is captured by an identifier rule such that it will be 
 merged into the predicate.
 
@@ -411,7 +411,7 @@ Captures truth questions asked about sentences with passive voice.
 	-> q_sbj_obj_passive_voice_past ->
 	p/X(Y, Z)
 	time(p, past)
-	question(user, p)
+	request_truth(user, p)
 	focus(p)
 	center(X)
 	cover(A)
@@ -424,7 +424,7 @@ Captures truth questions asked about sentences with passive voice.
 	-> q_obj_passive_voice_past ->
 	p/X(object(), Z)
 	time(p, past)
-	question(user, p)
+	request_truth(user, p)
 	focus(p)
 	center(X)
 	cover(A)
@@ -438,7 +438,7 @@ Captures truth questions asked about sentences with passive voice.
 	-> q_sbj_obj_passive_voice_present ->
 	p/X(Y, Z)
 	time(p, now)
-	question(user, p)
+	request_truth(user, p)
 	focus(p)
 	center(X)
 	cover(A)
@@ -451,7 +451,7 @@ Captures truth questions asked about sentences with passive voice.
 	-> q_obj_passive_voice_present ->
 	p/X(object(), Z)
 	time(p, now)
-	question(user, p)
+	request_truth(user, p)
 	focus(p)
 	center(X)
 	cover(A)
@@ -822,7 +822,7 @@ The overall tense of the question is also affected by the aux verb.
 	sbj(X, Z/pstg())
 	precede(Y,Z)
 	-> q_aux_past ->
-	q/question(user, X)
+	q/request_truth(user, X)
 	p_time(X, past)
 	center(Y)
 	focus(q)
@@ -833,7 +833,7 @@ The overall tense of the question is also affected by the aux verb.
 	sbj(X, Z/pstg())
 	precede(Y,Z)
 	-> q_aux_present ->
-	q/question(user, X)
+	q/request_truth(user, X)
 	p_time(X, now)
 	center(Y)
 	focus(q)
@@ -845,7 +845,7 @@ The overall tense of the question is also affected by the aux verb.
 	sbj(X, Z/pstg())
 	precede(Y,Z)
 	-> q_aux_have ->
-	q/question(user, X)
+	q/request_truth(user, X)
 	center(Y)
 	focus(q)
 	;
@@ -905,7 +905,7 @@ The overall meaning of the verb is also modified by the modal.
 	precede(Y, Z)
 	-> q_modal ->
 	m/Y(X)
-	q/question(user, m)
+	q/request_truth(user, m)
 	center(Y)
 	focus(m)
 	;
@@ -1246,7 +1246,7 @@ I bought four tickets.
   
 	neg(X/pstg(), Y/pstg())
 	-> negation ->
-	p/negate(X, Y)
+	p/Y(X)
 	focus(p)
 	center(Y)
 	;
