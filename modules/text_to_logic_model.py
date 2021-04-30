@@ -5,24 +5,14 @@ from GRIDD.data_structures.inference_engine import InferenceEngine
 from GRIDD.data_structures.intelligence_core import IntelligenceCore
 from GRIDD.data_structures.id_map import IdMap
 from GRIDD.utilities import collect
-from GRIDD.data_structures.reference_identifier import REFERENCES_BY_RULE, QUESTION_INST_REF, subtree_dependencies
-import torch, gc
-
-LOCALDEBUG = False
-
-def ENTITY_INSTANCES_BY_RULE(rule_name, focus_node, cg, comps):
-    # get the newly instantiated concept that is the question subject
-    if rule_name in {'q_aux_adv', 'q_adv', 'qdet_copula_present', 'qdet_copula_past', 'dat_question'}:
-        ((s,_,_,_), ) = list(cg.predicates(predicate_type='question'))
-        comps.append(s)
-    # only focal nodes which are newly instantiated entities are considered components
-    if rule_name in {'obj_question', 'sbj_question', 'q_aux_det', 'q_det',
-                     'ref_concept_determiner', 'inst_concept_determiner',
-                     'other_concept_determiner', 'ref_determiner', 'inst_determiner',
-                     'obj_of_possessive', 'ref_pron', 'single_word'}:
-        comps.append(focus_node)
+from GRIDD.globals import *
+from GRIDD.data_structures.reference_identifier import REFERENCES_BY_RULE, QUESTION_INST_REF, subtree_dependencies, parent_subtree_dependencies
 
 class ParseToLogic:
+
+    # Parse templates are priority-ordered, such that the highest-priority matching template
+    # for a specific center is kept and all other templates with the same center are discarded.
+    # Affects _get_mentions() and _get_merges()!
 
     def __init__(self, kb, template_file, device='cpu'):
         cg = ConceptGraph(collect(template_file), namespace='r_')
@@ -74,8 +64,7 @@ class ParseToLogic:
     @abstractmethod
     def text_to_graph(self, *args):
         """
-        return: ConceptGraph representation of the text's surface form.
-                For example, a graph of the dependency parse of the last turn.
+        return: ConceptGraph representation of the text, e.g. cg of the dependency parse
         """
         pass
 
@@ -98,9 +87,6 @@ class ParseToLogic:
                             for rule, (pre, post, sols) in self.intcore.infer().items()}
         mentions = self._get_mentions(rule_assignments, wm)
         merges = self._get_merges(rule_assignments, wm)
-        if LOCALDEBUG:
-            self.display_mentions(mentions, wm)
-            self.display_merges(merges, wm)
         return mentions, merges
 
     def _span_to_concepts(self):
@@ -137,47 +123,6 @@ class ParseToLogic:
                 wm.add(span_node, 'ref', f'"{surface_form}"')
                 wm.add(f'"{surface_form}"', 'expr', unk_node)
 
-    # def _unknown_expression_identification(self, ewm):
-    #     """
-    #     Create "UNK" expression nodes for all nodes with no expr references.
-    #     """
-    #     for span_node in self.spans:
-    #         expression = '"%s"' % ewm.features[span_node]["span_data"].expression
-    #         references = ewm.objects(expression, 'expr')
-    #         if len(references) == 0:
-    #             unk_node = ewm.add(ewm.id_map().get())
-    #             types = ewm.types(span_node)
-    #             pos_type = 'other'
-    #             for n in ['verb', 'noun', 'pron', 'adj', 'adv']:
-    #                 if n in types:
-    #                     pos_type = n
-    #                     break
-    #             ewm.add(unk_node, 'type', 'unknown_%s'%pos_type)
-    #             if not ewm.has('unknown_%s'%pos_type, 'type', 'object'):
-    #                 ewm.add('unknown_%s' % pos_type, 'type', 'object')
-    #             ewm.add(expression, 'expr', unk_node)
-
-    # def _inference(self, ewm, retry=None):
-    #     """
-    #     Apply the template rules to the current expression working_memory
-    #     and get the variable assignments of the solutions
-    #     """
-    #     try:
-    #         solutions = self.inference_engine.infer(ewm)
-    #         return solutions
-    #     except RuntimeError as e:
-    #         print('\n' + str(e))
-    #         if retry == 4:
-    #             return {}
-    #         gc.collect()
-    #         torch.cuda.empty_cache()
-    #         return self._inference(ewm, retry=retry+1 if retry is not None else 1)
-
-
-        # Parse templates are priority-ordered, such that the highest-priority matching template
-        # for a specific center is kept and all other templates with the same center are discarded.
-        # Affects _get_mentions() and _get_merges()!
-
     def _update_centers(self, centers_handled, post, center, solution):
         centers_handled.add(center)
         covered = list(post.predicates(predicate_type='cover'))
@@ -188,13 +133,12 @@ class ParseToLogic:
     def _get_mentions(self, assignments, ewm):
         """
         Produce dict<mention span: mention graph>.
-
         assignments: dict<rule: list<assignments>>
         """
         centers_handled = set()
         mentions = {}
         mention_ids = IdMap(namespace='ment_')
-        auxes = set()
+        time_promotions = set()
         for rule, solutions in assignments.items():
             link = False
             pre, post, rule_name = rule[0], rule[1], rule[2]
@@ -217,69 +161,36 @@ class ParseToLogic:
                     post_to_ewm_map = {node: self._get_concept_of_span(solution[node], ewm)
                                        for node in post.concepts()
                                        if node in solution and node in maintain_in_mention_graph}
-                    cg = ConceptGraph(namespace=mention_ids, concepts={center})
-                    post_to_cg_map = cg.concatenate(post)
+                    mention_cg = ConceptGraph(namespace=mention_ids, concepts={center})
+                    post_to_cg_map = mention_cg.concatenate(post)
                     for post_node, ewm_node in post_to_ewm_map.items():
                         cg_node = post_to_cg_map[post_node]
-                        cg.add(ewm_node)
+                        mention_cg.add(ewm_node)
                         if ewm_node.startswith(ewm.id_map().namespace):
-                            cg.merge(cg_node, ewm_node, strict_order=True)
+                            mention_cg.merge(cg_node, ewm_node, strict_order=True)
                         else:
-                            cg.merge(ewm_node, cg_node, strict_order=True)
-                        self._add_unknowns_to_cg(ewm_node, ewm, cg_node, cg)
-                    # get focus node of mention
-                    ((focus_node, _, _, _),) = list(cg.predicates(predicate_type='focus'))
-                    if rule_name in REFERENCES_BY_RULE: # identify reference spans
-                        if rule_name in QUESTION_INST_REF:
-                            # some questions have focus node as the question predicate instance,
-                            # when it should be the target of the question predicate instance
-                            focus_node = cg.predicate(focus_node)[2]
-                        cg.metagraph.add_links(focus_node, REFERENCES_BY_RULE[rule_name](center, ewm), 'refsp')
-                    comps = [pred[3] for pred in cg.predicates() if pred[1] not in {'focus', 'center', 'cover'}]
-                    ENTITY_INSTANCES_BY_RULE(rule_name, focus_node, cg, comps)
-                    cg.metagraph.add_links(focus_node, comps, 'comps')
-                    if ewm.has(center, 'assert'): # if center is asserted, add assertion to focus node
-                        cg.add(focus_node, 'assert')
-                        cg.metagraph.add_links(focus_node, subtree_dependencies(center, ewm), 'dp_sub')
-                    mentions[center] = cg
+                            mention_cg.merge(ewm_node, cg_node, strict_order=True)
+                        self._add_unknowns_to_cg(ewm_node, ewm, cg_node, mention_cg)
+                    self._get_span_links(rule_name, mention_cg, center, ewm)
+                    mentions[center] = mention_cg
                     if not center.startswith('__linking__'):
                         post_to_ewm_map = {node: self._get_concept_of_span(solution[node], ewm)
                                            for node in post.concepts()
                                            if node in solution and node in maintain_in_mention_graph}
-                        if len(list(cg.predicates(predicate_type='aux_time'))) > 0:
-                            auxes.add(center)
+                        if len(list(mention_cg.predicates(predicate_type='p_time'))) > 0:
+                            time_promotions.add(center)
                         for post_node, ewm_node in post_to_ewm_map.items():
                             cg_node = post_to_cg_map[post_node]
-                            cg.add(ewm_node)
+                            mention_cg.add(ewm_node)
                             if ewm_node.startswith(ewm.id_map().namespace):
-                                cg.merge(cg_node, ewm_node, strict_order=True)
+                                mention_cg.merge(cg_node, ewm_node, strict_order=True)
                             else:
-                                cg.merge(ewm_node, cg_node, strict_order=True)
-                            self._add_unknowns_to_cg(ewm_node, ewm, cg_node, cg)
-                        cg.features.update(ewm.features, concepts={center})
+                                mention_cg.merge(ewm_node, cg_node, strict_order=True)
+                            self._add_unknowns_to_cg(ewm_node, ewm, cg_node, mention_cg)
+                        mention_cg.features.update(ewm.features, concepts={center})
                     else:
-                        cg.features[center]["span_data"] = ewm.features[center.replace('__linking__','')]["span_data"]
-
-        for aux in auxes: # replaces `time` of head predicate of aux-span with `aux_time`
-            heads_of_aux = ewm.subjects(aux, 'aux')
-            for head in heads_of_aux:
-                aux_cg = mentions[aux]
-                preds = list(aux_cg.predicates(predicate_type='aux_time'))
-                if len(preds) > 0:
-                    ((a, at, aux_time, ai), ) = preds
-                    head_cg = mentions[head]
-                    preds = list(head_cg.predicates(predicate_type='time'))
-                    if len(preds) > 0:
-                        ((s,t,o,i), ) = preds
-                        head_cg.remove(s,t,o,i)
-                    else:
-                        ((s,_,_,_), ) = list(head_cg.predicates(predicate_type='focus'))
-                        i = head_cg.id_map().get()
-                    head_cg.add(s, 'time', aux_time, i)
-                    head_cg.metagraph.add(s, i, 'comps')
-                    aux_cg.remove(a, at, aux_time, ai)
-            if not list(mentions[aux].predicates(predicate_type='focus')):
-                del mentions[aux]
+                        mention_cg.features[center]["span_data"] = ewm.features[center.replace('__linking__','')]["span_data"]
+        self._promote_time(time_promotions, ewm, mentions)
         return mentions
 
     def _add_unknowns_to_cg(self, source_node, source, cg_node, cg):
@@ -289,10 +200,75 @@ class ParseToLogic:
                 cg.add(cg_node, 'type', unknown_type)
                 break
 
+    def _get_comps(self, rule_name, focus_node, mention_cg):
+        """
+        Gathers the components of the mention as determined by the origin rule.
+        Components are all predicates and entities that fully define the structure of the focus node.
+        """
+        # All predicates are components
+        comps = [pred[3] for pred in mention_cg.predicates() if pred[1] not in {'focus', 'center', 'cover'}]
+        # For argument questions, add the question subject
+        if rule_name in {'q_aux_adv', 'q_adv', 'qdet_copula_present', 'qdet_copula_past', 'dat_question'}:
+            ((s, _, _, _),) = list(mention_cg.predicates(predicate_type='question'))
+            comps.append(s)
+        # For various rules, the focal node is not a predicate instance so it needs to be added manually
+        if rule_name in {'obj_question', 'sbj_question', 'q_aux_det', 'q_det',
+                         'ref_concept_determiner', 'inst_concept_determiner',
+                         'other_concept_determiner', 'ref_determiner', 'inst_determiner',
+                         'obj_of_possessive', 'ref_pron', 'single_word'}:
+            comps.append(focus_node)
+        return comps
+
+    def _get_span_links(self, rule_name, mention_cg, center, ewm):
+        ((focus_node, _, _, _),) = list(mention_cg.predicates(predicate_type='focus'))
+
+        if rule_name in REFERENCES_BY_RULE:  # identify reference spans
+            if rule_name in QUESTION_INST_REF:
+                # some questions have focus node as the question predicate instance,
+                # but the reference links should attach to the target of the question predicate instance
+                focus_node = mention_cg.predicate(focus_node)[2]
+            mention_cg.metagraph.add_links(focus_node, REFERENCES_BY_RULE[rule_name](center, ewm) + [center], REF_SP)
+
+        if 'plural' in ewm.types(center): # if mention is a plural => group specification (definitions and properties)
+            mention_cg.add(focus_node, TYPE, GROUP)
+            definitions = set(subtree_dependencies(center, ewm) + [center])
+            properties = set(parent_subtree_dependencies(center, ewm))
+            properties -= definitions
+            mention_cg.metagraph.add_links(focus_node, definitions, GROUP_DEF_SP)
+            mention_cg.metagraph.add_links(focus_node, properties, GROUP_PROP_SP)
+
+        comps = self._get_comps(rule_name, focus_node, mention_cg)
+        mention_cg.metagraph.add_links(focus_node, comps, COMPS)
+
+        if ewm.has(center, ASSERT):  # if center is asserted, add assertion to focus node
+            mention_cg.add('user', ASSERT, focus_node)
+            mention_cg.metagraph.add_links(focus_node, subtree_dependencies(center, ewm) + [center], DP_SUB)
+
+    def _promote_time(self, promotions, ewm, mentions):
+        for p in promotions: # replaces obj of `time` of head predicate of promotion with obj of `p_time`
+            heads = ewm.subjects(p)
+            for head in heads:
+                promotion_cg = mentions[p]
+                preds = list(promotion_cg.predicates(predicate_type='p_time'))
+                if len(preds) > 0:
+                    (promotion_time_pred,) = preds
+                    head_cg = mentions[head]
+                    preds = list(head_cg.predicates(predicate_type='time'))
+                    if len(preds) > 0:
+                        ((s,t,o,i), ) = preds
+                        head_cg.remove(s,t,o,i)
+                    else:
+                        ((s,_,_,_), ) = list(head_cg.predicates(predicate_type='focus'))
+                        i = head_cg.id_map().get()
+                    head_cg.add(s, TIME, promotion_time_pred[2], i)
+                    head_cg.metagraph.add(s, i, COMPS)
+                    promotion_cg.remove(*promotion_time_pred)
+            if not list(mentions[p].predicates(predicate_type='focus')):
+                del mentions[p]
+
     def _get_merges(self, assignments, ewm):
         """
         Produce scored pairs of (mention span, path).
-
         assignments: dict<rule: list<assignments>>
         """
         centers_handled = set()
@@ -328,62 +304,7 @@ class ParseToLogic:
                             pair = ((center, 'type'),
                                     (solution[post.type(focus)], 'self'))
                             merges.append(pair)
-                    # for (_,o,t) in post.bipredicates_of_subject(focus):
-                    #     if o in solution:
-                    #         pass
-                    #     if t in solution:
-                    #         pass
-                    #     for inst in post.bipredicate(focus,o,t):
-                    #         if inst in solution:
-                    #             pass
-                    # for (_,t) in post.monopredicates_of_subject(focus):
-                    #     if t in solution:
-                    #         pass
-                    #     for inst in post.bipredicate(focus,t):
-                    #         if inst in solution:
-                    #             pass
-                    # for (s,_,t) in post.bipredicates_of_object(focus):
-                    #     if s in solution:
-                    #         pass
-                    #     if t in solution:
-                    #         pass
-                    #     for inst in post.bipredicate(s,focus,t):
-                    #         if inst in solution:
-                    #             pass
-                    # for tuple, inst in post.get_instances_of_type(focus):
-                    #     # get all predicates that use focus as type, if applicable
-                    #     if len(tuple) == 3:
-                    #         s,o,_ = tuple
-                    #         if s in solution:
-                    #             pass
-                    #         if o in solution:
-                    #             pass
-                    #     elif len(tuple) == 2:
-                    #         s,_ = tuple
-                    #         if s in solution:
-                    #             pass
-
         return merges
-
-    def display_mentions(self, mentions, ewm):
-        """
-        Display the mentions with their concepts instead of spans
-        """
-        print()
-        for span, mention_graph in mentions.items():
-            print('%s MENTION GRAPH:: '%span)
-            for s,t,o,inst in mention_graph.predicates():
-                if o is not None:
-                    subj = self._get_concept_of_span(s,ewm)
-                    obj = self._get_concept_of_span(o, ewm)
-                    typ = self._get_concept_of_span(t, ewm)
-                    print('\t[%s]\t-> %s(%s,%s)'%(inst,typ,subj,obj))
-                else:
-                    if t != 'var':
-                        subj = self._get_concept_of_span(s, ewm)
-                        typ = self._get_concept_of_span(t, ewm)
-                        print('\t[%s]\t-> %s(%s)' % (inst, typ, subj))
-            print()
 
     def _get_concept_of_span(self, span, ewm):
         expression = self._get_expression_of_span(span, ewm)
@@ -391,12 +312,6 @@ class ParseToLogic:
             # todo - disambiguation between multiple concepts per expression (for now, selecting first)
             expressions = ewm.objects(expression, 'expr')
             concept_var = next(iter(expressions))
-            # unknown_type = None
-            # for n in ['verb', 'noun', 'pron', 'adj', 'adv', 'other']:
-            #     if ewm.has(concept_var,'type','unknown_%s' % n):
-            #         unknown_type = n
-            # if unknown_type is not None:
-            #     return 'unknown_%s'%unknown_type
             return concept_var
         return span
 
@@ -405,15 +320,4 @@ class ParseToLogic:
         if len(expressions) == 1:
             return expressions.pop()
         return None
-
-    def display_merges(self, merges, ewm):
-        """
-        Display the merges with their concepts instead of spans
-        """
-        print()
-        print("MERGES:: ")
-        for (span1, pos1), (span2, pos2) in merges:
-            concept1 = self._get_concept_of_span(span1, ewm)
-            concept2 = self._get_concept_of_span(span2, ewm)
-            print("\t(%s,%s)\t<=> (%s,%s)"%(concept1,pos1,concept2,pos2))
 

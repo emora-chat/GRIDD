@@ -137,9 +137,15 @@ class ConceptGraph:
             del self._monopredicates_map[concept]
             self.metagraph.discard(concept)
 
+
     def clear(self):
-        for _,_,_,i in list(self.predicates()):
-            self.remove(i)
+        self._ids = IdMap(namespace=self._ids.namespace, start_index=Counter(),
+                         contains=lambda x: self.has(x) or self.has(predicate_id=x))
+        self._bipredicates_graph = MultiLabeledParallelDigraphNX()
+        self._bipredicate_instances = Index()
+        self._monopredicates_map = Map()
+        self._monopredicate_instances = Index()
+        self.metagraph = MetaGraph(self)
 
     def has(self, concept=None, predicate_type=None, object=None, predicate_id=None):
         if predicate_id is not None:                                    # Check predicate by id
@@ -456,6 +462,20 @@ class ConceptGraph:
                 pre = self.subgraph(pre)
                 references[ref] = (pre, vars)
         return references
+
+    def generics(self):
+        generics = {}
+        group_instances = [g for g in self.subtypes_of(GROUP) if g != GROUP]
+        # all groups that act as subjects of some predicate are generating generics
+        for group in group_instances:
+            preds = [p for p in self.predicates(group) if p[1] not in {TYPE, USER_AWARE, ASSERT, NONASSERT}]
+            if preds:
+                def_concepts = [e[1] for e in self.metagraph.out_edges(group, GROUP_DEF)
+                                if not self.has(predicate_id=e[1]) or self.predicate(e[1]) != (e[0], TYPE, GROUP, e[1])]
+                prop_concepts = [e[1] for e in self.metagraph.out_edges(group, GROUP_PROP)]
+                generics[group] = (def_concepts, prop_concepts)
+        # certain predicate types are generics if object is group (like, enjoy, hate, ) -> i like cats (generic) vs i bought cats (non-generic)
+        return generics
 
     def subgraph(self, concepts, meta_exclusions=None):
         if meta_exclusions is None:

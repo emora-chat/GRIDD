@@ -1,8 +1,4 @@
 
-attribute=(object)
-
-;
-
 event = (predicate)
 go = (event)
 expr("go", go)
@@ -20,12 +16,12 @@ building=(entity)
 expr("building", building)
 house=(building)
 expr("house", house)
-size = (attribute)
+size = (property)
 [big, small, average] = (size)
 expr("big, large, huge, spacious", big)
 expr("small, tiny", small)
 expr("average, normal, typical", average)
-expensive=(attribute)
+expensive=(property)
 expr("expensive, costly, pricey", expensive)
 
 location=(entity)
@@ -43,7 +39,7 @@ expr("seattle", seattle)
 [want, visit] = (predicate)
 expr("want", want)
 expr("visit", visit)
-always = (attribute)
+always = (property)
 expr("always", always)
 
 think = (predicate)

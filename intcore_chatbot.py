@@ -57,6 +57,71 @@ class Chatbot:
         self.produce_generic = ResponseGeneration()
         self.response_assembler = ResponseAssembler()
 
+    def run_nlu(self, user_utterance, debug):
+        input_dict = {"text": [user_utterance, None],
+                      "aux_state": [self.auxiliary_state, self.auxiliary_state],
+                      "conversationId": 'local'}
+        response = requests.post('http://cobot-LoadB-2W3OCXJ807QG-1571077302.us-east-1.elb.amazonaws.com',
+                                 data=json.dumps(input_dict),
+                                 headers={'content-type': 'application/json'},
+                                 timeout=3.0)
+        results = load(response.json()["context_manager"])
+        parse_dict = results['elit_results']
+        self.auxiliary_state = results["aux_state"]
+
+        self.dialogue_intcore.working_memory = ConceptGraph(namespace='wm', supports={AND_LINK: False})
+        wm = self.dialogue_intcore.working_memory
+
+        mentions, merges = self.elit_dp(parse_dict)
+
+        if debug:
+            print()
+            for span, graph in mentions.items():
+                print(span)
+                print('-' * 10)
+                print(graph.pretty_print())
+                print()
+
+            print()
+            for merge in merges:
+                print(merge)
+
+        # Mentions
+        namespace = list(mentions.items())[0][1].id_map() if len(mentions) > 0 else "ment_"
+        mega_mention_graph = ConceptGraph(namespace=namespace)
+        for span, mention_graph in mentions.items():
+            ((focus, t, o, i,),) = list(mention_graph.predicates(predicate_type='focus'))
+            center_pred = list(mention_graph.predicates(predicate_type='center'))
+            if len(center_pred) > 0:
+                ((center, t, o, i,),) = center_pred
+            else:
+                ((center, t, o, i,),) = list(mention_graph.predicates(predicate_type='link'))
+            mega_mention_graph.concatenate(mention_graph, predicate_exclusions={'focus', 'center', 'cover'})
+            mega_mention_graph.add(span, 'ref', focus)
+            mega_mention_graph.add(span, 'type', 'span')
+            if not span.startswith('__linking__'):
+                mega_mention_graph.add(span, 'def', center)
+        self.assign_cover(mega_mention_graph)
+        self.dialogue_intcore.consider(mega_mention_graph)
+
+        # Merges
+        node_merges = []
+        for (span1, pos1), (span2, pos2) in merges:
+            # if no mention for span, no merge possible
+            if wm.has(span1) and wm.has(span2):
+                (concept1,) = wm.objects(span1, 'ref')
+                concept1 = self._follow_path(concept1, pos1, wm)
+                (concept2,) = wm.objects(span2, 'ref')
+                concept2 = self._follow_path(concept2, pos2, wm)
+                node_merges.append((concept1, concept2))
+        self.dialogue_intcore.merge(node_merges)
+
+        if debug:
+            print('\n' + '#' * 10)
+            print('Result')
+            print('#' * 10)
+            print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=TYPEINFO))
+
 
     def respond(self, user_utterance, debug):
         input_dict = {"text": [user_utterance, None],
@@ -135,6 +200,9 @@ class Chatbot:
         for pred, sources in knowledge_by_source.items():
             if not wm.has(*pred):
                 self.dialogue_intcore.consider([pred], namespace=self.dialogue_intcore.knowledge_base._ids, associations=sources)
+                self.dialogue_intcore.working_memory.metagraph.update(self.dialogue_intcore.knowledge_base.metagraph,
+                                                                      self.dialogue_intcore.knowledge_base.metagraph.features,
+                                                                      concepts=[pred[3]])
         types = self.dialogue_intcore.pull_types()
         for type in types:
             if not wm.has(*type):
@@ -160,8 +228,11 @@ class Chatbot:
             inferences = self.dialogue_intcore.infer()
             self.dialogue_intcore.apply_inferences(inferences)
             self.dialogue_intcore.operate()
-            self.dialogue_intcore.gather_all_nlu_references()
-            self.dialogue_intcore.gather_all_assertion_links()
+            self.dialogue_intcore.convert_metagraph_span_links(REF_SP, [REF, VAR])
+            self.dialogue_intcore.convert_metagraph_span_links(DP_SUB, [ASS_LINK])
+            self.dialogue_intcore.convert_metagraph_span_links(GROUP_DEF_SP, [GROUP_DEF, VAR])
+            self.dialogue_intcore.convert_metagraph_span_links(GROUP_PROP_SP, [GROUP_PROP, VAR])
+            self.dialogue_intcore.learn_generics()
 
             if debug:
                 print('\n' + '#'*10)
@@ -170,7 +241,8 @@ class Chatbot:
                 print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=TYPEINFO))
 
             # Feature update
-            self.dialogue_intcore.update_confidence()
+            self.dialogue_intcore.update_confidence('user')
+            self.dialogue_intcore.update_confidence('emora')
             self.dialogue_intcore.update_salience()
 
             if debug:
@@ -213,7 +285,7 @@ class Chatbot:
                     ref_links = [e for e in wm.metagraph.out_edges(request_focus) if e[2] == REF and wm.has(predicate_id=e[1])]
                     for s, t, l in ref_links:
                         wm.features.setdefault(t, {})[SALIENCE] = wm.features.setdefault(fragment, {}).get(SALIENCE, 0)
-                        wm.features[t][BASE] = True
+                        # wm.features[t][BASE] = True todo - check if the BASE indication matters here
                 self.merge_references(fragment_request_merges)
                 self.dialogue_intcore.operate()
 
@@ -353,12 +425,12 @@ class Chatbot:
             if wm.has(predicate_id=concept):
                 sig = wm.predicate(concept)
                 if sig[0] not in excl and sig[1] not in excl and sig[2] not in excl:
-                    sa, cf, cv = features.get(SALIENCE, 0), features.get(CONFIDENCE, 0), wm.has(concept, USER_AWARE)
+                    sa, cf, ucf, cv = features.get(SALIENCE, 0), features.get(CONFIDENCE, 0), features.get(UCONFIDENCE, 0), wm.has(concept, USER_AWARE)
                     if sig[2] is not None:
                         rep = f'{sig[3]}/{sig[1]}({sig[0]},{sig[2]})'
                     else:
                         rep = f'{sig[3]}/{sig[1]}({sig[0]})'
-                    ls.append((f'{rep:40}: s({sa:.2f}) c({cf:.2f}) cv({cv:.2f})', sa))
+                    ls.append((f'{rep:40}: s({sa:.2f}) c({cf:.2f}) uc({ucf:.2f}) cv({cv:.2f})', sa))
         for pr, sa in sorted(ls, key=lambda x: x[1], reverse=True):
             print(pr)
 
@@ -382,4 +454,10 @@ if __name__ == '__main__':
     ITERATION = 2
 
     chatbot = Chatbot(*kb, inference_rules=rules, starting_wm=None)
-    chatbot.chat(debug=DEBUG)
+    # chatbot.chat(debug=DEBUG)
+
+    utter = input('>>> ').strip()
+    while utter != 'q':
+        chatbot.run_nlu(utter, debug=True)
+        print()
+        utter = input('>>> ').strip()

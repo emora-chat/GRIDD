@@ -186,7 +186,7 @@ Overrules the auxiliary question rule, which would cause an incorrect interpreta
 	obj(Z/pstg(), X)
 	aux(Z, A/present_tense())
 	-> q_aux_det_pres ->
-	p/aux_time(Z, now)
+	p/p_time(Z, now)
 	focus(p)
 	center(A)
 	;
@@ -195,7 +195,7 @@ Overrules the auxiliary question rule, which would cause an incorrect interpreta
 	obj(Z/pstg(), X)
 	aux(Z, A/past_tense())
 	-> q_aux_det_past ->
-	p/aux_time(Z, past)
+	p/p_time(Z, past)
 	focus(p)
 	center(A)
 	;
@@ -256,19 +256,80 @@ Was the book good?
 
 ## Copula
 
-Copula constructions become two-argument predicates of the format `copula(subject, root)`.
+Copula constructions have different logical forms depending on the copular verb. 
 
-The specific copular verb is captured by an identifier rule s.t. it will be merged into the 
-predicate.
+(A) The `be` copular verb takes one of three logical forms:
+
+* Property specifiers take the form `property(subject)` as in `I am happy`. 
+Properties are often specified as adjectives.
+
+* Equivalence specifiers take the form `copula(subject, root)` as in `I am a student`.
+ 
+* Prepositional specifiers take the form `root(subject, object)` as in `I am in Georgia`.
+
+(B) All other copular verbs are maintained and result in the logical form `copula(subject, root)`, 
+just like the second case of the `be` copular verb. 
+For these cases, the specific copular verb is captured by an identifier rule such that it will be 
+merged into the predicate.
 
 <details>
   <summary>Conversions</summary>
 
-	cop(X/pstg(), Y/present_tense())
+    cop(X/adj(), Y/present_tense())
+    sbj(X, Z/pstg())
+    ref(Y, E/expression())
+	expr(E, be)
+    -> be_adj_copula_present ->
+    p/X(Z)
+    time(p, now)
+    focus(p)
+    center(X)
+    cover(Y)
+    ;
+
+    cop(X/adj(), Y/past_tense())
+    sbj(X, Z/pstg())
+    ref(Y, E/expression())
+	expr(E, be)
+    -> be_adj_copula_past ->
+    p/X(Z)
+    time(p, now)
+    focus(p)
+    center(X)
+    cover(Y)
+    ;
+	
+    cop(X/prepo(), Y/present_tense())
+	sbj(X, Z/pstg())
+	obj(X, A/pstg())
+	ref(Y, E/expression())
+	expr(E, be)
+	-> be_prepo_copula_present ->
+	p/X(Z, A)
+	time(p, now)
+	focus(p)
+	center(X)
+	cover(Y)
+	;
+	
+	cop(X/prepo(), Y/past_tense())
+	sbj(X, Z/pstg())
+	obj(X, A/pstg())
+	ref(Y, E/expression())
+	expr(E, be)
+	-> be_prepo_copula_past ->
+	p/X(Z, A)
+	time(p, now)
+	focus(p)
+	center(X)
+	cover(Y)
+	;
+	
+    cop(X/pstg(), Y/present_tense())
 	det(X, D/dt())
 	sbj(X, Z/pstg())
-	-> sbj_det_copula_present ->
-	p/Y(Z,X)
+	-> det_copula_present ->
+	p/Y(Z,X())
 	time(p, now)
 	focus(p)
 	center(X)
@@ -278,8 +339,8 @@ predicate.
 	cop(X/pstg(), Y/past_tense())
 	det(X, D/dt())
 	sbj(X, Z/pstg())
-	-> sbj_det_copula_past ->
-	p/Y(Z,X)
+	-> det_copula_past ->
+	p/Y(Z,X())
 	time(p,past)
 	focus(p)
 	center(X)
@@ -288,7 +349,7 @@ predicate.
 
 	cop(X/pstg(), Y/present_tense())
 	sbj(X, Z/pstg())
-	-> sbj_copula_present ->
+	-> copula_present ->
 	p/Y(Z,X)
 	time(p, now)
 	focus(p)
@@ -297,7 +358,7 @@ predicate.
 	
 	cop(X/pstg(), Y/past_tense())
 	sbj(X, Z/pstg())
-	-> sbj_copula_past ->
+	-> copula_past ->
 	p/Y(Z,X)
 	time(p,past)
 	focus(p)
@@ -305,7 +366,7 @@ predicate.
 	;
 	
 	cop(X/pstg(), Y/pstg())
-	-> id_copular_verb ->
+	-> id_copula ->
 	focus(Y)
 	center(Y)
 	;
@@ -607,7 +668,7 @@ The overall tense of the question is also affected by the aux verb.
 	precede(Y,Z)
 	-> q_aux_past ->
 	q/question(user, X)
-	aux_time(X, past)
+	p_time(X, past)
 	center(Y)
 	focus(q)
 	;
@@ -618,7 +679,7 @@ The overall tense of the question is also affected by the aux verb.
 	precede(Y,Z)
 	-> q_aux_present ->
 	q/question(user, X)
-	aux_time(X, now)
+	p_time(X, now)
 	center(Y)
 	focus(q)
 	;
@@ -660,7 +721,7 @@ TODO - missing 'go' auxiliary
 	aux(X/pstg(), Y/past_tense())
 	type(Y, tenseful_aux)
 	-> aux_past ->
-	t/aux_time(X, past)
+	t/p_time(X, past)
 	center(Y)
 	focus(t)
 	;
@@ -668,7 +729,7 @@ TODO - missing 'go' auxiliary
 	aux(X/pstg(), Y/present_tense())
 	type(Y, tenseful_aux)
 	-> aux_present ->
-	t/aux_time(X, now)
+	t/p_time(X, now)
 	center(Y)
 	focus(t)
 	;
@@ -724,7 +785,7 @@ Modify the meaning of their parent verbs.
 	raise(X/pstg(), Y/past_tense())
 	-> raise_verb_past ->
 	p/mode(X, Y)
-	time(X, past)
+	p_time(X, past)
 	focus(p)
 	center(Y)
 	;
@@ -732,7 +793,7 @@ Modify the meaning of their parent verbs.
 	raise(X/pstg(), Y/present_tense())
 	-> raise_verb_present ->
 	p/mode(X, Y)
-	time(X, now)
+	p_time(X, now)
 	focus(p)
 	center(Y)
 	;
@@ -873,7 +934,7 @@ Captures verb constructions with indirect objects.
 
 	dat(X/pstg(), Y/pstg())
 	-> indirect_obj ->
-	p/indirect_obj(X, Y)
+	p/beneficiary(X, Y)
 	focus(p)
 	center(Y)
 	;
@@ -888,14 +949,15 @@ I bought a present for my mom.
 
 ## General Attribute
 
-Captures `attr` dependency relation as `property` logic relation.
+Captures `attr` dependency relation as current `property` logic which takes the form `property(subject)`.
 
  <details>
   <summary>Conversions</summary>
   
 	attr(X/pstg(), Y/pstg())
 	-> general_attribute ->
-	p/property(X,Y)
+	p/Y(X)
+	time(p, now)
 	focus(p)
 	center(Y)
 	;
@@ -1214,9 +1276,8 @@ TODO - not currently set up as references
 
 ## Single Words
 
-If a word is mentioned that does not match a previous rule, instantiate it as a lone concept.
-
-This captures non-referential pronouns, nouns, etc.
+If a word is mentioned that does not match a previous rule, generate the concept if it 
+is a noun or pronoun; otherwise, instantiate it as a lone concept.
 
 <details>
   <summary>Conversions</summary>
@@ -1227,17 +1288,17 @@ This captures non-referential pronouns, nouns, etc.
 	focus(p)
 	center(Y)
     ;
-
-    X/noun()
+    
+    X/singular()
     ltype(X, object)
-    -> noun ->
+    -> singular_noun ->
     focus(X)
     center(X)
-    ;  
+    ;
     
-    obj(Y/pstg(), X/allow_single())
+    X/pron()
     ltype(X, object)
-    -> obj_recog ->
+    -> pronoun ->
     focus(X)
     center(X)
     ;

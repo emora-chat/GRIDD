@@ -52,9 +52,10 @@ class ResponseExpansion:
         spoken_predicates = set()
         for main, exps, _ in responses:
             # expansions contains main predicate too
-            spoken_predicates.update([pred[3] for pred in exps])
+            spoken_predicates.update([pred[3] for pred in exps if pred[1] != 'expr'])
             self.identify_request_resolutions(exps, wm)
         self.assign_cover_and_salience(wm, concepts=spoken_predicates)
+        self.assign_user_confidence(wm, concepts=spoken_predicates)
         return responses, working_memory
 
     def identify_request_resolutions(self, spoken_predicates, wm):
@@ -70,7 +71,13 @@ class ResponseExpansion:
             if not graph.has(predicate_id=concept) or graph.type(concept) not in PRIM:
                 graph.add(concept, USER_AWARE)
             if graph.has(predicate_id=concept):
-                graph.features[concept][SALIENCE] = SENSORY_SALIENCE # todo - does this need to be only applied to predicates?
+                graph.features[concept][SALIENCE] = SENSORY_SALIENCE
+
+    def assign_user_confidence(self, graph, concepts=None):
+        if concepts is None:
+            concepts = graph.concepts()
+        for concept in concepts:
+            graph.features[concept][BASE_UCONFIDENCE] = graph.features.get(concept, {}).get(BASE_CONFIDENCE, 0.0)
 
 if __name__ == '__main__':
     print(ResponseExpansionSpec.verify(ResponseExpansion))
