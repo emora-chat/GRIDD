@@ -3,7 +3,6 @@
 import lark, time
 from lark.visitors import Visitor_Recursive
 
-import globals
 from GRIDD.data_structures.id_map import IdMap
 from itertools import chain
 from GRIDD.globals import *
@@ -173,10 +172,7 @@ class ConceptVisitor(Visitor_Recursive):
         concepts = []
         if args is None:
             id = self.locals.get(id, id)
-            if tree is not None and id in self.types:
-                if not hasattr(tree, 'generics'):
-                    tree.generics = set()
-                tree.generics.add(id)
+            self._check_generic(id, tree)
         else:
             if init == 'local':
                 if id in self.locals:
@@ -198,22 +194,26 @@ class ConceptVisitor(Visitor_Recursive):
                     concepts.append(type_inst)
                     self.lentries.append((id, TYPE, type, type_inst))
                 elif len(args) == 1:
+                    if type != TYPE and hasattr(tree, 'generics'):
+                        id = tree.generics.get(id, id)
                     self.lentries.append((args[0], type, None, id))
-                    if tree is not None and args[0] in self.types and type != TYPE:
-                        if not hasattr(tree, 'generics'):
-                            tree.generics = set()
-                        tree.generics.add(args[0])
                 elif len(args) == 2:
+                    if type != TYPE and hasattr(tree, 'generics'):
+                        for i in [0, 1]:
+                            args[i] = tree.generics.get(args[i], args[i])
                     self.lentries.append((args[0], type, args[1], id))
-                    for i in [0, 1]:
-                        if tree is not None and args[i] in self.types and type != TYPE:
-                            if not hasattr(tree, 'generics'):
-                                tree.generics = set()
-                            tree.generics.add(args[i])
                 concepts.append(type)
             concepts.extend(args)
         concepts.append(id)
         return concepts
+
+    def _check_generic(self, id, tree):
+        if tree is not None and id in self.types:
+            if not hasattr(tree, 'generics'):
+                tree.generics = {}
+            tree.generics[id] = self.globals.get()
+            return tree.generics[id]
+        return id
 
     def _add_exprs(self, id, expr):
         exprs = expr.split(',')
@@ -238,7 +238,7 @@ class ConceptVisitor(Visitor_Recursive):
             if hasattr(ch, 'concepts'):
                 concepts.update(ch.concepts)
         tree.concepts = concepts
-        generics = set() if not hasattr(tree, 'generics') else set(tree.generics)
+        generics = {} if not hasattr(tree, 'generics') else dict(tree.generics)
         for ch in tree.children:
             if hasattr(ch, 'generics'):
                 generics.update(ch.generics)
@@ -319,9 +319,10 @@ class ConceptVisitor(Visitor_Recursive):
             tree.focus = tree.mark
             del tree.mark
         self._collect_concepts(tree)
-        if hasattr(tree, 'generics'):
+        if hasattr(tree, 'generics') and tree.generics:
             generics = tree.generics
-            precondition = set(chain(*[self._init(None, None, generic, []) for generic in generics]))
+            precondition = set(chain(*[self._init(generics[generic], 'global', generic, [])
+                                       for generic in generics]))
             postcondition = set(tree.concepts)
             self._init_rule(precondition, postcondition)
         self._collect_rule(tree)
@@ -362,8 +363,8 @@ class ConceptVisitor(Visitor_Recursive):
         tree.concepts = {tree.focus}
         if tree.focus in self.types:            # is this real?
             if not hasattr(tree, 'generics'):
-                tree.generics = set()
-            tree.generics.add(tree.focus)
+                tree.generics = {}
+            tree.generics[tree.focus] = self.globals.get()
 
     def type(self, tree):
         variable, constraints = self._constrained_concept_collect(tree)
@@ -378,8 +379,8 @@ class ConceptVisitor(Visitor_Recursive):
         self._init_rule(constraints, postcondition)
         tree.concepts = {tree.focus}
         if not hasattr(tree, 'generics'):
-            tree.generics = set()
-        tree.generics.add(tree.focus)
+            tree.generics = {}
+        tree.generics[tree.focus] = self.globals.get()
 
     def id(self, tree):
         tree.children[0] = str(tree.children[0])
