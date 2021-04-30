@@ -41,10 +41,42 @@ passive = [
     "Was the bear chased by a hunter"
 ]
 
+modals = [
+    "I should wake up",
+    "I must score well",
+    "Should I dye my hair",
+    "Could you tell me more"
+]
+
+adv = [
+    "I go home",
+    "I ran quickly",
+    "I bought a house yesterday",
+    "I bought milk when I was hungry",
+    "You came to see me",
+    "I came to swim"
+]
+
+nested = [
+    "I like to swim",
+    "I came to swim",
+    "I like being happy",
+    "I like being in Georgia"
+]
+
 bad_nlu_examples = [
-    "I am inspired because of you",
-    "I bought a house when I was sad",
-    "I enjoy alcohol and being in nature"
+    "You came to see me",
+    "I came to swim",
+    "I enjoy alcohol and being in nature",
+    "I bought a house where I work",
+    "I am inspired because of you"
+]
+
+questions = [
+    "What is your name",
+    "What name is yours",
+    "What is her dog's color",
+    "What color is her dog"
 ]
 
 def run(utterances):
@@ -66,4 +98,4 @@ def run(utterances):
         print()
 
 if __name__ == '__main__':
-    run(passive)
+    run(questions)

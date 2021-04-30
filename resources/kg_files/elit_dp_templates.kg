@@ -13,9 +13,11 @@ cover(Z)
 ;
 
 adv(X/pstg(), Y/question_word())
+cop(X, Z/pstg())
 sbj(X, A/pstg())
-precede(Y, A)
--> q_adv ->
+precede(Y, Z)
+precede(Z, A)
+-> q_cop_adv ->
 p/Y(X, o/object())
 question(user, o)
 focus(p)
@@ -176,7 +178,7 @@ ref(Y, E/expression())
 expr(E, be)
 -> be_adj_copula_past ->
 p/X(Z)
-time(p, now)
+time(p, past)
 focus(p)
 center(X)
 cover(Y)
@@ -214,7 +216,7 @@ ref(Y, E/expression())
 expr(E, be)
 -> be_prepo_copula_past ->
 p/X(Z, A)
-time(p, now)
+time(p, past)
 focus(p)
 center(X)
 cover(Y)
@@ -639,7 +641,7 @@ modal(X/pstg(), Y/md())
 sbj(X, Z/pstg())
 precede(Y, Z)
 -> q_modal ->
-m/mode(X, Y)
+m/Y(X)
 q/question(user, m)
 center(Y)
 focus(m)
@@ -648,7 +650,7 @@ focus(m)
 
 modal(X/pstg(), Y/pstg())
 -> modal ->
-m/mode(X, Y)
+m/Y(X)
 center(Y)
 focus(m)
 ;
@@ -774,7 +776,7 @@ center(Y)
 
 
 advnp(X/pstg(), Y/pstg())
--> advnp ->
+-> advnp_rule ->
 p/qualifier(X, Y)
 focus(p)
 link(Y)
@@ -782,22 +784,15 @@ link(Y)
 
 advcl(X/pstg(), Y/pstg())
 advcl_indicator(Y, Z/pstg())
--> advcl_with_mention ->
+-> mention_advcl ->
 p/Z(X,Y)
 focus(p)
 center(Z)
 ;
 
-advcl(X/pstg(), Y/pstg())
--> advcl ->
-p/qualifier(X, Y)
-focus(p)
-link(Y)
-;
-
 adv(X/pstg(), Y/pstg())
--> adv ->
-p/qualifier(X, Y)
+-> adv_rule ->
+p/Y(X)
 focus(p)
 link(Y)
 ;

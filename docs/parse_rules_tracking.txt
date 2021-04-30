@@ -96,7 +96,7 @@ can be solved by mapping "being" to "is" in ontology, but not sure if this is a 
 Incorrect Dependency Parse?
 -------------
 He was proud of her -> `her` should be ppmod, not obj
-
+I like being in Georgia -> results in two roots `like` and `in`
 
 
 

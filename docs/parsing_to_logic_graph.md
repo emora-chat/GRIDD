@@ -26,9 +26,11 @@ The mapping between question word and semantic concept is:
 	;
 	
 	adv(X/pstg(), Y/question_word())
+	cop(X, Z/pstg())
 	sbj(X, A/pstg())
-	precede(Y, A)
-	-> q_adv ->
+	precede(Y, Z)
+	precede(Z, A)
+	-> q_cop_adv ->
 	p/Y(X, o/object())
 	question(user, o)
 	focus(p)
@@ -296,7 +298,7 @@ merged into the predicate.
 	expr(E, be)
     -> be_adj_copula_past ->
     p/X(Z)
-    time(p, now)
+    time(p, past)
     focus(p)
     center(X)
     cover(Y)
@@ -334,7 +336,7 @@ merged into the predicate.
 	expr(E, be)
 	-> be_prepo_copula_past ->
 	p/X(Z, A)
-	time(p, now)
+	time(p, past)
 	focus(p)
 	center(X)
 	cover(Y)
@@ -902,7 +904,7 @@ The overall meaning of the verb is also modified by the modal.
 	sbj(X, Z/pstg())
 	precede(Y, Z)
 	-> q_modal ->
-	m/mode(X, Y)
+	m/Y(X)
 	q/question(user, m)
 	center(Y)
 	focus(m)
@@ -912,16 +914,14 @@ The overall meaning of the verb is also modified by the modal.
 
 ## Modals
 
-Modify the meaning of the parent verbs by inducing a contemplation of possibilities/necessities.
-
-TODO - does this ever affect tense? 
+Modify the meaning of the parent verbs by inducing a contemplation of possibilities/necessities. 
 
  <details>
   <summary>Conversions</summary>
   
 	modal(X/pstg(), Y/pstg())
 	-> modal ->
-	m/mode(X, Y)
+	m/Y(X)
 	center(Y)
 	focus(m)
 	;
@@ -1139,11 +1139,23 @@ John's sister
 
 ## Adverbials
 
+Adverbial attachments usually specify some linking between predicates, without being explicitly tied
+to a token in the expression. For instance, in `I bought a house yesterday morning`, the `adv` connects 
+`I bought a house` with `yesterday morning` but there is not a token we want to extract as the linking predicate
+itself. Instead, the two predicates are just linked together through the appropriate canonical predicate;
+in this case, the most appropriate choice would be the `time` predicate.
+
+Sometimes, there is an indicator word used that we do want to take as the linking predicate, 
+like `when` in `I bought milk when I was hungry`.
+
+Sometimes, the adverb itself is used as a predicate involving the subject it is modifying, 
+as in `I ran quickly`.
+
  <details>
   <summary>Conversions</summary>
   
 	advnp(X/pstg(), Y/pstg())
-	-> advnp ->
+	-> advnp_rule ->
 	p/qualifier(X, Y)
 	focus(p)
 	link(Y)
@@ -1151,22 +1163,15 @@ John's sister
 	
 	advcl(X/pstg(), Y/pstg())
 	advcl_indicator(Y, Z/pstg())
-	-> advcl_with_mention ->
+	-> mention_advcl ->
 	p/Z(X,Y)
 	focus(p)
 	center(Z)
 	;
 	
-	advcl(X/pstg(), Y/pstg())
-	-> advcl ->
-	p/qualifier(X, Y)
-	focus(p)
-	link(Y)
-	;
-	
 	adv(X/pstg(), Y/pstg())
-	-> adv ->
-	p/qualifier(X, Y)
+	-> adv_rule ->
+	p/Y(X)
 	focus(p)
 	link(Y)
 	;

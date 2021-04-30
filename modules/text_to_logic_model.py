@@ -155,7 +155,7 @@ class ParseToLogic:
                 maintain_in_mention_graph = []
             for solution in solutions:
                 center = solution.get(center_var, center_var)
-                if link:
+                if link and center not in centers_handled: # if current linking span is already used as a centered span, skip it as a linker
                     center = '__linking__%s' % center
                 if center not in centers_handled:
                     self._update_centers(centers_handled, post, center, solution)
