@@ -282,28 +282,18 @@ class Chatbot:
             elif salient_emora_truth_request:
                 salient_emora_request = salient_emora_truth_request
                 req_type = REQ_TRUTH
+
             if salient_emora_request is not None:
                 request_focus = salient_emora_request[2]
-                fragment_request_merges = []
                 current_user_spans = [s for s in wm.subtypes_of("span") if s != "span" and int(wm.features[s]["span_data"].turn) == self.auxiliary_state["turn_index"]]
                 current_user_concepts = {o for s in current_user_spans for o in chain(wm.objects(s, SPAN_REF), wm.objects(s, SPAN_DEF))}
                 if req_type == REQ_TRUTH: # special case - y/n question requires yes/no fragment as answer (or full resolution from earlier in pipeline)
-                    indicator_preds = [p[3] for p in list(wm.predicates('user', AFFIRM)) + list(wm.predicates('user', REJECT))]
-                    options = set(indicator_preds).intersection(current_user_concepts)
-                    if len(indicator_preds) > 0:
-                        max_indicator = max(options, key=lambda p: wm.features.get(p[3], {}).get(SALIENCE, 0))
-                        fragment_request_merges.append((wm.object(max_indicator), request_focus))
+                    fragment_request_merges = self.truth_fragment_resolution(request_focus, current_user_concepts, wm)
                 else:
-                    types = wm.types()
-                    request_focus_types = types[request_focus] - {request_focus}
-                    salient_concepts = sorted(current_user_concepts, key=lambda c: wm.features.get(c, {}).get(SALIENCE, 0), reverse=True)
-                    for c in salient_concepts:
-                        if c != request_focus and request_focus_types.issubset(types[c] - {c}) and not wm.metagraph.out_edges(c, REF): # if user concept is a reference, dont treat as answer fragment
-                            fragment_request_merges.append((c, request_focus))
-                            break
+                    fragment_request_merges = self.arg_fragment_resolution(request_focus, current_user_concepts, wm)
                 if len(fragment_request_merges) > 0:
                     # set salience of all request predicates to salience of fragment
-                    fragment = fragment_request_merges[0][0]
+                    fragment = fragment_request_merges[0][0] # first fragment merge must be the origin request even for truth fragments which may include additional arg merges too!
                     ref_links = [e for e in wm.metagraph.out_edges(request_focus) if e[2] == REF and wm.has(predicate_id=e[1])]
                     for s, t, l in ref_links:
                         wm.features.setdefault(t, {})[SALIENCE] = wm.features.setdefault(fragment, {}).get(SALIENCE, 0)
@@ -387,6 +377,34 @@ class Chatbot:
         elif pos == 'type':
             return working_memory.type(concept)
         return concept
+
+    def arg_fragment_resolution(self, request_focus, current_user_concepts, wm):
+        fragment_request_merges = []
+        types = wm.types()
+        request_focus_types = types[request_focus] - {request_focus}
+        salient_concepts = sorted(current_user_concepts, key=lambda c: wm.features.get(c, {}).get(SALIENCE, 0),
+                                  reverse=True)
+        for c in salient_concepts:
+            if c != request_focus and request_focus_types.issubset(types[c] - {c}):
+                subtype_set = current_user_concepts.intersection(wm.subtypes_of(c)) - {c}
+                # if concept is a reference or if other salient concepts are its subtypes, dont treat current concept as answer fragment
+                if not subtype_set and not wm.metagraph.out_edges(c, REF):
+                    fragment_request_merges.append((c, request_focus))
+                    break
+        return fragment_request_merges
+
+    def truth_fragment_resolution(self, request_focus, current_user_concepts, wm):
+        fragment_request_merges = []
+        indicator_preds = [p[3] for p in list(wm.predicates('user', AFFIRM)) + list(wm.predicates('user', REJECT))]
+        options = set(indicator_preds).intersection(current_user_concepts)
+        if len(indicator_preds) > 0:
+            max_indicator = max(options, key=lambda p: wm.features.get(p[3], {}).get(SALIENCE, 0))
+            fragment_request_merges.append((wm.object(max_indicator), request_focus))
+            within_request_args = wm.metagraph.targets(request_focus, VAR)
+            for v in within_request_args:
+                arg_merges = self.arg_fragment_resolution(v, current_user_concepts, wm)
+                fragment_request_merges.extend(arg_merges)
+        return fragment_request_merges
 
     def get_merge_sets_from_pairs(self, pairs):
         merge_sets = {}

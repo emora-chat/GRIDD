@@ -42,7 +42,7 @@ class ResponseSelectionSalience:
         options = [(node,features[SALIENCE]) for node,features in working_memory.features.items()
                    if features.get(SALIENCE, 0) > 0.0
                    and working_memory.has(predicate_id=node)
-                   and ((working_memory.type(node) in {REQ_TRUTH, REQ_ARG}  and working_memory.subject(node) == "user")
+                   and ((working_memory.type(node) in {REQ_TRUTH, REQ_ARG} and working_memory.subject(node) == "user")
                         or not working_memory.has(node, USER_AWARE))
                    and working_memory.type(node) not in {'possess', 'referential', 'instantiative', 'ack_conf',
                                                          SPAN_DEF, SPAN_REF, ASSERT, USER_AWARE,
