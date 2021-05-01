@@ -7,5 +7,5 @@ time(fg, now)
 property(Y, favorite)
 possess(X, Y)
 >
-question(emora, fg)
+request_truth(emora, fg)
 ;

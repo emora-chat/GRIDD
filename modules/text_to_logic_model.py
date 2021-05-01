@@ -1,5 +1,6 @@
 
 from abc import abstractmethod
+from itertools import chain
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.inference_engine import InferenceEngine
 from GRIDD.data_structures.intelligence_core import IntelligenceCore
@@ -154,7 +155,7 @@ class ParseToLogic:
                 maintain_in_mention_graph = []
             for solution in solutions:
                 center = solution.get(center_var, center_var)
-                if link:
+                if link and center not in centers_handled: # if current linking span is already used as a centered span, skip it as a linker
                     center = '__linking__%s' % center
                 if center not in centers_handled:
                     self._update_centers(centers_handled, post, center, solution)
@@ -209,7 +210,11 @@ class ParseToLogic:
         comps = [pred[3] for pred in mention_cg.predicates() if pred[1] not in {'focus', 'center', 'cover'}]
         # For argument questions, add the question subject
         if rule_name in {'q_aux_adv', 'q_adv', 'qdet_copula_present', 'qdet_copula_past', 'dat_question'}:
-            ((s, _, _, _),) = list(mention_cg.predicates(predicate_type='question'))
+            preds = list(mention_cg.predicates(predicate_type=REQ_ARG))
+            if preds:
+                ((s, _, _, _),) = preds
+            else:
+                ((s, _, _, _),) = list(mention_cg.predicates(predicate_type=REQ_TRUTH))
             comps.append(s)
         # For various rules, the focal node is not a predicate instance so it needs to be added manually
         if rule_name in {'obj_question', 'sbj_question', 'q_aux_det', 'q_det',
@@ -246,7 +251,7 @@ class ParseToLogic:
 
     def _promote_time(self, promotions, ewm, mentions):
         for p in promotions: # replaces obj of `time` of head predicate of promotion with obj of `p_time`
-            heads = ewm.subjects(p)
+            heads = chain(ewm.subjects(p, 'aux'), ewm.subjects(p, 'raise'))
             for head in heads:
                 promotion_cg = mentions[p]
                 preds = list(promotion_cg.predicates(predicate_type='p_time'))
@@ -304,6 +309,15 @@ class ParseToLogic:
                             pair = ((center, 'type'),
                                     (solution[post.type(focus)], 'self'))
                             merges.append(pair)
+                        # if focus has attachments with variables, need to consider them too
+                        # for _, t, o, i in post.predicates(focus):
+                        #     if t not in {'focus', 'cover', 'center', 'assert'} and o in solution and solution[o] != center:
+                        #         pair = ((center, 'subject'),
+                        #                 (solution[o], 'self'))
+                        #         merges.append(pair)
+                        # for s, t, _, i in post.predicates(object=focus):
+                        #     if t not in {'focus', 'cover', 'center', 'assert'} and s in solution and solution[o] != center:
+                        #         pass
         return merges
 
     def _get_concept_of_span(self, span, ewm):

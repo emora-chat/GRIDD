@@ -261,7 +261,7 @@ class IntelligenceCore:
                 self.working_memory.metagraph.remove(node, t, gather_link)
 
     def gather(self, reference_node, constraints_as_spans):
-        PRIMITIVES = {'focus', 'center', 'question', 'var'}
+        PRIMITIVES = {'focus', 'center', REQ_TRUTH, REQ_ARG, 'var'}
         constraints = set()
         focal_nodes = set()
         for constraint_span in constraints_as_spans:

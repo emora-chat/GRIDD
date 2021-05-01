@@ -287,7 +287,7 @@ class ConceptGraph:
                     pred = self.predicate(concept)
                     s.append(pred)
                     stack.extend({pred[0], pred[2]} - visited)
-                    if pred[1] == 'question':
+                    if pred[1] in {REQ_TRUTH, REQ_ARG}:
                         # if concept is a request predicate, retrieve all ref metalinks to object for full definition
                         obj = pred[2]
                         for _, constraint, _ in self.metagraph.out_edges(obj, REF):
@@ -693,7 +693,7 @@ class ConceptGraph:
 
     def ugly_print(self, exclusions=None):
         strings = defaultdict(list)
-        preds = ['type', 'ref', 'def', 'instantiative', 'referential', 'question']
+        preds = ['type', 'ref', 'def', 'instantiative', 'referential', REQ_TRUTH, REQ_ARG]
         for pred in preds:
             if exclusions is None or pred not in exclusions:
                 for s, t, o, i in self.predicates(predicate_type=pred):

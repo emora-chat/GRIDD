@@ -156,15 +156,15 @@ def spanning_tree_of(cg):
                         for pred in cg.predicates(object=id):
                             if pred[1] not in exclude and pred[3] not in {id, parent.node_id}: frontier.append((pred_node, pred[3], '_rev_', 'link'))
                 else: # still need to attach node to parent if subj or obj of non-reversed predicate, but do not need to process links or node's children
-                    if label_type != 'link' and parent.type != '_rev_':
+                    if label_type != 'link': # and parent.type != '_rev_':
                         if cg.has(predicate_id=id):
                             s, t, o, _ = cg.predicate(id)
                             pred_node = SpanningNode(id, parent, t, node_type)
                         else:
                             pred_node = SpanningNode(id, parent, None, node_type)
                         parent.children[label_type].append(pred_node)
-                    elif parent.type == '_rev_': # remove the reverse predicate from spanning tree since it has already been handled
-                        parent.parent.children['link'].remove(parent)
+                    # elif parent.type == '_rev_': # remove the reverse predicate from spanning tree since it has already been handled
+                    #     parent.parent.children['link'].remove(parent)
     return roots
 
 def spanning_tree_string_of(cg, root=None, tab=1):

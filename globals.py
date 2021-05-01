@@ -19,6 +19,9 @@ TIME = 'time'                   # bipredicate indicating time specification
 SPAN_REF = 'ref'                # bipredicate linking span nodes to the concepts they refer to
 SPAN_DEF = 'def'                # bipredicate linking span nodes to the concept their language defines
 
+REQ_ARG = 'request'             # bipredicate of subject requesting disambiguation of the object (argument question)
+REQ_TRUTH = 'request_truth'     # bipredicate of subject requesting truth value of the object (y/n question)
+
 OBJECT = 'object'               # base concept type
 GROUP = 'group'                 # entity type indicating subtypes are groups
 CLASS = 'class'                 # entity type indicating class definition

@@ -66,7 +66,7 @@ def test_adv_question_parse_graph_matching():
 	precede(Z, A)
 	-> q_nadv ->
 	p/Y(X, o/object())
-	question(user, o)
+	request(user, o)
 	focus(p)
 	center(Y)
 	user_aware(Z)

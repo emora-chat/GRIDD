@@ -1,8 +1,0 @@
-white=(property)
-expr("white", white)
-black=(property)
-expr("black", black)
-brown=(property)
-expr("brown", brown)
-happy=(property)
-expr("happy", happy)

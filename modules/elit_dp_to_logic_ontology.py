@@ -11,7 +11,7 @@ PRONOUN = ['prp', 'prpds']
 ADV = ['rb', 'rbr', 'rbs']
 QUEST = ['wdt', 'wp', 'wpds', 'wrb']
 INTERJ = ['uh']
-ALLOW_SINGLE = ['rp', 'fw', 'cd', 'dt', 'ex', 'adj', 'noun', 'pron', 'adv', 'interj', 'verb', 'question_word']
+ALLOW_SINGLE = ['rp', 'fw', 'cd', 'dt', 'ex', 'adj', 'noun', 'pron', 'interj', 'verb', 'question_word', 'adv_pos']
 
 ADVCL_INDICATOR = ['adv', 'aux', 'mark', 'case']
 ACL_INDICATOR = ['aux', 'mark', 'case']
@@ -49,7 +49,7 @@ def generate_elit_dp_ontology():
     for n in PRONOUN:
         cg.add(pos_mapper(n), 'type', 'pron')
     for n in ADV:
-        cg.add(pos_mapper(n), 'type', 'adv')
+        cg.add(pos_mapper(n), 'type', 'adv_pos')
     for n in QUEST:
         cg.add(pos_mapper(n), 'type', 'question_word')
     for n in INTERJ:

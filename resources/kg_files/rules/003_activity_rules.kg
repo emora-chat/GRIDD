@@ -2,7 +2,7 @@
 g/go(user, object())
 ->
 p:<with(g, p/person())>
-question(emora, p)
+request(emora, p)
 ;
 
 buy(A/person(), B/entity())
@@ -13,10 +13,10 @@ possess(A, B)
 time(buy(A/person(), B/house()), past)
 -> house_purchase ->
 C:<time(where(B, C/location()), now)>
-question(emora, C)
+request(emora, C)
 
 D:<time(be(B, D/size()), now)>
-question(emora, D)
+request(emora, D)
 ;
 
 possess(A/person(), B/house())

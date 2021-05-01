@@ -5,7 +5,7 @@ from GRIDD.globals import *
 q_play_sports = ConceptGraph('''
 p/play(user, s/sport())
 time(p, now)
-question(emora, s)
+request(emora, s)
 ''', namespace='bu_')
 
 q_school_subject = ConceptGraph('''
@@ -13,7 +13,7 @@ b/be(s/school_subject(), o/school_subject())
 time(b, now)
 possess(user, s)
 property(s, favorite)
-question(emora, o)
+request(emora, o)
 ''', namespace='bu_')
 
 backup_topics = {
@@ -42,11 +42,11 @@ class ResponseSelectionSalience:
         options = [(node,features[SALIENCE]) for node,features in working_memory.features.items()
                    if features.get(SALIENCE, 0) > 0.0
                    and working_memory.has(predicate_id=node)
-                   and ((working_memory.type(node) == 'question' and working_memory.subject(node) == "user")
+                   and ((working_memory.type(node) in {REQ_TRUTH, REQ_ARG} and working_memory.subject(node) == "user")
                         or not working_memory.has(node, USER_AWARE))
-                   and working_memory.type(node) not in {'type', 'possess', 'referential', 'instantiative', 'ack_conf',
+                   and working_memory.type(node) not in {'possess', 'referential', 'instantiative', 'ack_conf',
                                                          SPAN_DEF, SPAN_REF, ASSERT, USER_AWARE,
-                                                         'time', 'expr'}]
+                                                         TIME, EXPR, TYPE, REQ_ARG, REQ_TRUTH}]
         salience_order = sorted(options, key=lambda x: x[1], reverse=True)
         if len(salience_order) > 0:
             return working_memory.predicate(salience_order[0][0]), 'nlg'
