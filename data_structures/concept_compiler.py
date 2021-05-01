@@ -16,14 +16,15 @@ class ConceptCompiler:
     })
     _default_types = frozenset({
         'object', 'entity', 'predicate', 'expr',
-        'number', 'expression', 'implication', 'type', 'nonassert', 'assert'
+        'number', 'expression', 'implication', 'type', 'nonassert', 'assert',
+        'response', 'response_token', 'token_seq'
     })
     _default_predicates = frozenset({
-        'type', 'expr', 'predicate', 'nonassert', 'assert'
+        'type', 'expr', 'predicate', 'nonassert', 'assert', 'token_seq'
     })
 
     def __init__(self, instances=_default_instances, types=_default_types, predicates=_default_predicates, namespace='c_'):
-        self.parser = Lark(ConceptCompiler._grammar, parser='lalr')
+        self.parser = Lark(ConceptCompiler._grammar, parser='earley')
         self.visitor = ConceptVisitor(instances, types, predicates, namespace)
 
     def _compile(self, string):
@@ -80,9 +81,11 @@ class ConceptCompiler:
         number_init: number
         reference: ID
         ID: /[a-zA-Z_.0-9]+/
-        rule: precondition "->" (ID "->")? postcondition
+        rule: precondition "->" (ID "->")? (template | (postcondition template?))
         precondition: declaration+
         postcondition: declaration+
+        template: "$" token+ "$"
+        token: /[^ $]+/ json?
         json: dict
         value: dict | list | string | number | constant
         string: ESCAPED_STRING 
@@ -132,23 +135,62 @@ class ConceptVisitor(Visitor_Recursive):
         self.metadatas = {}
 
     def rule(self, tree):
-        if len(tree.children) > 2:
+        if not hasattr(tree.children[1], 'data'):
             rid = tree.children[1]
         else:
             rid = self.globals.get()
-        self.check_double_init([rid], self.instances)
-        self.instances.add(rid)
-        self.lentries.append((rid, 'type', 'implication', self.globals.get()))
-        precondition, variables = tree.children[0].data
-        postcondition = tree.children[-1].data
-        for c in precondition:
-            self.links.append((rid, 'pre', c))
-        for c in postcondition:
-            self.links.append((rid, 'post', c))
-        for c in variables:
-            self.links.append((rid, 'var', c))
-        self.metadatas.setdefault(rid, {})['rindex'] = self.rule_iter
-        self.rule_iter += 1
+        postcondition = [c for c in tree.children if hasattr(c, 'data') and isinstance(c.data, set)]
+        postcondition = postcondition[0].data if postcondition else None
+        template = [c for c in tree.children if hasattr(c, 'data') and c.data == 'template']
+        template = template[0] if template else None
+        if template is not None:
+            tmplt = []
+            for token in template.children:
+                tok = self.locals.get(token.children[0], str(token.children[0]))
+                json = None
+                if len(token.children) > 1:
+                    json = token.children[1].children[0].data
+                tmplt.append((tok, json))
+            template = tmplt
+            response = self.globals.get()
+            instance = self.globals.get()
+            self.instances.update((instance, response))
+            self.lentries.append((response, 'type', 'response', instance))
+            response_set = {response, instance}
+            for i, (token, json) in enumerate(template):
+                if token in self.instances:
+                    tok_concept = token
+                    tokendata = None
+                else:
+                    tokendata = token
+                    tok_concept = self.globals.get()
+                instance = self.globals.get()
+                self.instances.update((tok_concept, instance))
+                self.lentries.append((tok_concept, 'type', 'response_token', instance))
+                response_set.update((tok_concept, instance))
+                self.metadatas.setdefault(tok_concept, {})['response_data'] = tokendata
+                self.metadatas[tok_concept]['response_index'] = i
+                instance = self.globals.get()
+                self.instances.add(instance)
+                self.lentries.append((response, 'token_seq', tok_concept, instance))
+                response_set.add(instance)
+            if postcondition is None:
+                postcondition = response_set
+            else:
+                postcondition.update(response_set)
+        if postcondition is not None:
+            self.check_double_init([rid], self.instances)
+            self.instances.add(rid)
+            self.lentries.append((rid, 'type', 'implication', self.globals.get()))
+            precondition, variables = tree.children[0].data
+            for c in precondition:
+                self.links.append((rid, 'pre', c))
+            for c in postcondition:
+                self.links.append((rid, 'post', c))
+            for c in variables:
+                self.links.append((rid, 'var', c))
+            self.metadatas.setdefault(rid, {})['rindex'] = self.rule_iter
+            self.rule_iter += 1
 
     def precondition(self, tree):
         preinst = set(chain(*[t.refs for t in tree.iter_subtrees() if hasattr(t, 'refs')]))

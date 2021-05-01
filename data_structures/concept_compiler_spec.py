@@ -57,21 +57,20 @@ class ConceptCompilerSpec:
         ;
             
         '''
+
         rules = '''
         [chase, happy, scared] = (predicate)
         dog = (object)
         fido = dog()
         ;
-        
 
-        
-        x/dog()
+        chase(x/dog(), y=dog())
         ->
-        scared(fido)
+        $ I am telling you that x is chasing y ! $
         ;
         
         '''
-        preds, links, metas = compiler.compile(test)
+        preds, links, metas = compiler.compile(rules)
         # preds, metas = compiler.compile(rules)
         for pred in preds:
             print(pred)

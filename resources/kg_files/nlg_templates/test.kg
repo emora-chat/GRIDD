@@ -2,5 +2,5 @@ time(h/hike(X=person()), Y/datetime())
 expr(X, Y=expression())
 assert(h)
 -> person_hiked ->
-X hike{"t":"Y", "s":"X"} .
+$ X hike{"t":"Y", "s":"X"} . $
 ;
