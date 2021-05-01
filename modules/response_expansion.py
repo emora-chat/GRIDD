@@ -49,27 +49,41 @@ class ResponseExpansion:
                 exp_preds = [mapped_ids[pred[3]] for pred in predicate[1]]
                 exp_pred_sigs = [wm.predicate(pred) for pred in exp_preds if pred != main_pred]
                 responses.append((main_pred_sig, exp_pred_sigs, generation_type))
-        spoken_predicates = set()
-        for main, exps, _ in responses:
-            # expansions contains main predicate too
-            spoken_predicates.update([pred[3] for pred in exps if pred[1] != 'expr'])
-            self.identify_request_resolutions(exps, wm)
-        self.assign_cover_and_salience(wm, concepts=spoken_predicates)
-        self.assign_user_confidence(wm, concepts=spoken_predicates)
+        responses = self.apply_dialogue_management_on_response(responses, wm)
         return responses, working_memory
 
-    def identify_request_resolutions(self, spoken_predicates, wm):
-        # identify emora answers to user requests and remove request bipredicate
-        for s, t, o, i in spoken_predicates:
-            if s == 'user' and t in {REQ_TRUTH, REQ_ARG} :
-                wm.remove(s, t, o, i)
+    def apply_dialogue_management_on_response(self, responses, wm):
+        final_responses = []
+        for main, exps, generation_type in responses: # exps contains main predicate too
+            final_exps = []
+            spoken_predicates = set()
+            for s, t, o, i in exps:
+                if s == 'user' and t in {REQ_TRUTH, REQ_ARG}: # identify emora answers to user requests and remove request bipredicate
+                    wm.remove(s, t, o, i)
+                else: # all other predicates are maintained as expansions and spoken predicates
+                    final_exps.append((s,t,o,i))
+                    if t != EXPR:
+                        spoken_predicates.add(i)
+            final_responses.append((main, final_exps, generation_type))
+            self.assign_cover(wm, concepts=spoken_predicates)
+            self.assign_salience(wm, concepts=spoken_predicates)
+            self.assign_user_confidence(wm, concepts=spoken_predicates)
+        return final_responses
 
-    def assign_cover_and_salience(self, graph, concepts=None):
+    def assign_cover(self, graph, concepts=None):
         if concepts is None:
             concepts = graph.concepts()
         for concept in concepts:
-            if not graph.has(predicate_id=concept) or graph.type(concept) not in PRIM:
+            if graph.has(predicate_id=concept):
+                if graph.type(concept) not in PRIM:
+                    graph.add(concept, USER_AWARE)
+            else:
                 graph.add(concept, USER_AWARE)
+
+    def assign_salience(self, graph, concepts=None):
+        if concepts is None:
+            concepts = graph.concepts()
+        for concept in concepts:
             if graph.has(predicate_id=concept):
                 graph.features[concept][SALIENCE] = SENSORY_SALIENCE
 
