@@ -338,7 +338,7 @@ class Chatbot:
         template_response_info = self.template_filler(matches, wm)
 
         # Response selection
-        aux_state, selections = self.response_selection(self.auxiliary_state, wm)
+        aux_state, selections = self.response_selection(self.auxiliary_state, wm, template_response_info)
 
         print('\n' + '#'*10)
         print('Response Selections')

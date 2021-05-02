@@ -80,7 +80,10 @@ class ResponseTemplateFiller:
                 sals = [cg.features.get(x, {}).get(SALIENCE, 0) for x in match_dict.values()]
                 avg = sum(sals) / len(sals)
                 with_sal.append((preds, string, avg))
-        return max(with_sal, key=lambda x: x[2])
+        if len(with_sal) > 0:
+            return max(with_sal, key=lambda x: x[2])
+        else:
+            return None, None, None
 
     def fill_string(self, match_dict, expr_dict, string_spec_ls, cg):
         realizations = {}

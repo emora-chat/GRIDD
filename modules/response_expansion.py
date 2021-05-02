@@ -18,6 +18,7 @@ class ResponseExpansion:
         responses = []
         for predicate, generation_type in main_predicates:
             if generation_type == 'nlg':
+                # predicate is the main predicate tuple signature (subj, type, obj, id)
                 expansions = wm.structure(predicate[3],
                                           subj_emodifiers={'time', 'mode', 'qualifier', 'property',
                                                            'indirect_obj', 'negate'},
@@ -40,8 +41,10 @@ class ResponseExpansion:
                 else:
                     responses.append((predicate, expansions, generation_type))
             elif generation_type in {'ack_conf'}:
+                # predicate is the main predicate tuple signature (subj, type, obj, id)
                 responses.append((predicate, [], generation_type))
             elif generation_type == "backup":
+                # predicate is a tuple (main predicate signature, list of all selected predicates)
                 cg = ConceptGraph(namespace='bu_', predicates=predicate[1])
                 mapped_ids = wm.concatenate(cg)
                 main_pred = mapped_ids[predicate[0][3]]
@@ -49,6 +52,9 @@ class ResponseExpansion:
                 exp_preds = [mapped_ids[pred[3]] for pred in predicate[1]]
                 exp_pred_sigs = [wm.predicate(pred) for pred in exp_preds if pred != main_pred]
                 responses.append((main_pred_sig, exp_pred_sigs, generation_type))
+            elif generation_type == 'template':
+                # predicate is a tuple (response utterance, list of all selected predicates)
+                responses.append((predicate[0], predicate[1], generation_type))
         responses = self.apply_dialogue_management_on_response(responses, wm)
         return responses, working_memory
 

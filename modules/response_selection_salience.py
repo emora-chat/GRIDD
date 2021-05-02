@@ -23,8 +23,13 @@ backup_topics = {
 
 class ResponseSelectionSalience:
 
-    def __call__(self, aux_state, working_memory):
-        responses = [self.select_acknowledgment(working_memory), self.select_followup(working_memory, aux_state)]
+    def __call__(self, aux_state, working_memory, template_response_selection):
+        if template_response_selection[0] is not None:
+            # template response takes priority
+            responses = [((template_response_selection[0],template_response_selection[1]),
+                         template_response_selection[2])]
+        else:
+            responses = [self.select_acknowledgment(working_memory), self.select_followup(working_memory, aux_state)]
         return aux_state, responses
 
     def select_acknowledgment(self, working_memory):

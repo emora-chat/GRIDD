@@ -17,4 +17,6 @@ class ResponseRules:
                     generations[idx] = random.choice(neutral)
             elif response_type == 'idk':
                 generations[idx] = random.choice(idk)
+            elif response_type == 'template':
+                generations[idx] = selection[0]
         return generations
