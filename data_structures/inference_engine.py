@@ -108,9 +108,24 @@ class InferenceEngine:
             all_rules = dynamic_rules
             converted_rules = Bimap(dynamic_converted_rules)
         sols = self.matcher.match(facts_graph, *list(converted_rules.values()))
-        sols = {converted_rules.reverse()[precondition]: sols for precondition, sols in sols.items()}
+        solutions = {}
+        for precondition, sols in sols.items():
+            precondition_id = converted_rules.reverse()[precondition]
+            precondition_cg = all_rules[precondition_id][0]
+            solset = []
+            for sol in sols:
+                for variable, value in sol.items():
+                    var_conf = precondition_cg.features.get(variable, {}).get('c', None)
+                    val_conf = facts_concept_graph.features.get(value, {}).get('c', 1.0)
+                    if (var_conf is None and val_conf <= 0) or \
+                       (var_conf is not None and var_conf > 0 and val_conf - var_conf < 0) or \
+                       (var_conf is not None and var_conf < 0 and val_conf - var_conf > 0):
+                        break
+                else:
+                    solset.append(sol)
+            solutions[precondition_id] = solset
         final_sols = {}
-        for rule_id, sol_ls in sols.items():
+        for rule_id, sol_ls in solutions.items():
             if len(all_rules[rule_id]) == 3:
                 final_sols[rule_id] = (all_rules[rule_id][0], all_rules[rule_id][1], sol_ls)
             else:
