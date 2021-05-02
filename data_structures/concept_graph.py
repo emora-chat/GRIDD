@@ -52,8 +52,7 @@ class ConceptGraph:
             pred_cg = ConceptGraph(predicates=p, namespace='__c__')
             pred_cg.features.update(md)
             for s, l, t in ml:
-                i = pred_cg.add(s, l, t)
-                pred_cg.add(i, 'type', 'meta')
+                pred_cg.metagraph.add(s, t, l)
             cg.concatenate(pred_cg)
         elif (isinstance(predicates, (list, tuple, set)) and len(predicates) > 0
               and (isinstance(next(iter(predicates)), (list, tuple)))):
@@ -65,8 +64,7 @@ class ConceptGraph:
             cg.concatenate(predicates)
         if metalinks is not None:
             for s, l, t in metalinks:
-                i = cg.add(s, l, t)
-                cg.add(i, 'type', 'meta')
+                cg.metagraph.add(s, t, l)
         if metadata is not None:
             cg.features.update(metadata)
 
@@ -435,6 +433,7 @@ class ConceptGraph:
         rule_instances = set(self.subtypes_of('implication')) - {'implication'}
 
         rule_links = {}
+        instance_exclusions = set()
         for rule in rule_instances:
             pre_inst = self.metagraph.out_edges(rule, 'pre')
             pre = [edge[1] for edge in pre_inst]
@@ -443,12 +442,13 @@ class ConceptGraph:
             vars_inst = self.metagraph.out_edges(rule, 'var')
             vars = {edge[1] for edge in vars_inst}
             if pre and post:
+                instance_exclusions.update(chain(pre_inst, post_inst, vars_inst))
                 rule_links[rule] = (pre, post, vars)
 
         for rule, (pre, post, vars) in rule_links.items():
             if pre and post:
-                pre = self.subgraph(pre, type_exclusions={'meta'})
-                post = self.subgraph(post, type_exclusions={'meta'})
+                pre = self.subgraph(pre, meta_exclusions=instance_exclusions)
+                post = self.subgraph(post, meta_exclusions=instance_exclusions)
                 rules[rule] = (pre, post, vars)
         return rules
 
@@ -477,9 +477,10 @@ class ConceptGraph:
         # certain predicate types are generics if object is group (like, enjoy, hate, ) -> i like cats (generic) vs i bought cats (non-generic)
         return generics
 
-    def subgraph(self, concepts=None, types=None, exclusions=None, type_exclusions=None):
+    def subgraph(self, concepts=None, types=None, exclusions=None, type_exclusions=None, meta_exclusions=None):
         concepts = set(concepts) if concepts else set()
         exclusions = set(exclusions) if exclusions else set()
+        meta_exclusions = set(meta_exclusions) if meta_exclusions else set()
         if types is not None or type_exclusions is not None:
             subtypes = self.subtypes()
             if types is not None:
@@ -501,7 +502,7 @@ class ConceptGraph:
             if fd:
                 graph.features[e] = fd
             for ml in chain(self.metagraph.in_edges(e), self.metagraph.out_edges(e)):
-                if graph.has(ml[0]) and graph.has(ml[1]):
+                if ml not in meta_exclusions and graph.has(ml[0]) and graph.has(ml[1]):
                     graph.metagraph.add(*ml)
         return graph
 
