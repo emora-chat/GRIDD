@@ -239,9 +239,6 @@ class Chatbot:
             self.dialogue_intcore.operate()
             self.dialogue_intcore.convert_metagraph_span_links(REF_SP, [REF, VAR])
             self.dialogue_intcore.convert_metagraph_span_links(DP_SUB, [ASS_LINK])
-            self.dialogue_intcore.convert_metagraph_span_links(GROUP_DEF_SP, [GROUP_DEF, VAR])
-            self.dialogue_intcore.convert_metagraph_span_links(GROUP_PROP_SP, [GROUP_PROP, VAR])
-            self.dialogue_intcore.learn_generics()
 
             if debug:
                 print('\n' + '#'*10)
@@ -338,7 +335,7 @@ class Chatbot:
             if not wm.has(*pred):
                 wm.add(*pred)
         matches = self.inference_engine.infer(wm, self.template_loader.templates())
-        response_info = self.template_filler(matches, wm)
+        template_response_info = self.template_filler(matches, wm)
 
         # Response selection
         aux_state, selections = self.response_selection(self.auxiliary_state, wm)

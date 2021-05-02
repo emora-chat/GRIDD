@@ -234,14 +234,6 @@ class ParseToLogic:
                 focus_node = mention_cg.predicate(focus_node)[2]
             mention_cg.metagraph.add_links(focus_node, REFERENCES_BY_RULE[rule_name](center, ewm) + [center], REF_SP)
 
-        if 'plural' in ewm.types(center): # if mention is a plural => group specification (definitions and properties)
-            mention_cg.add(focus_node, TYPE, GROUP)
-            definitions = set(subtree_dependencies(center, ewm) + [center])
-            properties = set(parent_subtree_dependencies(center, ewm))
-            properties -= definitions
-            mention_cg.metagraph.add_links(focus_node, definitions, GROUP_DEF_SP)
-            mention_cg.metagraph.add_links(focus_node, properties, GROUP_PROP_SP)
-
         comps = self._get_comps(rule_name, focus_node, mention_cg)
         mention_cg.metagraph.add_links(focus_node, comps, COMPS)
 
