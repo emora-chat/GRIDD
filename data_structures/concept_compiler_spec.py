@@ -66,7 +66,7 @@ class ConceptCompilerSpec:
 
         chase(x/dog(), y=dog())
         ->
-        $ I am telling you that x is chasing y ! $
+        $ I am telling you that x{"test": "T"} is chasing y ! $
         ;
         
         '''

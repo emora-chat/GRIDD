@@ -85,7 +85,7 @@ class ConceptCompiler:
         precondition: declaration+
         postcondition: declaration+
         template: "$" token+ "$"
-        token: /[^ $]+/ json?
+        token: /[^ ${]+/ json?
         json: dict
         value: dict | list | string | number | constant
         string: ESCAPED_STRING 
@@ -168,7 +168,7 @@ class ConceptVisitor(Visitor_Recursive):
                 self.instances.update((tok_concept, instance))
                 self.lentries.append((tok_concept, 'type', 'response_token', instance))
                 response_set.update((tok_concept, instance))
-                self.metadatas.setdefault(tok_concept, {})['response_data'] = tokendata
+                self.metadatas.setdefault(tok_concept, {})['response_str'] = tokendata
                 self.metadatas[tok_concept]['response_index'] = i
                 instance = self.globals.get()
                 self.instances.add(instance)
@@ -191,6 +191,11 @@ class ConceptVisitor(Visitor_Recursive):
                 self.links.append((rid, 'var', c))
             self.metadatas.setdefault(rid, {})['rindex'] = self.rule_iter
             self.rule_iter += 1
+
+    def token(self, tree):
+        if len(tree.children) > 1:
+            ident = str(tree.children[0])
+            self.lmetadatas.setdefault(ident, {})['response_data'] = tree.children[1].children[0].data
 
     def precondition(self, tree):
         preinst = set(chain(*[t.refs for t in tree.iter_subtrees() if hasattr(t, 'refs')]))
@@ -229,7 +234,8 @@ class ConceptVisitor(Visitor_Recursive):
                 if e not in self.predicates:
                     raise ValueError('Predicate initialization with non-predicate `{}`'.format(e))
         self.entries.extend(entries)
-        self.metadatas.update({self.locals.get(k, k): v for k, v in self.lmetadatas.items()})
+        for k, v in self.lmetadatas.items():
+            self.metadatas.setdefault(self.locals.get(k, k), {}).update(v)
         self.links.extend([(self.locals.get(s, s), l, self.locals.get(t, t)) for s, l, t in self.llinks])
         self.lentries = []
         self.llinks = []

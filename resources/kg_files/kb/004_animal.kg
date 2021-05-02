@@ -4,8 +4,9 @@ expr(["animal"], animal)
 pet = (animal)
 expr(["pet"], pet)
 
-h:<time(h/have(user, p/pet()), now)>
+h:<t/time(h/have(user, p/pet()), now)>
 request_truth(emora, h)
+
 ;
 
 

@@ -1,5 +1,5 @@
 from GRIDD.modules.responsegen_by_templates_spec import ResponseTemplatesSpec
-# from GRIDD.data_structures.concept_compiler import TemplateConceptCompiler
+from GRIDD.data_structures.concept_compiler import TemplateConceptCompiler
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.utilities.utilities import collect
 from GRIDD.globals import *
@@ -26,20 +26,20 @@ Execution Sequence:
     ResponseTemplateFiller
 """
 
-# class ResponseTemplateFinder:
-#     """
-#     Loads the template rules from template_dir upon initialization and returns them when called.
-#     """
-#
-#     def __init__(self, template_dir):
-#         compiler = TemplateConceptCompiler(predicates=None, types=None, namespace='c_')
-#         predicates, metalinks, metadatas = compiler.compile(collect(template_dir))
-#         template_cg = ConceptGraph(predicates, metalinks=metalinks, metadata=metadatas,
-#                                       namespace='t_')
-#         self.template_rules = template_cg.rules()
-#
-#     def __call__(self):
-#         return self.template_rules
+class ResponseTemplateFinder:
+    """
+    Loads the template rules from template_dir upon initialization and returns them when called.
+    """
+
+    def __init__(self, template_dir):
+        compiler = TemplateConceptCompiler(predicates=None, types=None, namespace='c_')
+        predicates, metalinks, metadatas = compiler.compile(collect(template_dir))
+        template_cg = ConceptGraph(predicates, metalinks=metalinks, metadata=metadatas,
+                                      namespace='t_')
+        self.template_rules = template_cg.rules()
+
+    def __call__(self):
+        return self.template_rules
 
 class ResponseTemplateFiller:
     """
