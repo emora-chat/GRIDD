@@ -1,6 +1,10 @@
 from structpy import specification
 from GRIDD.data_structures.concept_graph import ConceptGraph
+from GRIDD.data_structures.concept_compiler import ConceptCompiler
+from GRIDD.data_structures.inference_engine import InferenceEngine
+from GRIDD.utilities.utilities import collect
 from GRIDD.globals import *
+from os.path import join
 
 @specification
 class ResponseTemplatesSpec:
@@ -10,16 +14,33 @@ class ResponseTemplatesSpec:
         response_template_filler = ResponseTemplateFiller()
         return response_template_filler
 
-    def __call__(self, matches, wm):
+    def __call__(response_template_filler, matches, wm):
         """
         Fills the corresponding template for each match found
 
-        `matches` - is a list of (match_dict, string_spec_ls) where match_dict maps
-        variables from the rule to matches in the concept_graph and string_spec_ls
-        is a list of string elements that contain surface form realization parameters
+        `matches` is the output of the inference engine after running the template rules, which takes the form:
+            dict< rule_name: (pre, post, solutions_list) >
+        Each solution in the `solutions_list` is a `match_dict` which maps
+        variables from the rule to matches in the concept_graph.
+        `post` is the `string_spec_ls` which is a list of string elements that contain surface form realization parameters
         and form the full response when properly handled and concatenated.
         """
-        pass
+        compiler = ConceptCompiler(predicates=None, types=None, namespace='c_')
+        predicates, metalinks, metadatas = compiler.compile(collect(join('GRIDD', 'resources', 'kg_files', 'nlg_templates')))
+        template_cg = ConceptGraph(predicates, metalinks=metalinks, metadata=metadatas,
+                                   namespace='t_')
+        template_rules = template_cg.nlg_templates()
+        inference_engine = InferenceEngine()
+        cg = ConceptGraph(predicates='''
+        time(hike(user=person()), past=datetime())
+        expr("I", user)
+        expr("hike", hike)
+        expr("past", past)
+        type("past", expression)
+        ''', namespace="wm_")
+        matches = inference_engine.infer(cg, template_rules)
+        response = response_template_filler(matches, cg)[0]
+        assert response == 'I hiked .'
 
     def fill_string(response_template_filler, match_dict, expr_dict, string_spec_ls, wm):
         """
@@ -41,7 +62,7 @@ class ResponseTemplatesSpec:
         expr_dict = {
             'emora': 'I'
         }
-        string_spec_ls = ['X', ('hike',{'t': 'present', 's': 'X'}), '.']
+        string_spec_ls = ['X.var', ('hike',{'t': 'present', 's': 'X'}), '.']
         filled = response_template_filler.fill_string(match_dict, expr_dict, string_spec_ls, cg)
         assert filled == 'I hike .'
 
@@ -55,7 +76,7 @@ class ResponseTemplatesSpec:
             'Mary': 'Mary',
             'now': 'now'
         }
-        string_spec_ls = ['X', ('hike',{'t': 'Y', 's': 'X'}), '.']
+        string_spec_ls = ['X.var', ('hike',{'t': 'Y', 's': 'X'}), '.']
         filled = response_template_filler.fill_string(match_dict, expr_dict, string_spec_ls, cg)
         assert filled == 'Mary hikes .'
 
@@ -64,7 +85,7 @@ class ResponseTemplatesSpec:
         match_dict = {
             'X': 'c'
         }
-        string_spec_ls = ['X', ('be',{'t': 'present', 's': 'X'}), 'cute', '.']
+        string_spec_ls = ['X.var', ('be',{'t': 'present', 's': 'X'}), 'cute', '.']
         filled = response_template_filler.fill_string(match_dict, expr_dict, string_spec_ls, cg)
         assert filled == 'A cat is cute .'
 
@@ -75,7 +96,7 @@ class ResponseTemplatesSpec:
         match_dict = {
             'X': 'c'
         }
-        string_spec_ls = ['X', ('be',{'t': 'present', 's': 'X'}), 'cute', '.']
+        string_spec_ls = ['X.var', ('be',{'t': 'present', 's': 'X'}), 'cute', '.']
         filled = response_template_filler.fill_string(match_dict, expr_dict, string_spec_ls, cg)
         assert filled == 'The cat is cute .'
 
@@ -84,7 +105,7 @@ class ResponseTemplatesSpec:
         match_dict = {
             'X': 'c'
         }
-        string_spec_ls = ['X', ('be',{'t': 'present', 's': 'X'}), 'cute', '.']
+        string_spec_ls = ['X.var', ('be',{'t': 'present', 's': 'X'}), 'cute', '.']
         filled = response_template_filler.fill_string(match_dict, expr_dict, string_spec_ls, cg)
         assert filled == 'Some cats are cute .'
 
@@ -99,6 +120,6 @@ class ResponseTemplatesSpec:
         expr_dict = {
             'past': 'past'
         }
-        string_spec_ls = ['X', ('be',{'t': 'Y', 's': 'X'}), 'cute', '.']
+        string_spec_ls = ['X.var', ('be',{'t': 'Y', 's': 'X'}), 'cute', '.']
         filled = response_template_filler.fill_string(match_dict, expr_dict, string_spec_ls, cg)
         assert filled == 'The cats were cute .'

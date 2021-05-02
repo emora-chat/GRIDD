@@ -1,5 +1,5 @@
 from GRIDD.modules.responsegen_by_templates_spec import ResponseTemplatesSpec
-from GRIDD.data_structures.concept_compiler import TemplateConceptCompiler
+from GRIDD.data_structures.concept_compiler import ConceptCompiler
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.utilities.utilities import collect
 from GRIDD.globals import *
@@ -32,11 +32,11 @@ class ResponseTemplateFinder:
     """
 
     def __init__(self, template_dir):
-        compiler = TemplateConceptCompiler(predicates=None, types=None, namespace='c_')
+        compiler = ConceptCompiler(predicates=None, types=None, namespace='c_')
         predicates, metalinks, metadatas = compiler.compile(collect(template_dir))
         template_cg = ConceptGraph(predicates, metalinks=metalinks, metadata=metadatas,
                                       namespace='t_')
-        self.template_rules = template_cg.rules()
+        self.template_rules = template_cg.nlg_templates()
 
     def __call__(self):
         return self.template_rules
@@ -57,17 +57,31 @@ class ResponseTemplateFiller:
             if o not in expr_dict:
                 expr_dict[o] = s.replace('"', '')
         candidates = []
-        for match_dict, string_spec_ls in matches:
-            candidates.append((match_dict, self.fill_string(match_dict, expr_dict, string_spec_ls, cg)))
-        return candidates
+        for rule, (pre_graph, string_spec_ls, solutions_list) in matches.items():
+            for match_dict in solutions_list:
+                candidates.append((match_dict, self.fill_string(match_dict, expr_dict, string_spec_ls, cg)))
+        # get highest salience candidate
+        predicates, string, avg_sal = self.select_best_candidate(candidates, cg)
+        return (string, predicates, 'template')
+
+    def select_best_candidate(self, candidates, cg):
+        with_sal = []
+        for match_dict, string in candidates:
+            sals = [cg.features.get(x, {}).get(SALIENCE, 0) for x in match_dict.values()]
+            avg = sum(sals) / len(sals)
+            preds = [cg.predicate(x) for x in match_dict.values() if cg.has(predicate_id=x)]
+            with_sal.append((preds, string, avg))
+        return max(with_sal, key=lambda x: x[2])
 
     def fill_string(self, match_dict, expr_dict, string_spec_ls, cg):
         realizations = {}
         specifications = {}
 
         # Replacement of parameter-less variables
-        for e in string_spec_ls:
-            if not isinstance(e, tuple) and e not in realizations and e.isupper():
+        for i, e in enumerate(string_spec_ls):
+            if not isinstance(e, tuple) and e not in realizations and '.var' in e:
+                e = e[:-4]
+                string_spec_ls[i] = e
                 match = match_dict[e]
                 if match in expr_dict: # the matched concept for the variable is a named concept
                     realizations[e] = expr_dict[match_dict[e]]
@@ -102,7 +116,7 @@ class ResponseTemplateFiller:
                     tense = expr_dict.get(tense, tense)
                     if tense == 'past':
                         clause.setFeature(Feature.TENSE, Tense.PAST)
-                    elif tense == 'present' or tense == 'now':
+                    elif tense in {'present', 'now'}:
                         clause.setFeature(Feature.TENSE, Tense.PRESENT)
                     elif tense == 'future':
                         clause.setFeature(Feature.TENSE, Tense.FUTURE)
@@ -130,7 +144,7 @@ if __name__ == '__main__':
     # from os.path import join
     # from GRIDD.data_structures.inference_engine import InferenceEngine
     #
-    # tfind = ResponseTemplateFinder(join('GRIDD', 'resources', 'nlg_templates'))
+    # tfind = ResponseTemplateFinder(join('GRIDD', 'resources', 'kg_files', 'nlg_templates'))
     # infer = InferenceEngine()
     #
     # logic = '''

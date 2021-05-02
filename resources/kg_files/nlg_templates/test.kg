@@ -1,6 +1,5 @@
-time(h/hike(X=person()), Y/datetime())
-expr(X, Y=expression())
-assert(h)
+time(h/hike(X/person()), Y/datetime())
+expr(Z/expression(), Y)
 -> person_hiked ->
 $ X hike{"t":"Y", "s":"X"} . $
 ;

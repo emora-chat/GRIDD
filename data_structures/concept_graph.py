@@ -435,11 +435,11 @@ class ConceptGraph:
         rule_links = {}
         instance_exclusions = set()
         for rule in rule_instances:
-            pre_inst = self.metagraph.out_edges(rule, 'pre')
+            pre_inst = self.metagraph.out_edges(rule, PRE)
             pre = [edge[1] for edge in pre_inst]
-            post_inst = self.metagraph.out_edges(rule, 'post')
+            post_inst = self.metagraph.out_edges(rule, POST)
             post = [edge[1] for edge in post_inst]
-            vars_inst = self.metagraph.out_edges(rule, 'var')
+            vars_inst = self.metagraph.out_edges(rule, VAR)
             vars = {edge[1] for edge in vars_inst}
             if pre and post:
                 instance_exclusions.update(chain(pre_inst, post_inst, vars_inst))
@@ -451,6 +451,39 @@ class ConceptGraph:
                 post = self.subgraph(post, meta_exclusions=instance_exclusions)
                 rules[rule] = (pre, post, vars)
         return rules
+
+    def nlg_templates(self):
+        templates = {}
+        template_instances = set(self.subtypes_of('response')) - {'response'}
+
+        template_links = {}
+        instance_exclusions = set()
+        for template in template_instances:
+            # Get the rule that this template is the postcondition of
+            (rule, ) = self.metagraph.sources(template, POST)
+            # Get the precondition and vars
+            pre_inst = self.metagraph.out_edges(rule, PRE)
+            pre = [edge[1] for edge in pre_inst]
+            vars_inst = self.metagraph.out_edges(rule, VAR)
+            vars = {edge[1] for edge in vars_inst}
+            # get the post and represent it as a list of string element specifications
+            elements = self.objects(template, 'token_seq')
+            elements = sorted(elements, key=lambda x: self.features[x]['response_index'])
+            string_spec_ls = []
+            for e in elements:
+                string_literal = self.features[e]['response_str']
+                string_repr = string_literal if string_literal is not None else f"{e}.var"
+                string_data = self.features[e].get('response_data', None)
+                final_element = (string_repr, string_data) if string_data is not None else string_repr
+                string_spec_ls.append(final_element)
+            instance_exclusions.update(chain(pre_inst, vars_inst))
+            template_links[template] = (pre, string_spec_ls, vars)
+
+        for template, (pre, string_spec_ls, vars) in template_links.items():
+            pre = self.subgraph(pre, meta_exclusions=instance_exclusions)
+            templates[template] = (pre, string_spec_ls, vars)
+        return templates
+
 
     def references(self):
         references = {}

@@ -139,6 +139,7 @@ class ConceptVisitor(Visitor_Recursive):
             rid = tree.children[1]
         else:
             rid = self.globals.get()
+        precondition, variables = tree.children[0].data
         postcondition = [c for c in tree.children if hasattr(c, 'data') and isinstance(c.data, set)]
         postcondition = postcondition[0].data if postcondition else None
         template = [c for c in tree.children if hasattr(c, 'data') and c.data == 'template']
@@ -158,7 +159,7 @@ class ConceptVisitor(Visitor_Recursive):
             self.lentries.append((response, 'type', 'response', instance))
             response_set = {response, instance}
             for i, (token, json) in enumerate(template):
-                if token in self.instances:
+                if token in variables:
                     tok_concept = token
                     tokendata = None
                 else:
@@ -174,6 +175,10 @@ class ConceptVisitor(Visitor_Recursive):
                 self.instances.add(instance)
                 self.lentries.append((response, 'token_seq', tok_concept, instance))
                 response_set.add(instance)
+                if json is not None:
+                    for key, value in json.items(): # swap out temp local id specification for real id
+                        json[key] = self.locals.get(value, value)
+                    self.lmetadatas.setdefault(tok_concept, {})['response_data'] = json
             if postcondition is None:
                 postcondition = response_set
             else:
@@ -182,7 +187,6 @@ class ConceptVisitor(Visitor_Recursive):
             self.check_double_init([rid], self.instances)
             self.instances.add(rid)
             self.lentries.append((rid, 'type', 'implication', self.globals.get()))
-            precondition, variables = tree.children[0].data
             for c in precondition:
                 self.links.append((rid, 'pre', c))
             for c in postcondition:
@@ -191,11 +195,6 @@ class ConceptVisitor(Visitor_Recursive):
                 self.links.append((rid, 'var', c))
             self.metadatas.setdefault(rid, {})['rindex'] = self.rule_iter
             self.rule_iter += 1
-
-    def token(self, tree):
-        if len(tree.children) > 1:
-            ident = str(tree.children[0])
-            self.lmetadatas.setdefault(ident, {})['response_data'] = tree.children[1].children[0].data
 
     def precondition(self, tree):
         preinst = set(chain(*[t.refs for t in tree.iter_subtrees() if hasattr(t, 'refs')]))
