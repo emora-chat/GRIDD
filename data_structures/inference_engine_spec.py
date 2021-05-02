@@ -127,10 +127,10 @@ class InferenceEngineSpec:
         like(x, z)
         '''.split(';')
 
-        implications = inference_engine.apply(facts, *rules)
+        implications = inference_engine.apply(inference_engine.infer(facts, *rules))
 
         assert concept_graphs_equal(
-            implications['trans_like'][0],
+            implications['trans_like'][0][1],
             ConceptGraph('''
             like(john, sally);
             ''')
