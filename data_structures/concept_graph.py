@@ -472,7 +472,8 @@ class ConceptGraph:
             string_spec_ls = []
             for e in elements:
                 string_literal = self.features[e]['response_str']
-                string_repr = string_literal if string_literal is not None else f"{e}.var"
+                var = self.features[e]['response_var']
+                string_repr = string_literal if string_literal is not None else f"{var}.var"
                 string_data = self.features[e].get('response_data', None)
                 final_element = (string_repr, string_data) if string_data is not None else string_repr
                 string_spec_ls.append(final_element)

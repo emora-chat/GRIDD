@@ -1,5 +1,13 @@
-time(h/hike(X/person()), Y/datetime())
+time(hike(X/person()), Y/datetime())
 expr(Z/expression(), Y)
 -> person_hiked ->
 $ X hike{"t":"Y", "s":"X"} . $
+;
+
+time(hike(X/person()), Y/datetime())
+expr(Z/expression(), Y)
+with(X, A/friend())
+possess(X, A)
+-> person_hiked_with_friend ->
+$ X hike{"t":"Y", "s":"X"} with X{"p": true} friend . $
 ;

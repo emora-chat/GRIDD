@@ -40,7 +40,20 @@ class ResponseTemplatesSpec:
         ''', namespace="wm_")
         matches = inference_engine.infer(cg, template_rules)
         response = response_template_filler(matches, cg)[0]
-        assert response == 'I hiked .'
+        assert response.lower() == 'i hiked .'
+
+        cg = ConceptGraph(predicates='''
+        time(hike(user=person()), past=datetime())
+        with(user, f/friend())
+        possess(user, f)
+        expr("I", user)
+        expr("hike", hike)
+        expr("past", past)
+        type("past", expression)
+        ''', namespace="wm_")
+        matches = inference_engine.infer(cg, template_rules)
+        response = response_template_filler(matches, cg)[0]
+        assert response.lower() == 'i hiked with my friend .'
 
     def fill_string(response_template_filler, match_dict, expr_dict, string_spec_ls, wm):
         """
@@ -50,6 +63,7 @@ class ResponseTemplatesSpec:
         Grammatical markers are:
             t - discrete tense category (past, present, future)
             s - subject dependency for agreement between subjects and verbs
+            p - possessive indicator (true, false)
 
         An appropriate determiner and its agreement with its object is derived from logical form
         and as such is not specified in the template.

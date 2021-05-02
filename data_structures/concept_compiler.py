@@ -159,17 +159,20 @@ class ConceptVisitor(Visitor_Recursive):
             self.lentries.append((response, 'type', 'response', instance))
             response_set = {response, instance}
             for i, (token, json) in enumerate(template):
+                tok_concept = self.globals.get()
                 if token in variables:
-                    tok_concept = token
+                    tokenvar = token
                     tokendata = None
                 else:
-                    tokendata = token
                     tok_concept = self.globals.get()
+                    tokenvar = None
+                    tokendata = token
                 instance = self.globals.get()
                 self.instances.update((tok_concept, instance))
                 self.lentries.append((tok_concept, 'type', 'response_token', instance))
                 response_set.update((tok_concept, instance))
                 self.metadatas.setdefault(tok_concept, {})['response_str'] = tokendata
+                self.metadatas[tok_concept]['response_var'] = tokenvar
                 self.metadatas[tok_concept]['response_index'] = i
                 instance = self.globals.get()
                 self.instances.add(instance)

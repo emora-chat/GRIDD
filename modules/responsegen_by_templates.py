@@ -57,20 +57,22 @@ class ResponseTemplateFiller:
             if o not in expr_dict:
                 expr_dict[o] = s.replace('"', '')
         candidates = []
-        for rule, (pre_graph, string_spec_ls, solutions_list) in matches.items():
+        for rule, (pre_graph, post, solutions_list) in matches.items():
+            string_spec_ls = list(post) # need to create copy so as to not mutate the postcondition in the rule
             for match_dict in solutions_list:
                 candidates.append((match_dict, self.fill_string(match_dict, expr_dict, string_spec_ls, cg)))
-        # get highest salience candidate
         predicates, string, avg_sal = self.select_best_candidate(candidates, cg)
         return (string, predicates, 'template')
 
     def select_best_candidate(self, candidates, cg):
+        # get highest salience candidate with at least one uncovered predicate
         with_sal = []
         for match_dict, string in candidates:
-            sals = [cg.features.get(x, {}).get(SALIENCE, 0) for x in match_dict.values()]
-            avg = sum(sals) / len(sals)
             preds = [cg.predicate(x) for x in match_dict.values() if cg.has(predicate_id=x)]
-            with_sal.append((preds, string, avg))
+            if False in [cg.has(x, USER_AWARE) for x in preds]:
+                sals = [cg.features.get(x, {}).get(SALIENCE, 0) for x in match_dict.values()]
+                avg = sum(sals) / len(sals)
+                with_sal.append((preds, string, avg))
         return max(with_sal, key=lambda x: x[2])
 
     def fill_string(self, match_dict, expr_dict, string_spec_ls, cg):
@@ -79,9 +81,13 @@ class ResponseTemplateFiller:
 
         # Replacement of parameter-less variables
         for i, e in enumerate(string_spec_ls):
+            is_tuple = False
+            if isinstance(e, tuple):
+                is_tuple = True
+                e = e[0]
             if not isinstance(e, tuple) and e not in realizations and '.var' in e:
                 e = e[:-4]
-                string_spec_ls[i] = e
+                string_spec_ls[i] = e if not is_tuple else (e, string_spec_ls[i][1])
                 match = match_dict[e]
                 if match in expr_dict: # the matched concept for the variable is a named concept
                     realizations[e] = expr_dict[match_dict[e]]
@@ -128,7 +134,14 @@ class ResponseTemplateFiller:
                     if spec['s'] in specifications:
                         clause.setFeature(Feature.NUMBER, specifications[spec['s']].features['number'])
                     to_remove.add(subject)
-                    # todo - determine if we need to use simplenlg to determine plurality/person?
+                if 'p' in spec:
+                    noun = match_dict.get(surface_form, surface_form)
+                    noun = expr_dict.get(noun, noun)
+                    np = self.nlgFactory.createNounPhrase(noun)
+                    if spec['p'] == True:
+                        np.setFeature(Feature.POSSESSIVE, True)
+                        np.setFeature(Feature.PRONOMINAL, True)
+                    clause = np
                 sentence = self.realiser.realiseSentence(clause)
                 for r in to_remove:
                     sentence = sentence.replace(r, '')
