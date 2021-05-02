@@ -3,7 +3,7 @@ from GRIDD.data_structures.concept_compiler import ConceptCompiler
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.utilities.utilities import collect
 from GRIDD.globals import *
-import time
+import time, re
 
 from simplenlg.framework.NLGFactory         import *
 from simplenlg.realiser.english.Realiser    import *
@@ -152,9 +152,10 @@ class ResponseTemplateFiller:
                         np.setFeature(Feature.POSSESSIVE, True)
                         np.setFeature(Feature.PRONOMINAL, True)
                     clause = np
-                sentence = self.realiser.realiseSentence(clause)
+                sentence = self.realiser.realiseSentence(clause).lower()
                 for r in to_remove:
-                    sentence = sentence.replace(r, '')
+                    pattern = r'\b' + r.lower() + r'\b'
+                    sentence = re.sub(pattern, '', sentence)
                 realizations[str(e)] = sentence[:-1].strip()
 
         final_str = [realizations.get(str(e), str(e)) for e in string_spec_ls]

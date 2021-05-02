@@ -26,14 +26,29 @@ class ResponseTemplatesSpec:
         and form the full response when properly handled and concatenated.
         """
         compiler = ConceptCompiler(predicates=None, types=None, namespace='c_')
-        predicates, metalinks, metadatas = compiler.compile(collect(join('GRIDD', 'resources', 'kg_files', 'nlg_templates')))
+        predicates, metalinks, metadatas = compiler.compile('''
+        time(hike(X/person()), Y/datetime())
+        expr(Z/expression(), Y)
+        -> person_hiked ->
+        $ X hike{"t":"Y", "s":"X"} . $
+        ;
+        
+        time(h/hike(X/person()), Y/datetime())
+        expr(Z/expression(), Y)
+        with(h, A/friend())
+        possess(X, A)
+        -> person_hiked_with_friend ->
+        $ X hike{"t":"Y", "s":"X"} with X{"p": true} friend . $
+        ;
+        ''')
         template_cg = ConceptGraph(predicates, metalinks=metalinks, metadata=metadatas,
                                    namespace='t_')
         template_rules = template_cg.nlg_templates()
         inference_engine = InferenceEngine()
+
         cg = ConceptGraph(predicates='''
-        time(hike(user=person()), past=datetime())
-        expr("I", user)
+        time(hike(emora=person()), past=datetime())
+        expr("I", emora)
         expr("hike", hike)
         expr("past", past)
         type("past", expression)
@@ -43,12 +58,12 @@ class ResponseTemplatesSpec:
         assert response.lower() == 'i hiked .'
 
         cg = ConceptGraph(predicates='''
-        t/time(h/hike(user=person()), past=datetime())
-        with(user, f/friend())
-        possess(user, f)
+        t/time(h/hike(emora=person()), past=datetime())
+        with(h, f/friend())
+        possess(emora, f)
         user_aware(h)
         user_aware(t)
-        expr("I", user)
+        expr("I", emora)
         expr("hike", hike)
         expr("past", past)
         type("past", expression)
