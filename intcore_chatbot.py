@@ -35,10 +35,13 @@ class Chatbot:
     def __init__(self, *knowledge_base, inference_rules, starting_wm=None, device='cpu'):
         self.auxiliary_state = {'turn_index': -1}
 
+        s = time.time()
         compiler = ConceptCompiler()
         predicates, metalinks, metadatas = compiler.compile(collect(*knowledge_base))
         knowledge_base = ConceptGraph(predicates, metalinks=metalinks, metadata=metadatas,
                                       namespace='kb')
+        print('KB load: %.2f'%(time.time()-s))
+
         dialogue_inference = InferenceEngine(collect(*inference_rules))
         working_memory = None
         if starting_wm is not None:
@@ -331,6 +334,9 @@ class Chatbot:
 
         # Template NLG
 
+        for pred in self.dialogue_intcore.pull_expressions():
+            if not wm.has(*pred):
+                wm.add(*pred)
         matches = self.inference_engine.infer(wm, self.template_loader.templates())
         response_info = self.template_filler(matches, wm)
 

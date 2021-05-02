@@ -55,7 +55,12 @@ class ResponseTemplateFiller:
         expr_dict = {}
         for s, t, o, i in cg.predicates(predicate_type='expr'):
             if o not in expr_dict:
-                expr_dict[o] = s.replace('"', '')
+                if o == 'user':
+                    expr_dict[o] = 'you'
+                elif o == 'emora':
+                    expr_dict[o] = 'I'
+                else:
+                    expr_dict[o] = s.replace('"', '')
         candidates = []
         for rule, (pre_graph, post, solutions_list) in matches.items():
             string_spec_ls = list(post) # need to create copy so as to not mutate the postcondition in the rule
