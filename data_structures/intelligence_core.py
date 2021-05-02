@@ -495,7 +495,10 @@ class IntelligenceCore:
             pass
         if 'emora_knowledge' in options:
             for s, t, o, i in cg.predicates():
-                cg.features[i][CONVINCABLE] = 0.0
+                if not cg.has('emora', REQ_TRUTH, i):
+                    cg.features[i][CONVINCABLE] = 0.0
+                else:
+                    cg.features[i][CONVINCABLE] = 1.0
 
 
 if __name__ == '__main__':
