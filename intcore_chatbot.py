@@ -4,6 +4,7 @@ from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.concept_compiler import ConceptCompiler
 from GRIDD.data_structures.inference_engine import InferenceEngine
 from GRIDD.modules.elit_dp_to_logic_model import ElitDPToLogic
+from GRIDD.modules.responsegen_by_templates import ResponseTemplateFinder, ResponseTemplateFiller
 from GRIDD.modules.response_selection_salience import ResponseSelectionSalience
 from GRIDD.modules.response_expansion import ResponseExpansion
 from GRIDD.modules.responsegen_by_rules import ResponseRules
@@ -46,11 +47,16 @@ class Chatbot:
                                             working_memory=working_memory,
                                             inference_engine=dialogue_inference)
 
-        template_file = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
+        self.inference_engine = InferenceEngine()
+
+        nlu_templates = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
         s = time.time()
-        self.elit_dp = ElitDPToLogic(knowledge_base, template_file)
+        self.elit_dp = ElitDPToLogic(knowledge_base, nlu_templates)
         print('Parse2Logic load: %.2f'%(time.time()-s))
 
+        nlg_templates = join('GRIDD', 'resources', 'kg_files', 'nlg_templates')
+        self.template_loader = ResponseTemplateFinder(nlg_templates)
+        self.template_filler = ResponseTemplateFiller()
         self.response_selection = ResponseSelectionSalience()
         self.response_expansion = ResponseExpansion(knowledge_base)
         self.produce_acknowledgment = ResponseRules()
@@ -321,7 +327,12 @@ class Chatbot:
             print('\n' + '#' * 10 + '\nEnd User Turn\n' + '#' * 10)
             self.print_features()
 
-        # Start of emora turn
+        # Start of Emora turn
+
+        # Template NLG
+
+        matches = self.inference_engine.infer(wm, self.template_loader.templates())
+        response_info = self.template_filler(matches, wm)
 
         # Response selection
         aux_state, selections = self.response_selection(self.auxiliary_state, wm)

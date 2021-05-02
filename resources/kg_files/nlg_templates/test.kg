@@ -11,3 +11,11 @@ possess(X, A)
 -> person_hiked_with_friend ->
 $ X hike{"t":"Y", "s":"X"} with X{"p": true} friend . $
 ;
+
+
+time(where(B/house(), C/location()), now)
+possess(A/person(), B)
+request(emora, C)
+-> where_house ->
+$ Where is A{"p": true} house ? $
+;

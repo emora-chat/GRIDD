@@ -43,9 +43,11 @@ class ResponseTemplatesSpec:
         assert response.lower() == 'i hiked .'
 
         cg = ConceptGraph(predicates='''
-        time(hike(user=person()), past=datetime())
+        t/time(h/hike(user=person()), past=datetime())
         with(user, f/friend())
         possess(user, f)
+        user_aware(h)
+        user_aware(t)
         expr("I", user)
         expr("hike", hike)
         expr("past", past)

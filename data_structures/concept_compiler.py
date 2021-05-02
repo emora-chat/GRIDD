@@ -223,7 +223,8 @@ class ConceptVisitor(Visitor_Recursive):
                     if o is not None:
                         refs.append(o)
             for e in refs:
-                if e not in self.instances and e not in self.types:
+                if (self.instances and e not in self.instances)\
+                        and (self.types and e not in self.types):
                     raise ValueError('Reference to undeclared concept `{}`'.format(e))
         predicate_types = [t for _, t, _, _ in entries]
         if not self.typegen:

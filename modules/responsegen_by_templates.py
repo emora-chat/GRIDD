@@ -38,7 +38,7 @@ class ResponseTemplateFinder:
                                       namespace='t_')
         self.template_rules = template_cg.nlg_templates()
 
-    def __call__(self):
+    def templates(self):
         return self.template_rules
 
 class ResponseTemplateFiller:
@@ -68,8 +68,10 @@ class ResponseTemplateFiller:
         # get highest salience candidate with at least one uncovered predicate
         with_sal = []
         for match_dict, string in candidates:
-            preds = [cg.predicate(x) for x in match_dict.values() if cg.has(predicate_id=x)]
-            if False in [cg.has(x, USER_AWARE) for x in preds]:
+            preds = [cg.predicate(x) for x in match_dict.values() if cg.has(predicate_id=x)
+                     and cg.type(x) not in {EXPR, TYPE, TIME}]
+            user_awareness = [cg.has(x[3], USER_AWARE) for x in preds]
+            if False in user_awareness:
                 sals = [cg.features.get(x, {}).get(SALIENCE, 0) for x in match_dict.values()]
                 avg = sum(sals) / len(sals)
                 with_sal.append((preds, string, avg))
