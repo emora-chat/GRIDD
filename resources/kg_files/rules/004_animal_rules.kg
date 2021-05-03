@@ -17,10 +17,15 @@ request(emora, Y)
 time(have(user, d/dog()), now)
 -> user_has_dog ->
 
-t:<time(know(d, t/trick()), now)>
-request(emora, t)
+k:<time(k/know(d, trick()), now)>
+request_truth(emora, k)
 
 loc:<time(w/walk(user, d), now) locate(w, loc/location())>
 user_aware(w)
 request(emora, loc)
+;
+
+time(know(d/dog(), h/heel()), now)
+-> knows_heel ->
+obedient(d)
 ;

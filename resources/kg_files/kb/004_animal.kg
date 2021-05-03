@@ -38,6 +38,10 @@ speak = (trick)
 expr("speak", speak)
 ;
 
+obedient=(property)
+expr("obedient", obedient)
+;
+
 walk = (predicate)
 expr("walk", walk)
 play = (predicate)

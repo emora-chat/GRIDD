@@ -23,8 +23,6 @@ class NodeFeatures(defaultdict):
                         else:
                             self[node][feature] = other_value
                     elif feature == CONFIDENCE:
-                        if feature in self[node]:
-                            print(f'WARNING: Existing confidence value of {node} is being updated!')
                         self[node][feature] = other_value
                     elif feature == 'span_data':
                         if 'span_data' in self[node]:
@@ -48,8 +46,6 @@ class NodeFeatures(defaultdict):
                     else:
                         self[kept][feature] = other_value
                 elif feature == CONFIDENCE:
-                    if feature in self[kept]:
-                        print(f'WARNING: Existing confidence value of {kept} is being updated!')
                     self[kept][feature] = other_value
                 elif feature == 'span_data':
                     if 'span_data' in self[kept]:

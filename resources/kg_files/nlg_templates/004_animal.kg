@@ -1,7 +1,7 @@
 
 time(h/have(user, p/pet()), now)
 request_truth(emora, h)
--> q_user_have_pet ->
+-> q_user_has_pet ->
 $ Do you have a pet ? $
 ;
 
@@ -13,11 +13,17 @@ request(emora, Y)
 $ What do you like to do with your X ? $
 ;
 
-time(know(d/dog(), t/trick()), now)
+time(k/know(d/dog(), trick()), now)
 possess(user, d)
-request(emora, t)
+request_truth(emora, k)
 -> q_dog_tricks ->
 $ Does your dog know any tricks ? $
+;
+
+possess(user, d/dog())
+obedient(d)
+-> obedient_dog ->
+$ Wow, it sounds like your dog is pretty obedient ! $
 ;
 
 time(w/walk(user, d/dog()), now)

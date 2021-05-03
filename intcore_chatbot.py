@@ -22,7 +22,7 @@ import json, requests, time
 from itertools import chain
 from collections import defaultdict
 
-DEBUG = True
+DEBUG = False
 EXCL = {'expr', SPAN_REF, SPAN_DEF, USER_AWARE,
         'span', 'expression', 'predicate', 'datetime'}
 TYPEINFO = False
@@ -212,12 +212,6 @@ class Chatbot:
             print('#' * 10)
             print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=TYPEINFO))
 
-        print('\n' + '#'*10)
-        print('Before Inference')
-        print('#' * 10)
-        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=TYPEINFO))
-        print()
-
         for iteration in range(2):
             if debug:
                 print('\n<< INFERENCE ITERATION %d >> '%iteration)
@@ -295,18 +289,21 @@ class Chatbot:
                 self.merge_references(fragment_request_merges)
                 self.dialogue_intcore.operate()
 
+                # Feature update
+                self.dialogue_intcore.update_confidence('user')
+                self.dialogue_intcore.update_confidence('emora')
+                self.dialogue_intcore.update_salience()
+
+                if debug:
+                    print('\n' + '#' * 10 + '\nAfter Feature Update\n' + '#' * 10)
+                    self.print_features()
+
             if debug:
                 print('\n' + '#'*10)
                 print('After Reference Resolution')
                 print('#' * 10)
                 print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=TYPEINFO))
                 print()
-
-        print('\n' + '#'*10)
-        print('After Inference')
-        print('#' * 10)
-        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=TYPEINFO))
-        print()
 
         # End of user turn -> decay salience
         self.dialogue_intcore.decay_salience()
@@ -360,7 +357,7 @@ class Chatbot:
         # end of emora turn -> update salience, then decay and prune
         self.dialogue_intcore.update_salience()
         self.dialogue_intcore.decay_salience()
-        self.dialogue_intcore.prune_predicates_of_type({AFFIRM, REJECT})
+        self.dialogue_intcore.prune_predicates_of_type({AFFIRM, REJECT, EXPR})
         self.dialogue_intcore.prune_attended(keep=200)
 
         if debug:
@@ -399,13 +396,24 @@ class Chatbot:
         fragment_request_merges = []
         indicator_preds = [p[3] for p in list(wm.predicates('user', AFFIRM)) + list(wm.predicates('user', REJECT))]
         options = set(indicator_preds).intersection(current_user_concepts)
-        if len(indicator_preds) > 0:
+        if len(indicator_preds) > 0: # find yes or no answer to question
             max_indicator = max(options, key=lambda p: wm.features.get(p[3], {}).get(SALIENCE, 0))
             fragment_request_merges.append((wm.object(max_indicator), request_focus))
-            within_request_args = wm.metagraph.targets(request_focus, VAR)
-            for v in within_request_args:
-                arg_merges = self.arg_fragment_resolution(v, current_user_concepts, wm)
+        # find type-compatible argument match for non-predicates, if there is one
+        # todo - expand to match predicate arguments too
+        within_request_vars = {x for x in wm.metagraph.targets(request_focus, VAR) if not wm.has(predicate_id=x)}
+        for v in within_request_vars:
+            arg_merges = self.arg_fragment_resolution(v, current_user_concepts, wm)
+            if len(arg_merges) > 0:
+                if len(fragment_request_merges) == 0:
+                    affirm_obj = wm.id_map().get()
+                    i = wm.add('user', AFFIRM, affirm_obj)
+                    wm.add(i, USER_AWARE)
+                    wm.features[affirm_obj][SALIENCE] = 1.0
+                    wm.features[i][SALIENCE] = 1.0
+                    fragment_request_merges.append((affirm_obj, request_focus))
                 fragment_request_merges.extend(arg_merges)
+                break
         return fragment_request_merges
 
     def get_merge_sets_from_pairs(self, pairs):
@@ -447,7 +455,7 @@ class Chatbot:
                     self.dialogue_intcore.working_memory.add(truths[0][3], USER_AWARE)
                 else:
                     args = list(self.dialogue_intcore.working_memory.predicates('emora', REQ_ARG, ref_node))
-                    if truths:
+                    if args:
                         self.dialogue_intcore.working_memory.add(args[0][3], REQ_SAT)
                         self.dialogue_intcore.working_memory.add(args[0][3], USER_AWARE)
 

@@ -1,4 +1,5 @@
-[entity, predicate, unknown, property] = (object)
+[entity, predicate, unknown] = (object)
+property=(predicate)
 
 expr(["unknown"], unknown)
 unknown_noun = (object)
