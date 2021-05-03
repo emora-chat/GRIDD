@@ -36,6 +36,14 @@ class InferenceEngine:
             else:
                 pre, vars = structure
             pre = pre.copy()
+            categories = set()
+            for s, t, _, i in set(pre.predicates(predicate_type='category')):
+                categories.add(s)
+                pre.remove(predicate_id=i)
+            if pre.has('category'):
+                pre.remove(predicate_type='category')
+            if pre.has('category'):
+                pre.remove('category')
             attributes = {}
             types_to_remove = set()
             types_to_preserve = set()
@@ -61,6 +69,8 @@ class InferenceEngine:
             precondition = pre.to_graph()
             for node, types in attributes.items():
                 precondition.data(node)['attributes'] = types
+            for node in categories:
+                precondition.data(node)['category'] = True
             for var in vars: # vars includes both pre and post vars
                 if precondition.has(var):
                     precondition.data(var)['var'] = True
@@ -100,6 +110,7 @@ class InferenceEngine:
 
     def infer(self, facts, dynamic_rules=None, cached=True):
         facts_concept_graph = ConceptGraph(facts, namespace=(facts._ids if isinstance(facts, ConceptGraph) else "facts_"))
+        facts_types = facts_concept_graph.types()
         facts_graph = self._convert_facts(facts_concept_graph)
         if dynamic_rules is not None and not isinstance(dynamic_rules, dict):
             dynamic_rules = ConceptGraph(dynamic_rules).rules()
@@ -115,6 +126,10 @@ class InferenceEngine:
         sols = self.matcher.match(facts_graph, *list(converted_rules.values()))
         solutions = {}
         for precondition, sols in sols.items():
+            categories = set()
+            for node in precondition.nodes():
+                if 'category' in precondition.data(node):
+                    categories.add(node)
             precondition_id = converted_rules.reverse()[precondition]
             precondition_cg = all_rules[precondition_id][0]
             solset = []
@@ -126,6 +141,14 @@ class InferenceEngine:
                         if (var_conf is None and val_conf <= 0) or \
                            (var_conf is not None and var_conf > 0 and val_conf - var_conf < 0) or \
                            (var_conf is not None and var_conf < 0 and val_conf - var_conf > 0):
+                            break
+                    if variable in categories:
+                        not_category = False
+                        for t in precondition_cg.types(variable):
+                            if facts_types.get(value, set()) > facts_types.get(t, set()):
+                                not_category = True
+                                break
+                        if not_category:
                             break
                 else:
                     solset.append(sol)
