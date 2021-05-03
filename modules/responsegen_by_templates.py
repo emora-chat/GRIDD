@@ -95,7 +95,7 @@ class ResponseTemplateFiller:
             if isinstance(e, tuple):
                 is_tuple = True
                 e = e[0]
-            if not isinstance(e, tuple) and e not in realizations and '.var' in e:
+            if e not in realizations and '.var' in e:
                 e = e[:-4]
                 string_spec_ls[i] = e if not is_tuple else (e, string_spec_ls[i][1])
                 match = match_dict[e]
@@ -104,15 +104,17 @@ class ResponseTemplateFiller:
                 else: # not a named concept
                     np = self.nlgFactory.createNounPhrase()
                     # need to get main type
-                    types = cg.types(match)
-                    noun = self.nlgFactory.createNLGElement(list(types - {match, GROUP})[0], LexicalCategory.NOUN)
-                    # determine whether reference or instance
-                    if cg.metagraph.out_edges(match, REF) or list(cg.predicates(match, USER_AWARE)):
-                        np.setDeterminer('the')
-                    else:
-                        np.setDeterminer('a')
+                    match_types = cg.types(match)
+                    main_type = self._concrete_type(cg, match)
+                    noun = self.nlgFactory.createNLGElement(main_type, LexicalCategory.NOUN)
+                    if is_tuple and string_spec_ls[i][1].get("d", False) == True:
+                        # determine whether reference or instance
+                        if cg.metagraph.out_edges(match, REF) or list(cg.predicates(match, USER_AWARE)):
+                            np.setDeterminer('the')
+                        else:
+                            np.setDeterminer('a')
                     # whether group
-                    if GROUP in types:
+                    if GROUP in match_types:
                         noun.setFeature(Feature.NUMBER, NumberAgreement.PLURAL)
                     else:
                         noun.setFeature(Feature.NUMBER, NumberAgreement.SINGULAR)
@@ -160,6 +162,22 @@ class ResponseTemplateFiller:
 
         final_str = [realizations.get(str(e), str(e)) for e in string_spec_ls]
         return ' '.join(final_str)
+
+    def _concrete_type(self, cg, concept):
+        """
+        Identify which immediate type of a concept is the most concrete (e.g. is lowest in
+        the ontology hierarchy)
+        """
+        immediate_types = cg.objects(concept, TYPE)
+        candidates = set()
+        for t in immediate_types:
+            subs = set(cg.subtypes_of(t)) - {t}
+            intersection = immediate_types.intersection(subs)
+            if len(intersection) == 0:
+                # there are no lower types in the immediate types that are subtypes of the current one
+                candidates.add(t)
+        return next(iter(candidates))
+
 
 
 if __name__ == '__main__':

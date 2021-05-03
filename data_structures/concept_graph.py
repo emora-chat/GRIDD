@@ -497,10 +497,10 @@ class ConceptGraph:
 
     def references(self):
         references = {}
-        ref_instances = {s for s, t, l in self.metagraph.edges(label='ref')}
+        ref_instances = {s for s, t, l in self.metagraph.edges(label=REF)}
         for ref in ref_instances:
-            pre = self.metagraph.targets(ref, 'ref')
-            vars = set(self.metagraph.targets(ref, 'var'))
+            pre = self.metagraph.targets(ref, REF)
+            vars = set(self.metagraph.targets(ref, VAR))
             if pre:
                 pre = self.subgraph(pre)
                 references[ref] = (pre, vars)

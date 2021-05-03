@@ -80,7 +80,8 @@ class ResponseTemplatesSpec:
         Grammatical markers are:
             t - discrete tense category (past, present, future)
             s - subject dependency for agreement between subjects and verbs
-            p - possessive indicator (true, false)
+            p - possessive indicator (true, false) - defaults to false
+            d - needs determiner indicator (true, false) - defaults to false
 
         An appropriate determiner and its agreement with its object is derived from logical form
         and as such is not specified in the template.

@@ -5,3 +5,11 @@ request_truth(emora, h)
 $ Do you have a pet ? $
 ;
 
+l/like(user, Z/do(user, Y/predicate()))
+with(Z, X/pet())
+time(l, now)
+request(emora, Y)
+-> q_activity_with_pet ->
+$ What do you like to do with your X ? $
+;
+

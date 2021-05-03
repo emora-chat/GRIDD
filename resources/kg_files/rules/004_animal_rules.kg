@@ -3,15 +3,19 @@ have(user, p/pet())
 possess(user, p)
 ;
 
-time(have(user, d/dog()), now)
--> user_pet_dog ->
-p:<
-    l/like(user, p2/do(user, p/predicate()))
-    with(p, d)
+time(have(user, X/pet()), now)
+-> user_has_pet ->
+Y:<
+    l/like(user, Z/do(user, Y/predicate()))
+    with(Z, X)
     time(l, now)
 >
-user_aware(p2)
-request(emora, p)
+user_aware(Z)
+request(emora, Y)
+;
+
+time(have(user, d/dog()), now)
+-> user_has_dog ->
 
 t:<time(know(d, t/trick()), now)>
 request(emora, t)
