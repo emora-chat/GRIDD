@@ -1,8 +1,13 @@
 [entity, predicate, unknown] = (object)
 property=(predicate)
 
+subj_essential=(predicate)
+obj_essential=(predicate)
+
 imp_trigger = (predicate)
 init = (object)
+
+category=(predicate)
 
 expr(["unknown"], unknown)
 unknown_noun = (object)

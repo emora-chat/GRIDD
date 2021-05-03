@@ -33,7 +33,9 @@ class IntelligenceCore:
             self.working_memory = ConceptGraph(namespace='wm', supports={AND_LINK: False})
             self.consider(working_memory)
         self.operators = operators(intcoreops)
-        self.essential_types = {i for i in self.knowledge_base.subtypes_of(ESSENTIAL)
+        self.subj_essential_types = {i for i in self.knowledge_base.subtypes_of(SUBJ_ESSENTIAL)
+                                if not self.knowledge_base.has(predicate_id=i)}
+        self.obj_essential_types = {i for i in self.knowledge_base.subtypes_of(OBJ_ESSENTIAL)
                                 if not self.knowledge_base.has(predicate_id=i)}
 
 
@@ -381,9 +383,13 @@ class IntelligenceCore:
                     if len(related) == 0:
                         break
                 for r in related:
-                    to_add = set(kb.structure(r, self.essential_types))
+                    to_add = set(kb.structure(r,
+                                              subj_emodifiers=self.subj_essential_types,
+                                              obj_emodifiers=self.obj_essential_types))
                     for inst in backptrs.get(r, r):
-                        to_add.update(kb.structure(inst, self.essential_types))
+                        to_add.update(kb.structure(inst,
+                                                   subj_emodifiers=self.subj_essential_types,
+                                                   obj_emodifiers=self.obj_essential_types))
                     to_add.difference_update(wmp)
                     if len(to_add) <= limit:
                         limit -= len(to_add)
@@ -453,7 +459,7 @@ class IntelligenceCore:
                     preds = {pred for pred in self.working_memory.related(s) if self.working_memory.has(predicate_id=pred) and pred[1] != 'type'}
                     if not preds:
                         options.add(i)
-            elif t not in self.essential_types and t not in PRIM:
+            elif t not in chain(self.subj_essential_types, self.obj_essential_types,PRIM):
                 options.add(i)
 
         sconcepts = sorted(options,

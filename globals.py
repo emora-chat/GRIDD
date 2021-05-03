@@ -8,7 +8,8 @@ EVIDENCE_DECAY = 0.1            # decrease in salience for concepts added to att
 TIME_DECAY = 0.1                # decrease in salience for working memory concepts per timestep
 
 NONASSERT = 'nonassert'         # predicate type indicating arguments that are unasserted
-ESSENTIAL = 'essential'         # predicate type indicating required attachments for predicate instance definition
+SUBJ_ESSENTIAL = 'subj_essential'         # predicate type indicating required attachments for predicate instance definition where instance is the subject
+OBJ_ESSENTIAL = 'obj_essential'         # predicate type indicating required attachments for predicate instance definition where instance is the object
 
 ASSERT = 'assert'               # monopredicate indicating argument is asserted
 USER_AWARE = 'user_aware'       # monopredicate indicating user is aware of the concept

@@ -408,6 +408,9 @@ class Chatbot:
         if len(indicator_preds) > 0: # find yes or no answer to question
             max_indicator = max(options, key=lambda p: wm.features.get(p[3], {}).get(SALIENCE, 0))
             fragment_request_merges.append((wm.object(max_indicator), request_focus))
+        else:
+            # todo - map `i do/nt` ~ do(user), `i have/nt` ~ have(user), and `i am/not` ~ am(user) to yes/no preds
+            pass
         # find type-compatible argument match for non-predicates, if there is one
         # todo - expand to match predicate arguments too
         within_request_vars = {x for x in wm.metagraph.targets(request_focus, VAR) if not wm.has(predicate_id=x)}

@@ -47,3 +47,10 @@ cuddle = (predicate)
 expr("cuddle, snuggle", cuddle)
 
 ;
+
+want = (predicate)
+time(have(emora, d/dog()), now)
+time(w2/want(emora, c/cat()), past)
+time(w2, always)
+
+;

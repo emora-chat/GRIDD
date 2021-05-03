@@ -5,6 +5,16 @@ request_truth(emora, h)
 $ Do you have a pet ? $
 ;
 
+h/have(user, p/pet())
+h{"confidence": -1}
+time(w2/want(emora, p3/cat()), past)
+time(w2, always)
+time(w/want(user, p2/pet()), now)
+request_truth(emora, w)
+-> q_want_pet ->
+$ Oh , you don't have any pets . Do you want one ? I've always wanted a cat myself . $
+;
+
 l/like(user, Z/do(user, Y/predicate()))
 with(Z, X/pet())
 time(l, now)
