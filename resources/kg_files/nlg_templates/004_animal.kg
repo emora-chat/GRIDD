@@ -15,8 +15,14 @@ request_truth(emora, w)
 $ Oh , you don't have any pets . Do you want one ? I've always wanted a cat myself . $
 ;
 
+time(have(user, p2/pet()), now)
+request(emora, p2)
+->
+$ What kind of pet do you have ? $
+;
+
 l/like(user, Z/do(user, Y/predicate()))
-with(Z, X/pet())
+with(Z, X/dog())
 time(l, now)
 request(emora, Y)
 -> q_activity_with_pet ->
