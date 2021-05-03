@@ -9,6 +9,7 @@ from itertools import chain, combinations
 from GRIDD.data_structures.update_graph import UpdateGraph
 from GRIDD.globals import *
 from GRIDD.data_structures.assertions import assertions
+from GRIDD.data_structures.id_map import IdMap
 
 import GRIDD.data_structures.intelligence_core_operators as intcoreops
 
@@ -24,8 +25,8 @@ class IntelligenceCore:
         if isinstance(knowledge_base, ConceptGraph):
             self.knowledge_base = knowledge_base
         else:
-            self.knowledge_base = ConceptGraph(namespace='kb')
-        self.know(knowledge_base, emora_knowledge=True)
+            self.knowledge_base = ConceptGraph(namespace=KB)
+            self.know(knowledge_base, emora_knowledge=True)
         if isinstance(working_memory, ConceptGraph):
             self.working_memory = working_memory
         else:

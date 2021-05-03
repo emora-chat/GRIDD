@@ -49,7 +49,7 @@ class Chatbot:
 
         self.template_filler = ResponseTemplateFiller()
         self.response_selection = ResponseSelectionSalience()
-        self.response_expansion = ResponseExpansion(knowledge_base)
+        self.response_expansion = ResponseExpansion(self.dialogue_intcore.knowledge_base)
         self.produce_acknowledgment = ResponseRules()
         self.produce_generic = ResponseGeneration()
         self.response_assembler = ResponseAssembler()

@@ -629,6 +629,8 @@ class ConceptGraph:
         """
         if id_map is None:
             id_map = self.id_map(concept_graph)
+        if concept_graph.id_map().namespace == KB: # maintain KB predicate identifiers in any CG they get added to
+            id_map = concept_graph.id_map(concept_graph)
         all_added_concepts = None
         if concepts is not None:
             all_added_concepts = set()

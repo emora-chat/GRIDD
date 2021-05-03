@@ -1,5 +1,7 @@
 DEBUG = False
 
+KB = 'kb'                       # Namespace of Knowledge Base Concept Graph
+
 SENSORY_SALIENCE = 1.0          # salience value for predicates that are considered via sensations
 ASSOCIATION_DECAY = 0.3         # decrease in salience for concepts pulled into attention by neighbors
 EVIDENCE_DECAY = 0.1            # decrease in salience for concepts added to attention by inference
