@@ -12,6 +12,7 @@ ESSENTIAL = 'essential'         # predicate type indicating required attachments
 
 ASSERT = 'assert'               # monopredicate indicating argument is asserted
 USER_AWARE = 'user_aware'       # monopredicate indicating user is aware of the concept
+REQ_SAT = 'req_sat'             # monopredicate indicating request was answered
 
 TYPE = 'type'                   # bipredicate indicating a type/subtype relationship
 EXPR = 'expr'                   # bipredicate indicating ARG0 is an expression of ARG1
@@ -72,8 +73,8 @@ META = {COMPS, VAR,
 
 SAL_FREE = {ASSERT, NONASSERT, AFFIRM,
             REJECT, TIME, SPAN_DEF,
-            SPAN_REF, USER_AWARE}    # Predicate types that do not propogate salience to subtypes and whose salience does not decrease
+            SPAN_REF, USER_AWARE, REQ_SAT}    # Predicate types that do not propogate salience to subtypes and whose salience does not decrease
 
 PRIM = {SPAN_DEF, SPAN_REF,
         ASSERT, NONASSERT,
-        USER_AWARE, EXPR}             # Predicate types that are primitive
+        USER_AWARE, EXPR, REQ_SAT}             # Predicate types that are primitive

@@ -195,7 +195,7 @@ class Chatbot:
         # Knowledge pull
         knowledge_by_source = self.dialogue_intcore.pull_knowledge(limit=100, num_pullers=100, association_limit=10, subtype_limit=10)
         for pred, sources in knowledge_by_source.items():
-            if not wm.has(*pred):
+            if not wm.has(*pred) and not wm.has(predicate_id=pred[3]):
                 self.dialogue_intcore.consider([pred], namespace=self.dialogue_intcore.knowledge_base._ids, associations=sources)
                 self.dialogue_intcore.working_memory.metagraph.update(self.dialogue_intcore.knowledge_base.metagraph,
                                                                       self.dialogue_intcore.knowledge_base.metagraph.features,
@@ -255,11 +255,11 @@ class Chatbot:
             salient_emora_arg_request = None
             salient_emora_request = None
             req_type = None
-            emora_truth_requests = [pred for pred in wm.predicates('emora', REQ_TRUTH) if wm.has(pred[3], USER_AWARE)]
+            emora_truth_requests = [pred for pred in wm.predicates('emora', REQ_TRUTH) if wm.has(pred[3], USER_AWARE) and not wm.has(pred[3], REQ_SAT)]
             if len(emora_truth_requests) > 0:
                 salient_emora_truth_request = max(emora_truth_requests, key=lambda pred: wm.features.get(pred[3], {}).get(SALIENCE, 0))
                 truth_sal = wm.features.get(salient_emora_truth_request[3], {}).get(SALIENCE, 0)
-            emora_arg_requests = [pred for pred in wm.predicates('emora', REQ_ARG) if wm.has(pred[3], USER_AWARE)]
+            emora_arg_requests = [pred for pred in wm.predicates('emora', REQ_ARG) if wm.has(pred[3], USER_AWARE) and not wm.has(pred[3], REQ_SAT)]
             if len(emora_arg_requests) > 0:
                 salient_emora_arg_request = max(emora_arg_requests, key=lambda pred: wm.features.get(pred[3], {}).get(SALIENCE, 0))
                 arg_sal = wm.features.get(salient_emora_arg_request[3], {}).get(SALIENCE, 0)
@@ -439,19 +439,17 @@ class Chatbot:
 
     def merge_references(self, reference_pairs):
         for match_node, ref_node in reference_pairs:
-            # identify user answers to emora requests and remove request bipredicate
+            # identify user answers to emora requests and add req_sat monopredicate on request predicate
             if not self.dialogue_intcore.working_memory.metagraph.out_edges(match_node, REF):
-                if self.dialogue_intcore.working_memory.has('emora', REQ_TRUTH, ref_node):
-                    self.dialogue_intcore.working_memory.remove('emora', REQ_TRUTH, ref_node)
-                elif self.dialogue_intcore.working_memory.has('emora', REQ_ARG, ref_node):
-                    self.dialogue_intcore.working_memory.remove('emora', REQ_ARG, ref_node)
-        self.dialogue_intcore.merge(reference_pairs)
+                truths = list(self.dialogue_intcore.working_memory.predicates('emora', REQ_TRUTH, ref_node))
+                if truths:
+                    self.dialogue_intcore.working_memory.add(truths[0][3], REQ_SAT)
+                else:
+                    args = list(self.dialogue_intcore.working_memory.predicates('emora', REQ_ARG, ref_node))
+                    if truths:
+                        self.dialogue_intcore.working_memory.add(args[0][3], REQ_SAT)
 
-    def identify_request_resolutions(self, spoken_predicates):
-        # identify emora answers to user requests and remove request bipredicate
-        for s, t, o, i in spoken_predicates:
-            if s == 'user' and t in {REQ_TRUTH, REQ_ARG}:
-                self.dialogue_intcore.working_memory.remove(s, t, o, i)
+        self.dialogue_intcore.merge(reference_pairs)
 
     def assign_cover(self, graph, concepts=None):
         if concepts is None:

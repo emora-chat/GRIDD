@@ -64,8 +64,8 @@ class ResponseExpansion:
             final_exps = []
             spoken_predicates = set()
             for s, t, o, i in exps:
-                if s == 'user' and t in {REQ_TRUTH, REQ_ARG}: # identify emora answers to user requests and remove request bipredicate
-                    wm.remove(s, t, o, i)
+                if s == 'user' and t in {REQ_TRUTH, REQ_ARG}: # identify emora answers to user requests and add req_sat to request predicate
+                    wm.add(i, REQ_SAT)
                 else: # all other predicates are maintained as expansions and spoken predicates
                     final_exps.append((s,t,o,i))
                     if t != EXPR:
