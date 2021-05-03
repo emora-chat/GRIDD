@@ -187,6 +187,9 @@ class Chatbot:
                 concept2 = self._follow_path(concept2, pos2, wm)
                 node_merges.append((concept1, concept2))
         self.dialogue_intcore.merge(node_merges)
+        self.dialogue_intcore.operate()
+        self.dialogue_intcore.update_confidence('user')
+        self.dialogue_intcore.update_confidence('emora')
 
         if debug:
             print('\n' + '#'*10)
@@ -314,6 +317,10 @@ class Chatbot:
             print('\n' + '#' * 10 + '\nEnd User Turn\n' + '#' * 10)
             self.print_features()
 
+        print()
+        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=True))
+        print()
+
         # Start of Emora turn
 
         # Template NLG
@@ -386,7 +393,7 @@ class Chatbot:
         salient_concepts = sorted(current_user_concepts, key=lambda c: wm.features.get(c, {}).get(SALIENCE, 0),
                                   reverse=True)
         for c in salient_concepts:
-            if c != request_focus and request_focus_types.issubset(types[c] - {c}):
+            if c != request_focus and request_focus_types < (types[c] - {c}):
                 subtype_set = current_user_concepts.intersection(wm.subtypes_of(c)) - {c}
                 # if concept is a reference or if other salient concepts are its subtypes, dont treat current concept as answer fragment
                 if not subtype_set and not wm.metagraph.out_edges(c, REF):

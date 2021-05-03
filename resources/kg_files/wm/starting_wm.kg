@@ -1,5 +1,5 @@
 
 i/imp_trigger(init_ask_pet=init())
-i{"salience": 0.5}
+i{"b_confidence": 1.0, "convincable": 0.0, "salience": 0.5}
 
 ;

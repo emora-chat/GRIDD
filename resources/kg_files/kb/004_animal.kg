@@ -1,3 +1,5 @@
+flag=(predicate)
+;
 
 animal = (entity)
 expr(["animal"], animal)

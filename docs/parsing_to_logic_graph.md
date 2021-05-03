@@ -1246,7 +1246,7 @@ I bought four tickets.
   
 	neg(X/pstg(), Y/pstg())
 	-> negation ->
-	p/Y(X)
+	p/Y(user, X)
 	focus(p)
 	center(Y)
 	;
