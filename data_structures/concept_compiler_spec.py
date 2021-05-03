@@ -64,9 +64,9 @@ class ConceptCompilerSpec:
         fido = dog()
         ;
 
-        chase(x/dog(), y=dog())
-        ->
-        $ I am telling you that x{"test": "T"} is chasing y ! $
+        chase(x=dog(), y=dog())
+        -> myrule ->
+        z:<chase(z=dog(), x)>
         ;
         
         '''
