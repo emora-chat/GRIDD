@@ -77,7 +77,7 @@ class IntelligenceCore:
         for c, d in updates.items():
             if c not in considered.features or SALIENCE not in considered.features[c]:
                 considered.features[c][SALIENCE] = d[SALIENCE]
-        self._loading_options(concepts, options)
+        self._loading_options(considered, options)
         mapping = self.working_memory.concatenate(considered)
         return mapping
 
@@ -95,6 +95,9 @@ class IntelligenceCore:
         """
         # todo - think about type-based evidence
         #  (type predicates not found in solutions explicitly right now)
+        # todo - evidence is currently the variable solution dictionary
+        #  -> thus salience right now is only based on vars in precondition and
+        #  if the precondition contains no vars, there is no evidence!
         if inferences is None:
             inferences = self.infer()
         result_dict = self.inference_engine.apply(inferences)
@@ -489,6 +492,8 @@ class IntelligenceCore:
                     cg.features[i][CONVINCABLE] = 0.0
                 else:
                     cg.features[i][CONVINCABLE] = 1.0
+        if 'assert_conf' in options:
+            self._assertions(cg)
 
     def _assertions(self, cg):
         assertions(cg)

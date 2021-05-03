@@ -15,11 +15,6 @@ expr(["fish"], fish)
 
 ;
 
-h:<time(h/have(user, p/pet()), now)>
-request_truth(emora, h)
-
-;
-
 trick = (predicate)
 expr("trick", trick)
 sit = (trick)

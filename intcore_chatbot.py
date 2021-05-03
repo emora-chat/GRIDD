@@ -41,6 +41,8 @@ class Chatbot:
         nlg_templates = collect(join('GRIDD', 'resources', 'kg_files', 'nlg_templates'))
 
         self.dialogue_intcore = IntelligenceCore(knowledge_base=knowledge+inference_rules+nlg_templates)
+        if starting_wm is not None:
+            self.dialogue_intcore.consider(starting_wm)
 
         nlu_templates = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
         s = time.time()
@@ -505,7 +507,7 @@ if __name__ == '__main__':
     wm = [join('GRIDD', 'resources', 'kg_files', 'wm')]
     ITERATION = 2
 
-    chatbot = Chatbot(*kb, inference_rules=rules, starting_wm=None)
+    chatbot = Chatbot(*kb, inference_rules=rules, starting_wm=wm)
     chatbot.chat(debug=DEBUG)
 
     # utter = input('>>> ').strip()

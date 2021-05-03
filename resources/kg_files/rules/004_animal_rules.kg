@@ -1,3 +1,10 @@
+imp_trigger(init_ask_pet=init())
+->
+h:<time(h/have(user, p/pet()), now)>
+request_truth(emora, h)
+h{"coldstart": 1}
+;
+
 have(user, p/pet())
 -> user_own_pet ->
 possess(user, p)
