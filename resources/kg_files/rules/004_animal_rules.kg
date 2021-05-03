@@ -5,9 +5,9 @@ request_truth(emora, h)
 h{"coldstart": 1}
 ;
 
-have(user, p/pet())
+time(have(user, p/pet()), now)
 -> user_own_pet ->
-o/possess(user, p)
+time(o/possess(user, p), now)
 user_aware(o)
 ;
 
@@ -18,7 +18,7 @@ p2:<time(have(user, p2/pet()), now)>
 request(emora, p2)
 ;
 
-h/have(user, p/pet())
+time(h/have(user, p/pet()), now)
 h{"confidence": -1}
 -> not_have_pet ->
 w:<time(w/want(user, p2/pet()), now)>
