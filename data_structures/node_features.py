@@ -70,6 +70,10 @@ class NodeFeatures(defaultdict):
         if node in self:
             del self[node]
 
+    def get_confidence(self, node, default=0.0):
+        return self.get(node, {}).get(CONFIDENCE,
+                                      self.get(node, {}).get(BASE_CONFIDENCE, default))
+
     def copy(self):
         return NodeFeatures(self)
 

@@ -41,4 +41,7 @@ expr(["hello", "hi", "hey"], greet)
 dismiss = (predicate)
 expr(["bye", "goodbye"], dismiss)
 
+
+ack_conf = (predicate)
+user_aware = (predicate)
 ;

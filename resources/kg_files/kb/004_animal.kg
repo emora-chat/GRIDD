@@ -17,3 +17,32 @@ expr(["fish"], fish)
 
 h:<time(h/have(user, p/pet()), now)>
 request_truth(emora, h)
+
+;
+
+trick = (predicate)
+expr("trick", trick)
+sit = (trick)
+expr("sit", sit)
+stay = (trick)
+expr("stay", stay)
+heel = (trick)
+expr("heel", heel)
+fetch = (trick)
+expr("fetch", fetch)
+lay_down = (trick)
+expr("lay down", lay_down)
+roll_over = (trick)
+expr("roll over, rollover", roll_over)
+speak = (trick)
+expr("speak", speak)
+;
+
+walk = (predicate)
+expr("walk", walk)
+play = (predicate)
+expr("play", play)
+cuddle = (predicate)
+expr("cuddle, snuggle", cuddle)
+
+;

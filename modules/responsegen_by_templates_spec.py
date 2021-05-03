@@ -30,7 +30,7 @@ class ResponseTemplatesSpec:
         time(hike(X/person()), Y/datetime())
         expr(Z/expression(), Y)
         -> person_hiked ->
-        $ X hike{"t":"Y", "s":"X"} . $
+        $ X hike{"t":"#Y", "s":"#X"} . $
         ;
         
         time(h/hike(X/person()), Y/datetime())
@@ -38,7 +38,7 @@ class ResponseTemplatesSpec:
         with(h, A/friend())
         possess(X, A)
         -> person_hiked_with_friend ->
-        $ X hike{"t":"Y", "s":"X"} with X{"p": true} friend . $
+        $ X hike{"t":"#Y", "s":"#X"} with X{"p": true} friend . $
         ;
         ''')
         template_cg = ConceptGraph(predicates, metalinks=metalinks, metadata=metadatas,

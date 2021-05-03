@@ -3,6 +3,8 @@ from GRIDD.data_structures.inference_engine_spec import InferenceEngineSpec
 from GRIDD.data_structures.graph_matching_engine import GraphMatchingEngine
 from structpy.map import Bimap
 from GRIDD.data_structures.concept_graph import ConceptGraph
+from GRIDD.data_structures.assertions import assertions
+from GRIDD.globals import *
 
 
 class InferenceEngine:
@@ -16,7 +18,9 @@ class InferenceEngine:
 
     def add(self, rules):
         if not isinstance(rules, dict):
-            rules = ConceptGraph(rules, namespace='r_').rules()
+            rules = ConceptGraph(rules, namespace='r_')
+            assertions(rules)
+            rules = rules.rules()
         for rule in rules:
             if rule in self.rules:
                 raise ValueError(f'Rule by name {rule} already exists!')
@@ -115,12 +119,13 @@ class InferenceEngine:
             solset = []
             for sol in sols:
                 for variable, value in sol.items():
-                    var_conf = precondition_cg.features.get(variable, {}).get('c', None)
-                    val_conf = facts_concept_graph.features.get(value, {}).get('c', 1.0)
-                    if (var_conf is None and val_conf <= 0) or \
-                       (var_conf is not None and var_conf > 0 and val_conf - var_conf < 0) or \
-                       (var_conf is not None and var_conf < 0 and val_conf - var_conf > 0):
-                        break
+                    if precondition_cg.has(predicate_id=variable):
+                        var_conf = precondition_cg.features.get_confidence(variable, None)
+                        val_conf = facts_concept_graph.features.get_confidence(value, 1.0)
+                        if (var_conf is None and val_conf <= 0) or \
+                           (var_conf is not None and var_conf > 0 and val_conf - var_conf < 0) or \
+                           (var_conf is not None and var_conf < 0 and val_conf - var_conf > 0):
+                            break
                 else:
                     solset.append(sol)
             solutions[precondition_id] = solset

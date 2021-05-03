@@ -28,6 +28,8 @@ past=datetime()
 expr(["past"], past)
 future=datetime()
 expr(["future"], future)
+always=datetime()
+expr(["always"], always)
 
 in = (predicate)
 expr(["in", "inside"], in)
@@ -133,3 +135,8 @@ happy=(property)
 expr("happy", happy)
 
 ;
+
+like=(predicate)
+expr("like", like)
+know=(predicate)
+expr("know", know)

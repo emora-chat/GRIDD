@@ -428,9 +428,10 @@ class ConceptGraph:
                 todo.difference_update(set(memo.keys()))
             return
 
-    def rules(self):
+    def rules(self, rule_instances=None):
         rules = {}
-        rule_instances = set(self.subtypes_of('implication')) - {'implication'}
+        if rule_instances is None:
+            rule_instances = set(self.subtypes_of('implication')) - {'implication'}
 
         rule_links = {}
         instance_exclusions = set()
@@ -472,9 +473,17 @@ class ConceptGraph:
             string_spec_ls = []
             for e in elements:
                 string_literal = self.features[e]['response_str']
-                var = self.features[e]['response_var']
-                string_repr = string_literal if string_literal is not None else f"{var}.var"
+                if string_literal is None:
+                    (var,) = self.metagraph.targets(e, 'response_var')
+                    string_repr = f"{var}.var"
+                else:
+                    string_repr = string_literal
                 string_data = self.features[e].get('response_data', None)
+                if string_data is not None:
+                    for key, value in string_data.items():
+                        if isinstance(value, str) and value[0] == '#':
+                            (node,) = self.metagraph.targets(e, key)
+                            string_data[key] = node
                 final_element = (string_repr, string_data) if string_data is not None else string_repr
                 string_spec_ls.append(final_element)
             instance_exclusions.update(chain(pre_inst, vars_inst))

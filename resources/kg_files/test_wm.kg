@@ -10,7 +10,7 @@ ulm{"coldstart": 1, "salience": 0.999, "confidence": 0.0}
 
 bun/call(emora, n/name())
 indirect_obj(bun, user)
-mode(bun, should)
+should(bun)
 time(bun, now)
 request(emora, n)
 bun{"coldstart": 1, "salience": 0.999}

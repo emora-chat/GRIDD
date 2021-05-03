@@ -12,7 +12,7 @@ possess(A, B)
 
 time(buy(A/person(), B/house()), past)
 -> house_purchase ->
-C:<time(where(B, C/location()), now)>
+C:<time(locate(B, C/location()), now)>
 request(emora, C)
 
 D:<time(be(B, D/size()), now)>
@@ -20,19 +20,10 @@ request(emora, D)
 ;
 
 possess(A/person(), B/house())
-where(B, C/state())
+locate(B, C/state())
 -> emora_visit ->
 time(ewv/want(emora, evg/visit(emora, C)), past)
 user_aware(evg)
-mode(ewv, always)
-;
-
-possess(A/person(), B/house())
-be(B, small())
--> emora_appreciate_size ->
-sbg/be(small, good)
-time(sbg, now)
-user_aware(sbg)
-time(think(emora, sbg), now)
+time(ewv, always)
 ;
 

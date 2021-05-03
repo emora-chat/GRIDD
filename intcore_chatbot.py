@@ -14,7 +14,7 @@ from GRIDD.modules.response_assembler import ResponseAssembler
 from GRIDD.chatbot_server import load
 from GRIDD.data_structures.pipeline import Pipeline
 c = Pipeline.component
-from GRIDD.utilities import collect
+from GRIDD.utilities.utilities import collect
 from GRIDD.globals import *
 
 from os.path import join
@@ -35,30 +35,18 @@ class Chatbot:
     def __init__(self, *knowledge_base, inference_rules, starting_wm=None, device='cpu'):
         self.auxiliary_state = {'turn_index': -1}
 
-        s = time.time()
-        compiler = ConceptCompiler()
-        predicates, metalinks, metadatas = compiler.compile(collect(*knowledge_base))
-        knowledge_base = ConceptGraph(predicates, metalinks=metalinks, metadata=metadatas,
-                                      namespace='kb')
-        print('KB load: %.2f'%(time.time()-s))
+        knowledge = collect(*knowledge_base)
+        inference_rules = collect(*inference_rules)
+        starting_wm = None if starting_wm is None else collect(*starting_wm)
+        nlg_templates = collect(join('GRIDD', 'resources', 'kg_files', 'nlg_templates'))
 
-        dialogue_inference = InferenceEngine(collect(*inference_rules))
-        working_memory = None
-        if starting_wm is not None:
-            working_memory = ConceptGraph(collect(*starting_wm), namespace='wm', supports={AND_LINK: False})
-        self.dialogue_intcore = IntelligenceCore(knowledge_base=knowledge_base,
-                                            working_memory=working_memory,
-                                            inference_engine=dialogue_inference)
-
-        self.inference_engine = InferenceEngine()
+        self.dialogue_intcore = IntelligenceCore(knowledge_base=knowledge+inference_rules+nlg_templates)
 
         nlu_templates = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
         s = time.time()
         self.elit_dp = ElitDPToLogic(knowledge_base, nlu_templates)
         print('Parse2Logic load: %.2f'%(time.time()-s))
 
-        nlg_templates = join('GRIDD', 'resources', 'kg_files', 'nlg_templates')
-        self.template_loader = ResponseTemplateFinder(nlg_templates)
         self.template_filler = ResponseTemplateFiller()
         self.response_selection = ResponseSelectionSalience()
         self.response_expansion = ResponseExpansion(knowledge_base)
@@ -334,7 +322,7 @@ class Chatbot:
         for pred in self.dialogue_intcore.pull_expressions():
             if not wm.has(*pred):
                 wm.add(*pred)
-        matches = self.inference_engine.infer(wm, self.template_loader.templates())
+        matches = self.dialogue_intcore.nlg_inference_engine.infer(wm)
         template_response_info = self.template_filler(matches, wm)
 
         # Response selection

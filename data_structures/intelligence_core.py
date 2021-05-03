@@ -8,6 +8,7 @@ from GRIDD.utilities.utilities import uniquify, operators, interleave
 from itertools import chain, combinations
 from GRIDD.data_structures.update_graph import UpdateGraph
 from GRIDD.globals import *
+from GRIDD.data_structures.assertions import assertions
 
 import GRIDD.data_structures.intelligence_core_operators as intcoreops
 
@@ -16,6 +17,7 @@ class IntelligenceCore:
 
     def __init__(self, knowledge_base=None, working_memory=None, inference_engine=None):
         self.compiler = ConceptCompiler(namespace='__c__')
+        self.nlg_inference_engine = InferenceEngine()
         if inference_engine is None:
             inference_engine = InferenceEngine()
         self.inference_engine = inference_engine
@@ -39,9 +41,17 @@ class IntelligenceCore:
         ConceptGraph.construct(cg, knowledge, compiler=self.compiler)
         self._loading_options(cg, options)
         self._assertions(cg)
+        nlg_templates = cg.nlg_templates()
+        for rule, (pre, _, vars) in nlg_templates.items():
+            for concept in vars:
+                cg.remove(concept)
+            cg.remove(rule)
+        for concept in set(cg.subtypes_of('response_token')):
+            cg.remove(concept)
+        self.nlg_inference_engine.add(nlg_templates)
         rules = cg.rules()
         for rule, (pre, post, vars) in rules.items():
-            for concept in set(chain(pre.concepts(), post.concepts())):
+            for concept in vars:
                 cg.remove(concept)
             cg.remove(rule)
         self.inference_engine.add(rules)
@@ -467,27 +477,6 @@ class IntelligenceCore:
         s += '#'*(60+len(' working memory '))
         return s
 
-    def _assertions(self, cg):
-        """
-        Set confidence of predicates to 1.0 if they don't already
-        have a confidence AND they are not an argument of a NONASSERT.
-        """
-        types = cg.types()
-        predicates = set()
-        not_asserted = set()
-        for s, _, o, pred in cg.predicates():
-            if CONFIDENCE not in cg.features.get(pred, {}):
-                predicates.add(pred)
-            if NONASSERT in types[pred]:
-                if cg.has(predicate_id=s):
-                    not_asserted.add(s)
-                if cg.has(predicate_id=o):
-                    not_asserted.add(o)
-        for a in predicates - not_asserted:
-            cg.features.setdefault(a, {})[BASE_CONFIDENCE] = 1.0
-        for na in predicates & not_asserted:
-            cg.features.setdefault(na, {})[BASE_CONFIDENCE] = 0.0
-
     def _loading_options(self, cg, options):
         if 'commonsense' in options:
             pass
@@ -499,6 +488,9 @@ class IntelligenceCore:
                     cg.features[i][CONVINCABLE] = 0.0
                 else:
                     cg.features[i][CONVINCABLE] = 1.0
+
+    def _assertions(self, cg):
+        assertions(cg)
 
 
 if __name__ == '__main__':

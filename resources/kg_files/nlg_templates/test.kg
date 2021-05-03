@@ -1,5 +1,5 @@
 
-time(where(B/house(), C/location()), now)
+time(locate(B/house(), C/location()), now)
 possess(A/person(), B)
 request(emora, C)
 -> where_house ->

@@ -1,7 +1,7 @@
 
 time(h/have(user, p/pet()), now)
 request_truth(emora, h)
-->
+-> q_user_have_pet ->
 $ Do you have a pet ? $
 ;
 

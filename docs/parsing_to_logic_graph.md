@@ -937,7 +937,7 @@ Modify the meaning of their parent verbs.
   
 	raise(X/pstg(), Y/past_tense())
 	-> raise_verb_past ->
-	p/mode(X, Y)
+	p/Y(X)
 	p_time(X, past)
 	focus(p)
 	center(Y)
@@ -945,7 +945,7 @@ Modify the meaning of their parent verbs.
 	
 	raise(X/pstg(), Y/present_tense())
 	-> raise_verb_present ->
-	p/mode(X, Y)
+	p/Y(X)
 	p_time(X, now)
 	focus(p)
 	center(Y)

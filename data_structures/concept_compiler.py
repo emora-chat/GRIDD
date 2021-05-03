@@ -140,8 +140,9 @@ class ConceptVisitor(Visitor_Recursive):
         else:
             rid = self.globals.get()
         precondition, variables = tree.children[0].data
-        postcondition = [c for c in tree.children if hasattr(c, 'data') and isinstance(c.data, set)]
-        postcondition = postcondition[0].data if postcondition else None
+        postcondition = [c for c in tree.children if hasattr(c, 'data') and isinstance(c.data, tuple)]
+        postcondition, post_variables = postcondition[0].data if postcondition else (None, set())
+        variables.update(post_variables)
         template = [c for c in tree.children if hasattr(c, 'data') and c.data == 'template']
         template = template[0] if template else None
         if template is not None:
@@ -172,15 +173,17 @@ class ConceptVisitor(Visitor_Recursive):
                 self.lentries.append((tok_concept, 'type', 'response_token', instance))
                 response_set.update((tok_concept, instance))
                 self.metadatas.setdefault(tok_concept, {})['response_str'] = tokendata
-                self.metadatas[tok_concept]['response_var'] = tokenvar
+                if tokenvar is not None:
+                    self.llinks.append((tok_concept, 'response_var', tokenvar))
                 self.metadatas[tok_concept]['response_index'] = i
                 instance = self.globals.get()
                 self.instances.add(instance)
                 self.lentries.append((response, 'token_seq', tok_concept, instance))
                 response_set.add(instance)
                 if json is not None:
-                    for key, value in json.items(): # swap out temp local id specification for real id
-                        json[key] = self.locals.get(value, value)
+                    for key, value in json.items():
+                        if isinstance(value, str) and value[0] == '#':
+                            self.llinks.append((tok_concept, key, self.locals.get(value[1:], value[1:])))
                     self.lmetadatas.setdefault(tok_concept, {})['response_data'] = json
             if postcondition is None:
                 postcondition = response_set
@@ -210,7 +213,9 @@ class ConceptVisitor(Visitor_Recursive):
     def postcondition(self, tree):
         postinst = set(chain(*[t.refs for t in tree.iter_subtrees() if hasattr(t, 'refs')]))
         postinst = {self.locals.get(str(i), str(i)) for i in postinst}
-        tree.data = postinst
+        variables = set(chain(*[t.inits for t in tree.iter_subtrees() if hasattr(t, 'inits')]))
+        variables = {self.locals.get(str(i), str(i)) for i in variables}
+        tree.data = (postinst, variables)
         self.linstances = set()
 
     def block(self, _):
