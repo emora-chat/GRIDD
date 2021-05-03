@@ -143,11 +143,10 @@ class InferenceEngine:
                            (var_conf is not None and var_conf < 0 and val_conf - var_conf > 0):
                             break
                     if variable in categories:
-                        not_category = False
-                        for t in precondition_cg.types(variable):
-                            if facts_types.get(value, set()) > facts_types.get(t, set()):
-                                not_category = True
-                                break
+                        not_category = True
+                        for t in precondition_cg.types(variable) - {variable}:
+                            if facts_types.get(value, set()) - {value} <= facts_types.get(t, set()):
+                                not_category = False
                         if not_category:
                             break
                 else:
