@@ -61,9 +61,10 @@ class InferenceEngine:
             precondition = pre.to_graph()
             for node, types in attributes.items():
                 precondition.data(node)['attributes'] = types
-            for var in vars:
-                precondition.data(var)['var'] = True
-                precondition.data(var)['attributes'].discard(var)
+            for var in vars: # vars includes both pre and post vars
+                if precondition.has(var):
+                    precondition.data(var)['var'] = True
+                    precondition.data(var)['attributes'].discard(var)
             converted_rules[rid] = precondition
         return converted_rules
 

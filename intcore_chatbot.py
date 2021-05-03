@@ -44,7 +44,7 @@ class Chatbot:
 
         nlu_templates = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
         s = time.time()
-        self.elit_dp = ElitDPToLogic(knowledge_base, nlu_templates)
+        self.elit_dp = ElitDPToLogic(self.dialogue_intcore.knowledge_base, nlu_templates)
         print('Parse2Logic load: %.2f'%(time.time()-s))
 
         self.template_filler = ResponseTemplateFiller()

@@ -140,9 +140,11 @@ class ConceptVisitor(Visitor_Recursive):
         else:
             rid = self.globals.get()
         precondition, variables = tree.children[0].data
-        postcondition = [c for c in tree.children if hasattr(c, 'data') and isinstance(c.data, tuple)]
+
+        postcondition = [c for c in tree.children[1:] if hasattr(c, 'data') and isinstance(c.data, tuple)]
         postcondition, post_variables = postcondition[0].data if postcondition else (None, set())
         variables.update(post_variables)
+
         template = [c for c in tree.children if hasattr(c, 'data') and c.data == 'template']
         template = template[0] if template else None
         if template is not None:
@@ -213,9 +215,11 @@ class ConceptVisitor(Visitor_Recursive):
     def postcondition(self, tree):
         postinst = set(chain(*[t.refs for t in tree.iter_subtrees() if hasattr(t, 'refs')]))
         postinst = {self.locals.get(str(i), str(i)) for i in postinst}
+
         variables = set(chain(*[t.inits for t in tree.iter_subtrees() if hasattr(t, 'inits')]))
         variables = {self.locals.get(str(i), str(i)) for i in variables}
         tree.data = (postinst, variables)
+
         self.linstances = set()
 
     def block(self, _):

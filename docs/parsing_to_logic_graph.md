@@ -920,7 +920,7 @@ Modify the meaning of the parent verbs by inducing a contemplation of possibilit
   <summary>Conversions</summary>
   
 	modal(X/pstg(), Y/pstg())
-	-> modal ->
+	-> modal_rule ->
 	m/Y(X)
 	center(Y)
 	focus(m)
@@ -1101,7 +1101,7 @@ The red car
 	;
   
 	acl(X/pstg(), Y/pstg())
-	-> acl ->
+	-> acl_rule ->
 	p/property(X, Y)
 	focus(p)
 	link(Y)
@@ -1204,14 +1204,14 @@ He made up an excuse.
   <summary>Conversions</summary>
   
 	conj(X/pstg(), Y/pstg())
-	-> conjunct ->
+	-> conjunct_rule ->
 	p/conjunct(X, Y)
 	focus(p)
 	link(Y)
 	;
 	
 	cc(X/pstg(), Y/pstg())
-	-> cc ->
+	-> coord_conj ->
 	p/conjunct_type(X, Y)
 	focus(p)
 	center(Y)
@@ -1228,7 +1228,7 @@ Captures expressions of quantities by constructing a `numeric` predicate between
   
 	num(X/pstg(), Y/pstg())
 	-> numeric ->
-	p/numeric(X, Y)
+	p/quantity(X, Y)
 	focus(p)
 	center(Y)
 	;
@@ -1259,7 +1259,7 @@ I bought four tickets.
   <summary>Conversions</summary>
   
 	appo(X/pstg(), Y/pstg())
-	-> appositive ->
+	-> appositive_rule ->
 	p/appositive(X, Y)
 	focus(p)
 	link(Y)
@@ -1291,7 +1291,7 @@ Represented as the predicate `relay_info` where the subject is information being
   <summary>Conversions</summary>
 
 	prn(X/pstg(), Y/pstg())
-	-> parenthetical ->
+	-> parenthetical_rule ->
 	p/parenthical(X, Y)
 	focus(p)
 	center(Y)
