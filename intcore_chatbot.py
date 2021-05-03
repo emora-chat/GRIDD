@@ -444,10 +444,12 @@ class Chatbot:
                 truths = list(self.dialogue_intcore.working_memory.predicates('emora', REQ_TRUTH, ref_node))
                 if truths:
                     self.dialogue_intcore.working_memory.add(truths[0][3], REQ_SAT)
+                    self.dialogue_intcore.working_memory.add(truths[0][3], USER_AWARE)
                 else:
                     args = list(self.dialogue_intcore.working_memory.predicates('emora', REQ_ARG, ref_node))
                     if truths:
                         self.dialogue_intcore.working_memory.add(args[0][3], REQ_SAT)
+                        self.dialogue_intcore.working_memory.add(args[0][3], USER_AWARE)
 
         self.dialogue_intcore.merge(reference_pairs)
 

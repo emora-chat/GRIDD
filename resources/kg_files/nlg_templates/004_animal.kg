@@ -13,3 +13,17 @@ request(emora, Y)
 $ What do you like to do with your X ? $
 ;
 
+time(know(d/dog(), t/trick()), now)
+possess(user, d)
+request(emora, t)
+-> q_dog_tricks ->
+$ Does your dog know any tricks ? $
+;
+
+time(w/walk(user, d/dog()), now)
+possess(user, d)
+locate(w, loc/location())
+request(emora, loc)
+-> q_where_walk_dog ->
+$ Where do you walk your dog ? $
+;
