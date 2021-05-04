@@ -8,6 +8,7 @@ imp_trigger = (predicate)
 init = (object)
 
 category=(predicate)
+specific=(predicate)
 
 expr(["unknown"], unknown)
 unknown_noun = (object)
