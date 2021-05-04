@@ -151,6 +151,8 @@ class IntelligenceCore:
             conf
         """
         mg = self.working_memory.metagraph
+        # todo - exclude all links between precondition and a question in postcondition
+        question_constraints = self._get_excluded_question_links(self.working_memory)
         and_links, or_links = [], []
         nodes = {}
         if speaker == 'emora':
@@ -174,7 +176,8 @@ class IntelligenceCore:
             raise ValueError('speaker parameter must be either `emora` or `user`, not `%s`'%speaker)
         nodes.update({c: mg.features.get(c, {}).get(base_conf, 0) for c in mg.nodes()})
         and_links.extend([edge for edge in mg.edges() if isinstance(edge[2], tuple) and andl == edge[2][0]])
-        or_links.extend([edge for edge in mg.edges() if isinstance(edge[2], tuple) and orl == edge[2][0]])
+        or_links.extend([edge for edge in mg.edges()
+                         if isinstance(edge[2], tuple) and orl == edge[2][0] and edge[1] not in question_constraints])
         counter = 0
         for _,_,_,i in self.working_memory.predicates():
             bc = self.working_memory.features.get(i, {}).get(base_conf, None)
@@ -248,6 +251,17 @@ class IntelligenceCore:
             set_fn=set_fn
         )
         update_graph.update(iteration=10, push=True)
+
+    def _get_excluded_question_links(self, cg):
+        constraints = set()
+        questions = {*cg.subtypes_of(REQ_TRUTH), *cg.subtypes_of(REQ_ARG)} - {REQ_ARG, REQ_TRUTH}
+        signatures = {cg.predicate(x) for x in questions}
+        for sub, typ, obj, ins in signatures:
+            constraints.add(ins)        # ins is a request predicate
+            refs = cg.metagraph.out_edges(obj, REF)
+            for sou, tar, lab in refs:
+                constraints.add(tar)    # tar is a question constraint
+        return constraints
 
     def merge(self, concept_sets):
         sets = {}
