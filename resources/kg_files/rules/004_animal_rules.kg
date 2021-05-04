@@ -14,7 +14,7 @@ user_aware(o)
 time(have(user, p/pet()), now)
 category(p)
 -> q_ask_pet_type ->
-p2:<time(have(user, p2/pet()), now)>
+p2:<time(have(user, p2/pet()), now) >
 request(emora, p2)
 ;
 
