@@ -9,6 +9,7 @@ from itertools import chain, combinations
 from GRIDD.data_structures.update_graph import UpdateGraph
 from GRIDD.globals import *
 from GRIDD.data_structures.assertions import assertions
+from GRIDD.data_structures.confidence import *
 from GRIDD.data_structures.id_map import IdMap
 
 import GRIDD.data_structures.intelligence_core_operators as intcoreops
@@ -200,26 +201,16 @@ class IntelligenceCore:
             if t not in unasserted:
                 or_links.append((s, t, (orl, 1.0)))
         def and_fn(node, sources):
-            product = 1
-            for value, (label, weight) in sources:
-                product *= weight * value
-            if product >= 0:
-                return min(product, 1.0)
-            else:
-                return max(product, -1.0)
+            weighted_vals = [value*weight for value, (label, weight) in sources]
+            c = and_conf(*weighted_vals)
+            return c
         def or_fn(node, sources):
             convince_links = [s for s in sources if s[1][0] == 'convince_link']
             non_convince_links = [s for s in sources if s[1][0] != 'convince_link']
             conf_calc = 0
             if non_convince_links:
-                weight = non_convince_links[0][1][1]
-                conf_calc = non_convince_links[0][0] * weight
-                product = non_convince_links[0][0] * weight
-                for value, (label, weight) in non_convince_links[1:]:
-                    conf_calc += value * weight
-                    product *= value * weight
-                    conf_calc = conf_calc - product
-                    product = conf_calc
+                weighted_vals = [value * weight for value, (label, weight) in non_convince_links]
+                conf_calc = and_conf(*weighted_vals)
             weighted_convince = 0
             normalization = 1
             if convince_links:
@@ -228,7 +219,7 @@ class IntelligenceCore:
                 sum_non_convince = sum([1 - convince for _, (_, convince) in convince_links])
                 conf_calc = sum_non_convince * conf_calc
                 normalization = sum_convince + sum_non_convince
-            final_value = weighted_convince + conf_calc / normalization
+            final_value = (weighted_convince + conf_calc) / normalization
             return final_value
         def set_fn(n, v):
             if not (n.endswith('__cnode') or n.endswith('__bnode')): mg.features.setdefault(n, {}).__setitem__(conf, v)

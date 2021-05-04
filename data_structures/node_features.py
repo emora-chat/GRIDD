@@ -22,7 +22,7 @@ class NodeFeatures(defaultdict):
                             self[node][feature] = max(self[node][feature], other_value)
                         else:
                             self[node][feature] = other_value
-                    elif feature == CONFIDENCE:
+                    elif feature in {BASE_CONFIDENCE, BASE_UCONFIDENCE}:
                         self[node][feature] = other_value
                     elif feature == 'span_data':
                         if 'span_data' in self[node]:
@@ -45,7 +45,7 @@ class NodeFeatures(defaultdict):
                         self[kept][feature] = max(self[kept][feature], other_value)
                     else:
                         self[kept][feature] = other_value
-                elif feature == CONFIDENCE:
+                elif feature in {BASE_CONFIDENCE, BASE_UCONFIDENCE}:
                     self[kept][feature] = other_value
                 elif feature == 'span_data':
                     if 'span_data' in self[kept]:

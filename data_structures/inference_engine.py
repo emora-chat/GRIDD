@@ -44,6 +44,14 @@ class InferenceEngine:
                 pre.remove(predicate_type='category')
             if pre.has('category'):
                 pre.remove('category')
+            specifics = set()
+            for s, t, _, i in set(pre.predicates(predicate_type='specific')):
+                specifics.add(s)
+                pre.remove(predicate_id=i)
+            if pre.has('specific'):
+                pre.remove(predicate_type='specific')
+            if pre.has('specific'):
+                pre.remove('specific')
             attributes = {}
             types_to_remove = set()
             types_to_preserve = set()
@@ -71,6 +79,8 @@ class InferenceEngine:
                 precondition.data(node)['attributes'] = types
             for node in categories:
                 precondition.data(node)['category'] = True
+            for node in specifics:
+                precondition.data(node)['specific'] = True
             for var in vars: # vars includes both pre and post vars
                 if precondition.has(var):
                     precondition.data(var)['var'] = True
@@ -127,9 +137,12 @@ class InferenceEngine:
         solutions = {}
         for precondition, sols in sols.items():
             categories = set()
+            specifics = set()
             for node in precondition.nodes():
                 if 'category' in precondition.data(node):
                     categories.add(node)
+                if 'specific' in precondition.data(node):
+                    specifics.add(node)
             precondition_id = converted_rules.reverse()[precondition]
             precondition_cg = all_rules[precondition_id][0]
             solset = []
@@ -148,6 +161,13 @@ class InferenceEngine:
                             if facts_types.get(value, set()) - {value} <= facts_types.get(t, set()):
                                 not_category = False
                         if not_category:
+                            break
+                    if variable in specifics:
+                        not_specific = False
+                        for t in precondition_cg.types(variable) - {variable}:
+                            if facts_types.get(value, set()) - {value} <= facts_types.get(t, set()):
+                                not_specific = True
+                        if not_specific:
                             break
                 else:
                     solset.append(sol)

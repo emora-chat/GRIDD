@@ -35,6 +35,7 @@ class Chatbot:
     def __init__(self, *knowledge_base, inference_rules, starting_wm=None, device='cpu'):
         self.auxiliary_state = {'turn_index': -1}
 
+        s = time.time()
         knowledge = collect(*knowledge_base)
         inference_rules = collect(*inference_rules)
         starting_wm = None if starting_wm is None else collect(*starting_wm)
@@ -43,6 +44,7 @@ class Chatbot:
         self.dialogue_intcore = IntelligenceCore(knowledge_base=knowledge+inference_rules+nlg_templates)
         if starting_wm is not None:
             self.dialogue_intcore.consider(starting_wm)
+        print('IntelligenceCore load: %.2f'%(time.time()-s))
 
         nlu_templates = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
         s = time.time()
@@ -294,14 +296,14 @@ class Chatbot:
                 self.merge_references(fragment_request_merges)
                 self.dialogue_intcore.operate()
 
-                # Feature update
-                self.dialogue_intcore.update_confidence('user')
-                self.dialogue_intcore.update_confidence('emora')
-                self.dialogue_intcore.update_salience()
+            # Feature update
+            self.dialogue_intcore.update_confidence('user')
+            self.dialogue_intcore.update_confidence('emora')
+            self.dialogue_intcore.update_salience()
 
-                if debug:
-                    print('\n' + '#' * 10 + '\nAfter Feature Update\n' + '#' * 10)
-                    self.print_features()
+            if debug:
+                print('\n' + '#' * 10 + '\nAfter Feature Update\n' + '#' * 10)
+                self.print_features()
 
             if debug:
                 print('\n' + '#'*10)
@@ -318,7 +320,7 @@ class Chatbot:
             self.print_features()
 
         print()
-        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=True))
+        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=False))
         print()
 
         # Start of Emora turn
@@ -458,18 +460,26 @@ class Chatbot:
         return pairs_to_merge
 
     def merge_references(self, reference_pairs):
+        wm = self.dialogue_intcore.working_memory
         for match_node, ref_node in reference_pairs:
             # identify user answers to emora requests and add req_sat monopredicate on request predicate
-            if not self.dialogue_intcore.working_memory.metagraph.out_edges(match_node, REF):
-                truths = list(self.dialogue_intcore.working_memory.predicates('emora', REQ_TRUTH, ref_node))
+            if not wm.metagraph.out_edges(match_node, REF):
+                truths = list(wm.predicates('emora', REQ_TRUTH, ref_node))
                 if truths:
-                    self.dialogue_intcore.working_memory.add(truths[0][3], REQ_SAT)
-                    self.dialogue_intcore.working_memory.add(truths[0][3], USER_AWARE)
+                    wm.add(truths[0][3], REQ_SAT)
+                    wm.add(truths[0][3], USER_AWARE)
                 else:
-                    args = list(self.dialogue_intcore.working_memory.predicates('emora', REQ_ARG, ref_node))
+                    args = list(wm.predicates('emora', REQ_ARG, ref_node))
                     if args:
-                        self.dialogue_intcore.working_memory.add(args[0][3], REQ_SAT)
-                        self.dialogue_intcore.working_memory.add(args[0][3], USER_AWARE)
+                        wm.add(args[0][3], REQ_SAT)
+                        wm.add(args[0][3], USER_AWARE)
+            # ref_node takes confidence of match_node
+            buc = wm.features.get(match_node, {}).get(BASE_UCONFIDENCE, None)
+            if buc is not None:
+                wm.features.setdefault(ref_node, {})[BASE_UCONFIDENCE] = buc
+            bc = wm.features.get(match_node, {}).get(BASE_CONFIDENCE, None)
+            if bc is not None:
+                wm.features.setdefault(ref_node, {})[BASE_CONFIDENCE] = bc
 
         self.dialogue_intcore.merge(reference_pairs)
 

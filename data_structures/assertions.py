@@ -1,6 +1,6 @@
 from GRIDD.globals import *
 
-def assertions(cg, default=1.0):
+def assertions(cg, consider=None, default=1.0, conf=CONFIDENCE, bconf=BASE_CONFIDENCE):
     """
     Set confidence of predicates to `default` if they don't already
     have a confidence AND they are not an argument of a NONASSERT.
@@ -8,8 +8,10 @@ def assertions(cg, default=1.0):
     types = cg.types()
     predicates = set()
     not_asserted = set()
-    for s, _, o, pred in cg.predicates():
-        if CONFIDENCE not in cg.features.get(pred, {}):
+    if consider is None:
+        consider = cg.predicates()
+    for s, _, o, pred in consider:
+        if conf not in cg.features.get(pred, {}):
             predicates.add(pred)
         if NONASSERT in types[pred]:
             if cg.has(predicate_id=s):
@@ -17,6 +19,6 @@ def assertions(cg, default=1.0):
             if cg.has(predicate_id=o):
                 not_asserted.add(o)
     for a in predicates - not_asserted:
-        cg.features.setdefault(a, {})[BASE_CONFIDENCE] = default
+        cg.features.setdefault(a, {})[bconf] = default
     for na in predicates & not_asserted:
-        cg.features.setdefault(na, {})[BASE_CONFIDENCE] = 0.0
+        cg.features.setdefault(na, {})[bconf] = 0.0
