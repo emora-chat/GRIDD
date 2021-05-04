@@ -23,6 +23,7 @@ class NodeFeatures(defaultdict):
                         else:
                             self[node][feature] = other_value
                     elif feature in {BASE_CONFIDENCE, BASE_UCONFIDENCE}:
+                    # elif feature == CONFIDENCE:
                         self[node][feature] = other_value
                     elif feature == 'span_data':
                         if 'span_data' in self[node]:
@@ -46,6 +47,7 @@ class NodeFeatures(defaultdict):
                     else:
                         self[kept][feature] = other_value
                 elif feature in {BASE_CONFIDENCE, BASE_UCONFIDENCE}:
+                # elif feature == CONFIDENCE:
                     self[kept][feature] = other_value
                 elif feature == 'span_data':
                     if 'span_data' in self[kept]:

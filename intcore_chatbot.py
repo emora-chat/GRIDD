@@ -16,6 +16,7 @@ from GRIDD.data_structures.pipeline import Pipeline
 c = Pipeline.component
 from GRIDD.utilities.utilities import collect
 from GRIDD.globals import *
+from GRIDD.data_structures.assertions import assertions
 
 from os.path import join
 import json, requests, time
@@ -170,6 +171,7 @@ class Chatbot:
             if not span.startswith('__linking__'):
                 mega_mention_graph.add(span, 'def', center)
         self.assign_cover(mega_mention_graph)
+        # assertions(mega_mention_graph, conf=UCONFIDENCE, bconf=BASE_UCONFIDENCE)
         self.dialogue_intcore.consider(mega_mention_graph)
 
         if debug:
