@@ -221,6 +221,8 @@ def gather_solutions(edge_assignments, node_assignments):
             if len(solution) == 1:
                 final_solutions.append(solution[0])
             else:
+                if not isinstance(solution[0], dict):
+                    solution = [{}, *solution]
                 edge_sol, node_sols = dict(solution[0]), solution[1:]
                 edge_sol.update(node_sols)
                 final_solutions.append(edge_sol)
