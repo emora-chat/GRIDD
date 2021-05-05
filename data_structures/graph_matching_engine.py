@@ -7,7 +7,7 @@ import torch
 from time import time
 from GRIDD.utilities.utilities import combinations
 
-DEBUG = True
+DEBUG = False
 TIMING = False
 
 class GraphMatchingEngine:

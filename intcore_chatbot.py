@@ -335,7 +335,7 @@ class Chatbot:
         # Start of Emora turn
 
         # Template NLG
-
+        print(' <<< TEMPLATE NLG >>> ')
         for pred in self.dialogue_intcore.pull_expressions():
             if not wm.has(*pred):
                 wm.add(*pred)

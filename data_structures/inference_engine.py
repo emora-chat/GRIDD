@@ -81,6 +81,9 @@ class InferenceEngine:
                 precondition.data(node)['category'] = True
             for node in specifics:
                 precondition.data(node)['specific'] = True
+            edges = set(precondition.edges(label='t'))
+            for edge in edges:
+                precondition.remove(*edge)
             for var in vars: # vars includes both pre and post vars
                 if precondition.has(var):
                     precondition.data(var)['var'] = True
@@ -115,6 +118,9 @@ class InferenceEngine:
         facts_graph = facts.to_graph()
         for node, types in attributes.items():
             facts_graph.data(node)['attributes'] = types
+        edges = set(facts_graph.edges(label='t'))
+        for edge in edges:
+            facts_graph.remove(*edge)
         for node in quantities:
             facts_graph.data(node)['num'] = node
         return facts_graph
