@@ -110,7 +110,8 @@ class InferenceEngine:
             facts.remove(type)
             attributes.pop(type)
         facts.remove('type')
-        attributes.pop('type')
+        if 'type' in attributes:
+            attributes.pop('type')
         facts_graph = facts.to_graph()
         for node, types in attributes.items():
             facts_graph.data(node)['attributes'] = types
@@ -133,9 +134,9 @@ class InferenceEngine:
         else:
             all_rules = dynamic_rules
             converted_rules = Bimap(dynamic_converted_rules)
-        sols = self.matcher.match(facts_graph, *list(converted_rules.values()))
+        all_sols = self.matcher.match(facts_graph, *list(converted_rules.values()))
         solutions = {}
-        for precondition, sols in sols.items():
+        for precondition, sols in all_sols.items():
             categories = set()
             specifics = set()
             for node in precondition.nodes():

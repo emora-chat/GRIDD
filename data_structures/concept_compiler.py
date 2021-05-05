@@ -240,6 +240,8 @@ class ConceptVisitor(Visitor_Recursive):
             types = predicate_types + [o for _, t, o, _ in entries if t == 'type']
             for e in types:
                 if e not in self.types:
+                    if e in self.locals.values():
+                        e = [k for k,v in self.locals.items() if v == e]
                     raise ValueError('Reference to unknown type `{}`'.format(e))
         if not self.predgen:
             for e in predicate_types:

@@ -1,0 +1,5 @@
+habitual_present=(datetime)
+[always,frequent,usual]=(habitual_present)
+expr("always", always)
+expr("frequent", frequent)
+expr("usual", usual)

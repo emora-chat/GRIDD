@@ -17,35 +17,14 @@ $ Oh , you don't have any pets . Do you want one ? I've always wanted a cat myse
 
 time(have(user, p2/pet()), now)
 request(emora, p2)
-->
+-> q_pet_type ->
 $ What kind of pet do you have ? $
 ;
 
-l/like(user, Z/do(user, Y/predicate()))
-with(Z, X/dog())
-time(l, now)
-request(emora, Y)
--> q_activity_with_pet ->
-$ What do you like to do with your X ? $
+property_instance=property(pet_instance=pet())
+possess(user, pet_instance)
+request(emora, property_instance)
+-> q_pet_property ->
+$ What is your pet_instance like ? $
 ;
 
-time(k/know(d/dog(), trick()), now)
-possess(user, d)
-request_truth(emora, k)
--> q_dog_tricks ->
-$ Does your dog know any tricks ? $
-;
-
-possess(user, d/dog())
-obedient(d)
--> obedient_dog ->
-$ Wow, it sounds like your dog is pretty obedient ! $
-;
-
-time(w/walk(user, d/dog()), now)
-possess(user, d)
-locate(w, loc/location())
-request(emora, loc)
--> q_where_walk_dog ->
-$ Where do you walk your dog ? $
-;

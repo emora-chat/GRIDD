@@ -135,12 +135,4 @@ expr("purple", purple)
 pink=(color)
 expr("pink", pink)
 
-happy=(property)
-expr("happy", happy)
-
 ;
-
-like=(predicate)
-expr("like", like)
-know=(predicate)
-expr("know", know)

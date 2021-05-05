@@ -230,6 +230,13 @@ class Chatbot:
             self.dialogue_intcore.operate()
             self.dialogue_intcore.convert_metagraph_span_links(REF_SP, [REF, VAR])
             self.dialogue_intcore.convert_metagraph_span_links(DP_SUB, [ASS_LINK])
+            for s,t,l in wm.metagraph.edges(label=ASS_LINK):
+                if BASE_UCONFIDENCE not in wm.features[t]:
+                    if wm.has(predicate_id=s):
+                        if NONASSERT in wm.types(s):
+                            wm.features[t][BASE_UCONFIDENCE] = 0.0
+                        else:
+                            wm.features[t][BASE_UCONFIDENCE] = 1.0
 
             if debug:
                 print('\n' + '#'*10)

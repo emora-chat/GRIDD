@@ -1,0 +1,6 @@
+like=(predicate)
+expr("like, enjoy", like)
+dislike=(predicate)
+expr("dislike, hate", dislike)
+want = (predicate)
+expr("want, desire, hope", want)

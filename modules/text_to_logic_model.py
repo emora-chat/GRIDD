@@ -84,8 +84,7 @@ class ParseToLogic:
         self._span_to_concepts()
         types = self.intcore.pull_types()
         self.intcore.consider(types)
-        rule_assignments = {(pre, post, rule): sols
-                            for rule, (pre, post, sols) in self.intcore.infer().items()}
+        rule_assignments = {(pre, post, rule): sols for rule, (pre, post, sols) in self.intcore.infer().items()}
         mentions = self._get_mentions(rule_assignments, wm)
         merges = self._get_merges(rule_assignments, wm)
         return mentions, merges

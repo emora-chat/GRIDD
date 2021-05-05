@@ -1,3 +1,6 @@
+
+/* Has Pet */
+
 imp_trigger(init_ask_pet=init())
 -> ask_pet_trigger ->
 h:<time(h/have(user, p/pet()), now)>
@@ -27,27 +30,55 @@ request_truth(emora, w)
 
 time(have(user, X/pet()), now)
 -> user_has_pet ->
-Y:<
-    l/like(user, Z/do(user, Y/predicate()))
-    with(Z, X)
-    time(l, now)
->
-user_aware(Z)
-request(emora, Y)
+i:<i/property(X)>
+request(emora, i)
 ;
 
-time(have(user, d/dog()), now)
--> user_has_dog ->
-
-k:<time(k/know(d, trick()), now)>
-request_truth(emora, k)
-
-loc:<time(w/walk(user, d), now) locate(w, loc/location())>
-user_aware(w)
-request(emora, loc)
+i/property(X/pet())
+r/request(emora, i)
+user_aware(r)
+->
+pred:<like(user, pred/predicate()) with(pred, X)>
+request(emora, pred)
 ;
 
-time(know(d/dog(), h/heel()), now)
--> knows_heel ->
-obedient(d)
+/* Common Sense */
+
+like(X/pet(), nap(X))
+->
+lazy(X)
 ;
+
+time(nap(X/pet()), habitual_present)
+->
+lazy(X)
+;
+
+time(like(X/pet(), fetch(X)), now)
+->
+playful(X)
+healthy(X)
+fun(X)
+;
+
+time(like(X/pet(), play(X)), now)
+->
+playful(X)
+fun(X)
+;
+
+time(like(X/pet(), walk(X)), now)
+->
+healthy(X)
+;
+
+time(hide(X/pet()), habitual_present)
+->
+shy(X)
+;
+
+fat(X/pet())
+->
+lazy(X)
+;
+

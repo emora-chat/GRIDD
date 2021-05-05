@@ -137,9 +137,13 @@ class IntelligenceCore:
                             strength = inferences[rule][0].features.get(pre_node, {}).get(UCONFIDENCE, 1)
                             self.working_memory.metagraph.add(evidence_node, and_node, (UAND_LINK, strength))
                     for imp_node, strength in implication_strengths.items():
-                        self.working_memory.metagraph.add(and_node, implied_nodes[imp_node], (OR_LINK, strength))
+                        # add or_link only if imp_node is not part of a reference
+                        if not implication.metagraph.in_edges(imp_node, REF):
+                            self.working_memory.metagraph.add(and_node, implied_nodes[imp_node], (OR_LINK, strength))
                     for imp_node, strength in uimplication_strengths.items():
-                        self.working_memory.metagraph.add(and_node, implied_nodes[imp_node], (UOR_LINK, strength))
+                        # add or_link only if imp_node is not part of a reference
+                        if not implication.metagraph.in_edges(imp_node, REF):
+                            self.working_memory.metagraph.add(and_node, implied_nodes[imp_node], (UOR_LINK, strength))
 
     def update_confidence(self, speaker):
         """
@@ -151,8 +155,6 @@ class IntelligenceCore:
             conf
         """
         mg = self.working_memory.metagraph
-        # todo - exclude all links between precondition and a question in postcondition
-        question_constraints = self._get_excluded_question_links(self.working_memory)
         and_links, or_links = [], []
         nodes = {}
         if speaker == 'emora':
@@ -176,8 +178,7 @@ class IntelligenceCore:
             raise ValueError('speaker parameter must be either `emora` or `user`, not `%s`'%speaker)
         nodes.update({c: mg.features.get(c, {}).get(base_conf, 0) for c in mg.nodes()})
         and_links.extend([edge for edge in mg.edges() if isinstance(edge[2], tuple) and andl == edge[2][0]])
-        or_links.extend([edge for edge in mg.edges()
-                         if isinstance(edge[2], tuple) and orl == edge[2][0] and edge[1] not in question_constraints])
+        or_links.extend([edge for edge in mg.edges() if isinstance(edge[2], tuple) and orl == edge[2][0]])
         counter = 0
         for _,_,_,i in self.working_memory.predicates():
             bc = self.working_memory.features.get(i, {}).get(base_conf, None)
@@ -186,31 +187,24 @@ class IntelligenceCore:
                 counter += 1
                 or_links.append((bnode, i, (orl, 1.0)))
                 nodes[bnode] = bc
-        types = self.working_memory.types()
-        unasserted = {}
-        ass_links = set()
-        ass_link_edges = list(mg.edges(label=ASS_LINK))
-        for s, t, l in ass_link_edges:
-            if self.working_memory.has(predicate_id=t):
-                ass_links.add((s, t))
-                if NONASSERT in types[t]:
-                    unasserted.setdefault(s, set()).add(self.working_memory.predicate(t)[2])
-            if NONASSERT in types[s]:
-                unasserted.setdefault(s, set()).add(self.working_memory.predicate(s)[2])
-        for s, t, l in ass_link_edges:
-            if t in unasserted.get(s, set()):
-                ass_links.discard((s, t))
-        for s, t in ass_links:
-            if t not in unasserted:
-                or_links.append((s, t, (orl, 1.0)))
+        # types = self.working_memory.types()
+        # unasserted = {}
+        # ass_links = set()
+        # ass_link_edges = list(mg.edges(label=ASS_LINK))
+        # for s, t, l in ass_link_edges:
+        #     if self.working_memory.has(predicate_id=t):
+        #         ass_links.add((s, t))
+        #         if NONASSERT in types[t]:
+        #             unasserted.setdefault(s, set()).add(self.working_memory.predicate(t)[2])
+        #     if NONASSERT in types[s]:
+        #         unasserted.setdefault(s, set()).add(self.working_memory.predicate(s)[2])
+        # for s, t, l in ass_link_edges:
+        #     if t in unasserted.get(s, set()):
+        #         ass_links.discard((s, t))
+        # for s, t in ass_links:
+        #     if t not in unasserted:
+        #         or_links.append((s, t, (orl, 1.0)))
         def and_fn(node, sources):
-            # product = 1
-            # for value, (label, weight) in sources:
-            #     product *= weight * value
-            # if product >= 0:
-            #     return min(product, 1.0)
-            # else:
-            #     return max(product, -1.0)
             weighted_vals = [value * weight for value, (label, weight) in sources]
             c = and_conf(*weighted_vals)
             return c
@@ -219,14 +213,6 @@ class IntelligenceCore:
             non_convince_links = [s for s in sources if s[1][0] != 'convince_link']
             conf_calc = 0
             if non_convince_links:
-                # weight = non_convince_links[0][1][1]
-                # conf_calc = non_convince_links[0][0] * weight
-                # product = non_convince_links[0][0] * weight
-                # for value, (label, weight) in non_convince_links[1:]:
-                #     conf_calc += value * weight
-                #     product *= value * weight
-                #     conf_calc = conf_calc - product
-                #     product = conf_calc
                 weighted_vals = [value * weight for value, (label, weight) in non_convince_links]
                 conf_calc = or_conf(*weighted_vals)
             weighted_convince = 0
