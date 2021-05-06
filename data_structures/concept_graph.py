@@ -574,6 +574,7 @@ class ConceptGraph:
         return graph
 
     def merge(self, concept_a, concept_b, strict_order=False):
+        unique_preds = {USER_AWARE, TIME}
         if concept_a != concept_b:
             if not strict_order and concept_a.startswith(self._ids.namespace) and not concept_b.startswith(self._ids.namespace):
                 tmp = concept_a
@@ -581,7 +582,10 @@ class ConceptGraph:
                 concept_b = tmp
             for s, t, o, i in list(self.predicates(subject=concept_b)):
                 self._detach(s, t, o, i)
-                self.add(concept_a, t, o, i)
+                if t in unique_preds:
+                    x = 1
+                if t not in unique_preds or (t in unique_preds and not self.has(concept_a, t, o)):
+                    self.add(concept_a, t, o, i)
             for s, t, o, i in list(self.predicates(object=concept_b)):
                 self._detach(s, t, o, i)
                 self.add(s, t, concept_a, i)
@@ -593,6 +597,7 @@ class ConceptGraph:
                 subj_b, type_b, obj_b, inst_b = self.predicate(concept_b)
                 self._detach(subj_a, type_a, obj_a, inst_a)
                 self._detach(subj_b, type_b, obj_b, inst_b)
+                additional_type = None
                 if type_a == type_b:
                     final_type = type_a
                 elif type_b in set(self.subtypes_of(type_a)):   # type_b is a subtype of type_a
@@ -600,21 +605,25 @@ class ConceptGraph:
                 elif type_a in set(self.subtypes_of(type_b)):   # type_a is a subtype of type_b
                     final_type = type_a
                 else:
-                    raise ValueError('Merging predicate instances but neither type (%s, %s) is a subtype of the other!'
+                    print('WARNING! Merging predicate instances but neither type (%s, %s) is a subtype of the other!'
                                      % (type_a, type_b))
+                    final_type = type_a
+                    additional_type = type_b
                 # make new predicate, then merge args in
                 if obj_a is None and obj_b is None:
                     final_subj=self.id_map().get()
-                    self.add(final_subj, final_type, predicate_id=concept_a)
+                    i = self.add(final_subj, final_type, predicate_id=concept_a)
                 else:
                     # promote to argument structure of higher ordered predicate (monopredicate < bipredicate)
                     final_subj=self.id_map().get()
                     final_obj=self.id_map().get()
-                    self.add(final_subj, final_type, final_obj, predicate_id=concept_a)
+                    i = self.add(final_subj, final_type, final_obj, predicate_id=concept_a)
                     if obj_a is not None:
                         self.merge(final_obj, obj_a)
                     if obj_b is not None:
                         self.merge(final_obj, obj_b)
+                if additional_type is not None:
+                    self.add(i, TYPE, additional_type)
                 self.merge(final_subj, subj_a)
                 self.merge(final_subj, subj_b)
             elif self.has(predicate_id=concept_b) and not self.has(predicate_id=concept_a):

@@ -75,8 +75,14 @@ class ResponseTemplateFiller:
         for match_dict, string in candidates:
             preds = [cg.predicate(x) for x in match_dict.values() if cg.has(predicate_id=x)
                      and cg.type(x) not in {EXPR, TYPE, TIME}]
+            req_pred = [cg.predicate(x) for x in match_dict.values() if cg.has(predicate_id=x)
+                        and cg.type(x) in {REQ_ARG, REQ_TRUTH}]
             user_awareness = [cg.has(x[3], USER_AWARE) for x in preds]
-            if False in user_awareness:
+            user_req_awareness = [cg.has(x[3], USER_AWARE) for x in req_pred]
+            print()
+            for i, pred in enumerate(preds):
+                print(pred, user_awareness[i])
+            if False in user_awareness and (not user_req_awareness or True not in user_req_awareness):
                 sals = [cg.features.get(x, {}).get(SALIENCE, 0) for x in match_dict.values()]
                 avg = sum(sals) / len(sals)
                 with_sal.append((preds, string, avg))

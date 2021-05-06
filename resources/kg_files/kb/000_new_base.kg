@@ -10,6 +10,8 @@ init = (object)
 category=(predicate)
 specific=(predicate)
 
+group=(entity)
+
 expr(["unknown"], unknown)
 unknown_noun = (object)
 unknown_adj = (object)

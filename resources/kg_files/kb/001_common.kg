@@ -8,6 +8,9 @@ expr(["socialbot"], socialbot)
 
 user=person()
 expr(["i", "me", "my", "mine"], user)
+user_group=person()
+type(user_group, group)
+expr("we, us, our", user_group)
 emora=socialbot()
 expr(["you", "your", "yours"], emora)
 

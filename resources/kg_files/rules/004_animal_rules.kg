@@ -3,6 +3,10 @@
 
 imp_trigger(init_ask_pet=init())
 -> ask_pet_trigger ->
+love(emora, c/picture())
+type(c, group)
+of(c, a/animal())
+type(a, group)
 h:<time(h/have(user, p/pet()), now)>
 request_truth(emora, h)
 h{"coldstart": 1}
@@ -39,9 +43,21 @@ prop_i{"confidence": 0}
 req/request(emora, prop_i)
 user_aware(req)
 -> do_with_pet ->
-pred:<like(user, pred/predicate()) with(pred, pt)>
+pred:<like(user, pred/predicate(object())) with(pred, pt)>
 request(emora, pred)
 ;
+
+l/like(user, pred/predicate(object()))
+l{"confidence": 0}
+with(pred, pt/pet())
+req/request(emora, pred)
+user_aware(req)
+-> share_walk_dog ->
+el/like(emora, walk(emora, emora_dog))
+em/motivate(emora, healthy(emora))
+cause(em, el)
+;
+
 
 /* Common Sense */
 
@@ -82,4 +98,31 @@ fat(X/pet())
 ->
 lazy(X)
 ;
+
+
+
+type(X/object(), park)
+->
+n:<locate(X, l/location()) n/near(l, h/home()) possess(user, h)>
+request_truth(emora, n)
+
+s:<s/size(X)>
+request(emora, s)
+
+love(emora, P/park())
+type(P, group)
+;
+
+large(X/park())
+->
+C/crowded(X)
+C{"confidence": -1}
+;
+
+small(X/park())
+->
+C/crowded(X)
+;
+
+
 

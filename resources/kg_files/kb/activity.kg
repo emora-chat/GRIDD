@@ -7,11 +7,6 @@ expr("hike, hiking", hike)
 buy=(event)
 expr("buy", buy)
 
-size = (property)
-[big, small, average] = (size)
-expr("big, large, huge, spacious", big)
-expr("small, tiny", small)
-expr("average, normal, typical", average)
 expensive=(property)
 expr("expensive, costly, pricey", expensive)
 

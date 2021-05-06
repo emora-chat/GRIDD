@@ -81,12 +81,13 @@ class ResponseExpansion:
             concepts = graph.concepts()
         for concept in concepts:
             if graph.has(predicate_id=concept):
-                if graph.type(concept) not in PRIM:
+                if graph.type(concept) not in PRIM and not graph.has(concept, USER_AWARE):
                     i2 = graph.add(concept, USER_AWARE)
                     graph.features[i2][BASE_UCONFIDENCE] = 1.0
             else:
-                i2 = graph.add(concept, USER_AWARE)
-                graph.features[i2][BASE_UCONFIDENCE] = 1.0
+                if not graph.has(concept, USER_AWARE):
+                    i2 = graph.add(concept, USER_AWARE)
+                    graph.features[i2][BASE_UCONFIDENCE] = 1.0
 
     def assign_salience(self, graph, concepts=None):
         if concepts is None:

@@ -58,10 +58,14 @@ expr("angry, mad", angry)
 ;
 
 physical_trait=(property)
-[fat,small,large,young,old,cute,ugly]=(physical_trait)
-expr("fat, obese, chunky", fat)
+size=(property)
+[small,large,average]=(size)
 expr("small, tiny", small)
-expr("big, large", large)
+expr("big, large, huge", large)
+expr("average, normal, typical", average)
+[slender,fat,young,old,cute,ugly]=(physical_trait)
+expr("slender, thin, skinny, scrawny", slender)
+expr("fat, obese, chunky", fat)
 expr("young", young)
 expr("old, elderly", old)
 expr("cute, adorable", cute)
@@ -74,16 +78,21 @@ expr("obedient", obedient)
 expr("sweet, kind, nice, loving", sweet)
 expr("smart, intelligent", smart)
 expr("fun", fun)
-expr("playful, energetic, lively, spaz", playful)
-[mean,jealous,lazy,annoying]=(n_personality_trait)
+expr("playful, energetic, lively", playful)
+[mean,jealous,lazy,annoying,stupid]=(n_personality_trait)
 expr("mean", mean)
 expr("jealous", jealous)
 expr("lazy", lazy)
 expr("annoying, bothersome, nuisance", annoying)
-[social,shy,mischevious]=(personality_trait)
-expr("social, outgoing", social)
+expr("stupid, dumb, idiotic", stupid)
+[social,shy,mischevious,crazy]=(personality_trait)
+expr("social, outgoing, friendly", social)
 expr("shy, introvert", shy)
 expr("mischevious, tricky", mischevious)
+expr("crazy, spaz", crazy)
+
+crowded=(property)
+expr("crowded, cramped, packed", crowded)
 
 ;
 activity=(event)
@@ -102,12 +111,6 @@ expr("groom, clean", groom)
 expr("hide", hide)
 
 ;
-
-[outdoor_loc,indoor_loc]=(location)
-park=(outdoor_loc)
-expr("park", park)
-vet_clinic=(indoor_loc)
-expr("vets, vet's", vet_clinic)
 
 veterinarian=(person)
 expr("veterinarian, vet", veterinarian)
@@ -131,9 +134,26 @@ speak = (trick)
 expr("speak", speak)
 ;
 
+treat=(entity)
+expr("treat", treat)
 
-time(have(emora, d/dog()), now)
+;
+
+time(have(emora, emora_dog=dog()), now)
+large(emora_dog)
+white(emora_dog)
+social(emora_dog)
+mischevious(emora_dog)
+like(emora_dog, t/treat())
+type(t, group)
+
 time(w2/want(emora, c/cat()), past)
 time(w2, always)
 
+motivate=(predicate)
+expr("motivate, encourage", motivate)
+
 ;
+
+picture=(object)
+expr("picture, photo, photograph", picture)

@@ -171,7 +171,6 @@ class Chatbot:
             if not span.startswith('__linking__'):
                 mega_mention_graph.add(span, 'def', center)
         self.assign_cover(mega_mention_graph)
-        # assertions(mega_mention_graph, conf=UCONFIDENCE, bconf=BASE_UCONFIDENCE)
         self.dialogue_intcore.consider(mega_mention_graph)
 
         if debug:
@@ -430,8 +429,9 @@ class Chatbot:
                 if len(fragment_request_merges) == 0:
                     affirm_obj = wm.id_map().get()
                     i = wm.add('user', AFFIRM, affirm_obj)
-                    i2 = wm.add(i, USER_AWARE)
-                    wm.features[i2][BASE_UCONFIDENCE] = 1.0
+                    if not wm.has(i, USER_AWARE):
+                        i2 = wm.add(i, USER_AWARE)
+                        wm.features[i2][BASE_UCONFIDENCE] = 1.0
                     wm.features[affirm_obj][SALIENCE] = 1.0
                     wm.features[i][SALIENCE] = 1.0
                     fragment_request_merges.append((affirm_obj, request_focus))
@@ -476,14 +476,16 @@ class Chatbot:
                 truths = list(wm.predicates('emora', REQ_TRUTH, ref_node))
                 if truths:
                     wm.add(truths[0][3], REQ_SAT)
-                    i2 = wm.add(truths[0][3], USER_AWARE)
-                    wm.features[i2][BASE_UCONFIDENCE] = 1.0
+                    if not wm.has(truths[0][3], USER_AWARE):
+                        i2 = wm.add(truths[0][3], USER_AWARE)
+                        wm.features[i2][BASE_UCONFIDENCE] = 1.0
                 else:
                     args = list(wm.predicates('emora', REQ_ARG, ref_node))
                     if args:
                         wm.add(args[0][3], REQ_SAT)
-                        i2 = wm.add(args[0][3], USER_AWARE)
-                        wm.features[i2][BASE_UCONFIDENCE] = 1.0
+                        if not wm.has(args[0][3], USER_AWARE):
+                            i2 = wm.add(args[0][3], USER_AWARE)
+                            wm.features[i2][BASE_UCONFIDENCE] = 1.0
             # ref_node takes confidence of match_node
             buc = wm.features.get(match_node, {}).get(BASE_UCONFIDENCE, None)
             if buc is not None:
@@ -498,9 +500,9 @@ class Chatbot:
         if concepts is None:
             concepts = graph.concepts()
         for concept in concepts:
-            if not graph.has(predicate_id=concept) or graph.type(concept) not in PRIM:
-                i2 = graph.add(concept, USER_AWARE)
-                graph.features[i2][BASE_UCONFIDENCE] = 1.0
+            if not graph.has(predicate_id=concept) or graph.type(concept) not in PRIM and not graph.has(concept, USER_AWARE):
+                    i2 = graph.add(concept, USER_AWARE)
+                    graph.features[i2][BASE_UCONFIDENCE] = 1.0
 
     def print_features(self):
         wm = self.dialogue_intcore.working_memory
@@ -523,10 +525,11 @@ class Chatbot:
     def chat(self, debug):
         utterance = input('User: ')
         while utterance != 'q':
-            s = time.time()
-            response = self.respond(utterance, debug=debug)
-            elapsed = time.time() - s
-            print('[%.6f s] %s\n' % (elapsed, response))
+            if utterance.strip() != '':
+                s = time.time()
+                response = self.respond(utterance, debug=debug)
+                elapsed = time.time() - s
+                print('[%.2f s] %s\n' % (elapsed, response))
             utterance = input('User: ')
             # self.auxiliary_state['turn_index'] += 1
 
