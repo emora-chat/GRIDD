@@ -231,7 +231,13 @@ def gather_solutions(edge_assignments, node_assignments):
                 all_solutions.setdefault(query_graph, set()).add(frozenset(solution.items()))
     all_solutions = {qg: [{k: v for k, v in sol if 'var' in qg.data(k)} for sol in sols]
                      for qg, sols in all_solutions.items()}
-    return all_solutions
+    nonduplicate_solutions = {}
+    for k, vs in all_solutions.items(): # todo - inefficient duplication check; possible to do earlier??
+        nonduplicate_solutions[k] = []
+        for v in vs:
+            if v not in nonduplicate_solutions[k]:
+                nonduplicate_solutions[k].append(v)
+    return nonduplicate_solutions
 
 def edge_traversal(graph):
     visited = set()
