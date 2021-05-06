@@ -582,8 +582,6 @@ class ConceptGraph:
                 concept_b = tmp
             for s, t, o, i in list(self.predicates(subject=concept_b)):
                 self._detach(s, t, o, i)
-                if t in unique_preds:
-                    x = 1
                 if t not in unique_preds or (t in unique_preds and not self.has(concept_a, t, o)):
                     self.add(concept_a, t, o, i)
             for s, t, o, i in list(self.predicates(object=concept_b)):

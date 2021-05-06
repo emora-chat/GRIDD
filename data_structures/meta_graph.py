@@ -23,9 +23,17 @@ class MetaGraph(Graph):
         out_edges = self.out_edges(concept_b)
         in_edges = self.in_edges(concept_b)
         for s,t,l in out_edges:
-            if not remove_ref or (l not in {REF, VAR}):
+            if not remove_ref:
                 if t == concept_b:
                     t = concept_a
+                self.add(concept_a, t, l)
+            else: # convert resolved reference metalinks to their analogous forms
+                if t == concept_b:
+                    t = concept_a
+                if l == REF:
+                    l = RREF
+                elif l == VAR:
+                    l = RVAR
                 self.add(concept_a, t, l)
         for s,t,l in in_edges:
             self.add(s, concept_a, l)

@@ -6,6 +6,7 @@ obj_essential=(predicate)
 
 imp_trigger = (predicate)
 init = (object)
+op_more_info=(predicate)
 
 category=(predicate)
 specific=(predicate)

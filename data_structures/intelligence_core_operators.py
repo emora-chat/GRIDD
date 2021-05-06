@@ -48,3 +48,16 @@ def reject(cg, i):
         cg.features[sub][BASE_UCONFIDENCE] = -1.0
     elif wrt == 'emora':
         cg.features[sub][BASE_CONFIDENCE] = -1.0
+
+def op_more_info(cg, i):
+    new, _, old, _ = cg.predicate(i)
+    pre = cg.metagraph.targets(old, RREF)
+    vars = set(cg.metagraph.targets(old, RVAR))
+    # add specific()
+    i2 = cg.add(new, 'specific')
+    pre.add(i2)
+    vars.add(i2)
+    # add links
+    cg.metagraph.add_links(new, pre, REF)
+    cg.metagraph.add_links(new, vars, VAR)
+    cg.remove(i)

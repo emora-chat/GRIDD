@@ -18,11 +18,11 @@ time(o/possess(user, p), now)
 user_aware(o)
 ;
 
-time(have(user, p/pet()), now)
+t/time(h/have(user, p/pet()), now)
 category(p)
 -> q_ask_pet_type ->
-p2:<time(have(user, p2/pet()), now) specific(p2)>
-request(emora, p2)
+op_more_info(p, h)
+request(emora, p)
 ;
 
 time(h/have(user, p/pet()), now)
