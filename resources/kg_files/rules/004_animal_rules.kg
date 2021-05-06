@@ -34,11 +34,12 @@ i:<i/property(X)>
 request(emora, i)
 ;
 
-i/property(X/pet())
-r/request(emora, i)
-user_aware(r)
-->
-pred:<like(user, pred/predicate()) with(pred, X)>
+prop_i/property(pt/pet())
+prop_i{"confidence": 0}
+req/request(emora, prop_i)
+user_aware(req)
+-> do_with_pet ->
+pred:<like(user, pred/predicate()) with(pred, pt)>
 request(emora, pred)
 ;
 

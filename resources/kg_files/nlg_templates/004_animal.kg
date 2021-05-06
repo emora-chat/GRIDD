@@ -21,10 +21,18 @@ request(emora, p2)
 $ What kind of pet do you have ? $
 ;
 
-property_instance=property(pet_instance=pet())
-possess(user, pet_instance)
-request(emora, property_instance)
+X/property(Y/pet())
+possess(user, Y)
+request(emora, X)
 -> q_pet_property ->
-$ What is your pet_instance like ? $
+$ What is your Y like ? $
+;
+
+possess(user, X/pet())
+like(user, pred/predicate())
+with(pred, X)
+request(emora, pred)
+->
+$ What do you like to do with your X ? $
 ;
 

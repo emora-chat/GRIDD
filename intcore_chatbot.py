@@ -335,7 +335,6 @@ class Chatbot:
         # Start of Emora turn
 
         # Template NLG
-        print(' <<< TEMPLATE NLG >>> ')
         for pred in self.dialogue_intcore.pull_expressions():
             if not wm.has(*pred):
                 wm.add(*pred)
@@ -431,7 +430,8 @@ class Chatbot:
                 if len(fragment_request_merges) == 0:
                     affirm_obj = wm.id_map().get()
                     i = wm.add('user', AFFIRM, affirm_obj)
-                    wm.add(i, USER_AWARE)
+                    i2 = wm.add(i, USER_AWARE)
+                    wm.features[i2][BASE_UCONFIDENCE] = 1.0
                     wm.features[affirm_obj][SALIENCE] = 1.0
                     wm.features[i][SALIENCE] = 1.0
                     fragment_request_merges.append((affirm_obj, request_focus))
@@ -476,12 +476,14 @@ class Chatbot:
                 truths = list(wm.predicates('emora', REQ_TRUTH, ref_node))
                 if truths:
                     wm.add(truths[0][3], REQ_SAT)
-                    wm.add(truths[0][3], USER_AWARE)
+                    i2 = wm.add(truths[0][3], USER_AWARE)
+                    wm.features[i2][BASE_UCONFIDENCE] = 1.0
                 else:
                     args = list(wm.predicates('emora', REQ_ARG, ref_node))
                     if args:
                         wm.add(args[0][3], REQ_SAT)
-                        wm.add(args[0][3], USER_AWARE)
+                        i2 = wm.add(args[0][3], USER_AWARE)
+                        wm.features[i2][BASE_UCONFIDENCE] = 1.0
             # ref_node takes confidence of match_node
             buc = wm.features.get(match_node, {}).get(BASE_UCONFIDENCE, None)
             if buc is not None:
@@ -497,7 +499,8 @@ class Chatbot:
             concepts = graph.concepts()
         for concept in concepts:
             if not graph.has(predicate_id=concept) or graph.type(concept) not in PRIM:
-                graph.add(concept, USER_AWARE)
+                i2 = graph.add(concept, USER_AWARE)
+                graph.features[i2][BASE_UCONFIDENCE] = 1.0
 
     def print_features(self):
         wm = self.dialogue_intcore.working_memory
