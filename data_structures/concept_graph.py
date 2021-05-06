@@ -377,7 +377,7 @@ class ConceptGraph:
                 for predicate in self.predicates(subject=concept, predicate_type='type'):
                     supertype = predicate[2]
                     if concept == supertype: # todo - this should not be possible, right?
-                        raise Exception('Concept has self-loop type predicate which causes types() to crash on recursion error!')
+                        raise ValueError('Concept has self-loop type predicate which causes types() to crash on recursion error!')
                     types.update(self.types(supertype, memo))
                 memo[concept] = types
                 if inst is not None:
@@ -574,40 +574,55 @@ class ConceptGraph:
         return graph
 
     def merge(self, concept_a, concept_b, strict_order=False):
-        if not strict_order and concept_a.startswith(self._ids.namespace) and not concept_b.startswith(self._ids.namespace):
-            tmp = concept_a
-            concept_a = concept_b
-            concept_b = tmp
-        for s, t, o, i in list(self.predicates(subject=concept_b)):
-            self._detach(s, t, o, i)
-            self.add(concept_a, t, o, i)
-        for s, t, o, i in list(self.predicates(object=concept_b)):
-            self._detach(s, t, o, i)
-            self.add(s, t, concept_a, i)
-        for s, t, o, i in list(self.predicates(predicate_type=concept_b)):
-            self._detach(s, t, o, i)
-            self.add(s, concept_a, o, i)
-        if self.has(predicate_id=concept_a) and self.has(predicate_id=concept_b):
-            # merge all arguments, if not the same
-            subj_a, type_a, obj_a, inst_a = self.predicate(concept_a)
-            subj_b, type_b, obj_b, inst_b = self.predicate(concept_b)
-            if subj_a != subj_b:
-                subj_a = self.merge(subj_a, subj_b, strict_order=strict_order)
-            if type_a != type_b:
-                type_a = self.merge(type_a, type_b, strict_order=strict_order)
-            if obj_a is not None and obj_b is not None and obj_a != obj_b:
-                obj_a = self.merge(obj_a, obj_b, strict_order=strict_order)
-            elif obj_b is not None:
-                # promote to argument structure of higher ordered predicate (monopredicate < bipredicate)
+        if concept_a != concept_b:
+            if not strict_order and concept_a.startswith(self._ids.namespace) and not concept_b.startswith(self._ids.namespace):
+                tmp = concept_a
+                concept_a = concept_b
+                concept_b = tmp
+            for s, t, o, i in list(self.predicates(subject=concept_b)):
+                self._detach(s, t, o, i)
+                self.add(concept_a, t, o, i)
+            for s, t, o, i in list(self.predicates(object=concept_b)):
+                self._detach(s, t, o, i)
+                self.add(s, t, concept_a, i)
+            for s, t, o, i in list(self.predicates(predicate_type=concept_b)):
+                self._detach(s, t, o, i)
+                self.add(s, concept_a, o, i)
+            if self.has(predicate_id=concept_a) and self.has(predicate_id=concept_b): # todo - inefficient if types are the same
+                subj_a, type_a, obj_a, inst_a = self.predicate(concept_a)
+                subj_b, type_b, obj_b, inst_b = self.predicate(concept_b)
                 self._detach(subj_a, type_a, obj_a, inst_a)
-                self.add(subj_a, type_a, obj_b, inst_a)
-            self._detach(*self.predicate(inst_b))
-        elif self.has(predicate_id=concept_b) and not self.has(predicate_id=concept_a):
-            s, t, o, i = self.predicate(concept_b)
-            self.add(s, t, o, concept_a)
-            self._detach(s, t, o, i)
-        self.metagraph.merge(concept_a, concept_b)
-        self.remove(concept_b)
+                self._detach(subj_b, type_b, obj_b, inst_b)
+                if type_a == type_b:
+                    final_type = type_a
+                elif type_b in set(self.subtypes_of(type_a)):   # type_b is a subtype of type_a
+                    final_type = type_b
+                elif type_a in set(self.subtypes_of(type_b)):   # type_a is a subtype of type_b
+                    final_type = type_a
+                else:
+                    raise ValueError('Merging predicate instances but neither type (%s, %s) is a subtype of the other!'
+                                     % (type_a, type_b))
+                # make new predicate, then merge args in
+                if obj_a is None and obj_b is None:
+                    final_subj=self.id_map().get()
+                    self.add(final_subj, final_type, predicate_id=concept_a)
+                else:
+                    # promote to argument structure of higher ordered predicate (monopredicate < bipredicate)
+                    final_subj=self.id_map().get()
+                    final_obj=self.id_map().get()
+                    self.add(final_subj, final_type, final_obj, predicate_id=concept_a)
+                    if obj_a is not None:
+                        self.merge(final_obj, obj_a)
+                    if obj_b is not None:
+                        self.merge(final_obj, obj_b)
+                self.merge(final_subj, subj_a)
+                self.merge(final_subj, subj_b)
+            elif self.has(predicate_id=concept_b) and not self.has(predicate_id=concept_a):
+                s, t, o, i = self.predicate(concept_b)
+                self.add(s, t, o, concept_a)
+                self._detach(s, t, o, i)
+            self.metagraph.merge(concept_a, concept_b)
+            self.remove(concept_b)
         return concept_a
 
     def _detach(self, subject, predicate_type, object, predicate_id):
