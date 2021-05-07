@@ -658,9 +658,10 @@ class ConceptGraph:
             all_added_concepts = set()
         for s, t, o, i in concept_graph.predicates():
             if (predicate_exclusions is None or t not in predicate_exclusions) and (concepts is None or i in concepts):
-                self.add(*(id_map.get(x) if x is not None else None for x in (s, t, o, i)))
-                if concepts is not None:
-                    all_added_concepts.update({x for x in (s,t,o,i) if x is not None})
+                if t is not USER_AWARE or not self.has(s, t): # DO NOT ADD DUPLICATE USER_AWARE PREDS!!!
+                    self.add(*(id_map.get(x) if x is not None else None for x in (s, t, o, i)))
+                    if concepts is not None:
+                        all_added_concepts.update({x for x in (s,t,o,i) if x is not None})
         for concept in concept_graph.concepts():
             if concept not in id_map:
                 if predicate_exclusions is None:

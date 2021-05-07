@@ -405,7 +405,7 @@ class Chatbot:
         # end of emora turn -> update salience, then decay and prune
         self.dialogue_intcore.update_salience()
         self.dialogue_intcore.decay_salience()
-        self.dialogue_intcore.prune_predicates_of_type({AFFIRM, REJECT, EXPR})
+        self.dialogue_intcore.prune_predicates_of_type({AFFIRM, REJECT, EXPR}, {EXPR})
         self.dialogue_intcore.prune_attended(keep=PRUNE_THRESHOLD)
 
         if debug:
@@ -531,8 +531,8 @@ class Chatbot:
             concepts = graph.concepts()
         for concept in concepts:
             if not graph.has(predicate_id=concept) or graph.type(concept) not in PRIM and not graph.has(concept, USER_AWARE):
-                    i2 = graph.add(concept, USER_AWARE)
-                    graph.features[i2][BASE_UCONFIDENCE] = 1.0
+                i2 = graph.add(concept, USER_AWARE)
+                graph.features[i2][BASE_UCONFIDENCE] = 1.0
 
     def print_features(self):
         wm = self.dialogue_intcore.working_memory

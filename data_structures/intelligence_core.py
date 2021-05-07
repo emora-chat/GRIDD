@@ -465,7 +465,7 @@ class IntelligenceCore:
                     preds = {pred for pred in self.working_memory.related(s) if self.working_memory.has(predicate_id=pred) and pred[1] != 'type'}
                     if not preds:
                         options.add(i)
-            elif t not in chain(self.subj_essential_types, self.obj_essential_types,PRIM):
+            elif t not in chain(self.subj_essential_types, self.obj_essential_types, PRIM):
                 options.add(i)
 
         sconcepts = sorted(options,
@@ -474,10 +474,13 @@ class IntelligenceCore:
         for c in sconcepts[keep:]:
             self.working_memory.remove(c) # todo: uh oh - short term memory loss
 
-    def prune_predicates_of_type(self, types):
+    def prune_predicates_of_type(self, inst_removals, subj_removals):
         for s, t, o, i in list(self.working_memory.predicates()):
-            if t in types:
+            print(s, t, o, i)
+            if t in inst_removals and self.working_memory.has(s, t, o, i):
                 self.working_memory.remove(s, t, o, i)
+            if t in subj_removals and self.working_memory.has(s):
+                self.working_memory.remove(s)
 
     def operate(self, cg=None):
         if cg is None:
