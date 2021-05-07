@@ -501,11 +501,13 @@ class IntelligenceCore:
         if 'attention_shift' in options:
             pass
         if 'emora_knowledge' in options:
-            for s, t, o, i in cg.predicates():
-                if not cg.has('emora', REQ_TRUTH, i):
-                    cg.features[i][CONVINCABLE] = 0.0
-                else:
+            # convincable predicates are predicate instances that are objects of any request predicate
+            for s,t,o,i in cg.predicates():
+                if cg.has('emora', REQ_TRUTH, i) or cg.has('emora', REQ_ARG, i):
                     cg.features[i][CONVINCABLE] = 1.0
+                else:
+                    cg.features[i][CONVINCABLE] = 0.0
+
         if 'assert_conf' in options:
             self._assertions(cg)
 

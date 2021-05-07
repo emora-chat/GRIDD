@@ -25,6 +25,14 @@ request(emora, p2)
 $ What kind of pet do you have ? $
 ;
 
+have(emora, emora_dog)
+X/property(Z/dog())
+possess(user, Z)
+request(emora, X)
+->
+$ Oh, me too ! What is your Z like ? $
+;
+
 X/property(Z/pet())
 possess(user, Z)
 request(emora, X)
@@ -61,4 +69,23 @@ em/motivate(emora, healthy(emora))
 cause(em, el)
 ->
 $ I like to take my dog on walks because it motivates me to be healthy . $
+;
+
+t/think(user, handful(X/pet()))
+possess(user, X)
+request_truth(emora, t)
+->
+$ Well , your X must be a handful with so much energy , aren't they ? $
+;
+
+e/event(X/pet()) crazy(e)
+possess(user, X)
+request(emora, e)
+->
+$ I bet they keep your life interesting though. Like , what is the craziest thing they've ever done ? $
+;
+
+esympathy(emora, event())
+->
+$ Oh no , that is unfortunate ! I hope it wasn't too bad . $
 ;

@@ -130,13 +130,12 @@ class Chatbot:
         input_dict = {"text": [user_utterance, None],
                       "aux_state": [self.auxiliary_state, self.auxiliary_state],
                       "conversationId": 'local'}
-        s = time.time()
         response = requests.post('http://cobot-LoadB-2W3OCXJ807QG-1571077302.us-east-1.elb.amazonaws.com',
                                  data=json.dumps(input_dict),
                                  headers={'content-type': 'application/json'},
                                  timeout=3.0)
         results = load(response.json()["context_manager"])
-        print('remote elit - %.2f'%(time.time() - s))
+        # print('remote elit - %.2f'%(time.time() - s))
         parse_dict = results['elit_results']
         self.auxiliary_state = results["aux_state"]
         wm = self.dialogue_intcore.working_memory
@@ -146,9 +145,8 @@ class Chatbot:
         #########################
 
         # NLU Preprocessing
-        s = time.time()
         mentions, merges = self.elit_dp(parse_dict)
-        print('parse2logic - %.2f'%(time.time() - s))
+        # print('parse2logic - %.2f'%(time.time() - s))
 
         if debug:
             print()
@@ -163,7 +161,6 @@ class Chatbot:
                 print(merge)
 
         # Mentions
-        s = time.time()
         namespace = list(mentions.items())[0][1].id_map() if len(mentions) > 0 else "ment_"
         mega_mention_graph = ConceptGraph(namespace=namespace)
         for span, mention_graph in mentions.items():
@@ -178,7 +175,7 @@ class Chatbot:
                 mega_mention_graph.add(span, 'def', center)
         self.assign_cover(mega_mention_graph)
         self.dialogue_intcore.consider(mega_mention_graph)
-        print('mention - %.2f'%(time.time() - s))
+        # print('mention - %.2f'%(time.time() - s))
 
         if debug:
             print('\n' + '#'*10)
@@ -187,7 +184,6 @@ class Chatbot:
             print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=TYPEINFO))
 
         # Merges
-        s = time.time()
         node_merges = []
         for (span1, pos1), (span2, pos2) in merges:
             # if no mention for span, no merge possible
@@ -199,11 +195,11 @@ class Chatbot:
                 node_merges.append((concept1, concept2))
         self.dialogue_intcore.merge(node_merges)
         self.dialogue_intcore.operate()
-        print('merge - %.2f'%(time.time() - s))
+        # print('merge - %.2f'%(time.time() - s))
 
         self.dialogue_intcore.update_confidence('user', iterations=CONF_ITER)
         self.dialogue_intcore.update_confidence('emora', iterations=CONF_ITER)
-        print('update conf - %.2f'%(time.time() - s))
+        # print('update conf - %.2f'%(time.time() - s))
 
 
         if debug:
@@ -213,7 +209,6 @@ class Chatbot:
             print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=TYPEINFO))
 
         # Knowledge pull
-        s = time.time()
         knowledge_by_source = self.dialogue_intcore.pull_knowledge(limit=100, num_pullers=50, association_limit=10, subtype_limit=10)
         for pred, sources in knowledge_by_source.items():
             if not wm.has(*pred) and not wm.has(predicate_id=pred[3]):
@@ -226,7 +221,7 @@ class Chatbot:
             if not wm.has(*type):
                 self.dialogue_intcore.consider([type], associations=type[0])
         self.dialogue_intcore.operate()
-        print('knowledge pull - %.2f'%(time.time() - s))
+        # print('knowledge pull - %.2f'%(time.time() - s))
 
 
         if debug:
@@ -239,7 +234,6 @@ class Chatbot:
             if debug:
                 print('\n<< INFERENCE ITERATION %d >> '%iteration)
             # Inferences
-            s = time.time()
             inferences = self.dialogue_intcore.infer()
             self.dialogue_intcore.apply_inferences(inferences)
             self.dialogue_intcore.operate()
@@ -252,7 +246,7 @@ class Chatbot:
                             wm.features[t][BASE_UCONFIDENCE] = 0.0
                         else:
                             wm.features[t][BASE_UCONFIDENCE] = 1.0
-            print('dia infer - %.2f' % (time.time() - s))
+            # print('dia infer - %.2f' % (time.time() - s))
 
 
             if debug:
@@ -262,27 +256,24 @@ class Chatbot:
                 print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=TYPEINFO))
 
             # Feature update
-            s = time.time()
             self.dialogue_intcore.update_confidence('user', iterations=CONF_ITER)
             self.dialogue_intcore.update_confidence('emora', iterations=CONF_ITER)
             self.dialogue_intcore.update_salience(iterations=SAL_ITER)
-            print('feature update - %.2f' % (time.time() - s))
+            # print('feature update - %.2f' % (time.time() - s))
 
             if debug:
                 print('\n' + '#'*10 + '\nAfter Feature Update\n' + '#' * 10)
                 self.print_features()
 
             # Reference resolution
-            s = time.time()
             reference_sets = self.dialogue_intcore.resolve()
             reference_pairs = self.identify_reference_merges(reference_sets)
             if len(reference_pairs) > 0:
                 self.merge_references(reference_pairs)
-            print('ref resol - %.2f' % (time.time() - s))
+            # print('ref resol - %.2f' % (time.time() - s))
 
             # Fragment Request Resolution:
             #   most salient type-compatible user concept from current turn fills most salient emora request
-            s = time.time()
             salient_emora_truth_request = None
             salient_emora_arg_request = None
             salient_emora_request = None
@@ -326,14 +317,13 @@ class Chatbot:
                         # wm.features[t][BASE] = True todo - check if the BASE indication matters here
                 self.merge_references(fragment_request_merges)
                 self.dialogue_intcore.operate()
-            print('frag res - %.2f' % (time.time() - s))
+            # print('frag res - %.2f' % (time.time() - s))
 
             # Feature update
-            s = time.time()
             self.dialogue_intcore.update_confidence('user', iterations=CONF_ITER)
             self.dialogue_intcore.update_confidence('emora', iterations=CONF_ITER)
             self.dialogue_intcore.update_salience(iterations=SAL_ITER)
-            print('feature update - %.2f' % (time.time() - s))
+            # print('feature update - %.2f' % (time.time() - s))
 
             if debug:
                 print('\n' + '#' * 10 + '\nAfter Feature Update\n' + '#' * 10)
@@ -353,14 +343,15 @@ class Chatbot:
             print('\n' + '#' * 10 + '\nEnd User Turn\n' + '#' * 10)
             self.print_features()
 
-        print()
-        print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=False))
-        print()
+        # PRINT WORKING MEMORY
+
+        # print()
+        # print(self.dialogue_intcore.working_memory.pretty_print(exclusions=EXCL, typeinfo=False))
+        # print()
 
         # Start of Emora turn
 
         # Template NLG
-        s = time.time()
         for pred in self.dialogue_intcore.pull_expressions():
             if not wm.has(*pred):
                 wm.add(*pred)
@@ -368,7 +359,7 @@ class Chatbot:
         template_response_info = self.template_filler(matches, wm, self.auxiliary_state)
         if template_response_info[0] is not None:
             self.auxiliary_state.setdefault('spoken_responses', []).append(template_response_info[0])
-        print('template nlg - %.2f' % (time.time() - s))
+        # print('template nlg - %.2f' % (time.time() - s))
 
         # Response selection
         aux_state, selections = self.response_selection(self.auxiliary_state, wm, template_response_info)
