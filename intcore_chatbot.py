@@ -201,8 +201,8 @@ class Chatbot:
         self.dialogue_intcore.operate()
         print('merge - %.2f'%(time.time() - s))
 
-        self.dialogue_intcore.update_confidence('user')
-        self.dialogue_intcore.update_confidence('emora')
+        self.dialogue_intcore.update_confidence('user', iterations=CONF_ITER)
+        self.dialogue_intcore.update_confidence('emora', iterations=CONF_ITER)
         print('update conf - %.2f'%(time.time() - s))
 
 
@@ -263,9 +263,9 @@ class Chatbot:
 
             # Feature update
             s = time.time()
-            self.dialogue_intcore.update_confidence('user')
-            self.dialogue_intcore.update_confidence('emora')
-            self.dialogue_intcore.update_salience()
+            self.dialogue_intcore.update_confidence('user', iterations=CONF_ITER)
+            self.dialogue_intcore.update_confidence('emora', iterations=CONF_ITER)
+            self.dialogue_intcore.update_salience(iterations=SAL_ITER)
             print('feature update - %.2f' % (time.time() - s))
 
             if debug:
@@ -330,9 +330,9 @@ class Chatbot:
 
             # Feature update
             s = time.time()
-            self.dialogue_intcore.update_confidence('user')
-            self.dialogue_intcore.update_confidence('emora')
-            self.dialogue_intcore.update_salience()
+            self.dialogue_intcore.update_confidence('user', iterations=CONF_ITER)
+            self.dialogue_intcore.update_confidence('emora', iterations=CONF_ITER)
+            self.dialogue_intcore.update_salience(iterations=SAL_ITER)
             print('feature update - %.2f' % (time.time() - s))
 
             if debug:
@@ -403,10 +403,22 @@ class Chatbot:
         response = self.response_assembler(aux_state, ack_results, gen_results)
 
         # end of emora turn -> update salience, then decay and prune
-        self.dialogue_intcore.update_salience()
+        self.dialogue_intcore.update_salience(iterations=SAL_ITER)
         self.dialogue_intcore.decay_salience()
         self.dialogue_intcore.prune_predicates_of_type({AFFIRM, REJECT, EXPR}, {EXPR})
         self.dialogue_intcore.prune_attended(keep=PRUNE_THRESHOLD)
+
+        # preds = list(wm.predicates())
+        # nall = len(preds)
+        # niaware = len([pred for pred in preds if pred[1] == USER_AWARE and wm.has(predicate_id=pred[0])])
+        # ncaware = len([pred for pred in preds if pred[1] == USER_AWARE and not wm.has(predicate_id=pred[0])])
+        # ntype = len([pred for pred in preds if pred[1] == TYPE])
+        # nref = len([p for p in preds if p[1] == SPAN_REF])
+        # ndef = len([p for p in preds if p[1] == SPAN_DEF])
+        # print()
+        # print(nall, niaware, '|', ncaware, ntype, nref, ndef, '|', nall-ncaware-ntype-nref-ndef)
+        # for s,t,o,i in preds:
+        #     print(s,t,o,i)
 
         if debug:
             print('\n' + '#' * 10 + '\nEnd Emora Turn\n' + '#' * 10)

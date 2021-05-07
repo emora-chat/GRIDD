@@ -145,7 +145,7 @@ class IntelligenceCore:
                         if not implication.metagraph.in_edges(imp_node, REF):
                             self.working_memory.metagraph.add(and_node, implied_nodes[imp_node], (UOR_LINK, strength))
 
-    def update_confidence(self, speaker):
+    def update_confidence(self, speaker, iterations=10):
         """
         label_d is a dictionary of label_type to label in order to update confidence w.r.t different populations
         e.g. emora, user, etc.
@@ -236,7 +236,7 @@ class IntelligenceCore:
             default=0,
             set_fn=set_fn
         )
-        update_graph.update(iteration=10, push=True)
+        update_graph.update(iteration=iterations, push=True)
 
     def _get_excluded_question_links(self, cg):
         constraints = set()
@@ -476,7 +476,6 @@ class IntelligenceCore:
 
     def prune_predicates_of_type(self, inst_removals, subj_removals):
         for s, t, o, i in list(self.working_memory.predicates()):
-            print(s, t, o, i)
             if t in inst_removals and self.working_memory.has(s, t, o, i):
                 self.working_memory.remove(s, t, o, i)
             if t in subj_removals and self.working_memory.has(s):
