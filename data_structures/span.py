@@ -26,7 +26,7 @@ class Span:
 
     @classmethod
     def from_string(cls, string):
-        return Span(*re.match(r'<span>(.*)\(([0-9]+), ?([0-9])+, ?([0-9]+), ?([0-9])+, ?([0-9])+\)\[(.*)\]', string).groups())
+        return Span(*re.match(r'<span>(.*)\(([0-9]+), ?([0-9]+), ?([0-9]+), ?([0-9]+), ?([0-9]+)\)\[(.*)\]', string).groups())
 
 
 if __name__ == '__main__':

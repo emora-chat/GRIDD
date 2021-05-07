@@ -24,30 +24,50 @@ class GraphMatchingEngine:
         data_adj_entries, data_attr_entries, data_ids, edge_ids, attr_ids, quants = graph_to_entries(data_graph)
         query_adj_entries, query_attr_entries, query_ids, _, _, thresholds = graph_to_entries(*query_graphs,
                             edge_ids=edge_ids, attribute_ids=attr_ids, with_disambiguation=True)
+        if TIMING:
+            t_f = time()
+            print('setup time: %.3f'%(t_f-t_i))
         query_adj = torch.LongTensor(list(chain(*query_adj_entries))).to(self.device)
         query_attr = entries_to_tensor(query_attr_entries, query_ids, attr_ids).to(self.device)
         if TIMING:
+            t_i = t_f
             t_f = time()
-            print('Setup time:', t_f-t_i)
+            print('query load time: %.3f'%(t_f-t_i))
         data_adj = torch.LongTensor(list(chain(*data_adj_entries))).to(self.device)
         data_attr = entries_to_tensor(data_attr_entries, data_ids, attr_ids).to(self.device)
         quants = quants.get('num', torch.empty(0, 2)).to(self.device)
+        if TIMING:
+            t_i = t_f
+            t_f = time()
+            print('data load time: %.3f'%(t_f-t_i))
         thresholds = {k: v.to(self.device) for k, v in thresholds.items()}
         compatible_nodes = joined_subset(query_attr, data_attr)
         display(compatible_nodes, query_ids, data_ids,
                 label='Node compatibility matrix:')
         compatible_nodes = quantitative_filter(compatible_nodes, quants, thresholds)
+        if TIMING:
+            t_i = t_f
+            t_f = time()
+            print('quantitative filter time: %.3f'%(t_f-t_i))
         query_nodes = torch.arange(0, query_attr.size(0), dtype=torch.long, device=self.device)
         floating_node_filter = ~row_membership(query_nodes.unsqueeze(1),
                                                torch.unique(torch.cat([query_adj[:,0], query_adj[:,1]], 0)).unsqueeze(1))
         floating_nodes = filter_rows(query_nodes.unsqueeze(1), floating_node_filter).squeeze(1)
         fc = torch.nonzero(compatible_nodes[floating_nodes,:])
         floating_compatibilities = torch.cat([floating_nodes[fc[:,0]].unsqueeze(1), fc[:,1:]], 1)
+        if TIMING:
+            t_i = t_f
+            t_f = time()
+            print('floating compatibilities time: %.3f'%(t_f-t_i))
         edge_pairs = join(query_adj, data_adj, 2, list(range(len(edge_ids))))
         source_compatible = gather_by_indices(compatible_nodes, edge_pairs[:,[0,2]])
         target_compatible = gather_by_indices(compatible_nodes, edge_pairs[:,[1,3]])
         compatible = torch.logical_and(source_compatible, target_compatible)
         edge_pairs = filter_rows(edge_pairs, compatible)
+        if TIMING:
+            t_i = t_f
+            t_f = time()
+            print('edge pairs time: %.3f'%(t_f-t_i))
         display(edge_pairs, query_ids, query_ids, data_ids, data_ids, edge_ids,
                     label='Initial edge candidates (%d)' % len(edge_pairs))
         qs, rqs, qsc = torch.unique(query_adj[:, [0, 2]], dim=0, return_inverse=True, return_counts=True)
@@ -68,6 +88,10 @@ class GraphMatchingEngine:
         prev_num_edges = edge_pairs.size(0) * 2
         num_edges = edge_pairs.size(0)
         i = 0
+        if TIMING:
+            t_i = t_f
+            t_f = time()
+            print('counts time: %.3f'%(t_f-t_i))
         while (num_edges < prev_num_edges or i == limit) and edge_pairs.size()[0] > 0: #todo - debug issue when no solutions found! temporary fix: added edge_pairs size comparison
             qsqtdsl = torch.unique(edge_pairs[:,[0,1,2,4]], dim=0)
             qsqtdtl = torch.unique(edge_pairs[:,[0,1,3,4]], dim=0)
@@ -114,8 +138,20 @@ class GraphMatchingEngine:
             prev_num_edges = num_edges
             num_edges = edge_pairs.size(0)
             i += 1
+        if TIMING:
+            t_i = t_f
+            t_f = time()
+            print('loop time: %.3f'%(t_f-t_i))
         edge_assignments, node_assignments = edge_pairs_postproc(edge_pairs, floating_compatibilities, query_ids, data_ids, edge_ids)
+        if TIMING:
+            t_i = t_f
+            t_f = time()
+            print('postproc time: %.3f'%(t_f-t_i))
         all_solutions = gather_solutions(edge_assignments, node_assignments)
+        if TIMING:
+            t_i = t_f
+            t_f = time()
+            print('gather time: %.3f'%(t_f-t_i))
         return all_solutions
 
 def query_graph_var_preproc(*query_graphs):
@@ -231,13 +267,7 @@ def gather_solutions(edge_assignments, node_assignments):
                 all_solutions.setdefault(query_graph, set()).add(frozenset(solution.items()))
     all_solutions = {qg: [{k: v for k, v in sol if 'var' in qg.data(k)} for sol in sols]
                      for qg, sols in all_solutions.items()}
-    nonduplicate_solutions = {}
-    for k, vs in all_solutions.items(): # todo - inefficient duplication check; possible to do earlier??
-        nonduplicate_solutions[k] = []
-        for v in vs:
-            if v not in nonduplicate_solutions[k]:
-                nonduplicate_solutions[k].append(v)
-    return nonduplicate_solutions
+    return all_solutions
 
 def edge_traversal(graph):
     visited = set()

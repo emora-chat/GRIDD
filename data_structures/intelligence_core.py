@@ -17,11 +17,11 @@ import GRIDD.data_structures.intelligence_core_operators as intcoreops
 
 class IntelligenceCore:
 
-    def __init__(self, knowledge_base=None, working_memory=None, inference_engine=None):
+    def __init__(self, knowledge_base=None, working_memory=None, inference_engine=None, device='cpu'):
         self.compiler = ConceptCompiler(namespace='__c__')
-        self.nlg_inference_engine = InferenceEngine()
+        self.nlg_inference_engine = InferenceEngine(device=device)
         if inference_engine is None:
-            inference_engine = InferenceEngine()
+            inference_engine = InferenceEngine(device=device)
         self.inference_engine = inference_engine
         if isinstance(knowledge_base, ConceptGraph):
             self.knowledge_base = knowledge_base

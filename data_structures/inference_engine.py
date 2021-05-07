@@ -82,8 +82,9 @@ class InferenceEngine:
             for node in specifics:
                 precondition.data(node)['specific'] = True
             edges = set(precondition.edges(label='t'))
-            for edge in edges:
-                precondition.remove(*edge)
+            for s,t,l in edges:
+                if precondition.has(t):
+                    precondition.remove(t)
             for var in vars: # vars includes both pre and post vars
                 if precondition.has(var):
                     precondition.data(var)['var'] = True
@@ -119,8 +120,9 @@ class InferenceEngine:
         for node, types in attributes.items():
             facts_graph.data(node)['attributes'] = types
         edges = set(facts_graph.edges(label='t'))
-        for edge in edges:
-            facts_graph.remove(*edge)
+        for s, t, l in edges:
+            if facts_graph.has(t):
+                facts_graph.remove(t)
         for node in quantities:
             facts_graph.data(node)['num'] = node
         return facts_graph
@@ -140,6 +142,7 @@ class InferenceEngine:
         else:
             all_rules = dynamic_rules
             converted_rules = Bimap(dynamic_converted_rules)
+        # print('Nodes, Edges: ', len(facts_graph.nodes()), len(facts_graph.edges()))
         all_sols = self.matcher.match(facts_graph, *list(converted_rules.values()))
         solutions = {}
         for precondition, sols in all_sols.items():

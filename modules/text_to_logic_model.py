@@ -23,7 +23,8 @@ class ParseToLogic:
             self._reference_expansion(rule[0], rule[2])
         parse_inference = InferenceEngine(rules, device=device)
         self.intcore = IntelligenceCore(knowledge_base=kb,
-                                        inference_engine=parse_inference)
+                                        inference_engine=parse_inference,
+                                        device=device)
         self.spans = []
 
     def _reference_expansion(self, pregraph, vars):
