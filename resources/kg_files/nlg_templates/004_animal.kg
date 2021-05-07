@@ -33,7 +33,7 @@ $ What is your Z like ? $
 ;
 
 possess(user, X/pet())
-like(user, pred/predicate(object()))
+like(user, pred/event(object()))
 with(pred, X)
 request(emora, pred)
 ->

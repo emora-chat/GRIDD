@@ -43,13 +43,14 @@ prop_i{"confidence": 0}
 req/request(emora, prop_i)
 user_aware(req)
 -> do_with_pet ->
-pred:<like(user, pred/predicate(object())) with(pred, pt)>
+pred:<like(user, pred/event(object())) with(pred, pt)>
 request(emora, pred)
 ;
 
-l/like(user, pred/predicate(object()))
+possess(user, pt/pet())
+l/like(user, pred/event(object()))
 l{"confidence": 0}
-with(pred, pt/pet())
+with(pred, pt)
 req/request(emora, pred)
 user_aware(req)
 -> share_walk_dog ->

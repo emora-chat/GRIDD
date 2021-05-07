@@ -139,10 +139,6 @@ class Chatbot:
         print('remote elit - %.2f'%(time.time() - s))
         parse_dict = results['elit_results']
         self.auxiliary_state = results["aux_state"]
-        print()
-        print("### Tokens:", parse_dict["tok"])
-        print("### Aux   :", self.auxiliary_state)
-        print()
         wm = self.dialogue_intcore.working_memory
 
         #########################
@@ -369,7 +365,9 @@ class Chatbot:
             if not wm.has(*pred):
                 wm.add(*pred)
         matches = self.dialogue_intcore.nlg_inference_engine.infer(wm)
-        template_response_info = self.template_filler(matches, wm)
+        template_response_info = self.template_filler(matches, wm, self.auxiliary_state)
+        if template_response_info[0] is not None:
+            self.auxiliary_state.setdefault('spoken_responses', []).append(template_response_info[0])
         print('template nlg - %.2f' % (time.time() - s))
 
         # Response selection

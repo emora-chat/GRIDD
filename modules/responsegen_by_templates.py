@@ -51,7 +51,7 @@ class ResponseTemplateFiller:
         self.nlgFactory = NLGFactory(self.lexicon)
         self.realiser = Realiser(self.lexicon)
 
-    def __call__(self, matches, cg):
+    def __call__(self, matches, cg, aux_state):
         expr_dict = {}
         for s, t, o, i in cg.predicates(predicate_type='expr'):
             if o not in expr_dict:
@@ -65,7 +65,9 @@ class ResponseTemplateFiller:
         for rule, (pre_graph, post, solutions_list) in matches.items():
             string_spec_ls = list(post) # need to create copy so as to not mutate the postcondition in the rule
             for match_dict in solutions_list:
-                candidates.append((match_dict, self.fill_string(match_dict, expr_dict, string_spec_ls, cg)))
+                response_str = self.fill_string(match_dict, expr_dict, string_spec_ls, cg)
+                if response_str not in aux_state.get('spoken_responses', []):
+                    candidates.append((match_dict, response_str))
         predicates, string, avg_sal = self.select_best_candidate(candidates, cg)
         return (string, predicates, 'template')
 
