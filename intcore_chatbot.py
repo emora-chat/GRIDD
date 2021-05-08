@@ -11,6 +11,7 @@ from GRIDD.modules.responsegen_by_rules import ResponseRules
 from GRIDD.modules.responsegen_by_model import ResponseGeneration
 from GRIDD.modules.response_assembler import ResponseAssembler
 
+from GRIDD.data_structures.span import Span
 from GRIDD.chatbot_server import load
 from GRIDD.data_structures.pipeline import Pipeline
 c = Pipeline.component
@@ -171,6 +172,7 @@ class Chatbot:
             mega_mention_graph.concatenate(mention_graph, predicate_exclusions={'focus', 'center', 'cover'})
             mega_mention_graph.add(span, 'ref', focus)
             mega_mention_graph.add(span, 'type', 'span')
+            mega_mention_graph.add(span, 'pos_tag', Span.from_string(span).pos_tag)
             if not span.startswith('__linking__'):
                 mega_mention_graph.add(span, 'def', center)
         self.assign_cover(mega_mention_graph)
@@ -485,19 +487,33 @@ class Chatbot:
         return merge_sets
 
     def identify_reference_merges(self, reference_dict):
+        wm = self.dialogue_intcore.working_memory
         pairs_to_merge = []
         for ref_node, compatibilities in reference_dict.items():
             resolution_options = []
+            span_def = None
+            pos_tag = None
+            span_nodes = wm.subjects(ref_node, SPAN_REF)
+            if span_nodes:
+                (span_node, ) = span_nodes
+                span_defs = wm.objects(span_node, SPAN_DEF)
+                if span_defs:
+                    (span_def, )= span_defs
+                pos_tag = Span.from_string(span_node).pos_tag
             for ref_match, constraint_matches in compatibilities.items():
-                if self.dialogue_intcore.working_memory.metagraph.out_edges(ref_match, REF):
-                    # found other references that match; merge all
-                    pairs_to_merge.extend([(ref_match, ref_node)] + constraint_matches)
-                else:
-                    # found resolution to reference; merge only one
-                    resolution_options.append(ref_match)
+                if (span_def is None or ref_match != span_def) and \
+                        (pos_tag is None or pos_tag not in {'prp, prop$'} or ref_match not in {'user', 'emora'}):
+                    # the `def` obj of reference's span is not candidate, if there is one
+                    # user and emora are not candidates for pronoun references
+                    if wm.metagraph.out_edges(ref_match, REF):
+                        # found other references that match; merge all
+                        pairs_to_merge.extend([(ref_match, ref_node)] + constraint_matches)
+                    else:
+                        # found resolution to reference; merge only one
+                        resolution_options.append(ref_match)
             if len(resolution_options) > 0:
                 salient_resol = max(resolution_options,
-                                    key=lambda x: self.dialogue_intcore.working_memory.features.get(x, {}).get(SALIENCE, 0))
+                                    key=lambda x: wm.features.get(x, {}).get(SALIENCE, 0))
                 pairs_to_merge.extend([(salient_resol, ref_node)] + compatibilities[salient_resol])
         return pairs_to_merge
 

@@ -1388,6 +1388,22 @@ TODO - not currently set up as references
 
 <details>
   <summary>Conversions</summary>
+  
+    X/pron()  
+    ref(X, E/expression())
+	expr(E, he)
+	-> he_pron ->
+	focus(o/living_thing())
+	center(X)
+	;
+	
+	X/pron()  
+    ref(X, E/expression())
+	expr(E, she)
+	-> she_pron ->
+	focus(o/living_thing())
+	center(X)
+	;
 
 	X/pron()
 	ltype(X, ref_det)

@@ -22,6 +22,7 @@ class MetaGraph(Graph):
         remove_ref = True if not (self.out_edges(concept_a, REF) and self.out_edges(concept_b, REF)) else False
         out_edges = self.out_edges(concept_b)
         in_edges = self.in_edges(concept_b)
+        # merge edges from concept_b into concept_a
         for s,t,l in out_edges:
             if not remove_ref:
                 if t == concept_b:
@@ -37,6 +38,15 @@ class MetaGraph(Graph):
                 self.add(concept_a, t, l)
         for s,t,l in in_edges:
             self.add(s, concept_a, l)
+        # transform ref and var edges of concept_a if remove_ref
+        if remove_ref:
+            for s,t,l in list(self.out_edges(concept_a)):
+                self.remove(s, t, l)
+                if l == REF:
+                    l = RREF
+                elif l == VAR:
+                    l = RVAR
+                self.add(concept_a, t, l)
         if self.has(concept_b):
             Graph.remove(self, concept_b)
         self.features.merge(concept_a, concept_b)

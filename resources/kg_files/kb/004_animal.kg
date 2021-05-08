@@ -1,7 +1,7 @@
 flag=(predicate)
 ;
 
-animal = (entity)
+animal = (living_thing)
 expr(["animal"], animal)
 pet = (animal)
 expr(["pet"], pet)
