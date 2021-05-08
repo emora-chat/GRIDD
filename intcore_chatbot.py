@@ -14,7 +14,6 @@ from GRIDD.modules.response_assembler import ResponseAssembler
 from GRIDD.data_structures.span import Span
 from GRIDD.chatbot_server import load
 from GRIDD.data_structures.pipeline import Pipeline
-c = Pipeline.component
 from GRIDD.utilities.utilities import collect
 from GRIDD.globals import *
 from GRIDD.data_structures.assertions import assertions
@@ -24,6 +23,7 @@ import json, requests, time
 from itertools import chain
 from collections import defaultdict
 
+c = Pipeline.component
 DEBUG = False
 EXCL = {'expr', SPAN_REF, SPAN_DEF, USER_AWARE,
         'span', 'expression', 'predicate', 'datetime'}
@@ -172,7 +172,6 @@ class Chatbot:
             mega_mention_graph.concatenate(mention_graph, predicate_exclusions={'focus', 'center', 'cover'})
             mega_mention_graph.add(span, 'ref', focus)
             mega_mention_graph.add(span, 'type', 'span')
-            mega_mention_graph.add(span, 'pos_tag', Span.from_string(span).pos_tag)
             if not span.startswith('__linking__'):
                 mega_mention_graph.add(span, 'def', center)
         self.assign_cover(mega_mention_graph)
