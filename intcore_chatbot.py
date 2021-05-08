@@ -35,7 +35,7 @@ class Chatbot:
     """
 
     def __init__(self, *knowledge_base, inference_rules, starting_wm=None, device='cpu'):
-        self.auxiliary_state = {'turn_index': -1}
+        self.auxiliary_state = {'turn_index': 0}
 
         s = time.time()
         knowledge = collect(*knowledge_base)
@@ -501,7 +501,7 @@ class Chatbot:
                 pos_tag = Span.from_string(span_node).pos_tag
             for ref_match, constraint_matches in compatibilities.items():
                 if (span_def is None or ref_match != span_def) and \
-                        (pos_tag is None or pos_tag not in {'prp, prop$'} or ref_match not in {'user', 'emora'}):
+                        (pos_tag is None or pos_tag not in {'prp', 'prop$'} or ref_match not in {'user', 'emora'}):
                     # the `def` obj of reference's span is not candidate, if there is one
                     # user and emora are not candidates for pronoun references
                     if wm.metagraph.out_edges(ref_match, REF):
