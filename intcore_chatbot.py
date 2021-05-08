@@ -579,7 +579,7 @@ class Chatbot:
                 elapsed = time.time() - s
                 print('[%.2f s] %s\n' % (elapsed, response))
             utterance = input('User: ')
-            # self.auxiliary_state['turn_index'] += 1
+            self.auxiliary_state['turn_index'] += 1
 
 if __name__ == '__main__':
 

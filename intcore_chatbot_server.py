@@ -1,4 +1,4 @@
-import time
+import time, json, requests
 from os.path import join
 from itertools import chain
 
@@ -7,9 +7,15 @@ from GRIDD.data_structures.span import Span
 from GRIDD.globals import *
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.intelligence_core import IntelligenceCore
-from GRIDD.modules.elit_models import ElitModels
 from GRIDD.modules.elit_dp_to_logic_model import ElitDPToLogic
+from GRIDD.modules.responsegen_by_templates import ResponseTemplateFiller
+from GRIDD.modules.response_selection_salience import ResponseSelectionSalience
+from GRIDD.modules.response_expansion import ResponseExpansion
+from GRIDD.modules.responsegen_by_rules import ResponseRules
+from GRIDD.modules.responsegen_by_model import ResponseGeneration
+from GRIDD.modules.response_assembler import ResponseAssembler
 
+from GRIDD.chatbot_server import load
 
 class ChatbotServer:
 
@@ -18,14 +24,22 @@ class ChatbotServer:
         knowledge = collect(*knowledge_base)
         inference_rules = collect(*inference_rules)
         starting_wm = None if starting_wm is None else collect(*starting_wm)
-        nlg_templates = collect(nlg_templates)
+        nlg_templates = collect(*nlg_templates)
         self.dialogue_intcore = IntelligenceCore(knowledge_base=knowledge + inference_rules + nlg_templates,
                                                  device=device)
         if starting_wm is not None:
             self.dialogue_intcore.consider(starting_wm)
         print('IntelligenceCore load: %.2f' % (time.time() - s))
 
+    ###################################################
+    ## Pipeline Modules
+    ###################################################
+
     # turn counter?
+
+    def run_next_turn(self, aux_state):
+        aux_state["turn_index"] += 1
+        return aux_state
 
     def init_sentence_caser(self, local_testing=True):
         if not local_testing:
@@ -39,10 +53,22 @@ class ChatbotServer:
         return user_utterance
 
     def init_elit_models(self):
+        from GRIDD.modules.elit_models import ElitModels
         self.elit_models = ElitModels()
 
-    def run_elit_models(self, user_utterance, aux_state):
-        parse_dict = self.elit_models(user_utterance, aux_state)
+    def run_elit_models(self, user_utterance, aux_state, local=False):
+        if local:
+            input_dict = {"text": [user_utterance, None],
+                          "aux_state": [aux_state, aux_state],
+                          "conversationId": 'local'}
+            response = requests.post('http://cobot-LoadB-2W3OCXJ807QG-1571077302.us-east-1.elb.amazonaws.com',
+                                     data=json.dumps(input_dict),
+                                     headers={'content-type': 'application/json'},
+                                     timeout=3.0)
+            results = load(response.json()["context_manager"])
+            parse_dict = results['elit_results']
+        else:
+            parse_dict = self.elit_models(user_utterance, aux_state)
         return parse_dict
 
     def init_parse2logic(self, device=None):
@@ -134,12 +160,14 @@ class ChatbotServer:
     def run_reference_identification(self, working_memory):
         self.load_working_memory(working_memory)
         references = self.dialogue_intcore.working_memory.references()
-        return references
+        use_cached = False
+        return references, use_cached
 
-    def run_dynamic_inference(self, rules, working_memory):
+    def run_multi_inference(self, rules, use_cached, working_memory):
         self.load_working_memory(working_memory)
         inference_results = self.dialogue_intcore.nlg_inference_engine.infer(self.dialogue_intcore.working_memory,
-                                                                              rules)
+                                                                              rules,
+                                                                             cached=use_cached)
         return inference_results
 
     def run_reference_resolution(self, inference_results, working_memory):
@@ -243,15 +271,84 @@ class ChatbotServer:
         self.dialogue_intcore.update_confidence('user', iterations=CONF_ITER)
         self.dialogue_intcore.update_confidence('emora', iterations=CONF_ITER)
         self.dialogue_intcore.update_salience(iterations=SAL_ITER)
+        return self.dialogue_intcore.working_memory
 
+    def init_template_nlg(self):
+        self.template_filler = ResponseTemplateFiller()
 
+    def run_prepare_template_nlg(self, working_memory, aux_state):
+        self.load_working_memory(working_memory)
+        self.dialogue_intcore.decay_salience()
+        for pred in self.dialogue_intcore.pull_expressions():
+            if not working_memory.has(*pred):
+                working_memory.add(*pred)
+        use_cached = True
+        return self.dialogue_intcore.working_memory, use_cached
 
+    def run_template_fillers(self, inference_results, working_memory, aux_state):
+        template_response_info = self.template_filler(inference_results, working_memory, aux_state)
+        if template_response_info[0] is not None:
+            aux_state.setdefault('spoken_responses', []).append(template_response_info[0])
+        return template_response_info, aux_state
 
+    def init_response_selection(self):
+        self.response_selection = ResponseSelectionSalience()
+
+    def run_response_selection(self, working_memory, aux_state, template_response_selection):
+        self.load_working_memory(working_memory)
+        aux_state, response_predicates = self.response_selection(aux_state, self.dialogue_intcore.working_memory,
+                                                                 template_response_selection)
+        return aux_state, response_predicates
+
+    def init_response_expansion(self):
+        self.response_expansion = ResponseExpansion(self.dialogue_intcore.knowledge_base)
+
+    def run_response_expansion(self, response_predicates, working_memory):
+        self.load_working_memory(working_memory)
+        expanded_response_predicates, working_memory = self.response_expansion(response_predicates,
+                                                               self.dialogue_intcore.working_memory)
+        return expanded_response_predicates, working_memory
+
+    def init_response_acknowledgements(self):
+        self.response_acknowledgements = ResponseRules()
+
+    def run_response_by_rules(self, aux_state, expanded_response_predicates):
+        ack_responses = self.response_acknowledgements(aux_state, expanded_response_predicates)
+        return ack_responses
+
+    def init_response_nlg_model(self):
+        self.response_nlg_model = ResponseGeneration()
+
+    def run_response_nlg_model(self, expanded_response_predicates, local=False):
+        if local:
+            input_dict = {"expanded_response_predicates": [expanded_response_predicates, None],
+                          "conversationId": 'local'}
+            response = requests.post('http://cobot-LoadB-1L3YPB9TGV71P-1610005595.us-east-1.elb.amazonaws.com',
+                                     data=json.dumps(input_dict),
+                                     headers={'content-type': 'application/json'},
+                                     timeout=3.0)
+            response = response.json()
+            if "performance" in response:
+                del response["performance"]
+                del response["error"]
+            nlg_responses = json.loads(response["nlg_responses"])
+        else:
+            nlg_responses = self.response_nlg_model(expanded_response_predicates)
+        return nlg_responses
+
+    def init_response_assember(self):
+        self.response_assembler = ResponseAssembler()
+
+    def run_response_assembler(self, aux_state, ack_responses, nlg_responses):
+        response = self.response_assembler(aux_state, ack_responses, nlg_responses)
+        return response
+
+    ###################################################
+    ## Helpers
     ###################################################
 
     def load_working_memory(self, working_memory):
-        self.dialogue_intcore.working_memory.clear()
-        ConceptGraph.construct(self.dialogue_intcore.working_memory, working_memory)
+        self.dialogue_intcore.working_memory = working_memory
 
     def assign_cover(self, graph, concepts=None):
         if concepts is None:
@@ -297,15 +394,113 @@ class ChatbotServer:
                 wm.features.setdefault(ref_node, {})[BASE_CONFIDENCE] = bc
         self.dialogue_intcore.merge(reference_pairs)
 
+    def arg_fragment_resolution(self, request_focus, current_user_concepts, wm):
+        fragment_request_merges = []
+        types = wm.types()
+        request_focus_types = types[request_focus] - {request_focus}
+        salient_concepts = sorted(current_user_concepts, key=lambda c: wm.features.get(c, {}).get(SALIENCE, 0),
+                                  reverse=True)
+        for c in salient_concepts:
+            if c != request_focus and request_focus_types < (types[c] - {c}):
+                subtype_set = current_user_concepts.intersection(wm.subtypes_of(c)) - {c}
+                # if concept is a reference or if other salient concepts are its subtypes, dont treat current concept as answer fragment
+                if not subtype_set and not wm.metagraph.out_edges(c, REF):
+                    fragment_request_merges.append((c, request_focus))
+                    break
+        return fragment_request_merges
+
+    def truth_fragment_resolution(self, request_focus, current_user_concepts, wm):
+        fragment_request_merges = []
+        indicator_preds = [p[3] for p in list(wm.predicates('user', AFFIRM)) + list(wm.predicates('user', REJECT))]
+        options = set(indicator_preds).intersection(current_user_concepts)
+        if len(indicator_preds) > 0: # find yes or no answer to question
+            max_indicator = max(options, key=lambda p: wm.features.get(p[3], {}).get(SALIENCE, 0))
+            fragment_request_merges.append((wm.object(max_indicator), request_focus))
+        else:
+            # todo - map `i do/nt` ~ do(user), `i have/nt` ~ have(user), and `i am/not` ~ am(user) to yes/no preds
+            pass
+        # find type-compatible argument match for non-predicates, if there is one
+        # todo - expand to match predicate arguments too
+        within_request_vars = {x for x in wm.metagraph.targets(request_focus, VAR) if not wm.has(predicate_id=x)}
+        for v in within_request_vars:
+            arg_merges = self.arg_fragment_resolution(v, current_user_concepts, wm)
+            if len(arg_merges) > 0:
+                if len(fragment_request_merges) == 0:
+                    affirm_obj = wm.id_map().get()
+                    i = wm.add('user', AFFIRM, affirm_obj)
+                    if not wm.has(i, USER_AWARE):
+                        i2 = wm.add(i, USER_AWARE)
+                        wm.features[i2][BASE_UCONFIDENCE] = 1.0
+                    wm.features[affirm_obj][SALIENCE] = 1.0
+                    wm.features[i][SALIENCE] = 1.0
+                    fragment_request_merges.append((affirm_obj, request_focus))
+                fragment_request_merges.extend(arg_merges)
+                break
+        return fragment_request_merges
+
+    ###################################################
+    ## Run Full Pipeline
     ###################################################
 
-    def full_init(self):
+    def full_init(self, local=True):
         self.init_sentence_caser()
-        self.init_elit_models()
+        if not local:
+            self.init_elit_models()
+        self.init_parse2logic()
+        self.init_template_nlg()
+        self.init_response_selection()
+        self.init_response_expansion()
+        self.init_response_acknowledgements()
+        self.init_response_nlg_model()
+        self.init_response_assember()
 
-    def run(self, user_utterance, aux_state):
+    def respond(self, user_utterance, working_memory, aux_state, local=True):
+        aux_state = self.run_next_turn(aux_state)
         user_utterance = self.run_sentence_caser(user_utterance)
-        parse_dict = self.run_elit_models(user_utterance, aux_state)
+        parse_dict = self.run_elit_models(user_utterance, aux_state, local=local)
+        mentions, merges = self.run_parse2logic(parse_dict)
+        working_memory = self.run_mention_bridge(mentions, working_memory)
+        working_memory = self.run_merge_bridge(merges, working_memory)
+        working_memory = self.run_knowledge_pull(working_memory)
+
+        inference_results = self.run_dialogue_inference(working_memory)
+        working_memory = self.run_apply_dialogue_inferences(inference_results, working_memory)
+        rules, use_cached = self.run_reference_identification(working_memory)
+        inference_results = self.run_multi_inference(rules, use_cached, working_memory)
+        working_memory = self.run_reference_resolution(inference_results, working_memory)
+        working_memory = self.run_fragment_resolution(working_memory, aux_state)
+
+        inference_results = self.run_dialogue_inference(working_memory)
+        working_memory = self.run_apply_dialogue_inferences(inference_results, working_memory)
+        rules, use_cached = self.run_reference_identification(working_memory)
+        inference_results = self.run_multi_inference(rules, use_cached, working_memory)
+        working_memory = self.run_reference_resolution(inference_results, working_memory)
+        working_memory = self.run_fragment_resolution(working_memory, aux_state)
+
+        rules, use_cached = self.run_prepare_template_nlg(working_memory, aux_state)
+        inference_results = self.run_multi_inference(rules, use_cached, working_memory)
+        template_response_select, aux_state = self.run_template_fillers(inference_results, working_memory,
+                                                                        aux_state)
+        aux_state, response_predicates = self.run_response_selection(working_memory, aux_state,
+                                                                     template_response_select)
+        expanded_response_predicates, working_memory = self.run_response_expansion(response_predicates,
+                                                                                   working_memory)
+        ack_responses = self.run_response_by_rules(aux_state, expanded_response_predicates)
+        nlg_responses = self.run_response_nlg_model(expanded_response_predicates, local=local)
+        response = self.run_response_assembler(aux_state, ack_responses, nlg_responses)
+        return response, working_memory, aux_state
+
+    def run(self, local=True):
+        wm = self.dialogue_intcore.working_memory.copy()
+        aux_state = {'turn_index': -1}
+        utter = input('User: ')
+        while utter != 'q':
+            if utter.strip() != '':
+                s = time.time()
+                response, wm, aux_state = self.respond(utter, wm, aux_state, local)
+                elapsed = time.time() - s
+                print('[%.2f s] %s\n' % (elapsed, response))
+            utter = input('User: ')
 
 if __name__ == '__main__':
     kb_dir = join('GRIDD', 'resources', 'kg_files', 'kb')
@@ -317,5 +512,6 @@ if __name__ == '__main__':
 
     chatbot = ChatbotServer(kb, rules, nlg_templates, wm)
 
-    chatbot.full_init()
-    chatbot.run('this is a test', {'turn_index': -1})
+    local = True
+    chatbot.full_init(local)
+    chatbot.run(local)

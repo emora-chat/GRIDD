@@ -142,7 +142,7 @@ def nlp_preprocessing_handler(pipeline, input_dict, local=False):
         input = load(input)
         if input["aux_state"] is None:
             input["aux_state"] = {'turn_index': -1}
-        input["aux_state"]["turn_index"] += 1
+        # input["aux_state"]["turn_index"] += 1
         elit_results = {}
         if input["utter"] is not None and len(input["utter"]) > 0:
             elit_results = pipeline(utter=input["utter"], aux_state=input["aux_state"])

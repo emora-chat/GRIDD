@@ -703,7 +703,7 @@ class ConceptGraph:
 
     def copy(self, namespace=None):
         if namespace is None:
-            namespace = self._ids.namespace
+            namespace = self._ids
         cp = ConceptGraph(namespace=namespace)
         cp.concatenate(self)
         cp.metagraph = self.metagraph.copy(cp)
