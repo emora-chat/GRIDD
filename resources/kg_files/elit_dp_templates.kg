@@ -226,10 +226,10 @@ cop(X/pstg(), Y/present_tense())
 det(X, D/dt())
 sbj(X, Z/pstg())
 -> det_copula_present ->
-p/Y(Z,X())
+p/Y(Z,X)
 time(p, now)
 focus(p)
-center(X)
+center(Y)
 cover(D)
 ;
 
@@ -237,11 +237,20 @@ cop(X/pstg(), Y/past_tense())
 det(X, D/dt())
 sbj(X, Z/pstg())
 -> det_copula_past ->
-p/Y(Z,X())
+p/Y(Z,X)
 time(p,past)
 focus(p)
-center(X)
+center(Y)
 cover(D)
+;
+
+cop(X/pstg(), Y/verb())
+det(X, D/dt())
+sbj(X, Z/pstg())
+-> det_copula_obj ->
+inst/X()
+focus(inst)
+center(X)
 ;
 
 cop(X/pstg(), Y/present_tense())
@@ -714,15 +723,7 @@ cover(Y)
 ;
 
 X/dt()
-ltype(X, ref_det)
--> ref_determiner ->
-focus(o/object())
-center(X)
-;
-
-X/dt()
-ltype(X, inst_det)
--> inst_determiner ->
+-> determiner ->
 focus(o/object())
 center(X)
 ;

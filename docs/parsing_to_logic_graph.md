@@ -1037,15 +1037,7 @@ Determiners which are not a part of a `det` dependency relation are `object` ins
 	;
 	
 	X/dt()
-	ltype(X, ref_det)
-	-> ref_determiner ->
-	focus(o/object())
-	center(X)
-	;
-	
-	X/dt()
-	ltype(X, inst_det)
-	-> inst_determiner ->
+	-> determiner ->
 	focus(o/object())
 	center(X)
 	;

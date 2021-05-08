@@ -50,8 +50,7 @@ class GraphMatchingEngine:
             t_f = time()
             print('quantitative filter time: %.3f'%(t_f-t_i))
         query_nodes = torch.arange(0, query_attr.size(0), dtype=torch.long, device=self.device)
-        floating_node_filter = ~row_membership(query_nodes.unsqueeze(1),
-                                               torch.unique(torch.cat([query_adj[:,0], query_adj[:,1]], 0)).unsqueeze(1))
+        floating_node_filter = ~row_membership(query_nodes.unsqueeze(1), torch.unique(torch.cat([query_adj[:,0], query_adj[:,1]], 0)).unsqueeze(1))
         floating_nodes = filter_rows(query_nodes.unsqueeze(1), floating_node_filter).squeeze(1)
         fc = torch.nonzero(compatible_nodes[floating_nodes,:])
         floating_compatibilities = torch.cat([floating_nodes[fc[:,0]].unsqueeze(1), fc[:,1:]], 1)

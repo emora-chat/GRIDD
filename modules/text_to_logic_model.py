@@ -219,7 +219,7 @@ class ParseToLogic:
         # For various rules, the focal node is not a predicate instance so it needs to be added manually
         if rule_name in {'obj_question', 'sbj_question', 'q_aux_det', 'q_det',
                          'ref_concept_determiner', 'inst_concept_determiner',
-                         'other_concept_determiner', 'ref_determiner', 'inst_determiner',
+                         'other_concept_determiner', 'determiner',
                          'obj_of_possessive', 'ref_pron', 'single_word'}:
             comps.append(focus_node)
         return comps

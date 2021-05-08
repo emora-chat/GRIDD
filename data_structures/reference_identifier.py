@@ -54,7 +54,6 @@ def parent_subtree_dependencies(ref_span_node, cg):
 REFERENCES_BY_RULE = {
     'obj_of_possessive': subtree_dependencies,
     'ref_concept_determiner': subtree_dependencies,
-    'ref_determiner': subtree_dependencies,
     'q_sbj_copula_past': subtree_dependencies,
     'q_sbj_copula_present': subtree_dependencies,
     'q_aux_past': parent_subtree_dependencies,
