@@ -81,11 +81,6 @@ request(emora, e)
 
 
 
-
-
-
-
-
 /* Common Sense */
 
 like(X/pet(), run(X))

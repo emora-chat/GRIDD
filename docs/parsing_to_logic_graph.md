@@ -346,10 +346,10 @@ merged into the predicate.
 	det(X, D/dt())
 	sbj(X, Z/pstg())
 	-> det_copula_present ->
-	p/Y(Z,X())
+	p/Y(Z,X)
 	time(p, now)
 	focus(p)
-	center(X)
+	center(Y)
 	cover(D)
 	;
 	
@@ -357,11 +357,20 @@ merged into the predicate.
 	det(X, D/dt())
 	sbj(X, Z/pstg())
 	-> det_copula_past ->
-	p/Y(Z,X())
+	p/Y(Z,X)
 	time(p,past)
 	focus(p)
-	center(X)
+	center(Y)
 	cover(D)
+	;
+	
+	cop(X/pstg(), Y/verb())
+	det(X, D/dt())
+	sbj(X, Z/pstg())
+	-> det_copula_obj ->
+	inst/X()
+	focus(inst)
+	center(X)
 	;
 
 	cop(X/pstg(), Y/present_tense())
