@@ -383,10 +383,15 @@ class ChatbotServer:
     def init_response_assember(self):
         self.response_assembler = ResponseAssembler()
 
-    @serialized('response')
-    def run_response_assembler(self, aux_state, ack_responses, nlg_responses):
+    @serialized('response', 'working_memory')
+    def run_response_assembler(self, working_memory, aux_state, ack_responses, nlg_responses):
         response = self.response_assembler(aux_state, ack_responses, nlg_responses)
-        return response
+        self.load_working_memory(working_memory)
+        self.dialogue_intcore.update_salience(iterations=SAL_ITER)
+        self.dialogue_intcore.decay_salience()
+        self.dialogue_intcore.prune_predicates_of_type({AFFIRM, REJECT, EXPR}, {EXPR})
+        self.dialogue_intcore.prune_attended(keep=PRUNE_THRESHOLD)
+        return response, self.dialogue_intcore.working_memory
 
     ###################################################
     ## Helpers
@@ -532,7 +537,7 @@ class ChatbotServer:
                                                                                    working_memory)
         ack_responses = self.run_response_by_rules(aux_state, expanded_response_predicates)
         nlg_responses = self.run_response_nlg_model(expanded_response_predicates)
-        response = self.run_response_assembler(aux_state, ack_responses, nlg_responses)
+        response, working_memory = self.run_response_assembler(aux_state, ack_responses, nlg_responses)
         return response, working_memory, aux_state
 
     def respond_serialize(self, user_utterance, working_memory, aux_state):
