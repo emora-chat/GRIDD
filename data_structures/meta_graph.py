@@ -115,6 +115,8 @@ class MetaGraph(Graph):
         for c in data['concepts']:
             mg.add(c)
         for s,t,l in data['edges']:
+            if isinstance(l, list):
+                l = tuple(l)
             mg.add(s,t,l)
         self.update(mg, mg.features, id_map)
 

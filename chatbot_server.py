@@ -294,6 +294,7 @@ class DataEncoder(json.JSONEncoder):
             return obj.save()
         return json.JSONEncoder.default(self, object)
 
+
 ##############################
 # Chatbot Server Simulation
 ##############################
