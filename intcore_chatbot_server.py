@@ -28,17 +28,21 @@ def serialized(*returns):
         params = signature(f).parameters
         def f_with_serialization(cls, json):
             kwargs = {}
+            # s = time.time()
             for k, serialized in json.items():
                 if k in params:
                     obj = load(k, serialized)
                     kwargs[k] = obj
+            # print('load - %.2f' % (time.time() - s))
             result = f(cls, **kwargs)
             results = {}
+            # s = time.time()
             if isinstance(result, tuple):
                 for i, r in enumerate(result):
                     results[returns[i]] = save(returns[i], r)
             elif result is not None:
                 results[returns[0]] = save(returns[0], result)
+            # print('save - %.2f' % (time.time() - s))
             return results
         return f_with_serialization
     return dectorator
@@ -83,7 +87,7 @@ class ChatbotServer:
         self.elit_models = ElitModels()
 
     @serialized('elit_results')
-    def run_elit_models(self, user_utterance, aux_state, ):
+    def run_elit_models(self, user_utterance, aux_state):
         if LOCAL:
             input_dict = {"text": [user_utterance, None],
                           "aux_state": [aux_state, aux_state],
@@ -492,11 +496,11 @@ class ChatbotServer:
     ## Run Full Pipeline
     ###################################################
 
-    def full_init(self):
+    def full_init(self, device=None):
         self.init_sentence_caser()
         if not LOCAL:
             self.init_elit_models()
-        self.init_parse2logic()
+        self.init_parse2logic(device=device)
         self.init_template_nlg()
         self.init_response_selection()
         self.init_response_expansion()
@@ -632,7 +636,7 @@ if __name__ == '__main__':
     wm = [join('GRIDD', 'resources', 'kg_files', 'wm')]
     nlg_templates = [join('GRIDD', 'resources', 'kg_files', 'nlg_templates')]
 
-    chatbot = ChatbotServer(kb, rules, nlg_templates, wm)
+    chatbot = ChatbotServer(kb, rules, nlg_templates, wm, device='cuda:1')
 
-    chatbot.full_init()
+    chatbot.full_init(device='cuda:1')
     chatbot.run()
