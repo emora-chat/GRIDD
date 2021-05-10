@@ -358,10 +358,10 @@ class ChatbotServer:
     def init_response_by_rules(self):
         self.response_by_rules = ResponseRules()
 
-    @serialized('ack_responses')
+    @serialized('rule_responses')
     def run_response_by_rules(self, aux_state, expanded_response_predicates):
-        ack_responses = self.response_by_rules(aux_state, expanded_response_predicates)
-        return ack_responses
+        rule_responses = self.response_by_rules(aux_state, expanded_response_predicates)
+        return rule_responses
 
     def init_response_nlg_model(self, model=None, device='cpu'):
         self.response_nlg_model = ResponseGeneration(model, device)
@@ -388,8 +388,8 @@ class ChatbotServer:
         self.response_assembler = ResponseAssembler()
 
     @serialized('response', 'working_memory')
-    def run_response_assembler(self, working_memory, aux_state, ack_responses, nlg_responses):
-        response = self.response_assembler(aux_state, ack_responses, nlg_responses)
+    def run_response_assembler(self, working_memory, aux_state, rule_responses, nlg_responses):
+        response = self.response_assembler(aux_state, rule_responses, nlg_responses)
         self.load_working_memory(working_memory)
         self.dialogue_intcore.update_salience(iterations=SAL_ITER)
         self.dialogue_intcore.decay_salience()
@@ -543,9 +543,9 @@ class ChatbotServer:
                                                                      template_response_sel)
         expanded_response_predicates, working_memory = self.run_response_expansion(response_predicates,
                                                                                    working_memory)
-        ack_responses = self.run_response_by_rules(aux_state, expanded_response_predicates)
+        rule_responses = self.run_response_by_rules(aux_state, expanded_response_predicates)
         nlg_responses = self.run_response_nlg_model(expanded_response_predicates)
-        response, working_memory = self.run_response_assembler(working_memory, aux_state, ack_responses, nlg_responses)
+        response, working_memory = self.run_response_assembler(working_memory, aux_state, rule_responses, nlg_responses)
         return response, working_memory, aux_state
 
     def respond_serialize(self, user_utterance, working_memory, aux_state):
