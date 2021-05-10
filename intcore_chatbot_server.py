@@ -363,8 +363,8 @@ class ChatbotServer:
         ack_responses = self.response_acknowledgements(aux_state, expanded_response_predicates)
         return ack_responses
 
-    def init_response_nlg_model(self):
-        self.response_nlg_model = ResponseGeneration()
+    def init_response_nlg_model(self, model=None, device='cpu'):
+        self.response_nlg_model = ResponseGeneration(model, device)
 
     @serialized('nlg_responses')
     def run_response_nlg_model(self, expanded_response_predicates):
