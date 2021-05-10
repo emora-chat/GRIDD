@@ -676,7 +676,8 @@ class ConceptGraph:
                             self.add(id_map.get(concept))
                             if concepts is not None:
                                 all_added_concepts.add(concept)
-        self.id_map().index = id_map.index # todo - is this necessary?
+        if concept_graph.id_map().namespace != KB: # for non-KB concatenations, need to make sure id_map is updated to index after concatenation
+            self.id_map().index = id_map.index
         self.metagraph.update(concept_graph.metagraph, concept_graph.metagraph.features,
                               id_map=id_map, concepts=all_added_concepts)
         return id_map

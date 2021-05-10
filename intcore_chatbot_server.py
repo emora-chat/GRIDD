@@ -541,7 +541,7 @@ class ChatbotServer:
                                                                                    working_memory)
         ack_responses = self.run_response_by_rules(aux_state, expanded_response_predicates)
         nlg_responses = self.run_response_nlg_model(expanded_response_predicates)
-        response, working_memory = self.run_response_assembler(aux_state, ack_responses, nlg_responses)
+        response, working_memory = self.run_response_assembler(working_memory, aux_state, ack_responses, nlg_responses)
         return response, working_memory, aux_state
 
     def respond_serialize(self, user_utterance, working_memory, aux_state):
@@ -628,13 +628,17 @@ class ChatbotServer:
                 print('[%.2f s] %s\n' % (elapsed, response))
             utter = input('User: ')
 
-if __name__ == '__main__':
+def get_filepaths():
     kb_dir = join('GRIDD', 'resources', 'kg_files', 'kb')
     kb = [kb_dir]
     rules_dir = join('GRIDD', 'resources', 'kg_files', 'rules')
     rules = [rules_dir]
     wm = [join('GRIDD', 'resources', 'kg_files', 'wm')]
     nlg_templates = [join('GRIDD', 'resources', 'kg_files', 'nlg_templates')]
+    return kb, rules, nlg_templates, wm
+
+if __name__ == '__main__':
+    kb, rules, nlg_templates, wm = get_filepaths()
 
     chatbot = ChatbotServer(kb, rules, nlg_templates, wm, device='cuda:1')
 
