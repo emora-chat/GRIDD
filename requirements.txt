@@ -3,4 +3,6 @@ matplotlib==3.3.3
 networkx==2.5
 torch==1.7.1
 pytest
+simplenlg
 requests
+nltk

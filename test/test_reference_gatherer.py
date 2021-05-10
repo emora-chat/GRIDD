@@ -24,12 +24,12 @@ class ReferenceGathererSpec:
         based on the `concept_graph`.
 
         The returned predicates should enumerate the contentful predicates defining the reference,
-        and exclude the framework primitives (`focus`, `center`, `is_type`, `cover`, `question`, `var`)
+        and exclude the framework primitives (`focus`, `center`, REQ_ARG, REQ_TRUTH, `var`)
         """
-        my_span = Span('my', 2, 3, 0, 0, 1)
-        very_span = Span('very', 3, 4, 0, 0, 1)
-        red_span = Span('red', 4, 5, 0, 0, 1)
-        car_span = Span('car', 5, 6, 0, 0, 1)
+        my_span = Span('my', 'my', 2, 3, 0, 0, 1)
+        very_span = Span('very', 'very', 3, 4, 0, 0, 1)
+        red_span = Span('red', 'red', 4, 5, 0, 0, 1)
+        car_span = Span('car', 'car', 5, 6, 0, 0, 1)
         graph = ConceptGraph(predicates=[
             ('user', 'possess', 'c1', 'upc'),
             ('c1', 'type', 'car', 'ctc'),
@@ -43,10 +43,10 @@ class ReferenceGathererSpec:
             (red_span.to_string(), 'ref', 'cpr'),
             (car_span.to_string(), 'ref', 'c1')
         ])
-        graph.features['upc']['comps'] = []
-        graph.features['rpv']['comps'] = []
-        graph.features['cpr']['comps'] = ['prim1']
-        graph.features['c1']['comps'] = ['ctc', 'extra1']
+        graph.features['upc']['comps'] = set()
+        graph.features['rpv']['comps'] = set()
+        graph.features['cpr']['comps'] = {'prim1'}
+        graph.features['c1']['comps'] = {'ctc', 'extra1'}
         constraints_as_spans = {my_span.to_string(), very_span.to_string(),
                                 red_span.to_string()}
 

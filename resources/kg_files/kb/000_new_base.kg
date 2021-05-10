@@ -1,0 +1,60 @@
+[entity, predicate, unknown] = (object)
+property=(predicate)
+
+subj_essential=(predicate)
+obj_essential=(predicate)
+
+imp_trigger = (predicate)
+init = (object)
+op_more_info=(predicate)
+
+category=(predicate)
+specific=(predicate)
+
+group=(entity)
+
+expr(["unknown"], unknown)
+unknown_noun = (object)
+unknown_adj = (object)
+unknown_verb = (object)
+unknown_pron = (object)
+unknown_adv = (object)
+unknown_other = (object)
+
+inst_det = (object)
+a = (inst_det)
+expr(["a"], a)
+an = (inst_det)
+expr(["an"], an)
+
+ref_det = (object)
+the = (ref_det)
+expr(["the"], the)
+those = (ref_det)
+expr(["those"], those)
+these = (ref_det)
+expr(["these"], these)
+that = (ref_det)
+expr(["that"], that)
+this = (ref_det)
+expr(["this"], this)
+it = (ref_det)
+expr(["it"], it)
+
+affirm = (predicate)
+expr(["yes", "yeah", "yea", "sure", "yep", "yup",
+      "exactly", "course", "definitely", "right", "absolutely"], affirm)
+reject = (predicate)
+expr(["no", "nope", "nah"], reject)
+acknowledge = (predicate)
+expr(["ok", "okay"], acknowledge)
+
+greet = (predicate)
+expr(["hello", "hi", "hey"], greet)
+dismiss = (predicate)
+expr(["bye", "goodbye"], dismiss)
+
+
+ack_conf = (predicate)
+user_aware = (predicate)
+;

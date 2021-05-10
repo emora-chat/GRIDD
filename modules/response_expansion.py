@@ -1,100 +1,106 @@
 from GRIDD.modules.response_expansion_spec import ResponseExpansionSpec
 from GRIDD.data_structures.concept_graph import ConceptGraph
-
-subj_expansion_types = {'type', 'property', 'qualifier', 'time', 'question', 'referential', 'instantiative',
-                        'indirect_obj', 'mode', 'negate'}
-obj_expansion_types = {'possess'}
+from GRIDD.globals import *
 
 class ResponseExpansion:
 
+    def __init__(self, kb):
+        self.knowledge_base = kb
+
     def __call__(self, main_predicates, working_memory):
         """
-        Select the supporting predicates for the main predicate.
+        Select the supporting predicates for the main predicates.
         Update the node features of the selected predicates.
+
+        :param main_predicates: [(main_pred_sig, generation_type), ...]
         """
+        wm = working_memory
         responses = []
         for predicate, generation_type in main_predicates:
             if generation_type == 'nlg':
-                p, e, working_memory = self.get_expansions(predicate, working_memory) # todo - don't need to return working memory because updated inplace?
-                responses.append((p, list(e), generation_type))
-                if p is not None:
-                    working_memory.features.update_from_response(responses[-1][0], responses[-1][1])
-            elif generation_type in {"ack_conf", "ack_emo"}:
+                # predicate is the main predicate tuple signature (subj, type, obj, id)
+                expansions = wm.structure(predicate[3],
+                                          subj_emodifiers={'time', 'mode', 'qualifier', 'property',
+                                                           'indirect_obj', 'negate'},
+                                          obj_emodifiers={'possess', REQ_TRUTH, REQ_ARG})
+                expansions = set(expansions) # todo - fix this list to set to list conversion
+                for pred in list(expansions):
+                    for c in pred:
+                        expansions.update(self.knowledge_base.predicates(c, 'expr'))
+                        expansions.update(self.knowledge_base.predicates(predicate_type='expr', object=c))
+                expansions = list(expansions)
+                # check for unresolved user request
+                emora_idk = False
+                for s, t, o, i in expansions:
+                    if s == 'user' and t in {REQ_TRUTH, REQ_ARG} and wm.metagraph.out_edges(o, REF):
+                        emora_idk = True
+                        break
+
+                if emora_idk:
+                    responses.append((predicate, expansions, 'idk'))
+                else:
+                    responses.append((predicate, expansions, generation_type))
+            elif generation_type in {'ack_conf'}:
+                # predicate is the main predicate tuple signature (subj, type, obj, id)
                 responses.append((predicate, [], generation_type))
-                working_memory.features.update_from_response(responses[-1][0], responses[-1][1])
             elif generation_type == "backup":
-                cg = ConceptGraph(namespace='default_', predicates=predicate[1])
-                mapped_ids = working_memory.concatenate(cg)
+                # predicate is a tuple (main predicate signature, list of all selected predicates)
+                cg = ConceptGraph(namespace='bu_', predicates=predicate[1])
+                mapped_ids = wm.concatenate(cg)
                 main_pred = mapped_ids[predicate[0][3]]
-                main_pred_sig = working_memory.predicate(main_pred)
+                main_pred_sig = wm.predicate(main_pred)
                 exp_preds = [mapped_ids[pred[3]] for pred in predicate[1]]
-                exp_pred_sigs = [working_memory.predicate(pred) for pred in exp_preds if pred != main_pred]
+                exp_pred_sigs = [wm.predicate(pred) for pred in exp_preds if pred != main_pred]
                 responses.append((main_pred_sig, exp_pred_sigs, generation_type))
-                working_memory.features.update_from_response(responses[-1][0], responses[-1][1])
+            elif generation_type == 'template':
+                # predicate is a tuple (response utterance, list of all selected predicates)
+                responses.append((predicate[0], predicate[1], generation_type))
+        responses = self.apply_dialogue_management_on_response(responses, wm)
         return responses, working_memory
 
-    def get_expansions(self, main_predicate, working_memory):
-        if main_predicate is not None:
-            main_s, main_t, main_o, main_i = main_predicate
-            if main_t != 'question':
-                expansions = self.get_predicate_supports(main_predicate, working_memory)
+    def apply_dialogue_management_on_response(self, responses, wm):
+        final_responses = []
+        for main, exps, generation_type in responses: # exps contains main predicate too
+            final_exps = []
+            spoken_predicates = set()
+            for s, t, o, i in exps:
+                if s == 'user' and t in {REQ_TRUTH, REQ_ARG}: # identify emora answers to user requests and add req_sat to request predicate
+                    wm.add(i, REQ_SAT)
+                else: # all other predicates are maintained as expansions and spoken predicates
+                    final_exps.append((s,t,o,i))
+                    if t != EXPR:
+                        spoken_predicates.add(i)
+            final_responses.append((main, final_exps, generation_type))
+            self.assign_cover(wm, concepts=spoken_predicates)
+            self.assign_salience(wm, concepts=spoken_predicates)
+            self.assign_user_confidence(wm, concepts=spoken_predicates)
+        return final_responses
+
+    def assign_cover(self, graph, concepts=None):
+        if concepts is None:
+            concepts = graph.concepts()
+        for concept in concepts:
+            if graph.has(predicate_id=concept):
+                if graph.type(concept) not in PRIM and not graph.has(concept, USER_AWARE):
+                    i2 = graph.add(concept, USER_AWARE)
+                    graph.features[i2][BASE_UCONFIDENCE] = 1.0
             else:
-                expansions = self.get_question_supports(main_s, working_memory)
-            concepts = []
-            for s, t, o, i in expansions:
-                concepts.extend([s,o])
-            for concept in concepts:
-                if working_memory.has(predicate_id=concept):
-                    sig = working_memory.predicate(concept)
-                    expansions.add(sig)
-                    expansions.update(self.get_predicate_supports(sig, working_memory))
-            expansions -= {main_predicate}
-            return main_predicate, expansions, working_memory
-        else:
-            return None, [], working_memory
+                if not graph.has(concept, USER_AWARE):
+                    i2 = graph.add(concept, USER_AWARE)
+                    graph.features[i2][BASE_UCONFIDENCE] = 1.0
 
-    def get_predicate_supports(self, main_predicate, working_memory):
-        main_s, main_t, main_o, main_i = main_predicate
-        expansions = self.get_one_degree_supports([main_s, main_o, main_i], working_memory)
-        if working_memory.has(predicate_id=main_s):
-            subj_pred = working_memory.predicate(main_s)
-            expansions.add(subj_pred)
-            expansions.update(self.get_one_degree_supports([subj_pred[0], subj_pred[2]], working_memory))
-        if working_memory.has(predicate_id=main_o):
-            obj_pred = working_memory.predicate(main_o)
-            expansions.add(obj_pred)
-            expansions.update(self.get_one_degree_supports([obj_pred[0], obj_pred[2]], working_memory))
-        return expansions
+    def assign_salience(self, graph, concepts=None):
+        if concepts is None:
+            concepts = graph.concepts()
+        for concept in concepts:
+            if graph.has(predicate_id=concept):
+                graph.features[concept][SALIENCE] = SENSORY_SALIENCE
 
-    def get_one_degree_supports(self, items, working_memory):
-        expansions = set()
-        items = [item for item in items if item is not None]
-        for element in items:
-            for pred_type in subj_expansion_types:
-                expansions.update(working_memory.predicates(element, predicate_type=pred_type))
-            for pred_type in obj_expansion_types:
-                expansions.update(working_memory.predicates(predicate_type=pred_type, object=element))
-        return expansions
-
-    def get_question_supports(self, question_focus, working_memory):
-        expansions = set()
-        if working_memory.has(predicate_id=question_focus):
-            # question is on a predicate
-            question_predicate = working_memory.predicate(question_focus)
-            expansions.add(question_predicate)
-            supports = self.get_predicate_supports(question_predicate, working_memory)
-            expansions.update(supports)
-        else:
-            # question is on an entity
-            expansions.update(working_memory.predicates(question_focus))
-            expansions.update(working_memory.predicates(object=question_focus))
-            predicate_supports = set()
-            for s, t, o, i in expansions:
-                if t not in subj_expansion_types.union(obj_expansion_types):
-                    preds = self.get_predicate_supports((s,t,o,i), working_memory)
-                    predicate_supports.update(preds)
-            expansions.update(predicate_supports)
-        return expansions
+    def assign_user_confidence(self, graph, concepts=None):
+        if concepts is None:
+            concepts = graph.concepts()
+        for concept in concepts:
+            graph.features[concept][BASE_UCONFIDENCE] = graph.features.get(concept, {}).get(BASE_CONFIDENCE, 0.0)
 
 if __name__ == '__main__':
     print(ResponseExpansionSpec.verify(ResponseExpansion))

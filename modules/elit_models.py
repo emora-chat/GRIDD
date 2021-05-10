@@ -52,13 +52,13 @@ class ElitModels:
             tokens = []
             for i, tok in enumerate(toks):
                 lemma = parse_dict['lem'][j][i].lower()
+                pos_tag = parse_dict['pos'][j][i].lower()
                 if lemma in {"'s","s"}:
-                    pos_tag = parse_dict['pos'][j][i].lower()
                     if 'vb' in pos_tag:
                         lemma = 'be'
                     elif 'prp' in pos_tag:
                         lemma = 'us'
-                tokens.append(Span(tok.lower(), i, i+1, 0, turn_index, speaker_ids[j], lemma))
+                tokens.append(Span(tok.lower(), i, i+1, 0, turn_index, speaker_ids[j], lemma, pos_tag))
             all_tokens.append(tokens)
 
         global_tokens = list(chain(prev_global_toks, *all_tokens))

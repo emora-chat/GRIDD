@@ -66,10 +66,10 @@ def test_adv_question_parse_graph_matching():
 	precede(Z, A)
 	-> q_nadv ->
 	p/Y(X, o/object())
-	question(o)
+	request(user, o)
 	focus(p)
 	center(Y)
-	cover(Z)
+	user_aware(Z)
 	;
     '''
     pre_from_parse = KnowledgeParser.rules(l)

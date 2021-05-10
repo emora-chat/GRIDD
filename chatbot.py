@@ -23,7 +23,7 @@ from GRIDD.modules.merge_bridge import MergeBridge
 from GRIDD.modules.inference_rule_based import InferenceRuleBased
 from GRIDD.modules.inference_bridge import InferenceBridge
 from GRIDD.modules.feature_propogation import FeaturePropogation
-from GRIDD.modules.response_selection_salience import SalienceResponseSelection
+from GRIDD.modules.response_selection_salience import ResponseSelectionSalience
 from GRIDD.modules.response_expansion import ResponseExpansion
 from GRIDD.modules.response_generation import ResponseGeneration
 
@@ -57,7 +57,7 @@ class Chatbot:
         inference_rulebased = c(InferenceRuleBased(*rules))
         inference_bridge = c(InferenceBridge())
         feature_propogation = c(FeaturePropogation(max_score=1.0, turn_decrement=0.1, propogation_rate=0.5, propogation_decrement=0.1))
-        response_selection = c(SalienceResponseSelection())
+        response_selection = c(ResponseSelectionSalience())
         response_expansion = c(ResponseExpansion())
         response_generation = c(ResponseGeneration())
 
@@ -148,7 +148,6 @@ if __name__ == '__main__':
     rules_dir = join('GRIDD', 'resources', 'kg_files', 'rules')
     rules = [rules_dir]
     starting_wm = join('GRIDD', 'resources', 'kg_files', 'wm')
-    # rules = [join(rules_dir, file) for file in os.listdir(rules_dir) if file.endswith('.kg')]
 
     if interactive:
         chatbot = Chatbot(kb, rules=rules, starting_wm=starting_wm)

@@ -6,6 +6,7 @@ from lark.visitors import Visitor_Recursive
 from GRIDD.data_structures.id_map import IdMap
 from itertools import chain
 from GRIDD.utilities.utilities import combinations
+from GRIDD.globals import *
 
 
 class ConceptCompiler:
@@ -14,11 +15,12 @@ class ConceptCompiler:
 
     })
     _default_types = frozenset({
-        'object', 'entity', 'predicate',
-        'number', 'expression', 'imp_rule', 'type'
+        'object', 'entity', 'predicate', 'expr',
+        'number', 'expression', 'implication', 'type', 'nonassert', 'assert',
+        'response', 'response_token', 'token_seq'
     })
     _default_predicates = frozenset({
-        'type', 'expr', 'predicate'
+        'type', 'expr', 'predicate', 'nonassert', 'assert', 'token_seq'
     })
 
     def __init__(self, instances=_default_instances, types=_default_types, predicates=_default_predicates, namespace='c_'):
@@ -30,7 +32,7 @@ class ConceptCompiler:
             string = string + ';'
         parse_tree = self.parser.parse(string)
         self.visitor.visit(parse_tree)
-        return self.visitor.entries, self.visitor.metadatas
+        return self.visitor.entries, self.visitor.links, self.visitor.metadatas
 
     def compile(self, logic_strings):
         """
@@ -43,11 +45,11 @@ class ConceptCompiler:
             if len(string) < 300 and string.endswith('.kg'):
                 with open(string) as f:
                     string = f.read()
-            if not string.strip().endswith(';'):
-                string = string + ';'
-            parse_tree = self.parser.parse(string)
-            self.visitor.visit(parse_tree)
-        return self.visitor.entries, self.visitor.metadatas
+            for block in string.split(';'):
+                if block.strip():
+                    parse_tree = self.parser.parse(block + ';')
+                    self.visitor.visit(parse_tree)
+        return self.visitor.entries, self.visitor.links, self.visitor.metadatas
 
     @property
     def namespace(self): return self.visitor.globals.namespace
@@ -79,9 +81,11 @@ class ConceptCompiler:
         number_init: number
         reference: ID
         ID: /[a-zA-Z_.0-9]+/
-        rule: precondition "=>" (ID "=>")? postcondition
+        rule: precondition "->" (ID "->")? (template | (postcondition template?))
         precondition: declaration+
         postcondition: declaration+
+        template: "$" token+ "$"
+        token: /[^ ${]+/ json?
         json: dict
         value: dict | list | string | number | constant
         string: ESCAPED_STRING 
@@ -104,10 +108,12 @@ class ConceptVisitor(Visitor_Recursive):
     def __init__(self, instances=None, types=None, predicates=None, namespace='c_'):
         Visitor_Recursive.__init__(self)
         self.entries = []               # quadruples to output
+        self.links = []                 # metagraph links between concepts
         self.rules = set()
         self.lentries = []              # quadruples of block
-        self.metadatas = {}             # concept: json metadata entries
-        self.lmetadatas = {}            # concept: json entries for local block
+        self.llinks = []                # metagraph links within block
+        self.metadatas = {}             # concept: json metadata predicates
+        self.lmetadatas = {}            # concept: json predicates for local block
         self.globals = IdMap(namespace=namespace)   # global id generator
         self.locals = {}                # mapping of local_id : global_id
         self.linstances = set()         # all instances (for rule collection)
@@ -121,6 +127,7 @@ class ConceptVisitor(Visitor_Recursive):
         self.predgen = predicates is None
         predicates = set() if predicates is None else set(predicates)
         self.predicates = predicates    # set of all declared predicate types
+        self.rule_iter = 0              # incrementing rule order index
 
     def reset(self):
         self.entries = []
@@ -128,17 +135,74 @@ class ConceptVisitor(Visitor_Recursive):
         self.metadatas = {}
 
     def rule(self, tree):
-        if len(tree.children) > 2:
+        if not hasattr(tree.children[1], 'data'):
             rid = tree.children[1]
         else:
             rid = self.globals.get()
-        self.check_double_init([rid], self.instances)
-        self.instances.add(rid)
-        self.lentries.append((rid, 'type', 'imp_rule', self.globals.get()))
         precondition, variables = tree.children[0].data
-        postcondition = tree.children[-1].data
-        self.metadatas.setdefault(rid, {}).update(
-            {'precondition': precondition, 'postcondition': postcondition, 'vars': variables})
+
+        postcondition = [c for c in tree.children[1:] if hasattr(c, 'data') and isinstance(c.data, tuple)]
+        postcondition, post_variables = postcondition[0].data if postcondition else (None, set())
+        variables.update(post_variables)
+
+        template = [c for c in tree.children if hasattr(c, 'data') and c.data == 'template']
+        template = template[0] if template else None
+        if template is not None:
+            tmplt = []
+            for token in template.children:
+                tok = self.locals.get(token.children[0], str(token.children[0]))
+                json = None
+                if len(token.children) > 1:
+                    json = token.children[1].children[0].data
+                tmplt.append((tok, json))
+            template = tmplt
+            response = self.globals.get()
+            instance = self.globals.get()
+            self.instances.update((instance, response))
+            self.lentries.append((response, 'type', 'response', instance))
+            response_set = {response, instance}
+            for i, (token, json) in enumerate(template):
+                tok_concept = self.globals.get()
+                if token in variables:
+                    tokenvar = token
+                    tokendata = None
+                else:
+                    tok_concept = self.globals.get()
+                    tokenvar = None
+                    tokendata = token
+                instance = self.globals.get()
+                self.instances.update((tok_concept, instance))
+                self.lentries.append((tok_concept, 'type', 'response_token', instance))
+                response_set.update((tok_concept, instance))
+                self.metadatas.setdefault(tok_concept, {})['response_str'] = tokendata
+                if tokenvar is not None:
+                    self.llinks.append((tok_concept, 'response_var', tokenvar))
+                self.metadatas[tok_concept]['response_index'] = i
+                instance = self.globals.get()
+                self.instances.add(instance)
+                self.lentries.append((response, 'token_seq', tok_concept, instance))
+                response_set.add(instance)
+                if json is not None:
+                    for key, value in json.items():
+                        if isinstance(value, str) and value[0] == '#':
+                            self.llinks.append((tok_concept, key, self.locals.get(value[1:], value[1:])))
+                    self.lmetadatas.setdefault(tok_concept, {})['response_data'] = json
+            if postcondition is None:
+                postcondition = response_set
+            else:
+                postcondition.update(response_set)
+        if postcondition is not None:
+            self.check_double_init([rid], self.instances)
+            self.instances.add(rid)
+            self.lentries.append((rid, 'type', 'implication', self.globals.get()))
+            for c in precondition:
+                self.links.append((rid, 'pre', c))
+            for c in postcondition:
+                self.links.append((rid, 'post', c))
+            for c in variables:
+                self.links.append((rid, 'var', c))
+            self.metadatas.setdefault(rid, {})['rindex'] = self.rule_iter
+            self.rule_iter += 1
 
     def precondition(self, tree):
         preinst = set(chain(*[t.refs for t in tree.iter_subtrees() if hasattr(t, 'refs')]))
@@ -151,7 +215,11 @@ class ConceptVisitor(Visitor_Recursive):
     def postcondition(self, tree):
         postinst = set(chain(*[t.refs for t in tree.iter_subtrees() if hasattr(t, 'refs')]))
         postinst = {self.locals.get(str(i), str(i)) for i in postinst}
-        tree.data = postinst
+
+        variables = set(chain(*[t.inits for t in tree.iter_subtrees() if hasattr(t, 'inits')]))
+        variables = {self.locals.get(str(i), str(i)) for i in variables}
+        tree.data = (postinst, variables)
+
         self.linstances = set()
 
     def block(self, _):
@@ -164,21 +232,27 @@ class ConceptVisitor(Visitor_Recursive):
                     if o is not None:
                         refs.append(o)
             for e in refs:
-                if e not in self.instances:
+                if (self.instances and e not in self.instances)\
+                        and (self.types and e not in self.types):
                     raise ValueError('Reference to undeclared concept `{}`'.format(e))
         predicate_types = [t for _, t, _, _ in entries]
         if not self.typegen:
             types = predicate_types + [o for _, t, o, _ in entries if t == 'type']
             for e in types:
                 if e not in self.types:
+                    if e in self.locals.values():
+                        e = [k for k,v in self.locals.items() if v == e]
                     raise ValueError('Reference to unknown type `{}`'.format(e))
         if not self.predgen:
             for e in predicate_types:
                 if e not in self.predicates:
                     raise ValueError('Predicate initialization with non-predicate `{}`'.format(e))
         self.entries.extend(entries)
-        self.metadatas.update({self.locals.get(k, k): v for k, v in self.lmetadatas.items()})
+        for k, v in self.lmetadatas.items():
+            self.metadatas.setdefault(self.locals.get(k, k), {}).update(v)
+        self.links.extend([(self.locals.get(s, s), l, self.locals.get(t, t)) for s, l, t in self.llinks])
         self.lentries = []
+        self.llinks = []
         self.lmetadatas = {}
         self.locals = {}
         self.plinstances = set()
@@ -193,6 +267,8 @@ class ConceptVisitor(Visitor_Recursive):
             self.types.update(newtype)
         if any([st in self.predicates for st in supertypes]):
             self.predicates.update(newtype)
+        for n in chain(newtype, supertypes):
+            self.lmetadatas.setdefault(n, {})[IS_TYPE] = True
         tree.refs = newtype
 
     def concept_init(self, tree):
@@ -288,10 +364,13 @@ class ConceptVisitor(Visitor_Recursive):
         variables = set(chain(*[t.inits for t in ref_tree.iter_subtrees() if hasattr(t, 'inits')]))
         variables = {self.locals.get(str(i), str(i)) for i in variables}
         for i in tree.children[0].children:
+            i = str(i)
             if 'ref' in self.metadatas.get(i, {}):
                 raise ValueError('Reference defined twice for concept {}'.format(i))
-            self.lmetadatas.setdefault(i, {}).setdefault('ref', set()).update(constraints)
-            self.lmetadatas[i].setdefault('vars', set()).update(variables)
+            for c in constraints:
+                self.llinks.append((i, 'ref', c))
+            for c in variables:
+                self.llinks.append((i, 'var', c))
 
     def string_init(self, tree):
         inits = ['"'+s.strip()+'"' for s in tree.children[0].children[0][1:-1].split(',')]

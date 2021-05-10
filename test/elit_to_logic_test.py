@@ -2,6 +2,7 @@ import pytest
 from GRIDD.modules.elit_models import ElitModels
 from GRIDD.modules.elit_dp_to_logic_model import ElitDPToLogic, NODES
 from GRIDD.data_structures.knowledge_base import KnowledgeBase
+from GRIDD.globals import *
 from os.path import join
 
 @pytest.fixture
@@ -595,7 +596,7 @@ def test_aux_question(elitmodels, elit_to_logic):
     assert len(aux_preds) == 1
     ((s,t,o,i),) = aux_preds
     assert o == 'past'
-    quest_preds = did_mg.predicates(predicate_type='question')
+    quest_preds = did_mg.predicates(predicate_type=REQ_TRUTH)
     assert len(quest_preds) == 1
     ((s,t,o,i),) = quest_preds
     assert o is None
@@ -639,7 +640,7 @@ def test_adv_question_word(elitmodels, elit_to_logic):
     assert len(preds) == 1
     ((s,t,o,i),) = preds
     assert o is not None
-    quest_preds = how_mg.predicates(predicate_type='question')
+    quest_preds = how_mg.predicates(predicate_type=REQ_ARG)
     assert len(quest_preds) == 1
     ((s,t,_,_),) = quest_preds
     assert s == o

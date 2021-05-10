@@ -120,16 +120,17 @@ def interleave(*iterables):
 from GRIDD.data_structures.spanning_node import SpanningNode
 
 def spanning_tree_of(cg):
-    exclude = {'expr', 'def', 'ref', 'assert', 'type', 'link'}
+    exclude = {'expr', 'def', 'ref', 'assert', 'type', 'link', 'user_aware'}
     roots = []
+    pred_types_visited = set() # save the predicate type of predicate intances that have been visited to avoid outputting just the predicate type again like in cases of copular_ids
     # main root is the asserted predicate
-    ((assertion_node, _, _, _),) = cg.predicates(predicate_type='assert')
+    ((_, _, assertion_node, _),) = cg.predicates(predicate_type='assert')
     # get all span focus nodes as additional potential roots
     ref_preds = cg.predicates(predicate_type='ref')
     additional_roots = [focal_node for _,_,focal_node,_ in ref_preds if focal_node != assertion_node]
     visited = set()
     for node in [assertion_node] + additional_roots:
-        if node not in visited:
+        if node not in visited and node not in pred_types_visited:
             root = SpanningNode('__root__', None)
             roots.append(root)
             frontier = [(root, node, None, 'link')]
@@ -141,6 +142,7 @@ def spanning_tree_of(cg):
                         s, t, o, _ = cg.predicate(id)
                         if node_type == '_rev_': tmp = o; o = s; s = tmp;
                         pred_node = SpanningNode(id, parent, t, node_type)
+                        pred_types_visited.add(t)
                         if parent.node_id != s:
                             frontier.append((pred_node, s, None, 'arg0'))
                         if o is not None:
@@ -154,15 +156,15 @@ def spanning_tree_of(cg):
                         for pred in cg.predicates(object=id):
                             if pred[1] not in exclude and pred[3] not in {id, parent.node_id}: frontier.append((pred_node, pred[3], '_rev_', 'link'))
                 else: # still need to attach node to parent if subj or obj of non-reversed predicate, but do not need to process links or node's children
-                    if label_type != 'link' and parent.type != '_rev_':
+                    if label_type != 'link': # and parent.type != '_rev_':
                         if cg.has(predicate_id=id):
                             s, t, o, _ = cg.predicate(id)
                             pred_node = SpanningNode(id, parent, t, node_type)
                         else:
                             pred_node = SpanningNode(id, parent, None, node_type)
                         parent.children[label_type].append(pred_node)
-                    elif parent.type == '_rev_': # remove the reverse predicate from spanning tree since it has already been handled
-                        parent.parent.children['link'].remove(parent)
+                    # elif parent.type == '_rev_': # remove the reverse predicate from spanning tree since it has already been handled
+                    #     parent.parent.children['link'].remove(parent)
     return roots
 
 def spanning_tree_string_of(cg, root=None, tab=1):

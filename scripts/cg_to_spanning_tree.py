@@ -1,5 +1,6 @@
 from GRIDD.data_structures.knowledge_parser import KnowledgeParser
 from GRIDD.chatbot_server import ChatbotServer
+from GRIDD.utilities.utilities import spanning_tree_linearized
 import os, requests, json
 
 if __name__ == '__main__':
@@ -30,8 +31,10 @@ if __name__ == '__main__':
     while utter != 'q':
         cg = nlu_pipeline.run_nlu(utter, display=False)
         cg.pull_expressions()
-        print(cg.print_spanning_tree())
-        print(cg.ugly_print(exclusions={'is_type', 'object', 'predicate', 'entity', 'post', 'pre', 'def', 'span', 'datetime', 'expr'}))
+        print('-'*10)
+        print(spanning_tree_linearized(cg, nlg_training_mode=False))
+        print('-'*10)
+        print(cg.ugly_print(exclusions={'object', 'predicate', 'entity', 'post', 'pre', 'def', 'span', 'datetime', 'expr'}))
         print()
         utter = input('>>> ').strip()
 
@@ -133,7 +136,7 @@ if __name__ == '__main__':
     property(apd, illegal)
     assert(dlb)
     ''')
-    print(cg.print_spanning_tree())
+    print(spanning_tree_linearized(cg, nlg_training_mode=False))
 
     print("\nJohn's aunt likes to buy a gift for him")
     cg = KnowledgeParser.from_data('''
@@ -143,7 +146,7 @@ if __name__ == '__main__':
     alb/like(a, abg)
     assert(alb)
     ''')
-    print(cg.print_spanning_tree())
+    print(spanning_tree_linearized(cg, nlg_training_mode=False))
 
     print("\nShowering brings me joy but showering is annoying")
     cg = KnowledgeParser.from_data('''
@@ -154,5 +157,5 @@ if __name__ == '__main__':
     sbs/but(sbj, sba)
     assert(sbs)
     ''')
-    print(cg.print_spanning_tree())
+    print(spanning_tree_linearized(cg, nlg_training_mode=False))
 

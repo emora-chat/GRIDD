@@ -85,13 +85,13 @@ class WorkingMemory(ConceptGraph):
     #  if multiple paths to same ancestor,
     #  it will pull ancestor's ancestor-chain multiple times
     # todo - rename to "types"
-    def supertypes(self, concept=None):
+    def types(self, concept=None):
         if concept is not None:
             types = set()
             for predicate in self.predicates(subject=concept, predicate_type='type'):
                 supertype = predicate[2]
                 types.add(supertype)
-                types.update(self.supertypes(supertype))
+                types.update(self.types(supertype))
             return types
         else:
             supertypes = {c: set() for c in self.concepts()}
@@ -128,7 +128,7 @@ class WorkingMemory(ConceptGraph):
         (otherwise `types` will be dynamically computed).
         """
         if types is None:
-            types = self.supertypes()
+            types = self.types()
         if self.has(ref, 'is_type') or self.has(target, 'is_type'):
             return []
         pairs = []

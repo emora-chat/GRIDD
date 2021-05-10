@@ -1,0 +1,91 @@
+
+time(h/have(user, p/pet()), now)
+request_truth(emora, h)
+love(emora, C/picture())
+type(C, group)
+of(C, A/animal())
+type(A, group)
+-> q_user_has_pet ->
+$ I love looking at pictures of animals . Do you have a pet ? $
+;
+
+h/have(user, p/pet())
+h{"confidence": -1}
+time(w2/want(emora, p3/cat()), past)
+time(w2, always)
+time(w/want(user, p2/pet()), now)
+request_truth(emora, w)
+-> q_want_pet ->
+$ Oh , if you don't have any pets , do you want one ? I've always wanted a cat myself . $
+;
+
+time(have(user, p2/pet()), now)
+request(emora, p2)
+-> q_pet_type ->
+$ What kind of pet do you have ? $
+;
+
+have(emora, emora_dog)
+X/property(Z/dog())
+possess(user, Z)
+request(emora, X)
+->
+$ Oh, me too ! What is your Z like ? $
+;
+
+X/property(Z/pet())
+possess(user, Z)
+request(emora, X)
+-> q_pet_property ->
+$ What is your Z like ? $
+;
+
+possess(user, X/pet())
+like(user, pred/event(object()))
+with(pred, X)
+request(emora, pred)
+->
+$ What do you like to do with your X ? $
+;
+
+locate(X/park(), L/location())
+N/near(L, H/home())
+possess(user, H)
+request_truth(emora, N)
+->
+$ Oh , is the park nearby where you live ? That would be so convenient ! $
+;
+
+love(emora, P/park())
+type(P, group)
+S/size(X/park())
+request(emora, S)
+->
+$ There is really nothing better than a beautiful park ! How big is the one you mentioned ? $
+;
+
+el/like(emora, walk(emora, emora_dog))
+em/motivate(emora, healthy(emora))
+cause(em, el)
+->
+$ I like to take my dog on walks because it motivates me to be healthy . $
+;
+
+t/think(user, handful(X/pet()))
+possess(user, X)
+request_truth(emora, t)
+->
+$ Well , your X must be a handful with so much energy , aren't they ? $
+;
+
+e/event(X/pet()) crazy(e)
+possess(user, X)
+request(emora, e)
+->
+$ I bet they keep your life interesting though. Like , what is the craziest thing they've ever done ? $
+;
+
+esympathy(emora, event())
+->
+$ Oh no , that is unfortunate ! I hope it wasn't too bad . $
+;

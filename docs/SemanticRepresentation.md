@@ -228,7 +228,7 @@ Possessive expressions often do not denote ownership. In this case, the possessi
 *"Georgia's weather"*
 
 ```
-&w<in(w/weather(), Georgia)>
+&w<location(w/weather(), Georgia)>
 ```
 
 There is a lot of variety in the relationships between concepts introduced by possessive language.

@@ -10,7 +10,7 @@ class IdMapSpec:
     """
 
     @specification.init
-    def ID_MAP(IdMap, items=None, namespace=None, chars=None, start_index=0, condition=None):
+    def ID_MAP(IdMap, items=None, namespace=None, chars=None, start_index=0, condition=None, contains=None):
         """
         Create an `IdMap` object.
         """
@@ -58,7 +58,7 @@ class IdMapSpec:
 
     def contains(id_map, obj):
         """
-
+        __contains__ magic method
         """
         assert 'my' in id_map
         assert 'x5' not in id_map

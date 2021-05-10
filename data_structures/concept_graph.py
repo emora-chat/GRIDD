@@ -7,19 +7,21 @@ from structpy.map.map import Map
 from GRIDD.data_structures.id_map import IdMap
 from structpy.map.index.index import Index
 from GRIDD.data_structures.span import Span
-from GRIDD.data_structures.spanning_node import SpanningNode
 from GRIDD.data_structures.concept_compiler import compile_concepts
+from GRIDD.data_structures.meta_graph import MetaGraph
+
 CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 from collections import defaultdict, deque
 import json
 from GRIDD.utilities import Counter
-import GRIDD.globals
+from GRIDD.globals import *
 from itertools import chain
 
 
 class ConceptGraph:
 
-    def __init__(self, predicates=None, concepts=None, namespace=None, metadata=None, feature_cls=GRIDD.globals.FEATURE_CLS):
+    def __init__(self, predicates=None, concepts=None, namespace=None,
+                 metalinks=None, metadata=None, supports=None):
         if namespace is not None:
             namespace = namespace
         if isinstance(namespace, IdMap):
@@ -31,33 +33,44 @@ class ConceptGraph:
         self._bipredicate_instances = Index()
         self._monopredicates_map = Map()
         self._monopredicate_instances = Index()
-        self.features = feature_cls()
+        self.metagraph = MetaGraph(self, supports)
         if concepts is not None:
             for concept in concepts:
                 self.add(concept)
         if predicates is not None:
-            ConceptGraph.construct(self, predicates, metadata)
+            ConceptGraph.construct(self, predicates, metalinks, metadata)
 
     @classmethod
-    def construct(cls, cg, predicates, metadata=None, compiler=None):
+    def construct(cls, cg, predicates, metalinks=None, metadata=None, compiler=None):
         if isinstance(predicates, str) or \
-                (isinstance(predicates, list) and len(predicates) > 0 and isinstance(predicates[0], str)):
+                (isinstance(predicates, list) and len(predicates) > 0
+                 and isinstance(predicates[0], str)):
             if compiler is None:
-                predicates, metadatas = compile_concepts(predicates, namespace='__c__')
+                p, ml, md = compile_concepts(predicates, namespace='__c__')
             else:
-                predicates, metadatas = compiler.compile(predicates)
-            pred_cg = ConceptGraph(predicates=predicates, namespace='__c__')
-            pred_cg.features.update(metadatas)
+                p, ml, md = compiler.compile(predicates)
+            pred_cg = ConceptGraph(predicates=p, namespace='__c__')
+            pred_cg.features.update(md)
+            for s, l, t in ml:
+                pred_cg.metagraph.add(s, t, l)
             cg.concatenate(pred_cg)
-        elif (isinstance(predicates, list) or isinstance(predicates, tuple)) \
-                and len(predicates) > 0 \
-                and (isinstance(predicates[0], list) or (isinstance(predicates[0], tuple))):
+        elif (isinstance(predicates, (list, tuple, set)) and len(predicates) > 0
+              and (isinstance(next(iter(predicates)), (list, tuple)))):
             for predicate in predicates:
                 cg.add(*predicate)
+        elif isinstance(predicates, (list, tuple, set, str)) and len(predicates) == 0:
+            pass # no predicates to add to cg
         else:  # ConceptGraph
             cg.concatenate(predicates)
+        if metalinks is not None:
+            for s, l, t in metalinks:
+                cg.metagraph.add(s, t, l)
         if metadata is not None:
             cg.features.update(metadata)
+
+    @property
+    def features(self):
+        return self.metagraph.features
 
     def add(self, concept, predicate_type=None, object=None, predicate_id=None):
         self._bipredicates_graph.add(concept)
@@ -91,6 +104,10 @@ class ConceptGraph:
             return predicate_id
 
     def remove(self, concept=None, predicate_type=None, object=None, predicate_id=None):
+        if concept is not None and predicate_type is None and object is None \
+                and predicate_id is None and self.has(predicate_id=concept):
+            predicate_id = concept
+            concept = None
         if predicate_id is not None:        # Remove predicate by id
             concept, predicate_type, object, predicate_id = self.predicate(predicate_id)
             if object is not None:
@@ -105,17 +122,30 @@ class ConceptGraph:
                     del self._monopredicate_instances[(concept, predicate_type)]
             self.remove(concept=predicate_id)
         elif predicate_type is not None:    # Remove predicates by type and signature
-            for s, t, o, i in self.predicates(concept, predicate_type, object):
+            for s, t, o, i in list(self.predicates(concept, predicate_type, object)):
                 self.remove(predicate_id=i)
         elif object is not None:            # Remove predicates between subject and object
-            for s, t, o, i in self.predicates(subject=concept, object=object):
+            for s, t, o, i in list(self.predicates(subject=concept, object=object)):
                 self.remove(predicate_id=i)
         else:                               # Remove concept
-            for s, t, o, i in self.predicates(subject=concept) + self.predicates(object=concept):
+            for s, t, o, i in list(self.predicates(subject=concept)):
+                self.remove(predicate_id=i)
+            for s, t, o, i in list(self.predicates(object=concept)):
                 self.remove(predicate_id=i)
             if self._bipredicates_graph.has(concept):
                 self._bipredicates_graph.remove(concept)
             del self._monopredicates_map[concept]
+            self.metagraph.discard(concept)
+
+
+    def clear(self):
+        self._ids = IdMap(namespace=self._ids.namespace, start_index=Counter(),
+                         contains=lambda x: self.has(x) or self.has(predicate_id=x))
+        self._bipredicates_graph = MultiLabeledParallelDigraphNX()
+        self._bipredicate_instances = Index()
+        self._monopredicates_map = Map()
+        self._monopredicate_instances = Index()
+        self.metagraph = MetaGraph(self)
 
     def has(self, concept=None, predicate_type=None, object=None, predicate_id=None):
         if predicate_id is not None:                                    # Check predicate by id
@@ -187,60 +217,53 @@ class ConceptGraph:
                 if object is not None:      # Predicates by (subject, type, object)
                     sig = (subject, predicate_type, object)
                     if sig in self._bipredicate_instances:
-                        return [(*sig, id) for id in self._bipredicate_instances[sig]]
+                        for id in self._bipredicate_instances[sig]:
+                            yield (*sig, id)
                 else:                       # Predicates by (subject, type)
                     sig = (subject, predicate_type)
                     if sig in self._monopredicate_instances:
-                        monos = [(*sig, None, id) for id in self._monopredicate_instances[sig]]
-                    else:
-                        monos = []
+                        for id in self._monopredicate_instances[sig]:
+                            yield (*sig, None, id)
                     if self._bipredicates_graph.has(subject, label=predicate_type):
-                        es = self._bipredicates_graph.out_edges(subject, predicate_type)
-                        bis = [(s, l, t, i) for s, t, l, i in es]
-                    else:
-                        bis = []
-                    return monos + bis
+                        for s, t, l, i in self._bipredicates_graph.out_edges(subject, predicate_type):
+                            yield s, l, t, i
             else:
                 if object is not None:      # Predicates by (subject, object)
                     if self._bipredicates_graph.has(subject, object):
-                        es = self._bipredicates_graph.edges(subject, object)
-                        return [(s, l, t, i) for s, t, l, i in es]
+                        for s, t, l, i in self._bipredicates_graph.edges(subject, object):
+                            yield s, l, t, i
                 else:                       # Predicates by (subject)
                     if self._bipredicates_graph.has(subject):
-                        es = self._bipredicates_graph.out_edges(subject)
-                        bis = [(s, l, t, i) for s, t, l, i in es]
-                    else:
-                        bis = []
+                        for s, t, l, i in self._bipredicates_graph.out_edges(subject):
+                            yield s, l, t, i
                     if subject in self._monopredicates_map:
-                        ms = self._monopredicates_map[subject]
-                        monos = [(subject, m, None, i) for m in ms for i in self._monopredicate_instances[subject, m]]
-                    else:
-                        monos = []
-                    return monos + bis
+                        for m in self._monopredicates_map[subject]:
+                            for i in self._monopredicate_instances[subject, m]:
+                                yield (subject, m, None, i)
         else:
             if predicate_type is not None:
                 if object is not None:      # Predicates by (type, object)
-                    es = self._bipredicates_graph.in_edges(object, predicate_type)
-                    return [(s, l, t, i) for s, t, l, i in es]
+                    for s, t, l, i in self._bipredicates_graph.in_edges(object, predicate_type):
+                        yield s, l, t, i
                 else:                       # Predicates by (type)
-                    es = self._bipredicates_graph.edges(label=predicate_type)
-                    bis = [(s, l, t, i) for s, t, l, i in es]
+                    for s, t, l, i in self._bipredicates_graph.edges(label=predicate_type):
+                        yield s, l, t, i
                     if predicate_type in self._monopredicates_map.reverse():
-                        ss = self._monopredicates_map.reverse()[predicate_type]
-                        monos = [(s, predicate_type, None, i) for s in ss for i in self._monopredicate_instances[s, predicate_type]]
-                        return monos + bis
-                    else:
-                        return bis
+                        for s in self._monopredicates_map.reverse()[predicate_type]:
+                            for i in self._monopredicate_instances[s, predicate_type]:
+                                yield (s, predicate_type, None, i)
             else:
                 if object is not None:      # Predicates by (object)
                     if self._bipredicates_graph.has(object):
-                        es = self._bipredicates_graph.in_edges(object)
-                        return [(s, l, t, i) for s, t, l, i in es]
+                        for s, t, l, i in self._bipredicates_graph.in_edges(object):
+                            yield s, l, t, i
                 else:                       # All predicates
-                    bis = [(*sig, i) for sig, id in self._bipredicate_instances.items() for i in id]
-                    monos = [(*sig, None, i) for sig, id in self._monopredicate_instances.items() for i in id]
-                    return monos + bis
-        return []
+                    for sig, id in self._bipredicate_instances.items():
+                        for i in id:
+                            yield (*sig, i)
+                    for sig, id in self._monopredicate_instances.items():
+                        for i in id:
+                            yield (*sig, None, i)
 
     def subjects(self, concept, type=None):
         return set([predicate[0] for predicate in self.predicates(predicate_type=type,
@@ -250,29 +273,281 @@ class ConceptGraph:
         return set([predicate[2] for predicate in self.predicates(subject=concept,predicate_type=type)
                     if predicate[2] is not None])
 
-    def related(self, concept, type=None):
-        neighbors = self.subjects(concept, type)
-        neighbors.update(self.objects(concept, type))
-        return neighbors
+    def structure(self, concept, subj_emodifiers=None, obj_emodifiers=None):
+        visited = {None}
+        s = []
+        stack = [concept]
+        while stack:
+            concept = stack.pop()
+            if concept not in visited:
+                visited.add(concept)
+                if self.has(predicate_id=concept):
+                    pred = self.predicate(concept)
+                    s.append(pred)
+                    stack.extend({pred[0], pred[2]} - visited)
+                    if pred[1] in {REQ_TRUTH, REQ_ARG}:
+                        # if concept is a request predicate, retrieve all ref metalinks to object for full definition
+                        obj = pred[2]
+                        for _, constraint, _ in self.metagraph.out_edges(obj, REF):
+                            if self.has(predicate_id=constraint):
+                                mp = self.predicate(constraint)
+                                if mp[1] not in {'ref', 'def', 'expr'} and mp[3] not in visited:
+                                    stack.append(mp[3])
+                for p in self.predicates(concept, predicate_type='type'):
+                    if p[3] not in visited:
+                        s.append(p)
+                        visited.add(p[3])
+                if subj_emodifiers:
+                    for em in subj_emodifiers:
+                        for mp in self.predicates(concept, predicate_type=em):
+                            if mp[3] not in visited:
+                                stack.append(mp[3])
+                if obj_emodifiers:
+                    for em in obj_emodifiers:
+                        for mp in self.predicates(object=concept, predicate_type=em):
+                            if mp[3] not in visited:
+                                stack.append(mp[3])
+        return s
 
-    def subtypes(self, concept):
-        subtypes = set()
-        for predicate in self.predicates(predicate_type='type', object=concept):
-            subtype = predicate[0]
-            subtypes.add(subtype)
-            subtypes.update(self.subtypes(subtype))
-        return subtypes
+    def related(self, concept, types=None, exclusions=None, limit=None):
+        if self.has(predicate_id=concept):
+            yield from [x for x in self.predicate(concept) if x is not None and (exclusions is None or x not in exclusions)]
+        num = 0
+        for _, t, _, i in self.predicates(concept):
+            if (types is None or t in types) and (exclusions is None or t not in exclusions):
+                if limit is None or num < limit:
+                    yield i
+                    num += 1
+                else: break
+        for _, t, _, i in self.predicates(object=concept):
+            if (types is None or t in types) and (exclusions is None or t not in exclusions):
+                if limit is None or num < limit:
+                    yield i
+                    num += 1
+                else: break
 
-    # todo - efficiency check
-    #  if multiple paths to same ancestor,
-    #  it will pull ancestor's ancestor-chain multiple times
-    def supertypes(self, concept):
-        types = set()
-        for predicate in self.predicates(subject=concept, predicate_type='type'):
-            supertype = predicate[2]
-            types.add(supertype)
-            types.update(self.supertypes(supertype))
-        return types
+    def subtypes_of(self, concept, memo=None):
+        if memo is None:
+            memo = {}
+        if concept is not None:
+            if concept not in memo:
+                types = {concept}
+                yield concept
+                for _, _, _, instance in self.predicates(predicate_type=concept):
+                    for st in self.subtypes_of(instance, memo):
+                        yield st
+                        types.add(st)
+                for predicate in self.predicates(predicate_type='type', object=concept):
+                    subtype = predicate[0]
+                    for st in self.subtypes_of(subtype, memo):
+                        yield st
+                        types.add(st)
+                memo[concept] = types
+            else:
+                yield from memo[concept]
+
+    def subtypes(self, memo=None):
+        if memo is None:
+            memo = {}
+        todo = set(self.concepts())
+        while todo:
+            concept = todo.pop()
+            todo.difference_update(self.subtypes_of(concept, memo))
+        return memo
+
+    def instances(self, concept=None, memo=None, limit=None):
+        count = 0
+        for subtype in self.subtypes_of(concept, memo):
+            if self.metagraph.features.get(subtype, {}).get(IS_TYPE, False):
+                if count < limit:
+                    yield subtype
+                else: break
+
+    def types(self, concept=None, memo=None):
+        if memo is None:
+            memo = {}
+        if concept is not None and not isinstance(concept, (list, set, tuple)):
+            if concept not in memo:
+                if self.has(predicate_id=concept):
+                    inst = concept
+                    concept = self.type(concept)
+                else:
+                    inst = None
+                types = {concept}
+                for predicate in self.predicates(subject=concept, predicate_type='type'):
+                    supertype = predicate[2]
+                    if concept == supertype: # todo - this should not be possible, right?
+                        raise ValueError('Concept has self-loop type predicate which causes types() to crash on recursion error!')
+                    types.update(self.types(supertype, memo))
+                memo[concept] = types
+                if inst is not None:
+                    memo[inst] = types | {inst}
+                    return memo[inst]
+            return memo[concept]
+        else:
+            if isinstance(concept, (list, set, tuple)):
+                todo = set(concept)
+            else:
+                todo = set(self.concepts())
+            while todo:
+                concept = todo.pop()
+                self.types(concept, memo)
+                todo.difference_update(set(memo.keys()))
+            return memo
+
+    def type_predicates(self, concepts=None, memo=None):
+        if memo is None:
+            memo = {}
+        if concepts is not None and not isinstance(concepts, (list, set, tuple)):
+            if concepts not in memo:
+                if self.has(predicate_id=concepts):
+                    inst = concepts
+                    concepts = self.type(concepts)
+                else:
+                    inst = None
+                types = {concepts}
+                for predicate in self.predicates(subject=concepts, predicate_type='type'):
+                    supertype = predicate[2]
+                    supertypes = list(self.type_predicates(supertype, memo))
+                    types.update([o for s,t,o,i in supertypes])
+                    yield from supertypes
+                    yield predicate
+                memo[concepts] = types
+                if inst is not None:
+                    memo[inst] = types | {inst}
+                    return
+            return
+        else:
+            if isinstance(concepts, (list, set, tuple)):
+                todo = set(concepts)
+            else:
+                todo = set(self.concepts())
+            while todo:
+                concepts = todo.pop()
+                yield from self.type_predicates(concepts, memo)
+                todo.difference_update(set(memo.keys()))
+            return
+
+    def rules(self, rule_instances=None):
+        rules = {}
+        if rule_instances is None:
+            rule_instances = set(self.subtypes_of('implication')) - {'implication'}
+
+        rule_links = {}
+        instance_exclusions = set()
+        for rule in rule_instances:
+            pre_inst = self.metagraph.out_edges(rule, PRE)
+            pre = [edge[1] for edge in pre_inst]
+            post_inst = self.metagraph.out_edges(rule, POST)
+            post = [edge[1] for edge in post_inst]
+            vars_inst = self.metagraph.out_edges(rule, VAR)
+            vars = {edge[1] for edge in vars_inst}
+            if pre and post:
+                instance_exclusions.update(chain(pre_inst, post_inst, vars_inst))
+                rule_links[rule] = (pre, post, vars)
+
+        for rule, (pre, post, vars) in rule_links.items():
+            if pre and post:
+                pre = self.subgraph(pre, meta_exclusions=instance_exclusions)
+                post = self.subgraph(post, meta_exclusions=instance_exclusions)
+                rules[rule] = (pre, post, vars)
+        return rules
+
+    def nlg_templates(self):
+        templates = {}
+        template_instances = set(self.subtypes_of('response')) - {'response'}
+
+        template_links = {}
+        instance_exclusions = set()
+        for template in template_instances:
+            # Get the rule that this template is the postcondition of
+            (rule, ) = self.metagraph.sources(template, POST)
+            # Get the precondition and vars
+            pre_inst = self.metagraph.out_edges(rule, PRE)
+            pre = [edge[1] for edge in pre_inst]
+            vars_inst = self.metagraph.out_edges(rule, VAR)
+            vars = {edge[1] for edge in vars_inst}
+            # get the post and represent it as a list of string element specifications
+            elements = self.objects(template, 'token_seq')
+            elements = sorted(elements, key=lambda x: self.features[x]['response_index'])
+            string_spec_ls = []
+            for e in elements:
+                string_literal = self.features[e]['response_str']
+                if string_literal is None:
+                    (var,) = self.metagraph.targets(e, 'response_var')
+                    string_repr = f"{var}.var"
+                else:
+                    string_repr = string_literal
+                string_data = self.features[e].get('response_data', None)
+                if string_data is not None:
+                    for key, value in string_data.items():
+                        if isinstance(value, str) and value[0] == '#':
+                            (node,) = self.metagraph.targets(e, key)
+                            string_data[key] = node
+                final_element = (string_repr, string_data) if string_data is not None else string_repr
+                string_spec_ls.append(final_element)
+            instance_exclusions.update(chain(pre_inst, vars_inst))
+            template_links[template] = (pre, string_spec_ls, vars)
+
+        for template, (pre, string_spec_ls, vars) in template_links.items():
+            pre = self.subgraph(pre, meta_exclusions=instance_exclusions)
+            templates[template] = (pre, string_spec_ls, vars)
+        return templates
+
+
+    def references(self):
+        references = {}
+        ref_instances = {s for s, t, l in self.metagraph.edges(label=REF)}
+        for ref in ref_instances:
+            pre = self.metagraph.targets(ref, REF)
+            vars = set(self.metagraph.targets(ref, VAR))
+            if pre:
+                pre = self.subgraph(pre)
+                references[ref] = (pre, vars)
+        return references
+
+    def generics(self):
+        generics = {}
+        group_instances = [g for g in self.subtypes_of(GROUP) if g != GROUP]
+        # all groups that act as subjects of some predicate are generating generics
+        for group in group_instances:
+            preds = [p for p in self.predicates(group) if p[1] not in {TYPE, USER_AWARE, ASSERT, NONASSERT}]
+            if preds:
+                def_concepts = [e[1] for e in self.metagraph.out_edges(group, GROUP_DEF)
+                                if not self.has(predicate_id=e[1]) or self.predicate(e[1]) != (e[0], TYPE, GROUP, e[1])]
+                prop_concepts = [e[1] for e in self.metagraph.out_edges(group, GROUP_PROP)]
+                generics[group] = (def_concepts, prop_concepts)
+        # certain predicate types are generics if object is group (like, enjoy, hate, ) -> i like cats (generic) vs i bought cats (non-generic)
+        return generics
+
+    def subgraph(self, concepts=None, types=None, exclusions=None, type_exclusions=None, meta_exclusions=None):
+        concepts = set(concepts) if concepts else set()
+        exclusions = set(exclusions) if exclusions else set()
+        meta_exclusions = set(meta_exclusions) if meta_exclusions else set()
+        if types is not None or type_exclusions is not None:
+            subtypes = self.subtypes()
+            if types is not None:
+                concepts.update(set(chain(*[subtypes[t] for t in types])))
+            if type_exclusions is not None:
+                exclusions.update(set(chain(*[subtypes[t] for t in type_exclusions])))
+        graph = ConceptGraph(namespace=self._ids)
+        to_add = set()
+        for c in concepts - exclusions:
+            if self.has(predicate_id=c):
+                pred = self.predicate(c)
+                graph.add(*pred)
+                to_add.update(pred)
+            else:
+                graph.add(c)
+                to_add.add(c)
+        for e in to_add:
+            fd = dict(self.features.get(e, {}))
+            if fd:
+                graph.features[e] = fd
+            for ml in chain(self.metagraph.in_edges(e), self.metagraph.out_edges(e)):
+                if ml not in meta_exclusions and graph.has(ml[0]) and graph.has(ml[1]):
+                    graph.metagraph.add(*ml)
+        return graph
 
     def id_map(self, other=None):
         if other is None:
@@ -299,27 +574,62 @@ class ConceptGraph:
         return graph
 
     def merge(self, concept_a, concept_b, strict_order=False):
-        if self.has(predicate_id=concept_a) and self.has(predicate_id=concept_b):
-            raise ValueError("Cannot merge two predicate instances!")
-        if not strict_order and concept_a.startswith(self._ids.namespace) and not concept_b.startswith(self._ids.namespace):
-            tmp = concept_a
-            concept_a = concept_b
-            concept_b = tmp
-        for s, t, o, i in self.predicates(subject=concept_b):
-            self._detach(s, t, o, i)
-            self.add(concept_a, t, o, i)
-        for s, t, o, i in self.predicates(object=concept_b):
-            self._detach(s, t, o, i)
-            self.add(s, t, concept_a, i)
-        for s, t, o, i in self.predicates(predicate_type=concept_b):
-            self._detach(s, t, o, i)
-            self.add(s, concept_a, o, i)
-        if self.has(predicate_id=concept_b):
-            s, t, o, i = self.predicate(concept_b)
-            self.add(s, t, o, concept_a)
-            self._detach(s, t, o, i)
-        self.remove(concept_b)
-        self.features.merge(concept_a, concept_b)
+        unique_preds = {USER_AWARE, TIME}
+        if concept_a != concept_b:
+            if not strict_order and concept_a.startswith(self._ids.namespace) and not concept_b.startswith(self._ids.namespace):
+                tmp = concept_a
+                concept_a = concept_b
+                concept_b = tmp
+            for s, t, o, i in list(self.predicates(subject=concept_b)):
+                self._detach(s, t, o, i)
+                if t not in unique_preds or (t in unique_preds and not self.has(concept_a, t, o)):
+                    self.add(concept_a, t, o, i)
+            for s, t, o, i in list(self.predicates(object=concept_b)):
+                self._detach(s, t, o, i)
+                self.add(s, t, concept_a, i)
+            for s, t, o, i in list(self.predicates(predicate_type=concept_b)):
+                self._detach(s, t, o, i)
+                self.add(s, concept_a, o, i)
+            if self.has(predicate_id=concept_a) and self.has(predicate_id=concept_b): # todo - inefficient if types are the same
+                subj_a, type_a, obj_a, inst_a = self.predicate(concept_a)
+                subj_b, type_b, obj_b, inst_b = self.predicate(concept_b)
+                self._detach(subj_a, type_a, obj_a, inst_a)
+                self._detach(subj_b, type_b, obj_b, inst_b)
+                additional_type = None
+                if type_a == type_b:
+                    final_type = type_a
+                elif type_b in set(self.subtypes_of(type_a)):   # type_b is a subtype of type_a
+                    final_type = type_b
+                elif type_a in set(self.subtypes_of(type_b)):   # type_a is a subtype of type_b
+                    final_type = type_a
+                else:
+                    print('WARNING! Merging predicate instances but neither type (%s, %s) is a subtype of the other!'
+                                     % (type_a, type_b))
+                    final_type = type_a
+                    additional_type = type_b
+                # make new predicate, then merge args in
+                if obj_a is None and obj_b is None:
+                    final_subj=self.id_map().get()
+                    i = self.add(final_subj, final_type, predicate_id=concept_a)
+                else:
+                    # promote to argument structure of higher ordered predicate (monopredicate < bipredicate)
+                    final_subj=self.id_map().get()
+                    final_obj=self.id_map().get()
+                    i = self.add(final_subj, final_type, final_obj, predicate_id=concept_a)
+                    if obj_a is not None:
+                        self.merge(final_obj, obj_a)
+                    if obj_b is not None:
+                        self.merge(final_obj, obj_b)
+                if additional_type is not None:
+                    self.add(i, TYPE, additional_type)
+                self.merge(final_subj, subj_a)
+                self.merge(final_subj, subj_b)
+            elif self.has(predicate_id=concept_b) and not self.has(predicate_id=concept_a):
+                s, t, o, i = self.predicate(concept_b)
+                self.add(s, t, o, concept_a)
+                self._detach(s, t, o, i)
+            self.metagraph.merge(concept_a, concept_b)
+            self.remove(concept_b)
         return concept_a
 
     def _detach(self, subject, predicate_type, object, predicate_id):
@@ -335,22 +645,40 @@ class ConceptGraph:
                 del self._bipredicate_instances[(subject, predicate_type, object)]
 
     def concatenate(self, concept_graph, predicate_exclusions=None, concepts=None, id_map=None):
+        """
+        :param concepts - list of predicate instance ids to be concatenated from concept_graph into self
+            * only used by KnowledgeParser._extract_rules_from_graph()
+        """
         if id_map is None:
             id_map = self.id_map(concept_graph)
+        if concept_graph.id_map().namespace == KB: # maintain KB predicate identifiers in any CG they get added to
+            id_map = concept_graph.id_map(concept_graph)
+        all_added_concepts = None
+        if concepts is not None:
+            all_added_concepts = set()
         for s, t, o, i in concept_graph.predicates():
             if (predicate_exclusions is None or t not in predicate_exclusions) and (concepts is None or i in concepts):
-                self.add(*(id_map.get(x) if x is not None else None for x in (s, t, o, i)))
+                if t is not USER_AWARE or not self.has(s, t): # DO NOT ADD DUPLICATE USER_AWARE PREDS!!!
+                    self.add(*(id_map.get(x) if x is not None else None for x in (s, t, o, i)))
+                    if concepts is not None:
+                        all_added_concepts.update({x for x in (s,t,o,i) if x is not None})
         for concept in concept_graph.concepts():
             if concept not in id_map:
                 if predicate_exclusions is None:
                     if concepts is None or concept in concepts:
                         self.add(id_map.get(concept))
+                        if concepts is not None:
+                            all_added_concepts.add(concept)
                 else:
                     if concept not in predicate_exclusions and (concepts is None or concept in concepts):
                         if not concept_graph.has(predicate_id=concept) \
                            or concept_graph.type(concept) not in predicate_exclusions:
                             self.add(id_map.get(concept))
-        self.features.update(concept_graph.features, id_map)
+                            if concepts is not None:
+                                all_added_concepts.add(concept)
+        self.id_map().index = id_map.index # todo - is this necessary?
+        self.metagraph.update(concept_graph.metagraph, concept_graph.metagraph.features,
+                              id_map=id_map, concepts=all_added_concepts)
         return id_map
 
     def graph_component_siblings(self, source, target):
@@ -373,13 +701,12 @@ class ConceptGraph:
                     frontier.extend(self.related(node))
         return False
 
-
     def copy(self, namespace=None):
         if namespace is None:
-            namespace = self._ids.namespace
+            namespace = self._ids
         cp = ConceptGraph(namespace=namespace)
         cp.concatenate(self)
-        cp.features = self.features.copy()
+        cp.metagraph = self.metagraph.copy(cp)
         return cp
 
     def save(self, json_filepath=None):
@@ -387,12 +714,16 @@ class ConceptGraph:
             'namespace': self._ids.namespace,
             'next_id': int(self._ids.index),
             'predicates': [],
-            'features': self.features.to_json()
+            'concepts': [],
+            'features': self.metagraph.to_json()
         }
         for item in self.predicates():
             item = [e.to_string() if hasattr(e, 'to_string') else str(e) for e in item]
             s, t, o, i = item
             d['predicates'].append([s, t, o, i])
+        for item in self.concepts():
+            item = item.to_string() if hasattr(item, 'to_string') else str(item)
+            d['concepts'].append(item)
         if json_filepath:
             with open(json_filepath, 'w') as f:
                 json.dump(d, f, indent=2)
@@ -409,25 +740,29 @@ class ConceptGraph:
         else:
             d = json_file_str_obj
         if d['namespace'] != self._ids.namespace:
+            id_map = self.id_map(d['namespace'])
+            for item in d['concepts']:
+                self.add(id_map.get(item))
             for item in d['predicates']:
-                id_map = self.id_map(d['namespace'])
                 s, t, o, i = item
                 if o == 'None':
                     o = None
                 self.add(*(id_map.get(x) if x is not None else None for x in (s, t, o ,i)))
-                self.features.from_json(d['features'], id_map=id_map)
+            self.metagraph.from_json(d['features'], id_map=id_map)
         else:
+            for item in d['concepts']:
+                self.add(item)
             for item in d['predicates']:
                 s, t, o, i = item
                 if o == 'None':
                     o = None
                 self.add(s, t, o, i)
             self._ids.index = Counter(d['next_id'])
-            self.features.from_json(d['features'])
+            self.metagraph.from_json(d['features'])
 
     def ugly_print(self, exclusions=None):
         strings = defaultdict(list)
-        preds = ['type', 'ref', 'def', 'instantiative', 'referential', 'question']
+        preds = ['type', 'ref', 'def', 'instantiative', 'referential', REQ_TRUTH, REQ_ARG]
         for pred in preds:
             if exclusions is None or pred not in exclusions:
                 for s, t, o, i in self.predicates(predicate_type=pred):
@@ -447,113 +782,6 @@ class ConceptGraph:
         strings['type'] = sorted(strings['type'])
         full_string = '\n'.join([''.join(value) for value in strings.values()])
         return full_string.strip()
-
-    def to_spanning_tree(self):
-        exclude = {'expr', 'def', 'ref', 'assert', 'type', 'link', 'is_type'}
-        roots = []
-        # main root is the asserted predicate
-        ((assertion_node, _, _, _),) = self.predicates(predicate_type='assert')
-        # get all span focus nodes as additional potential roots
-        ref_preds = self.predicates(predicate_type='ref')
-        additional_roots = [focal_node for _,_,focal_node,_ in ref_preds if focal_node != assertion_node]
-
-        visited = set()
-        for node in [assertion_node] + additional_roots:
-            if node not in visited:
-                root = SpanningNode('__root__', None)
-                roots.append(root)
-                frontier = [(root, node, None, 'link')]
-                while len(frontier) > 0:
-                    parent, id, node_type, label_type = frontier.pop(0)
-                    if id not in visited:
-                        visited.add(id)
-                        if self.has(predicate_id=id):
-                            s, t, o, _ = self.predicate(id)
-                            if node_type == '_rev_': tmp = o; o = s; s = tmp;
-                            pred_node = SpanningNode(id, parent, t, node_type)
-                            if parent.node_id != s:
-                                frontier.append((pred_node, s, None, 'arg0'))
-                            if o is not None:
-                                frontier.append((pred_node, o, None, 'arg1'))
-                        else:
-                            pred_node = SpanningNode(id, parent, None, node_type)
-                        parent.children[label_type].append(pred_node)
-                        if parent.pred_type != 'time': # do not get descendants of objects of `time` predicates
-                            for pred in self.predicates(id):
-                                if pred[1] not in exclude and pred[3] not in {id, parent.node_id}: frontier.append((pred_node, pred[3], None, 'link'))
-                            for pred in self.predicates(object=id):
-                                if pred[1] not in exclude and pred[3] not in {id, parent.node_id}: frontier.append((pred_node, pred[3], '_rev_', 'link'))
-                    else: # still need to attach node to parent if subj or obj of non-reversed predicate, but do not need to process links or node's children
-                        if label_type != 'link' and parent.type != '_rev_':
-                            if self.has(predicate_id=id):
-                                s, t, o, _ = self.predicate(id)
-                                pred_node = SpanningNode(id, parent, t, node_type)
-                            else:
-                                pred_node = SpanningNode(id, parent, None, node_type)
-                            parent.children[label_type].append(pred_node)
-                        elif parent.type == '_rev_': # remove the reverse predicate from spanning tree since it has already been handled
-                            parent.parent.children['link'].remove(parent)
-
-        return roots
-
-    def print_spanning_tree(self, root=None, tab=1):
-        s = ""
-        if root is None:
-            roots = self.to_spanning_tree()
-            for r in roots:
-                root = r.children['link'][0]
-                expression = self._get_expr(root)
-                s += expression + '\n'
-                s += self.print_spanning_tree(root, tab)
-        else:
-            for label, nodes in root.children.items():
-                if label in {'arg0', 'arg1'}:
-                    node = nodes[0]
-                    prefix = node.type + ' ' if node.type is not None else ''
-                    expression = self._get_expr(node)
-                    s += '%s%s%s: %s\n'%('\t'*tab, prefix, label, expression)
-                    s += self.print_spanning_tree(node, tab+1)
-                elif label == 'link':
-                    for node in nodes:
-                        prefix = node.type + ' ' if node.type is not None else ''
-                        expression = self._get_expr(node)
-                        if len(node.children) > 0:
-                            s += '%s%s%s:\n'%('\t'*tab, prefix, expression)
-                            s += self.print_spanning_tree(node, tab+1)
-                        else:
-                            s += '%s%s%s\n' % ('\t' * tab, prefix, expression)
-        return s
-
-    def _get_expr(self, node):
-        # Return label of concept as one of the following, in priority order:
-        #   (1) Definitions
-        #   (2) Expressions
-        #   (3) Types
-        #   (4) Concept
-        # SPECIAL CASES: return `user` or `bot` as label of those concepts
-        if isinstance(node, str):
-            concept = node
-        else:
-            concept = node.pred_type if node.pred_type is not None else node.node_id
-        label = set()
-        if concept in {'user','emora'}:
-            label.add(concept)
-        else:
-            definitions = self.subjects(concept, 'def')
-            if len(definitions) > 0:
-                for def_expression in definitions:
-                    expression = self.features[def_expression]['span_data'].expression
-                    label.add(expression)
-            else:
-                for expression in self.subjects(concept, 'expr'):
-                    label.add(expression.replace('"', ''))
-                    break
-            if len(label) == 0:
-                for _, _, supertype, predinst in self.predicates(concept, 'type'):
-                    label.add(self._get_expr(supertype))
-            if len(label) == 0:
-                return concept.strip()
-        return ' '.join(label)
 
     def __str__(self):
         return 'CG<%s>' % (str(id(self))[-5:])
@@ -616,16 +844,15 @@ class ConceptGraph:
         type_preds = [(s, t, o, i) for s, t, o, i in preds if t == 'type']
         todo -= set(chain(*type_preds))
         while todo:
-            predstodo = [t for t in todo if self.has(predicate_id=t)]
-            if predstodo:
-                left = predstodo[0]
-            else:
-                left = todo.pop()
-            todo.discard(left)
+            left = todo.pop()
+            if self.has(predicate_id=left):
+                display.append(cstr(left))
+
         if typeinfo:
             types = {}
             for s, t, o, i in type_preds:
-                types.setdefault(s, set()).add(o)
+                if exclusions is None or (s not in exclusions and o not in exclusions):
+                    types.setdefault(s, set()).add(o)
             for c, v in types.items():
                 c = ids.get(c, c)
                 v = [ids.get(x, x) for x in v]

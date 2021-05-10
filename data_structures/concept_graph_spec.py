@@ -1,9 +1,8 @@
 
 from structpy import specification
-import time
+import time, json
 from os.path import join
-import GRIDD.globals
-from GRIDD.data_structures.spanning_node import SpanningNode
+from GRIDD.globals import *
 
 checkpoints = join('GRIDD', 'resources', 'checkpoints')
 
@@ -18,7 +17,7 @@ class ConceptGraphSpec:
     """
 
     @specification.init
-    def CONCEPT_GRAPH(ConceptGraph, predicates=None, concepts=None, namespace=None,  feature_cls=GRIDD.globals.FEATURE_CLS):
+    def CONCEPT_GRAPH(ConceptGraph, predicates=None, concepts=None, namespace=None):
         """
         """
         concept_graph = ConceptGraph(predicates=[
@@ -139,7 +138,8 @@ class ConceptGraphSpec:
         Return an iterable of related concepts to `concept`, where each element of the
         iterable appears in a predicate with `concept`.
         """
-        assert set(concept_graph.related('Peter')) == {'John', 'Sarah', 'Mary'}
+        rel = set(concept_graph.related('Peter'))
+        assert rel == {'pjl_1', 'x_1', 'x_2', 'x_3', 'x_5'}
 
     def to_graph(concept_graph):
         """
@@ -217,16 +217,36 @@ class ConceptGraphSpec:
         Otherwise,
             `concept_a`'s is the maintained id.
 
-        If both concepts are a predicate instance, ValueError is raised.
+        If both concepts are a predicate instance,
+            merge all arguments before merging the predicate instances and
+            promote the lower predicate (e.g. monopredicate) to the higher one, if not the same type of predicate.
 
         Returns the remaining concept after merge.
         """
-        concept_graph.features['pjl_1']['cover'] = 0
-        concept_graph.features['Sarah']['cover'] = 1
         concept_graph.merge('pjl_1', 'Sarah')
         assert concept_graph.has('Peter', 'likes', 'pjl_1')
         assert concept_graph.has('Peter', 'likes', 'John', 'pjl_1')
-        assert concept_graph.features['pjl_1']['cover'] == 1
+
+        concept_graph.add('user', 'go', 'store', 'p1')
+        concept_graph.add('user', 'go', 'store', 'p2')
+        concept_graph.merge('p1', 'p2')
+        assert concept_graph.has('p1') and not concept_graph.has('p2')
+        assert concept_graph.predicate('p1') == ('user', 'go', 'store', 'p1')
+
+        concept_graph.add('user', 'go', None, 'p3')
+        concept_graph.merge('p3', 'p1')
+        assert concept_graph.has('p3') and not concept_graph.has('p1')
+        assert concept_graph.predicate('p3') == ('user', 'go', 'store', 'p3')
+
+        concept_graph.add('john', 'travel', 'kroger', 'p4')
+        concept_graph.merge('p4', 'p3')
+        assert concept_graph.has('p4') and not concept_graph.has('p3')
+        assert concept_graph.predicate('p4') == ('john', 'travel', 'kroger', 'p4')
+
+        concept_graph.add('john', 'travel', 'x_100000', 'p5')
+        concept_graph.merge('p5', 'p4')
+        assert concept_graph.has('p5') and not concept_graph.has('p4')
+        assert concept_graph.predicate('p5') == ('john', 'travel', 'kroger', 'p5')
 
     @specification.init
     def id_map(ConceptGraph, other):
@@ -254,15 +274,13 @@ class ConceptGraphSpec:
         """
         cg1 = ConceptGraph(concepts=['princess', 'hiss'], namespace='1_')
         cg1.add('princess', 'hiss')
-        cg1.features['princess']['salience'] = 0.5
-        cg1.features['princess']['cover'] = 0.5
+        cg1.features['princess'][SALIENCE] = 0.5
 
         cg2 = ConceptGraph(concepts=['fluffy', 'bark', 'princess', 'friend'], namespace='2_')
         fb = cg2.add('fluffy', 'bark')
         cg2.add('princess', 'friend', 'fluffy')
         cg2.add(fb, 'volume', 'loud')
-        cg2.features['princess']['salience'] = 0.75
-        cg2.features['princess']['cover'] = 0.25
+        cg2.features['princess'][SALIENCE] = 0.75
 
         assert not cg1.has('fluffy')
         assert not cg2.has('hiss')
@@ -274,11 +292,10 @@ class ConceptGraphSpec:
         assert cg1.has('princess', 'hiss')
         assert cg1.predicate('1_1') in [('fluffy', 'bark', None, '1_1'),
                                         ('princess' , 'friend', 'fluffy', '1_1')]
-        fb_merge = cg1.predicates('fluffy', 'bark', None)[0][3]
+        fb_merge = list(cg1.predicates('fluffy', 'bark', None))[0][3]
         assert cg1.has(fb_merge, 'volume', 'loud')
 
-        assert cg1.features['princess']['salience'] == 0.75
-        assert cg1.features['princess']['cover'] == 0.5
+        assert cg1.features['princess'][SALIENCE] == 0.75
 
         return cg1
 
@@ -299,15 +316,15 @@ class ConceptGraphSpec:
         assert new_cg.predicate('1_1') == concept_graph.predicate('1_1')
         assert new_cg.predicate('1_2') == concept_graph.predicate('1_2')
         assert new_cg.predicate('1_3') == concept_graph.predicate('1_3')
-        assert new_cg.predicates() == concept_graph.predicates()
+        assert set(new_cg.predicates()) == set(concept_graph.predicates())
 
-        final_pred_subj = concept_graph.predicates('fluffy', 'bark', None)[0][3]
+        final_pred_subj = list(concept_graph.predicates('fluffy', 'bark', None))[0][3]
         assert new_cg.has(final_pred_subj, 'volume', 'loud')
 
         namespace_cg = concept_graph.copy(namespace="new_")
-        assert namespace_cg.predicates('fluffy', 'bark', None)[0][3].startswith("new")
-        assert namespace_cg.predicates('princess' , 'friend', 'fluffy')[0][3].startswith("new")
-        assert namespace_cg.predicates('princess', 'hiss', None)[0][3].startswith("new")
+        assert list(namespace_cg.predicates('fluffy', 'bark', None))[0][3].startswith("new")
+        assert list(namespace_cg.predicates('princess' , 'friend', 'fluffy'))[0][3].startswith("new")
+        assert list(namespace_cg.predicates('princess', 'hiss', None))[0][3].startswith("new")
         for i in range(4):
             assert not namespace_cg.has(predicate_id='1_%d'%i)
             assert namespace_cg.has(predicate_id='new_%d'%i)
@@ -324,8 +341,7 @@ class ConceptGraphSpec:
         cg1 = ConceptGraph(concepts=['princess', 'hiss'], namespace='1_')
         a = cg1.add('princess', 'hiss')
         cg1.add(a, 'volume', 'loud')
-        cg1.features['princess']['salience'] = 0.75
-        cg1.features['princess']['cover'] = 0.25
+        cg1.features['princess'][SALIENCE] = 0.75
         cg1_file = join(checkpoints, 'load_test_cg1.json')
         cg1.save(cg1_file)
 
@@ -340,23 +356,21 @@ class ConceptGraphSpec:
 
         assert concept_graph.has('princess', 'hiss')
         assert concept_graph.predicate(a) == ('princess', 'hiss', None, a)
-        assert concept_graph.features['princess']['salience'] == 0.75
-        assert concept_graph.features['princess']['cover'] == 0.25
+        assert concept_graph.features['princess'][SALIENCE] == 0.75
 
         concept_graph.load(cg2_file)
 
         assert concept_graph.has('fluffy', 'bark')
         assert concept_graph.has('princess', 'friend', 'fluffy')
-        assert concept_graph.predicates('princess', 'friend', 'fluffy')[0][3].startswith('1')
-        assert concept_graph.features['princess']['salience'] == 0.75
-        assert concept_graph.features['princess']['cover'] == 0.25
+        assert list(concept_graph.predicates('princess', 'friend', 'fluffy'))[0][3].startswith('1')
+        assert concept_graph.features['princess'][SALIENCE] == 0.75
 
         b = concept_graph.add('fluffy', 'friend', 'princess')
         assert b == '1_4'
         return concept_graph
 
     @specification.init
-    def pretty_print(ConceptGraph, exclusions=None):
+    def pretty_print(ConceptGraph, exclusions):
         """
         Prints the predicates of concept_graph in a human-readable format,
         defined by the knowledge base text file format.
@@ -373,138 +387,6 @@ class ConceptGraphSpec:
         ''', namespace='wm_')
         print(cg.pretty_print(exclusions=[]))
 
-    @specification.init
-    def to_spanning_tree(ConceptGraph):
-        # cg = ConceptGraph(namespace='x_', predicates=[
-        #     ('user', 'type', 'person'),
-        #     ('georgia', 'type', 'state'),
-        #     ('user', 'go', 'georgia', 'ugg'),
-        #     ('ugg', 'time', 'july', 'utj'),
-        #     ('july', 'property', 'mid'),
-        #     ('utj', 'property', 'last'),
-        #     ('ugg', 'mode', 'plane'),
-        #     ('person_1', 'type', 'person'),
-        #     ('user', 'sister', 'person_1'),
-        #     ('user', 'visit', 'person_1', 'uvp'),
-        #     ('ugg', 'cause', 'uvp'),
-        #     ('house_1', 'type', 'house'),
-        #     ('uvp', 'locate', 'house_1'),
-        #     ('person_1', 'possess', 'house_1'),
-        #     ('house_1', 'property', 'new'),
-        #     ('"user"', 'expr', 'user'),
-        #     ('"person"', 'expr', 'person'),
-        #     ('"georgia"', 'expr', 'georgia'),
-        #     ('"state"', 'expr', 'state'),
-        #     ('"go"', 'expr', 'go'),
-        #     ('"time"', 'expr', 'time'),
-        #     ('"july"', 'expr', 'july'),
-        #     ('"mode"', 'expr', 'mode'),
-        #     ('"plane"', 'expr', 'plane'),
-        #     ('"sister"', 'expr', 'sister'),
-        #     ('"visit"', 'expr', 'visit'),
-        #     ('"cause"', 'expr', 'cause'),
-        #     ('"house"', 'expr', 'house'),
-        #     ('"locate"', 'expr', 'locate'),
-        #     ('"possess"', 'expr', 'possess'),
-        #     ('"property"', 'expr', 'property'),
-        #     ('"new"', 'expr', 'new'),
-        #     ('"last"', 'expr', 'last'),
-        #     ('"mid"', 'expr', 'mid')
-        # ])
-
-        cg = ConceptGraph(predicates=[
-            ('d', 'type', 'dog', 'dtd'),
-            ('b', 'type', 'bone', 'btb'),
-            ('a', 'type', 'person', 'atp'),
-            ('sally', 'buy', 'b', 'sbb'),
-            ('d', 'like', 'sbb', 'dlb'),
-            ('dlb', 'degree', 'really', 'ddr'),
-            ('john', 'aunt', 'a', 'jaa'),
-            ('a', 'possess', 'd', 'apd'),
-            ('apd', 'property', 'illegal', 'api'),
-            ('"dog"', 'expr', 'dog'),
-            ('"person"', 'expr', 'person'),
-            ('"bone"', 'expr', 'bone'),
-            ('"buy"', 'expr', 'buy'),
-            ('"like"', 'expr', 'like'),
-            ('"degree"', 'expr', 'degree'),
-            ('"really"', 'expr', 'really'),
-            ('"aunt"', 'expr', 'aunt'),
-            ('"possess"', 'expr', 'possess'),
-            ('"property"', 'expr', 'property'),
-            ('"illegal"', 'expr', 'illegal'),
-            ('"john"', 'expr', 'john'),
-            ('"sally"', 'expr', 'sally'),
-            ('dlb', 'assert')
-        ])
-        root = SpanningNode('__root__')
-        like = SpanningNode('dlb', 'like')
-        d = SpanningNode('d')
-        dog = SpanningNode('dog')
-        dtd = SpanningNode('dtd', 'type')
-        b = SpanningNode('b')
-        bone = SpanningNode('bone')
-        btb = SpanningNode('btb', 'type')
-        buy = SpanningNode('sbb', 'buy')
-        john = SpanningNode('john')
-        sally = SpanningNode('sally')
-        degree = SpanningNode('ddr', 'degree')
-        really = SpanningNode('really')
-        rpossess = SpanningNode('apd', 'possess', 'r')
-        a = SpanningNode('a')
-        person = SpanningNode('person')
-        atp = SpanningNode('atp')
-        raunt = SpanningNode('jaa', 'aunt', 'r')
-        property = SpanningNode('api', 'property')
-        illegal = SpanningNode('illegal')
-
-        root.children['link'] = [like]
-        like.children['arg0'] = [d]
-        like.children['arg1'] = [buy]
-        like.children['link'] = [degree]
-        d.children['link'] = [rpossess, dtd]
-        buy.children['arg0'] = [sally]
-        buy.children['arg1'] = [b]
-        b.children['link'] = [btb]
-        btb.children['arg1'] = [bone]
-        degree.children['arg1'] = [really]
-        rpossess.children['arg1'] = [a]
-        rpossess.children['link'] = [property]
-        dtd.children['arg1'] = [dog]
-        a.children['link'] = [raunt, atp]
-        atp.children['arg1'] = [person]
-        raunt.children['arg1'] = [john]
-        property.children['arg1'] = [illegal]
-
-        s = time.time()
-        span_tree_root = cg.to_spanning_tree()
-        # print('to spanning tree: %.5f sec'%(time.time()-s))
-        assert root.equal(span_tree_root)
-
-        s = time.time()
-        # print(cg.print_spanning_tree())
-        # print('print spanning tree: %.5f sec'%(time.time()-s))
-
-        cg = ConceptGraph(predicates=[
-            ('d', 'type', 'dog', 'dtd'),
-            ('b', 'type', 'bone', 'btb'),
-            ('a', 'type', 'person', 'atp'),
-            ('john', 'buy', 'b', 'sbb'),
-            ('d', 'like', 'sbb', 'dlb'),
-            ('john', 'aunt', 'a', 'jaa'),
-            ('a', 'possess', 'd', 'apd'),
-            ('"dog"', 'expr', 'dog'),
-            ('"person"', 'expr', 'person'),
-            ('"bone"', 'expr', 'bone'),
-            ('"buy"', 'expr', 'buy'),
-            ('"like"', 'expr', 'like'),
-            ('"aunt"', 'expr', 'aunt'),
-            ('"possess"', 'expr', 'possess'),
-            ('"john"', 'expr', 'john'),
-            ('"sally"', 'expr', 'sally'),
-            ('dlb', 'assert')
-        ])
-        # print(cg.print_spanning_tree())
 
     @specification.init
     def graph_component_siblings(ConceptGraph, source, target):
@@ -532,6 +414,69 @@ class ConceptGraphSpec:
         assert cg1.graph_component_siblings('bob', 'tom')
         assert cg1.graph_component_siblings('tom', 'bob')
 
+    @specification.init
+    def CONCEPT_GRAPH_TYPED(ConceptGraph):
+        cg = ConceptGraph('''
+        entity = (object)
+        animal = (entity)
+        person = (animal)
+        dog = (animal, pet)
+        pet = (entity)
+        german_shepard = (dog)
+        golden_retriever = (dog);
+        chase = (predicate)
+        emotion = (predicate)
+        pursue = (chase)
+        [reason, time, should] = (predicate)
+        now = (entity)
+        [happy, excited] = (emotion);
+        fido = german_shepard()
+        fluffy = golden_retriever()
+        user = person();
+        uh=happy(user) excited(fido) excited(fluffy);
+        time(my_reason=reason(cff=chase(fido, fluffy), ef=excited(fido)), now);
+        should(my_reason);
+        ''', namespace='cg_')
+        return cg
+
+    def types(cg, concept=None):
+        """
+        Get all supertypes of a concept.
+
+        If no concept is provided, returns a dictionary where
+        keys are concepts and values are the set of their types.
+        """
+        assert cg.types('fluffy') == {'fluffy', 'golden_retriever',
+                              'pet', 'dog', 'entity', 'object', 'animal'}
+        assert cg.types('uh') == {'uh', 'happy', 'emotion', 'predicate'}
+        all_supertypes = cg.types()
+        assert all_supertypes['animal'] == {'animal', 'entity', 'object'}
+        assert all_supertypes['user'] == {'person', 'animal', 'entity', 'object', 'user'}
+
+    def subtypes_of(cg, concept=None):
+        """
+        Get all subtypes of a concept.
+
+        If no concept is provided, returns a dictionary where
+        keys are concepts and values are the set of their subtypes.
+        """
+        assert set(cg.subtypes_of('animal')) == {'fluffy', 'fido', 'user', 'dog', 'person',
+                                         'animal', 'golden_retriever', 'german_shepard'}
+        all_subtypes = cg.subtypes()
+        for k, v in all_subtypes.items():
+            print(k, v)
+        assert all_subtypes['fluffy'] == {'fluffy'}
+        assert all_subtypes['happy'] == {'happy', 'uh'}
+
+    def structure(cg, concept, essential_modifiers=None):
+        structs = cg.structure('my_reason', {'time'})
+        struct_sigs = {(s, t, o) for s, t, o, i in structs}
+        assert ('fido', 'chase', 'fluffy') in struct_sigs
+        assert ('fido', 'excited', None) in struct_sigs
+        assert ('fido', 'type', 'german_shepard') in struct_sigs
+        assert ('cff', 'reason', 'ef') in struct_sigs
+        assert ('my_reason', 'time', 'now') in struct_sigs
+        assert ('should', 'my_reason', None) not in struct_sigs
 
 @specification
 class ConceptGraphFromLogicSpec:

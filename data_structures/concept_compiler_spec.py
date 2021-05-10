@@ -7,7 +7,7 @@ class ConceptCompilerSpec:
 
     @specification.init
     def CONCEPT_COMPILER(ConceptCompiler):
-        parser = ConceptCompiler(set(), {'predicate', 'object', 'type', 'expression', 'imp_rule'}, {'predicate', 'type'})
+        parser = ConceptCompiler()
         return parser
 
     def compile(compiler, logic_string):
@@ -51,29 +51,32 @@ class ConceptCompilerSpec:
         ;
         
         x/dog() chase(x, y/dog())
-        =>
+        ->
         happy(x) scared(y)
         chase(y, d=dog())
         ;
             
         '''
+
         rules = '''
         [chase, happy, scared] = (predicate)
         dog = (object)
         fido = dog()
         ;
-        
 
-        
-        x/dog()
-        =>
-        scared(fido)
+        chase(x=dog(), y=dog())
+        -> myrule ->
+        z:<chase(z=dog(), x)>
         ;
         
         '''
-        preds, metas = compiler.compile(test)
+        preds, links, metas = compiler.compile(rules)
         # preds, metas = compiler.compile(rules)
         for pred in preds:
             print(pred)
+        print('----')
+        for link in links:
+            print(link)
+        print('----')
         for k, v in metas.items():
             print(k, ':', v)

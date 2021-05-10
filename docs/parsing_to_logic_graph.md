@@ -3,7 +3,7 @@
 
 Captures questions that start with `When`, `Where`, `Why`, and `How` in the adverb role.
 
-Represented as `question_concept(main_predicate, question(object()))`.
+Represented as `question_concept(main_predicate, request(user, object()))`.
 
 The mapping between question word and semantic concept is:
 
@@ -17,12 +17,24 @@ The mapping between question word and semantic concept is:
 	sbj(X, A/pstg())
 	precede(Y, Z)
 	precede(Z, A)
-	-> q_adv ->
+	-> q_aux_adv ->
 	p/Y(X, o/object())
-	question(o)
+	request(user, o)
 	focus(p)
 	center(Y)
 	cover(Z)
+	;
+	
+	adv(X/pstg(), Y/question_word())
+	cop(X, Z/pstg())
+	sbj(X, A/pstg())
+	precede(Y, Z)
+	precede(Z, A)
+	-> q_cop_adv ->
+	p/Y(X, o/object())
+	request(user, o)
+	focus(p)
+	center(Y)
 	;
   
 </details>
@@ -41,7 +53,7 @@ When did you start reading
 
 Captures questions that start with `How`, `What`, and `Who` as the root of a copular construction or as the determiner of the root. 
 
-Represented as `copula(sbj, question(question_concept))`.
+Represented as `copula(sbj, request(user, question_concept))`.
 
 <details>
   <summary>Conversions</summary>
@@ -50,10 +62,8 @@ Represented as `copula(sbj, question(question_concept))`.
 	sbj(X, Z/pstg())
 	det(X, D/question_word())
 	-> qdet_copula_present ->
-	is_type(Y)
-	is_type(X)
 	p/Y(Z, inst/X())
-	question(inst)
+	request(user, inst)
 	time(p, now)
 	focus(p)
 	center(X)
@@ -64,10 +74,8 @@ Represented as `copula(sbj, question(question_concept))`.
 	sbj(X, Z/pstg())
 	det(X, D/question_word())
 	-> qdet_copula_past ->
-	is_type(Y)
-	is_type(X)
 	p/Y(Z, inst/X())
-	question(inst)
+	request(user, inst)
 	time(p, past)
 	focus(p)
 	center(X)
@@ -77,9 +85,8 @@ Represented as `copula(sbj, question(question_concept))`.
 	cop(X/question_word(), Y/present_tense())
 	sbj(X, Z/pstg())
 	-> qw_copula_present ->
-	is_type(Y)
 	p/Y(Z, X)
-	question(X)
+	request(user, X)
 	time(p, now)
 	focus(p)
 	center(X)
@@ -88,9 +95,8 @@ Represented as `copula(sbj, question(question_concept))`.
 	cop(X/question_word(), Y/past_tense())
 	sbj(X, Z/pstg())
 	-> qw_copula_past ->
-	is_type(Y)
 	p/Y(Z, X)
-	question(X)
+	request(user, X)
 	time(p, past)
 	focus(p)
 	center(X)
@@ -112,23 +118,23 @@ What color was it
 
 Captures questions that contain `Who` and `What` as subjects, objects, or datives. 
 
-Represented by wrapping the subject/object/dative with the `question` predicate. 
+Represented by wrapping the subject/object/dative with the `request` predicate. 
 
 <details>
   <summary>Conversions</summary>
   
 	obj(X/pstg(), Y/question_word())
 	-> obj_question ->
-	q/question(object())
+	request(user, o/object())
 	center(Y)
-	focus(q)
+	focus(o)
 	;
 	
 	sbj(X/pstg(), Y/question_word())
 	-> sbj_question ->
-	q/question(object())
+	request(user, o/object())
 	center(Y)
-	focus(q)
+	focus(o)
 	;
 	
 	dat(X/pstg(), Y/question_word())
@@ -136,9 +142,9 @@ Represented by wrapping the subject/object/dative with the `question` predicate.
 	sbj(X, A/pstg())
 	precede(Y, Z)
 	precede(Z, A)
-	-> q_dat ->
-	p/indirect_obj(X, o/object())
-	question(o)
+	-> dat_question ->
+	p/beneficiary(X, o/object())
+	request(user, o)
 	center(Y)
 	cover(Z)
 	focus(p)
@@ -171,9 +177,8 @@ Overrules the auxiliary question rule, which would cause an incorrect interpreta
 	obj(Z/pstg(), X)
 	aux(Z, A/pstg())
 	-> q_aux_det ->
-	is_type(X)
 	inst/X()
-	question(inst)
+	request(user, inst)
 	focus(inst)
 	center(X)
 	cover(Y)
@@ -183,7 +188,7 @@ Overrules the auxiliary question rule, which would cause an incorrect interpreta
 	obj(Z/pstg(), X)
 	aux(Z, A/present_tense())
 	-> q_aux_det_pres ->
-	p/aux_time(Z, now)
+	p/p_time(Z, now)
 	focus(p)
 	center(A)
 	;
@@ -192,16 +197,15 @@ Overrules the auxiliary question rule, which would cause an incorrect interpreta
 	obj(Z/pstg(), X)
 	aux(Z, A/past_tense())
 	-> q_aux_det_past ->
-	p/aux_time(Z, past)
+	p/p_time(Z, past)
 	focus(p)
 	center(A)
 	;
 	
 	det(X/pstg(), Y/question_word())
 	-> q_det ->
-	is_type(X)
 	inst/X()
-	question(inst)
+	request(user, inst)
 	focus(inst)
 	center(X)
 	cover(Y)
@@ -226,9 +230,8 @@ Copula constructions are in interrogative form when the copula precedes the subj
 	sbj(X, Z/pstg())
 	precede(Y, Z)
 	-> q_sbj_copula_present ->
-	is_type(Y)
 	p/Y(Z,X)
-	q/question(p)
+	q/request_truth(user, p)
 	time(p, now)
 	focus(p)
 	center(X)
@@ -238,9 +241,8 @@ Copula constructions are in interrogative form when the copula precedes the subj
 	sbj(X, Z/pstg())
 	precede(Y, Z)
 	-> q_sbj_copula_past ->
-	is_type(Y)
 	p/Y(Z,X)
-	q/question(p)
+	q/request_truth(user, p)
 	time(p, past)
 	focus(p)
 	center(X)
@@ -256,42 +258,124 @@ Was the book good?
 
 ## Copula
 
-Copula constructions become two-argument predicates of the format `copula(subject, root)`.
+Copula constructions have different logical forms depending on the copular verb. 
 
-The specific copular verb is captured by an identifier rule s.t. it will be merged into the 
-predicate.
+(A) The `be` copular verb takes one of four logical forms:
+
+* Cause-less property specifiers take the form `property(subject)` as in `I am happy`. 
+Properties are often specified as adjectives.
+
+* Property specifiers can also be specified with their causes as in `I am proud of her`. 
+In this case, the final logical form is `p/property(subject) cause(obj, p)`
+
+* Equivalence specifiers take the form `copula(subject, root)` as in `I am a student`.
+ 
+* Prepositional specifiers take the form `root(subject, object)` as in `I am in Georgia`.
+
+(B) All other copular verbs are maintained and result in the logical form `copula(subject, root)`, 
+just like the third case of the `be` copular verb. It may have a `cause` attachment, if one is given.
+For these cases, the specific copular verb is captured by an identifier rule such that it will be 
+merged into the predicate.
 
 <details>
   <summary>Conversions</summary>
 
-	cop(X/pstg(), Y/present_tense())
-	det(X, D/dt())
+    cop(X/adj(), Y/present_tense())
+    sbj(X, Z/pstg())
+    ref(Y, E/expression())
+	expr(E, be)
+    -> be_adj_copula_present ->
+    p/X(Z)
+    time(p, now)
+    focus(p)
+    center(X)
+    cover(Y)
+    ;
+
+    cop(X/adj(), Y/past_tense())
+    sbj(X, Z/pstg())
+    ref(Y, E/expression())
+	expr(E, be)
+    -> be_adj_copula_past ->
+    p/X(Z)
+    time(p, past)
+    focus(p)
+    center(X)
+    cover(Y)
+    ;
+    
+    cop(X/adj(), Y/verb())
 	sbj(X, Z/pstg())
-	-> sbj_det_copula_present ->
-	is_type(Y)
-	p/Y(Z,X)
+	obj(X, A/pstg())
+	case(A, B/pstg())
+	ref(Y, E/expression())
+	expr(E, be)
+	-> cause_of_be_adj_copula ->
+	p/cause(A, X)
+	focus(p)
+	center(B)
+	;
+	
+    cop(X/prepo(), Y/present_tense())
+	sbj(X, Z/pstg())
+	obj(X, A/pstg())
+	ref(Y, E/expression())
+	expr(E, be)
+	-> be_prepo_copula_present ->
+	p/X(Z, A)
 	time(p, now)
 	focus(p)
 	center(X)
+	cover(Y)
+	;
+	
+	cop(X/prepo(), Y/past_tense())
+	sbj(X, Z/pstg())
+	obj(X, A/pstg())
+	ref(Y, E/expression())
+	expr(E, be)
+	-> be_prepo_copula_past ->
+	p/X(Z, A)
+	time(p, past)
+	focus(p)
+	center(X)
+	cover(Y)
+	;
+	
+    cop(X/pstg(), Y/present_tense())
+	det(X, D/dt())
+	sbj(X, Z/pstg())
+	-> det_copula_present ->
+	p/Y(Z,X)
+	time(p, now)
+	focus(p)
+	center(Y)
 	cover(D)
 	;
 	
 	cop(X/pstg(), Y/past_tense())
 	det(X, D/dt())
 	sbj(X, Z/pstg())
-	-> sbj_det_copula_past ->
-	is_type(Y)
+	-> det_copula_past ->
 	p/Y(Z,X)
 	time(p,past)
 	focus(p)
-	center(X)
+	center(Y)
 	cover(D)
+	;
+	
+	cop(X/pstg(), Y/verb())
+	det(X, D/dt())
+	sbj(X, Z/pstg())
+	-> det_copula_obj ->
+	inst/X()
+	focus(inst)
+	center(X)
 	;
 
 	cop(X/pstg(), Y/present_tense())
 	sbj(X, Z/pstg())
-	-> sbj_copula_present ->
-	is_type(Y)
+	-> copula_present ->
 	p/Y(Z,X)
 	time(p, now)
 	focus(p)
@@ -300,8 +384,7 @@ predicate.
 	
 	cop(X/pstg(), Y/past_tense())
 	sbj(X, Z/pstg())
-	-> sbj_copula_past ->
-	is_type(Y)
+	-> copula_past ->
 	p/Y(Z,X)
 	time(p,past)
 	focus(p)
@@ -309,7 +392,7 @@ predicate.
 	;
 	
 	cop(X/pstg(), Y/pstg())
-	-> id_copular_verb ->
+	-> id_copula ->
 	focus(Y)
 	center(Y)
 	;
@@ -322,6 +405,144 @@ John is a student.
 
 Sally became a doctor last year.
 
+## Interrogative Auxiliary with Passive Constructions
+
+Captures truth questions asked about sentences with passive voice.
+
+ <details>
+  <summary>Conversions</summary>
+
+	sbj(X/pstg(), Y/pstg())
+	obj(X, Z/pstg())
+	aux(X, A/past_tense())
+	precede(Z, X)
+	precede(A, Z)
+	-> q_sbj_obj_passive_voice_past ->
+	p/X(Y, Z)
+	time(p, past)
+	request_truth(user, p)
+	focus(p)
+	center(X)
+	cover(A)
+	;
+
+	obj(X/pstg(), Z/pstg())
+	aux(X, A/past_tense())
+	precede(Z, X)
+	precede(A, Z)
+	-> q_obj_passive_voice_past ->
+	p/X(object(), Z)
+	time(p, past)
+	request_truth(user, p)
+	focus(p)
+	center(X)
+	cover(A)
+	;
+
+	sbj(X/pstg(), Y/pstg())
+	obj(X, Z/pstg())
+	aux(X, A/present_tense())
+	precede(Z, X)
+	precede(A, Z)
+	-> q_sbj_obj_passive_voice_present ->
+	p/X(Y, Z)
+	time(p, now)
+	request_truth(user, p)
+	focus(p)
+	center(X)
+	cover(A)
+	;
+
+	obj(X/pstg(), Z/pstg())
+	aux(X, A/present_tense())
+	precede(Z, X)
+	precede(A, Z)
+	-> q_obj_passive_voice_present ->
+	p/X(object(), Z)
+	time(p, now)
+	request_truth(user, p)
+	focus(p)
+	center(X)
+	cover(A)
+	;
+
+</details>
+
+#### Examples
+
+Was the dog found
+
+Was the dog was found by the policeman
+
+Was I chosen
+
+## Passive Constructions
+
+Captures sentences with passive voice.
+
+ <details>
+  <summary>Conversions</summary>
+
+	sbj(X/pstg(), Y/pstg())
+	obj(X, Z/pstg())
+	aux(X, A/past_tense())
+	precede(Z, X)
+	precede(Z, A)
+	-> sbj_obj_passive_voice_past ->
+	p/X(Y, Z)
+	time(p, past)
+	focus(p)
+	center(X)
+	cover(A)
+	;
+	
+	sbj(X/pstg(), Y/pstg())
+	obj(X, Z/pstg())
+	aux(X, A/present_tense())
+	precede(Z, X)
+	precede(Z, A)
+	-> sbj_obj_passive_voice_present ->
+	p/X(Y, Z)
+	time(p, now)
+	focus(p)
+	center(X)
+	cover(A)
+	;
+
+	obj(X/pstg(), Y/pstg())
+	aux(X, A/past_tense())
+	precede(Y, X)
+	precede(Y, A)
+	-> obj_passive_voice_past ->
+	p/X(object(), Y)
+	time(p, past)
+	focus(p)
+	center(X)
+	cover(A)
+	;
+
+	obj(X/pstg(), Y/pstg())
+	aux(X, A/present_tense())
+	precede(Y, X)
+	precede(Y, A)
+	-> obj_passive_voice_present ->
+	p/X(object(), Y)
+	time(p, now)
+	focus(p)
+	center(X)
+	cover(A)
+	;
+
+</details>
+
+#### Examples
+
+The dog was found.
+
+The dog was found by the policeman.
+
+I was chosen.
+
 ## Subject-Verb-Object
 
 Two-argument predicates of the format `root(subject, object)`.
@@ -332,7 +553,6 @@ Two-argument predicates of the format `root(subject, object)`.
 	sbj(X/past_tense(), Y/pstg())
 	obj(X, Z/pstg())
 	-> sbj_dobj_past ->
-	is_type(X)
 	p/X(Y,Z)
 	time(p, past)
 	focus(p)
@@ -342,7 +562,6 @@ Two-argument predicates of the format `root(subject, object)`.
 	sbj(X/present_tense(), Y/pstg())
 	obj(X, Z/pstg())
 	-> sbj_dobj_present ->
-	is_type(X)
 	p/X(Y,Z)
 	time(p, now)
 	focus(p)
@@ -352,7 +571,6 @@ Two-argument predicates of the format `root(subject, object)`.
 	sbj(X/pstg(), Y/pstg())
 	obj(X, Z/pstg())
 	-> sbj_dobj_nonverb_head ->
-	is_type(X)
 	p/X(Y,Z)
 	focus(p)
 	center(X)
@@ -373,7 +591,6 @@ Two-argument predicates of the format `root(subject, object)`. The light verb is
 	obj(X, Z/pstg())
 	lv(X, U/past_tense())
 	-> sbj_obj_det_light_verb_past ->
-	is_type(X)
 	p/X(Y,Z)
 	time(p, past)
 	focus(p)
@@ -387,7 +604,6 @@ Two-argument predicates of the format `root(subject, object)`. The light verb is
 	obj(X, Z/pstg())
 	lv(X, U/present_tense())
 	-> sbj_obj_det_light_verb_present ->
-	is_type(X)
 	p/X(Y,Z)
 	time(p, now)
 	focus(p)
@@ -400,7 +616,6 @@ Two-argument predicates of the format `root(subject, object)`. The light verb is
 	obj(X, Z/pstg())
 	lv(X, U/past_tense())
 	-> sbj_obj_light_verb_past ->
-	is_type(X)
 	p/X(Y,Z)
 	time(p, past)
 	focus(p)
@@ -412,7 +627,6 @@ Two-argument predicates of the format `root(subject, object)`. The light verb is
 	obj(X, Z/pstg())
 	lv(X, U/present_tense())
 	-> sbj_obj_light_verb_present ->
-	is_type(X)
 	p/X(Y,Z)
 	time(p, now)
 	focus(p)
@@ -441,7 +655,6 @@ One-argument predicates of the format `root(subject)`. The light verb is dropped
 	det(X, A/dt())
 	lv(X, U/past_tense())
 	-> sbj_det_light_verb_past ->
-	is_type(X)
 	p/X(Y)
 	time(p, past)
 	focus(p)
@@ -454,7 +667,6 @@ One-argument predicates of the format `root(subject)`. The light verb is dropped
 	det(X, A/dt())
 	lv(X, U/present_tense())
 	-> sbj_det_light_verb_present ->
-	is_type(X)
 	p/X(Y)
 	time(p, now)
 	focus(p)
@@ -466,7 +678,6 @@ One-argument predicates of the format `root(subject)`. The light verb is dropped
 	sbj(X/noun(), Y/pstg())
 	lv(X, U/past_tense())
 	-> sbj_light_verb_past ->
-	is_type(X)
 	p/X(Y)
 	time(p, past)
 	focus(p)
@@ -477,7 +688,6 @@ One-argument predicates of the format `root(subject)`. The light verb is dropped
 	sbj(X/noun(), Y/pstg())
 	lv(X, U/present_tense())
 	-> sbj_light_verb_present ->
-	is_type(X)
 	p/X(Y)
 	time(p, now)
 	focus(p)
@@ -499,7 +709,6 @@ John made a call.
 	sbj(X/past_tense(), Y/pstg())
 	comp(X, Z/pstg())
 	-> sbj_outer_comp_past ->
-	is_type(X)
 	p/X(Y,Z)
 	time(p,past)
 	focus(p)
@@ -509,7 +718,6 @@ John made a call.
 	sbj(X/present_tense(), Y/pstg())
 	comp(X, Z/pstg())
 	-> sbj_outer_comp_present ->
-	is_type(X)
 	p/X(Y,Z)
 	time(p, now)
 	focus(p)
@@ -518,7 +726,6 @@ John made a call.
 	
 	comp(X/past_tense(), Z/pstg())
 	-> missing_outer_sbj_comp_past ->
-	is_type(X)
 	p/X(object(),Z)
 	time(p,past)
 	focus(p)
@@ -527,7 +734,6 @@ John made a call.
 		
 	comp(X/present_tense(), Z/pstg())
 	-> missing_outer_sbj_comp_present ->
-	is_type(X)
 	p/X(object(),Z)
 	time(p,past)
 	focus(p)
@@ -539,7 +745,6 @@ John made a call.
 	sbj(Z, B/pstg())
 	obj(Z, A/pstg())
 	-> sbj_sbj_inner_comp_with_obj ->
-	is_type(Z)
 	p/Z(B,A)
 	focus(p)
 	center(Z)
@@ -549,7 +754,6 @@ John made a call.
 	comp(X, Z/pstg())
 	sbj(Z, A/pstg())
 	-> sbj_sbj_inner_comp ->
-	is_type(Z)
 	p/Z(A)
 	focus(p)
 	center(Z)
@@ -559,7 +763,6 @@ John made a call.
 	comp(X, Z/pstg())
 	obj(Z, A/pstg())
 	-> sbj_inner_comp_with_obj ->
-	is_type(Z)
 	p/Z(Y,A)
 	focus(p)
 	center(Z)
@@ -568,13 +771,20 @@ John made a call.
 	sbj(X/verb(), Y/pstg())
 	comp(X, Z/pstg())
 	-> sbj_inner_comp ->
-	is_type(Z)
 	p/Z(Y)
 	focus(p)
 	center(Z)
 	;
 
  </details>
+
+#### Examples
+
+I thought John bought a house.
+
+I thought that John did buy a house.
+
+I like buying a house.
 
 ## Verbs without Objects
 
@@ -585,7 +795,6 @@ Captures expressions where the verb only has a subject.
 
 	sbj(X/past_tense(), Y/pstg())
 	-> sbj_no_obj_past ->
-	is_type(X)
 	p/X(Y)
 	time(p, past)
 	focus(p)
@@ -594,7 +803,6 @@ Captures expressions where the verb only has a subject.
 	
 	sbj(X/present_tense(), Y/pstg())
 	-> sbj_no_obj_present ->
-	is_type(X)
 	p/X(Y)
 	time(p, now)
 	focus(p)
@@ -623,8 +831,8 @@ The overall tense of the question is also affected by the aux verb.
 	sbj(X, Z/pstg())
 	precede(Y,Z)
 	-> q_aux_past ->
-	q/question(X)
-	aux_time(X, past)
+	q/request_truth(user, X)
+	p_time(X, past)
 	center(Y)
 	focus(q)
 	;
@@ -634,8 +842,8 @@ The overall tense of the question is also affected by the aux verb.
 	sbj(X, Z/pstg())
 	precede(Y,Z)
 	-> q_aux_present ->
-	q/question(X)
-	aux_time(X, now)
+	q/request_truth(user, X)
+	p_time(X, now)
 	center(Y)
 	focus(q)
 	;
@@ -646,7 +854,7 @@ The overall tense of the question is also affected by the aux verb.
 	sbj(X, Z/pstg())
 	precede(Y,Z)
 	-> q_aux_have ->
-	q/question(X)
+	q/request_truth(user, X)
 	center(Y)
 	focus(q)
 	;
@@ -669,7 +877,7 @@ Have you bought a house
 
 Auxiliary verbs modify the tense of their parent verb.
 
-TODO - properly update tense of main verb using auxiliaries, right now we have both a `time` predicate and an `aux_time` predicate
+TODO - missing 'go' auxiliary
 
  <details>
   <summary>Conversions</summary>
@@ -677,7 +885,7 @@ TODO - properly update tense of main verb using auxiliaries, right now we have b
 	aux(X/pstg(), Y/past_tense())
 	type(Y, tenseful_aux)
 	-> aux_past ->
-	t/aux_time(X, past)
+	t/p_time(X, past)
 	center(Y)
 	focus(t)
 	;
@@ -685,7 +893,7 @@ TODO - properly update tense of main verb using auxiliaries, right now we have b
 	aux(X/pstg(), Y/present_tense())
 	type(Y, tenseful_aux)
 	-> aux_present ->
-	t/aux_time(X, now)
+	t/p_time(X, now)
 	center(Y)
 	focus(t)
 	;
@@ -705,8 +913,8 @@ The overall meaning of the verb is also modified by the modal.
 	sbj(X, Z/pstg())
 	precede(Y, Z)
 	-> q_modal ->
-	m/mode(X, Y)
-	q/question(m)
+	m/Y(X)
+	q/request_truth(user, m)
 	center(Y)
 	focus(m)
 	;
@@ -715,16 +923,14 @@ The overall meaning of the verb is also modified by the modal.
 
 ## Modals
 
-Modify the meaning of the parent verbs by inducing a contemplation of possibilities/necessities.
-
-TODO - does this ever affect tense? 
+Modify the meaning of the parent verbs by inducing a contemplation of possibilities/necessities. 
 
  <details>
   <summary>Conversions</summary>
   
 	modal(X/pstg(), Y/pstg())
-	-> modal ->
-	m/mode(X, Y)
+	-> modal_rule ->
+	m/Y(X)
 	center(Y)
 	focus(m)
 	;
@@ -740,16 +946,16 @@ Modify the meaning of their parent verbs.
   
 	raise(X/pstg(), Y/past_tense())
 	-> raise_verb_past ->
-	p/mode(X, Y)
-	time(X, past)
+	p/Y(X)
+	p_time(X, past)
 	focus(p)
 	center(Y)
 	;
 	
 	raise(X/pstg(), Y/present_tense())
 	-> raise_verb_present ->
-	p/mode(X, Y)
-	time(X, now)
+	p/Y(X)
+	p_time(X, now)
 	focus(p)
 	center(Y)
 	;
@@ -766,7 +972,6 @@ Captures prepositional phrases by converting the preposition into a predicate of
 	ppmod(X/pstg(), Y/pstg())
 	case(Y, Z/pstg())
 	-> preposition_phrase ->
-	is_type(Z)
 	p/Z(X,Y)
 	focus(p)
 	center(Z)
@@ -779,42 +984,6 @@ Captures prepositional phrases by converting the preposition into a predicate of
 I walked in the door.
 
 The cat hid under the bed.
-
-## Passive Constructions
-
-Captures sentences with passive voice.
-
- <details>
-  <summary>Conversions</summary>
-
-	sbj(X/pstg(), Y/pstg())
-	obj(X, Z/pstg())
-	precede(Z, X)
-	-> sbj_obj_passive_voice ->
-	is_type(X)
-	p/X(Y, Z)
-	focus(p)
-	center(X)
-	;
-
-	obj(X/pstg(), Y/pstg())
-	precede(Y, X)
-	-> obj_passive_voice ->
-	is_type(X)
-	p/X(Y)
-	focus(p)
-	center(X)
-	;
-
-</details>
-
-#### Examples
-
-The dog was found.
-
-The dog was found by the policeman.
-
-I was chosen.
 
 ## Relative Clause
 
@@ -837,7 +1006,7 @@ TODO - make better
 Captures definite and indefinite specifications of concepts.
 
 `det` dependency relation specifies instances of a concept, where
-definite instances exist in a `referential` predicate and ndefinite instances exist in an `instantiative` predicate.
+definite instances are used to construct reference links and indefinite instances aren't.
 
 Determiners which are not a part of a `det` dependency relation are `object` instances, following the same predicate structure as above. 
 
@@ -847,9 +1016,7 @@ Determiners which are not a part of a `det` dependency relation are `object` ins
 	det(X/pstg(), Y/dt())
 	ltype(Y, ref_det)
 	-> ref_concept_determiner ->
-	is_type(X)
 	focus(inst/X())
-	referential(inst)
 	center(X)
 	cover(Y)
 	;
@@ -857,34 +1024,21 @@ Determiners which are not a part of a `det` dependency relation are `object` ins
 	det(X/pstg(), Y/dt())
 	ltype(Y, inst_det)
 	-> inst_concept_determiner ->
-	is_type(X)
 	focus(inst/X())
-	instantiative(inst)
 	center(X)
 	cover(Y)
 	;
 	
 	det(X/pstg(), Y/dt())
 	-> other_concept_determiner ->
-	is_type(X)
 	focus(X())
 	center(X)
 	cover(Y)
 	;
 	
 	X/dt()
-	ltype(X, ref_det)
-	-> ref_determiner ->
+	-> determiner ->
 	focus(o/object())
-	referential(o)
-	center(X)
-	;
-	
-	X/dt()
-	ltype(X, inst_det)
-	-> inst_determiner ->
-	focus(o/object())
-	instantiative(o)
 	center(X)
 	;
 
@@ -900,7 +1054,7 @@ Captures verb constructions with indirect objects.
 
 	dat(X/pstg(), Y/pstg())
 	-> indirect_obj ->
-	p/indirect_obj(X, Y)
+	p/beneficiary(X, Y)
 	focus(p)
 	center(Y)
 	;
@@ -915,14 +1069,15 @@ I bought a present for my mom.
 
 ## General Attribute
 
-Captures `attr` dependency relation as `property` logic relation.
+Captures `attr` dependency relation as current `property` logic which takes the form `property(subject)`.
 
  <details>
   <summary>Conversions</summary>
   
 	attr(X/pstg(), Y/pstg())
 	-> general_attribute ->
-	p/property(X,Y)
+	p/Y(X)
+	time(p, now)
 	focus(p)
 	center(Y)
 	;
@@ -947,7 +1102,7 @@ The red car
 	;
   
 	acl(X/pstg(), Y/pstg())
-	-> acl ->
+	-> acl_rule ->
 	p/property(X, Y)
 	focus(p)
 	link(Y)
@@ -964,7 +1119,6 @@ Captures possessive phrases by constructing a `possess` predicate between the po
 	  
 	poss(X/pstg(), Y/pstg())
 	-> obj_of_possessive ->
-	is_type(X)
 	focus(X())
 	center(X)
 	;
@@ -986,11 +1140,23 @@ John's sister
 
 ## Adverbials
 
+Adverbial attachments usually specify some linking between predicates, without being explicitly tied
+to a token in the expression. For instance, in `I bought a house yesterday morning`, the `adv` connects 
+`I bought a house` with `yesterday morning` but there is not a token we want to extract as the linking predicate
+itself. Instead, the two predicates are just linked together through the appropriate canonical predicate;
+in this case, the most appropriate choice would be the `time` predicate.
+
+Sometimes, there is an indicator word used that we do want to take as the linking predicate, 
+like `when` in `I bought milk when I was hungry`.
+
+Sometimes, the adverb itself is used as a predicate involving the subject it is modifying, 
+as in `I ran quickly`.
+
  <details>
   <summary>Conversions</summary>
   
 	advnp(X/pstg(), Y/pstg())
-	-> advnp ->
+	-> advnp_rule ->
 	p/qualifier(X, Y)
 	focus(p)
 	link(Y)
@@ -998,23 +1164,15 @@ John's sister
 	
 	advcl(X/pstg(), Y/pstg())
 	advcl_indicator(Y, Z/pstg())
-	-> advcl_with_mention ->
-	is_type(Z)
+	-> mention_advcl ->
 	p/Z(X,Y)
 	focus(p)
 	center(Z)
 	;
 	
-	advcl(X/pstg(), Y/pstg())
-	-> advcl ->
-	p/qualifier(X, Y)
-	focus(p)
-	link(Y)
-	;
-	
 	adv(X/pstg(), Y/pstg())
-	-> adv ->
-	p/qualifier(X, Y)
+	-> adv_rule ->
+	p/Y(X)
 	focus(p)
 	link(Y)
 	;
@@ -1047,14 +1205,14 @@ He made up an excuse.
   <summary>Conversions</summary>
   
 	conj(X/pstg(), Y/pstg())
-	-> conjunct ->
+	-> conjunct_rule ->
 	p/conjunct(X, Y)
 	focus(p)
 	link(Y)
 	;
 	
 	cc(X/pstg(), Y/pstg())
-	-> cc ->
+	-> coord_conj ->
 	p/conjunct_type(X, Y)
 	focus(p)
 	center(Y)
@@ -1071,7 +1229,7 @@ Captures expressions of quantities by constructing a `numeric` predicate between
   
 	num(X/pstg(), Y/pstg())
 	-> numeric ->
-	p/numeric(X, Y)
+	p/quantity(X, Y)
 	focus(p)
 	center(Y)
 	;
@@ -1089,7 +1247,7 @@ I bought four tickets.
   
 	neg(X/pstg(), Y/pstg())
 	-> negation ->
-	p/negate(X, Y)
+	p/Y(user, X)
 	focus(p)
 	center(Y)
 	;
@@ -1102,7 +1260,7 @@ I bought four tickets.
   <summary>Conversions</summary>
   
 	appo(X/pstg(), Y/pstg())
-	-> appositive ->
+	-> appositive_rule ->
 	p/appositive(X, Y)
 	focus(p)
 	link(Y)
@@ -1134,7 +1292,7 @@ Represented as the predicate `relay_info` where the subject is information being
   <summary>Conversions</summary>
 
 	prn(X/pstg(), Y/pstg())
-	-> parenthetical ->
+	-> parenthetical_rule ->
 	p/parenthical(X, Y)
 	focus(p)
 	center(Y)
@@ -1167,56 +1325,29 @@ If a target of the indication is not explicitly provided, then it is a variable.
 <details>
   <summary>Conversions</summary>
 
-	disc(X/pstg(), Y/pstg())
-	ref(Y, E/expression())
-	expr(E, affirm)
-	-> affirm_disc ->
-	p/affirm(user, X)
-	focus(p)
-	center(Y)
-	;
-	
-	ref(Y/interj(), E/expression())
-	expr(E, affirm)
-	-> affirm_interj ->
-	p/affirm(user, object())
-	focus(p)
-	center(Y)
-	;
-	
-	disc(X/pstg(), Y/pstg())
-	ref(Y, E/expression())
-	expr(E, reject)
-	-> reject_disc ->
-	p/reject(user, X)
-	focus(p)
-	center(Y)
-	;
-	
-	ref(Y/interj(), E/expression())
-	expr(E, reject)
-	-> reject_interj ->
-	p/reject(user, object())
-	focus(p)
-	center(Y)
-	;
-	
-	disc(X/pstg(), Y/pstg())
-	ref(Y, E/expression())
-	expr(E, acknowledge)
-	-> acknowledge_disc ->
-	p/acknowledge(user, X)
-	focus(p)
-	center(Y)
-	;
-	
-	ref(Y/interj(), E/expression())
-	expr(E, acknowledge)
-	-> acknowledge_interj ->
-	p/acknowledge(user, object())
-	focus(p)
-	center(Y)
-	;
+	ref(Y/pstg(), E/expression())
+    expr(E, affirm)
+    -> affirm_interj ->
+    p/affirm(user, predicate())
+    focus(p)
+    center(Y)
+    ;
+    
+    ref(Y/pstg(), E/expression())
+    expr(E, reject)
+    -> reject_interj ->
+    p/reject(user, predicate())
+    focus(p)
+    center(Y)
+    ;
+    
+    ref(Y/pstg(), E/expression())
+    expr(E, acknowledge)
+    -> acknowledge_interj ->
+    p/acknowledge(user, predicate())
+    focus(p)
+    center(Y)
+    ;
 
 </details>
 
@@ -1251,16 +1382,33 @@ Represented as predicates where the speaker is the subject and the dialogue part
 
 Recognize all pronouns that exist as concepts in the KG.
 
-If pronoun is referential (e.g. `it`), then it has a `referential` predicate. 
+If pronoun is referential (e.g. `it`), then it uses the reference linking (?)
+
+TODO - not currently set up as references
 
 <details>
   <summary>Conversions</summary>
+  
+    X/pron()  
+    ref(X, E/expression())
+	expr(E, he)
+	-> he_pron ->
+	focus(o/living_thing())
+	center(X)
+	;
+	
+	X/pron()  
+    ref(X, E/expression())
+	expr(E, she)
+	-> she_pron ->
+	focus(o/living_thing())
+	center(X)
+	;
 
 	X/pron()
 	ltype(X, ref_det)
 	-> ref_pron ->
 	focus(o/object())
-	referential(o)
 	center(X)
 	;
 
@@ -1269,9 +1417,8 @@ If pronoun is referential (e.g. `it`), then it has a `referential` predicate.
 
 ## Single Words
 
-If a word is mentioned that does not match a previous rule, instantiate it as a lone concept.
-
-This captures non-referential pronouns, nouns, etc.
+If a word is mentioned that does not match a previous rule, generate the concept if it 
+is a noun or pronoun; otherwise, instantiate it as a lone concept.
 
 <details>
   <summary>Conversions</summary>
@@ -1282,13 +1429,20 @@ This captures non-referential pronouns, nouns, etc.
 	focus(p)
 	center(Y)
     ;
-
-    X/noun()
+    
+    X/singular()
     ltype(X, object)
-    -> noun ->
+    -> singular_noun ->
     focus(X)
     center(X)
-    ;  
+    ;
+    
+    X/pron()
+    ltype(X, object)
+    -> pronoun ->
+    focus(X)
+    center(X)
+    ;
     
     X/allow_single()
     ltype(X, object)

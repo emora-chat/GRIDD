@@ -1,6 +1,6 @@
 
 from structpy import specification
-
+from GRIDD.globals import *
 
 @specification
 class IntelligenceCoreSpec:
@@ -30,18 +30,34 @@ class IntelligenceCoreSpec:
         """
         core.know('''
         cause = (predicate);
-        z/chase(x/animal(), y/animal()) => scared(y) cause(c:<c/predicate(x)>, z);
+        z/chase(x/animal(), y/animal()) => scared(y);
         ''')
+
+    def accept(core, knowledge):
+        """
+        Add predicates to working memory with confidence assumed.
+        """
+        core.accept('''
+        chase(fido, fluffy=cat())
+        ''')
+        print()
+        print(core.working_memory.pretty_print())
 
     def consider(core, knowledge):
         """
         Add predicates to working memory.
         """
         core.consider('''
-        chase(fido, fluffy=cat())
+        cref:<chase(fido, cref=cat())>
         ''')
         print()
         print(core.working_memory.pretty_print())
+
+    def pull_types(core):
+        """
+        Pull type hierarchy of all working memory concepts into working memory.
+        """
+        core.pull_types()
 
     def infer(core, rules=None):
         """
@@ -54,6 +70,63 @@ class IntelligenceCoreSpec:
         Add instantiated postconditions to working memory based on inference solutions.
         """
         core.apply_inferences(core.infer())
+        return
+
+    def update_confidence(core, feature=None):
+        """
+        Update confidence scores based on confidence links.
+        """
+        core.update_confidence()
+        return
+
+    def update_salience(core, feature=None):
+        """
+        Update salience scores based on semantic relatedness.
+        """
+        core.update_salience()
+        return
+
+    def resolve(core, references=None):
+        """
+        Resolve all references in working memory to their referents.
+        """
+        resolutions = core.resolve()
+        assert len(resolutions) == 3
+        assert ('fluffy', 'cref') in resolutions
+        return
+
+    def pull_knowledge(core, k=1):
+        """
+        Pull knowledge of semantic neighbors of working memory concepts from knowledge base.
+        """
+        additions = core.pull_knowledge(10, 10)
+        assert len(additions) == 1
+        core.consider(additions)
+        return
+
+    def decay_salience(core, feature=None):
+        """
+        Decay salience
+        """
+        core.consider('''
+        ht=happy(taylor=dog()){"%s": 0.1}
+        '''%SALIENCE)
+        core.decay_salience()
+        assert core.working_memory.features['ht'][SALIENCE] == 0.0
+
+    def prune_attended(core, keep, feature=None):
+        """
+        Remove concepts from working memory according to salience feature.
+        """
+        core.prune_attended(2)
+        assert not core.working_memory.has(predicate_id='ht')
+        return
+
+    def pull_expressions(core):
+        """
+        Pull all expressions of working memory concepts.
+        """
+        core.pull_expressions()
 
     def merge(core, concept_sets):
         """
@@ -63,60 +136,12 @@ class IntelligenceCoreSpec:
         """
         core.merge([])
 
-    def resolve(core, references=None):
-        """
-        Resolve all references in working memory to their referents.
-        """
-        resolutions = core.resolve()
-
     def logical_merge(core):
         """
         Merge isomorphic concepts in working memory.
         """
         core.consider('scared(fluffy)')
         core.logical_merge()
-
-    def pull_types(core):
-        """
-        Pull type hierarchy of all working memory concepts into working memory.
-        """
-        core.pull_types()
-
-    def pull_knowledge(core, k=1):
-        """
-        Pull knowledge of semantic neighbors of working memory concepts from knowledge base.
-        """
-        core.consider(core.pull_knowledge())
-
-    def pull_expressions(core):
-        """
-        Pull all expressions of working memory concepts.
-        """
-        core.pull_expressions()
-
-    def update_confidences(core, feature=None):
-        """
-        Update confidence scores based on confidence links.
-        """
-        core.update_confidences()
-
-    def update_salience(core, feature=None):
-        """
-        Update salience scores based on semantic relatedness.
-        """
-        core.update_salience()
-
-    def decay_salience(core, feature=None):
-        """
-        Decay salience
-        """
-        core.decay_salience()
-
-    def prune_attended(core, feature=None):
-        """
-        Remove concepts from working memory according to salience feature.
-        """
-        core.prune_attended()
 
     def operate(core, operations=None):
         """
