@@ -57,8 +57,8 @@ class ChatbotServer:
         nlg_templates = collect(*nlg_templates)
         self.dialogue_intcore = IntelligenceCore(knowledge_base=knowledge + inference_rules + nlg_templates,
                                                  device=device)
-        if starting_wm is not None:
-            self.dialogue_intcore.consider(starting_wm)
+        if self.starting_wm is not None:
+            self.dialogue_intcore.consider(self.starting_wm)
         print('IntelligenceCore load: %.2f' % (time.time() - s))
 
     ###################################################
@@ -376,10 +376,10 @@ class ChatbotServer:
                                      headers={'content-type': 'application/json'},
                                      timeout=3.0)
             response = response.json()
-            if "performance" in response:
-                del response["performance"]
-                del response["error"]
-            nlg_responses = json.loads(response["nlg_responses"])
+            if 'context_manager' in response:
+                nlg_responses = json.loads(response['context_manager']['nlg_responses'])
+            else:
+                nlg_responses = []
         else:
             nlg_responses = self.response_nlg_model(expanded_response_predicates)
         return nlg_responses
