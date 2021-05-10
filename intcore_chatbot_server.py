@@ -53,7 +53,7 @@ class ChatbotServer:
         s = time.time()
         knowledge = collect(*knowledge_base)
         inference_rules = collect(*inference_rules)
-        starting_wm = None if starting_wm is None else collect(*starting_wm)
+        self.starting_wm = None if starting_wm is None else collect(*starting_wm)
         nlg_templates = collect(*nlg_templates)
         self.dialogue_intcore = IntelligenceCore(knowledge_base=knowledge + inference_rules + nlg_templates,
                                                  device=device)
@@ -355,12 +355,12 @@ class ChatbotServer:
                                                                self.dialogue_intcore.working_memory)
         return expanded_response_predicates, working_memory
 
-    def init_response_acknowledgements(self):
-        self.response_acknowledgements = ResponseRules()
+    def init_response_by_rules(self):
+        self.response_by_rules = ResponseRules()
 
     @serialized('ack_responses')
     def run_response_by_rules(self, aux_state, expanded_response_predicates):
-        ack_responses = self.response_acknowledgements(aux_state, expanded_response_predicates)
+        ack_responses = self.response_by_rules(aux_state, expanded_response_predicates)
         return ack_responses
 
     def init_response_nlg_model(self, model=None, device='cpu'):
@@ -402,7 +402,11 @@ class ChatbotServer:
     ###################################################
 
     def load_working_memory(self, working_memory):
-        self.dialogue_intcore.working_memory = working_memory
+        if working_memory is not None:
+            self.dialogue_intcore.working_memory = working_memory
+        else:
+            self.dialogue_intcore.working_memory = ConceptGraph(namespace='wm', supports={AND_LINK: False})
+            self.dialogue_intcore.consider(self.starting_wm)
 
     def assign_cover(self, graph, concepts=None):
         if concepts is None:
@@ -504,7 +508,7 @@ class ChatbotServer:
         self.init_template_nlg()
         self.init_response_selection()
         self.init_response_expansion()
-        self.init_response_acknowledgements()
+        self.init_response_by_rules()
         self.init_response_nlg_model()
         self.init_response_assember()
 
