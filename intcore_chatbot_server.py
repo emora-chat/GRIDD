@@ -120,7 +120,7 @@ class ChatbotServer:
     def run_mention_bridge(self, mentions, working_memory):
         self.load_working_memory(working_memory)
         if mentions is None:
-            mentions = []
+            mentions = {}
         namespace = list(mentions.items())[0][1].id_map() if len(mentions) > 0 else "ment_"
         mega_mention_graph = ConceptGraph(namespace=namespace)
         for span, mention_graph in mentions.items():
