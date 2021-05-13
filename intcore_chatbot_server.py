@@ -89,8 +89,8 @@ class ChatbotServer:
     @serialized('elit_results')
     def run_elit_models(self, user_utterance, aux_state):
         if LOCAL:
-            input_dict = {"text": [user_utterance, None],
-                          "aux_state": [aux_state, aux_state],
+            input_dict = {"user_utterance": user_utterance,
+                          "aux_state": aux_state,
                           "conversationId": 'local'}
             response = requests.post('http://cobot-LoadB-2W3OCXJ807QG-1571077302.us-east-1.elb.amazonaws.com',
                                      data=json.dumps(input_dict),
@@ -119,6 +119,8 @@ class ChatbotServer:
     @serialized('working_memory')
     def run_mention_bridge(self, mentions, working_memory):
         self.load_working_memory(working_memory)
+        if mentions is None:
+            mentions = []
         namespace = list(mentions.items())[0][1].id_map() if len(mentions) > 0 else "ment_"
         mega_mention_graph = ConceptGraph(namespace=namespace)
         for span, mention_graph in mentions.items():
@@ -140,6 +142,8 @@ class ChatbotServer:
     @serialized('working_memory')
     def run_merge_bridge(self, merges, working_memory):
         self.load_working_memory(working_memory)
+        if merges is None:
+            merges = []
         node_merges = []
         for (span1, pos1), (span2, pos2) in merges:
             # if no mention for span, no merge possible
@@ -158,11 +162,12 @@ class ChatbotServer:
     @serialized('working_memory')
     def run_knowledge_pull(self, working_memory):
         self.load_working_memory(working_memory)
+        working_memory = self.dialogue_intcore.working_memory
         knowledge_by_source = self.dialogue_intcore.pull_knowledge(limit=100, num_pullers=50, association_limit=10, subtype_limit=10)
         for pred, sources in knowledge_by_source.items():
             if not working_memory.has(*pred) and not working_memory.has(predicate_id=pred[3]):
                 self.dialogue_intcore.consider([pred], namespace=self.dialogue_intcore.knowledge_base._ids, associations=sources)
-                self.dialogue_intcore.working_memory.metagraph.update(self.dialogue_intcore.knowledge_base.metagraph,
+                working_memory.metagraph.update(self.dialogue_intcore.knowledge_base.metagraph,
                                                                       self.dialogue_intcore.knowledge_base.metagraph.features,
                                                                       concepts=[pred[3]])
         types = self.dialogue_intcore.pull_types()
@@ -217,6 +222,8 @@ class ChatbotServer:
     def run_reference_resolution(self, inference_results, working_memory):
         self.load_working_memory(working_memory)
         wm = self.dialogue_intcore.working_memory
+        if inference_results is None:
+            inference_results = {}
         compatible_pairs = {}
         if len(inference_results) > 0:
             for reference_node, (pre, matches) in inference_results.items():
@@ -333,6 +340,8 @@ class ChatbotServer:
 
     @serialized('template_response_sel', 'aux_state')
     def run_template_fillers(self, inference_results, working_memory, aux_state):
+        if inference_results is None:
+            inference_results = {}
         template_response_sel = self.template_filler(inference_results, working_memory, aux_state)
         if template_response_sel[0] is not None:
             aux_state.setdefault('spoken_responses', []).append(template_response_sel[0])
@@ -354,6 +363,8 @@ class ChatbotServer:
     @serialized('expanded_response_predicates', 'working_memory')
     def run_response_expansion(self, response_predicates, working_memory):
         self.load_working_memory(working_memory)
+        if response_predicates is None:
+            response_predicates = []
         expanded_response_predicates, working_memory = self.response_expansion(response_predicates,
                                                                self.dialogue_intcore.working_memory)
         return expanded_response_predicates, working_memory
@@ -363,6 +374,8 @@ class ChatbotServer:
 
     @serialized('rule_responses')
     def run_response_by_rules(self, aux_state, expanded_response_predicates):
+        if expanded_response_predicates is None:
+            expanded_response_predicates = []
         rule_responses = self.response_by_rules(aux_state, expanded_response_predicates)
         return rule_responses
 
@@ -372,7 +385,7 @@ class ChatbotServer:
     @serialized('nlg_responses')
     def run_response_nlg_model(self, expanded_response_predicates):
         if LOCAL:
-            input_dict = {"expanded_response_predicates": [expanded_response_predicates, None],
+            input_dict = {"expanded_response_predicates": expanded_response_predicates,
                           "conversationId": 'local'}
             response = requests.post('http://cobot-LoadB-1L3YPB9TGV71P-1610005595.us-east-1.elb.amazonaws.com',
                                      data=json.dumps(input_dict),
@@ -392,6 +405,10 @@ class ChatbotServer:
 
     @serialized('response', 'working_memory')
     def run_response_assembler(self, working_memory, aux_state, rule_responses, nlg_responses):
+        if rule_responses is None:
+            rule_responses = []
+        if nlg_responses is None:
+            nlg_responses = []
         response = self.response_assembler(aux_state, rule_responses, nlg_responses)
         self.load_working_memory(working_memory)
         self.dialogue_intcore.update_salience(iterations=SAL_ITER)
