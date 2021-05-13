@@ -353,6 +353,8 @@ class ChatbotServer:
     @serialized('aux_state', 'response_predicates')
     def run_response_selection(self, working_memory, aux_state, template_response_sel):
         self.load_working_memory(working_memory)
+        if template_response_sel is None:
+            template_response_sel = (None,None,None)
         aux_state, response_predicates = self.response_selection(aux_state, self.dialogue_intcore.working_memory,
                                                                  template_response_sel)
         return aux_state, response_predicates

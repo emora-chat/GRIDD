@@ -54,6 +54,7 @@ def load(key, value):
         try:
             value = json.loads(value) if isinstance(value, str) else value
         except json.JSONDecodeError as e:
+            print('ERROR:', e)
             value = value
         if key == 'working_memory':
             working_memory = ConceptGraph(namespace=value["namespace"])
@@ -78,6 +79,7 @@ def load(key, value):
                 new_d[span_str] = cg
             value = new_d
         elif key == 'inference_results':
+            print('Value:', value)
             for rule, info in value.items():
                 if len(info) == 3:
                     pre_json, post_json, match_dict = info
