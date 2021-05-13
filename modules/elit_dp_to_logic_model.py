@@ -26,7 +26,7 @@ class ElitDPToLogic(ParseToLogic):
         args[0,1,2] - tok, pos, dp
         :return dependency parse cg
         """
-        cg = ConceptGraph(concepts=NODES, namespace='p_')
+        cg = ConceptGraph(namespace='p_')
         self.convert(*args, cg)
         return cg
 

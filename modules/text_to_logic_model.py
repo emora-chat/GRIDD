@@ -81,6 +81,8 @@ class ParseToLogic:
         wm = self.intcore.working_memory
         self.intcore.working_memory.clear()
         parse_graph = self.text_to_graph(*args)
+        if len(parse_graph.concepts()) == 0: # empty utterance
+            return [], []
         self.intcore.consider(parse_graph)
         self._span_to_concepts()
         types = self.intcore.pull_types()

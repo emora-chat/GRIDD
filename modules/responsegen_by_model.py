@@ -37,6 +37,10 @@ class ResponseGeneration:
     def __call__(self, expanded_response_predicates):
         generations = []
         for selection in expanded_response_predicates:
+            print(selection)    # DEBUGGING
+            print(selection[0]) # DEBUGGING
+            print(selection[1]) # DEBUGGING
+            print(selection[2]) # DEBUGGING
             if selection[2] in {'nlg', 'backup'}:
                 generations.append(self.generate(selection[0], selection[1]))
             else:
