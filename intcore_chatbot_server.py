@@ -99,7 +99,10 @@ class ChatbotServer:
             json_results = response.json()["context_manager"]
             elit_results = load('elit_results', json_results['elit_results'])
         else:
-            elit_results = self.elit_models(user_utterance, aux_state)
+            if len(user_utterance.strip()) == 0:
+                elit_results = {}
+            else:
+                elit_results = self.elit_models(user_utterance, aux_state)
         return elit_results
 
     def init_parse2logic(self, device=None):
