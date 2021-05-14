@@ -9,14 +9,6 @@ from GRIDD.intcore_server_globals import *
 
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.intelligence_core import IntelligenceCore
-if INFERENCE:
-    from GRIDD.modules.elit_dp_to_logic_model import ElitDPToLogic
-from GRIDD.modules.responsegen_by_templates import ResponseTemplateFiller
-from GRIDD.modules.response_selection_salience import ResponseSelectionSalience
-from GRIDD.modules.response_expansion import ResponseExpansion
-from GRIDD.modules.responsegen_by_rules import ResponseRules
-from GRIDD.modules.responsegen_by_model import ResponseGeneration
-from GRIDD.modules.response_assembler import ResponseAssembler
 
 from GRIDD.utilities.server import save, load
 from inspect import signature
@@ -106,6 +98,7 @@ class ChatbotServer:
         return elit_results
 
     def init_parse2logic(self, device=None):
+        from GRIDD.modules.elit_dp_to_logic_model import ElitDPToLogic
         nlu_templates = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
         self.elit_dp = ElitDPToLogic(self.dialogue_intcore.knowledge_base,
                                      nlu_templates,
@@ -326,6 +319,7 @@ class ChatbotServer:
         return self.dialogue_intcore.working_memory
 
     def init_template_nlg(self):
+        from GRIDD.modules.responsegen_by_templates import ResponseTemplateFiller
         self.template_filler = ResponseTemplateFiller()
 
     @serialized('working_memory', 'use_cached')
@@ -348,6 +342,7 @@ class ChatbotServer:
         return template_response_sel, aux_state
 
     def init_response_selection(self):
+        from GRIDD.modules.response_selection_salience import ResponseSelectionSalience
         self.response_selection = ResponseSelectionSalience()
 
     @serialized('aux_state', 'response_predicates')
@@ -360,6 +355,7 @@ class ChatbotServer:
         return aux_state, response_predicates
 
     def init_response_expansion(self):
+        from GRIDD.modules.response_expansion import ResponseExpansion
         self.response_expansion = ResponseExpansion(self.dialogue_intcore.knowledge_base)
 
     @serialized('expanded_response_predicates', 'working_memory')
@@ -372,6 +368,7 @@ class ChatbotServer:
         return expanded_response_predicates, working_memory
 
     def init_response_by_rules(self):
+        from GRIDD.modules.responsegen_by_rules import ResponseRules
         self.response_by_rules = ResponseRules()
 
     @serialized('rule_responses')
@@ -382,6 +379,7 @@ class ChatbotServer:
         return rule_responses
 
     def init_response_nlg_model(self, model=None, device='cpu'):
+        from GRIDD.modules.responsegen_by_model import ResponseGeneration
         self.response_nlg_model = ResponseGeneration(model, device)
 
     @serialized('nlg_responses')
@@ -403,6 +401,7 @@ class ChatbotServer:
         return nlg_responses
 
     def init_response_assember(self):
+        from GRIDD.modules.response_assembler import ResponseAssembler
         self.response_assembler = ResponseAssembler()
 
     @serialized('response', 'working_memory')
