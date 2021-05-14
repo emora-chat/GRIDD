@@ -1,8 +1,10 @@
 
 from GRIDD.data_structures.intelligence_core_spec import IntelligenceCoreSpec
+from GRIDD.intcore_server_globals import *
 
 from GRIDD.data_structures.concept_graph import ConceptGraph
-from GRIDD.data_structures.inference_engine import InferenceEngine
+if INFERENCE:
+    from GRIDD.data_structures.inference_engine import InferenceEngine
 from GRIDD.data_structures.concept_compiler import ConceptCompiler
 from GRIDD.utilities.utilities import uniquify, operators, interleave
 from itertools import chain, combinations
@@ -19,10 +21,11 @@ class IntelligenceCore:
 
     def __init__(self, knowledge_base=None, working_memory=None, inference_engine=None, device='cpu'):
         self.compiler = ConceptCompiler(namespace='__c__')
-        self.nlg_inference_engine = InferenceEngine(device=device)
-        if inference_engine is None:
-            inference_engine = InferenceEngine(device=device)
-        self.inference_engine = inference_engine
+        if INFERENCE:
+            self.nlg_inference_engine = InferenceEngine(device=device)
+            if inference_engine is None:
+                inference_engine = InferenceEngine(device=device)
+            self.inference_engine = inference_engine
         if isinstance(knowledge_base, ConceptGraph):
             self.knowledge_base = knowledge_base
         else:

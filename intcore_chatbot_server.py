@@ -18,8 +18,7 @@ from GRIDD.modules.response_assembler import ResponseAssembler
 from GRIDD.utilities.server import save, load
 from inspect import signature
 
-LOCAL = True
-IS_SERIALIZING = True
+from GRIDD.intcore_server_globals import *
 
 def serialized(*returns):
     def dectorator(f):
