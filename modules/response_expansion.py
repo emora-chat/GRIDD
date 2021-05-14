@@ -1,4 +1,3 @@
-from GRIDD.modules.response_expansion_spec import ResponseExpansionSpec
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.globals import *
 
@@ -103,4 +102,5 @@ class ResponseExpansion:
             graph.features[concept][BASE_UCONFIDENCE] = graph.features.get(concept, {}).get(BASE_CONFIDENCE, 0.0)
 
 if __name__ == '__main__':
+    from GRIDD.modules.response_expansion_spec import ResponseExpansionSpec
     print(ResponseExpansionSpec.verify(ResponseExpansion))

@@ -1,4 +1,3 @@
-from GRIDD.modules.responsegen_by_templates_spec import ResponseTemplatesSpec
 from GRIDD.data_structures.concept_compiler import ConceptCompiler
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.utilities.utilities import collect
@@ -16,7 +15,7 @@ from simplenlg.features.Tense               import *
 from simplenlg.features.Person              import *
 
 """
-These two classes work in conjunction with the service-implementation of the InferenceEngine
+This class works in conjunction with the service-implementation of the InferenceEngine
 in order to find appropriate template matches for a given concept graph and properly fill in the 
 templates for each match.
 
@@ -25,21 +24,6 @@ Execution Sequence:
     InferenceEngine
     ResponseTemplateFiller
 """
-
-class ResponseTemplateFinder:
-    """
-    Loads the template rules from template_dir upon initialization and returns them when called.
-    """
-
-    def __init__(self, template_dir):
-        compiler = ConceptCompiler(predicates=None, types=None, namespace='c_')
-        predicates, metalinks, metadatas = compiler.compile(collect(template_dir))
-        template_cg = ConceptGraph(predicates, metalinks=metalinks, metadata=metadatas,
-                                      namespace='t_')
-        self.template_rules = template_cg.nlg_templates()
-
-    def templates(self):
-        return self.template_rules
 
 class ResponseTemplateFiller:
     """
@@ -189,6 +173,7 @@ class ResponseTemplateFiller:
 
 
 if __name__ == '__main__':
+    from GRIDD.modules.responsegen_by_templates_spec import ResponseTemplatesSpec
     print(ResponseTemplatesSpec.verify(ResponseTemplateFiller))
 
     # from os.path import join
