@@ -55,13 +55,15 @@ class IntelligenceCore:
             cg.remove(rule)
         for concept in set(cg.subtypes_of('response_token')):
             cg.remove(concept)
-        self.nlg_inference_engine.add(nlg_templates)
+        if INFERENCE:
+            self.nlg_inference_engine.add(nlg_templates)
         rules = cg.rules()
         for rule, (pre, post, vars) in rules.items():
             for concept in vars:
                 cg.remove(concept)
             cg.remove(rule)
-        self.inference_engine.add(rules)
+        if INFERENCE:
+            self.inference_engine.add(rules)
         self.knowledge_base.concatenate(cg)
 
     def consider(self, concepts, namespace=None, associations=None, evidence=None, salience=1, **options):
@@ -94,6 +96,26 @@ class IntelligenceCore:
             solutions = self.inference_engine.infer(self.working_memory, dynamic_rules=rules)
         return solutions
 
+    def apply(self, inferences):
+        implications = {}
+        for rid, (pre, post, sols) in inferences.items():
+            for sol in sols:
+                implied = ConceptGraph(namespace=post._ids)
+                for pred in post.predicates():
+                    pred = [sol.get(x, x) for x in pred]
+                    implied.add(*pred)
+                for concept in post.concepts():
+                    concept = sol.get(concept, concept)
+                    implied.add(concept)
+                for s, t, l in post.metagraph.edges():
+                    implied.metagraph.add(sol.get(s, s), sol.get(t, t), l)
+                for s in post.metagraph.nodes():
+                    implied.metagraph.add(sol.get(s, s))
+                features = {sol.get(k, k): v for k, v in post.features.items()}
+                implied.features.update(features)
+                implications.setdefault(rid, []).append((sol, implied))
+        return implications
+
     def apply_inferences(self, inferences=None):
         """
         :param inferences: {rule: (pre, post, [solution_dict, ...]),
@@ -106,7 +128,7 @@ class IntelligenceCore:
         #  if the precondition contains no vars, there is no evidence!
         if inferences is None:
             inferences = self.infer()
-        result_dict = self.inference_engine.apply(inferences)
+        result_dict = self.apply(inferences)
         for rule, results in result_dict.items():
             pre, post = inferences[rule][0], inferences[rule][1] # todo- assign neg conf links
             for evidence, implication in results:

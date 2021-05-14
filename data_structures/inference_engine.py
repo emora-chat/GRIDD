@@ -190,25 +190,5 @@ class InferenceEngine:
                 final_sols[rule_id] = (all_rules[rule_id][0], sol_ls)
         return final_sols
 
-    def apply(self, inferences):
-        implications = {}
-        for rid, (pre, post, sols) in inferences.items():
-            for sol in sols:
-                implied = ConceptGraph(namespace=post._ids)
-                for pred in post.predicates():
-                    pred = [sol.get(x, x) for x in pred]
-                    implied.add(*pred)
-                for concept in post.concepts():
-                    concept = sol.get(concept, concept)
-                    implied.add(concept)
-                for s, t, l in post.metagraph.edges():
-                    implied.metagraph.add(sol.get(s, s), sol.get(t, t), l)
-                for s in post.metagraph.nodes():
-                    implied.metagraph.add(sol.get(s, s))
-                features = {sol.get(k, k): v for k, v in post.features.items()}
-                implied.features.update(features)
-                implications.setdefault(rid, []).append((sol, implied))
-        return implications
-
 if __name__ == '__main__':
     print(InferenceEngineSpec.verify(InferenceEngine))
