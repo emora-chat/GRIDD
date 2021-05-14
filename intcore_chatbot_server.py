@@ -5,9 +5,12 @@ from itertools import chain
 from GRIDD.utilities.utilities import collect
 from GRIDD.data_structures.span import Span
 from GRIDD.globals import *
+from GRIDD.intcore_server_globals import *
+
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.intelligence_core import IntelligenceCore
-from GRIDD.modules.elit_dp_to_logic_model import ElitDPToLogic
+if INFERENCE:
+    from GRIDD.modules.elit_dp_to_logic_model import ElitDPToLogic
 from GRIDD.modules.responsegen_by_templates import ResponseTemplateFiller
 from GRIDD.modules.response_selection_salience import ResponseSelectionSalience
 from GRIDD.modules.response_expansion import ResponseExpansion
@@ -17,8 +20,6 @@ from GRIDD.modules.response_assembler import ResponseAssembler
 
 from GRIDD.utilities.server import save, load
 from inspect import signature
-
-from GRIDD.intcore_server_globals import *
 
 def serialized(*returns):
     def dectorator(f):
