@@ -14,6 +14,7 @@ from GRIDD.data_structures.id_map import IdMap
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.globals import *
 import numpy as np
+import time
 MY_DECAY = 0.1
 def update_salienceold(wm):
     """
@@ -68,37 +69,65 @@ def update_salienceold(wm):
     return sal
     #raise NotImplementedError
 
+
+
+#def to_graph(self):
+ #       graph = Graph()
+  #      for s, t, o, i in self.predicates():
+   #         graph.add(i, s, 's')
+    #        graph.add(i, t, 't')
+     #       if o is not None:
+      #          graph.add(i, o, 'o')
+       # for c in self.concepts():
+        #    graph.add(c)
+        #return graph
+
+
+
 def update_salience(wm):
     names = {}
-    g = wm.to_graph()
-    npsal = np.zeros(shape=(1,len(g)))
-    npedges = np.zeros(shape=(len(g), len(g)))
-    for i, name in enumerate(g.nodes()):
+   # g = wm.to_graph()
+    wmc = wm.concepts()
+    npsal = np.zeros(shape=(1,len(wmc)))
+    npedges = np.zeros(shape=(len(wmc), len(wmc)))
+    #for i, name in enumerate(g.nodes()):
+    for i, name in enumerate(wmc):
         names[name] = i
         try:
             npsal[0][i]=wm.features[name][SALIENCE]
         except:
             pass
 
-    edges = []
-    for e in g.edges():
-        if e[0] not in SAL_FREE and e[1] not in SAL_FREE:
-            if not wm.has(predicate_id=e[0]) or wm.type(e[0]) not in SAL_FREE:
-                #edges.append(e)
-                npedges[names[e[1]]][names[e[0]]] = MY_DECAY
+
+   # for e in g.edges():
+       # if e[0] not in SAL_FREE and e[1] not in SAL_FREE and (not wm.has(predicate_id=e[0]) or wm.type(e[0]) not in SAL_FREE):
+       #     npedges[names[e[1]]][names[e[0]]] = MY_DECAY
+    for s, t, o, i in wm.predicates():
+        if i not in SAL_FREE:
+            if s not in SAL_FREE:
+                npedges[names[s]][names[i]] = MY_DECAY
+                npedges[names[i]][names[s]] = MY_DECAY
+            if t not in SAL_FREE:
+                npedges[names[t]][names[i]] = MY_DECAY
+                npedges[names[i]][names[t]] = MY_DECAY
+            if o is not None and o not in SAL_FREE:
+                npedges[names[o]][names[i]] = MY_DECAY
+                npedges[names[i]][names[o]] = MY_DECAY
+
     for edge in wm.metagraph.edges():
         if isinstance(edge[2], tuple) and AND_LINK == edge[2][0]:
             for evidence, and_node, _ in edge:
                 or_links = [edge for edge in wm.metagraph.out_edges(and_node) if
                             isinstance(edge[2], tuple) and OR_LINK == edge[2][0]]
                 for _, implication, _ in or_links:
-                    #redges.append((evidence, implication, None))
                     npedges[names[evidence]][names[implication]] = MY_DECAY
 
   #  print(npsal)
     a = np.matmul(npsal, npedges)
+
     sal = {}
-    for i in g.nodes():
+    #for i in g.nodes():
+    for i in wm.concepts():
         try:
             sal[i] = wm.features[i][SALIENCE] + a[0][names[i]]
             wm.features[i][SALIENCE] += a[0][names[i]]
@@ -3455,10 +3484,10 @@ class TestSalienceUpdate(unittest.TestCase):
         assert wm.features['d'][SALIENCE] == 1.0
 
         saliences = update_salience(wm)
-
+        saliences = update_salience(wm)
         for concept, salience in saliences.items():
             print(concept, ':', salience)
-
+        print()
         '''
         Considerations:
 
