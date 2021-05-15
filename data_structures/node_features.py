@@ -83,7 +83,7 @@ class NodeFeatures(defaultdict):
                 if feature == "span_data":
                     json_compatible[node][feature] = value.to_string()
                 elif isinstance(value, float):
-                    json_compatible[node][feature] = '%.2f' % value
+                    json_compatible[node][feature] = round(value, 2)
                 else:
                     json_compatible[node][feature] = value
         return json_compatible
