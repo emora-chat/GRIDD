@@ -25,13 +25,6 @@ op_more_info(p, h)
 request(emora, p)
 ;
 
-time(h/have(user, p/pet()), now)
-h{"confidence": -1}
--> not_have_pet ->
-w:<time(w/want(user, p2/pet()), now)>
-request_truth(emora, w)
-;
-
 time(have(user, X/pet()), now)
 -> user_has_pet ->
 i:<i/property(X)>
@@ -74,7 +67,14 @@ request(emora, e)
 
 
 
+/* Does Not Have Pet */
 
+time(h/have(user, p/pet()), now)
+h{"confidence": -1}
+-> not_have_pet ->
+w:<time(w/want(user, p2/pet()), now)>
+request_truth(emora, w)
+;
 
 
 

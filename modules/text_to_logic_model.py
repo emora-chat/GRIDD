@@ -56,6 +56,8 @@ class ParseToLogic:
                     vars.update([expression_var, ref, concept_var, expr, concept_type])
                     vars.difference_update(to_remove)
                     original_vars.difference_update(to_remove) # remove ltype predicate instance from vars; otherwise, it will be added as constraint with ref and expression
+                if pregraph.has('ltype'):
+                    pregraph.remove('ltype')
                 if not found_supertype:
                     expression_var = pregraph.id_map().get()
                     ref = pregraph.add(concept, 'ref', expression_var)

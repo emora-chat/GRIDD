@@ -395,7 +395,7 @@ class ChatbotServer:
             if 'context_manager' in response:
                 nlg_responses = json.loads(response['context_manager']['nlg_responses'])
             else:
-                nlg_responses = []
+                nlg_responses = [None] * len(expanded_response_predicates)
         else:
             nlg_responses = self.response_nlg_model(expanded_response_predicates)
         return nlg_responses

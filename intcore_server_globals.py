@@ -1,4 +1,4 @@
 
 LOCAL = True
-IS_SERIALIZING = True
+IS_SERIALIZING = False
 INFERENCE = True
