@@ -1,12 +1,13 @@
 import unittest
-from suffix_trees import STree
 import time
-
+from GRIDD.possible_tasks.trie import SpanMatcher
+import string
+import random
 
 class ExpressionMatcher:
 
     def __init__(self, expressions):
-        self.expressions = list(expressions)  # feel free to modify
+        self.st = SpanMatcher(expressions)
 
     def match(self, input):
         """
@@ -24,13 +25,14 @@ class ExpressionMatcher:
         """
 
         count = 0
-        st = STree.STree(input.lower())
+        st = self.st
         m = {}
         o = {}
         c = {}
-        for i in self.expressions:
-            for j in st.find_all(i):
-                m[(j, j + len(i))] = i
+        tokens = input.lower().split()
+        a = st.findall(tokens,remove_subset=False, remove_overlap=False)
+        for i in a:
+            m[(i[1],i[2])] = i[0]
         for i in m.keys():
             o[i] = set()
             c[i] = set()
@@ -53,7 +55,6 @@ class ExpressionMatcher:
                 c.pop(i)
         return m, o, c
 
-
 class TestExpressionMatching(unittest.TestCase):
 
     def test_match_expressions_aesop(self):
@@ -62,208 +63,11 @@ class TestExpressionMatching(unittest.TestCase):
             'mouse',
             'country mouse',
             'felix the fox',
-            'lone wolf',
-            'aaaa0',
-            'aaaa1',
-            'aaaa2',
-            'aaaa3',
-            'aaaa4',
-            'aaaa5',
-            'aaaa6',
-            'aaaa7',
-            'aaaa8',
-            'aaaa9',
-            'aaaa10',
-            'aaaa11',
-            'aaaa12',
-            'aaaa13',
-            'aaaa14',
-            'aaaa15',
-            'aaaa16',
-            'aaaa17',
-            'aaaa18',
-            'aaaa19',
-            'aaaa20',
-            'aaaa21',
-            'aaaa22',
-            'aaaa23',
-            'aaaa24',
-            'aaaa25',
-            'aaaa26',
-            'aaaa27',
-            'aaaa28',
-            'aaaa29',
-            'aaaa30',
-            'aaaa31',
-            'aaaa32',
-            'aaaa33',
-            'aaaa34',
-            'aaaa35',
-            'aaaa36',
-            'aaaa37',
-            'aaaa38',
-            'aaaa39',
-            'aaaa40',
-            'aaaa41',
-            'aaaa42',
-            'aaaa43',
-            'aaaa44',
-            'aaaa45',
-            'aaaa46',
-            'aaaa47',
-            'aaaa48',
-            'aaaa49',
-            'aaaa50',
-            'aaaa51',
-            'aaaa52',
-            'aaaa53',
-            'aaaa54',
-            'aaaa55',
-            'aaaa56',
-            'aaaa57',
-            'aaaa58',
-            'aaaa59',
-            'aaaa60',
-            'aaaa61',
-            'aaaa62',
-            'aaaa63',
-            'aaaa64',
-            'aaaa65',
-            'aaaa66',
-            'aaaa67',
-            'aaaa68',
-            'aaaa69',
-            'aaaa70',
-            'aaaa71',
-            'aaaa72',
-            'aaaa73',
-            'aaaa74',
-            'aaaa75',
-            'aaaa76',
-            'aaaa77',
-            'aaaa78',
-            'aaaa79',
-            'aaaa80',
-            'aaaa81',
-            'aaaa82',
-            'aaaa83',
-            'aaaa84',
-            'aaaa85',
-            'aaaa86',
-            'aaaa87',
-            'aaaa88',
-            'aaaa89',
-            'aaaa90',
-            'aaaa91',
-            'aaaa92',
-            'aaaa93',
-            'aaaa94',
-            'aaaa95',
-            'aaaa96',
-            'aaaa97',
-            'aaaa98',
-            'aaaa99',
-            'aaaa100',
-            'aaaa101',
-            'aaaa102',
-            'aaaa103',
-            'aaaa104',
-            'aaaa105',
-            'aaaa106',
-            'aaaa107',
-            'aaaa108',
-            'aaaa109',
-            'aaaa110',
-            'aaaa111',
-            'aaaa112',
-            'aaaa113',
-            'aaaa114',
-            'aaaa115',
-            'aaaa116',
-            'aaaa117',
-            'aaaa118',
-            'aaaa119',
-            'aaaa120',
-            'aaaa121',
-            'aaaa122',
-            'aaaa123',
-            'aaaa124',
-            'aaaa125',
-            'aaaa126',
-            'aaaa127',
-            'aaaa128',
-            'aaaa129',
-            'aaaa130',
-            'aaaa131',
-            'aaaa132',
-            'aaaa133',
-            'aaaa134',
-            'aaaa135',
-            'aaaa136',
-            'aaaa137',
-            'aaaa138',
-            'aaaa139',
-            'aaaa140',
-            'aaaa141',
-            'aaaa142',
-            'aaaa143',
-            'aaaa144',
-            'aaaa145',
-            'aaaa146',
-            'aaaa147',
-            'aaaa148',
-            'aaaa149',
-            'aaaa150',
-            'aaaa151',
-            'aaaa152',
-            'aaaa153',
-            'aaaa154',
-            'aaaa155',
-            'aaaa156',
-            'aaaa157',
-            'aaaa158',
-            'aaaa159',
-            'aaaa160',
-            'aaaa161',
-            'aaaa162',
-            'aaaa163',
-            'aaaa164',
-            'aaaa165',
-            'aaaa166',
-            'aaaa167',
-            'aaaa168',
-            'aaaa169',
-            'aaaa170',
-            'aaaa171',
-            'aaaa172',
-            'aaaa173',
-            'aaaa174',
-            'aaaa175',
-            'aaaa176',
-            'aaaa177',
-            'aaaa178',
-            'aaaa179',
-            'aaaa180',
-            'aaaa181',
-            'aaaa182',
-            'aaaa183',
-            'aaaa184',
-            'aaaa185',
-            'aaaa186',
-            'aaaa187',
-            'aaaa188',
-            'aaaa189',
-            'aaaa190',
-            'aaaa191',
-            'aaaa192',
-            'aaaa193',
-            'aaaa194',
-            'aaaa195',
-            'aaaa196',
-            'aaaa197',
-            'aaaa198',
-            'aaaa199'
+            'lone wolf'
         ]
+        letters = string.ascii_lowercase
+        for i in range(1000000):
+            expressions.append(''.join(random.choice(letters) for i in range(10))) #append a million 10-long random strings for stress test
 
         matcher = ExpressionMatcher(expressions)
 
@@ -271,7 +75,7 @@ class TestExpressionMatching(unittest.TestCase):
         t1 = time.time()
         matched, overlaps, contains = matcher.match(input)
         t2 = time.time()
-        print(f"Time Taken: {t2 - t1}")
+        print(f"\nTime Taken: {t2 - t1}")
         assert set(matched.values()) == {
             'town mouse', 'mouse', 'country mouse'
         }
