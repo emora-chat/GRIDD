@@ -42,14 +42,12 @@ class ExpressionMatcher:
                     continue
                 if (j[0] <= i[0] and j[1] >= i[0]):
                     o[i].add(j)
-                    #continue
                 if (j[0] <= i[1] and j[1] >= i[1]):
-                    if j not in o[i]: o[i].add(j)
+                    o[i].add(j)
                     #continue
                 if (j[0] >= i[0] and j[1] <= i[1]):
-                    if j not in o[i]: o[i].add(j)
+                    o[i].add(j)
                     c[i].add(j)
-                    #continue
             if (len(o[i]) is 0):
                 o.pop(i)
             if (len(c[i]) is 0):
