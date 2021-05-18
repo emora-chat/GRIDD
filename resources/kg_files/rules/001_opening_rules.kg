@@ -1,0 +1,17 @@
+imp_trigger(init_ask_name=init())
+-> ask_name_trigger ->
+n:<time(h/have(user, n/name()), now)>
+request(emora, n)
+h{"coldstart": 1}
+;
+
+time(have(user, n/name()), now)
+req_sat(request(emora, n))
+-> welcome_convo ->
+h/happy(emora)
+time(m/meet(emora, user), now)
+cause(m, h)
+time(hope(emora, feel(user, good)), now)
+p:<time(do(user, p/predicate(object())), today)>
+request(emora, p)
+;

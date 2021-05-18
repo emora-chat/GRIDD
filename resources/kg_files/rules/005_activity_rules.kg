@@ -1,0 +1,13 @@
+
+g/go(user, object())
+->
+p:<with(g, p/person())>
+request(emora, p)
+;
+
+buy(A/person(), B/entity())
+-> ownership ->
+possess(A, B)
+;
+
+

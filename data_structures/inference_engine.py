@@ -175,7 +175,7 @@ class InferenceEngine:
                     if variable in specifics:
                         not_specific = False
                         for t in precondition_cg.types(variable) - {variable}:
-                            if facts_types.get(value, set()) - {value} <= facts_types.get(t, set()):
+                            if facts_types.get(value, set()) <= facts_types.get(t, set()):
                                 not_specific = True
                         if not_specific:
                             break

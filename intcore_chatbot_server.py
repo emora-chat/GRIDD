@@ -453,14 +453,16 @@ class ChatbotServer:
             if not wm.metagraph.out_edges(match_node, REF):
                 truths = list(wm.predicates('emora', REQ_TRUTH, ref_node))
                 if truths:
-                    wm.add(truths[0][3], REQ_SAT)
+                    i2 = wm.add(truths[0][3], REQ_SAT)
+                    wm.features[i2][BASE_UCONFIDENCE] = 1.0
                     if not wm.has(truths[0][3], USER_AWARE):
                         i2 = wm.add(truths[0][3], USER_AWARE)
                         wm.features[i2][BASE_UCONFIDENCE] = 1.0
                 else:
                     args = list(wm.predicates('emora', REQ_ARG, ref_node))
                     if args:
-                        wm.add(args[0][3], REQ_SAT)
+                        i2 = wm.add(args[0][3], REQ_SAT)
+                        wm.features[i2][BASE_UCONFIDENCE] = 1.0
                         if not wm.has(args[0][3], USER_AWARE):
                             i2 = wm.add(args[0][3], USER_AWARE)
                             wm.features[i2][BASE_UCONFIDENCE] = 1.0
@@ -480,7 +482,7 @@ class ChatbotServer:
         salient_concepts = sorted(current_user_concepts, key=lambda c: wm.features.get(c, {}).get(SALIENCE, 0),
                                   reverse=True)
         for c in salient_concepts:
-            if c != request_focus and request_focus_types < (types[c] - {c}):
+            if c != request_focus and request_focus_types < (types[c]): # todo - should it be types[c] - {c}?
                 subtype_set = current_user_concepts.intersection(wm.subtypes_of(c)) - {c}
                 # if concept is a reference or if other salient concepts are its subtypes, dont treat current concept as answer fragment
                 if not subtype_set and not wm.metagraph.out_edges(c, REF):
@@ -556,7 +558,7 @@ class ChatbotServer:
         working_memory = self.run_reference_resolution(inference_results, working_memory)
         working_memory = self.run_fragment_resolution(working_memory, aux_state)
 
-        rules, use_cached = self.run_prepare_template_nlg(working_memory)
+        working_memory, use_cached = self.run_prepare_template_nlg(working_memory)
         inference_results, rules = self.run_multi_inference(rules, use_cached, working_memory)
         template_response_sel, aux_state = self.run_template_fillers(inference_results, working_memory,
                                                                         aux_state)

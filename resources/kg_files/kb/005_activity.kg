@@ -10,14 +10,15 @@ expr("buy", buy)
 expensive=(property)
 expr("expensive, costly, pricey", expensive)
 
-[want, visit] = (predicate)
+[want, visit, think, meet] = (predicate)
 expr("want", want)
 expr("visit", visit)
+expr("think", think)
+expr("meet", meet)
 always = (property)
 expr("always", always)
 
-think = (predicate)
-expr("think", think)
+
 
 ehh/have(emora, house())
 time(ehh, now)

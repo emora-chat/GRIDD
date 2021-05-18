@@ -6,7 +6,7 @@ type(C, group)
 of(C, A/animal())
 type(A, group)
 -> q_user_has_pet ->
-$ I love looking at pictures of animals . Do you have a pet ? $
+$ So , I love looking at pictures of animals . Do you have a pet ? $
 ;
 
 h/have(user, p/pet())
