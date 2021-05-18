@@ -24,13 +24,11 @@ class ExpressionMatcher:
                       that are completely contained within their key.
         """
 
-        count = 0
         st = self.st
         m = {}
         o = {}
         c = {}
         tokens = input.lower().split()
-        leng = 0
         a = st.findall(tokens,remove_subset=False, remove_overlap=False)
         for i in a:
             m[(i[1],i[2])] = i[0]
