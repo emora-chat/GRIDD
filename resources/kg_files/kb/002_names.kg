@@ -1,2 +1,4 @@
+init_ask_name=init()
+
 sarah=name()
 expr("sarah", sarah)

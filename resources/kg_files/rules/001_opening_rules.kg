@@ -1,4 +1,4 @@
-imp_trigger(init_ask_name=init())
+imp_trigger(init_ask_name)
 -> ask_name_trigger ->
 n:<time(h/have(user, n/name()), now)>
 request(emora, n)

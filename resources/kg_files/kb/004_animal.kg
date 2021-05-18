@@ -1,4 +1,4 @@
-flag=(predicate)
+init_ask_pet=init()
 ;
 
 animal = (living_thing)

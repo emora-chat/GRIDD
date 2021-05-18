@@ -1,7 +1,7 @@
 
 /* Has Pet */
 
-imp_trigger(init_ask_pet=init())
+imp_trigger(init_ask_pet)
 -> ask_pet_trigger ->
 love(emora, c/picture())
 type(c, group)
