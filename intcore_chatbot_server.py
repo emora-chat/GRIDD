@@ -656,10 +656,8 @@ class ChatbotServer:
             utter = input('User: ')
 
 def get_filepaths():
-    kb_dir = join('GRIDD', 'resources', 'kg_files', 'kb')
-    kb = [kb_dir]
-    rules_dir = join('GRIDD', 'resources', 'kg_files', 'rules')
-    rules = [rules_dir]
+    kb = [join('GRIDD', 'resources', 'kg_files', 'kb')]
+    rules = [join('GRIDD', 'resources', 'kg_files', 'rules')]
     wm = [join('GRIDD', 'resources', 'kg_files', 'wm')]
     nlg_templates = [join('GRIDD', 'resources', 'kg_files', 'nlg_templates')]
     return kb, rules, nlg_templates, wm
@@ -667,7 +665,7 @@ def get_filepaths():
 if __name__ == '__main__':
     kb, rules, nlg_templates, wm = get_filepaths()
 
-    chatbot = ChatbotServer(kb, rules, nlg_templates, wm, device='cuda:1')
-
-    chatbot.full_init(device='cuda:1')
+    cuda = 'cuda:1'
+    chatbot = ChatbotServer(kb, rules, nlg_templates, wm, device=cuda)
+    chatbot.full_init(device=cuda)
     chatbot.run()
