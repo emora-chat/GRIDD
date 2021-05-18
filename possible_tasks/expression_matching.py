@@ -29,7 +29,14 @@ class ExpressionMatcher:
         m = {}
         o = {}
         c = {}
+        pos1 = {}
+        pos2 = {}
+
         tokens = input.lower().split()
+        leng = 0
+        for ind, t in enumerate(tokens):
+            pos1[ind] = leng
+            leng += len(t)
         a = st.findall(tokens,remove_subset=False, remove_overlap=False)
         for i in a:
             m[(i[1],i[2])] = i[0]
@@ -39,16 +46,16 @@ class ExpressionMatcher:
             for j in m.keys():
                 if j == i:
                     continue
-                if (j[0] < i[0] and j[1] > i[0]):
+                if (j[0] <= i[0] and j[1] >= i[0]):
                     o[i].add(j)
-                    continue
-                if (j[0] < i[1] and j[1] > i[1]):
-                    o[i].add(j)
-                    continue
-                if (j[0] > i[0] and j[1] < i[1]):
-                    o[i].add(j)
+                    #continue
+                if (j[0] <= i[1] and j[1] >= i[1]):
+                    if j not in o[i]: o[i].add(j)
+                    #continue
+                if (j[0] >= i[0] and j[1] <= i[1]):
+                    if j not in o[i]: o[i].add(j)
                     c[i].add(j)
-                    continue
+                    #continue
             if (len(o[i]) is 0):
                 o.pop(i)
             if (len(c[i]) is 0):

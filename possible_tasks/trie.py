@@ -67,8 +67,8 @@ class SpanMatcher:
         for eidx, t in self._AC.iter(text):
             eidx += 1
             sidx = eidx - len(t.span)
-            sidx = smap.get(sidx, None)
-            eidx = emap.get(eidx, None)
+           # sidx = smap.get(sidx, None)
+            #eidx = emap.get(eidx, None)
             if sidx is None or eidx is None: continue
             spans.append((t.span, sidx, eidx+1, t.values))
 
@@ -108,6 +108,7 @@ class SpanMatcher:
                     s.remove(k)
                     if not s: del overlaps[i]
             if remove: spans = [span for i, span in enumerate(spans) if i not in remove]
+
 
         return spans
 
