@@ -42,7 +42,6 @@ class IntelligenceCore:
         self.obj_essential_types = {i for i in self.knowledge_base.subtypes_of(OBJ_ESSENTIAL)
                                 if not self.knowledge_base.has(predicate_id=i)}
 
-
     def know(self, knowledge, **options):
         cg = ConceptGraph(namespace='_tmp_')
         ConceptGraph.construct(cg, knowledge, compiler=self.compiler)

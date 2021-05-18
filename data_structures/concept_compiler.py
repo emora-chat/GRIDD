@@ -136,7 +136,7 @@ class ConceptVisitor(Visitor_Recursive):
 
     def rule(self, tree):
         if not hasattr(tree.children[1], 'data'):
-            rid = tree.children[1]
+            rid = str(tree.children[1])
         else:
             rid = self.globals.get()
         precondition, variables = tree.children[0].data

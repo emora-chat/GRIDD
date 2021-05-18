@@ -487,11 +487,11 @@ class ConceptGraph:
                 final_element = (string_repr, string_data) if string_data is not None else string_repr
                 string_spec_ls.append(final_element)
             instance_exclusions.update(chain(pre_inst, vars_inst))
-            template_links[template] = (pre, string_spec_ls, vars)
+            template_links[rule] = (pre, string_spec_ls, vars)
 
-        for template, (pre, string_spec_ls, vars) in template_links.items():
+        for rule, (pre, string_spec_ls, vars) in template_links.items():
             pre = self.subgraph(pre, meta_exclusions=instance_exclusions)
-            templates[template] = (pre, string_spec_ls, vars)
+            templates[rule] = (pre, string_spec_ls, vars)
         return templates
 
 
