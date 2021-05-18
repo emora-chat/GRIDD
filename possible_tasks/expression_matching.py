@@ -29,14 +29,8 @@ class ExpressionMatcher:
         m = {}
         o = {}
         c = {}
-        pos1 = {}
-        pos2 = {}
-
         tokens = input.lower().split()
         leng = 0
-        for ind, t in enumerate(tokens):
-            pos1[ind] = leng
-            leng += len(t)
         a = st.findall(tokens,remove_subset=False, remove_overlap=False)
         for i in a:
             m[(i[1],i[2])] = i[0]
