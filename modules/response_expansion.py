@@ -63,6 +63,8 @@ class ResponseExpansion:
             final_exps = []
             spoken_predicates = set()
             for s, t, o, i in exps:
+                if COLDSTART in wm.features[i]:
+                    del wm.features[i][COLDSTART]
                 if s == 'user' and t in {REQ_TRUTH, REQ_ARG}: # identify emora answers to user requests and add req_sat to request predicate
                     wm.add(i, REQ_SAT)
                     wm.features[i][BASE_UCONFIDENCE] = 1.0
