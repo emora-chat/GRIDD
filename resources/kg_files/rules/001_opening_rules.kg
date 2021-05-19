@@ -13,6 +13,6 @@ h/happy(emora)
 time(m/meet(emora, user), now)
 cause(m, h)
 time(hope(emora, feel(user, good)), now)
-p:<time(do(user, p/predicate(object())), today)>
+p:<time(do(user, p/event(object())), today)>
 request(emora, p)
 ;

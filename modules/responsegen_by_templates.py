@@ -55,6 +55,7 @@ class ResponseTemplateFiller:
         print('\nResponse Options: ')
         for c in candidates:
             print('\t' + c[1])
+        print()
         predicates, string, avg_sal = self.select_best_candidate(candidates, cg)
         return (string, predicates, 'template')
 
