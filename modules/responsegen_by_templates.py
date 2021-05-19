@@ -77,47 +77,108 @@ class ResponseTemplateFiller:
         else:
             return None, None, None
 
+
     def fill_string(self, match_dict, expr_dict, string_spec_ls, cg):
-        realizations = {}
+        # initialize realizations for variables used in string_spec_ls dependencies
         specifications = {}
-
-        # Replacement of parameter-less variables
-        for i, e in enumerate(string_spec_ls):
-            is_tuple = False
-            if isinstance(e, tuple):
-                is_tuple = True
-                e = e[0]
-            if e not in realizations and '.var' in e:
-                e = e[:-4]
-                string_spec_ls[i] = e if not is_tuple else (e, string_spec_ls[i][1])
-                match = match_dict[e]
-                if match in expr_dict: # the matched concept for the variable is a named concept
-                    realizations[e] = expr_dict[match_dict[e]]
-                else: # not a named concept
-                    np = self.nlgFactory.createNounPhrase()
-                    # need to get main type
-                    match_types = cg.types(match)
-                    main_type = self._concrete_type(cg, match)
-                    noun = self.nlgFactory.createNLGElement(main_type, LexicalCategory.NOUN)
-                    if is_tuple and string_spec_ls[i][1].get("d", False) == True:
-                        # determine whether reference or instance
-                        if cg.metagraph.out_edges(match, REF) or list(cg.predicates(match, USER_AWARE)):
-                            np.setDeterminer('the')
-                        else:
-                            np.setDeterminer('a')
-                    # whether group
-                    if GROUP in match_types:
-                        noun.setFeature(Feature.NUMBER, NumberAgreement.PLURAL)
-                    else:
-                        noun.setFeature(Feature.NUMBER, NumberAgreement.SINGULAR)
-                    np.setNoun(noun)
-                    realizations[e] = self.realiser.realiseSentence(np)[:-1]
-                    specifications[e] = np
-
-        # Replacement of parameterized variables
+        realizations = {}
         for e in string_spec_ls:
-            if isinstance(e, tuple) and str(e) not in realizations:
-                surface_form, spec = e
+            if isinstance(e, tuple):
+                for k,v in e[1].items():
+                    if v in match_dict:
+                        np, np_realized = self._process_variable_match(match_dict[v], cg, expr_dict)
+                        if np is not None:
+                            specifications[v] = np
+                        realizations[v] = np_realized
+        with_params = [(i,e) for i,e in enumerate(string_spec_ls) if isinstance(e, tuple)]
+        without_params = [(i,e) for i,e in enumerate(string_spec_ls) if not isinstance(e, tuple)]
+
+        # Replacement of constants and parameter-less variables
+        for i, e in without_params:
+            if '.var' in e:
+                e = e[:-4]
+                string_spec_ls[i] = e
+                if e not in realizations:
+                    match = match_dict[e]
+                    np, np_realized = self._process_variable_match(match, cg, expr_dict)
+                    if np is not None:
+                        specifications[e] = np
+                    realizations[e] = np_realized
+            else:
+                if e not in realizations:
+                    realizations[e] = e
+
+        with_params_dependent = []
+        with_params_independent = []
+        for i, e in with_params:
+            for val in e[1].values():
+                if val in match_dict:
+                    with_params_dependent.append((i,e))
+                    break
+            else:
+                with_params_independent.append((i,e))
+
+        # Replacement of independent variables
+        for i, e in with_params_independent:
+            surface_form, spec = e
+            e_id = str(e)
+            if e_id not in realizations:
+                if '.var' in surface_form:
+                    surface_form = surface_form[:-4]
+                    surface_form = match_dict[surface_form]
+                if "p" in spec or "d" in spec: # noun
+                    np = self.nlgFactory.createNounPhrase()
+                    if surface_form in expr_dict:  # the matched concept for the variable is a named concept
+                        noun = self.nlgFactory.createNLGElement(expr_dict[surface_form], LexicalCategory.NOUN)
+                    else:  # not a named concept
+                        noun = self._unnamed_noun(cg, surface_form)
+                    np.setNoun(noun)
+                    if spec.get("d", False) == True: # set determiner
+                        if cg.metagraph.out_edges(surface_form, REF) or list(cg.predicates(surface_form, USER_AWARE)): # reference
+                            np.setDeterminer('the')
+                        else: # instance
+                            np.setDeterminer('a')
+                    if spec.get("p", False) == True: # set as possessive
+                        np.setFeature(Feature.POSSESSIVE, True)
+                        np.setFeature(Feature.PRONOMINAL, True) # todo - is this supposed to be here?
+                    realizations[e_id] = self.realiser.realiseSentence(np)[:-1]
+                    specifications[e_id] = np
+                else: # verb
+                    clause = self.nlgFactory.createClause()
+                    to_remove = set()
+                    if 't' in spec:
+                        clause.setVerb(surface_form)
+                        tense = match_dict.get(spec['t'], spec['t'])
+                        tense = expr_dict.get(tense, tense)
+                        if tense == 'past':
+                            clause.setFeature(Feature.TENSE, Tense.PAST)
+                        elif tense in {'present', 'now'}:
+                            clause.setFeature(Feature.TENSE, Tense.PRESENT)
+                        elif tense == 'future':
+                            clause.setFeature(Feature.TENSE, Tense.FUTURE)
+                        else:
+                            print(
+                                'WARNING! You specified an nlg `tense` parameter that is not handled (%s).' % spec['t'])
+                    if 's' in spec:
+                        subject = realizations.get(spec['s'], spec['s'])
+                        clause.setSubject(subject)
+                        if spec['s'] in specifications:
+                            clause.setFeature(Feature.NUMBER, specifications[spec['s']].features['number'])
+                        to_remove.add(subject)
+                    sentence = self.realiser.realiseSentence(clause).lower()
+                    for r in to_remove:
+                        pattern = r'\b' + r.lower() + r'\b'
+                        sentence = re.sub(pattern, '', sentence)
+                    realizations[e_id] = sentence[:-1].strip()
+
+        # Replacement of dependent variables (only verbs can be dependent and `p` and `d` markers are not relevant for verbs)
+        for i, e in with_params_dependent:
+            surface_form, spec = e
+            e_id = str(e)
+            if e_id not in realizations:
+                if '.var' in surface_form:
+                    surface_form = surface_form[:-4]
+                    surface_form = match_dict[surface_form]
                 clause = self.nlgFactory.createClause()
                 to_remove = set()
                 if 't' in spec:
@@ -138,21 +199,13 @@ class ResponseTemplateFiller:
                     if spec['s'] in specifications:
                         clause.setFeature(Feature.NUMBER, specifications[spec['s']].features['number'])
                     to_remove.add(subject)
-                if 'p' in spec:
-                    noun = match_dict.get(surface_form, surface_form)
-                    noun = expr_dict.get(noun, noun)
-                    np = self.nlgFactory.createNounPhrase(noun)
-                    if spec['p'] == True:
-                        np.setFeature(Feature.POSSESSIVE, True)
-                        np.setFeature(Feature.PRONOMINAL, True)
-                    clause = np
                 sentence = self.realiser.realiseSentence(clause).lower()
                 for r in to_remove:
                     pattern = r'\b' + r.lower() + r'\b'
                     sentence = re.sub(pattern, '', sentence)
-                realizations[str(e)] = sentence[:-1].strip()
+                realizations[e_id] = sentence[:-1].strip()
 
-        final_str = [realizations.get(str(e), str(e)) for e in string_spec_ls]
+        final_str = [realizations[str(e)] for e in string_spec_ls]
         return ' '.join(final_str)
 
     def _concrete_type(self, cg, concept):
@@ -165,12 +218,32 @@ class ResponseTemplateFiller:
         for t in immediate_types:
             subs = set(cg.subtypes_of(t)) - {t}
             intersection = immediate_types.intersection(subs)
-            if len(intersection) == 0:
+            if len(intersection) == 0 and t not in {GROUP}:
                 # there are no lower types in the immediate types that are subtypes of the current one
                 candidates.add(t)
         return next(iter(candidates))
 
+    def _process_variable_match(self, match, cg, expr_dict):
+        if match in expr_dict:  # the matched concept for the variable is a named concept
+            return None, expr_dict[match]
+        else:  # not a named concept
+            np = self.nlgFactory.createNounPhrase()
+            noun = self._unnamed_noun(cg, match)
+            np.setNoun(noun)
+            return np, self.realiser.realiseSentence(np)[:-1]
 
+
+    def _unnamed_noun(self, cg, match):
+        # need to get main type
+        match_types = cg.types(match)
+        main_type = self._concrete_type(cg, match)
+        noun = self.nlgFactory.createNLGElement(main_type, LexicalCategory.NOUN)
+        # whether group
+        if GROUP in match_types:
+            noun.setFeature(Feature.NUMBER, NumberAgreement.PLURAL)
+        else:
+            noun.setFeature(Feature.NUMBER, NumberAgreement.SINGULAR)
+        return noun
 
 if __name__ == '__main__':
     from GRIDD.modules.responsegen_by_templates_spec import ResponseTemplatesSpec

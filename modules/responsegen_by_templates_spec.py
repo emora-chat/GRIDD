@@ -45,12 +45,12 @@ class ResponseTemplatesSpec:
         aux_state = {}
 
         ###############################################################################################################
-        ## Example 1
-        ##  The tense of the `hike` verb is determined by the `datetime` object `Y` of the `hike` predicate. Since the
-        ##  `datetime` object is a variable, the value of the `t` marker is `#Y`.
-        ##  Similarly, the subject of the `hike` verb is a variable `person` `X`, so to produce a subject-verb sentence
-        ##  structure, we write `X hike`.
-        ##  In order to ensure agreement between the verb and its subject, we set the `s` marker to be `#X`.
+        # Example 1
+        #  The tense of the `hike` verb is determined by the `datetime` object `Y` of the `hike` predicate. Since the
+        #  `datetime` object is a variable, the value of the `t` marker is `#Y`.
+        #  Similarly, the subject of the `hike` verb is a variable `person` `X`, so to produce a subject-verb sentence
+        #  structure, we write `X hike`.
+        #  In order to ensure agreement between the verb and its subject, we set the `s` marker to be `#X`.
         ###############################################################################################################
 
         compiler = ConceptCompiler(predicates=None, types=None, namespace='c_')
@@ -79,11 +79,11 @@ class ResponseTemplatesSpec:
         assert response.lower() == 'i hiked .'
 
         ###############################################################################################################
-        ## Example 1
-        ##  This example is similar to the one above, with an extension that adds a clause to the subject-verb sentence
-        ##  for the `hike` predicate indicating who the subject performed the hike event with.
-        ##  In order to indicate this possessive nature between the subject and the friend in the clause, we set the
-        ##  `p` indicator to be `true`.
+        # Example 1
+        #  This example is similar to the one above, with an extension that adds a clause to the subject-verb sentence
+        #  for the `hike` predicate indicating who the subject performed the hike event with.
+        #  In order to indicate this possessive nature between the subject and the friend in the clause, we set the
+        #  `p` indicator to be `true`.
         ###############################################################################################################
 
         compiler = ConceptCompiler(predicates=None, types=None, namespace='c_')
@@ -153,7 +153,7 @@ class ResponseTemplatesSpec:
         match_dict = {
             'X': 'c'
         }
-        string_spec_ls = ['X.var', ('be',{'t': 'present', 's': 'X'}), 'cute', '.']
+        string_spec_ls = [('X.var',{'d': True}), ('be',{'t': 'present', 's': 'X'}), 'cute', '.']
         filled = response_template_filler.fill_string(match_dict, expr_dict, string_spec_ls, cg)
         assert filled == 'A cat is cute .'
 
@@ -164,7 +164,7 @@ class ResponseTemplatesSpec:
         match_dict = {
             'X': 'c'
         }
-        string_spec_ls = ['X.var', ('be',{'t': 'present', 's': 'X'}), 'cute', '.']
+        string_spec_ls = [('X.var',{'d': True}), ('be',{'t': 'present', 's': 'X'}), 'cute', '.']
         filled = response_template_filler.fill_string(match_dict, expr_dict, string_spec_ls, cg)
         assert filled == 'The cat is cute .'
 
@@ -174,6 +174,15 @@ class ResponseTemplatesSpec:
             'X': 'c'
         }
         string_spec_ls = ['X.var', ('be',{'t': 'present', 's': 'X'}), 'cute', '.']
+        filled = response_template_filler.fill_string(match_dict, expr_dict, string_spec_ls, cg)
+        assert filled == 'Cats are cute .'
+
+        cg = ConceptGraph()
+        ConceptGraph.construct(cg, 'time(cute(c=cat()), now) type(c, group)')
+        match_dict = {
+            'X': 'c'
+        }
+        string_spec_ls = [('X.var',{'d': True}), ('be',{'t': 'present', 's': 'X'}), 'cute', '.']
         filled = response_template_filler.fill_string(match_dict, expr_dict, string_spec_ls, cg)
         assert filled == 'Some cats are cute .'
 
@@ -188,6 +197,6 @@ class ResponseTemplatesSpec:
         expr_dict = {
             'past': 'past'
         }
-        string_spec_ls = ['X.var', ('be',{'t': 'Y', 's': 'X'}), 'cute', '.']
+        string_spec_ls = [('X.var',{'d': True}), ('be',{'t': 'Y', 's': 'X'}), 'cute', '.']
         filled = response_template_filler.fill_string(match_dict, expr_dict, string_spec_ls, cg)
         assert filled == 'The cats were cute .'
