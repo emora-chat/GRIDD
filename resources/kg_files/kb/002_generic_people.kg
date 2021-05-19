@@ -1,0 +1,23 @@
+
+living_thing=(entity)
+person = (living_thing)
+expr(["person"], person)
+socialbot = (entity)
+expr(["socialbot"], socialbot)
+
+user=person()
+expr(["i", "me", "my", "mine"], user)
+user_group=person()
+type(user_group, group)
+expr("we, us, our", user_group)
+emora=socialbot()
+expr(["you", "your", "yours"], emora)
+
+he=(living_thing)
+expr("he, his, him", he)
+she=(living_thing)
+expr("she, hers, her", she)
+
+[male, female] = (property)
+expr("male, masculine", male)
+expr("female, feminine", female)

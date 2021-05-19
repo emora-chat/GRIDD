@@ -25,14 +25,6 @@ request(emora, p2)
 $ What kind of pet do you have ? $
 ;
 
-have(emora, emora_dog)
-X/property(Z/dog())
-possess(user, Z)
-request(emora, X)
-->
-$ Oh, me too ! What is your Z like ? $
-;
-
 X/property(Z/pet())
 possess(user, Z)
 request(emora, X)

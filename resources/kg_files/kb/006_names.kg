@@ -1,5 +1,8 @@
 init_ask_name=init()
 
+name=(entity)
+expr("name", name)
+
 sarah=name()
 expr("sarah", sarah)
 sophy=name()
