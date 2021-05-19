@@ -12,6 +12,18 @@ cause(m, h)
 time(hope(emora, feel(user, good)), now)
 time(do(user, p/predicate(object())), today)
 request(emora, p)
--> greet_with_name_nlg ->
+-> greet_name_nlg ->
 $ I am really happy to meet you , N ! I hope you've been doing well today . What have you been up to ? $
+;
+
+time(have(user, N/name()), now)
+category(N)
+h/happy(emora)
+time(m/meet(emora, user), now)
+cause(m, h)
+time(hope(emora, feel(user, good)), now)
+time(do(user, p/predicate(object())), today)
+request(emora, p)
+-> greet_no_name_nlg ->
+$ I am really happy to meet you ! I hope you've been doing well today . What have you been up to ? $
 ;

@@ -6,7 +6,8 @@ h{"coldstart": 1}
 ;
 
 time(have(user, n/name()), now)
-req_sat(request(emora, n))
+r/request(emora, n)
+user_aware(r)
 -> welcome_convo ->
 h/happy(emora)
 time(m/meet(emora, user), now)

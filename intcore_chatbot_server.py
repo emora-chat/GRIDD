@@ -222,7 +222,7 @@ class ChatbotServer:
             for reference_node, (pre, matches) in inference_results.items():
                 compatible_pairs[reference_node] = {}
                 for match in matches:
-                    if reference_node != match[reference_node]:
+                    if reference_node in match and reference_node != match[reference_node]:
                         compatible_pairs[reference_node][match[reference_node]] = []
                         for node in match:
                             if node != reference_node:
@@ -663,11 +663,15 @@ def get_filepaths():
     return kb, rules, nlg_templates, wm
 
 if __name__ == '__main__':
+    import torch
     kb, rules, nlg_templates, wm = get_filepaths()
 
     device = input('device (cpu/cuda:0/cuda:1/...) >>> ').strip()
     if len(device) == 0:
-        device = 'cuda:0'
+        if torch.cuda.is_available():
+            device = 'cuda:0'
+        else:
+            device = 'cpu'
     chatbot = ChatbotServer(kb, rules, nlg_templates, wm, device=device)
     chatbot.full_init(device=device)
     chatbot.run()

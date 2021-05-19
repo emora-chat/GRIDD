@@ -52,6 +52,9 @@ class ResponseTemplateFiller:
                 response_str = self.fill_string(match_dict, expr_dict, string_spec_ls, cg)
                 if response_str not in aux_state.get('spoken_responses', []):
                     candidates.append((match_dict, response_str))
+        print()
+        for c in candidates:
+            print(c[1])
         predicates, string, avg_sal = self.select_best_candidate(candidates, cg)
         return (string, predicates, 'template')
 
@@ -213,13 +216,14 @@ class ResponseTemplateFiller:
         Identify which immediate type of a concept is the most concrete (e.g. is lowest in
         the ontology hierarchy)
         """
+        namespace = cg.id_map().namespace
         immediate_types = cg.objects(concept, TYPE)
         candidates = set()
         for t in immediate_types:
-            subs = set(cg.subtypes_of(t)) - {t}
-            intersection = immediate_types.intersection(subs)
-            if len(intersection) == 0 and t not in {GROUP}:
-                # there are no lower types in the immediate types that are subtypes of the current one
+            expressable_subs = {x for x in cg.subtypes_of(t) if x != t and not x.startswith(namespace)}
+            intersection = immediate_types.intersection(expressable_subs)
+            if len(intersection) == 0 and t not in {GROUP} and not t.startswith(namespace):
+                # there are no subtypes in the immediate types and it is not an unexpressable type
                 candidates.add(t)
         return next(iter(candidates))
 
