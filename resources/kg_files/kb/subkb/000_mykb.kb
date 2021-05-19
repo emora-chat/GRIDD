@@ -1,0 +1,8 @@
+
+squid = (animal);
+
+ink = (predicate);
+
+x/squid()
+->
+ink(x);
