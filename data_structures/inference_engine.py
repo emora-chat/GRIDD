@@ -167,15 +167,23 @@ class InferenceEngine:
                             break
                     if variable in categories:
                         not_category = True
+                        value_types = facts_types.get(value, set())
+                        if value.startswith(facts.id_map().namespace) or value.startswith(KB):
+                            # remove non-specific concepts from their type sets
+                            # e.g. an instance of name is removed but the specified name 'sarah' is not
+                            value_types -= {value}
                         for t in precondition_cg.types(variable) - {variable}:
-                            if facts_types.get(value, set()) - {value} <= facts_types.get(t, set()):
+                            if value_types == facts_types.get(t, set()):
                                 not_category = False
                         if not_category:
                             break
                     if variable in specifics:
                         not_specific = False
+                        value_types = facts_types.get(value, set())
+                        if value.startswith(facts.id_map().namespace) or value.startswith(KB):
+                            value_types -= {value}
                         for t in precondition_cg.types(variable) - {variable}:
-                            if facts_types.get(value, set()) <= facts_types.get(t, set()):
+                            if value_types <= facts_types.get(t, set()):
                                 not_specific = True
                         if not_specific:
                             break

@@ -267,14 +267,17 @@ class ChatbotServer:
         salient_emora_arg_request = None
         salient_emora_request = None
         req_type = None
+        # currently valid requests to be resolved through fragment resolution must have been requested on previous turn (approximated by salience threshold)
         emora_truth_requests = [pred for pred in wm.predicates('emora', REQ_TRUTH) if
-                                wm.has(pred[3], USER_AWARE) and not wm.has(pred[3], REQ_SAT)]
+                                wm.has(pred[3], USER_AWARE) and not wm.has(pred[3], REQ_SAT)
+                                and wm.features.get(pred[3], {}).get(SALIENCE, 0) >= 0.9]
         if len(emora_truth_requests) > 0:
             salient_emora_truth_request = max(emora_truth_requests,
                                               key=lambda pred: wm.features.get(pred[3], {}).get(SALIENCE, 0))
             truth_sal = wm.features.get(salient_emora_truth_request[3], {}).get(SALIENCE, 0)
         emora_arg_requests = [pred for pred in wm.predicates('emora', REQ_ARG) if
-                              wm.has(pred[3], USER_AWARE) and not wm.has(pred[3], REQ_SAT)]
+                              wm.has(pred[3], USER_AWARE) and not wm.has(pred[3], REQ_SAT)
+                              and wm.features.get(pred[3], {}).get(SALIENCE, 0) >= 0.9]
         if len(emora_arg_requests) > 0:
             salient_emora_arg_request = max(emora_arg_requests,
                                             key=lambda pred: wm.features.get(pred[3], {}).get(SALIENCE, 0))
