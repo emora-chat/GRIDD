@@ -1,24 +1,14 @@
 
 hike=(event)
-expr("hike, hiking", hike)
-
-;
-
 buy=(event)
-expr("buy", buy)
+motivate=(predicate)
+expr("encourage", motivate)
 
 expensive=(property)
 expr("expensive, costly, pricey", expensive)
 
 [want, visit, think, meet] = (predicate)
-expr("want", want)
-expr("visit", visit)
-expr("think", think)
-expr("meet", meet)
 always = (property)
-expr("always", always)
-
-
 
 ehh/have(emora, house())
 time(ehh, now)
