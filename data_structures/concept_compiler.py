@@ -224,6 +224,10 @@ class ConceptVisitor(Visitor_Recursive):
 
     def block(self, _):
         entries = [[self.locals.get(c, c) for c in e] for e in self.lentries]
+        for s, t, o, i in entries:          # auto add expressions
+            self.add_auto_expression(s)    # auto add expressions
+            if o is not None:
+                self.add_auto_expression(o)     # auto add expressions
         if not self.refgen:
             refs = []
             for s, t, o, _ in entries:
@@ -237,7 +241,7 @@ class ConceptVisitor(Visitor_Recursive):
                     raise ValueError('Reference to undeclared concept `{}`'.format(e))
         predicate_types = [t for _, t, _, _ in entries]
         if not self.typegen:
-            types = predicate_types + [o for _, t, o, _ in entries if t == 'type']
+            types = predicate_types #+ [o for _, t, o, _ in entries if t == 'type']  # commented out explicit type construction check
             for e in types:
                 if e not in self.types:
                     if e in self.locals.values():
@@ -257,6 +261,12 @@ class ConceptVisitor(Visitor_Recursive):
         self.locals = {}
         self.plinstances = set()
         self.linstances = set()
+
+    def add_auto_expression(self, instance):
+        if set(instance) <= set('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ -.'):
+            ei = self.globals.get()
+            self.instances.add(ei)
+            self.entries.append((f'"{instance}"', EXPR, instance, ei))
 
     def type_init(self, tree):
         newtype = [str(c) for c in tree.children[0].children]
@@ -284,6 +294,7 @@ class ConceptVisitor(Visitor_Recursive):
             else:
                 self.check_double_init(newconcepts, self.instances)
                 self.instances.update(newconcepts)
+
         else:
             newconcepts = [self.globals.get() for _ in types]
             self.instances.update(newconcepts)
@@ -352,6 +363,11 @@ class ConceptVisitor(Visitor_Recursive):
         for i, (type, arg0, arg1) in enumerate(type_args):
             self.lentries.append((arg0, type, arg1, newconcepts[i]))
             self.plinstances.add(newconcepts[i])
+            if type == 'type':  # ???   Explicit new type creation with type bipredicate
+                self.types.add(arg0)  # ???
+            if arg1 in self.predicates:  # ???
+                self.predicates.add(arg0)  # ???
+            self.lmetadatas.setdefault(arg0, {})[IS_TYPE] = True  # ???
         tree.refs = newconcepts
         tree.inits = newconcepts
 

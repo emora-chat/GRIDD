@@ -666,6 +666,8 @@ if __name__ == '__main__':
     kb, rules, nlg_templates, wm = get_filepaths()
 
     device = input('device (cpu/cuda:0/cuda:1/...) >>> ').strip()
+    if len(device) == 0:
+        device = 'cuda:0'
     chatbot = ChatbotServer(kb, rules, nlg_templates, wm, device=device)
     chatbot.full_init(device=device)
     chatbot.run()

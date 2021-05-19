@@ -181,7 +181,8 @@ class InferenceEngine:
                             break
                 else:
                     solset.append(sol)
-            solutions[precondition_id] = solset
+            if len(solset) > 0:
+                solutions[precondition_id] = solset
         final_sols = {}
         for rule_id, sol_ls in solutions.items():
             if len(all_rules[rule_id]) == 3:
