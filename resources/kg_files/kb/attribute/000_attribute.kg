@@ -1,0 +1,8 @@
+personality_trait=(property)
+physical_trait=(property)
+emotion=(property)
+
+crowded=(property)
+expr("cramped, packed", crowded)
+
+handful=(property)

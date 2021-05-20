@@ -1,0 +1,5 @@
+event = (predicate)
+
+go = (event)
+
+activity = (event)

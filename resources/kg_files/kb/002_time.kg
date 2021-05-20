@@ -23,3 +23,5 @@ habitual_present=(datetime)
 expr("always", always)
 expr("frequent", frequent)
 expr("usual", usual)
+
+always = (property)

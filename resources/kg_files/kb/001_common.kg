@@ -26,9 +26,3 @@ have = (predicate)
 expr(["have"], have)
 ;
 
-event = (predicate)
-go = (event)
-expr("go", go)
-
-;
-

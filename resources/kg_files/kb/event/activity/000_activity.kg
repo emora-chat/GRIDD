@@ -1,0 +1,12 @@
+
+[leisure, self_improvement]=(property)
+[solo, social, solo_or_social]=(property)
+
+hike=(event)
+buy=(event)
+motivate=(predicate)
+expr("encourage", motivate)
+
+;
+
+
