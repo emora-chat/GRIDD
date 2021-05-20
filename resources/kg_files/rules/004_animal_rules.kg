@@ -1,12 +1,11 @@
 
 /* Has Pet */
 
-imp_trigger(init_ask_pet)
+time(do(user, e/event(object())), today)
+r/request(emora, e)
+user_aware(r)
 -> ask_pet_trigger ->
-love(emora, c/picture())
-type(c, group)
-of(c, a/animal())
-type(a, group)
+time(walk(emora, emora_dog), today)
 h:<time(h/have(user, p/pet()), now)>
 request_truth(emora, h)
 h{"coldstart": 1}
@@ -43,17 +42,6 @@ pred:<like(user, pred/event(object())) with(pred, pt)>
 request(emora, pred)
 ;
 
-possess(user, pt/pet())
-l/like(user, pred/event(object()))
-l{"confidence": 0}
-with(pred, pt)
-req/request(emora, pred)
-user_aware(req)
--> share_walk_dog ->
-el/like(emora, walk(emora, emora_dog))
-em/motivate(emora, healthy(emora))
-cause(em, el)
-;
 
 energetic(X/pet())
 possess(user, X)

@@ -1199,6 +1199,12 @@ Captures verb particles by attaching a `particle` predicate to the verb.
 
 He made up an excuse.
 
+I worked out.
+
+I picked up my kids.
+
+I turned on the oven.
+
 ## Conjunct
 
  <details>

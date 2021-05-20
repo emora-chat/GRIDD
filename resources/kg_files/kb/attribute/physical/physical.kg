@@ -1,3 +1,8 @@
+
+[male, female] = (property)
+expr("male, masculine", male)
+expr("female, feminine", female)
+
 size=(property)
 [small,large,average]=(size)
 expr("tiny", small)
@@ -15,3 +20,7 @@ expr("unattractive", ugly)
 [sick,healthy]=(physical_trait)
 expr("ill", sick)
 expr("fit", healthy)
+
+indoor=(property)
+outdoor=(property)
+;

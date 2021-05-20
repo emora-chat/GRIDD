@@ -1,7 +1,5 @@
 
-indoor=(property)
-outdoor=(property)
-;
+
 
 building=(entity)
 home=(building)
@@ -41,3 +39,5 @@ near=(distance)
 expr("close, near", near)
 
 ;
+
+nature=(entity)

@@ -1,28 +1,18 @@
 
 locate = (predicate)
-expr(["where"], locate)
+expr("where", locate)
 cause = (predicate)
-expr(["why"], cause)
+expr("why", cause)
 qualifier = (predicate)
-expr(["how"], qualifier)
+expr("how", qualifier)
 
 possess = (predicate, obj_essential)
-expr(["possess"], possess)
-
-request = (predicate, nonassert, obj_essential)
-request_truth = (predicate, nonassert, obj_essential)
-req_sat = (predicate)
 
 what = (entity)
-expr(["what"], what)
 who = (entity)
-expr(["who"], who)
 
 be = (predicate)
-expr(["be"], be)
 do = (predicate)
-expr(["do"], do)
 have = (predicate)
-expr(["have"], have)
 ;
 

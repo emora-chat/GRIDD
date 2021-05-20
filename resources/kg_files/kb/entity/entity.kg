@@ -1,0 +1,13 @@
+energy=(entity)
+
+living_thing=(entity)
+
+socialbot = (entity)
+emora=socialbot()
+expr(["you", "your", "yours"], emora)
+
+picture=(entity)
+expr("photo, photograph", picture)
+
+treat=(entity)
+;

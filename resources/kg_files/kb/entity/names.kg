@@ -1,7 +1,7 @@
 init_ask_name=init()
+;
 
 name=(entity)
-expr("name", name)
 
 sarah=name()
 sophy=name()

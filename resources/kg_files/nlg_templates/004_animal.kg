@@ -1,12 +1,9 @@
 
 time(h/have(user, p/pet()), now)
 request_truth(emora, h)
-love(emora, C/picture())
-type(C, group)
-of(C, A/animal())
-type(A, group)
+time(walk(emora, emora_dog), today)
 -> q_user_has_pet ->
-$ So , I love looking at pictures of animals . Do you have a pet ? $
+$ For me , I took my dog on a walk today . Do you have a pet ? $
 ;
 
 h/have(user, p/pet())

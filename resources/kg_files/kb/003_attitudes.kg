@@ -1,15 +1,14 @@
 [like, dislike, want, feel, hope]=(predicate)
-expr("like, enjoy", like)
-expr("dislike, hate", dislike)
-expr("want, desire, hope", want)
-expr("feel", feel)
-expr("hope", hope)
+expr("enjoy", like)
+expr("hate", dislike)
+expr("desire, hope", want)
 
 love=(like)
-expr("love", love)
 
-good=(property)
-expr("good", good)
+sounds=(predicate)
+
 ;
 
 esympathy=(predicate)
+
+similar_to=(predicate)
