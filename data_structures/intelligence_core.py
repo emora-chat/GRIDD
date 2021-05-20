@@ -20,7 +20,7 @@ import GRIDD.data_structures.intelligence_core_operators as intcoreops
 class IntelligenceCore:
 
     def __init__(self, knowledge_base=None, working_memory=None, inference_engine=None, device='cpu'):
-        self.compiler = ConceptCompiler(namespace='__c__')
+        self.compiler = ConceptCompiler(namespace='__c__', warn=True)
         if INFERENCE:
             self.nlg_inference_engine = InferenceEngine(device=device)
             if inference_engine is None:
