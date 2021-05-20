@@ -89,6 +89,10 @@ class ParseToLogic:
         self._span_to_concepts()
         types = self.intcore.pull_types()
         self.intcore.consider(types)
+        # todo - this is just a temporary patch for missing type expression
+        for s,_,_,_ in wm.predicates(predicate_type='expr'):
+            if not wm.has(s, 'type', 'expression'):
+                wm.add(s, 'type', 'expression')
         rule_assignments = {(pre, post, rule): sols for rule, (pre, post, sols) in self.intcore.infer().items()}
         mentions = self._get_mentions(rule_assignments, wm)
         merges = self._get_merges(rule_assignments, wm)
