@@ -1,0 +1,238 @@
+be(x/person(),fd/foodie())
+->
+happy(emora)
+be(emora,fd)
+f:<like(x, f/food())>
+request(emora,f)
+;
+
+hungry(user)
+->
+sorry(emora)
+g:<time(g/intend(user,f/food()), now) type(f,group)>
+request_truth(emora, g)
+;
+
+time(g/intend(user, f/food()), now)
+-> user_want_food ->
+time(m/make(user,plan()), past)
+op_more_info(f, g)
+request(emora, f)
+;
+
+thirsty(user)
+->
+sorry(emora)
+important(keep(emora,hydrated(emora)))
+g:<time(g/intend(user, d/drink()), future) type(d,group)>
+request_truth(emora, g)
+;
+
+intend(x/person(),f/fruit())
+->
+gf/good(f)
+gfh/for(gf,health())
+sff/from(sugar(),f)
+bs/bad(sff)
+but(gfh,bs)
+;
+
+intend(x/person(),cf/chinese_food())
+->
+love(emora,cf)
+eeo/like(emora,overall(dining_experience()))
+at(eeo,chinese(r/restaurant()))
+type(r,group)
+;
+
+time(intend(x/person(),jf/japanese_food()),z/datetime())
+->
+delicious(jf)
+ea/amazed(emora)
+small(d/dish())
+type(d,group)
+delicate(d)
+ebd/by(ea,d)
+at(ebd,japanese(r/restaurant()))
+type(r,group)
+;
+
+intend(x/person(),ff/fast_food())
+->
+time(good(ff),now)
+time(hungry(emora),now)
+hf/healthy(f/fast_food())
+type(f,group)
+nt/not(hf)
+mbb/make(burger_and_ff,best(meal()))
+type(burger,burger_and_ff)
+type(french_fries,burger_and_ff)
+but(nt,mbb)
+;
+
+intend(x/person(),mf/mexican_food())
+->
+time(have(emora,mf2/mexican_food()),past)
+type(mf2,group)
+melt(soft(shrimp()))
+crispy(taco())
+;
+
+intend(x/person(),if/italian_food())
+->
+of(speak(emora),if)
+favorite(emora,p/pizza())
+tuh:<
+    hp/hawaiian(p)
+    with(hp,pineapple_and_ham)
+    type(pineapple,pineapple_and_ham)
+    type(ham,pineapple_and_ham)
+    tuh/time(try(user,hp),past)
+>
+request_truth(emora,tuh)
+;
+
+intend(x/person(),tf/thai_food())
+->
+smell(emora,tf)
+swm/with(sr/sticky_rice(),mango())
+delicious(swm)
+;
+
+intend(x/person(),sp/spaghetti())
+->
+spm/with(sp,meatball)
+ecs/cook(emora,spm)
+often(emora,ecs)
+;
+
+intend(x/person(),ds/dessert())
+->
+sd/sweet(ds)
+make(sd,happy(emora))
+;
+
+time(try(user,hp/hawaiian(pizza())),past)
+->
+ulh/like(user,hp)
+amazing(ulh)
+rhe/remind(hp,emora)
+of(rhe,baked(b/banana()))
+type(b,group)
+;
+
+time(have(X/person(),Y/meal()),z/datetime())
+->
+f:<time(xef/eat(X,f/food()), z) for(xef, Y)>
+request(emora,f)
+emp/make(emora,p/plan())
+type(p,group)
+mkp/time(for(emp,Y),now)
+egi/get(emora,i/idea())
+type(i,group)
+gif/from(egi,X)
+cause(gif,mkp)
+;
+
+cook(x/person())
+->
+ce/cook(emora)
+elc/like(emora,ce)
+ee/eat(emora)
+ewf/with(ee,family())
+ele/like(emora,ewf)
+cause(elc,ele)
+;
+
+bx/bake(x/person())
+->
+bbg/be(bx,good)
+rxs/reduce(bx,stress())
+for(bbg,rxs)
+;
+
+intend(x/person(),cf/coffee())
+->
+ese/start(emora,d/day())
+with(ese,cf)
+;
+
+intend(x/person(),od/ot_drink())
+->
+like(emora,od)
+;
+
+intend(x/person(),w/water())
+->
+bd/best(d/drink())
+be(w,bd)
+;
+
+intend(x/person(),m/milk())
+->
+provide(m,protein)
+;
+
+intend(x/person(),sd/soft_drink())
+->
+want(emora,sd2/soft_drink())
+type(sd2,group)
+have(emora,coke())
+;
+
+/* Common Sense */
+
+g/get(x/person(), f/food())
+->
+intend(x,f)
+;
+
+g/get(x/person(), d/drink())
+->
+intend(x,d)
+;
+
+g/eat(x/person(), f/food())
+->
+intend(x,f)
+;
+
+g/have(x/person(), f/food())
+->
+intend(x,f)
+;
+
+g/have(x/person(), d/drink())
+->
+intend(x,d)
+;
+
+like(x/person(), f/food())
+->
+intend(x,f)
+;
+
+like(x/person(), d/drink())
+->
+intend(x,d)
+;
+
+want(x/person(), f/food())
+->
+intend(x,f)
+;
+
+want(x/person(), d/drink())
+->
+intend(x,d)
+;
+
+eat(x/person(),m/meal())
+->
+have(x,m)
+;
+
+get(x/person(),m/meal())
+->
+have(x,m)
+;
