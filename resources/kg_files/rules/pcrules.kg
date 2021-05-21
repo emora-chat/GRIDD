@@ -1,4 +1,4 @@
-have(user,name())
+have(user,p/computer())
 ->
 time(have(emora,p), now)
 time(h/have(user, p), now)
