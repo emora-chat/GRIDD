@@ -1,0 +1,73 @@
+w:<time(w/want(user, p2/pet()), now)>
+w{"confidence": -1}
+->
+$ Do you have a computer or smart device? Of course, if you didn't I couldn't talk to you . $
+;
+
+w:<time(w/want(user, p2/pet()), now)>
+w{"confidence": 1}
+->
+$ Do you have a computer or smart device? Of course, if you didn't I couldn't talk to you . $
+;
+
+time(h/have(user, p/computer()), now)
+request_truth(emora, h)
+time(tinker(emora, p), now)
+->
+$ I love tinkering with my pc. Do you have a Pc ? Or something else, like a mac ? $
+;
+
+
+
+have(user, p/computer())
+request_truth(property(user, pc_enthusiast()))
+->
+$ Oh, are you a pc enthusiast ? $
+;
+
+
+h/have(user, p/computer())
+h{"confidence": -1}
+time(w/want(user, p), now)
+request_truth(emora, w)
+->
+$ Oh, do you just not like the hassle ? Or would you like to get a pc one day ? $
+;
+
+h/have(user, p/computer())
+h{"confidence": 1}
+time(u/use(user, l/linux()), now)
+request_truth(emora, u)
+->
+$ Do you use Linux ? I think it gives a lot of freedom to do whatever you want, but can be complicated sometimes. $
+;
+
+time(h/have(user, p/computer()), now)
+b/build(computer())
+request_truth(b)
+->
+$ I really like the freedom of building your own pc out of whatever parts you want. Have you built your own pc ? $
+;
+
+property(user, pc_enthusiast())
+a/cpu_manuf(p/computer(), amd())
+have(user, p)
+request_truth(emora,a)
+->
+$ Do you have an amd processor? I hear they are very popular for builders now, but I remember Intel was ahead for many years in the past. $
+;
+
+
+h/have(user, p/computer())
+a/cpu_arch(p ,arm())
+request_truth(emora,a)
+->
+$ Do you have an arm processor? They used to be mainly mobile and low powered processors, but now they are getting really fast, like in the new Macbook. $
+;
+
+h/have(user, p/computer())
+m/mobile(p)
+request_truth(emora,m)
+->
+$ Do you have a mobile device? They may not be as fast as some computers, but they're really power efficient and do the most for the least electricity possible $
+;

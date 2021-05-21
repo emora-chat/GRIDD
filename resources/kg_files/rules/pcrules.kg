@@ -1,0 +1,218 @@
+have(user,name())
+->
+time(have(emora,p), now)
+time(h/have(user, p), now)
+request_truth(emora,h)
+time(tinker(emora,p), now)
+;
+
+have(user, p/computer())
+->
+request_truth(property(user, pc_enthusiast()))
+time(u/use(user, l/linux()), now)
+request_truth(emora, u)
+;
+
+
+
+uses(user, linux())
+->
+property(user, advanced_user())
+b/build(computer())
+have(user, capability(b))
+request_truth(b)
+property(hardware_freedom(), good())
+;
+
+
+
+
+
+
+
+build(user, p/computer())
+->
+property(user, pc_enthusiast())
+a/cpu_manuf(p, amd())
+have(user, p)
+request_truth(emora,a)
+;
+
+
+
+
+
+have(user, p/computer()) gaming(p)
+->
+a/play(user, computer_game())
+request_truth(emora,a)
+;
+
+property(user, advanced_user())
+->
+a/cpu_manuf(p/computer(), amd())
+have(user, p)
+request_truth(emora,a)
+;
+
+property(user, pc_enthusiast())
+->
+a/cpu_manuf(p/computer(), amd())
+have(user, p)
+request_truth(emora,a)
+;
+
+
+
+
+have(user, p/computer()) work(p)
+->
+a/purpose(p, graphic_design())
+request_truth(emora,a)
+;
+
+
+
+
+
+
+
+have(user, m/mac())
+->
+a/cpu_arch(m ,arm())
+request_truth(emora,a)
+;
+
+
+
+
+
+
+
+have(user, p/computer())
+->
+a/cpu_arch(p ,arm())
+m/mobile(p)
+request_truth(emora,a)
+request_truth(emora,m)
+;
+
+
+
+
+
+
+
+arm(p/computer())
+->
+property(p, power_efficient())
+a/property(p, good_program_compatibility())
+request_truth(emora,a)
+;
+
+
+
+
+
+
+
+power_efficient(p/computer()) mobile(p)
+->
+property(p, good_battery_life())
+;
+
+
+
+
+
+
+
+x86(p/computer())
+->
+a/property(p, good_performance())
+request_truth(emora,a)
+;
+
+
+
+
+
+
+
+purpose(p/computer(), graphic_design())
+->
+a/cpu_manuf_brand(p, amd())
+request_truth(emora,a)
+have(p, dgpu())
+pr/property(p, dgpu_manuf())
+request(emora,pr)
+;
+
+
+
+
+
+
+
+uses(user, photoshop()) have(user, p/computer())
+->
+i/cpu_manuf(p, intel())
+request_truth(emora,i)
+;
+
+
+
+
+
+
+
+uses(user, windows())
+->
+b/build(computer())
+have(user, capability(b))
+request_truth(b)
+property(hardware_freedom(), good())
+a/annoy(user, windows_updates())
+request_truth(emora,a)
+l/like(user, frequent_software_updates())
+request_truth(emora,l)
+;
+
+
+
+
+
+
+
+have(user, mac())
+->
+uses(user, macos())
+;
+
+
+
+
+
+
+
+uses(user, macos())
+->
+pr/property(macos(), work())
+property(pr, always())
+property(property(macos(), security()), awesome())
+property(macos(), connected(ios()))
+a/like(user, frequent_software_updates())
+request_truth(emora,a)
+have(macos(), s/style())
+property(s, good())
+;
+
+a/cpu_manuf(p/computer(), amd())
+have(user, p)
+a{"confidence": -1}
+->
+aa/cpu_arch(p ,arm())
+m/mobile(p)
+request_truth(emora,aa)
+request_truth(emora,m)
+;
