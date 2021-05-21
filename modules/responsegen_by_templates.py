@@ -50,6 +50,7 @@ class ResponseTemplateFiller:
             for match_dict in solutions_list:
                 string_spec_ls = list(post)  # need to create copy so as to not mutate the postcondition in the rule
                 response_str = self.fill_string(match_dict, expr_dict, string_spec_ls, cg)
+                print(string_spec_ls)
                 if response_str not in aux_state.get('spoken_responses', []):
                     candidates.append((match_dict, response_str))
         print('\nResponse Options: ')
@@ -87,15 +88,15 @@ class ResponseTemplateFiller:
         specifications = {}
         realizations = {}
         for e in string_spec_ls:
-            if isinstance(e, tuple):
+            if isinstance(e, (list,tuple)):
                 for k,v in e[1].items():
                     if v in match_dict:
                         np, np_realized = self._process_variable_match(match_dict[v], cg, expr_dict)
                         if np is not None:
                             specifications[v] = np
                         realizations[v] = np_realized
-        with_params = [(i,e) for i,e in enumerate(string_spec_ls) if isinstance(e, tuple)]
-        without_params = [(i,e) for i,e in enumerate(string_spec_ls) if not isinstance(e, tuple)]
+        with_params = [(i,e) for i,e in enumerate(string_spec_ls) if isinstance(e, (list,tuple))]
+        without_params = [(i,e) for i,e in enumerate(string_spec_ls) if not isinstance(e, (list,tuple))]
 
         # Replacement of constants and parameter-less variables
         for i, e in without_params:
