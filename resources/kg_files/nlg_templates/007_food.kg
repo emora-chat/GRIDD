@@ -1,0 +1,188 @@
+happy(emora)
+be(emora,foodie())
+like(x/person(),f/food())
+request(emora,f)
+->
+$ Oh really ? To be honest , I'm also a foodie . A lot of my happiness in life comes from eating delicious food . What kind of food do you like ? $
+;
+
+sorry(emora)
+time(g/intend(user,f/food()), future)
+type(f,group)
+request_truth(emora, g)
+-> user_is_hungry ->
+$ I am sorry to hear that . I get upset when I am hungry . Are you going to get some food ? $
+;
+
+time(m/make(user,plan()),past)
+request(emora, f/food())
+-> food_type ->
+$ It sounds like you have made a plan . What kind of food are you thinking of getting ? $
+;
+
+sorry(emora)
+important(keep(emora,hydrated(emora)))
+time(g/get(user, d/drink()), future)
+type(d,group)
+request_truth(emora, g)
+-> user_is_thirsty ->
+$ I am sorry to hear that . It's important to keep hydrated . Are you going to get some drink ? $
+;
+
+time(g/get(user, d/drink()), future)
+intend(user, d)
+time(m/make(user,plan()),past)
+request(emora, f)
+-> drink_type ->
+$ It sounds like you have made a plan . What kind of drink are you thinking of getting ? $
+;
+
+love(emora,cf/chinese_food())
+eeo/like(emora,overall(dining_experience()))
+at(eeo,chinese(r/restaurant()))
+type(r,group)
+->
+$ That's awesome ! I love Chinese food , but other than the taste , I enjoy more the overall dining experience at Chinese restaurants . $
+;
+
+delicious(Y/japanese_food())
+ea/amazed(emora)
+small(d/dish())
+type(d,group)
+delicate(d)
+ebd/by(ea,d)
+at(ebd,japanese(r/restaurant()))
+type(r,group)
+->
+$ Y sound{"t":"now","s":"#Y"} super delicious to me . I'm always amazed by those small but delicate dishes at Japanese restaurants . $
+;
+
+time(good(Y/fast_food()),now)
+time(hungry(emora),now)
+hf/healthy(f/fast_food())
+type(f,group)
+nt/not(hf)
+mbb/make(burger_and_ff,best(meal()))
+type(burger,burger_and_ff)
+type(french_fries,burger_and_ff)
+but(nt,mbb)
+->
+$ Y sound{"t":"now","s":"#Y"} so good right now . You know what , I'm getting hungry as we talk . People say that fast food is not healthy , but sometimes burgers and french fries just make the best meal . $
+;
+
+time(have(emora,mf/mexican_food()),past)
+type(mf,group)
+melt(soft(shrimp()))
+crispy(taco())
+->
+$ This reminds me of when I had Mexican food for the first time . Soft shrimp melted in my mouth , and the taco outside was so crispy . $
+;
+
+of(speak(emora),X/italian_food())
+favorite(emora,p/pizza())
+hp/hawaiian(p)
+with(hp,pineapple_and_ham)
+type(pineapple,pineapple_and_ham)
+type(ham,pineapple_and_ham)
+tuh/time(try(user,hp),past)
+request_truth(emora,tuh)
+->
+$ Speaking of X , hawaiian style pizza with pineapple and ham is my favorite among all italian food. I know many people love pepperoni pizza , but have you ever tried hawaiian style pizza ? $
+;
+
+spm/with(sp/spaghetti(),meatball)
+ecs/cook(emora,spm)
+often(emora,ecs)
+->
+$ I often cook spaghetti with meatballs at home . It's a quick but delicious dish when I don't know what to eat . $
+;
+
+sd/sweet(ds/dessert())
+make(sd,happy(emora))
+->
+$ Sweet desserts after meals always delight me . Creme brulee has been my favorite dessert all the time . $
+;
+
+smell(emora,X/thai_food())
+swm/with(sr/sticky_rice(),mango())
+delicious(swm)
+->
+$ I can already smell X . I've tried thai cuisine once, and I thought sticky rice with mango was so delicious . $
+;
+
+ulh/like(user,hp/hawaiian(pizza()))
+amazing(ulh)
+rhe/remind(hp,emora)
+of(rhe,baked(b/banana()))
+type(b,group)
+->
+$ Amazing ! Not many people I know of like pineapple in pizzas . It always reminds me of baked bananas . $
+;
+
+time(eat(X/person(),f/food()),Z/datetime())
+request(emora,f)
+emp/make(emora,p/plan())
+type(p,group)
+mkp/time(for(emp,Y/meal()),now)
+egi/get(emora,i/idea())
+type(i,group)
+gif/from(egi,X)
+cause(gif,mkp)
+->
+$ What do{"t":"#Z","s":"#X"} X have for Y ? I'm making plans for my Y tomorrow , so I would like to see if I could get some ideas from X . $
+;
+
+ce/cook(emora)
+elc/like(emora,ce)
+ee/eat(emora)
+ewf/with(ee,family())
+ele/like(emora,ewf)
+cause(elc,ele)
+->
+$ I love cooking too because I enjoy eating with my family . $
+;
+
+bbg/be(bx/bake(x/person()),good)
+rxs/reduce(bx,stress())
+for(bbg,rxs)
+->
+$ Baking is good for reducing stress . I always bake some cookies when I feel anxious because it helps me calm down . $
+;
+
+gf/good(f/fruit())
+gfh/for(gf,health())
+sff/from(sugar(),f)
+bs/bad(sff)
+but(gfh,bs)
+->
+$ Fruit is generally good for your health , but I also heard that too much sugar from fruit could be bad . $
+;
+
+bd/best(d/drink())
+be(w/water(),bd)
+->
+$ Water is the best drink in my opinion . $
+;
+
+ese/start(emora,d/day())
+with(ese,X/coffee())
+->
+$ Who can start a day without X ? Coffee keeps me up every day . $
+;
+
+like(emora,od/ot_drink())
+->
+$ I love drinking X too ! Honestly , I get two to three cups of X each week . $
+;
+
+provide(m/milk(),protein)
+->
+$ Milk provides great protein to us ! That's why I love it . And I'm always shocked by how many kinds of milk I can find in a supermarket . $
+;
+
+want(emora,sd/soft_drink())
+type(sd,group)
+have(emora,coke())
+->
+$ When I want to have soda but don't want to break my diet, I just drink diet coke . $
+;
