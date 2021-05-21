@@ -190,6 +190,9 @@ class ChatbotServer:
                         working_memory.features[t][BASE_UCONFIDENCE] = 0.0
                     else:
                         working_memory.features[t][BASE_UCONFIDENCE] = 1.0
+                else:
+                    # fragment language often does not have predicate as root (e.g. the big backyard<root>)
+                    working_memory.features[t][BASE_UCONFIDENCE] = 1.0
         self.dialogue_intcore.update_confidence('user', iterations=CONF_ITER)
         self.dialogue_intcore.update_confidence('emora', iterations=CONF_ITER)
         self.dialogue_intcore.update_salience(iterations=SAL_ITER)
