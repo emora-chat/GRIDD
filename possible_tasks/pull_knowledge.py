@@ -18,17 +18,17 @@ def pull(kb, wm, limit=None, branch_limit=None, reach=1):
 	already_pulled = {}  # Tracks nodes that have been pulled
 	already_checked = {} # Tracks nodes that have been pulled from
 	tot_pulled = 0       # Tracks total number of pulled nodes
-	curr_pull = []       # holds all nodes of a certain edge distance from our original nodes
+	curr_pull = set()    # holds all nodes of a certain edge distance from our original nodes
 
-	# Add all subject and object nodes from WM
+	# Add all subject, object, and predicate instance nodes from WM
 	for c in curr_concepts:
-		curr_pull.append(c[0])
+		curr_pull.add(c[0])
+		curr_pull.add(c[3])
 		# Make sure object exists as it is possible to have a monopredicate
 		if c[2]:
-			curr_pull.append(c[2])
-
-	# Since subjects and objects could be same in diff preds, remove redundancies
-	curr_pull = set(curr_pull)
+			curr_pull.add(c[2])
+	curr_pull = sorted(curr_pull, key=lambda x: wm.features[x]["SALIENCE"], reverse=True)
+	print(curr_pull)
 
 	pulled = []
 
@@ -51,25 +51,33 @@ def pull(kb, wm, limit=None, branch_limit=None, reach=1):
 				if done:
 					break
 
-				# These seem to be entity definitions from ontology - unnecessary?
-				if g[3].isnumeric():
+				# Don't pull any type predicate instances
+				if g[1] == "type":
 					continue
-				for elem in [g[0], g[2], g[3]]:
+
+				good_elem = [x for x in [g[0], g[2], g[3]] if x]
+
+				for i, elem in enumerate(good_elem):
 					if elem not in already_pulled:
+						# Check for essential predicates
+						elem_preds = set(kb.predicates(elem)) | set(kb.predicates(object=elem))
+						for pred in elem_preds:
+							if pred[1] in ['subj_essential', 'obj_essential']:
+								
 						already_pulled[elem] = 1
 						branch_pulled += 1
 						tot_pulled += 1
 						temp_pull.append(elem)   
 						pulled.append(elem)
 
-					# Reached number of desired pulled nodes
-					if (limit and tot_pulled >= limit):
-						return(pulled)
+				# Reached number of desired pulled nodes
+				if (limit and tot_pulled >= limit):
+					return(pulled)
 
-					# Reached number of desired pulled nodes from this puller
-					if (branch_limit and branch_pulled >= branch_limit):
-						done = 1
-						break
+				# Reached number of desired pulled nodes from this puller
+				if (branch_limit and branch_pulled >= branch_limit):
+					done = 1
+					break
 
 		# Restock puller list with new nodes
 		curr_pull = temp_pull
@@ -116,6 +124,7 @@ class TestPullKnowledge(unittest.TestCase):
 		wm = ConceptGraph('''
 		happy(d)
 		''')
+		wm.features['d'] = {"SALIENCE": 1}
 
 		pulled = pull(kb, wm)
 		# neighbors of d pulled, since d was mentioned
@@ -182,6 +191,7 @@ class TestPullKnowledge(unittest.TestCase):
 		cfg=chase(f, g)
 		cgh=chase(g, h)
 		cgi=chase(g, i)
+		fff=happy(g)
 		;
 		
 		''')
@@ -190,6 +200,12 @@ class TestPullKnowledge(unittest.TestCase):
 		happy(d)
 		happy(e)
 		''')
+
+		wm.features['d'] = {"SALIENCE": 0.8}
+		wm.features['e'] = {"SALIENCE": 1.0}
+		wm.features['happy'] = {"SALIENCE": 1.0}
+		wm.features['1'] = {"SALIENCE": 1.0}
+		wm.features['0'] = {"SALIENCE": 0.5}
 
 		pulled = pull(kb, wm)
 		# neighbors of d and e pulled, since both were mentioned
@@ -206,11 +222,12 @@ class TestPullKnowledge(unittest.TestCase):
 
 		pulled = pull(kb, wm, branch_limit=1)
 		# since the branch limit is 1, after pulling along one
-		# of d's connections, the pull operation should terminate
-		# without pulling any additional neighbors of d
+		# of d's and one of e's connections, the pull operation should terminate
+		# without pulling any additional neighbors of d or e
 		assert len(set(pulled)) == 2
 
 		pulled = pull(kb, wm, branch_limit=200, reach=20)
+		print(pulled)
 
 
 if __name__ == '__main__':
