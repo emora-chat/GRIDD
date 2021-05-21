@@ -20,11 +20,13 @@ def recurse_essential(kb, c, tot_pulled, pulled, temp_pull, already_pulled, alre
 					pulled.append(e)
 					tot_pulled = recurse_essential(kb, e, tot_pulled, pulled, temp_pull, already_pulled, already_checked)
 	
+	# update # of pulled nodes to include what we have added here
+	# note that we could exceed our limit while adding here
 	return tot_pulled
 
 def return_salience(wm, c):
 	try:
-		return wm.features[x]["SALIENCE"]
+		return wm.features[c]["SALIENCE"]
 	except:
 		return 0
 
@@ -128,149 +130,149 @@ def pull(kb, wm, limit=None, branch_limit=None, reach=1):
 
 class TestPullKnowledge(unittest.TestCase):
 
-#	def test_pull_simple(self):
-#		kb = ConceptGraph('''
-#		
-#		dog = (entity)
-#		cat = (entity)
-#		chase = (predicate)
-#		happy = (predicate)
-#		;
-#		
-#		a = dog()
-#		b = dog()
-#		c = cat()
-#		d = dog()
-#		e = cat()
-#		f = dog()
-#		g = dog()
-#		h = cat()
-#		i = cat()
-#		;
-#		
-#		cab=chase(a, b)
-#		cbc=chase(b, c)
-#		ccd=chase(c, d)
-#		cde=chase(d, e)
-#		cef=chase(e, f)
-#		cfg=chase(f, g)
-#		cgh=chase(g, h)
-#		cgi=chase(g, i)
-#		;
-#		
-#		''')
-#
-#		wm = ConceptGraph('''
-#		happy(d)
-#		''')
-#		wm.features['d'] = {"SALIENCE": 0.8}
-#		wm.features['happy'] = {"SALIENCE": 1.0}
-#		wm.features['0'] = {"SALIENCE": 0.5}
-#
-#		pulled = pull(kb, wm)
-#		# neighbors of d pulled, since d was mentioned
-#		assert set(pulled) == {'c', 'e', 'ccd', 'cde'}
-#
-#		pulled = pull(kb, wm, reach=2)
-#		# neighbors of d and neighbors-of-neighbors of d pulled
-#		assert set(pulled) == {'c', 'e', 'ccd', 'cde','b', 'cbc', 'f', 'cef'}
-#
-#		pulled = pull(kb, wm, limit=3)
-#		# since the absolute limit is 3, a maximum of 3 concepts
-#		# should be returned by the pull operation.
-#		assert len(set(pulled)) <= 3
-#
-#		pulled = pull(kb, wm, branch_limit=1)
-#		# since the branch limit is 1, after pulling along one
-#		# of d's connections, the pull operation should terminate
-#		# without pulling any additional neighbors of d
-#		#assert len(set(pulled)) == 1
-#
-#		'''
-#		Additional considerations:
-#		
-#		* there will potentially be hundreds of nodes in working memory--
-#		  make sure the pull operation efficiently scales for large working
-#		  memory and large KB.
-#		
-#		* if a predicate instance is pulled, its arguments MUST be pulled
-#		
-#		* when pulling concept A, any related predicates of type ESSENTIAL
-#		  (see globals.ESSENTIAL) MUST be pulled
-#		  
-#		* Test pulling with a large branch factor-- setting a small limit
-#		  such as branch_limit=5 should make pulling efficient even with
-#		  thousands of neighbors per concept
-#		'''
-#
-#
-#	def test_pull_simple_2(self):
-#		kb = ConceptGraph('''
-#		
-#		dog = (entity)
-#		cat = (entity)
-#		chase = (predicate)
-#		happy = (predicate)
-#		;
-#		
-#		a = dog()
-#		b = dog()
-#		c = cat()
-#		d = dog()
-#		e = cat()
-#		f = dog()
-#		g = dog()
-#		h = cat()
-#		i = cat()
-#		;
-#		
-#		cab=chase(a, b)
-#		cbc=chase(b, c)
-#		ccd=chase(c, d)
-#		cde=chase(d, e)
-#		cef=chase(e, f)
-#		cfg=chase(f, g)
-#		cgh=chase(g, h)
-#		cgi=chase(g, i)
-#		fff=happy(g)
-#		;
-#		
-#		''')
-#
-#		wm = ConceptGraph('''
-#		happy(d)
-#		happy(e)
-#		''')
-#
-#		wm.features['d'] = {"SALIENCE": 0.8}
-#		wm.features['e'] = {"SALIENCE": 1.0}
-#		wm.features['happy'] = {"SALIENCE": 1.0}
-#		wm.features['1'] = {"SALIENCE": 1.0}
-#		wm.features['0'] = {"SALIENCE": 0.5}
-#
-#		pulled = pull(kb, wm)
-#		# neighbors of d and e pulled, since both were mentioned
-#		assert set(pulled) == {'c', 'ccd', 'cde', 'cef', 'f'}
-#
-#		pulled = pull(kb, wm, reach=2)
-#		# neighbors of d and neighbors-of-neighbors of d pulled
-#		assert set(pulled) == {'c', 'b', 'cbc', 'ccd', 'cde', 'f', 'cef', 'g', 'cfg'}
-#
-#		pulled = pull(kb, wm, limit=3)
-#		# since the absolute limit is 3, a maximum of 3 concepts
-#		# should be returned by the pull operation.
-#		assert len(set(pulled)) <= 3
-#
-#		pulled = pull(kb, wm, branch_limit=1)
-#		# since the branch limit is 1, after pulling along one
-#		# of d's and one of e's connections, the pull operation should terminate
-#		# without pulling any additional neighbors of d or e
-#		
-#		# Can't predict presence of essential attachments
-#		#assert len(set(pulled)) == 2
-#
-#		first = time.time()
-#		pulled = pull(kb, wm, branch_limit=200, reach=20)
+	def test_pull_simple(self):
+		kb = ConceptGraph('''
+		
+		dog = (entity)
+		cat = (entity)
+		chase = (predicate)
+		happy = (predicate)
+		;
+		
+		a = dog()
+		b = dog()
+		c = cat()
+		d = dog()
+		e = cat()
+		f = dog()
+		g = dog()
+		h = cat()
+		i = cat()
+		;
+		
+		cab=chase(a, b)
+		cbc=chase(b, c)
+		ccd=chase(c, d)
+		cde=chase(d, e)
+		cef=chase(e, f)
+		cfg=chase(f, g)
+		cgh=chase(g, h)
+		cgi=chase(g, i)
+		;
+		
+		''')
+
+		wm = ConceptGraph('''
+		happy(d)
+		''')
+		wm.features['d'] = {"SALIENCE": 0.8}
+		wm.features['happy'] = {"SALIENCE": 1.0}
+		wm.features['0'] = {"SALIENCE": 0.5}
+
+		pulled = pull(kb, wm)
+		# neighbors of d pulled, since d was mentioned
+		assert set(pulled) == {'c', 'e', 'ccd', 'cde'}
+
+		pulled = pull(kb, wm, reach=2)
+		# neighbors of d and neighbors-of-neighbors of d pulled
+		assert set(pulled) == {'c', 'e', 'ccd', 'cde','b', 'cbc', 'f', 'cef'}
+
+		pulled = pull(kb, wm, limit=3)
+		# since the absolute limit is 3, a maximum of 3 concepts
+		# should be returned by the pull operation.
+		assert len(set(pulled)) <= 3
+
+		pulled = pull(kb, wm, branch_limit=1)
+		# since the branch limit is 1, after pulling along one
+		# of d's connections, the pull operation should terminate
+		# without pulling any additional neighbors of d
+		#assert len(set(pulled)) == 1
+
+		'''
+		Additional considerations:
+		
+		* there will potentially be hundreds of nodes in working memory--
+		  make sure the pull operation efficiently scales for large working
+		  memory and large KB.
+		
+		* if a predicate instance is pulled, its arguments MUST be pulled
+		
+		* when pulling concept A, any related predicates of type ESSENTIAL
+		  (see globals.ESSENTIAL) MUST be pulled
+		  
+		* Test pulling with a large branch factor-- setting a small limit
+		  such as branch_limit=5 should make pulling efficient even with
+		  thousands of neighbors per concept
+		'''
+
+
+	def test_pull_simple_2(self):
+		kb = ConceptGraph('''
+		
+		dog = (entity)
+		cat = (entity)
+		chase = (predicate)
+		happy = (predicate)
+		;
+		
+		a = dog()
+		b = dog()
+		c = cat()
+		d = dog()
+		e = cat()
+		f = dog()
+		g = dog()
+		h = cat()
+		i = cat()
+		;
+		
+		cab=chase(a, b)
+		cbc=chase(b, c)
+		ccd=chase(c, d)
+		cde=chase(d, e)
+		cef=chase(e, f)
+		cfg=chase(f, g)
+		cgh=chase(g, h)
+		cgi=chase(g, i)
+		fff=happy(g)
+		;
+		
+		''')
+
+		wm = ConceptGraph('''
+		happy(d)
+		happy(e)
+		''')
+
+		wm.features['d'] = {"SALIENCE": 0.8}
+		wm.features['e'] = {"SALIENCE": 1.0}
+		wm.features['happy'] = {"SALIENCE": 1.0}
+		wm.features['1'] = {"SALIENCE": 1.0}
+		wm.features['0'] = {"SALIENCE": 0.5}
+
+		pulled = pull(kb, wm)
+		# neighbors of d and e pulled, since both were mentioned
+		assert set(pulled) == {'c', 'ccd', 'cde', 'cef', 'f'}
+
+		pulled = pull(kb, wm, reach=2)
+		# neighbors of d and neighbors-of-neighbors of d pulled
+		assert set(pulled) == {'c', 'b', 'cbc', 'ccd', 'cde', 'f', 'cef', 'g', 'cfg'}
+
+		pulled = pull(kb, wm, limit=3)
+		# since the absolute limit is 3, a maximum of 3 concepts
+		# should be returned by the pull operation.
+		assert len(set(pulled)) <= 3
+
+		pulled = pull(kb, wm, branch_limit=1)
+		# since the branch limit is 1, after pulling along one
+		# of d's and one of e's connections, the pull operation should terminate
+		# without pulling any additional neighbors of d or e
+		
+		# Can't predict presence of essential attachments
+		#assert len(set(pulled)) == 2
+
+		first = time.time()
+		pulled = pull(kb, wm, branch_limit=200, reach=20)
 
 	def test_larger_2(self):
 		a = '''
