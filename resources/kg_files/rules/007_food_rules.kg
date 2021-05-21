@@ -2,21 +2,21 @@ be(x/person(),fd/foodie())
 ->
 happy(emora)
 be(emora,fd)
-like(x,f/food())
+f:<like(x, f/food())>
 request(emora,f)
 ;
 
 hungry(user)
 ->
 sorry(emora)
-time(g/intend(user,f/food()), now)
-type(f,group)
+g:<time(g/intend(user,f/food()), now) type(f,group)>
 request_truth(emora, g)
 ;
 
 time(g/intend(user, f/food()), now)
 -> user_want_food ->
-time(m/make(user,plan()),past)
+time(m/make(user,plan()), past)
+op_more_info(f, g)
 request(emora, f)
 ;
 
@@ -24,8 +24,7 @@ thirsty(user)
 ->
 sorry(emora)
 important(keep(emora,hydrated(emora)))
-g:<time(g/intend(user, d/drink()), future)>
-type(d,group)
+g:<time(g/intend(user, d/drink()), future) type(d,group)>
 request_truth(emora, g)
 ;
 
@@ -83,11 +82,13 @@ intend(x/person(),if/italian_food())
 ->
 of(speak(emora),if)
 favorite(emora,p/pizza())
-hp/hawaiian(p)
-with(hp,pineapple_and_ham)
-type(pineapple,pineapple_and_ham)
-type(ham,pineapple_and_ham)
-tuh/time(try(user,hp),past)
+tuh:<
+    hp/hawaiian(p)
+    with(hp,pineapple_and_ham)
+    type(pineapple,pineapple_and_ham)
+    type(ham,pineapple_and_ham)
+    tuh/time(try(user,hp),past)
+>
 request_truth(emora,tuh)
 ;
 
@@ -122,7 +123,7 @@ type(b,group)
 
 time(have(X/person(),Y/meal()),z/datetime())
 ->
-time(eat(X,f/food()),z)
+f:<time(xef/eat(X,f/food()), z) for(xef, Y)>
 request(emora,f)
 emp/make(emora,p/plan())
 type(p,group)

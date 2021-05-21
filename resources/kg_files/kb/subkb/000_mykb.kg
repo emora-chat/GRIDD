@@ -1,6 +1,0 @@
-
-ink = (predicate);
-
-x/squid()
-->
-ink(x);

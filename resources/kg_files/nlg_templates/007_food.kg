@@ -165,12 +165,12 @@ $ Water is the best drink in my opinion . $
 ;
 
 ese/start(emora,d/day())
-with(ese,X/coffee())
+with(ese, X/coffee())
 ->
-$ Who can start a day without X ? Coffee keeps me up every day . $
+$ Who can start a day without X ? X keeps me up every day . $
 ;
 
-like(emora,od/ot_drink())
+like(emora, X/ot_drink())
 ->
 $ I love drinking X too ! Honestly , I get two to three cups of X each week . $
 ;
