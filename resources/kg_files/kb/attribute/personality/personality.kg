@@ -1,0 +1,16 @@
+[p_personality_trait, n_personality_trait]=(personality_trait)
+
+[obedient,sweet,smart,playful,energetic]=(p_personality_trait)
+expr("kind, nice, loving, sweetheart", sweet)
+expr("intelligent", smart)
+expr("lively, spunky, rambunctious", energetic)
+
+[mean,jealous,lazy,annoying,stupid]=(n_personality_trait)
+expr("bothersome, nuisance", annoying)
+expr("dumb, idiotic", stupid)
+
+[friendly,shy,mischevious,crazy]=(personality_trait)
+expr("outgoing", friendly)
+expr("introvert", shy)
+expr("tricky", mischevious)
+expr("spaz", crazy)

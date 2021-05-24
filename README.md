@@ -9,7 +9,7 @@ utterance understanding and decision-making.
 The general dialogue management pipeline available within the Framework 
 is shown in Figure 1 (above).  
 
-## Content Development Test App
+## Content Development
 
 For local content development work, follow the instructions in this section.
 
@@ -49,51 +49,32 @@ This framework requires `Python >= 3.7`
    ```
    pip install -r GRIDD/requirements.txt
    ```
-1. Create the following directory structure under the project directory:
-   ```
-   emora/
-       gridd_files/
-           kb_test/
-               kb/
-                   kb.kg
-               rules/
-                   rules.kg
-   ```
-   * Add your knowledge base content (ontology, world knowledge, etc.) to `kb.kg`.
-   * Add your implication rules to `rules.kg`.
-   * Note: You can separate your content development into separate `.kg` files in `kb/` and `rules/`, if desired. There is no necessary naming convention.
-1. Go to the project directory (e.g., `emora`) and run the test app:
-   ```
-   python GRIDD/scripts/knowledge_base_test_app.py
-   ```
-1. You will be prompted to choose either the logic or language interface, and you have the option within the language interface to see intermediate debugging results (the working memory at various steps in the dialogue pipeline). The default options if you don't provide anything at the prompts is the language interface with no debugging outputs.
+1. The files that compose the knowledge base, inference rules, and template rules are found in `GRIDD/resources/kg_files/`.
 
-## Full System
+   * Add your knowledge base content (ontology, world knowledge, etc.) to topic-specific files in `GRIDD/resources/kg_files/kb/`.
+        
+     NOTE! There are various common files already in place; before adding new content, verify that it is not already located in an existing file.
+   
+   * Add your implication rules to topic-specific files in `GRIDD/resources/kg_files/rules/`.
+   
+   * Add your implication rules to topic-specific files in `GRIDD/resources/kg_files/nlg_templates/`.
 
-To run the whole system end-to-end, follow the instructions in this section.
-
-### Setup
-
-(0) Required `Python >= 3.7`
-
-(1) Install required dependencies:
-
-* (a) Execute `pip install -r GRIDD/requirements.txt`
-
-(2) Clone the [structpy repository](https://github.com/jdfinch/structpy). 
-Put the inner `structpy` directory into the **parent** directory of your cloned GRIDD directory 
-(i.e. it should be on the same directory level as GRIDD, **not** contained within GRIDD).
-
-(3) Download required files:
-
-* [SentenceCasing data](https://github.com/nreimers/truecaser/releases/download/v1.0/english_distributions.obj.zip)
-into the `GRIDD/resources` directory.
-
-(4) Install the ELIT package and execute `elit serve` in a terminal. 
-`elit serve` will run in the background.
 
 ### Execution
 
-Set your runtime working directory to the directory that contains `GRIDD`.
+Set your runtime working directory to the `emora` directory.
 
-Run the `GRIDD/chatbot.py` script.
+Run the `GRIDD/intcore_chatbot_server.py` script.
+
+You will be prompted to enter the device that you want to use. 
+
+* For GPU-enabled machines, find an unused GPU and enter it (`cuda:0`, `cuda:1`, etc). 
+You can see the usage of the GPU by executing `nvidia-smi` in the terminal.
+
+* For CPU-only machines, enter `cpu`.
+
+Begin the conversation by typing some greeting like `hi`.
+
+There is no end-phrase, so you must manually stop the execution when you want to be done.
+
+

@@ -56,6 +56,8 @@ class ParseToLogic:
                     vars.update([expression_var, ref, concept_var, expr, concept_type])
                     vars.difference_update(to_remove)
                     original_vars.difference_update(to_remove) # remove ltype predicate instance from vars; otherwise, it will be added as constraint with ref and expression
+                if pregraph.has('ltype'):
+                    pregraph.remove('ltype')
                 if not found_supertype:
                     expression_var = pregraph.id_map().get()
                     ref = pregraph.add(concept, 'ref', expression_var)
@@ -82,11 +84,15 @@ class ParseToLogic:
         self.intcore.working_memory.clear()
         parse_graph = self.text_to_graph(*args)
         if len(parse_graph.concepts()) == 0: # empty utterance
-            return [], []
+            return {}, []
         self.intcore.consider(parse_graph)
         self._span_to_concepts()
         types = self.intcore.pull_types()
         self.intcore.consider(types)
+        # todo - this is just a temporary patch for missing type expression
+        for s,_,_,_ in wm.predicates(predicate_type='expr'):
+            if not wm.has(s, 'type', 'expression'):
+                wm.add(s, 'type', 'expression')
         rule_assignments = {(pre, post, rule): sols for rule, (pre, post, sols) in self.intcore.infer().items()}
         mentions = self._get_mentions(rule_assignments, wm)
         merges = self._get_merges(rule_assignments, wm)

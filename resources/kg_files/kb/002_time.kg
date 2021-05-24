@@ -1,5 +1,17 @@
+time = (predicate, subj_essential)
+expr("when", time)
+
+datetime = (entity)
+yesterday=datetime()
+tomorrow=datetime()
+today=datetime()
+now=datetime()
+past=datetime()
+future=datetime()
+always=datetime()
+
 habitual_present=(datetime)
 [always,frequent,usual]=(habitual_present)
-expr("always", always)
-expr("frequent", frequent)
-expr("usual", usual)
+
+always=(property)
+after=(time)

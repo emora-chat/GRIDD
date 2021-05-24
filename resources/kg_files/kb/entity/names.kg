@@ -1,0 +1,17 @@
+init_ask_name=init()
+;
+
+name=(entity)
+
+sarah=name()
+sophy=name()
+expr("sophie", sophy)
+dan=name()
+mack=name()
+william=name()
+james=name()
+jimmy=name()
+jinho=name()
+john=name()
+bob=name()
+sam=name()

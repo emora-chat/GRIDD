@@ -1,0 +1,37 @@
+in = (predicate)
+expr("inside", in)
+to = (predicate)
+for = (predicate)
+of = (predicate)
+from = (predicate)
+over = (predicate)
+under = (predicate)
+expr("beneath", under)
+on = (predicate)
+into = (predicate)
+with = (predicate)
+around = (predicate)
+about = (predicate)
+;
+
+indirect_obj=(predicate, subj_essential)
+beneficiary=(indirect_obj)
+;
+
+modifier=(predicate, subj_essential)
+can = (modifier)
+expr("ca", can)
+could = (modifier)
+shall = (modifier)
+should = (modifier)
+will = (modifier)
+would = (modifier)
+may = (modifier)
+might = (modifier)
+must = (modifier)
+;
+
+not = (predicate)
+expr("nt", not)
+;
+

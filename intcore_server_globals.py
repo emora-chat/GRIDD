@@ -1,0 +1,4 @@
+
+LOCAL = True
+IS_SERIALIZING = False
+INFERENCE = True

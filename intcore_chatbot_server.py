@@ -5,21 +5,13 @@ from itertools import chain
 from GRIDD.utilities.utilities import collect
 from GRIDD.data_structures.span import Span
 from GRIDD.globals import *
+from GRIDD.intcore_server_globals import *
+
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.intelligence_core import IntelligenceCore
-from GRIDD.modules.elit_dp_to_logic_model import ElitDPToLogic
-from GRIDD.modules.responsegen_by_templates import ResponseTemplateFiller
-from GRIDD.modules.response_selection_salience import ResponseSelectionSalience
-from GRIDD.modules.response_expansion import ResponseExpansion
-from GRIDD.modules.responsegen_by_rules import ResponseRules
-from GRIDD.modules.responsegen_by_model import ResponseGeneration
-from GRIDD.modules.response_assembler import ResponseAssembler
 
 from GRIDD.utilities.server import save, load
 from inspect import signature
-
-LOCAL = True
-IS_SERIALIZING = True
 
 def serialized(*returns):
     def dectorator(f):
@@ -106,6 +98,7 @@ class ChatbotServer:
         return elit_results
 
     def init_parse2logic(self, device=None):
+        from GRIDD.modules.elit_dp_to_logic_model import ElitDPToLogic
         nlu_templates = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
         self.elit_dp = ElitDPToLogic(self.dialogue_intcore.knowledge_base,
                                      nlu_templates,
@@ -120,7 +113,7 @@ class ChatbotServer:
     def run_mention_bridge(self, mentions, working_memory):
         self.load_working_memory(working_memory)
         if mentions is None:
-            mentions = []
+            mentions = {}
         namespace = list(mentions.items())[0][1].id_map() if len(mentions) > 0 else "ment_"
         mega_mention_graph = ConceptGraph(namespace=namespace)
         for span, mention_graph in mentions.items():
@@ -147,14 +140,25 @@ class ChatbotServer:
         node_merges = []
         for (span1, pos1), (span2, pos2) in merges:
             # if no mention for span, no merge possible
-            if working_memory.has(span1) and working_memory.has(span2):
-                (concept1,) = working_memory.objects(span1, 'ref')
-                concept1 = self._follow_path(concept1, pos1, working_memory)
-                (concept2,) = working_memory.objects(span2, 'ref')
-                concept2 = self._follow_path(concept2, pos2, working_memory)
+            if self.dialogue_intcore.working_memory.has(span1) and self.dialogue_intcore.working_memory.has(span2):
+                (concept1,) = self.dialogue_intcore.working_memory.objects(span1, 'ref')
+                concept1 = self._follow_path(concept1, pos1, self.dialogue_intcore.working_memory)
+                (concept2,) = self.dialogue_intcore.working_memory.objects(span2, 'ref')
+                concept2 = self._follow_path(concept2, pos2, self.dialogue_intcore.working_memory)
                 node_merges.append((concept1, concept2))
         self.dialogue_intcore.merge(node_merges)
         self.dialogue_intcore.operate()
+        self.dialogue_intcore.convert_metagraph_span_links(DP_SUB, [ASS_LINK])
+        for so, t, l in self.dialogue_intcore.working_memory.metagraph.edges(label=ASS_LINK):
+            if BASE_UCONFIDENCE not in self.dialogue_intcore.working_memory.features[t]:
+                if self.dialogue_intcore.working_memory.has(predicate_id=so):
+                    if NONASSERT in self.dialogue_intcore.working_memory.types(so):
+                        self.dialogue_intcore.working_memory.features[t][BASE_UCONFIDENCE] = 0.0
+                    else:
+                        self.dialogue_intcore.working_memory.features[t][BASE_UCONFIDENCE] = 1.0
+                else:
+                    # fragment language often does not have predicate as root (e.g. the big backyard<root>)
+                    self.dialogue_intcore.working_memory.features[t][BASE_UCONFIDENCE] = 1.0
         self.dialogue_intcore.update_confidence('user', iterations=CONF_ITER)
         self.dialogue_intcore.update_confidence('emora', iterations=CONF_ITER)
         return self.dialogue_intcore.working_memory
@@ -188,15 +192,6 @@ class ChatbotServer:
         self.load_working_memory(working_memory)
         self.dialogue_intcore.apply_inferences(inference_results)
         self.dialogue_intcore.operate()
-        self.dialogue_intcore.convert_metagraph_span_links(REF_SP, [REF, VAR])
-        self.dialogue_intcore.convert_metagraph_span_links(DP_SUB, [ASS_LINK])
-        for so, t, l in working_memory.metagraph.edges(label=ASS_LINK):
-            if BASE_UCONFIDENCE not in working_memory.features[t]:
-                if working_memory.has(predicate_id=so):
-                    if NONASSERT in working_memory.types(so):
-                        working_memory.features[t][BASE_UCONFIDENCE] = 0.0
-                    else:
-                        working_memory.features[t][BASE_UCONFIDENCE] = 1.0
         self.dialogue_intcore.update_confidence('user', iterations=CONF_ITER)
         self.dialogue_intcore.update_confidence('emora', iterations=CONF_ITER)
         self.dialogue_intcore.update_salience(iterations=SAL_ITER)
@@ -205,6 +200,7 @@ class ChatbotServer:
     @serialized('rules', 'use_cached')
     def run_reference_identification(self, working_memory):
         self.load_working_memory(working_memory)
+        self.dialogue_intcore.convert_metagraph_span_links(REF_SP, [REF, VAR])
         rules = self.dialogue_intcore.working_memory.references()
         use_cached = False
         return rules, use_cached
@@ -229,7 +225,7 @@ class ChatbotServer:
             for reference_node, (pre, matches) in inference_results.items():
                 compatible_pairs[reference_node] = {}
                 for match in matches:
-                    if reference_node != match[reference_node]:
+                    if reference_node in match and reference_node != match[reference_node]:
                         compatible_pairs[reference_node][match[reference_node]] = []
                         for node in match:
                             if node != reference_node:
@@ -274,14 +270,17 @@ class ChatbotServer:
         salient_emora_arg_request = None
         salient_emora_request = None
         req_type = None
+        # currently valid requests to be resolved through fragment resolution must have been requested on previous turn (approximated by salience threshold)
         emora_truth_requests = [pred for pred in wm.predicates('emora', REQ_TRUTH) if
-                                wm.has(pred[3], USER_AWARE) and not wm.has(pred[3], REQ_SAT)]
+                                wm.has(pred[3], USER_AWARE) and not wm.has(pred[3], REQ_SAT)
+                                and wm.features.get(pred[3], {}).get(SALIENCE, 0) >= 0.8]
         if len(emora_truth_requests) > 0:
             salient_emora_truth_request = max(emora_truth_requests,
                                               key=lambda pred: wm.features.get(pred[3], {}).get(SALIENCE, 0))
             truth_sal = wm.features.get(salient_emora_truth_request[3], {}).get(SALIENCE, 0)
         emora_arg_requests = [pred for pred in wm.predicates('emora', REQ_ARG) if
-                              wm.has(pred[3], USER_AWARE) and not wm.has(pred[3], REQ_SAT)]
+                              wm.has(pred[3], USER_AWARE) and not wm.has(pred[3], REQ_SAT)
+                              and wm.features.get(pred[3], {}).get(SALIENCE, 0) >= 0.8]
         if len(emora_arg_requests) > 0:
             salient_emora_arg_request = max(emora_arg_requests,
                                             key=lambda pred: wm.features.get(pred[3], {}).get(SALIENCE, 0))
@@ -326,6 +325,7 @@ class ChatbotServer:
         return self.dialogue_intcore.working_memory
 
     def init_template_nlg(self):
+        from GRIDD.modules.responsegen_by_templates import ResponseTemplateFiller
         self.template_filler = ResponseTemplateFiller()
 
     @serialized('working_memory', 'use_cached')
@@ -348,16 +348,20 @@ class ChatbotServer:
         return template_response_sel, aux_state
 
     def init_response_selection(self):
+        from GRIDD.modules.response_selection_salience import ResponseSelectionSalience
         self.response_selection = ResponseSelectionSalience()
 
     @serialized('aux_state', 'response_predicates')
     def run_response_selection(self, working_memory, aux_state, template_response_sel):
         self.load_working_memory(working_memory)
+        if template_response_sel is None:
+            template_response_sel = (None,None,None)
         aux_state, response_predicates = self.response_selection(aux_state, self.dialogue_intcore.working_memory,
                                                                  template_response_sel)
         return aux_state, response_predicates
 
     def init_response_expansion(self):
+        from GRIDD.modules.response_expansion import ResponseExpansion
         self.response_expansion = ResponseExpansion(self.dialogue_intcore.knowledge_base)
 
     @serialized('expanded_response_predicates', 'working_memory')
@@ -370,6 +374,7 @@ class ChatbotServer:
         return expanded_response_predicates, working_memory
 
     def init_response_by_rules(self):
+        from GRIDD.modules.responsegen_by_rules import ResponseRules
         self.response_by_rules = ResponseRules()
 
     @serialized('rule_responses')
@@ -380,6 +385,7 @@ class ChatbotServer:
         return rule_responses
 
     def init_response_nlg_model(self, model=None, device='cpu'):
+        from GRIDD.modules.responsegen_by_model import ResponseGeneration
         self.response_nlg_model = ResponseGeneration(model, device)
 
     @serialized('nlg_responses')
@@ -395,12 +401,13 @@ class ChatbotServer:
             if 'context_manager' in response:
                 nlg_responses = json.loads(response['context_manager']['nlg_responses'])
             else:
-                nlg_responses = []
+                nlg_responses = [None] * len(expanded_response_predicates)
         else:
             nlg_responses = self.response_nlg_model(expanded_response_predicates)
         return nlg_responses
 
     def init_response_assember(self):
+        from GRIDD.modules.response_assembler import ResponseAssembler
         self.response_assembler = ResponseAssembler()
 
     @serialized('response', 'working_memory')
@@ -452,14 +459,16 @@ class ChatbotServer:
             if not wm.metagraph.out_edges(match_node, REF):
                 truths = list(wm.predicates('emora', REQ_TRUTH, ref_node))
                 if truths:
-                    wm.add(truths[0][3], REQ_SAT)
+                    i2 = wm.add(truths[0][3], REQ_SAT)
+                    wm.features[i2][BASE_UCONFIDENCE] = 1.0
                     if not wm.has(truths[0][3], USER_AWARE):
                         i2 = wm.add(truths[0][3], USER_AWARE)
                         wm.features[i2][BASE_UCONFIDENCE] = 1.0
                 else:
                     args = list(wm.predicates('emora', REQ_ARG, ref_node))
                     if args:
-                        wm.add(args[0][3], REQ_SAT)
+                        i2 = wm.add(args[0][3], REQ_SAT)
+                        wm.features[i2][BASE_UCONFIDENCE] = 1.0
                         if not wm.has(args[0][3], USER_AWARE):
                             i2 = wm.add(args[0][3], USER_AWARE)
                             wm.features[i2][BASE_UCONFIDENCE] = 1.0
@@ -479,7 +488,7 @@ class ChatbotServer:
         salient_concepts = sorted(current_user_concepts, key=lambda c: wm.features.get(c, {}).get(SALIENCE, 0),
                                   reverse=True)
         for c in salient_concepts:
-            if c != request_focus and request_focus_types < (types[c] - {c}):
+            if c != request_focus and request_focus_types < (types[c]): # todo - should it be types[c] - {c}?
                 subtype_set = current_user_concepts.intersection(wm.subtypes_of(c)) - {c}
                 # if concept is a reference or if other salient concepts are its subtypes, dont treat current concept as answer fragment
                 if not subtype_set and not wm.metagraph.out_edges(c, REF):
@@ -541,21 +550,21 @@ class ChatbotServer:
         working_memory = self.run_merge_bridge(merges, working_memory)
         working_memory = self.run_knowledge_pull(working_memory)
 
-        inference_results = self.run_dialogue_inference(working_memory)
-        working_memory = self.run_apply_dialogue_inferences(inference_results, working_memory)
         rules, use_cached = self.run_reference_identification(working_memory)
         inference_results, rules = self.run_multi_inference(rules, use_cached, working_memory)
         working_memory = self.run_reference_resolution(inference_results, working_memory)
         working_memory = self.run_fragment_resolution(working_memory, aux_state)
-
         inference_results = self.run_dialogue_inference(working_memory)
         working_memory = self.run_apply_dialogue_inferences(inference_results, working_memory)
+
         rules, use_cached = self.run_reference_identification(working_memory)
         inference_results, rules = self.run_multi_inference(rules, use_cached, working_memory)
         working_memory = self.run_reference_resolution(inference_results, working_memory)
         working_memory = self.run_fragment_resolution(working_memory, aux_state)
+        inference_results = self.run_dialogue_inference(working_memory)
+        working_memory = self.run_apply_dialogue_inferences(inference_results, working_memory)
 
-        rules, use_cached = self.run_prepare_template_nlg(working_memory)
+        working_memory, use_cached = self.run_prepare_template_nlg(working_memory)
         inference_results, rules = self.run_multi_inference(rules, use_cached, working_memory)
         template_response_sel, aux_state = self.run_template_fillers(inference_results, working_memory,
                                                                         aux_state)
@@ -652,19 +661,59 @@ class ChatbotServer:
                 print('[%.2f s] %s\n' % (elapsed, response))
             utter = input('User: ')
 
+    def run_static(self):
+        wm = self.dialogue_intcore.working_memory.copy()
+        aux_state = {'turn_index': -1}
+        utters = [
+            'hi',
+            'sarah',
+            'i actually just finished up some paperwork so i officially have bought a house',
+            'yeah its a relief for it to be over',
+            'it has a big backyard',
+            'yeah',
+            'i have a dog too',
+            'he is very energetic',
+            'yeah',
+            'he chewed my couch cushions to shreds'
+        ]
+        # utters = [
+        #     'hi',
+        #     'sarah',
+        #     'i just bought a house',
+        #     'yeah it was a long time coming',
+        #     'it has a big backyard',
+        #     'yeah but i have a cat',
+        #     'he is very energetic',
+        #     'yeah'
+        # ]
+        for utter in utters:
+            print(utter)
+            if utter.strip() != '':
+                s = time.time()
+                if IS_SERIALIZING:
+                    response, wm, aux_state = self.respond_serialize(utter, wm, aux_state)
+                else:
+                    response, wm, aux_state = self.respond(utter, wm, aux_state)
+                elapsed = time.time() - s
+                print('[%.2f s] %s\n' % (elapsed, response))
+
 def get_filepaths():
-    kb_dir = join('GRIDD', 'resources', 'kg_files', 'kb')
-    kb = [kb_dir]
-    rules_dir = join('GRIDD', 'resources', 'kg_files', 'rules')
-    rules = [rules_dir]
+    kb = [join('GRIDD', 'resources', 'kg_files', 'kb')]
+    rules = [join('GRIDD', 'resources', 'kg_files', 'rules')]
     wm = [join('GRIDD', 'resources', 'kg_files', 'wm')]
     nlg_templates = [join('GRIDD', 'resources', 'kg_files', 'nlg_templates')]
     return kb, rules, nlg_templates, wm
 
 if __name__ == '__main__':
+    import torch
     kb, rules, nlg_templates, wm = get_filepaths()
 
-    chatbot = ChatbotServer(kb, rules, nlg_templates, wm, device='cuda:1')
-
-    chatbot.full_init(device='cuda:1')
+    device = input('device (cpu/cuda:0/cuda:1/...) >>> ').strip()
+    if len(device) == 0:
+        if torch.cuda.is_available():
+            device = 'cuda:0'
+        else:
+            device = 'cpu'
+    chatbot = ChatbotServer(kb, rules, nlg_templates, wm, device=device)
+    chatbot.full_init(device=device)
     chatbot.run()

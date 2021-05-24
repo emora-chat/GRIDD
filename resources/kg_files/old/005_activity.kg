@@ -1,0 +1,32 @@
+
+E/activity(user)
+l/learn(emora, E)
+w/want(emora, l)
+always(w)
+time(s/start(user, E), past)
+cause(p/predicate(), s)
+request(emora, p)
+-> how_user_started_activity_nlg ->
+$ I've always wanted to learn how to E . How did you get started ? $
+;
+
+E/activity(user)
+sounds(E, fun)
+l2/like(user, p/predicate(object()))
+about(l2, E)
+request(emora, p)
+-> user_likes_about_activity_nlg ->
+$ That sounds like fun ! What do you like so much about E ? $
+;
+
+E/activity(user)
+r/relax(emora)
+after(r, do(emora, a/activity()))
+similar_to(a, E)
+l/like(emora, r)
+like(user, p/predicate(user, object()))
+to(p, relax(user))
+request(emora, p)
+-> relaxing_activity_nlg ->
+$ I find it pretty tiring to E and always like to relax after . What do you like to do to relax ? $
+;

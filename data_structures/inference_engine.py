@@ -143,6 +143,8 @@ class InferenceEngine:
             all_rules = dynamic_rules
             converted_rules = Bimap(dynamic_converted_rules)
         # print('Nodes, Edges: ', len(facts_graph.nodes()), len(facts_graph.edges()))
+        if len(converted_rules) == 0:
+            return {}
         all_sols = self.matcher.match(facts_graph, *list(converted_rules.values()))
         solutions = {}
         for precondition, sols in all_sols.items():
@@ -167,21 +169,30 @@ class InferenceEngine:
                             break
                     if variable in categories:
                         not_category = True
+                        value_types = facts_types.get(value, set())
+                        if value.startswith(facts.id_map().namespace) or value.startswith(KB):
+                            # remove non-specific concepts from their type sets
+                            # e.g. an instance of name is removed but the specified name 'sarah' is not
+                            value_types -= {value}
                         for t in precondition_cg.types(variable) - {variable}:
-                            if facts_types.get(value, set()) - {value} <= facts_types.get(t, set()):
+                            if value_types == facts_types.get(t, set()):
                                 not_category = False
                         if not_category:
                             break
                     if variable in specifics:
                         not_specific = False
+                        value_types = facts_types.get(value, set())
+                        if value.startswith(facts.id_map().namespace) or value.startswith(KB):
+                            value_types -= {value}
                         for t in precondition_cg.types(variable) - {variable}:
-                            if facts_types.get(value, set()) - {value} <= facts_types.get(t, set()):
+                            if value_types <= facts_types.get(t, set()):
                                 not_specific = True
                         if not_specific:
                             break
                 else:
                     solset.append(sol)
-            solutions[precondition_id] = solset
+            if len(solset) > 0:
+                solutions[precondition_id] = solset
         final_sols = {}
         for rule_id, sol_ls in solutions.items():
             if len(all_rules[rule_id]) == 3:
@@ -189,26 +200,6 @@ class InferenceEngine:
             else:
                 final_sols[rule_id] = (all_rules[rule_id][0], sol_ls)
         return final_sols
-
-    def apply(self, inferences):
-        implications = {}
-        for rid, (pre, post, sols) in inferences.items():
-            for sol in sols:
-                implied = ConceptGraph(namespace=post._ids)
-                for pred in post.predicates():
-                    pred = [sol.get(x, x) for x in pred]
-                    implied.add(*pred)
-                for concept in post.concepts():
-                    concept = sol.get(concept, concept)
-                    implied.add(concept)
-                for s, t, l in post.metagraph.edges():
-                    implied.metagraph.add(sol.get(s, s), sol.get(t, t), l)
-                for s in post.metagraph.nodes():
-                    implied.metagraph.add(sol.get(s, s))
-                features = {sol.get(k, k): v for k, v in post.features.items()}
-                implied.features.update(features)
-                implications.setdefault(rid, []).append((sol, implied))
-        return implications
 
 if __name__ == '__main__':
     print(InferenceEngineSpec.verify(InferenceEngine))

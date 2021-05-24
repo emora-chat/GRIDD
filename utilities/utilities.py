@@ -40,8 +40,11 @@ def collect(*files_folders_or_strings, extension=None, directory=None):
             files_or_strings.append(ffs)
     for ffs in sorted(files_or_strings):
         if not extension or (isinstance(ffs, str) and ffs.endswith(extension)):
-            with open(ffs, 'r') as f:
-                collected.append(f.read())
+            if os.path.isdir(ffs):
+                collected.extend(collect(ffs))
+            else:
+                with open(ffs, 'r') as f:
+                    collected.append(f.read())
         else:
             collected.append(ffs)
     return collected
