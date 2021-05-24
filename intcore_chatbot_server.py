@@ -123,7 +123,7 @@ class ChatbotServer:
                 ((center, t, o, i,),) = center_pred
             else:
                 ((center, t, o, i,),) = list(mention_graph.predicates(predicate_type='link'))
-            mega_mention_graph.concatenate(mention_graph, predicate_exclusions={'focus', 'center', 'cover'})
+            mega_mention_graph.concatenate(mention_graph, predicate_exclusions={'focus', 'center', 'cover', 'link'})
             mega_mention_graph.add(span, 'ref', focus)
             mega_mention_graph.add(span, 'type', 'span')
             if not span.startswith('__linking__'):
@@ -564,6 +564,10 @@ class ChatbotServer:
         inference_results = self.run_dialogue_inference(working_memory)
         working_memory = self.run_apply_dialogue_inferences(inference_results, working_memory)
 
+        if PRINT_WM:
+            print('\n<< Working Memory After Inferences Applied >>')
+            print(working_memory.pretty_print(exclusions={SPAN_DEF, SPAN_REF, USER_AWARE, ASSERT, 'imp_trigger'}))
+
         working_memory, use_cached = self.run_prepare_template_nlg(working_memory)
         inference_results, rules = self.run_multi_inference(rules, use_cached, working_memory)
         template_response_sel, aux_state = self.run_template_fillers(inference_results, working_memory,
@@ -704,11 +708,16 @@ def get_filepaths():
     nlg_templates = [join('GRIDD', 'resources', 'kg_files', 'nlg_templates')]
     return kb, rules, nlg_templates, wm
 
+PRINT_WM = False
+
 if __name__ == '__main__':
     import torch
     kb, rules, nlg_templates, wm = get_filepaths()
 
     device = input('device (cpu/cuda:0/cuda:1/...) >>> ').strip()
+    print_wm = input('debug (n/y) >>> ').strip()
+    # global PRINT_WM
+    PRINT_WM = True if print_wm == 'y' else False
     if len(device) == 0:
         if torch.cuda.is_available():
             device = 'cuda:0'

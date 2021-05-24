@@ -53,10 +53,6 @@ class ResponseTemplateFiller:
                 # print(string_spec_ls)
                 if response_str not in aux_state.get('spoken_responses', []):
                     candidates.append((match_dict, response_str))
-        print('\nResponse Options: ')
-        for c in candidates:
-            print('\t' + c[1])
-        print()
         predicates, string, avg_sal = self.select_best_candidate(candidates, cg)
         return (string, predicates, 'template')
 
@@ -77,7 +73,11 @@ class ResponseTemplateFiller:
                 sals = [cg.features.get(x, {}).get(SALIENCE, 0) for x in match_dict.values()]
                 avg = sum(sals) / len(sals)
                 with_sal.append((preds, string, avg))
+        print('\nResponse Options: ')
         if len(with_sal) > 0:
+            for _, s, _ in with_sal:
+                print('\t%s'%s)
+            print()
             return max(with_sal, key=lambda x: x[2])
         else:
             return None, None, None
