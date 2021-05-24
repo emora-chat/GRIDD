@@ -14,7 +14,7 @@ epositive(emora, l)
 ;
 
 la/large(yard())
-->
+-> large_yard ->
 epositive(emora, la)
 time(w/want(emora, y/yard()), now)
 large(y)

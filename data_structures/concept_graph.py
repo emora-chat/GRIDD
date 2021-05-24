@@ -575,15 +575,23 @@ class ConceptGraph:
 
     def merge(self, concept_a, concept_b, strict_order=False):
         unique_preds = {USER_AWARE, TIME}
+        unique_pred_merges = set()
         if concept_a != concept_b:
             if not strict_order and concept_a.startswith(self._ids.namespace) and not concept_b.startswith(self._ids.namespace):
                 tmp = concept_a
                 concept_a = concept_b
                 concept_b = tmp
             for s, t, o, i in list(self.predicates(subject=concept_b)):
-                self._detach(s, t, o, i)
-                if t not in unique_preds or (t in unique_preds and not self.has(concept_a, t, o)):
+                if t not in unique_preds:
+                    self._detach(s, t, o, i)
                     self.add(concept_a, t, o, i)
+                else:
+                    source_preds = list(self.predicates(concept_a, t, o))
+                    if len(source_preds) > 0: # If >1 instance of unique_pred, additional merges need to happen
+                        unique_pred_merges.update({(pred[3], i) for pred in source_preds})
+                    else: # otherwise, treat it like normal
+                        self._detach(s, t, o, i)
+                        self.add(concept_a, t, o, i)
             for s, t, o, i in list(self.predicates(object=concept_b)):
                 self._detach(s, t, o, i)
                 self.add(s, t, concept_a, i)
@@ -629,6 +637,8 @@ class ConceptGraph:
                 self.add(s, t, o, concept_a)
                 self._detach(s, t, o, i)
             self.metagraph.merge(concept_a, concept_b)
+            for p1, p2 in unique_pred_merges:
+                self.merge(p1, p2, strict_order)
             self.remove(concept_b)
         return concept_a
 

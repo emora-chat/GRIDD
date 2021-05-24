@@ -140,14 +140,25 @@ class ChatbotServer:
         node_merges = []
         for (span1, pos1), (span2, pos2) in merges:
             # if no mention for span, no merge possible
-            if working_memory.has(span1) and working_memory.has(span2):
-                (concept1,) = working_memory.objects(span1, 'ref')
-                concept1 = self._follow_path(concept1, pos1, working_memory)
-                (concept2,) = working_memory.objects(span2, 'ref')
-                concept2 = self._follow_path(concept2, pos2, working_memory)
+            if self.dialogue_intcore.working_memory.has(span1) and self.dialogue_intcore.working_memory.has(span2):
+                (concept1,) = self.dialogue_intcore.working_memory.objects(span1, 'ref')
+                concept1 = self._follow_path(concept1, pos1, self.dialogue_intcore.working_memory)
+                (concept2,) = self.dialogue_intcore.working_memory.objects(span2, 'ref')
+                concept2 = self._follow_path(concept2, pos2, self.dialogue_intcore.working_memory)
                 node_merges.append((concept1, concept2))
         self.dialogue_intcore.merge(node_merges)
         self.dialogue_intcore.operate()
+        self.dialogue_intcore.convert_metagraph_span_links(DP_SUB, [ASS_LINK])
+        for so, t, l in self.dialogue_intcore.working_memory.metagraph.edges(label=ASS_LINK):
+            if BASE_UCONFIDENCE not in self.dialogue_intcore.working_memory.features[t]:
+                if self.dialogue_intcore.working_memory.has(predicate_id=so):
+                    if NONASSERT in self.dialogue_intcore.working_memory.types(so):
+                        self.dialogue_intcore.working_memory.features[t][BASE_UCONFIDENCE] = 0.0
+                    else:
+                        self.dialogue_intcore.working_memory.features[t][BASE_UCONFIDENCE] = 1.0
+                else:
+                    # fragment language often does not have predicate as root (e.g. the big backyard<root>)
+                    self.dialogue_intcore.working_memory.features[t][BASE_UCONFIDENCE] = 1.0
         self.dialogue_intcore.update_confidence('user', iterations=CONF_ITER)
         self.dialogue_intcore.update_confidence('emora', iterations=CONF_ITER)
         return self.dialogue_intcore.working_memory
@@ -181,15 +192,6 @@ class ChatbotServer:
         self.load_working_memory(working_memory)
         self.dialogue_intcore.apply_inferences(inference_results)
         self.dialogue_intcore.operate()
-        self.dialogue_intcore.convert_metagraph_span_links(REF_SP, [REF, VAR])
-        self.dialogue_intcore.convert_metagraph_span_links(DP_SUB, [ASS_LINK])
-        for so, t, l in working_memory.metagraph.edges(label=ASS_LINK):
-            if BASE_UCONFIDENCE not in working_memory.features[t]:
-                if working_memory.has(predicate_id=so):
-                    if NONASSERT in working_memory.types(so):
-                        working_memory.features[t][BASE_UCONFIDENCE] = 0.0
-                    else:
-                        working_memory.features[t][BASE_UCONFIDENCE] = 1.0
         self.dialogue_intcore.update_confidence('user', iterations=CONF_ITER)
         self.dialogue_intcore.update_confidence('emora', iterations=CONF_ITER)
         self.dialogue_intcore.update_salience(iterations=SAL_ITER)
@@ -198,6 +200,7 @@ class ChatbotServer:
     @serialized('rules', 'use_cached')
     def run_reference_identification(self, working_memory):
         self.load_working_memory(working_memory)
+        self.dialogue_intcore.convert_metagraph_span_links(REF_SP, [REF, VAR])
         rules = self.dialogue_intcore.working_memory.references()
         use_cached = False
         return rules, use_cached
@@ -547,19 +550,19 @@ class ChatbotServer:
         working_memory = self.run_merge_bridge(merges, working_memory)
         working_memory = self.run_knowledge_pull(working_memory)
 
-        inference_results = self.run_dialogue_inference(working_memory)
-        working_memory = self.run_apply_dialogue_inferences(inference_results, working_memory)
         rules, use_cached = self.run_reference_identification(working_memory)
         inference_results, rules = self.run_multi_inference(rules, use_cached, working_memory)
         working_memory = self.run_reference_resolution(inference_results, working_memory)
         working_memory = self.run_fragment_resolution(working_memory, aux_state)
+        inference_results = self.run_dialogue_inference(working_memory)
+        working_memory = self.run_apply_dialogue_inferences(inference_results, working_memory)
 
-        inference_results = self.run_dialogue_inference(working_memory)
-        working_memory = self.run_apply_dialogue_inferences(inference_results, working_memory)
         rules, use_cached = self.run_reference_identification(working_memory)
         inference_results, rules = self.run_multi_inference(rules, use_cached, working_memory)
         working_memory = self.run_reference_resolution(inference_results, working_memory)
         working_memory = self.run_fragment_resolution(working_memory, aux_state)
+        inference_results = self.run_dialogue_inference(working_memory)
+        working_memory = self.run_apply_dialogue_inferences(inference_results, working_memory)
 
         working_memory, use_cached = self.run_prepare_template_nlg(working_memory)
         inference_results, rules = self.run_multi_inference(rules, use_cached, working_memory)
@@ -657,6 +660,42 @@ class ChatbotServer:
                 elapsed = time.time() - s
                 print('[%.2f s] %s\n' % (elapsed, response))
             utter = input('User: ')
+
+    def run_static(self):
+        wm = self.dialogue_intcore.working_memory.copy()
+        aux_state = {'turn_index': -1}
+        utters = [
+            'hi',
+            'sarah',
+            'i actually just finished up some paperwork so i officially have bought a house',
+            'yeah its a relief for it to be over',
+            'it has a big backyard',
+            'yeah',
+            'i have a dog too',
+            'he is very energetic',
+            'yeah',
+            'he chewed my couch cushions to shreds'
+        ]
+        # utters = [
+        #     'hi',
+        #     'sarah',
+        #     'i just bought a house',
+        #     'yeah it was a long time coming',
+        #     'it has a big backyard',
+        #     'yeah but i have a cat',
+        #     'he is very energetic',
+        #     'yeah'
+        # ]
+        for utter in utters:
+            print(utter)
+            if utter.strip() != '':
+                s = time.time()
+                if IS_SERIALIZING:
+                    response, wm, aux_state = self.respond_serialize(utter, wm, aux_state)
+                else:
+                    response, wm, aux_state = self.respond(utter, wm, aux_state)
+                elapsed = time.time() - s
+                print('[%.2f s] %s\n' % (elapsed, response))
 
 def get_filepaths():
     kb = [join('GRIDD', 'resources', 'kg_files', 'kb')]
