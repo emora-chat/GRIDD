@@ -1,3 +1,4 @@
+from GRIDD.modules.response_expansion_spec import ResponseExpansionSpec
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.globals import *
 
@@ -63,11 +64,8 @@ class ResponseExpansion:
             final_exps = []
             spoken_predicates = set()
             for s, t, o, i in exps:
-                if COLDSTART in wm.features[i]:
-                    del wm.features[i][COLDSTART]
                 if s == 'user' and t in {REQ_TRUTH, REQ_ARG}: # identify emora answers to user requests and add req_sat to request predicate
                     wm.add(i, REQ_SAT)
-                    wm.features[i][BASE_UCONFIDENCE] = 1.0
                 else: # all other predicates are maintained as expansions and spoken predicates
                     final_exps.append((s,t,o,i))
                     if t != EXPR:
@@ -105,5 +103,4 @@ class ResponseExpansion:
             graph.features[concept][BASE_UCONFIDENCE] = graph.features.get(concept, {}).get(BASE_CONFIDENCE, 0.0)
 
 if __name__ == '__main__':
-    from GRIDD.modules.response_expansion_spec import ResponseExpansionSpec
     print(ResponseExpansionSpec.verify(ResponseExpansion))

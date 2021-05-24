@@ -1,8 +1,0 @@
-
-[happy,sad,scared,lonely,angry]=(emotion)
-
-expr("joyful, upbeat", happy)
-expr("upset, depressed", sad)
-expr("terrified, afraid", scared)
-expr("lonely", lonely)
-expr("mad", angry)

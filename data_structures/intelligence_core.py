@@ -1,10 +1,8 @@
 
 from GRIDD.data_structures.intelligence_core_spec import IntelligenceCoreSpec
-from GRIDD.intcore_server_globals import *
 
 from GRIDD.data_structures.concept_graph import ConceptGraph
-if INFERENCE:
-    from GRIDD.data_structures.inference_engine import InferenceEngine
+from GRIDD.data_structures.inference_engine import InferenceEngine
 from GRIDD.data_structures.concept_compiler import ConceptCompiler
 from GRIDD.utilities.utilities import uniquify, operators, interleave
 from itertools import chain, combinations
@@ -20,12 +18,11 @@ import GRIDD.data_structures.intelligence_core_operators as intcoreops
 class IntelligenceCore:
 
     def __init__(self, knowledge_base=None, working_memory=None, inference_engine=None, device='cpu'):
-        self.compiler = ConceptCompiler(namespace='__c__', warn=True)
-        if INFERENCE:
-            self.nlg_inference_engine = InferenceEngine(device=device)
-            if inference_engine is None:
-                inference_engine = InferenceEngine(device=device)
-            self.inference_engine = inference_engine
+        self.compiler = ConceptCompiler(namespace='__c__')
+        self.nlg_inference_engine = InferenceEngine(device=device)
+        if inference_engine is None:
+            inference_engine = InferenceEngine(device=device)
+        self.inference_engine = inference_engine
         if isinstance(knowledge_base, ConceptGraph):
             self.knowledge_base = knowledge_base
         else:
@@ -42,6 +39,7 @@ class IntelligenceCore:
         self.obj_essential_types = {i for i in self.knowledge_base.subtypes_of(OBJ_ESSENTIAL)
                                 if not self.knowledge_base.has(predicate_id=i)}
 
+
     def know(self, knowledge, **options):
         cg = ConceptGraph(namespace='_tmp_')
         ConceptGraph.construct(cg, knowledge, compiler=self.compiler)
@@ -54,15 +52,13 @@ class IntelligenceCore:
             cg.remove(rule)
         for concept in set(cg.subtypes_of('response_token')):
             cg.remove(concept)
-        if INFERENCE:
-            self.nlg_inference_engine.add(nlg_templates)
+        self.nlg_inference_engine.add(nlg_templates)
         rules = cg.rules()
         for rule, (pre, post, vars) in rules.items():
             for concept in vars:
                 cg.remove(concept)
             cg.remove(rule)
-        if INFERENCE:
-            self.inference_engine.add(rules)
+        self.inference_engine.add(rules)
         self.knowledge_base.concatenate(cg)
 
     def consider(self, concepts, namespace=None, associations=None, evidence=None, salience=1, **options):
@@ -95,26 +91,6 @@ class IntelligenceCore:
             solutions = self.inference_engine.infer(self.working_memory, dynamic_rules=rules)
         return solutions
 
-    def apply(self, inferences):
-        implications = {}
-        for rid, (pre, post, sols) in inferences.items():
-            for sol in sols:
-                implied = ConceptGraph(namespace=post._ids)
-                for pred in post.predicates():
-                    pred = [sol.get(x, x) for x in pred]
-                    implied.add(*pred)
-                for concept in post.concepts():
-                    concept = sol.get(concept, concept)
-                    implied.add(concept)
-                for s, t, l in post.metagraph.edges():
-                    implied.metagraph.add(sol.get(s, s), sol.get(t, t), l)
-                for s in post.metagraph.nodes():
-                    implied.metagraph.add(sol.get(s, s))
-                features = {sol.get(k, k): v for k, v in post.features.items()}
-                implied.features.update(features)
-                implications.setdefault(rid, []).append((sol, implied))
-        return implications
-
     def apply_inferences(self, inferences=None):
         """
         :param inferences: {rule: (pre, post, [solution_dict, ...]),
@@ -127,7 +103,7 @@ class IntelligenceCore:
         #  if the precondition contains no vars, there is no evidence!
         if inferences is None:
             inferences = self.infer()
-        result_dict = self.apply(inferences)
+        result_dict = self.inference_engine.apply(inferences)
         for rule, results in result_dict.items():
             pre, post = inferences[rule][0], inferences[rule][1] # todo- assign neg conf links
             for evidence, implication in results:

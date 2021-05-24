@@ -1,0 +1,29 @@
+
+g/go(user, object())
+->
+p:<with(g, p/person())>
+request(emora, p)
+;
+
+buy(A/person(), B/entity())
+-> ownership ->
+possess(A, B)
+;
+
+time(buy(A/person(), B/house()), past)
+-> house_purchase ->
+C:<time(locate(B, C/location()), now)>
+request(emora, C)
+
+D:<time(be(B, D/size()), now)>
+request(emora, D)
+;
+
+possess(A/person(), B/house())
+locate(B, C/state())
+-> emora_visit ->
+time(ewv/want(emora, evg/visit(emora, C)), past)
+user_aware(evg)
+time(ewv, always)
+;
+
