@@ -1,20 +1,12 @@
-attitude=(predicate)
-
-[like, dislike, want, feel, hope]=(attitude)
-expr("enjoy", like)
-expr("hate", dislike)
-expr("desire, hope", want)
-
+like=(predicate)
+expr("like, enjoy", like)
 love=(like)
-
-look_forward=(attitude)
-
-sounds=(attitude)
+expr("love", love)
+dislike=(predicate)
+expr("dislike, hate", dislike)
+want = (predicate)
+expr("want, desire, hope", want)
 
 ;
 
-
-[esympathy,econgrat,epositive]=(attitude)
-
-
-similar_to=(attitude)
+esympathy=(predicate)

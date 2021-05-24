@@ -23,10 +23,9 @@ class ConceptCompiler:
         'type', 'expr', 'predicate', 'nonassert', 'assert', 'token_seq'
     })
 
-    def __init__(self, instances=_default_instances, types=_default_types, predicates=_default_predicates, namespace='c_', warn=False):
+    def __init__(self, instances=_default_instances, types=_default_types, predicates=_default_predicates, namespace='c_'):
         self.parser = Lark(ConceptCompiler._grammar, parser='earley')
-        self.visitor = ConceptVisitor(instances, types, predicates, namespace, warn=warn)
-        self.warn = warn
+        self.visitor = ConceptVisitor(instances, types, predicates, namespace)
 
     def _compile(self, string):
         if not string.strip().endswith(';'):
@@ -50,30 +49,7 @@ class ConceptCompiler:
                 if block.strip():
                     parse_tree = self.parser.parse(block + ';')
                     self.visitor.visit(parse_tree)
-        if self.warn:
-            fr, ft = self.checks(self.visitor.entries, self.visitor.types,
-                                     self.visitor.instances, self.visitor.rmap)
-            for f, m in (fr, 'missing references'), (ft, 'missing types'):
-                if f:
-                    print(f'Found {m}:' + '\n  ' + "\n  ".join([str(e) for e in f]))
         return self.visitor.entries, self.visitor.links, self.visitor.metadatas
-
-    def checks(self, entries, types, instances, rmap):
-        failed_refs = set()
-        failed_types = set()
-        for s, t, o, i in entries:
-            if t not in types:
-                failed_types.add(rmap.get(t, t))
-            if t == TYPE and o not in types:
-                failed_types.add(rmap.get(o, o))
-            for e in s, o:
-                if (e not in instances) and (e not in types)\
-                   and not (isinstance(e, str) and e.startswith('"') and e.endswith('"')):
-                    failed_refs.add(rmap.get(e, e))
-        failed_refs.difference_update(self._default_instances | self._default_types | self._default_predicates)
-        failed_types.difference_update(self._default_types)
-        failed_refs.difference_update(failed_types | {None})
-        return failed_refs, failed_types
 
     @property
     def namespace(self): return self.visitor.globals.namespace
@@ -129,7 +105,7 @@ class ConceptCompiler:
 
 class ConceptVisitor(Visitor_Recursive):
 
-    def __init__(self, instances=None, types=None, predicates=None, namespace='c_', warn=False):
+    def __init__(self, instances=None, types=None, predicates=None, namespace='c_'):
         Visitor_Recursive.__init__(self)
         self.entries = []               # quadruples to output
         self.links = []                 # metagraph links between concepts
@@ -142,17 +118,16 @@ class ConceptVisitor(Visitor_Recursive):
         self.locals = {}                # mapping of local_id : global_id
         self.linstances = set()         # all instances (for rule collection)
         self.plinstances = set()        # local predicate instances for predicate multiplicity
-        self.refgen = instances is None or warn # whether references autogenerate concepts
+        self.refgen = instances is None # whether references autogenerate concepts
         instances = set() if instances is None else set(instances)
         self.instances = instances      # set of all initialized concepts
-        self.typegen = types is None or warn
+        self.typegen = types is None
         types = set() if types is None else set(types)
         self.types = types              # set of all declared types
-        self.predgen = predicates is None or warn
+        self.predgen = predicates is None
         predicates = set() if predicates is None else set(predicates)
         self.predicates = predicates    # set of all declared predicate types
         self.rule_iter = 0              # incrementing rule order index
-        self.rmap = {}                  # mapping from global ids back to local ids for convenience
 
     def reset(self):
         self.entries = []
@@ -161,7 +136,7 @@ class ConceptVisitor(Visitor_Recursive):
 
     def rule(self, tree):
         if not hasattr(tree.children[1], 'data'):
-            rid = str(tree.children[1])
+            rid = tree.children[1]
         else:
             rid = self.globals.get()
         precondition, variables = tree.children[0].data
@@ -248,12 +223,7 @@ class ConceptVisitor(Visitor_Recursive):
         self.linstances = set()
 
     def block(self, _):
-        self.rmap.update([(v,k) for k,v in self.locals.items()])
         entries = [[self.locals.get(c, c) for c in e] for e in self.lentries]
-        for s, t, o, i in entries:          # auto add expressions
-            self.add_auto_expression(s)    # auto add expressions
-            if o is not None:
-                self.add_auto_expression(o)     # auto add expressions
         if not self.refgen:
             refs = []
             for s, t, o, _ in entries:
@@ -288,12 +258,6 @@ class ConceptVisitor(Visitor_Recursive):
         self.plinstances = set()
         self.linstances = set()
 
-    def add_auto_expression(self, instance):
-        if set(instance) <= set('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ -.'):
-            ei = self.globals.get()
-            self.instances.add(ei)
-            self.entries.append((f'"{instance}"', EXPR, instance, ei))
-
     def type_init(self, tree):
         newtype = [str(c) for c in tree.children[0].children]
         supertypes = [str(c.children[0]) for c in tree.children[1:]]
@@ -320,7 +284,6 @@ class ConceptVisitor(Visitor_Recursive):
             else:
                 self.check_double_init(newconcepts, self.instances)
                 self.instances.update(newconcepts)
-
         else:
             newconcepts = [self.globals.get() for _ in types]
             self.instances.update(newconcepts)
@@ -389,11 +352,6 @@ class ConceptVisitor(Visitor_Recursive):
         for i, (type, arg0, arg1) in enumerate(type_args):
             self.lentries.append((arg0, type, arg1, newconcepts[i]))
             self.plinstances.add(newconcepts[i])
-            if type == 'type':  # ???   Explicit new type creation with type bipredicate
-                self.types.add(arg0)  # ???
-            if arg1 in self.predicates:  # ???
-                self.predicates.add(arg0)  # ???
-            self.lmetadatas.setdefault(arg0, {})[IS_TYPE] = True  # ???
         tree.refs = newconcepts
         tree.inits = newconcepts
 

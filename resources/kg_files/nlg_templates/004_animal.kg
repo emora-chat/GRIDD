@@ -1,9 +1,12 @@
 
 time(h/have(user, p/pet()), now)
 request_truth(emora, h)
-time(walk(emora, emora_dog), today)
+love(emora, C/picture())
+type(C, group)
+of(C, A/animal())
+type(A, group)
 -> q_user_has_pet ->
-$ For me , I took my dog on a walk today . Do you have a pet ? $
+$ I love looking at pictures of animals . Do you have a pet ? $
 ;
 
 h/have(user, p/pet())
@@ -20,6 +23,14 @@ time(have(user, p2/pet()), now)
 request(emora, p2)
 -> q_pet_type ->
 $ What kind of pet do you have ? $
+;
+
+have(emora, emora_dog)
+X/property(Z/dog())
+possess(user, Z)
+request(emora, X)
+->
+$ Oh, me too ! What is your Z like ? $
 ;
 
 X/property(Z/pet())

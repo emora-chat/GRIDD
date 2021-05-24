@@ -523,16 +523,14 @@ class Chatbot:
             if not wm.metagraph.out_edges(match_node, REF):
                 truths = list(wm.predicates('emora', REQ_TRUTH, ref_node))
                 if truths:
-                    i2 = wm.add(truths[0][3], REQ_SAT)
-                    wm.features[i2][BASE_UCONFIDENCE] = 1.0
+                    wm.add(truths[0][3], REQ_SAT)
                     if not wm.has(truths[0][3], USER_AWARE):
                         i2 = wm.add(truths[0][3], USER_AWARE)
                         wm.features[i2][BASE_UCONFIDENCE] = 1.0
                 else:
                     args = list(wm.predicates('emora', REQ_ARG, ref_node))
                     if args:
-                        i2 = wm.add(args[0][3], REQ_SAT)
-                        wm.features[i2][BASE_UCONFIDENCE] = 1.0
+                        wm.add(args[0][3], REQ_SAT)
                         if not wm.has(args[0][3], USER_AWARE):
                             i2 = wm.add(args[0][3], USER_AWARE)
                             wm.features[i2][BASE_UCONFIDENCE] = 1.0
