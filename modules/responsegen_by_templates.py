@@ -50,7 +50,7 @@ class ResponseTemplateFiller:
             for match_dict in solutions_list:
                 string_spec_ls = list(post)  # need to create copy so as to not mutate the postcondition in the rule
                 response_str = self.fill_string(match_dict, expr_dict, string_spec_ls, cg)
-                print(string_spec_ls)
+                # print(string_spec_ls)
                 if response_str not in aux_state.get('spoken_responses', []):
                     candidates.append((match_dict, response_str))
         print('\nResponse Options: ')

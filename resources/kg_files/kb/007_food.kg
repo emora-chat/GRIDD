@@ -40,7 +40,6 @@ provide=(predicate)
 start=(predicate)
 
 eat=(event)
-expr("have",eat)
 get=(event)
 cook=(event)
 make=(event)

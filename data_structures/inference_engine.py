@@ -143,6 +143,8 @@ class InferenceEngine:
             all_rules = dynamic_rules
             converted_rules = Bimap(dynamic_converted_rules)
         # print('Nodes, Edges: ', len(facts_graph.nodes()), len(facts_graph.edges()))
+        if len(converted_rules) == 0:
+            return {}
         all_sols = self.matcher.match(facts_graph, *list(converted_rules.values()))
         solutions = {}
         for precondition, sols in all_sols.items():
