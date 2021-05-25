@@ -17,6 +17,8 @@ And review the following documents for guidelines:
 
 [Knowledge Format Documentation](https://docs.google.com/document/d/1mfdZIY09JwZ-DN4eBmIpxQ9phItEbrJqD5d1QtFKBN8/edit?usp=sharing)
 
+[Semantic Representation](https://github.com/emora-chat/GRIDD/blob/main/docs/SemanticRepresentation.md)
+
 [Content Development Guidelines](https://github.com/emora-chat/GRIDD/wiki/Content-Development-Guidelines)
 
 ### Getting Started
