@@ -3,3 +3,9 @@ event = (predicate)
 go = (event)
 
 activity = (event)
+
+get=(event)
+make=(event)
+keep=(event)
+
+;
