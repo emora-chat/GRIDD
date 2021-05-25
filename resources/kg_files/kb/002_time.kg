@@ -9,6 +9,7 @@ now=datetime()
 past=datetime()
 future=datetime()
 always=datetime()
+often=datetime()
 
 habitual_present=(datetime)
 [always,frequent,usual]=(habitual_present)
