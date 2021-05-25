@@ -10,4 +10,13 @@ picture=(entity)
 expr("photo, photograph", picture)
 
 treat=(entity)
+plan=(entity)
+idea=(entity)
+style=(entity)
+family=(entity)
+health=(entity)
+stress=(entity)
+day=(entity)
+note=(entity)
+
 ;

@@ -1,0 +1,41 @@
+
+
+
+building=(entity)
+home=(building)
+expr("residence", home)
+[house,apartment,dorm]=(home)
+
+;
+
+location=(entity)
+expr("place", location)
+[continent,country,region,state,city,attraction] = (location)
+expr("town", city)
+
+neighborhood = (location, outdoor)
+street = (location, outdoor)
+expr("road", street)
+sidewalk = (location, outdoor)
+
+[park, yard, outside]=(location, outdoor)
+expr("backyard, frontyard", yard)
+expr("outdoors", outside)
+
+vet_clinic=(location, indoor)
+expr("vets, vet's", vet_clinic)
+
+body_of_water = (location, outdoor)
+lake = (body_of_water)
+ocean = (body_of_water)
+
+beach = (location, outdoor)
+;
+
+distance=(predicate)
+near=(distance)
+expr("close, near", near)
+
+;
+
+nature=(entity)
