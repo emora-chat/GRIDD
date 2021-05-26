@@ -1,3 +1,16 @@
+/* Methods for entering sports component */
+t/time(l/like(user, activity), now)
+user_aware(l)
+-> person_likes_activity ->
+request_truth(like(user, sport))
+;
+
+t/time(l/like(user, sport), now)
+user_aware(l)
+-> person_likes_sports ->
+request_truth(play(user, sport))
+;
+
 t/time(pl/play(user, s/sport()), now)
 category(s)
 user_aware(pl)
@@ -51,9 +64,31 @@ op_more_info(s, w)
 request(emora, s)
 ;
 
-t/time(w/want(user, pl/play(user, s/sport())), now)
+/* Wants to Play Specific Sport */
+t/time(w/want(user, pl/play(user, football)), now)
 user_aware(w)
--> Person_wants_to_play_specific_sport ->
+-> Person_wants_to_play_football ->
+p:<c/want(user, pl) cause(p/predicate(), c)>
+request(me, p)
+;
+
+t/time(w/want(user, pl/play(user, soccer)), now)
+user_aware(w)
+-> Person_wants_to_play_soccer ->
+p:<c/want(user, pl) cause(p/predicate(), c)>
+request(me, p)
+;
+
+t/time(w/want(user, pl/play(user, tennis)), now)
+user_aware(w)
+-> Person_wants_to_play_tennis ->
+p:<c/want(user, pl) cause(p/predicate(), c)>
+request(me, p)
+;
+
+t/time(w/want(user, pl/play(user, basketball)), now)
+user_aware(w)
+-> Person_wants_to_play_basketball ->
 p:<c/want(user, pl) cause(p/predicate(), c)>
 request(me, p)
 ;

@@ -1,3 +1,18 @@
+/* Entering sports component */
+l/like(user, sport)
+l{"confidence": -1}
+request_truth(emora, l)
+->
+$ You seem like someone who might like sports. Do you? $
+;
+
+pl/play(user, sport)
+pl{"confidence": -1}
+request_truth(emora, pl)
+->
+$ If you like sports, do you play any? $
+;
+
 /* Plays some sport */
 time(play(user, s/sport()), now)
 request(emora, s)
@@ -48,11 +63,32 @@ $ What sport do you want to play? $
 ;
 
 /* Wants to play some specific sport */
-t/time(w/want(user, play(user, S/sport())), now)
+t/time(w/want(user, play(user, football)), now)
 cause(p/predicate(), w)
 request(emora, p)
 ->
-$ What makes you want to play S ? And who would you play S with ? That does sound like fun, though.  $
+$ What makes you want to play football ? That's a hard sport. $
+;
+
+t/time(w/want(user, play(user, soccer)), now)
+cause(p/predicate(), w)
+request(emora, p)
+->
+$ Oh, soccer is great. Why do you want to play?  $
+;
+
+t/time(w/want(user, play(user, tennis)), now)
+cause(p/predicate(), w)
+request(emora, p)
+->
+$ Tennis is fun. You have to be quick on your feet for sure. What made you want to start playing tennis?  $
+;
+
+t/time(w/want(user, play(user, basketball)), now)
+cause(p/predicate(), w)
+request(emora, p)
+->
+$ Why do you want to play basketball? $
 ;
 
 pl/play(user, s/sport())
