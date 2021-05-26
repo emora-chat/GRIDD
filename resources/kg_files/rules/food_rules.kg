@@ -24,8 +24,6 @@ but(he,ne)
 ;
 
 time(g/intend_to_consume(user, f/food()), future)
-category(f)
-user_aware(g)
 -> user_want_food ->
 time(m/make(user,plan()), past)
 op_more_info(f, g)
@@ -40,8 +38,12 @@ ode:<
     type(r,group)
 >
 like(emora,ode)
-enjoy(emora,hp/hotpot()) chinese(hp)
-th:<th/try(x,hp) time(th,past)>
+th:<
+    chp/chinese(hp/hotpot())
+    enjoy(emora,chp)
+    th/intend_to_consume(x,hp)
+    time(th,past)
+>
 request_truth(emora,th)
 ;
 
@@ -51,10 +53,11 @@ ebe/be(emora,expert())
 of(ebe,hp)
 ;
 
-th/try(x/person(),hp/hotpot()) time(th,past)
+th/intend_to_consume(x/person(),hp/hotpot())
+th{"confidence":-1}
 ->
-ebe/be(emora,expert())
-of(ebe,hp)
+iex/invite(emora,x)
+for(iex,hp)
 ;
 
 intend_to_consume(x/person(),jf/japanese_cuisine())
@@ -99,15 +102,17 @@ intend_to_consume(x/person(),mf/mexican_cuisine())
 ->
 time(have(emora,mf2/mexican_cuisine()),past)
 type(mf2,group)
-melt(soft(shrimp))
-crispy(taco())
+ss:<ss/soft(shrimp)>
+melt(ss)
+tc:<tc/crispy(taco())>
+good(tc)
 ;
 
 mr/mexican_restaurant()
 ->
 gtp/time(go(emora),past)
 to(gtp,mr)
-mf:<like(user,mf/mexican_cuisine())>
+mf:<intend_to_consume(user,mf/mexican_cuisine())>
 request(emora,mf)
 ;
 
@@ -179,7 +184,7 @@ time(ecs/cook(emora,spm),often)
 
 intend_to_consume(x/person(),ds/dessert())
 ->
-sd/sweet(ds)
+sd/sweet_flavor(ds)
 make(sd,happy(emora))
 ;
 
@@ -187,12 +192,15 @@ time(have(X/person(),Y/meal()),z/datetime())
 ->
 f:<time(xef/eat(X,f/food()), z) for(xef, Y)>
 request(emora,f)
+
 emp/make(emora,p/plan())
 type(p,group)
 mkp/time(for(emp,Y),now)
+
 egi/get(emora,i/idea())
 type(i,group)
 gif/from(egi,X)
+
 cause(gif,mkp)
 ;
 
@@ -232,7 +240,22 @@ g:<time(g/intend_to_consume(user, d/drinkable()), future) type(d,group)>
 request_truth(emora, g)
 ;
 
+time(g/intend_to_consume(user, d/drinkable()), future)
+-> user_want_drink ->
+time(m/make(user,plan()), past)
+op_more_info(d, g)
+request(emora, d)
+;
 
+time(g/intend_to_consume(user, d/drinkable()), future)
+g{"confidence": -1}
+->
+understand(emora)
+he/thirsty(emora)
+ne/drink(emora,f)
+not(ne)
+but(he,ne)
+;
 
 intend_to_consume(x/person(),f/fruit())
 ->
@@ -302,12 +325,20 @@ be(w,bd)
 
 g/intend_to_consume(x/person(),cd/common_drink())
 ->
-like(emora, cd)
+intend_to_consume(emora, cd)
+time(get(emora,cd),often)
 ;
 
 intend_to_consume(x/person(),m/milk())
 ->
 provide(m,protein)
+;
+
+intend_to_consume(x/person(),sd/soda())
+->
+want(emora,sd)
+type(sd,group)
+have(emora,coke())
 ;
 
 intend_to_consume(x/person(),j/jam())
@@ -410,6 +441,7 @@ request_truth(emora,blr)
 
 delicious(o/object())
 ->
+glad(emora)
 time(take(emora,note()),future)
 time(try(emora,o),future)
 ;
@@ -422,15 +454,15 @@ time(have(emora,c),past)
 
 co/crispy(o/object())
 ->
-ttf/time(try(emora,co),future)
+ttf:<ttf/time(try(emora,co),future)>
 look_forward(emora,ttf)
 ;
 
 co/crispy(c/consumable())
 ->
 re/remind(user,emora)
-of(re,ce/cereal())
-crispy(ce)
+ce:<ce/crispy(cereal())>
+of(re,ce)
 ;
 
 spicy(o/object())
@@ -458,30 +490,20 @@ not(ns)
 
 bo/bitter(o/object())
 ->
-elb/like(emora,bo)
+elb/intend_to_consume(emora,bo)
 not(elb)
-so/sweet(o2/object())
+so/sweet_flavor(o2/object())
 he/happy(emora)
 make(so,he)
 ;
 
 so/sweet_flavor(o/object())
 ->
-like(emora,so)
-like(emora,dessert())
+intend_to_consume(emora,so)
+intend_to_consume(emora,dessert())
 ;
 
 /* Common Sense */
-
-like(x/person(),o/unknown_noun())
-->
-intend(x,o)
-;
-
-want(x/person(),o/unknown_noun())
-->
-intend(x,o)
-;
 
 g/get(x/person(), c/consumable())
 ->
@@ -536,16 +558,6 @@ intend_to_eat(x,o)
 g/drink(x/person(), o/unknown_noun())
 ->
 intend_to_drink(x,o)
-;
-
-like(x/person(),o/unknown_noun())
-->
-intend(x,o)
-;
-
-want(x/person(),o/unknown_noun())
-->
-intend(x,o)
 ;
 
 xc/cook(x/person()) like(x,xc)
