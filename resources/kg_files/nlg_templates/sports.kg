@@ -1,14 +1,14 @@
 /* Entering sports component */
-l/like(user, sport)
-l{"confidence": -1}
-request_truth(emora, l)
+l/like(user, activity)
+l2/like(user, sport())
+request_truth(l2)
 ->
 $ You seem like someone who might like sports. Do you? $
 ;
 
-pl/play(user, sport)
-pl{"confidence": -1}
-request_truth(emora, pl)
+l/like(user,sport)
+pl/play(user, sport())
+request_truth(pl)
 ->
 $ If you like sports, do you play any? $
 ;

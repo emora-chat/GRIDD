@@ -2,13 +2,13 @@
 t/time(l/like(user, activity), now)
 user_aware(l)
 -> person_likes_activity ->
-request_truth(like(user, sport))
+request_truth(like(user, sport()))
 ;
 
 t/time(l/like(user, sport), now)
 user_aware(l)
 -> person_likes_sports ->
-request_truth(play(user, sport))
+request_truth(play(user, sport()))
 ;
 
 t/time(pl/play(user, s/sport()), now)
