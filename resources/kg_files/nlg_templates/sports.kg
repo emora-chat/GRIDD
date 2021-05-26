@@ -1,0 +1,71 @@
+/* Plays some sport */
+time(play(user, s/sport()), now)
+request(emora, s)
+->
+$ What sport do you play? I've enjoyed soccer in the past. Something about working with a team makes the experience more fulfilling, in my opinion.$
+;
+
+play(user, s/sport())
+request_truth(property(user, athlete()))
+->
+$ Oh, are you an athlete ? $
+;
+
+/* Plays some specific sport */
+X/property(football)
+play(user, football)
+request(emora, X)
+-> q_football_opinion ->
+$ How would you describe playing football? I've heard it can be a very tough sport to play. $
+;
+
+X/property(basketball)
+play(user, basketball)
+request(emora, X)
+-> q_basketball_opinion ->
+$ What is playing basketball like? It seems like a cool sport, but I've never had the chance to play. $
+;
+
+X/property(tennis)
+play(user, tennis)
+request(emora, X)
+-> q_tennis_opinion ->
+$ Tennis is a great sport. How would you describe playing it? $
+;
+
+X/property(soccer)
+play(user, soccer)
+request(emora, X)
+-> q_soccer_opinion ->
+$ I play soccer too! Well, I try to in my free time. Would you say soccer is more fun or more tiring? $
+;
+
+/* Wants to play some sport */
+time(want(user, play(user, s/sport())), now)
+request(emora, s)
+->
+$ What sport do you want to play? $
+;
+
+/* Wants to play some specific sport */
+t/time(w/want(user, play(user, S/sport())), now)
+cause(p/predicate(), w)
+request(emora, p)
+->
+$ What makes you want to play S ? And who would you play S with ? That does sound like fun, though.  $
+;
+
+pl/play(user, s/sport())
+pl{"confidence": -1}
+time(w2/want(emora, play(emora, tennis)), past)
+time(w2, always)
+time(w/want(user, play(user, s2/sport())), now)
+request_truth(emora, w)
+->
+$ Oh, if you don't play any sports now, do you want to try any in the future? I have wanted to try tennis for awhile, myself . $
+;
+
+energetic(user)
+-> user_is_energetic ->
+$ Sounds like you are an energetic person! $
+;

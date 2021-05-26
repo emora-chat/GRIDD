@@ -1,0 +1,74 @@
+t/time(pl/play(user, s/sport()), now)
+category(s)
+user_aware(pl)
+-> person_plays_sport ->
+op_more_info(s, pl)
+request(emora, s)
+;
+
+/* Plays specific sport */
+t/time(pl/play(user, football), now)
+user_aware(pl)
+-> person_plays_football ->
+i:<i/property(football)>
+request(emora,i)
+;
+
+t/time(pl/play(user, soccer), now)
+user_aware(pl)
+-> person_plays_soccer ->
+i:<i/property(soccer)>
+request(emora,i)
+;
+
+t/time(pl/play(user, tennis), now)
+user_aware(pl)
+-> person_plays_tennis ->
+i:<i/property(tennis)>
+request(emora,i)
+;
+
+t/time(pl/play(user, b/basketball()), now)
+user_aware(pl)
+-> person_plays_basketball ->
+i:<i/property(b)>
+request(emora,i)
+;
+
+/* In General if Play Sports */
+t/time(pl/play(user, s/sport()), now)
+user_aware(pl)
+-> user_plays_known_sport ->
+request_truth(property(user, athlete()))
+;
+
+/* Wants to Play Sports */
+t/time(w/want(user, pl/play(user, s/sport())), now)
+category(s)
+user_aware(w)
+-> Person_wants_to_play_some_sport ->
+op_more_info(s, w)
+request(emora, s)
+;
+
+t/time(w/want(user, pl/play(user, s/sport())), now)
+user_aware(w)
+-> Person_wants_to_play_specific_sport ->
+p:<c/want(user, pl) cause(p/predicate(), c)>
+request(me, p)
+;
+
+/* Does Not Play Sports */
+time(pl/play(user, s/sport()), now)
+pl{"confidence": -1}
+-> not_play_sport ->
+w:<time(w/want(user, sp/sport()), now)>
+request_truth(emora, w)
+;
+
+/* Common Sense */
+play(user, s/sport())
+->
+energetic(user)
+healthy(user)
+;
