@@ -575,15 +575,23 @@ class ConceptGraph:
 
     def merge(self, concept_a, concept_b, strict_order=False):
         unique_preds = {USER_AWARE, TIME}
+        unique_pred_merges = set()
         if concept_a != concept_b:
             if not strict_order and concept_a.startswith(self._ids.namespace) and not concept_b.startswith(self._ids.namespace):
                 tmp = concept_a
                 concept_a = concept_b
                 concept_b = tmp
             for s, t, o, i in list(self.predicates(subject=concept_b)):
-                self._detach(s, t, o, i)
-                if t not in unique_preds or (t in unique_preds and not self.has(concept_a, t, o)):
+                if t not in unique_preds:
+                    self._detach(s, t, o, i)
                     self.add(concept_a, t, o, i)
+                else:
+                    source_preds = list(self.predicates(concept_a, t, o))
+                    if len(source_preds) > 0: # If >1 instance of unique_pred, additional merges need to happen
+                        unique_pred_merges.update({(pred[3], i) for pred in source_preds})
+                    else: # otherwise, treat it like normal
+                        self._detach(s, t, o, i)
+                        self.add(concept_a, t, o, i)
             for s, t, o, i in list(self.predicates(object=concept_b)):
                 self._detach(s, t, o, i)
                 self.add(s, t, concept_a, i)
@@ -616,19 +624,25 @@ class ConceptGraph:
                     final_subj=self.id_map().get()
                     final_obj=self.id_map().get()
                     i = self.add(final_subj, final_type, final_obj, predicate_id=concept_a)
+                    merged_obj = None
                     if obj_a is not None:
-                        self.merge(final_obj, obj_a)
+                        merged_obj = self.merge(obj_a, final_obj)
                     if obj_b is not None:
-                        self.merge(final_obj, obj_b)
+                        if merged_obj is not None:
+                            self.merge(merged_obj, obj_b)
+                        else:
+                            self.merge(obj_b, final_obj)
                 if additional_type is not None:
                     self.add(i, TYPE, additional_type)
-                self.merge(final_subj, subj_a)
-                self.merge(final_subj, subj_b)
+                merged_sub = self.merge(subj_a, final_subj)
+                self.merge(merged_sub, subj_b)
             elif self.has(predicate_id=concept_b) and not self.has(predicate_id=concept_a):
                 s, t, o, i = self.predicate(concept_b)
                 self.add(s, t, o, concept_a)
                 self._detach(s, t, o, i)
             self.metagraph.merge(concept_a, concept_b)
+            for p1, p2 in unique_pred_merges:
+                self.merge(p1, p2, strict_order)
             self.remove(concept_b)
         return concept_a
 

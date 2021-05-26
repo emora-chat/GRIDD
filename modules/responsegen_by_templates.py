@@ -35,27 +35,15 @@ class ResponseTemplateFiller:
         self.nlgFactory = NLGFactory(self.lexicon)
         self.realiser = Realiser(self.lexicon)
 
-    def __call__(self, matches, cg, aux_state):
-        expr_dict = {}
-        for s, t, o, i in cg.predicates(predicate_type='expr'):
-            if o not in expr_dict:
-                if o == 'user':
-                    expr_dict[o] = 'you'
-                elif o == 'emora':
-                    expr_dict[o] = 'I'
-                else:
-                    expr_dict[o] = s.replace('"', '')
+    def __call__(self, matches, expr_dict, cg, aux_state):
         candidates = []
         for rule, (pre_graph, post, solutions_list) in matches.items():
             for match_dict in solutions_list:
                 string_spec_ls = list(post)  # need to create copy so as to not mutate the postcondition in the rule
                 response_str = self.fill_string(match_dict, expr_dict, string_spec_ls, cg)
+                # print(string_spec_ls)
                 if response_str not in aux_state.get('spoken_responses', []):
                     candidates.append((match_dict, response_str))
-        print('\nResponse Options: ')
-        for c in candidates:
-            print('\t' + c[1])
-        print()
         predicates, string, avg_sal = self.select_best_candidate(candidates, cg)
         return (string, predicates, 'template')
 
@@ -76,7 +64,11 @@ class ResponseTemplateFiller:
                 sals = [cg.features.get(x, {}).get(SALIENCE, 0) for x in match_dict.values()]
                 avg = sum(sals) / len(sals)
                 with_sal.append((preds, string, avg))
+        print('\nResponse Options: ')
         if len(with_sal) > 0:
+            for _, s, _ in with_sal:
+                print('\t%s'%s)
+            print()
             return max(with_sal, key=lambda x: x[2])
         else:
             return None, None, None
@@ -87,15 +79,15 @@ class ResponseTemplateFiller:
         specifications = {}
         realizations = {}
         for e in string_spec_ls:
-            if isinstance(e, tuple):
+            if isinstance(e, (list,tuple)):
                 for k,v in e[1].items():
                     if v in match_dict:
                         np, np_realized = self._process_variable_match(match_dict[v], cg, expr_dict)
                         if np is not None:
                             specifications[v] = np
                         realizations[v] = np_realized
-        with_params = [(i,e) for i,e in enumerate(string_spec_ls) if isinstance(e, tuple)]
-        without_params = [(i,e) for i,e in enumerate(string_spec_ls) if not isinstance(e, tuple)]
+        with_params = [(i,e) for i,e in enumerate(string_spec_ls) if isinstance(e, (list,tuple))]
+        without_params = [(i,e) for i,e in enumerate(string_spec_ls) if not isinstance(e, (list,tuple))]
 
         # Replacement of constants and parameter-less variables
         for i, e in without_params:
