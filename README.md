@@ -31,10 +31,56 @@ This framework requires `Python >= 3.7`
    cd emora
    ```
 1. Create a virtual environment:
-   ```
-   python3 -m venv venv
-   source venv/bin/activate
-   ```
+
+* On ainos:
+
+```
+>>> bash
+
+IMPORTANT: Make sure to use the bash shell when you login to ainos 
+(AND each time after, for conda to work properly)!
+
+>>> wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+
+>>> sha256sum Miniconda3-latest-Linux-x86_64.sh
+
+Verify that the output of the above command equals 
+1314b90489f154602fd794accfc90446111514a5a72fe1f71ab83e07de9504a7
+
+If it does, then continue to next steps. If not, let us know.
+
+>>> bash Miniconda3-latest-Linux-x86_64.sh
+
+Follow prompts.
+
+IMPORTANT: To make the changes take effect, you need to close the terminal 
+completely (for best results). Then, re-open and login to 
+ainos and activate the bash shell (see step 1 above).
+
+With the new terminal, test your installation. 
+
+In your terminal window or Anaconda Prompt, run the command `conda list`. 
+
+A list of installed packages appears if it has been installed correctly.
+
+If not, try running `source ~/.bashrc` and then `conda list` again.
+
+If you are still having conda issues, let us know.
+
+>>> conda create -n gridd python=3.8
+
+Follow prompts.
+
+>>> conda activate gridd
+```
+
+* On other machine:
+
+```
+python3 -m venv venv
+source venv/bin/activate
+```
+
 1. Install GitHub Clone (for cloning `structpy` below):
    ```
    pip install git+git://github.com/HR/github-clone#egg=ghclone
