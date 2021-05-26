@@ -204,6 +204,38 @@ gif/from(egi,X)
 cause(gif,mkp)
 ;
 
+time(eat(X/person(),Y/meal()),z/datetime())
+->
+f:<time(xef/eat(X,f/food()), z) for(xef, Y)>
+request(emora,f)
+
+emp/make(emora,p/plan())
+type(p,group)
+mkp/time(for(emp,Y),now)
+
+egi/get(emora,i/idea())
+type(i,group)
+gif/from(egi,X)
+
+cause(gif,mkp)
+;
+
+time(get(X/person(),Y/meal()),z/datetime())
+->
+f:<time(xef/eat(X,f/food()), z) for(xef, Y)>
+request(emora,f)
+
+emp/make(emora,p/plan())
+type(p,group)
+mkp/time(for(emp,Y),now)
+
+egi/get(emora,i/idea())
+type(i,group)
+gif/from(egi,X)
+
+cause(gif,mkp)
+;
+
 g/intend_to_consume(x/person(),bg/burger())
 ->
 fr:<fr/favorite(r/burger_restaurant())>
@@ -528,16 +560,6 @@ intend_to_consume(x,c)
 want(x/person(), c/consumable())
 ->
 intend_to_consume(x,c)
-;
-
-eat(x/person(),m/meal())
-->
-have(x,m)
-;
-
-get(x/person(),m/meal())
-->
-have(x,m)
 ;
 
 g/eat(x/person(), o/unknown_noun())
