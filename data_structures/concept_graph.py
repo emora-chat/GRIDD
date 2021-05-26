@@ -624,14 +624,18 @@ class ConceptGraph:
                     final_subj=self.id_map().get()
                     final_obj=self.id_map().get()
                     i = self.add(final_subj, final_type, final_obj, predicate_id=concept_a)
+                    merged_obj = None
                     if obj_a is not None:
-                        self.merge(final_obj, obj_a)
+                        merged_obj = self.merge(obj_a, final_obj)
                     if obj_b is not None:
-                        self.merge(final_obj, obj_b)
+                        if merged_obj is not None:
+                            self.merge(merged_obj, obj_b)
+                        else:
+                            self.merge(obj_b, final_obj)
                 if additional_type is not None:
                     self.add(i, TYPE, additional_type)
-                self.merge(final_subj, subj_a)
-                self.merge(final_subj, subj_b)
+                merged_sub = self.merge(subj_a, final_subj)
+                self.merge(merged_sub, subj_b)
             elif self.has(predicate_id=concept_b) and not self.has(predicate_id=concept_a):
                 s, t, o, i = self.predicate(concept_b)
                 self.add(s, t, o, concept_a)

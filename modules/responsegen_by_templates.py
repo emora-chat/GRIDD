@@ -35,16 +35,7 @@ class ResponseTemplateFiller:
         self.nlgFactory = NLGFactory(self.lexicon)
         self.realiser = Realiser(self.lexicon)
 
-    def __call__(self, matches, cg, aux_state):
-        expr_dict = {}
-        for s, t, o, i in cg.predicates(predicate_type='expr'):
-            if o not in expr_dict:
-                if o == 'user':
-                    expr_dict[o] = 'you'
-                elif o == 'emora':
-                    expr_dict[o] = 'I'
-                else:
-                    expr_dict[o] = s.replace('"', '')
+    def __call__(self, matches, expr_dict, cg, aux_state):
         candidates = []
         for rule, (pre_graph, post, solutions_list) in matches.items():
             for match_dict in solutions_list:
