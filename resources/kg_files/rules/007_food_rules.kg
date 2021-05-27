@@ -121,17 +121,18 @@ of(rhe,baked(b/banana()))
 type(b,group)
 ;
 
-time(have(X/person(),Y/meal()),z/datetime())
+xhy/have(X/person(), Y/meal())
+time(xhy, Z/datetime())
 ->
-f:<time(xef/eat(X,f/food()), z) for(xef, Y)>
-request(emora,f)
-emp/make(emora,p/plan())
-type(p,group)
-mkp/time(for(emp,Y),now)
-egi/get(emora,i/idea())
-type(i,group)
-gif/from(egi,X)
-cause(gif,mkp)
+f:<xef/eat(X, f/food()) time(xef, xhy)>
+erf/request(emora, f)
+
+emp/make(emora, p/plan())
+for(p, Y)
+type(p, group)
+time(emp, now)
+
+cause(emp, erf)
 ;
 
 cook(x/person())

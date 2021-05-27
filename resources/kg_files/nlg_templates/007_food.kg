@@ -119,15 +119,16 @@ type(b,group)
 $ Amazing ! Not many people I know of like pineapple in pizzas . It always reminds me of baked bananas . $
 ;
 
-time(eat(X/person(),f/food()),Z/datetime())
-request(emora,f)
-emp/make(emora,p/plan())
-type(p,group)
-mkp/time(for(emp,Y/meal()),now)
-egi/get(emora,i/idea())
-type(i,group)
-gif/from(egi,X)
-cause(gif,mkp)
+xhy/have(X/person(), Y/meal())
+time(xhy, Z/datetime())
+xef/eat(X, f/food())
+time(xef, xhy)
+erf/request(emora, f)
+emp/make(emora, p/plan())
+for(p, Y)
+type(p, group)
+time(emp, now)
+cause(emp, erf)
 ->
 $ What do{"t":"#Z","s":"#X"} X have for Y ? I'm making plans for my Y tomorrow , so I would like to see if I could get some ideas from X . $
 ;
