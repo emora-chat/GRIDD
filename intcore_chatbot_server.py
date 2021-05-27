@@ -123,7 +123,7 @@ class ChatbotServer:
                 ((center, t, o, i,),) = center_pred
             else:
                 ((center, t, o, i,),) = list(mention_graph.predicates(predicate_type='link'))
-            mega_mention_graph.concatenate(mention_graph, predicate_exclusions={'focus', 'center', 'cover'})
+            mega_mention_graph.concatenate(mention_graph, predicate_exclusions={'focus', 'center', 'cover', 'link'})
             mega_mention_graph.add(span, 'ref', focus)
             mega_mention_graph.add(span, 'type', 'span')
             if not span.startswith('__linking__'):
@@ -328,21 +328,27 @@ class ChatbotServer:
         from GRIDD.modules.responsegen_by_templates import ResponseTemplateFiller
         self.template_filler = ResponseTemplateFiller()
 
-    @serialized('working_memory', 'use_cached')
+    @serialized('working_memory', 'expr_dict', 'use_cached')
     def run_prepare_template_nlg(self, working_memory):
         self.load_working_memory(working_memory)
         self.dialogue_intcore.decay_salience()
-        for pred in self.dialogue_intcore.pull_expressions():
-            if not working_memory.has(*pred):
-                working_memory.add(*pred)
+        expr_dict = {}
+        for s,t,o,i in self.dialogue_intcore.pull_expressions():
+            if o not in expr_dict:
+                if o == 'user':
+                    expr_dict[o] = 'you'
+                elif o == 'emora':
+                    expr_dict[o] = 'I'
+                else:
+                    expr_dict[o] = s.replace('"', '')
         use_cached = True
-        return self.dialogue_intcore.working_memory, use_cached
+        return self.dialogue_intcore.working_memory, expr_dict, use_cached
 
     @serialized('template_response_sel', 'aux_state')
-    def run_template_fillers(self, inference_results, working_memory, aux_state):
+    def run_template_fillers(self, inference_results, expr_dict, working_memory, aux_state):
         if inference_results is None:
             inference_results = {}
-        template_response_sel = self.template_filler(inference_results, working_memory, aux_state)
+        template_response_sel = self.template_filler(inference_results, expr_dict, working_memory, aux_state)
         if template_response_sel[0] is not None:
             aux_state.setdefault('spoken_responses', []).append(template_response_sel[0])
         return template_response_sel, aux_state
@@ -564,10 +570,14 @@ class ChatbotServer:
         inference_results = self.run_dialogue_inference(working_memory)
         working_memory = self.run_apply_dialogue_inferences(inference_results, working_memory)
 
-        working_memory, use_cached = self.run_prepare_template_nlg(working_memory)
+        if PRINT_WM:
+            print('\n<< Working Memory After Inferences Applied >>')
+            print(working_memory.pretty_print(exclusions={SPAN_DEF, SPAN_REF, USER_AWARE, ASSERT, 'imp_trigger'}))
+
+        working_memory, expr_dict, use_cached = self.run_prepare_template_nlg(working_memory)
         inference_results, rules = self.run_multi_inference(rules, use_cached, working_memory)
-        template_response_sel, aux_state = self.run_template_fillers(inference_results, working_memory,
-                                                                        aux_state)
+        template_response_sel, aux_state = self.run_template_fillers(inference_results, expr_dict,
+                                                                     working_memory, aux_state)
         aux_state, response_predicates = self.run_response_selection(working_memory, aux_state,
                                                                      template_response_sel)
         expanded_response_predicates, working_memory = self.run_response_expansion(response_predicates,
@@ -667,14 +677,15 @@ class ChatbotServer:
         utters = [
             'hi',
             'sarah',
-            'i actually just finished up some paperwork so i officially have bought a house',
-            'yeah its a relief for it to be over',
-            'it has a big backyard',
+            'i bought a house',
+            'thanks',
+            'it has a big backyard which we wanted',
             'yeah',
-            'i have a dog too',
+            'a dog',
             'he is very energetic',
             'yeah',
-            'he chewed my couch cushions to shreds'
+            'he chewed my shoes',
+            'yeah'
         ]
         # utters = [
         #     'hi',
@@ -704,11 +715,16 @@ def get_filepaths():
     nlg_templates = [join('GRIDD', 'resources', 'kg_files', 'nlg_templates')]
     return kb, rules, nlg_templates, wm
 
+PRINT_WM = False
+
 if __name__ == '__main__':
     import torch
     kb, rules, nlg_templates, wm = get_filepaths()
 
     device = input('device (cpu/cuda:0/cuda:1/...) >>> ').strip()
+    print_wm = input('debug (n/y) >>> ').strip()
+    # global PRINT_WM
+    PRINT_WM = True if print_wm == 'y' else False
     if len(device) == 0:
         if torch.cuda.is_available():
             device = 'cuda:0'
