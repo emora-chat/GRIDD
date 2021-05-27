@@ -76,4 +76,6 @@ android=(phone)
 ecosystem=(entity)
 software_ecosystem=(ecosystem)
 walled_garden=(software_ecosystem)
+tempwall=(entity)
+tempiph=(entity)
 ;

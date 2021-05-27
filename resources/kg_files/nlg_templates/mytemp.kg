@@ -50,26 +50,19 @@ $ I really like the freedom of building your own pc out of whatever parts you wa
 ;
 
 property(user, pc_enthusiast())
-a/cpu_manuf(p/computer(), amd())
+a1/cpu_manuf(p/computer(), amd())
 have(user, p)
-request_truth(emora,a)
+request_truth(emora,a1)
 ->
 $ Do you have an amd processor? I hear they are very popular for builders now, but I remember Intel was ahead for many years in the past. $
 ;
 
 
 h/have(user, p/computer())
-a/cpu_arch(p ,arm())
-request_truth(emora,a)
+a1/cpu_arch(p ,arm())
+request_truth(emora,a1)
 ->
 $ Do you have an arm processor? I think its about time a new cpu architecture was used more for pc's. x 86 is not the best possible architecture, but for a long time it just kept going because everyone else was using it.  $
-;
-
-h/have(user, p/computer())
-m/mobile(p)
-request_truth(emora,m)
-->
-$ Do you have a laptop? They may not be as fast as some computers, but they're really power efficient and do the most for the least electricity possible. I sometimes can't believe how powerful a mobile device can get. $
 ;
 
 h/have(user, p/phone())
@@ -85,23 +78,25 @@ h/have(user, i/iphone())
 h{"confidence": 1}
 l/like(user, walled_garden())
 request_truth(emora,l)
+request(tempiph())
 ->
-$ Iphones are great! You know, they just work. You can only get apps from the App Store though, what do you think about that? I think you should be allowed to put whatever you want on your own device, as long as you understand the risks. $
+$ Iphones are great! You know, they just work. You can only get apps from the App Store though, what do you think about that? $
 ;
 
 
 
-
+/* The temp variable here is to get around a bug that happens atm with templates firing when they shouldn't - it still fires too early, but not as early? Bug is being worked on afaik*/
 l/like(user, walled_garden())
 l{"confidence": 1}
+request(tempwall())
 ->
-$ So you like the walled garden approach to phones, where you can only install a curated selection of apps? I would have to disagree, I think people should be able to use a device however they want. $
+$ So you like the walled garden approach to phones, where you can only install a curated selection of apps? I would have to disagree, I think people should be able to use a device however they want. You should be allowed to put whatever you want on your own device, as long as you understand the risks.$
 ;
 
 
 
-h/have(user, a/android())
+h/have(user, a1/android())
 h{"confidence": 1}
 ->
-$ Android phones are great, and I'm excited for Android 12 . You can use them like an iphone, but you can really customize it anyway you want to. iPhones are made for everyone, but you can make an Android fit you . $
+$ Android phones are great, and I'm excited for Android 12 . You can use them like an iphone, but you can also really customize it anyway you want to. iPhones are made for everyone, but you can make an Android fit you . $
 ;

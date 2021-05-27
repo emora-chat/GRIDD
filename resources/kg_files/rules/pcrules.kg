@@ -228,6 +228,7 @@ h{"confidence": 1}
 ->
 l/like(user, walled_garden())
 request_truth(emora,l)
+request(tempiph())
 ;
 
 h/have(user, p/phone())
@@ -236,4 +237,10 @@ h1{"confidence": -1}
 ->
 have(user, android())
 h{"confidence": 1}
+;
+
+l/like(user, walled_garden())
+l{"confidence": 1}
+->
+request(tempwall())
 ;
