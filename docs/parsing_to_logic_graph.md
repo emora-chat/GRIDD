@@ -1320,6 +1320,22 @@ Represented as the predicate `relay_info` where the subject is information being
 
 </details>
 
+## Compound Concept
+
+Compound attachments are treated as attributes.
+
+<details>
+  <summary>Conversions</summary>
+
+    com(X/pstg(), Y/pstg())
+    -> compound_concept ->
+    p/Y(X)
+	focus(p)
+	center(Y)
+    ;
+	
+</details>
+
 ## Dialogue Acknowledgements
 
 Recognize when the speaker affirms, rejects, or acknowledges.
@@ -1458,8 +1474,3 @@ is a noun or pronoun; otherwise, instantiate it as a lone concept.
     ;
 	
 </details>
-
-## Compound Concept
-
-Compound concepts are condensed into a single entity when the dependency relations are preprocessed  into a `concept graph`, before any conversion rules are applied.
- 

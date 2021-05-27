@@ -109,14 +109,46 @@ class ChatbotServer:
         mentions, merges = self.elit_dp(elit_results)
         return mentions, merges
 
-    @serialized('working_memory')
-    def run_mention_bridge(self, mentions, working_memory):
+    def init_multiword_matcher(self):
+        from GRIDD.modules.multiword_expression_mentions import MultiwordExpressionMatcher
+        self.multiword_matcher = MultiwordExpressionMatcher(self.dialogue_intcore.knowledge_base)
+
+    @serialized('multiword_mentions')
+    def run_multiword_matcher(self, elit_results):
+        multiword_mentions = self.multiword_matcher(elit_results)
+        return multiword_mentions
+
+    @serialized('subspans', 'working_memory')
+    def run_mention_bridge(self, mentions, multiword_mentions, working_memory):
         self.load_working_memory(working_memory)
-        if mentions is None:
-            mentions = {}
+        if mentions is None: mentions = {}
+        if multiword_mentions is None: multiword_mentions = {}
         namespace = list(mentions.items())[0][1].id_map() if len(mentions) > 0 else "ment_"
         mega_mention_graph = ConceptGraph(namespace=namespace)
+
+        # multiword mentions supersede single word mentions
+        covered_idx = {}
+        for span, mention_graph in multiword_mentions.items():
+            ((focus, t, o, i,),) = list(mention_graph.predicates(predicate_type='focus'))
+            center_pred = list(mention_graph.predicates(predicate_type='center'))
+            ((center, t, o, i,),) = center_pred
+            mega_mention_graph.concatenate(mention_graph, predicate_exclusions={'focus', 'center'})
+            mega_mention_graph.add(span, 'ref', focus)
+            mega_mention_graph.add(span, 'type', 'span')
+            mega_mention_graph.add(span, 'def', center)
+            span_obj = Span.from_string(span)
+            covered_idx.update({i: span for i in range(span_obj.start, span_obj.end)}) # map inner indices to the multiword
+
+        # only add mentions that are not subset of multiword mentions
+        subspans = {}
         for span, mention_graph in mentions.items():
+            if not span.startswith('__linking__'):
+                # linking constructions need to be maintained even if based on subword of multiword
+                # the merge process will appropriately utilize multiword to handle these cases
+                span_obj = Span.from_string(span)
+                if span_obj.start in covered_idx: # map single word spans to encapsulating multiword spans
+                    subspans[span] = covered_idx[span_obj.start]
+                    continue
             ((focus, t, o, i,),) = list(mention_graph.predicates(predicate_type='focus'))
             center_pred = list(mention_graph.predicates(predicate_type='center'))
             if len(center_pred) > 0:
@@ -130,22 +162,30 @@ class ChatbotServer:
                 mega_mention_graph.add(span, 'def', center)
         self.assign_cover(mega_mention_graph)
         self.dialogue_intcore.consider(mega_mention_graph)
-        return self.dialogue_intcore.working_memory
+        return subspans, self.dialogue_intcore.working_memory
 
     @serialized('working_memory')
-    def run_merge_bridge(self, merges, working_memory):
+    def run_merge_bridge(self, merges, subspans, working_memory):
         self.load_working_memory(working_memory)
         if merges is None:
             merges = []
         node_merges = []
         for (span1, pos1), (span2, pos2) in merges:
+            has_span1 = self.dialogue_intcore.working_memory.has(span1)
+            has_span2 = self.dialogue_intcore.working_memory.has(span2)
             # if no mention for span, no merge possible
-            if self.dialogue_intcore.working_memory.has(span1) and self.dialogue_intcore.working_memory.has(span2):
-                (concept1,) = self.dialogue_intcore.working_memory.objects(span1, 'ref')
-                concept1 = self._follow_path(concept1, pos1, self.dialogue_intcore.working_memory)
-                (concept2,) = self.dialogue_intcore.working_memory.objects(span2, 'ref')
-                concept2 = self._follow_path(concept2, pos2, self.dialogue_intcore.working_memory)
-                node_merges.append((concept1, concept2))
+            if has_span1 and has_span2:
+                node_merges.append(self._convert_span_to_node_merges(span1, pos1, span2, pos2))
+            # update merge to be between multiword and nonsubword, where appropriate
+            elif has_span2 and span1 in subspans:
+                node_merges.append(self._convert_span_to_node_merges(subspans[span1], 'self', span2, pos2))
+            elif has_span1 and span2 in subspans:
+                node_merges.append(self._convert_span_to_node_merges(span1, pos1, subspans[span2], 'self'))
+            elif span1 in subspans and span2 in subspans:
+                if subspans[span1] != subspans[span2]:
+                    print('[WARNING!] Found merge between 2 subspans that are not from the same '
+                          'multiword span: %s -> %s, %s -> %s'
+                          %(span1, subspans[span1], span2, subspans[span2]))
         self.dialogue_intcore.merge(node_merges)
         self.dialogue_intcore.operate()
         self.dialogue_intcore.convert_metagraph_span_links(DP_SUB, [ASS_LINK])
@@ -162,6 +202,13 @@ class ChatbotServer:
         self.dialogue_intcore.update_confidence('user', iterations=CONF_ITER)
         self.dialogue_intcore.update_confidence('emora', iterations=CONF_ITER)
         return self.dialogue_intcore.working_memory
+
+    def _convert_span_to_node_merges(self, span1, pos1, span2, pos2):
+        (concept1,) = self.dialogue_intcore.working_memory.objects(span1, 'ref')
+        concept1 = self._follow_path(concept1, pos1, self.dialogue_intcore.working_memory)
+        (concept2,) = self.dialogue_intcore.working_memory.objects(span2, 'ref')
+        concept2 = self._follow_path(concept2, pos2, self.dialogue_intcore.working_memory)
+        return (concept1, concept2)
 
     @serialized('working_memory')
     def run_knowledge_pull(self, working_memory):
@@ -540,6 +587,7 @@ class ChatbotServer:
         if not LOCAL:
             self.init_elit_models()
         self.init_parse2logic(device=device)
+        self.init_multiword_matcher()
         self.init_template_nlg()
         self.init_response_selection()
         self.init_response_expansion()
@@ -552,8 +600,9 @@ class ChatbotServer:
         user_utterance = self.run_sentence_caser(user_utterance)
         elit_results = self.run_elit_models(user_utterance, aux_state)
         mentions, merges = self.run_parse2logic(elit_results)
-        working_memory = self.run_mention_bridge(mentions, working_memory)
-        working_memory = self.run_merge_bridge(merges, working_memory)
+        multiword_mentions = self.run_multiword_matcher(elit_results)
+        subspans, working_memory = self.run_mention_bridge(mentions, multiword_mentions, working_memory)
+        working_memory = self.run_merge_bridge(merges, subspans, working_memory)
         working_memory = self.run_knowledge_pull(working_memory)
 
         rules, use_cached = self.run_reference_identification(working_memory)
@@ -600,6 +649,8 @@ class ChatbotServer:
         state_update = self.run_elit_models(state)
         state.update(state_update)
         state_update = self.run_parse2logic(state)
+        state.update(state_update)
+        state_update = self.run_multiword_matcher(state)
         state.update(state_update)
         state_update = self.run_mention_bridge(state)
         state.update(state_update)
