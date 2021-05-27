@@ -153,11 +153,13 @@ class ConceptVisitor(Visitor_Recursive):
         self.predicates = predicates    # set of all declared predicate types
         self.rule_iter = 0              # incrementing rule order index
         self.rmap = {}                  # mapping from global ids back to local ids for convenience
+        self.expr_added = set()         # set of all concepts who have their auto added expression
 
     def reset(self):
         self.entries = []
         self.rules = set()
         self.metadatas = {}
+        self.expr_added = set()
 
     def rule(self, tree):
         if not hasattr(tree.children[1], 'data'):
@@ -251,8 +253,11 @@ class ConceptVisitor(Visitor_Recursive):
         self.rmap.update([(v,k) for k,v in self.locals.items()])
         entries = [[self.locals.get(c, c) for c in e] for e in self.lentries]
         for s, t, o, i in entries:          # auto add expressions
-            self.add_auto_expression(s)    # auto add expressions
-            if o is not None:
+            if s not in self.expr_added:
+                self.expr_added.add(s)
+                self.add_auto_expression(s)    # auto add expressions
+            if o is not None and o not in self.expr_added:
+                self.expr_added.add(o)
                 self.add_auto_expression(o)     # auto add expressions
         if not self.refgen:
             refs = []

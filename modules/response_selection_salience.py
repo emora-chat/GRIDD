@@ -40,7 +40,7 @@ class ResponseSelectionSalience:
         if len(salience_order) > 0:
             return working_memory.predicate(salience_order[0][0]), 'ack_conf'
         else:
-            print('[WARNING] No acknowledgment predicate responses found.')
+            # print('[WARNING] No acknowledgment predicate responses found.')
             return None, None
 
     def select_followup(self, working_memory, aux_state):
@@ -57,7 +57,7 @@ class ResponseSelectionSalience:
             return working_memory.predicate(salience_order[0][0]), 'nlg'
         else:
             # pick non-repetitive backup topic
-            print('[WARNING] No followup predicate responses found. Picking backup topic.')
+            # print('[WARNING] No followup predicate responses found. Picking backup topic.')
             backups_used = aux_state.get('backups', [])
             options = [x for x in backup_topics if x not in backups_used]
             if len(options) > 0:
@@ -66,7 +66,7 @@ class ResponseSelectionSalience:
                 aux_state['backups'] = backups_used
                 return backup_topics[selection], 'backup'
             else:
-                print('[WARNING] No non-repetitive backup topics found.')
+                # print('[WARNING] No non-repetitive backup topics found.')
                 return None, 'nlg'
 
 if __name__ == '__main__':
