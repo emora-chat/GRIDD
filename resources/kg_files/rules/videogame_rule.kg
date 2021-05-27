@@ -1,0 +1,61 @@
+time(l/like(x/person(), v/videogame()), now)
+->
+op_more_info(v,l)
+request(emora, v)
+time(like(emora, vg/videogame()), now)
+type(vg, group)
+c:<time(c/cause(x, l), now)>
+request(emora, c)
+g:<time(like(x, g/genre()), now)>
+request(emora, g)
+time(like(emora, multiplayer), now)
+;
+
+time(l/play(x/person(), v/videogame()), now)
+->
+op_more_info(v,l)
+request(emora, v)
+time(like(emora, vg/videogame()), now)
+type(vg, group)
+d:<time(play(x, d/device()), now)>
+request(emora, d)
+;
+
+time(f/fun(videogame()), now)
+->
+time(agree(emora, f), now)
+;
+
+time(pwf/with(play(x/person(), videogame), friend), now)
+->
+time(fun(pwf), now)
+; 
+
+time(play(x/person(), videogame()), now)
+time(like(x, graphics), now)
+->
+g:<time(g/good(graphics), now)>
+request_truth(emora, g)
+;
+
+
+time(l/like(x/person(), multiplayer), now)
+->
+agree(emora, l)
+fun(multiplayer)
+play(x, with(other(person())))
+;
+
+time(like(x/person(), mariokart), now)
+->
+time(play(emora, mariokart), past)
+time(like(x, racing), now)
+g:<play(x, g/gamemode())>
+request(emora, g)
+;
+
+time(l/like(x/person(), shooter), now)
+->
+agree(emora, l)
+fun(shooter)
+;

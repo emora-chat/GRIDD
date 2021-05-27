@@ -1,0 +1,63 @@
+like(person(), videogame())
+request(emora, videogame())
+->
+$ Oh, that's really cool. I love video games too! What games do you like? $
+;
+
+play(person(), videogame())
+request(emora, videogame())
+->
+$ Oh, that's really cool. I love video games too! What's your favorite game to play? $
+;
+
+play(person(), videogame())
+request(emora, device())
+->
+$ I like video games too! What's your favorite device to play on? $
+;
+
+play(x/person(), v/videogame())
+request(emora, cause(x, like(x, v)))
+->
+$ Yeah, that's an interesting game. What do you like about it? $
+;
+
+agree(emora, fun(videogame()))
+->
+$ Yeah, video games are really fun. That's a big factor in why I play them. $
+;
+
+time(fun(with(play(person(), videogame), friend)), now)
+->
+$ Yup, playing with friends is pretty great. I think it makes the entire experience much more fun. $
+;
+
+play(x/person(), vg/videogame())
+request_truth(emora, good(graphics))
+->
+$ I find graphics to be pretty important for how a game feels. What do you think about the graphics in vg? $
+;
+
+like(person(), genre())
+request(emora, genre())
+like(emora, multiplayer)
+->
+$ I love video games, but especially multiplayer games. Do you have a favorite genre of games? $
+;
+
+agree(emora, like(x/person(), multiplayer))
+fun(multiplayer)
+play(x, with(other(people())))
+->
+$ Yeah, I really like multiplayer games. I think it's really fun to play with other people. $
+;
+
+time(play(emora, mariokart), past)
+->
+$ I love Mario kart. It reminds me of the past, when I used to play it a lot more. It's a really fun game to play by yourself or with others. $
+;
+
+time(play(emora, shooter), now)
+->
+$ Yeah, shooters are pretty cool. It's most fun when you're landing shots on people, but I think it can sometimes be frustrating when you're losing. $
+;
