@@ -33,6 +33,10 @@ in(japan,asia)
 tokyo=city()
 in(tokyo,japan)
 
+mountain_fuji=attraction()
+expr("mountain fuji",mountain_fuji)
+in(mountain_fuji,tokyo)
+
 ;
 
 thailand=country()
@@ -40,5 +44,21 @@ in(thailand,asia)
 
 bangkok=city()
 in(bangkok,thailand)
+
+;
+
+singapore=country()
+in(singapore,asia)
+
+;
+
+malaysia=country()
+in(malaysia,asia)
+
+;
+
+sri_lanka=country()
+expr("sri lanka",sri_lanka)
+in(sri_lanka,asia)
 
 ;

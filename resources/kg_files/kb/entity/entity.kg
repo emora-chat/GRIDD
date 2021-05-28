@@ -20,3 +20,12 @@ day=(entity)
 note=(entity)
 
 ;
+
+trip=(entity)
+pandemic=(entity)
+drama=(entity)
+weather=(entity)
+knowledge=(entity)
+sunset=(entity)
+picture=(entity)
+shape=(entity)

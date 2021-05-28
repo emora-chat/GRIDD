@@ -12,3 +12,5 @@ expr("surprised",amazed)
 impressed=(emotion)
 sorry=(emotion)
 glad=(emotion)
+
+inspired=(emotion)

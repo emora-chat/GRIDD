@@ -16,3 +16,4 @@ habitual_present=(datetime)
 
 always=(property)
 after=(time)
+before=(time)

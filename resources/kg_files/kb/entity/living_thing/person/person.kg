@@ -16,3 +16,5 @@ expr("vet", veterinarian)
 foodie=(person)
 expert=(person)
 fan=(person)
+
+friend=(person)

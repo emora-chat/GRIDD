@@ -19,6 +19,7 @@ in(berlin,germany)
 ;
 
 united_kingdom=country()
+expr("united kingdom, uk",united_kingdom)
 in(united_kingdom,europe)
 
 london=city()

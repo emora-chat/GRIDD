@@ -382,6 +382,7 @@ tulsa=city()
 in(tulsa,oklahoma)
 
 long_island=city()
+expr("long island",long_island)
 in(long_island,new_york)
 
 ;

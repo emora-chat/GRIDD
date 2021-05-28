@@ -73,7 +73,7 @@ intend_to_consume(x/person(),hp/hotpot())
 ebe/be(emora,expert())
 of(ebe,hp)
 ->
-$ You know what ? I'm an expert of hotpot . You should take me next time so that I could introduce you the best way of eating it ! $
+$ You know what ? I'm an expert on hot pot . You should take me next time so that I could introduce you the best way of eating it ! $
 ;
 
 th/intend_to_consume(x/person(),hp/hotpot())
@@ -88,7 +88,7 @@ favorite(emora,kb/korean_bbq())
 xlk/intend_to_consume(x/person(),kb)
 request_truth(emora,xlk)
 ->
-$ Sounds delicious ! Speaking of Korean cuisine, Korean barbecue has been my favorite meal all the time . Do you like it ? $
+$ Sounds delicious ! Speaking of Korean cuisine, Korean barbecue has been my favorite meal of all the time . Do you like it ? $
 ;
 
 lk/intend_to_consume(x/person(),kb/korean_bbq())
@@ -179,7 +179,7 @@ $ I often cook spaghetti with meatballs at home . It's a quick but delicious dis
 sd/sweet_flavor(ds/dessert())
 make(sd,happy(emora))
 ->
-$ Sweet desserts after meals always delight me . Creme brulee has been my favorite dessert all the time . $
+$ Sweet desserts after meals always delight me . Creme brulee has been my favorite dessert of all the time . $
 ;
 
 time(good(Y/fast_food()),now)
@@ -266,7 +266,7 @@ $ Fruit is generally good for your health , but I also heard that too much sugar
 sbv/be(X/special_fruit(),vegetable())
 not(sbv)
 ->
-$ Did you know that X is actually a type of fruit by scientific definition ? It's okay if you don't know because most people think X is vegetable . $
+$ Did you know that X is actually a type of fruit by scientific definition ? It's okay if you don't know because most people think X is a vegetable . $
 ;
 
 ht/have(emora,pecan_pie())
