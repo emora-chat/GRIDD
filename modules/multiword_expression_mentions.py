@@ -60,7 +60,7 @@ class MultiwordExpressionMatcher:
                                       for s, _, o, _ in knowledge_base.predicates(predicate_type='expr')
                                       if len(s.split()) > 1 or "'" in s}
         self.matcher = ExpressionMatcher(self.multiword_expressions.keys())
-        print(self.multiword_expressions.keys())
+        # print(self.multiword_expressions.keys())
 
     def __call__(self, elit_results):
         """
@@ -76,13 +76,33 @@ class MultiwordExpressionMatcher:
             matched, overlaps, contains = self.matcher.match(surface_form_tokens, remove_subset=True)
             if surface_form_tokens != lemma_tokens:
                 lmatched, loverlaps, lcontains = self.matcher.match(lemma_tokens, remove_subset=True)
-                matched = dict(lmatched, **matched)
-                overlaps = dict(loverlaps, **overlaps)
-                contains = dict(lcontains, **contains)
+                for k,v in lmatched.items():
+                    if k not in matched: matched[k] = v
+                for k,v in loverlaps.items():
+                    if k not in overlaps: overlaps[k] = v
+                for k, v in lcontains.items():
+                    if k not in contains: contains[k] = v
+            # manually remove subsets between surface form and lemma results
+            keys = list(matched.keys())
+            for i in range(len(keys)):
+                for j in range(len(keys)):
+                    if i > j:
+                        k1 = keys[i]
+                        k2 = keys[j]
+                        if k1[0] >= k2[0] and k1[1] <= k2[1]:
+                            # k1 is contained in k2
+                            del matched[k1]
+                            if k1 in overlaps: del overlaps[k1]
+                            if k1 in contains: del contains[k1]
+                        elif k2[0] >= k1[0] and k2[1] <= k1[1]:
+                            # k2 is contained in k1
+                            del matched[k2]
+                            if k2 in overlaps: del overlaps[k2]
+                            if k2 in contains: del contains[k2]
             for (sidx, eidx), string in matched.items():
                 longest = True
                 if (sidx, eidx) in overlaps:
-                    for overlap in overlaps:
+                    for overlap in overlaps[(sidx, eidx)]:
                         if eidx - sidx < overlap[1] - overlap[0]:
                             longest = False
                             break

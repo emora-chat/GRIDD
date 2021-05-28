@@ -848,7 +848,7 @@ class ConceptGraph:
                     string += '#' + ids[c] + ('/' if self._was_autonamed(c) else '=') + types[0] + '()'
                     todo.discard(types[0])
                 else:
-                    string += c
+                    string += str(c)
             return string
 
         roots = set(todo) - set(chain(*[(s, o) for s, _, o, _ in self.predicates()]))

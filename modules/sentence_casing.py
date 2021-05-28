@@ -120,10 +120,11 @@ class SentenceCaser:
             results.append(true_cased)
         return results
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, sentence):
         """
         Convert the provided sentence into its true casing
         args[0] - sentence
         """
-        cased_sent = self.run_model([args[0]])[0]
+        sentence = sentence.replace(" '", "'").replace("' ", "'") # alexa ASR puts whitespace before apostrophe in contractions
+        cased_sent = self.run_model([sentence])[0]
         return cased_sent

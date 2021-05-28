@@ -161,6 +161,17 @@ class ChatbotServer:
             if not span.startswith('__linking__'):
                 mega_mention_graph.add(span, 'def', center)
         self.assign_cover(mega_mention_graph)
+        for s,t,l in mega_mention_graph.metagraph.edges():
+            update = False
+            if s in subspans:
+                s = subspans[s]
+                update = True
+            if t in subspans:
+                t = subspans[t]
+                update = True
+            if update and not mega_mention_graph.has(s,t,l):
+                mega_mention_graph.metagraph.add(s,t,l)
+
         self.dialogue_intcore.consider(mega_mention_graph)
         return subspans, self.dialogue_intcore.working_memory
 
@@ -177,9 +188,10 @@ class ChatbotServer:
             if has_span1 and has_span2:
                 node_merges.append(self._convert_span_to_node_merges(span1, pos1, span2, pos2))
             # update merge to be between multiword and nonsubword, where appropriate
-            elif has_span2 and span1 in subspans:
-                node_merges.append(self._convert_span_to_node_merges(subspans[span1], 'self', span2, pos2))
-            elif has_span1 and span2 in subspans:
+            # only appropriate if relationship is non-predicate relation (i.e. not subj or obj)
+            elif has_span2 and span1 in subspans and pos1 == 'self':
+                node_merges.append(self._convert_span_to_node_merges(subspans[span1], pos1, span2, pos2))
+            elif has_span1 and span2 in subspans and pos2 == 'self':
                 node_merges.append(self._convert_span_to_node_merges(span1, pos1, subspans[span2], 'self'))
             elif span1 in subspans and span2 in subspans:
                 if subspans[span1] != subspans[span2]:
@@ -202,13 +214,6 @@ class ChatbotServer:
         self.dialogue_intcore.update_confidence('user', iterations=CONF_ITER)
         self.dialogue_intcore.update_confidence('emora', iterations=CONF_ITER)
         return self.dialogue_intcore.working_memory
-
-    def _convert_span_to_node_merges(self, span1, pos1, span2, pos2):
-        (concept1,) = self.dialogue_intcore.working_memory.objects(span1, 'ref')
-        concept1 = self._follow_path(concept1, pos1, self.dialogue_intcore.working_memory)
-        (concept2,) = self.dialogue_intcore.working_memory.objects(span2, 'ref')
-        concept2 = self._follow_path(concept2, pos2, self.dialogue_intcore.working_memory)
-        return (concept1, concept2)
 
     @serialized('working_memory')
     def run_knowledge_pull(self, working_memory):
@@ -496,6 +501,13 @@ class ChatbotServer:
                 i2 = graph.add(concept, USER_AWARE)
                 graph.features[i2][BASE_UCONFIDENCE] = 1.0
 
+    def _convert_span_to_node_merges(self, span1, pos1, span2, pos2):
+        (concept1,) = self.dialogue_intcore.working_memory.objects(span1, 'ref')
+        concept1 = self._follow_path(concept1, pos1, self.dialogue_intcore.working_memory)
+        (concept2,) = self.dialogue_intcore.working_memory.objects(span2, 'ref')
+        concept2 = self._follow_path(concept2, pos2, self.dialogue_intcore.working_memory)
+        return (concept1, concept2)
+
     def _follow_path(self, concept, pos, working_memory):
         if pos == 'subject':
             return working_memory.subject(concept)
@@ -594,6 +606,16 @@ class ChatbotServer:
         self.init_response_by_rules()
         self.init_response_nlg_model()
         self.init_response_assember()
+
+    def run_mention_merge(self, user_utterance, working_memory, aux_state):
+        aux_state = self.run_next_turn(aux_state)
+        user_utterance = self.run_sentence_caser(user_utterance)
+        elit_results = self.run_elit_models(user_utterance, aux_state)
+        mentions, merges = self.run_parse2logic(elit_results)
+        multiword_mentions = self.run_multiword_matcher(elit_results)
+        subspans, working_memory = self.run_mention_bridge(mentions, multiword_mentions, working_memory)
+        working_memory = self.run_merge_bridge(merges, subspans, working_memory)
+        return working_memory
 
     def respond(self, user_utterance, working_memory, aux_state):
         aux_state = self.run_next_turn(aux_state)
