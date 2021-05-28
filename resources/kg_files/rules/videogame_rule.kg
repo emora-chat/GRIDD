@@ -71,18 +71,6 @@ time(f/fun(videogame()), now)
 time(agree(emora, f), now)
 ;
 
-time(pwf/with(play(x/person(), v/videogame()), friend()), now)
-->
-time(fun(pwf), now)
-possess(x, friend)
-;
-
-play(x/person(), videogame())
-time(like(x, graphics()), now)
-->
-g:<time(g/good(graphics), now)>
-request_truth(emora, g)
-;
 
 time(l/like(x/person(), multiplayer), now)
 ->

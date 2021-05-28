@@ -24,17 +24,6 @@ agree(emora, fun(videogame()))
 $ Yeah, video games are really fun. That's a big factor in why I play them. $
 ;
 
-time(fun(with(play(person(), videogame), friend)), now)
-->
-$ Yup, playing with friends is pretty great. I think it makes the entire experience much more fun. $
-;
-
-play(x/person(), vg/videogame())
-request_truth(emora, good(graphics()))
-->
-$ I find graphics to be pretty important for how a game feels. You must really like how vg looks, right? $
-;
-
 like(person(), g/genre())
 request(emora, g)
 like(emora, multiplayer)
