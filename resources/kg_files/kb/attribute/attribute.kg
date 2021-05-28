@@ -34,5 +34,20 @@ romantic=(property)
 ancient=(property)
 famous=(property)
 historic=(property)
+gourmet=(property)
 
 most=(property)
+less=(property)
+
+mustsee=(property)
+expr("must see",mustsee)
+
+exciting=(property)
+convenient=(property)
+ideal=(property)
+numerous=(property)
+
+pristine=(property)
+vibrant=(property)
+affordable=(property)
+lost=(property)

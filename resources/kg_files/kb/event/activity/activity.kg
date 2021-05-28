@@ -29,5 +29,7 @@ expr("encourage", motivate)
 
 travel=(activity, physical)
 
+dream=(activity, mental)
+
 ;
 

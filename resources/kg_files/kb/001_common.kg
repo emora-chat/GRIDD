@@ -38,5 +38,13 @@ cry=(predicate)
 remember=(predicate)
 send=(predicate)
 impress=(predicate)
+carry=(predicate)
+miss=(predicate)
+recommend=(predicate)
+stay=(predicate)
+bring=(predicate)
+hear=(predicate)
+prefer=(predicate)
+embrace=(predicate)
 
 ;

@@ -8,9 +8,6 @@ in(china,asia)
 beijing=city()
 in(beijing,china)
 
-great_wall=attraction()
-in(great_wall,beijing)
-
 shanghai=city()
 in(shanghai,china)
 
@@ -32,10 +29,6 @@ in(japan,asia)
 
 tokyo=city()
 in(tokyo,japan)
-
-mountain_fuji=attraction()
-expr("mountain fuji",mountain_fuji)
-in(mountain_fuji,tokyo)
 
 ;
 

@@ -11,6 +11,8 @@ in(vancouver,canada)
 
 ;
 
+selected_state=(location)
+
 united_states=country()
 expr("united states, usa, united states of america, america",united_states)
 in(united_states,north_america)
@@ -62,7 +64,7 @@ in(illinois,west)
 michigan=state()
 in(michigan,midwest)
 
-florida=state()
+florida=selected_state()
 in(florida,southeast)
 
 pennsylvania=state()
@@ -99,7 +101,7 @@ in(texas,southwest)
 oregon=state()
 in(oregon,midwest)
 
-california=state()
+california=selected_state()
 in(california,west)
 
 washington=state()
@@ -120,7 +122,7 @@ in(vermont,west)
 wisconsin=state()
 in(wisconsin,midwest)
 
-arizona=state()
+arizona=selected_state()
 in(arizona,west)
 
 mississippi=state()
@@ -129,7 +131,7 @@ in(mississippi,midwest)
 tennessee=state()
 in(tennessee,southwest)
 
-alaska=state()
+alaska=selected_state()
 in(alaska,southwest)
 
 minnesota=state()
@@ -180,10 +182,10 @@ in(west_virginia,southeast)
 maine=state()
 in(maine,northeast)
 
-nevada=state()
+nevada=selected_state()
 in(nevada,southwest)
 
-hawaii=state()
+hawaii=selected_state()
 in(hawaii,southeast)
 
 delaware=state()
@@ -199,68 +201,65 @@ in(rhode_island,southwest)
 
 ;
 
-san_francisco=city()
+big_city=(location)
+selected_city=(location)
+
+san_francisco=big_city()
 expr("san francisco",san_francisco)
 in(san_francisco,california)
 
-los_angeles=city()
+los_angeles=big_city()
 expr("los angeles",los_angeles)
 in(los_angeles,california)
 
-san_diego=city()
+san_diego=selected_city()
 expr("san diego",san_diego)
 in(san_diego,california)
 
-las_vegas=city()
+las_vegas=selected_city()
 expr("las vegas",las_vegas)
 in(las_vegas,nevada)
 
-honolulu=city()
+honolulu=selected_city()
 in(honolulu,hawaii)
 
-atlanta=city()
+atlanta=big_city()
 in(atlanta,georgia)
-georgia_aquarium=attraction()
-expr("georgia aquarium",georgia_aquarium)
-in(georgia_aquarium, atlanta)
 
-miami=city()
+miami=selected_city()
 in(miami,florida)
 
-orlando=city()
+orlando=selected_city()
 in(orlando,florida)
 
 new_orleans=city()
 expr("new orleans",new_orleans)
 in(new_orleans,louisiana)
 
-new_york_city=city()
+new_york_city=big_city()
 expr("new york, new york city",new_york_city)
 in(new_york_city,new_york)
 
-philadelphia=city()
+philadelphia=big_city()
 in(philadelphia,pennsylvania)
 
-washington_dc=city()
+washington_dc=big_city()
 expr("washington dc, DC",washington_dc)
 in(washington_dc,northeast)
 
-chicago=city()
+chicago=big_city()
 in(chicago,illinois)
 
-houston=city()
+houston=big_city()
 in(houston,texas)
 
 phoenix=city()
 in(phoenix,arizona)
 
-seattle=city()
+seattle=big_city()
 in(seattle,washington)
-space_needle=attraction()
-expr("space needle",space_needle)
-in(space_needle, seattle)
 
-boston=city()
+boston=big_city()
 in(boston,massachusetts)
 
 saint_paul=city()
@@ -384,5 +383,9 @@ in(tulsa,oklahoma)
 long_island=city()
 expr("long island",long_island)
 in(long_island,new_york)
+
+santa_monica=selected_city()
+expr("santa monica",santa_monica)
+in(santa_monica,california)
 
 ;

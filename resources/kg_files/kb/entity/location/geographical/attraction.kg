@@ -1,0 +1,36 @@
+indoor_attraction=(attraction)
+outdoor_attraction=(attraction)
+
+;
+
+great_wall=outdoor_attraction()
+in(great_wall,beijing)
+
+;
+
+mountain_fuji=outdoor_attraction()
+expr("mountain fuji",mountain_fuji)
+in(mountain_fuji,tokyo)
+
+georgia_aquarium=indoor_attraction()
+expr("georgia aquarium",georgia_aquarium)
+in(georgia_aquarium, atlanta)
+
+space_needle=indoor_attraction()
+expr("space needle",space_needle)
+in(space_needle, seattle)
+
+disneyland_park=outdoor_attraction()
+expr("disneyland park",disneyland_park)
+in(disneyland_park,california)
+
+grand_canyon=outdoor_attraction()
+expr("grand canyon",grand_canyon)
+in(grand_canyon,arizona)
+
+universal_studio=outdoor_attraction()
+expr("universal studio",universal_studio)
+in(universal_studio,orlando)
+
+;
+

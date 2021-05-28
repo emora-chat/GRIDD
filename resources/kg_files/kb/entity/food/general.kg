@@ -20,3 +20,5 @@ expr("dining experience",dining_experience)
 dish=(entity)
 
 ;
+
+dining=(entity)

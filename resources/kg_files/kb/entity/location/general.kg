@@ -25,6 +25,8 @@ expr("outdoors", outside)
 vet_clinic=(location, indoor)
 expr("vets, vet's", vet_clinic)
 
+casino=(location, indoor)
+
 body_of_water = (location, outdoor)
 lake = (body_of_water)
 ocean = (body_of_water)
@@ -39,3 +41,4 @@ expr("close, near", near)
 ;
 
 nature=(entity)
+coastline=(nature)

@@ -103,3 +103,276 @@ request_truth(emora,xls)
 $ Speaking of Italy , the different shapes of spaghetti in Italy always impress me . Do you like spaghetti ? $
 ;
 
+gtv/to(good(california),visit(emora))
+think(emora,gtv)
+gtd/to(go(emora),disneyland_park)
+time(gtd,past)
+remember(emora,gtd)
+dg/dream(g/girl())
+type(g,group)
+about(dg,disneyland_park)
+gt/to(go(x/person()),disneyland_park)
+time(gt,past)
+request_truth(emora,gt)
+->
+$ I think California is a great state to visit ! I remember going to Disneyland Park when I was little . It was definitely a place that every girl dreams about . Have you been there before ? $
+;
+
+gx/go(x/person())
+to(gx,disneyland_park)
+em/possess(emora,m/memory())
+type(m,group)
+carry(disneyland_park,em)
+miss(emora,ch/childhood())
+->
+$ Right ? It carries so many memories of mine . Speaking of childhood , I always have many things that I miss . $
+;
+
+gt/to(go(x/person()),disneyland_park)
+gt{"confidence":-1}
+ng/not(gt)
+gm/good(m/memory())
+type(m,group)
+xhg/have(x,gm)
+but(ng,xhg)
+->
+$ Oh , then you have missed a lot of fun ! Just kidding . I bet you still have some good memories from childhood even if you haven’t been to Disneyland Park . $
+;
+
+fl/favorite(l/location())
+be(florida,fl)
+se/sit(emora)
+sbs/by(se,bc/beach())
+romantic(sbs)
+ws/watch(emora,ss/sunset())
+romantic(ws)
+->
+$ Florida is one of my favorite places for beaches in the United States . There is nothing more romantic than sitting by the beach watching the sunset . $
+;
+
+pt/think(p/person())
+type(p,group)
+of(pt,c/casino())
+type(c,group)
+gd/gourmet(dining())
+like(emora,gd)
+->
+$ Speaking of Nevada , many people think of casinos in Las Vegas . But I’m actually more into the gourmet dining there . $
+;
+
+good(hawaii)
+beautiful(bc/beach())
+type(bc,group)
+in(bc,hawaii)
+bh/best(hawaii)
+for(bh,h/holiday())
+type(h,group)
+gxx/go(x/person())
+gt/to(gxx,honolulu)
+time(gt,past)
+request_truth(emora,gt)
+->
+$ Hawaii is such an awesome place ! The beaches are so beautiful there . It’s the best choice for vacations in my mind . Have you been to Honolulu before ? $
+;
+
+se/sit(emora)
+sbs/by(se,bc/beach())
+ws/watch(emora,ss/sunset())
+love(emora,sbs)
+love(ws)
+bp/beautiful(pc/picture())
+type(pc,group)
+mbp/most(bp)
+etp/take(emora,mbp)
+time(etp,past)
+->
+$ Sounds awesome ! I love sitting by the beach watching the sunset . I was able to take the most beautiful pictures in my life when I went there last time . $
+;
+
+gx/go(x/person())
+gt/to(gx,honolulu)
+gt{"confidence":-1}
+gc/good(cm/camera())
+xtg/take(x,gc)
+recommend(emora,xtg)
+->
+$ Then I highly recommend you to visit there some time ! Take a good camera with you , and you will know how perfect the beach serves for pictures . $
+;
+
+mustsee(grand_canyon)
+impress(grand_canyon,x/person())
+->
+$ I think the Grand Canyon in Arizona is one of the must-see places . Trust me , you would be impressed by it . $
+;
+
+epf/possess(emora,f/friend())
+type(f,group)
+eg/go(epf)
+eta/to(eg,alaska)
+for(eta,a/aurora())
+type(a,group)
+
+esp/see(emora,p/picture())
+type(p,group)
+time(esp,always)
+
+ew/want(emora)
+to(ew,sa/see(emora,a))
+time(sa,future)
+->
+$ Many friends of mine go to Alaska for auroras . I’ve always seen pictures , but I wish I could see them with my own eyes some time . $
+;
+
+gx/go(x/person())
+gt/to(gx,Y/state())
+se/stay(emora)
+in(se,united_states)
+evs/visit(emora,Y)
+tv/travel(emora)
+eft/for(evs,tv)
+time(eft,never)
+for(gt,o/object())
+request(emora,o)
+->
+$ You know what ? Even if I have been in the United States for such a long time , I’ve never visited Y for traveling purposes . What brings you to Y ? $
+;
+
+tob/of(trip(),bs/business())
+ft/fun(tob)
+less(ft)
+->
+$ Oh , I see . Business trips sound less fun , but I hope everything goes well for you . $
+;
+
+gx/go(x/person())
+gt/to(gx,s/state())
+xmf/meet(x,f/friend())
+gfx/for(gt,xmf)
+exciting(gfx)
+->
+$ That sounds exciting ! I hope you have a great time there . $
+;
+
+eh/hear(emora)
+eal/about(eh,Y/big_city())
+from(eal,f/friend())
+type(f,group)
+xll/like(x/person(),Y)
+request_truth(emora,xll)
+->
+$ Sounds fun ! I’ve been hearing good and bad sides about Y from different friends of mine . Do you like Y ? $
+;
+
+like(x/person(),Y/big_city())
+xl/live(x)
+xil/in(xl,Y)
+convenient(xil)
+numerous(op/opportunity())
+type(op,group)
+numerous(pb/possibility())
+type(pb,group)
+->
+$ I know ! Living in a big city like Y is so convenient . Also , it’s a city of numerous opportunities and possibilities . $
+;
+
+xll/like(x/person(),Y/big_city())
+xll{"confidence":-1}
+understand(emora)
+ib/ideal(Y)
+yg/young(g/generation())
+type(g,group)
+for(ib,yg)
+sc/small(ct/city())
+type(ct,group)
+prefer(emora,sc)
+->
+$ I understand . I think living in a big city like Y may be ideal for younger generations because they get more opportunities and bring vitality to the city . But when I get old , I prefer to live in smaller cities . $
+;
+
+gd/gourmet(dining())
+in(gd,las_vegas)
+prefer(emora,gd)
+->
+$ Rather than going to casinos , I like the gourmet dining in Las Vegas more . I mean , that’s not something I can enjoy in many other cities . $
+;
+
+as/affordable(san_diego)
+for(as,h/holiday())
+type(h,group)
+->
+$ I think San Diego is a pretty affordable place for vacations . The climate in San Diego also brings plenty of sunshine every time I visit there . $
+;
+
+xre/remind(x/person(),emora)
+ept/possess(emora,t/trip())
+tto/to(ept,orlando)
+of(xre,tto)
+ge/go(emora)
+to(ge,universal_studio)
+time(ge,past)
+->
+$ This reminds me of my trip to Orlando . I went to the Universal Studio and certainly had a lot of fun ! I wish I could go back again someday . $
+;
+
+pw/perfect(w/weather())
+pc/pristine(cl/coastline())
+vn/vibrant(nl/nightlife())
+have(miami,pw)
+have(miami,pc)
+have(miami,vn)
+want(emora,ct/cruise_trip())
+from(ct,miami)
+->
+$ Miami has perfect weather, a pristine coastline, and vibrant nightlife ! I always want to go on a cruise trip from Miami . $
+;
+
+ge/go(emora)
+gts/to(ge,santa_monica)
+ewg/want(emora,gts)
+make(user,ewg)
+->
+$ I'm starting to think about the beach , sunshine , surfing , and cold drinks ... You know what , you make me want to go to Santa Monica right now . $
+;
+
+ge/go(emora)
+gtc/to(ge,X/city())
+ewg/want(emora,gtc)
+time(ewg,always)
+request(emora,X)
+->
+$ I’ve always wanted to go to X but never had the chance . What kind of city is it ? $
+;
+
+lc/large(ct/city())
+convenient(ct)
+el/lost(emora)
+in(el,lc)
+->
+$ Big cities are convenient , but I feel like it’s easy to get lost when there are too many choices . $
+;
+
+sc/small(ct/city())
+el/live(emora)
+lis/in(el,sc)
+prefer(emora,lis)
+->
+$ I actually prefer to live in small cities when I get old . $
+;
+
+embrace(emora,dv/diversity())
+el/learn(emora)
+db/different(b/background())
+type(b,group)
+lad/about(el,db)
+like(emora,lad)
+->
+$ As someone who embraces diversity , I love places that give enough respect to people . I mean , it’s fun to learn about different backgrounds . $
+;
+
+bl/beautiful(lc/location())
+etp/take(emora,p/picture())
+type(p,group)
+in(etp,bl)
+->
+$ I wish I could see it with my own eyes . I bet I could take a lot of beautiful pictures there . $
+;
