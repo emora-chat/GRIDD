@@ -6,6 +6,7 @@ football=(sport)
 basketball=(sport)
 soccer=(sport)
 tennis=(sport)
+baseball=(sport)
 
 play(predicate)
 win=(predicate)
@@ -16,6 +17,7 @@ sports_team=(entity)
 basketball_team=(sports_team)
 football_team=(sports_team)
 soccer_team=(sports_team)
+baseball_team=(sports_team)
 
 [Atlanta Hawks, Boston Celtics, Brooklyn Nets, Charlotte Hornets, Chicago Bulls, Cleveland Cavaliers, Dallas Mavericks, Denver Nuggets, Detroit Pistons, Golden State Warriors, Houston Rockets, Indiana Pacers, Los Angeles Clippers, Los Angeles Lakers, Memphis Grizzlies, Miami Heat, Milwaukee Bucks, Minnesota Timberwolves, New Orleans Pelicans, New York Knicks, Oklahoma City Thunder, Orlando Magic, Philadelphia 76ers, Phoenix Suns, Portland Trail Blazers, Sacramento Kings, San Antonio Spurs, Toronto Raptors, Utah Jazz, Washington Wizards] = (basketball_team)
 
@@ -23,9 +25,5 @@ soccer_team=(sports_team)
 
 [Arsenal, A.F.C. Bournemouth, Brighton and Hove Albion, Burnley, Chelsea, Crystal Palace, Everton, Huddersfield Town, Leicester City, Liverpool, Manchester City, Manchester United, Newcastle United, Southampton, Stoke City, Swansea City, Tottenham Hotspur, Watford, West Bromwich Albion, West Ham United] = (soccer_team)
 
-sports_equipment = (entity)
-basketball = (sports_equipment)
-football = (sports_equipment)
-tennis_ball = (sports_equipment)
-soccer_ball = (sports_equipment)
+[Arizona Diamondbacks, Atlanta Braves, Baltimore Orioles, Boston Red Sox, Chicago White Sox, Chicago Cubs, Cincinnati Reds, Cleveland Indians, Colorado Rockies, Detroit Tigers, Houston Astros, Kansas City Royals, Los Angeles Angels, Los Angeles Dodgers, Miami Marlins, Milwaukee Brewers, Minnesota Twins, New York Yankees, New York Mets, Oakland Athletics, Philadelphia Phillies, Pittsburgh Pirates, San Diego Padres, San Francisco Giants, Seattle Mariners, St. Louis Cardinals, Tampa Bay Rays, Texas Rangers, Toronto Blue Jays, Washington Nationals] = (baseball_team)
 ;
