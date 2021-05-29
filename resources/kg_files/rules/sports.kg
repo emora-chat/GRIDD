@@ -5,15 +5,60 @@ user_aware(l)
 request_truth(emora, like(user, sport()))
 ;
 
-t/time(l/like(user, sport), now)
+l/like(user, s/sport())
+category(s)
 user_aware(l)
 -> person_likes_sports ->
-pl:<pl/play(user,sport)>
-request_truth(emora, pl)
+op_more_info(s, l)
+request(emora, s)
+;
+
+/* Likes specific sport */
+pl/like(user, football)
+user_aware(pl)
+-> person_likes_football ->
+l:<l/play(user, football)>
+request_truth(emora, l)
+s:<f/like(user, s/football_team())>
+request(emora, s)
+;
+
+pl/like(user, baseball)
+user_aware(pl)
+-> person_likes_baseball ->
+l:<l/play(user, baseball)>
+request_truth(emora, l)
+s:<f/like(user, s/baseball_team())>
+request(emora, s)
+;
+
+pl/like(user, soccer)
+user_aware(pl)
+-> person_likes_soccer ->
+l:<l/play(user, soccer)>
+request_truth(emora, l)
+s:<f/like(user, s/soccer_team())>
+request(emora, s)
+;
+
+pl/like(user, tennis)
+user_aware(pl)
+-> person_likes_tennis ->
+l:<l/play(user, tennis)>
+request_truth(emora, l)
+;
+
+pl/like(user, basketball)
+user_aware(pl)
+-> person_likes_basketball ->
+l:<l/play(user, basketball)>
+request_truth(emora, l)
+s:<f/like(user, s/basketball_team())>
+request(emora, s)
 ;
 
 /* Plays some sport */
-t/time(pl/play(user, s/sport()), now)
+pl/play(user, s/sport())
 category(s)
 user_aware(pl)
 -> person_plays_sport ->
@@ -22,38 +67,38 @@ request(emora, s)
 ;
 
 /* Plays specific sport */
-t/time(pl/play(user, football), today)
+pl/play(user, football)
 user_aware(pl)
 -> person_plays_football ->
 i:<i/property(football)>
 request(emora,i)
 ;
 
-t/time(pl/play(user, baseball), today)
+pl/play(user, baseball)
 user_aware(pl)
 -> person_plays_baseball ->
 i:<i/property(baseball)>
 request(emora,i)
 ;
 
-t/time(pl/play(user, soccer), today)
+pl/play(user, soccer)
 user_aware(pl)
 -> person_plays_soccer ->
 i:<i/property(soccer)>
 request(emora,i)
 ;
 
-t/time(pl/play(user, tennis), today)
+pl/play(user, tennis)
 user_aware(pl)
 -> person_plays_tennis ->
 i:<i/property(tennis)>
 request(emora,i)
 ;
 
-t/time(pl/play(user, b/basketball()), today)
+pl/play(user, basketball)
 user_aware(pl)
 -> person_plays_basketball ->
-i:<i/property(b)>
+i:<i/property(basketball)>
 request(emora,i)
 ;
 
@@ -100,6 +145,51 @@ user_aware(w)
 -> Person_wants_to_play_basketball ->
 p:<c/want(user, pl) cause(p/predicate(), c)>
 request(me, p)
+;
+
+/* Likes General Sports Team */
+l/like(user, s/sports_team())
+user_aware(l)
+-> User_likes_some_sports_team ->
+pl/like(user, sport)
+user_aware(pl)
+;
+
+/* Likes Specific Sports Team */
+pl/like(user, s/football_team())
+user_aware(pl)
+-> person_likes_football_team ->
+j/like(user, football)
+user_aware(j)
+l:<l/play(user, football)>
+request_truth(emora, l)
+;
+
+t/time(pl/like(user, s/baseball_team()), today)
+user_aware(pl)
+-> person_likes_baseball_team ->
+j/like(user, baseball)
+user_aware(j)
+l:<l/play(user, baseball)>
+request_truth(emora, l)
+;
+
+t/time(pl/like(user, s/soccer_team()), today)
+user_aware(pl)
+-> person_likes_soccer_team ->
+j/like(user, soccer)
+user_aware(j)
+l:<l/play(user, soccer)>
+request_truth(emora, l)
+;
+
+t/time(pl/like(user, s/basketball_team()), today)
+user_aware(pl)
+-> person_likes_basketball_team ->
+j/like(user, basketball)
+user_aware(j)
+l:<l/play(user, basketball)>
+request_truth(emora, l)
 ;
 
 /* Does Not Play Sports */

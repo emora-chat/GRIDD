@@ -1,16 +1,51 @@
 /* Entering sports component */
-t/time(l/like(user, activity), now)
-l2/like(user, sport())
+l/like(user, activity)
+l2/like(user, h/sport())
 request_truth(emora, l2)
 ->
 $ You seem like someone who might like sports. Do you? $
 ;
 
-t/time(l/like(X/person(), sport), now)
-pl/play(X, sport())
+l/like(user, s/sport())
+request(emora, s)
+->
+$ Out of all sports, what's your favorite? My favorite sports are football, baseball, tennis, soccer, and basketball. $
+;
+
+/* Likes specific sport */
+l/like(user, football)
+pl/play(user, football)
 request_truth(emora, pl)
 ->
-$ If X like sports, do you play any? $
+$ Have you ever played football? Figured I'd ask since you said you liked it. $
+;
+
+l/like(user, baseball)
+pl/play(user, baseball)
+request_truth(emora, pl)
+->
+$ Since you like baseball, I wanted to ask: have you played baseball before? $
+;
+
+l/like(user, soccer)
+pl/play(user, soccer)
+request_truth(emora, pl)
+->
+$ Sounds like you're a soccer fan. Have you played before? $
+;
+
+l/like(user, tennis)
+pl/play(user, tennis)
+request_truth(emora, pl)
+->
+$ Have you played tennis at all in the past? I'm asking since you mentioned you like tennis. $
+;
+
+l/like(user, basketball)
+pl/play(user, basketball)
+request_truth(emora, pl)
+->
+$ Have you played basketball much? Sounds like you enjoy it! $
 ;
 
 /* Plays some sport */
@@ -114,6 +149,35 @@ time(w/want(user, play(user, s2/sport())), now)
 request_truth(emora, w)
 ->
 $ Oh, if you don't play any sports now, do you want to try any in the future? I have wanted to try tennis for awhile, myself . $
+;
+
+/* Likes some sport, ask about team */
+pl/like(user, basketball)
+l/like(user, g/basketball_team())
+request(emora, g)
+->
+$ Since you like basketball, what's your favorite team? $
+;
+
+pl/like(user, soccer)
+l/like(user, g/soccer_team())
+request(emora, g)
+->
+$ If you like soccer, what's your favorite team? $
+;
+
+pl/like(user, baseball)
+l/like(user, g/baseball_team())
+request(emora, g)
+->
+$ What's your favorite baseball team? $
+;
+
+pl/like(user, football)
+l/like(user, g/football_team())
+request(emora, g)
+->
+$ Which football team is your favorite? $
 ;
 
 /* Transition to food */
