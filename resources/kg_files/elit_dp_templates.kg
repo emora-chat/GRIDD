@@ -870,6 +870,14 @@ center(Y)
 ;
 
 
+com(X/pstg(), Y/pstg())
+-> compound_concept ->
+p/Y(X)
+focus(p)
+center(Y)
+;
+
+
 ref(Y/pstg(), E/expression())
 expr(E, affirm)
 -> affirm_interj ->

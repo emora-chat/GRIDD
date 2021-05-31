@@ -67,8 +67,8 @@ class SpanMatcher:
         for eidx, t in self._AC.iter(text):
             eidx += 1
             sidx = eidx - len(t.span)
-           # sidx = smap.get(sidx, None)
-            #eidx = emap.get(eidx, None)
+            sidx = smap.get(sidx, None) # get start index from start char offset
+            eidx = emap.get(eidx, None) # get end index from end char offset
             if sidx is None or eidx is None: continue
             spans.append((t.span, sidx, eidx+1, t.values))
 

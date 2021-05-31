@@ -1,56 +1,9 @@
 import unittest
 import time
-from GRIDD.possible_tasks.trie import SpanMatcher
 import string
 import random
+from GRIDD.modules.multiword_expression_mentions import ExpressionMatcher
 
-class ExpressionMatcher:
-
-    def __init__(self, expressions):
-        self.st = SpanMatcher(expressions)
-
-    def match(self, input):
-        """
-        input:      string to check for expressions
-        returns:    matched, overlaps, contains
-
-            matched: dictionary where keys are (start, end) int tuples and
-                     values are str representing matched expression
-            overlaps: dictionary where keys are (start, end) int tuples and
-                      values are sets of (start, end) tuples representing
-                      all matches that conflict/overlap with their key
-            contains: dictionary where keys are (start, end) int tuples and
-                      values are (start, end) tuples representing all matches
-                      that are completely contained within their key.
-        """
-
-        st = self.st
-        m = {}
-        o = {}
-        c = {}
-        tokens = input.lower().split()
-        a = st.findall(tokens,remove_subset=False, remove_overlap=False)
-        for i in a:
-            m[(i[1],i[2])] = i[0]
-        for i in m.keys():
-            o[i] = set()
-            c[i] = set()
-            for j in m.keys():
-                if j == i:
-                    continue
-                if (j[0] <= i[0] and j[1] >= i[0]):
-                    o[i].add(j)
-                if (j[0] <= i[1] and j[1] >= i[1]):
-                    o[i].add(j)
-                    #continue
-                if (j[0] >= i[0] and j[1] <= i[1]):
-                    o[i].add(j)
-                    c[i].add(j)
-            if (len(o[i]) is 0):
-                o.pop(i)
-            if (len(c[i]) is 0):
-                c.pop(i)
-        return m, o, c
 
 class TestExpressionMatching(unittest.TestCase):
 
