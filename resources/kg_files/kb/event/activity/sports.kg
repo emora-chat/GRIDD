@@ -1,0 +1,29 @@
+sport=(entity)
+
+athlete=(entity)
+
+football=(sport)
+basketball=(sport)
+soccer=(sport)
+tennis=(sport)
+baseball=(sport)
+
+play(predicate)
+win=(predicate)
+lose=(predicate)
+start=(predicate)
+
+sports_team=(entity)
+basketball_team=(sports_team)
+football_team=(sports_team)
+soccer_team=(sports_team)
+baseball_team=(sports_team)
+
+[Atlanta Hawks, Boston Celtics, Brooklyn Nets, Charlotte Hornets, Chicago Bulls, Cleveland Cavaliers, Dallas Mavericks, Denver Nuggets, Detroit Pistons, Golden State Warriors, Houston Rockets, Indiana Pacers, Los Angeles Clippers, Los Angeles Lakers, Memphis Grizzlies, Miami Heat, Milwaukee Bucks, Minnesota Timberwolves, New Orleans Pelicans, New York Knicks, Oklahoma City Thunder, Orlando Magic, Philadelphia 76ers, Phoenix Suns, Portland Trail Blazers, Sacramento Kings, San Antonio Spurs, Toronto Raptors, Utah Jazz, Washington Wizards] = (basketball_team)
+
+[Arizona Cardinals, Atlanta Falcons, Baltimore Ravens, Buffalo Bills, Carolina Panthers, Chicago Bears, Cincinnati Bengals, Cleveland Browns, Dallas Cowboys, Denver Broncos, Detroit Lions, Green Bay Packers, Houston Texans, Indianapolis Colts, Jacksonville Jaguars, Kansas City Chiefs, Los Angeles Chargers, Los Angeles Rams, Miami Dolphins, Minnesota Vikings, New England Patriots, New Orleans Saints, New York Giants, New York Jets, Oakland Raiders, Philadelphia Eagles, Pittsburgh Steelers, San Francisco 49ers, Seattle Seahawks, Tampa Bay Buccaneers, Tennessee Titans, Washington Redskins] = (football_team)
+
+[Arsenal, A.F.C. Bournemouth, Brighton and Hove Albion, Burnley, Chelsea, Crystal Palace, Everton, Huddersfield Town, Leicester City, Liverpool, Manchester City, Manchester United, Newcastle United, Southampton, Stoke City, Swansea City, Tottenham Hotspur, Watford, West Bromwich Albion, West Ham United] = (soccer_team)
+
+[Arizona Diamondbacks, Atlanta Braves, Baltimore Orioles, Boston Red Sox, Chicago White Sox, Chicago Cubs, Cincinnati Reds, Cleveland Indians, Colorado Rockies, Detroit Tigers, Houston Astros, Kansas City Royals, Los Angeles Angels, Los Angeles Dodgers, Miami Marlins, Milwaukee Brewers, Minnesota Twins, New York Yankees, New York Mets, Oakland Athletics, Philadelphia Phillies, Pittsburgh Pirates, San Diego Padres, San Francisco Giants, Seattle Mariners, St. Louis Cardinals, Tampa Bay Rays, Texas Rangers, Toronto Blue Jays, Washington Nationals] = (baseball_team)
+;

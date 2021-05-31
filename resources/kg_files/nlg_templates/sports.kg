@@ -1,0 +1,195 @@
+/* Entering sports component */
+l/like(user, activity)
+l2/like(user, h/sport())
+request_truth(emora, l2)
+->
+$ You seem like someone who might like sports. Do you? $
+;
+
+l/like(user, s/sport())
+request(emora, s)
+->
+$ Out of all sports, what's your favorite? My favorite sports are football, baseball, tennis, soccer, and basketball. $
+;
+
+/* Likes specific sport */
+l/like(user, football)
+pl/play(user, football)
+request_truth(emora, pl)
+->
+$ Have you ever played football? Figured I'd ask since you said you liked it. $
+;
+
+l/like(user, baseball)
+pl/play(user, baseball)
+request_truth(emora, pl)
+->
+$ Since you like baseball, I wanted to ask: have you played baseball before? $
+;
+
+l/like(user, soccer)
+pl/play(user, soccer)
+request_truth(emora, pl)
+->
+$ Sounds like you're a soccer fan. Have you played before? $
+;
+
+l/like(user, tennis)
+pl/play(user, tennis)
+request_truth(emora, pl)
+->
+$ Have you played tennis at all in the past? I'm asking since you mentioned you like tennis. $
+;
+
+l/like(user, basketball)
+pl/play(user, basketball)
+request_truth(emora, pl)
+->
+$ Have you played basketball much? Sounds like you enjoy it! $
+;
+
+/* Plays some sport */
+time(play(user, s/sport()), now)
+request(emora, s)
+->
+$ What sport do you play? I've enjoyed soccer in the past. Something about working with a team makes the experience more fulfilling, in my opinion.$
+;
+
+play(user, s/sport())
+request_truth(property(user, athlete()))
+->
+$ Oh, are you an athlete ? $
+;
+
+/* Plays some specific sport */
+X/property(football)
+play(user, football)
+request(emora, X)
+-> q_football_opinion ->
+$ How would you describe playing football? I've heard it can be a very tough sport to play. $
+;
+
+X/property(baseball)
+play(user, baseball)
+request(emora, X)
+-> q_baseball_opinion ->
+$ How would you describe baseball in one word? For me, I always think of family. $
+;
+
+X/property(basketball)
+play(user, basketball)
+request(emora, X)
+-> q_basketball_opinion ->
+$ What is playing basketball like? It seems like a cool sport, but I've never had the chance to play. $
+;
+
+X/property(tennis)
+play(user, tennis)
+request(emora, X)
+-> q_tennis_opinion ->
+$ Tennis is a great sport. How would you describe playing it? $
+;
+
+X/property(soccer)
+play(user, soccer)
+request(emora, X)
+-> q_soccer_opinion ->
+$ I play soccer too! Well, I try to in my free time. Would you say soccer is more fun or more tiring? $
+;
+
+/* Wants to play some sport */
+time(want(user, play(user, s/sport())), now)
+request(emora, s)
+->
+$ What sport do you want to play? $
+;
+
+/* Wants to play some specific sport */
+t/time(w/want(user, play(user, football)), now)
+cause(p/predicate(), w)
+request(emora, p)
+->
+$ What makes you want to play football ? That's a hard sport. $
+;
+
+/* Wants to play some specific sport */
+t/time(w/want(user, play(user, baseball)), now)
+cause(p/predicate(), w)
+request(emora, p)
+->
+$ What makes you want to start playing baseball? $
+;
+
+t/time(w/want(user, play(user, soccer)), now)
+cause(p/predicate(), w)
+request(emora, p)
+->
+$ Oh, soccer is great. Why do you want to play?  $
+;
+
+t/time(w/want(user, play(user, tennis)), now)
+cause(p/predicate(), w)
+request(emora, p)
+->
+$ Tennis is fun. You have to be quick on your feet for sure. What made you want to start playing tennis?  $
+;
+
+t/time(w/want(user, play(user, basketball)), now)
+cause(p/predicate(), w)
+request(emora, p)
+->
+$ Why do you want to play basketball? $
+;
+
+pl/play(user, s/sport())
+pl{"confidence": -1}
+time(w2/want(emora, play(emora, tennis)), past)
+time(w2, always)
+time(w/want(user, play(user, s2/sport())), now)
+request_truth(emora, w)
+->
+$ Oh, if you don't play any sports now, do you want to try any in the future? I have wanted to try tennis for awhile, myself . $
+;
+
+/* Likes some sport, ask about team */
+pl/like(user, basketball)
+l/like(user, g/basketball_team())
+request(emora, g)
+->
+$ Since you like basketball, what's your favorite team? $
+;
+
+pl/like(user, soccer)
+l/like(user, g/soccer_team())
+request(emora, g)
+->
+$ If you like soccer, what's your favorite team? $
+;
+
+pl/like(user, baseball)
+l/like(user, g/baseball_team())
+request(emora, g)
+->
+$ What's your favorite baseball team? $
+;
+
+pl/like(user, football)
+l/like(user, g/football_team())
+request(emora, g)
+->
+$ Which football team is your favorite? $
+;
+
+/* Transition to food */
+w/want(user, play(user, s/sport()))
+w{"confidence": -1}
+time(b/be(user, fd/foodie()), now)
+request_truth(emora, b)
+->
+$ Hmm. Seems like sports might not be your thing. Would you say that you are a foodie? $
+;
+
+energetic(user)
+-> user_is_energetic ->
+$ Sounds like you are an energetic person! $
+;
