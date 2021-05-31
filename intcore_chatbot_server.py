@@ -9,6 +9,7 @@ from GRIDD.intcore_server_globals import *
 
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.intelligence_core import IntelligenceCore
+from GRIDD.modules.ner_mentions import get_ner_mentions
 
 from GRIDD.utilities.server import save, load
 from inspect import signature
@@ -118,8 +119,13 @@ class ChatbotServer:
         multiword_mentions = self.multiword_matcher(elit_results)
         return multiword_mentions
 
+    @serialized('ner_mentions')
+    def run_ner_mentions(self, elit_results):
+        ner_mentions = get_ner_mentions(elit_results)
+        return ner_mentions
+
     @serialized('subspans', 'working_memory')
-    def run_mention_bridge(self, mentions, multiword_mentions, working_memory):
+    def run_mention_bridge(self, mentions, multiword_mentions, ner_mentions, working_memory):
         self.load_working_memory(working_memory)
         if mentions is None: mentions = {}
         if multiword_mentions is None: multiword_mentions = {}
@@ -132,21 +138,51 @@ class ChatbotServer:
             ((focus, t, o, i,),) = list(mention_graph.predicates(predicate_type='focus'))
             center_pred = list(mention_graph.predicates(predicate_type='center'))
             ((center, t, o, i,),) = center_pred
-            mega_mention_graph.concatenate(mention_graph, predicate_exclusions={'focus', 'center'})
-            mega_mention_graph.add(span, 'ref', focus)
+            mapped_ids = mega_mention_graph.concatenate(mention_graph, predicate_exclusions={'focus', 'center'})
+            mega_mention_graph.add(span, 'ref', mapped_ids.get(focus))
             mega_mention_graph.add(span, 'type', 'span')
-            mega_mention_graph.add(span, 'def', center)
+            mega_mention_graph.add(span, 'def', mapped_ids.get(center))
             span_obj = Span.from_string(span)
             covered_idx.update({i: span for i in range(span_obj.start, span_obj.end)}) # map inner indices to the multiword
 
-        # only add mentions that are not subset of multiword mentions
+        # NER mention is used as a last resort.
+        # Multi-word expressions and single-word expressions supersede the identification of an NER mention.
+        for span, mention_graph in ner_mentions.items():
+            span_obj = Span.from_string(span)
+            # If NER mention overlaps with a multi-word expression, don't take it.
+            span_range = set(range(span_obj.start, span_obj.end))
+            if span_range.intersection(set(covered_idx.keys())):
+                continue
+            # If NER mention can be broken into recognized (non-linking) single word expressions, don't take it.
+            # Only if NER captures a token that is not otherwise recognized do we take it.
+            decomposable = True
+            for single_span, single_mention_graph in mentions.items():
+                if not single_span.startswith('__linking__'):
+                    single_span_obj = Span.from_string(single_span)
+                    if single_span_obj.start in span_range:
+                        ((focus, t, o, i,),) = list(single_mention_graph.predicates(predicate_type='focus'))
+                        if UNKNOWN_TYPES.intersection(single_mention_graph.types(focus)):
+                            decomposable = False
+                            break
+            if not decomposable:
+                ((focus, t, o, i,),) = list(mention_graph.predicates(predicate_type='focus'))
+                center_pred = list(mention_graph.predicates(predicate_type='center'))
+                ((center, t, o, i,),) = center_pred
+                mapped_ids = mega_mention_graph.concatenate(mention_graph, predicate_exclusions={'focus', 'center'})
+                mega_mention_graph.add(span, 'ref', mapped_ids.get(focus))
+                mega_mention_graph.add(span, 'type', 'span')
+                mega_mention_graph.add(span, 'def', mapped_ids.get(center))
+                span_obj = Span.from_string(span)
+                covered_idx.update({i: span for i in range(span_obj.start, span_obj.end)})  # map inner indices to ner mention
+
+        # only add mentions that are not subset of added multiword or ner mentions
         subspans = {}
         for span, mention_graph in mentions.items():
             if not span.startswith('__linking__'):
-                # linking constructions need to be maintained even if based on subword of multiword
-                # the merge process will appropriately utilize multiword to handle these cases
+                # linking constructions need to be maintained even if based on subword of other mention type
+                # the merge process will appropriately handle these cases
                 span_obj = Span.from_string(span)
-                if span_obj.start in covered_idx: # map single word spans to encapsulating multiword spans
+                if span_obj.start in covered_idx: # map single word spans to encapsulating other mention types
                     subspans[span] = covered_idx[span_obj.start]
                     continue
             ((focus, t, o, i,),) = list(mention_graph.predicates(predicate_type='focus'))
@@ -613,7 +649,8 @@ class ChatbotServer:
         elit_results = self.run_elit_models(user_utterance, aux_state)
         mentions, merges = self.run_parse2logic(elit_results)
         multiword_mentions = self.run_multiword_matcher(elit_results)
-        subspans, working_memory = self.run_mention_bridge(mentions, multiword_mentions, working_memory)
+        ner_mentions = self.run_ner_mentions(elit_results)
+        subspans, working_memory = self.run_mention_bridge(mentions, multiword_mentions, ner_mentions, working_memory)
         working_memory = self.run_merge_bridge(merges, subspans, working_memory)
         return working_memory
 
@@ -623,7 +660,8 @@ class ChatbotServer:
         elit_results = self.run_elit_models(user_utterance, aux_state)
         mentions, merges = self.run_parse2logic(elit_results)
         multiword_mentions = self.run_multiword_matcher(elit_results)
-        subspans, working_memory = self.run_mention_bridge(mentions, multiword_mentions, working_memory)
+        ner_mentions = self.run_ner_mentions(elit_results)
+        subspans, working_memory = self.run_mention_bridge(mentions, multiword_mentions, ner_mentions, working_memory)
         working_memory = self.run_merge_bridge(merges, subspans, working_memory)
         working_memory = self.run_knowledge_pull(working_memory)
 
@@ -673,6 +711,8 @@ class ChatbotServer:
         state_update = self.run_parse2logic(state)
         state.update(state_update)
         state_update = self.run_multiword_matcher(state)
+        state.update(state_update)
+        state_update = self.run_ner_mentions(state)
         state.update(state_update)
         state_update = self.run_mention_bridge(state)
         state.update(state_update)
