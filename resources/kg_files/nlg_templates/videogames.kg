@@ -1,0 +1,130 @@
+be(x/person(), gamer)
+like(x, v/videogame())
+request(emora, v)
+->
+$ Oh, that's really cool. I love video games too! What games do you like? $
+;
+
+be(x/person(), gamer)
+play(x, v/videogame())
+request(emora, v)
+->
+$ Oh, that's really cool. I love video games too! What's your favorite game? $
+;
+
+p/play(person(), videogame())
+request(emora, d/device())
+
+-> vg_device ->
+$ I like video games too! What's your favorite device to play on? $
+;
+
+agree(emora, fun(videogame()))
+->
+$ Yeah, video games are really fun. That's a big factor in why I play them. $
+;
+
+like(person(), g/genre())
+request(emora, g)
+like(emora, multiplayer)
+->
+$ I love video games, but especially multiplayer games. Do you have a favorite genre of games? $
+;
+
+agree(emora, like(x/person(), multiplayer))
+fun(multiplayer)
+play(x, with(other(person())))
+->
+$ Yeah, I really like multiplayer games. I think it's really fun to play with other people. $
+;
+
+time(play(emora, mariokart), past)
+->
+$ I love Mario kart. It reminds me of the past, when I used to play it a lot more. It's a really fun game to play by yourself or with others. $
+;
+
+time(agree(emora, like(x/person(), s/shooter())), now)
+time(fun(s), now)
+->
+$ Yeah, shooters are pretty cool. It's most fun when you're landing shots on people, but I think it can sometimes be frustrating when you're losing. $
+;
+
+like(emora, nintendo)
+request_truth(emora, play(x/person(), mariokart))
+->
+$ Oh yeah! I love Nintendo. They make really entertaining family friendly games. Have you ever played Mariokart? $
+;
+
+time(p/play(emora, xbox), now)
+not(p)
+request(emora, cause(x, play(x/person(), xbox)))
+->
+$ Oh, that's cool. I haven't actually played the xbox before, though my friends tell me it's fun. What do you like about it? $
+;
+
+like(emora, playstation)
+request(emora, play(x/person(), finalfantasy))
+->
+$ Yeah, Play stations are pretty nice. There's some really good games to play on it. Have you ever played Final Fantasy? $
+;
+
+like(emora, c/computer())
+type(c, group)
+possess(computer, diverse(v/videogame()))
+type(v, group)
+possess(computer, cheap(v))
+->
+$ Yeah, computers are great for playing games. There's a ton of options to choose from so that you can always find a game you like. Not to mention that they're usually cheaper than console games. $
+;
+
+like(x/person(), convenient(p/phone()))
+epn/prefer(emora, nintendo)
+to(epn, p)
+->
+$ Oh yeah, mobile games are super convenient. I prefer playing on a Nintendo, but it's so much easier to just play on your phone than to get out a console. $
+;
+
+k/know(emora, u/unknown_noun())
+not(k)
+time(research(emora, u), future)
+->
+$ Oh, I haven't actually heard of that one. It must be pretty good though, so I'm definitely going to look it up. $
+;
+
+classic(finalfantasy)
+like(emora, finalfantasy)
+f:<time(possess(x/person(), favorite(f/finalfantasy())), now)>
+request(emora, f)
+->
+$ I really like Final Fantasy, it's a classic series. Do you have a favorite out of the series? I thought the new combat system in the newer games has been pretty interesting. $
+;
+
+time(good(f/finalfantasy()), now)
+c:<time(c/cause(x/person(), favorite(f)), now)>
+request(emora, c)
+->
+$ Yeah, f is a good one. Although I do think that all of the games in the series are quite good. Why is f your favorite? $
+;
+
+time(play(emora, minecraft), past)
+like(emora, minecraft)
+time(popular(minecraft), now)
+->
+$ Minecraft is a really good game that I love. Years ago, I would spend tons of time just exploring, mining, and building. The game's become really popular again recently, which is awesome. $
+;
+
+time(popular(leagueoflegends), now)
+frustrating(leagueoflegends)
+c:<c/cause(x, play(x/person(), leagueoflegends))>
+request(emora, c)
+->
+$ Oh yes, League of Legends is a really popular game. I have mixed feelings about it though. It can be a very frustrating game to play sometimes. What do you like about League of Legends? $
+;
+
+epc/play(emora, csgo)
+not(epc)
+c:<c/cause(x/person(), play(x, csgo))>
+request(emora, c)
+->
+$ Oh, C.S.G.O. is pretty cool right? I've never actually played it, but I've heard that it's pretty fun. What do you like about it? $
+;

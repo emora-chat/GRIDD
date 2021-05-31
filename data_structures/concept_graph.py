@@ -109,17 +109,18 @@ class ConceptGraph:
             predicate_id = concept
             concept = None
         if predicate_id is not None:        # Remove predicate by id
-            concept, predicate_type, object, predicate_id = self.predicate(predicate_id)
-            if object is not None:
-                self._bipredicates_graph.remove(concept, object, predicate_type, predicate_id)
-                self._bipredicate_instances[(concept, predicate_type, object)].remove(predicate_id)
-                if len(self._bipredicate_instances[(concept, predicate_type, object)]) == 0:
-                    del self._bipredicate_instances[(concept, predicate_type, object)]
-            else:
-                self._monopredicate_instances[(concept, predicate_type)].remove(predicate_id)
-                if len(self._monopredicate_instances[(concept, predicate_type)]) == 0:
-                    self._monopredicates_map[concept].remove(predicate_type)
-                    del self._monopredicate_instances[(concept, predicate_type)]
+            if self.has(predicate_id=predicate_id):
+                concept, predicate_type, object, predicate_id = self.predicate(predicate_id)
+                if object is not None:
+                    self._bipredicates_graph.remove(concept, object, predicate_type, predicate_id)
+                    self._bipredicate_instances[(concept, predicate_type, object)].remove(predicate_id)
+                    if len(self._bipredicate_instances[(concept, predicate_type, object)]) == 0:
+                        del self._bipredicate_instances[(concept, predicate_type, object)]
+                else:
+                    self._monopredicate_instances[(concept, predicate_type)].remove(predicate_id)
+                    if len(self._monopredicate_instances[(concept, predicate_type)]) == 0:
+                        self._monopredicates_map[concept].remove(predicate_type)
+                        del self._monopredicate_instances[(concept, predicate_type)]
             self.remove(concept=predicate_id)
         elif predicate_type is not None:    # Remove predicates by type and signature
             for s, t, o, i in list(self.predicates(concept, predicate_type, object)):
