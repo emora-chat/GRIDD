@@ -7,8 +7,6 @@ elt/love(emora,tp/trip())
 type(tp,group)
 gi/get(emora,inspired())
 git/from(gi,te)
-time(git,always)
-cause(elt,git)
 ->
 $ What country have you visited ? I love trips too because I always get inspired from traveling . $
 ;
@@ -16,13 +14,13 @@ $ What country have you visited ? I love trips too because I always get inspired
 possess(emora,f/friend())
 tf/travel(f)
 time(tf,past)
-ttc/to(tf,china)
+to(tf,china)
 pa:<pa/pandemic()>
-before(ttc,pa)
+before(tf,pa)
 
-gpd/giant(pd/panda())
+giant(pd/panda())
 type(pd,group)
-time(sg/see(gpd),past)
+time(sg/see(f,pd),past)
 in(sg,szechuan)
 time(fth/try(f,hotpot()),past)
 in(fth,szechuan)
@@ -30,49 +28,44 @@ in(fth,szechuan)
 $ Oh , wonderful ! One of my friends traveled to China before the pandemic . She was able to see giant pandas and try the hot pot in Szechuan . She said it was a lot of fun . $
 ;
 
-gtj/to(go(emora),japan)
-time(gtj,past)
+to(ge/go(emora),japan)
+time(ge,past)
 esm/see(emora,mountain_fuji)
 time(esm,past)
 ns/not(esm)
-hw/horrible(w/weather())
-cause(hw,ns)
+horrible(w/weather())
+cause(w,ns)
 ->
 $ Sounds fun ! When I went to Japan last time , I wasn't able to see Mountain Fuji due to the horrible weather . I hope that I can go back some day to see the beautiful landscape out there . $
 ;
 
-kok/of(kl/knowledge(),korea)
-pek/possess(emora,kok)
+of(kl/knowledge(),korea)
+pek/possess(emora,kl)
 kdd/korean(dm/drama())
 type(dm,group)
-from(come(pek),kdd)
-rdm/romantic(dm)
+from(kl,dm)
+rkd/romantic(kdd)
 ec/cry(emora)
-make(rdm,ec)
+cause(rkd,ec)
 ->
 $ That's awesome ! My knowledge of Korea mostly comes from Korean dramas . Those romantic dramas always make me cry .  $
 ;
 
-se/speak(emora)
-of(se,france)
 rl/romantic(lg/language())
 mrl/most(rl)
 be(fc/french_language(),mrl)
-emp/make(emora,p/plan())
-type(p,group)
 elf/learn(emora,fc)
-to(emp,elf)
+time(elf,future)
 ->
 $ Oh , really ? Speaking of France , I think French is the most romantic language . I'm planning to learn it when I have time . $
 ;
 
-egv/to(ge/go(emora),vancouver)
+to(ge/go(emora),vancouver)
 time(ge,past)
 ess/see(emora,s/sunset())
 in(ess,vancouver)
 time(ess,past)
-ers/remember(emora,s)
-but(egv,ers)
+remember(emora,s)
 bs/beautiful(s)
 most(bs)
 ->
@@ -81,9 +74,10 @@ $ I went to Vancouver several years ago , but I still remember the sunset I saw 
 
 lbf/be(london,famous())
 hb/historic(bd/building())
-for(lbf,hb)
+type(bd,group)
+for(lbf,bd)
 epf/possess(emora,f/friend())
-esp/send(epf,pc/picture())
+esp/send(f,pc/picture())
 type(pc,group)
 time(esp,past)
 to(esp,emora)
@@ -93,8 +87,8 @@ $ London is famous for its historic buildings . My friend sent a lot of pictures
 
 dsg/different(sp/shape())
 type(sp,group)
-dos/of(dsg,sg/spaghetti())
-ide/impress(dos,emora)
+dos/of(sp,sg/spaghetti())
+ide/impress(sp,emora)
 time(ide,always)
 in(dsg,italy)
 xls/like(x/person(),sg)
@@ -103,11 +97,9 @@ request_truth(emora,xls)
 $ Speaking of Italy , the different shapes of spaghetti in Italy always impress me . Do you like spaghetti ? $
 ;
 
-gtv/to(good(california),visit(emora))
-think(emora,gtv)
-gtd/to(go(emora),disneyland_park)
-time(gtd,past)
-remember(emora,gtd)
+good(california)
+to(ge/go(emora),disneyland_park)
+time(ge,past)
 dg/dream(g/girl())
 type(g,group)
 about(dg,disneyland_park)
@@ -120,9 +112,9 @@ $ I think California is a great state to visit ! I remember going to Disneyland 
 
 gx/go(x/person())
 to(gx,disneyland_park)
-em/possess(emora,m/memory())
+possess(emora,m/memory())
 type(m,group)
-carry(disneyland_park,em)
+carry(disneyland_park,m)
 miss(emora,ch/childhood())
 ->
 $ Right ? It carries so many memories of mine . Speaking of childhood , I always have many things that I miss . $
@@ -130,11 +122,10 @@ $ Right ? It carries so many memories of mine . Speaking of childhood , I always
 
 gt/to(go(x/person()),disneyland_park)
 gt{"confidence":-1}
-ng/not(gt)
 gm/good(m/memory())
 type(m,group)
-xhg/have(x,gm)
-but(ng,xhg)
+xhg/have(x,m)
+about(m,childhood())
 ->
 $ Oh , then you have missed a lot of fun ! Just kidding . I bet you still have some good memories from childhood even if you haven’t been to Disneyland Park . $
 ;
