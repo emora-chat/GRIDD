@@ -6,7 +6,7 @@ boardgame=(game)
 [monopoly,scrabble]=(boardgame)
 
 videogame=(game)
-expr("video game", videogame)
+expr("video game, videogames", videogame)
 [skyrim, mario, minecraft, fortnite, pokemon]=(videogame)
 
 cardgame=(game)

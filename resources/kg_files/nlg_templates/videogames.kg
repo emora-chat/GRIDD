@@ -15,7 +15,7 @@ $ Oh, that's really cool. I love video games too! What's your favorite game? $
 p/play(person(), videogame())
 request(emora, d/device())
 
-->
+-> vg_device ->
 $ I like video games too! What's your favorite device to play on? $
 ;
 
