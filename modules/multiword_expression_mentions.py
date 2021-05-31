@@ -60,6 +60,10 @@ class MultiwordExpressionMatcher:
                                       for s, _, o, _ in knowledge_base.predicates(predicate_type='expr')
                                       if len(s.split()) > 1 or "'" in s}
         self.matcher = ExpressionMatcher(self.multiword_expressions.keys())
+        if len(self.multiword_expressions.keys()) == 0:
+            self.run = False
+        else:
+            self.run = True
         # print(self.multiword_expressions.keys())
 
     def __call__(self, elit_results):
@@ -68,11 +72,11 @@ class MultiwordExpressionMatcher:
         """
         tokens = elit_results["tok"]
         mentions = {}
-        if len(tokens) > 0:
+        if len(tokens) > 0 and self.run:
             surface_form_tokens = [span.string for span in tokens]
             lemma_tokens = [span.expression for span in tokens]
-            # todo - ELIT tokens are split on punctuation (e.g. Sally's becomes Sally 's) but expression creation doesn't follow this
-            # todo - check hwo punctuation is handled in system so far (is it preserved, does alexa asr reliably add punctuation, etc.)
+            # todo - ELIT tokens are split on punctuation (e.g. Sally's becomes Sally 's)
+            #  so expression specification needs to auto separate apostragphe in contractions and possessive
             matched, overlaps, contains = self.matcher.match(surface_form_tokens, remove_subset=True)
             if surface_form_tokens != lemma_tokens:
                 lmatched, loverlaps, lcontains = self.matcher.match(lemma_tokens, remove_subset=True)

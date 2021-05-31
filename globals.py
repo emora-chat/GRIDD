@@ -85,3 +85,6 @@ SAL_FREE = {ASSERT, NONASSERT, AFFIRM,
 PRIM = {SPAN_DEF, SPAN_REF,
         ASSERT, NONASSERT,
         USER_AWARE, EXPR, REQ_SAT}             # Predicate types that are primitive
+
+
+UNKNOWN_TYPES = {'unknown_verb', 'unknown_noun', 'unknown_pron', 'unknown_adj', 'unknown_adv', 'unknown_other'}
