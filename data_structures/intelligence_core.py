@@ -315,6 +315,13 @@ class IntelligenceCore:
                 foci = self.working_memory.objects(constraint_span, 'ref')
                 focus = next(iter(foci))  # todo - could be more than one focal node in disambiguation situation?
                 focal_nodes.add(focus)
+        # add linking span versions of constraint spans as constraints too, if any
+        for c in constraints_as_spans:
+            link_c = '__linking__%s'%c
+            if self.working_memory.has(link_c):
+                foci = self.working_memory.objects(link_c, 'ref')
+                focus = next(iter(foci))  # todo - could be more than one focal node in disambiguation situation?
+                focal_nodes.add(focus)
         # expand constraint spans into constraint predicates
         for focal_node in focal_nodes:
             components = self.working_memory.metagraph.targets(focal_node, COMPS)

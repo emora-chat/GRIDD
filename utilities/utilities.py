@@ -42,9 +42,11 @@ def collect(*files_folders_or_strings, extension=None, directory=None):
         if not extension or (isinstance(ffs, str) and ffs.endswith(extension)):
             if os.path.isdir(ffs):
                 collected.extend(collect(ffs))
-            else:
+            elif os.path.isfile(ffs):
                 with open(ffs, 'r') as f:
                     collected.append(f.read())
+            else:
+                collected.append(ffs)
         else:
             collected.append(ffs)
     return collected

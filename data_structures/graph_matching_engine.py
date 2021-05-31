@@ -18,6 +18,10 @@ class GraphMatchingEngine:
             self.query_graphs.extend(query_graphs)
         self.device = device if torch.cuda.is_available() else 'cpu'
 
+    def _delete(self, item):
+        del item
+        torch.cuda.empty_cache()
+
     def match(self, data_graph, *query_graphs, limit=10):
         t_i = time()
         query_graphs = query_graph_var_preproc(*query_graphs)
@@ -42,27 +46,40 @@ class GraphMatchingEngine:
             print('data load time: %.3f'%(t_f-t_i))
         thresholds = {k: v.to(self.device) for k, v in thresholds.items()}
         compatible_nodes = joined_subset(query_attr, data_attr)
+        self._delete(data_attr)
         display(compatible_nodes, query_ids, data_ids,
                 label='Node compatibility matrix:')
         compatible_nodes = quantitative_filter(compatible_nodes, quants, thresholds)
+        self._delete(quants)
+        self._delete(thresholds)
         if TIMING:
             t_i = t_f
             t_f = time()
             print('quantitative filter time: %.3f'%(t_f-t_i))
         query_nodes = torch.arange(0, query_attr.size(0), dtype=torch.long, device=self.device)
+        self._delete(query_attr)
         floating_node_filter = ~row_membership(query_nodes.unsqueeze(1), torch.unique(torch.cat([query_adj[:,0], query_adj[:,1]], 0)).unsqueeze(1))
         floating_nodes = filter_rows(query_nodes.unsqueeze(1), floating_node_filter).squeeze(1)
+        self._delete(query_nodes)
+        self._delete(floating_node_filter)
         fc = torch.nonzero(compatible_nodes[floating_nodes,:])
         floating_compatibilities = torch.cat([floating_nodes[fc[:,0]].unsqueeze(1), fc[:,1:]], 1)
+        self._delete(floating_nodes)
+        self._delete(fc)
         if TIMING:
             t_i = t_f
             t_f = time()
             print('floating compatibilities time: %.3f'%(t_f-t_i))
         edge_pairs = join(query_adj, data_adj, 2, list(range(len(edge_ids))))
+        self._delete(data_adj)
         source_compatible = gather_by_indices(compatible_nodes, edge_pairs[:,[0,2]])
         target_compatible = gather_by_indices(compatible_nodes, edge_pairs[:,[1,3]])
+        self._delete(compatible_nodes)
         compatible = torch.logical_and(source_compatible, target_compatible)
+        self._delete(source_compatible)
+        self._delete(target_compatible)
         edge_pairs = filter_rows(edge_pairs, compatible)
+        self._delete(compatible)
         if TIMING:
             t_i = t_f
             t_f = time()
@@ -70,18 +87,27 @@ class GraphMatchingEngine:
         display(edge_pairs, query_ids, query_ids, data_ids, data_ids, edge_ids,
                     label='Initial edge candidates (%d)' % len(edge_pairs))
         qs, rqs, qsc = torch.unique(query_adj[:, [0, 2]], dim=0, return_inverse=True, return_counts=True)
+        self._delete(rqs)
         display(torch.cat([qs, qsc.unsqueeze(1)], dim=1), query_ids, edge_ids, None,
                     label='Query out-constraint counts')
         qt, rqt, qtc = torch.unique(query_adj[:, [1, 2]], dim=0, return_inverse=True, return_counts=True)
+        self._delete(query_adj)
+        self._delete(rqt)
         display(torch.cat([qt, qtc.unsqueeze(1)], dim=1), query_ids, edge_ids, None,
                     label='Query in-constraint counts')
         query_source_counts = torch.sparse.LongTensor(qs.T, qsc, [len(query_ids), len(edge_ids)]).to_dense()
+        self._delete(qs)
+        self._delete(qsc)
         display(query_source_counts, query_ids, edge_ids,
                     label='Query out-constraint counts')
         query_target_counts = torch.sparse.LongTensor(qt.T, qtc, [len(query_ids), len(edge_ids)]).to_dense()
+        self._delete(qt)
+        self._delete(qtc)
         display(query_target_counts, query_ids, edge_ids,
                     label='Query in-constraint counts')
         constraints = torch.cat([query_source_counts, query_target_counts], 1)
+        self._delete(query_source_counts)
+        self._delete(query_target_counts)
         display(constraints, query_ids, None, None,
                     label='Query constraint counts')
         prev_num_edges = edge_pairs.size(0) * 2
@@ -95,9 +121,11 @@ class GraphMatchingEngine:
             qsqtdsl = torch.unique(edge_pairs[:,[0,1,2,4]], dim=0)
             qsqtdtl = torch.unique(edge_pairs[:,[0,1,3,4]], dim=0)
             qsdsl, source_counts = torch.unique(qsqtdsl[:,[0,2,3]], dim=0, return_counts=True)
+            self._delete(qsqtdsl)
             display(torch.cat([qsdsl, source_counts.unsqueeze(1)], dim=1), query_ids, data_ids, edge_ids, None,
                         label='Out-property counts per candidate node assignment')
             qtdtl, target_counts = torch.unique(qsqtdtl[:,[1,2,3]], dim=0, return_counts=True)
+            self._delete(qsqtdtl)
             display(torch.cat([qtdtl, target_counts.unsqueeze(1)], dim=1), query_ids, data_ids, edge_ids, None,
                         label='In-property counts per candidate node assignment')
             qsds, asi = torch.unique(qsdsl[:,:2], dim=0, return_inverse=True)
@@ -105,33 +133,52 @@ class GraphMatchingEngine:
             qtdt, ati = torch.unique(qtdtl[:,:2], dim=0, return_inverse=True)
             display(qtdt, query_ids, data_ids, label='Target assignments')
             qd, dsi = torch.unique(torch.cat([qsds, qtdt], dim=0), dim=0, return_inverse=True)
+            self._delete(qtdt)
             display(qd, query_ids, data_ids, label='Assignments')
             source_indices = (dsi[:len(qsds)][asi], qsdsl[:,2])
+            self._delete(asi)
+            self._delete(qsdsl)
             target_indices = (dsi[len(qsds):][ati], qtdtl[:,2]+len(edge_ids))
+            self._delete(qsds)
+            self._delete(qtdtl)
+            self._delete(ati)
+            self._delete(dsi)
             source_values = source_counts
             target_values = target_counts
             properties_template = torch.zeros(len(qd), len(edge_ids)*2, device=self.device).long()
             indices = (torch.cat([source_indices[0], target_indices[0]], 0), torch.cat([source_indices[1], target_indices[1]], 0))
+            self._delete(source_indices)
+            self._delete(target_indices)
             values = torch.cat([source_values, target_values], 0)
             properties = torch.index_put(properties_template, indices, values)
+            self._delete(properties_template)
+            self._delete(indices)
+            self._delete(values)
             display(torch.cat([qd,properties],1), query_ids, data_ids, *([None]*len(edge_ids)*2),
                     label='Properties per assignment')
             requirements = constraints[qd[:,0]]
             display(torch.cat([qd,requirements],1), query_ids, data_ids, *([None]*len(edge_ids)*2),
                     label='Requirements per assignment')
             satisfactions = torch.eq(torch.sum(torch.le(requirements, properties).long(), 1), len(edge_ids)*2)
+            self._delete(properties)
+            self._delete(requirements)
             display(torch.cat([qd,satisfactions.unsqueeze(1)],1), query_ids, data_ids, None,
                     label='Satisfactions')
             invalid_assignments = filter_rows(qd, ~satisfactions)
+            self._delete(satisfactions)
+            self._delete(qd)
             display(invalid_assignments, query_ids, data_ids, label='Invalid assignments')
             edge_filter_1 = row_membership(edge_pairs[:,[0,2]], invalid_assignments)
             display(torch.cat([edge_pairs,edge_filter_1.unsqueeze(1)],1), query_ids, query_ids, data_ids, data_ids, edge_ids, None,
                     label='Edge filter 1')
             edge_pairs = filter_rows(edge_pairs, ~edge_filter_1)
+            self._delete(edge_filter_1)
             edge_filter_2 = row_membership(edge_pairs[:,[1,3]], invalid_assignments)
+            self._delete(invalid_assignments)
             display(torch.cat([edge_pairs,edge_filter_2.unsqueeze(1)],1), query_ids, query_ids, data_ids, data_ids, edge_ids, None,
                     label='Edge filter 2')
             edge_pairs = filter_rows(edge_pairs, ~edge_filter_2)
+            self._delete(edge_filter_2)
             display(edge_pairs, query_ids, query_ids, data_ids, data_ids, edge_ids,
                     label='Edge candidates (%d) after %d link filters' % (len(edge_pairs), i + 1))
             prev_num_edges = num_edges

@@ -64,29 +64,11 @@ class ElitDPToLogic(ParseToLogic):
             if head_idx != -1:
                 source = tokens[head_idx]
                 target = tokens[token_idx]
-                if label == 'com': # condense compound relations into single entity
-                    original_source = source.to_string()
-                    original_target = target.to_string()
-
-                    self.spans.remove(original_target)
-                    original_source_span_idx = self.spans.index(original_source)
-                    del cg.features[original_source]
-                    del cg.features[original_target]
-
-                    source.string = target.string + ' ' + source.string
-                    source.expression = target.expression + ' ' + source.expression
-                    source.start = target.start
-                    new_source = source.to_string()
-                    cg.features[new_source]["span_data"] = source
-                    self.spans[original_source_span_idx] = new_source
-                    cg.merge(new_source, original_source)
-                    cg.merge(new_source, original_target)
-                else:
-                    if not cg.has(label):
-                        add_ont_types = label_ont.get(label, set()) - {label}
-                        for t in add_ont_types:
-                            cg.add(label, 'type', t)
-                    cg.add(source.to_string(), label, target.to_string())
+                if not cg.has(label):
+                    add_ont_types = label_ont.get(label, set()) - {label}
+                    for t in add_ont_types:
+                        cg.add(label, 'type', t)
+                cg.add(source.to_string(), label, target.to_string())
             else:
                 # assert the root
                 cg.add(tokens[token_idx].to_string(), 'assert')
