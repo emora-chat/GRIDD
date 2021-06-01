@@ -12,12 +12,3 @@ expr("she, hers, her", she)
 
 veterinarian=(person)
 expr("vet", veterinarian)
-
-foodie=(person)
-expert=(person)
-fan=(person)
-
-friend=(person)
-
-girl=(person)
-boy=(person)

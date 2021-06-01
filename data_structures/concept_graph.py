@@ -378,9 +378,8 @@ class ConceptGraph:
                 for predicate in self.predicates(subject=concept, predicate_type='type'):
                     supertype = predicate[2]
                     if concept == supertype: # todo - this should not be possible, right?
-                        raise ValueError('Concept has self-loop type predicate which causes types() to crash on recursion error!') # todo - remove before deploy and pass instead
-                    else:
-                        types.update(self.types(supertype, memo))
+                        raise ValueError('Concept has self-loop type predicate which causes types() to crash on recursion error!')
+                    types.update(self.types(supertype, memo))
                 memo[concept] = types
                 if inst is not None:
                     memo[inst] = types | {inst}

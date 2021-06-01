@@ -6,11 +6,3 @@ expr("upset, depressed", sad)
 expr("terrified, afraid", scared)
 expr("lonely", lonely)
 expr("mad", angry)
-
-amazed=(emotion)
-expr("surprised",amazed)
-impressed=(emotion)
-sorry=(emotion)
-glad=(emotion)
-
-inspired=(emotion)

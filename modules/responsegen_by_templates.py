@@ -66,8 +66,8 @@ class ResponseTemplateFiller:
                 with_sal.append((preds, string, avg))
         print('\nResponse Options: ')
         if len(with_sal) > 0:
-            for _, response, sal in with_sal:
-                print('\t%s (%.2f)'%(response, sal))
+            for _, s, _ in with_sal:
+                print('\t%s'%s)
             print()
             return max(with_sal, key=lambda x: x[2])
         else:

@@ -29,9 +29,7 @@ class ResponseSelectionSalience:
             responses = [((template_response_selection[0],template_response_selection[1]),
                          template_response_selection[2])]
         else:
-            # no nlg model
-            # responses = [self.select_acknowledgment(working_memory), self.select_followup(working_memory, aux_state)]
-            responses = []
+            responses = [self.select_acknowledgment(working_memory), self.select_followup(working_memory, aux_state)]
         return aux_state, responses
 
     def select_acknowledgment(self, working_memory):

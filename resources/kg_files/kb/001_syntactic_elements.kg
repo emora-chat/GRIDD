@@ -12,10 +12,6 @@ into = (predicate)
 with = (predicate)
 around = (predicate)
 about = (predicate)
-at=(predicate)
-by=(predicate)
-out_of=(predicate)
-expr("out of",out_of)
 ;
 
 indirect_obj=(predicate, subj_essential)

@@ -102,13 +102,14 @@ class InferenceEngine:
             if isinstance(c, int) or isinstance(c, float):
                 quantities.add(c)
         for s, t, o, i in facts.predicates(predicate_type='type'):
-            nr = facts.subjects(o) - facts.subjects(o, 'type') - facts.subjects(o, SPAN_REF) - facts.subjects(o, SPAN_DEF)
-            nr.update(facts.objects(o) - facts.objects(o, 'type'))
-            facts.remove(predicate_id=i)
-            attributes.pop(i)
-            types_to_remove.add(o)
-            if nr:
-                types_to_preserve.add(o)
+            nr = facts.subjects(i)
+            nr.update(facts.objects(i))
+            if not nr:
+                facts.remove(predicate_id=i)
+                attributes.pop(i)
+                types_to_remove.add(o)
+            else:
+                types_to_preserve.update({s,o})
         for type in types_to_remove - types_to_preserve:
             facts.remove(type)
             attributes.pop(type)
