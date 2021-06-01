@@ -1,6 +1,7 @@
 DEBUG = False
 
 KB = 'kb'                       # Namespace of Knowledge Base Concept Graph
+WM = 'wm'                       # Namespace of Working Memory Concept Graph
 
 PRUNE_THRESHOLD = 50            # Number of main predicate nodes to keep in WM after pruning
 CONF_ITER = 5
