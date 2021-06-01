@@ -1,0 +1,4 @@
+language=(entity)
+
+french_language=(language)
+expr("french",french_language)

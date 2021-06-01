@@ -1,0 +1,11 @@
+hydrated=(property)
+
+cooking_qualifier=(property)
+boiled=(cooking_qualifier)
+steamed=(cooking_qualifier)
+baked=(cooking_qualifier)
+fried=(cooking_qualifier)
+raw=(cooking_qualifier)
+cooked=(cooking_qualifier)
+
+;

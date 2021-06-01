@@ -27,7 +27,9 @@ expr("encourage", motivate)
 
 [buy, meet, start]=(activity, physical)
 
+travel=(activity, physical)
+
+dream=(activity, mental)
 
 ;
-
 

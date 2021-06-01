@@ -1,0 +1,179 @@
+asian_cuisine=(cuisine)
+expr("asian cuisine, asian food",asian_cuisine)
+european_cuisine=(cuisine)
+expr("european cuisine, european food",european_cuisine)
+americas_cuisine=(cuisine)
+expr("americas food",americas_cuisine)
+fusion_cuisine=(cuisine)
+expr("fusion cuisine, fusion food",fusion_cuisine)
+vegan_cuisine=(cuisine)
+expr("vegan cuisine, vegan food",vegan_cuisine)
+fast_food=(cuisine)
+expr("fast food",fast_food)
+
+;
+
+chinese_cuisine=(asian_cuisine)
+expr("chinese cuisine, chinese food",chinese_cuisine)
+japanese_cuisine=(asian_cuisine)
+expr("japanese cuisine, japanese food",japanese_cuisine)
+thai_cuisine=(asian_cuisine)
+expr("thai cuisine, thai food",thai_cuisine)
+korean_cuisine=(asian_cuisine)
+expr("korean cuisine, korean food",korean_cuisine)
+vietnamese_cuisine=(asian_cuisine)
+expr("vietnamese cuisine, vietnamese food",vietnamese_cuisine)
+indian_cuisine=(asian_cuisine)
+expr("indian cuisine, indian food",indian_cuisine)
+malaysian_cuisine=(asian_cuisine)
+expr("malaysian cuisine, malaysian food",malaysian_cuisine)
+indonesian_cuisine=(asian_cuisine)
+expr("indonesian cuisine, indonesian food",indonesian_cuisine)
+
+;
+
+mediterranean_cuisine=(european_cuisine)
+expr("mediterranean cuisine, mediterranean food",mediterranean_cuisine)
+greek_cuisine=(european_cuisine)
+expr("greek cuisine, greek food",greek_cuisine)
+italian_cuisine=(european_cuisine)
+expr("italian cuisine, italian food",italian_cuisine)
+french_cuisine=(european_cuisine)
+expr("french cuisine, french food",french_cuisine)
+british_cuisine=(european_cuisine)
+expr("british cuisine, british food",british_cuisine)
+
+;
+
+canadian_cuisine=(americas_cuisine)
+expr("canadian cuisine, canadian food",canadian_cuisine)
+american_cuisine=(americas_cuisine)
+expr("american cuisine, american food",american_cuisine)
+mexican_cuisine=(americas_cuisine)
+expr("mexican cuisine, mexican food",mexican_cuisine)
+
+;
+
+burger=(fast_food)
+expr("hamburger",burger)
+french_fries=(fast_food)
+expr("french fries",french_fries)
+mashed_potato=(fast_food)
+expr("mashed potatoes",mashed_potato)
+fried_chicken=(fast_food)
+expr("fried chicken",fried_chicken)
+chicken_wing=(fast_food)
+expr("chicken wing",chicken_wing)
+
+;
+
+dim_sum=(chinese_cuisine)
+expr("dim sum",dim_sum)
+noodles=(chinese_cuisine)
+chow_mein=(noodles)
+expr("chow mein, fried noodles",chow_mein)
+dumpling=(chinese_cuisine)
+orange_chicken=(chinese_cuisine)
+expr("orange chicken",orange_chicken)
+kung_pao_chicken=(chinese_cuisine)
+expr("kung pao chicken",kung_pao_chicken)
+mongolian_beef=(chinese_cuisine)
+expr("mongolian beef",mongolian_beef)
+bun=(chinese_cuisine)
+peking_duck=(chinese_cuisine)
+expr("peking duck",peking_duck)
+hotpot=(chinese_cuisine)
+expr("hot pot",hotpot)
+fried_rice=(chinese_cuisine)
+expr("fried rice",fried_rice)
+
+;
+
+sashimi=(japanese_cuisine)
+sushi=(japanese_cuisine)
+expr("roll",sushi)
+ramen=(japanese_cuisine)
+udon=(japanese_cuisine)
+tempura=(japanese_cuisine)
+hibachi=(japanese_cuisine)
+expr("japanese barbecue",hibachi)
+takoyaki=(japanese_cuisine)
+chicken_curry=(japanese_cuisine)
+expr("chicken curry",chicken_curry)
+shabu=(japanese_cuisine)
+expr("shabu shabu, japanese hotpot",shabu)
+miso_soup=(japanese_cuisine)
+expr("miso soup",miso_soup)
+matcha=(japanese_cuisine)
+
+;
+
+pad_thai=(thai_cuisine)
+expr("pad thai",pad_thai)
+sticky_rice=(thai_cuisine)
+expr("sticky rice",sticky_rice)
+tom_yum_goong=(thai_cuisine)
+expr("tom yum goong",tom_yum_goong)
+green_curry=(thai_cuisine)
+expr("green curry",green_curry)
+yellow_curry=(thai_cuisine)
+expr("yellow curry",yellow_curry)
+
+;
+
+korean_bbq=(korean_cuisine)
+expr("korean bbq, korean barbecue",korean_bbq)
+kimchi=(korean_cuisine)
+soft_tofu_stew=(korean_cuisine)
+expr("soft tofu stew",soft_tofu_stew)
+jiajangmyeon=(korean_cuisine)
+bulgogi=(korean_cuisine)
+
+;
+
+pho=(vietnamese_cuisine)
+
+;
+
+samosa=(indian_cuisine)
+pakora=(indian_cuisine)
+
+;
+
+satay=(indonesian_cuisine)
+
+;
+
+pasta=(italian_cuisine)
+spaghetti=(pasta)
+pizza=(italian_cuisine)
+lasagna=(italian_cuisine)
+risotto=(italian_cuisine)
+
+;
+
+new_york_strip_steak=(americas_cuisine)
+expr("new york strip steak, new york steak",new_york_strip_steak)
+clam_chowder=(americas_cuisine)
+expr("clam chowder",clam_chowder)
+texas_barbecue=(americas_cuisine)
+expr("texas barbecue, texas bbq",texas_barbecue)
+
+;
+
+taco=(mexican_cuisine)
+burrito=(mexican_cuisine)
+chilaquiles=(mexican_cuisine)
+enchilada=(mexican_cuisine)
+
+;
+
+burger=(fast_food)
+french_fries=(fast_food)
+expr("french fries",french_fries)
+mashed_potatoes=(fast_food)
+expr("mashed potatoes",mashed_potatoes)
+fried_chicken=(fast_food)
+expr("fried chicken",fried_chicken)
+
+;

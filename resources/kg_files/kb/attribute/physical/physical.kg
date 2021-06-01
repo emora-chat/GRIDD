@@ -8,6 +8,7 @@ size=(property)
 expr("tiny", small)
 expr("big, huge", large)
 expr("normal, typical", average)
+giant=(large)
 
 [slender,fat,young,old,cute,ugly]=(physical_trait)
 expr("thin, skinny, scrawny", slender)
