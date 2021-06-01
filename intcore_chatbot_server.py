@@ -508,10 +508,13 @@ class ChatbotServer:
 
     @serialized('response', 'working_memory')
     def run_response_assembler(self, working_memory, aux_state, rule_responses, nlg_responses):
-        if rule_responses is None:
+        if rule_responses is None and nlg_responses is None:
             rule_responses = []
-        if nlg_responses is None:
             nlg_responses = []
+        elif nlg_responses is None:
+            nlg_responses = [None] * len(rule_responses)
+        elif rule_responses is None:
+            rule_responses = [None] * len(nlg_responses)
         response = self.response_assembler(aux_state, rule_responses, nlg_responses)
         self.load_working_memory(working_memory)
         self.dialogue_intcore.update_salience(iterations=SAL_ITER)
@@ -694,7 +697,8 @@ class ChatbotServer:
         expanded_response_predicates, working_memory = self.run_response_expansion(response_predicates,
                                                                                    working_memory)
         rule_responses = self.run_response_by_rules(aux_state, expanded_response_predicates)
-        nlg_responses = self.run_response_nlg_model(expanded_response_predicates)
+        # nlg_responses = self.run_response_nlg_model(expanded_response_predicates)
+        nlg_responses = None
         response, working_memory = self.run_response_assembler(working_memory, aux_state, rule_responses, nlg_responses)
         return response, working_memory, aux_state
 
