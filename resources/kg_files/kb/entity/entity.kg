@@ -44,3 +44,11 @@ vitality=(entity)
 nightlife=(entity)
 diversity=(entity)
 background=(entity)
+
+;
+
+travel_reason=(entity)
+travelreason_business=(travel_reason)
+travelreason_family=(travel_reason)
+travelreason_friend=(travel_reason)
+travelreason_vacation=(travel_reason)
