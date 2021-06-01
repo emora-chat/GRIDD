@@ -1,0 +1,24 @@
+consumable=(entity)
+
+food=(consumable)
+cuisine=(food)
+ingredient=(food)
+drinkable=(consumable)
+condiment=(consumable)
+
+;
+
+meal=(entity)
+breakfast=(meal)
+lunch=(meal)
+dinner=(meal)
+
+flavor=(entity)
+
+dining_experience=(entity)
+expr("dining experience",dining_experience)
+dish=(entity)
+
+;
+
+dining=(entity)
