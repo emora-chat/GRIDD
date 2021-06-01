@@ -12,6 +12,8 @@ play(predicate)
 win=(predicate)
 lose=(predicate)
 start=(predicate)
+compete=(predicate)
+watch=(predicate)
 
 sports_team=(entity)
 basketball_team=(sports_team)
@@ -23,7 +25,27 @@ baseball_team=(sports_team)
 
 [Arizona Cardinals, Atlanta Falcons, Baltimore Ravens, Buffalo Bills, Carolina Panthers, Chicago Bears, Cincinnati Bengals, Cleveland Browns, Dallas Cowboys, Denver Broncos, Detroit Lions, Green Bay Packers, Houston Texans, Indianapolis Colts, Jacksonville Jaguars, Kansas City Chiefs, Los Angeles Chargers, Los Angeles Rams, Miami Dolphins, Minnesota Vikings, New England Patriots, New Orleans Saints, New York Giants, New York Jets, Oakland Raiders, Philadelphia Eagles, Pittsburgh Steelers, San Francisco 49ers, Seattle Seahawks, Tampa Bay Buccaneers, Tennessee Titans, Washington Redskins] = (football_team)
 
-[Arsenal, A.F.C. Bournemouth, Brighton and Hove Albion, Burnley, Chelsea, Crystal Palace, Everton, Huddersfield Town, Leicester City, Liverpool, Manchester City, Manchester United, Newcastle United, Southampton, Stoke City, Swansea City, Tottenham Hotspur, Watford, West Bromwich Albion, West Ham United] = (soccer_team)
+[Arsenal, A.F.C. Bournemouth, Brighton and Hove Albion, Burnley, Chelsea, Crystal Palace, Everton, Huddersfield Town, Leicester City, Liverpool, Manchester City, Manchester United, Newcastle United, Southampton, Stoke City, Swansea City, Tottenham Hotspur, Watford, West Bromwich Albion, West Ham United, Atlanta United FC, Chicago Fire, Colorado Rapids, Columbus Crew SC, D.C. United, FC Dallas, Houston Dynamo, LA Galaxy, Los Angeles FC, Minnesota United FC, Montreal Impact, New England Revolution, New York City FC, New York Red Bulls, Orlando City SC, Philadelphia Union, Portland Timbers, Real Salt Lake, San Jose Earthquakes, Seattle Sounders FC, Sporting Kansas City, Toronto FC, Vancouver Whitecaps FC] = (soccer_team)
 
 [Arizona Diamondbacks, Atlanta Braves, Baltimore Orioles, Boston Red Sox, Chicago White Sox, Chicago Cubs, Cincinnati Reds, Cleveland Indians, Colorado Rockies, Detroit Tigers, Houston Astros, Kansas City Royals, Los Angeles Angels, Los Angeles Dodgers, Miami Marlins, Milwaukee Brewers, Minnesota Twins, New York Yankees, New York Mets, Oakland Athletics, Philadelphia Phillies, Pittsburgh Pirates, San Diego Padres, San Francisco Giants, Seattle Mariners, St. Louis Cardinals, Tampa Bay Rays, Texas Rangers, Toronto Blue Jays, Washington Nationals] = (baseball_team)
+
+sports_event = (entity)
+[the game, the big game] = (sports_event)
+
+team_sports_event = (sports_event)
+
+football_game = (team_sports_event)
+[football game, football match] = (football_game)
+
+soccer_game = (team_sports_event)
+[soccer game, soccer match] = (soccer_game)
+
+tennis_game = (team_sports_event)
+[tennis game, tennis match, tennis exhibition] = (tennis_game)
+
+baseball_game = (team_sports_event)
+[baseball game, baseball match] = (baseball_game)
+
+basketball_game = (team_sports_event)
+[basketball game, basketball match] = (basketball_game)
 ;

@@ -160,12 +160,11 @@ pl/like(user, s/football_team())
 user_aware(pl)
 -> person_likes_football_team ->
 j/like(user, football)
-user_aware(j)
 l:<l/play(user, football)>
 request_truth(emora, l)
 ;
 
-t/time(pl/like(user, s/baseball_team()), today)
+pl/like(user, s/baseball_team())
 user_aware(pl)
 -> person_likes_baseball_team ->
 j/like(user, baseball)
@@ -174,7 +173,7 @@ l:<l/play(user, baseball)>
 request_truth(emora, l)
 ;
 
-t/time(pl/like(user, s/soccer_team()), today)
+pl/like(user, s/soccer_team())
 user_aware(pl)
 -> person_likes_soccer_team ->
 j/like(user, soccer)
@@ -183,13 +182,52 @@ l:<l/play(user, soccer)>
 request_truth(emora, l)
 ;
 
-t/time(pl/like(user, s/basketball_team()), today)
+pl/like(user, s/basketball_team())
 user_aware(pl)
 -> person_likes_basketball_team ->
 j/like(user, basketball)
 user_aware(j)
 l:<l/play(user, basketball)>
 request_truth(emora, l)
+;
+
+/* More event-related rules for sports */
+w/watch(user, s/sports_event())
+user_aware(w)
+-> person_watches_sports_event ->
+l/like(user, sport)
+;
+
+w/watch(user, g/football_game())
+user_aware(w)
+-> person_watches_football_game ->
+l/like(user, football)
+x:<c/compete(x/football_team(), y/football_team())>
+request(emora, x)
+;
+
+w/watch(user, g/basketball_game())
+user_aware(w)
+-> person_watches_basketball_game ->
+l/like(user, basketball)
+x:<c/compete(x/basketball_team(), y/basketball_team())>
+request(emora, x)
+;
+
+w/watch(user, g/baseball_game())
+user_aware(w)
+-> person_watches_baseball_game ->
+l/like(user, baseball)
+x:<c/compete(x/baseball_team(), y/baseball_team())>
+request(emora, x)
+;
+
+w/watch(user, g/soccer_game())
+user_aware(w)
+-> person_watches_soccer_game ->
+l/like(user, soccer)
+x:<c/compete(x/soccer_team(), y/soccer_team())>
+request(emora, x)
 ;
 
 /* Does Not Play Sports */

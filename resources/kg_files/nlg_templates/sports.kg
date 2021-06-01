@@ -180,6 +180,15 @@ request(emora, g)
 $ Which football team is your favorite? $
 ;
 
+
+/* Sports Events */
+
+c/compete(x/sports_team(), y/sports_team())
+request(emora, x)
+->
+$ Oh nice, which two teams were playing? $
+;
+
 /* Transition to food */
 w/want(user, play(user, s/sport()))
 w{"confidence": -1}
