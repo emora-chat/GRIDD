@@ -2,3 +2,4 @@ lark-parser==0.11.1
 networkx==2.5
 simplenlg
 requests
+pyahocorasick==1.4.2
