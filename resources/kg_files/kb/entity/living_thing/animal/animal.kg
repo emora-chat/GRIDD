@@ -22,3 +22,5 @@ bother=(animal_event)
 expr("distract", bother)
 steal=(animal_event)
 chew=(animal_event)
+
+panda=(animal)
