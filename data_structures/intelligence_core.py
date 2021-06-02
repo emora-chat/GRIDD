@@ -171,12 +171,7 @@ class IntelligenceCore:
 
     def update_confidence(self, speaker, iterations=10):
         """
-        label_d is a dictionary of label_type to label in order to update confidence w.r.t different populations
-        e.g. emora, user, etc.
-        label_d must contain a mapping for:
-            and
-            or
-            conf
+        speaker is string ("emora", "user") indicating whose confidence is being updated
         """
         mg = self.working_memory.metagraph
         and_links, or_links = [], []
@@ -186,13 +181,6 @@ class IntelligenceCore:
             orl = OR_LINK
             conf = CONFIDENCE
             base_conf = BASE_CONFIDENCE
-            counter = 0
-            for s, t, o, i in self.working_memory.predicates():
-                convincability = self.working_memory.features.get(i, {}).get(CONVINCABLE, 1.0)
-                cnode = f'{counter}__cnode'
-                counter += 1
-                or_links.append((cnode, i, ('convince_link', convincability)))
-                nodes[cnode] = self.working_memory.features.get(i, {}).get(UCONFIDENCE, 0.0)
         elif speaker == 'user':
             andl = UAND_LINK
             orl = UOR_LINK
@@ -202,8 +190,26 @@ class IntelligenceCore:
             raise ValueError('speaker parameter must be either `emora` or `user`, not `%s`'%speaker)
         nodes.update({c: mg.features.get(c, {}).get(base_conf, 0) for c in mg.nodes()})
         and_links.extend([edge for edge in mg.edges() if isinstance(edge[2], tuple) and andl == edge[2][0]])
-        or_links.extend([edge for edge in mg.edges() if isinstance(edge[2], tuple) and orl == edge[2][0]])
+        # or_links.extend([edge for edge in mg.edges() if isinstance(edge[2], tuple) and orl == edge[2][0]])
+        request_truth_objs_from_inference = set()
+        for s,t,l in mg.edges():
+            if isinstance(l, tuple) and orl == l[0]:
+                # inference links to the object of a request_truth predicate are not included in the confidence propogation
+                if not self.working_memory.has('emora', REQ_TRUTH, t):
+                    or_links.append((s,t,l))
+                else:
+                    request_truth_objs_from_inference.add(t)
+        if speaker == 'emora':
+            # set up convinceability links from user confidence of node to itself
+            counter = 0
+            for s, t, o, i in self.working_memory.predicates():
+                convincability = self.working_memory.features.get(i, {}).get(CONVINCABLE, 1.0)
+                cnode = f'{counter}__cnode'
+                counter += 1
+                or_links.append((cnode, i, ('convince_link', convincability)))
+                nodes[cnode] = self.working_memory.features.get(i, {}).get(UCONFIDENCE, 0.0)
         counter = 0
+        # set up base confidence links from self to self
         for _,_,_,i in self.working_memory.predicates():
             bc = self.working_memory.features.get(i, {}).get(base_conf, None)
             if bc is not None: # nodes with base confidence include themselves in their OR conf calculation
