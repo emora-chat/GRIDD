@@ -6,3 +6,22 @@ like(emora, baseball)
 possess(emora, s/sport())
 favorite(s)
 be(s, basketball)
+play(emora, soccer)
+
+
+possess(emora, f/football_team())
+favorite(f)
+be(f, Houston_Texans)
+
+possess(emora, b/basketball_team())
+favorite(b)
+be(b, Los_Angeles_Lakers) 
+
+possess(emora, soc/soccer_team())
+favorite(soc)
+be(soc, Arsenal) 
+
+possess(emora, bas/baseball_team())
+favorite(bas)
+be(bas, Boston_Red_Sox) 
+;

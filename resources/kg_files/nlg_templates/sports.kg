@@ -17,7 +17,7 @@ l/like(user, football)
 pl/play(user, football)
 request_truth(emora, pl)
 ->
-$ Have you ever played football? Figured I'd ask since you said you liked it. $
+$ Have you ever played football? Figured I'd ask since it seems you like it. $
 ;
 
 l/like(user, baseball)
@@ -38,7 +38,7 @@ l/like(user, tennis)
 pl/play(user, tennis)
 request_truth(emora, pl)
 ->
-$ Have you played tennis at all in the past? I'm asking since you mentioned you like tennis. $
+$ Have you played tennis at all in the past? I'm asking since it seems you like tennis. $
 ;
 
 l/like(user, basketball)
@@ -177,7 +177,7 @@ pl/like(user, football)
 l/like(user, g/football_team())
 request(emora, g)
 ->
-$ Which football team is your favorite? $
+$ Which football team is your favorite? My favorite is the Texans$
 ;
 
 /* Sports Events */
@@ -185,14 +185,6 @@ $ Which football team is your favorite? $
 /* This takes two rounds to be triggered */
 w/watch(user, g/team_sports_event())
 c/compete(x/sports_team(), y/sports_team())
-request(emora, x)
-->
-$ Oh nice, which two teams were playing in the game? $
-;
-
-/* Here this is needed to trigger first-round */
-w/watch(user, g/basketball_game())
-c/compete(x/basketball_team(), y/basketball_team())
 request(emora, x)
 ->
 $ Oh nice, which two teams were playing in the game? $

@@ -123,28 +123,28 @@ t/time(w/want(user, pl/play(user, football)), now)
 user_aware(w)
 -> Person_wants_to_play_football ->
 p:<c/want(user, pl) cause(p/predicate(), c)>
-request(me, p)
+request(emora, p)
 ;
 
 t/time(w/want(user, pl/play(user, soccer)), now)
 user_aware(w)
 -> Person_wants_to_play_soccer ->
 p:<c/want(user, pl) cause(p/predicate(), c)>
-request(me, p)
+request(emora, p)
 ;
 
 t/time(w/want(user, pl/play(user, tennis)), now)
 user_aware(w)
 -> Person_wants_to_play_tennis ->
 p:<c/want(user, pl) cause(p/predicate(), c)>
-request(me, p)
+request(emora, p)
 ;
 
 t/time(w/want(user, pl/play(user, basketball)), now)
 user_aware(w)
 -> Person_wants_to_play_basketball ->
 p:<c/want(user, pl) cause(p/predicate(), c)>
-request(me, p)
+request(emora, p)
 ;
 
 /* Likes General Sports Team */
