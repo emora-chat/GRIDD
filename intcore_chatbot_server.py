@@ -262,10 +262,7 @@ class ChatbotServer:
                 working_memory.metagraph.update(self.dialogue_intcore.knowledge_base.metagraph,
                                                                       self.dialogue_intcore.knowledge_base.metagraph.features,
                                                                       concepts=[pred[3]])
-        types = self.dialogue_intcore.pull_types()
-        for type in types:
-            if not working_memory.has(*type):
-                self.dialogue_intcore.consider([type], associations=type[0])
+        self._update_types(working_memory)
         self.dialogue_intcore.operate()
         return self.dialogue_intcore.working_memory
 
@@ -279,6 +276,7 @@ class ChatbotServer:
     def run_apply_dialogue_inferences(self, inference_results, working_memory):
         self.load_working_memory(working_memory)
         self.dialogue_intcore.apply_inferences(inference_results)
+        self._update_types(self.dialogue_intcore.working_memory)
         self.dialogue_intcore.operate()
         self.dialogue_intcore.update_confidence('user', iterations=CONF_ITER)
         self.dialogue_intcore.update_confidence('emora', iterations=CONF_ITER)
@@ -541,6 +539,12 @@ class ChatbotServer:
             if not graph.has(predicate_id=concept) or graph.type(concept) not in PRIM and not graph.has(concept, USER_AWARE):
                 i2 = graph.add(concept, USER_AWARE)
                 graph.features[i2][BASE_UCONFIDENCE] = 1.0
+
+    def _update_types(self, working_memory):
+        types = self.dialogue_intcore.pull_types()
+        for type in types:
+            if not working_memory.has(*type):
+                self.dialogue_intcore.consider([type], associations=type[0])
 
     def _convert_span_to_node_merges(self, span1, pos1, span2, pos2):
         (concept1,) = self.dialogue_intcore.working_memory.objects(span1, 'ref')
