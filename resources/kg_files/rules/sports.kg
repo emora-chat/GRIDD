@@ -106,7 +106,7 @@ request(emora,i)
 pl/play(user, s/sport())
 user_aware(pl)
 -> user_plays_known_sport ->
-request_truth(property(user, athlete()))
+request_truth(be(user, athlete()))
 ;
 
 /* Wants to Play Sports */
@@ -192,11 +192,6 @@ request_truth(emora, l)
 ;
 
 /* More event-related rules for sports */
-w/watch(user, s/sports_event())
-user_aware(w)
--> person_watches_sports_event ->
-l/like(user, sport)
-;
 
 w/watch(user, g/football_game())
 user_aware(w)
@@ -232,6 +227,7 @@ request(emora, x)
 
 /* Does Not Play Sports */
 time(pl/play(user, s/sport()), now)
+category(s)
 pl{"confidence": -1}
 -> not_play_sport ->
 w:<time(w/want(user, play(user, sp/sport())), now)>
@@ -240,6 +236,7 @@ request_truth(emora, w)
 
 /* Does not want to play Sports */
 time(w/want(user, play(user, s/sport())), now)
+category(s)
 w{"confidence": -1}
 -> not_want_to_play_sports ->
 b:<time(b/be(user, fd/foodie()), now)>

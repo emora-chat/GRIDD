@@ -9,7 +9,7 @@ $ You seem like someone who might like sports. Do you? $
 l/like(user, s/sport())
 request(emora, s)
 ->
-$ Out of all sports, what's your favorite? My favorite sports are football, baseball, tennis, soccer, and basketball. $
+$ Out of all sports, what's your favorite? I like football, baseball, tennis, and soccer, but basketball is my favorite. $
 ;
 
 /* Likes specific sport */
@@ -45,7 +45,7 @@ l/like(user, basketball)
 pl/play(user, basketball)
 request_truth(emora, pl)
 ->
-$ Have you played basketball much? Sounds like you enjoy it! $
+$ Have you played basketball before? Sounds like you enjoy it. $
 ;
 
 /* Plays some sport */
@@ -56,7 +56,7 @@ $ What sport do you play? I've enjoyed soccer in the past. Something about worki
 ;
 
 play(user, s/sport())
-request_truth(property(user, athlete()))
+request_truth(be(user, athlete()))
 ->
 $ Oh, are you an athlete ? $
 ;
@@ -180,13 +180,22 @@ request(emora, g)
 $ Which football team is your favorite? $
 ;
 
-
 /* Sports Events */
 
+/* This takes two rounds to be triggered */
+w/watch(user, g/team_sports_event())
 c/compete(x/sports_team(), y/sports_team())
 request(emora, x)
 ->
-$ Oh nice, which two teams were playing? $
+$ Oh nice, which two teams were playing in the game? $
+;
+
+/* Here this is needed to trigger first-round */
+w/watch(user, g/basketball_game())
+c/compete(x/basketball_team(), y/basketball_team())
+request(emora, x)
+->
+$ Oh nice, which two teams were playing in the game? $
 ;
 
 /* Transition to food */

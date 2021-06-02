@@ -1,0 +1,8 @@
+like(emora, sport)
+like(emora, football)
+like(emora, soccer)
+like(emora, tennis)
+like(emora, baseball)
+possess(emora, s/sport())
+favorite(s)
+be(s, basketball)
