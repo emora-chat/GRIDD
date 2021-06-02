@@ -1,7 +1,8 @@
 import time, json, requests
 from os.path import join
 from itertools import chain
-
+import sys, os
+sys.path.append(os.getcwd())
 from GRIDD.utilities.utilities import collect
 from GRIDD.data_structures.span import Span
 from GRIDD.globals import *
