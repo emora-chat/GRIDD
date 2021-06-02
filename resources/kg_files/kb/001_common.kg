@@ -46,5 +46,8 @@ bring=(predicate)
 hear=(predicate)
 prefer=(predicate)
 embrace=(predicate)
+open=(predicate)
+admire=(predicate)
+listen=(predicate)
 
 ;

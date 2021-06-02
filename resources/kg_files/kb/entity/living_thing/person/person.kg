@@ -21,3 +21,5 @@ friend=(person)
 
 girl=(person)
 boy=(person)
+
+peer=(person)

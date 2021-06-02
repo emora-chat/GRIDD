@@ -112,12 +112,12 @@ time(ge,past)
 dg/dream(g/girl())
 type(g,group)
 about(dg,disneyland_park)
-gt:<gt/to(go(user),disneyland_park) time(gt,past)>
+gt:<gu/go(user) gt/to(gu,disneyland_park) time(gu,past)>
 request_truth(emora,gt)
 ;
 
 gx/go(x/person())
-gtd/to(gx,disneyland_park)
+to(gx,disneyland_park)
 ->
 possess(emora,m/memory())
 type(m,group)
@@ -125,7 +125,8 @@ carry(disneyland_park,m)
 miss(emora,ch/childhood())
 ;
 
-gt/to(go(x/person()),disneyland_park)
+gx/go(x/person())
+gt/to(gx,disneyland_park)
 gt{"confidence":-1}
 ->
 gm/good(m/memory())

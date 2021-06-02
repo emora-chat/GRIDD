@@ -8,7 +8,7 @@ type(tp,group)
 gi/get(emora,inspired())
 git/from(gi,te)
 ->
-$ What country have{"s":"#X"} X visited ? I love trips too because I always get inspired from traveling . $
+$ What country have{"s":"#X","t":"now"} X visited ? I love trips too because I always get inspired from traveling . $
 ;
 
 possess(emora,f/friend())
@@ -103,8 +103,9 @@ time(ge,past)
 dg/dream(g/girl())
 type(g,group)
 about(dg,disneyland_park)
-gt/to(go(user,disneyland_park))
-time(gt,past)
+gu/go(user)
+gt/to(gu,disneyland_park)
+time(gu,past)
 request_truth(emora,gt)
 ->
 $ I think California is a great state to visit ! I remember going to Disneyland Park when I was little . It was definitely a place that every girl dreams about . Have you been there before ? $
@@ -120,14 +121,16 @@ miss(emora,ch/childhood())
 $ Right ? It carries so many memories of mine . Speaking of childhood , I always have many things that I miss . $
 ;
 
-gt/to(go(X/person()),disneyland_park)
+gx/go(X/person())
+gt/to(gx,disneyland_park)
+time(gx,Z/datetime())
 gt{"confidence":-1}
 gm/good(m/memory())
 type(m,group)
 xhg/have(X,m)
 about(m,childhood())
 ->
-$ Oh , then X have{"s":"#X"} missed a lot of fun ! Just kidding . I bet X still have{"s":"#X"} some good memories from childhood even if X have{"s":"#X"} not been to Disneyland Park . $
+$ Oh , then X miss{"s":"#X","t":"#Z"} a lot of fun ! Just kidding . I bet X still have{"s":"#X","t":"now"} some good memories from childhood even if X have{"s":"#X","t":"now"} not been to Disneyland Park . $
 ;
 
 fl/favorite(l/location())
