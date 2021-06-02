@@ -19,35 +19,3 @@ l2{"coldstart": 1, "salience": 0.2}
 r{"coldstart": 1, "salience": 0.2}
 ;
 
-phone=(device)
-iphone=(phone)
-walled_garden=(entity)
-;
-
-h/have(user, p/phone())
-->
-i/have(user, iphone())
-request_truth(emora,i)
-;
-
-h/have(user, i/iphone())
-h{"confidence": 1}
--> have_iphone_q ->
-l/like(user, walled_garden())
-request_truth(emora,l)
-;
-
-h/have(user, p/phone())
-i/have(user, iphone())
-request_truth(emora,i)
-->
-$ Do you have an iPhone? $
-;
-
-h/have(user, i/iphone())
-h{"confidence": 1}
-l/like(user, walled_garden())
-request_truth(emora,l)
-->
-$ Iphones are great! You know, they just work. You can only get apps from the App Store though, what do you think about that? $
-;
