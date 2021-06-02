@@ -1,5 +1,5 @@
 eat=(event)
-expr("have,consume",eat)
+expr("consume",eat)
 drink=(event)
 cook=(event)
 bake=(event)
