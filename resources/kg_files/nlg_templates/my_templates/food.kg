@@ -1,3 +1,11 @@
+/* COLDSTART LINKING */
+l/like(user, f/food())
+r/request(emora, f)
+->
+$ Yeah . So anyway , I love trying new foods . What food do you like to eat ? $
+;
+/* COLDSTART LINKING */
+
 happy(emora)
 be(emora,foodie())
 like(x/person(),f/food())
