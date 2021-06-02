@@ -20,4 +20,5 @@ bad_performance=(performance)
 connected=(predicate)
 nvidia=(dgpu_manuf)
 amd_rx=(dgpu_manuf)
+design=(entity)
 ;

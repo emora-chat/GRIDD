@@ -19,7 +19,6 @@ arm=(cpu_arch)
 x86=(cpu_arch)
 gpu=(device)
 dgpu=(device)
-
 pc=(computer)
 software=(entity)
 photoshop=(software)

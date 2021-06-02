@@ -12,7 +12,7 @@ $ I love tinkering with my pc. Do you have a Pc ? Or something else, like a mac 
 have(user, p/computer())
 request_truth(emora, pc_enthusiast(user))
 ->
-$ Do you like pc's ? Or are they just something you have to use for work or school ?$
+$ Do you like computers ? Or are they just something you have to use for work or school ?$
 ;
 
 
@@ -80,17 +80,14 @@ h/have(user, i/iphone())
 h{"confidence": 1}
 l/like(user, walled_garden())
 request_truth(emora,l)
-temppred(tempiph())
 ->
 $ Iphones are great! You know, they just work. You can only get apps from the App Store though, what do you think about that? $
 ;
 
 
 
-/* The temp variable here is to get around a bug that happens atm with templates firing when they shouldn't - it still fires too early, but not as early? Bug is being worked on afaik*/
 l/like(user, walled_garden())
 l{"confidence": 1}
-temppred(tempwall())
 ->
 $ Huh, so you like the walled garden approach to phones, where you can only install a curated selection of apps? I would have to disagree, I think people should be able to use a device however they want. You should be allowed to put whatever you want on your own device, as long as you understand the risks.$
 ;
@@ -101,4 +98,13 @@ h/have(user, a1/android())
 h{"confidence": 1}
 ->
 $ I bet you have an android then. Android phones are great, and I'm excited for Android 12 . You can use them like an iphone, but you can also really customize it anyway you want to. iPhones are made for everyone, but you can make an Android fit you . $
+;
+
+
+use(user, m/macos())
+have(m, d/design())
+l/like(user, d)
+request_truth(emora, l)
+->
+$ Do you like the design of mac OS? I used to use windows, but windows never focuses on aesthetics - and when it does it might change with a new version. Mac OS is consistently beautifully designed. $
 ;

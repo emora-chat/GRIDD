@@ -152,7 +152,12 @@ request_truth(emora,l)
 
 have(user, mac())
 ->
-use(user, macos())
+use(user, m/macos())
+l:<
+have(m, d/design())
+l/like(user, d)
+>
+request_truth(emora, l)
 ;
 
 
@@ -186,7 +191,6 @@ h{"confidence": 1}
 ->
 l:<l/like(user, walled_garden())>
 request_truth(emora,l)
-temppred(tempiph())
 ;
 
 h/have(user, p/phone())
@@ -196,8 +200,3 @@ h1{"confidence": -1}
 have(user, android())
 ;
 
-l/like(user, walled_garden())
-l{"confidence": 1}
-->
-temppred(tempwall())
-;
