@@ -31,5 +31,7 @@ travel=(activity, physical)
 
 dream=(activity, mental)
 
+annoy=(activity,mental)
+use=(predicate)
 ;
 
