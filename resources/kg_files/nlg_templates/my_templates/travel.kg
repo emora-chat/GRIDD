@@ -15,7 +15,7 @@ possess(emora,f/friend())
 tf/travel(f)
 time(tf,past)
 to(tf,china)
-pa:<pa/pandemic()>
+pa/pandemic()
 before(tf,pa)
 
 giant(pd/panda())
@@ -104,9 +104,9 @@ dg/dream(g/girl())
 type(g,group)
 about(dg,disneyland_park)
 gu/go(user)
-gt/to(gu,disneyland_park)
+to(gu,disneyland_park)
 time(gu,past)
-request_truth(emora,gt)
+request_truth(emora,gu)
 ->
 $ I think California is a great state to visit ! I remember going to Disneyland Park when I was little . It was definitely a place that every girl dreams about . Have you been there before ? $
 ;
@@ -122,9 +122,9 @@ $ Right ? It carries so many memories of mine . Speaking of childhood , I always
 ;
 
 gx/go(X/person())
-gt/to(gx,disneyland_park)
+to(gx,disneyland_park)
 time(gx,Z/datetime())
-gt{"confidence":-1}
+gx{"confidence":-1}
 gm/good(m/memory())
 type(m,group)
 xhg/have(X,m)
@@ -136,8 +136,8 @@ $ Oh , then X miss{"s":"#X","t":"#Z"} a lot of fun ! Just kidding . I bet X stil
 fl/favorite(l/location())
 be(florida,fl)
 se/sit(emora)
-sbs/by(se,bc/beach())
-romantic(sbs)
+by(se,bc/beach())
+romantic(se)
 ws/watch(emora,ss/sunset())
 romantic(ws)
 ->
@@ -160,16 +160,16 @@ in(bc,hawaii)
 bh/best(hawaii)
 for(bh,h/holiday())
 type(h,group)
-gxx/go(user)
-gt/to(gxx,honolulu)
-time(gt,past)
-request_truth(emora,gt)
+gu/go(user)
+to(gu,honolulu)
+time(gu,past)
+request_truth(emora,gu)
 ->
 $ Hawaii is such an awesome place ! The beaches are so beautiful there . It’s the best choice for vacations in my mind . Have you been to Honolulu before ? $
 ;
 
 se/sit(emora)
-sbs/by(se,bc/beach())
+by(se,bc/beach())
 ws/watch(emora,ss/sunset())
 love(emora,se)
 love(ws)
@@ -183,8 +183,8 @@ $ Sounds awesome ! I love sitting by the beach watching the sunset . I was able 
 ;
 
 gx/go(X/person())
-gt/to(gx,honolulu)
-gt{"confidence":-1}
+to(gx,honolulu)
+gx{"confidence":-1}
 gc/good(cm/camera())
 xtg/take(X,cm)
 recommend(emora,xtg)
