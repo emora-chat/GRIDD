@@ -25,7 +25,7 @@ class GraphMatchingEngine:
             cl = preprocess_query_graph(query_graph)
 
     def match(self, data_graph, *query_graphs):
-        complete = {}                                                               # list<Tensor<n>> completed solutions
+        complete = []                                                               # list<Tensor<n>> completed solutions
         checklist = self._add_queries(query_graphs)                                 # list<Tensor<q x 3: (n, l, n)>> list of required next edge lists
         edges = preprocess_data_graph(data_graph)                                   # JaggedTensor<>
         solutions = torch.LongTensor(list(self.q.values()), device=self.device)     # Tensor<solution x step: n> in-progress solutions (1st entry is query id)

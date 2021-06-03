@@ -13,7 +13,6 @@ if __name__ == '__main__':
             primestxt = f.read()
             primestxt.replace('\n', '').replace('\t', ' ')
             primes = [int(x) for x in primestxt.split(' ') if x]
-
         with open('primeslist.txt', 'w') as f:
             f.write(str(primes))
 
