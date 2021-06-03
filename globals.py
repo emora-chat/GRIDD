@@ -89,9 +89,3 @@ PRIM = {SPAN_DEF, SPAN_REF,
 
 
 UNKNOWN_TYPES = {'unknown_verb', 'unknown_noun', 'unknown_pron', 'unknown_adj', 'unknown_adv', 'unknown_other'}
-
-
-PRIORITY_WEIGHT = 0.5
-SAL_WEIGHT = 0.5
-DEFAULT_PRIORITY = 0.5
-PRIORITY_PRED = '_pr'
