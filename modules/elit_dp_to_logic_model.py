@@ -3,7 +3,8 @@
 from GRIDD.modules.text_to_logic_model import ParseToLogic
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.modules.elit_dp_to_logic_spec import ElitDPSpec
-from GRIDD.modules.elit_dp_to_logic_ontology import pos_mapper, generate_elit_dp_ontology, PRECEDE_LABELS, QUEST, TENSEFUL_AUX
+from GRIDD.modules.elit_dp_to_logic_ontology import pos_mapper, generate_elit_dp_ontology, \
+    PRECEDE_LABELS, QUEST, TENSEFUL_AUX
 
 import os
 from os.path import join

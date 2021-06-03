@@ -101,8 +101,10 @@ class IntelligenceCore:
             for sol in sols:
                 implied = ConceptGraph(namespace=post._ids)
                 for pred in post.predicates():
-                    pred = [sol.get(x, x) for x in pred]
-                    implied.add(*pred)
+                    if pred[3] not in sol:
+                        # if predicate instance is not in solutions, add to implication; otherwise, it already exists in WM
+                        pred = [sol.get(x, x) for x in pred]
+                        implied.add(*pred)
                 for concept in post.concepts():
                     concept = sol.get(concept, concept)
                     implied.add(concept)

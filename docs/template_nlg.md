@@ -179,3 +179,64 @@ To counteract this, you probably only want to not include determiners if you gua
 ## More examples
 
 More examples can be found in `GRIDD/resources/kg_files/nlg_templates/`.
+
+# Template Response Priority Specification
+
+All NLG response template have a priority category. 
+This response category is used in tandem with the salience
+scoring system to determine the ranked order of candidate responses.
+
+You can specify a specific priority using the `_pr` predicate in the postcondition of the template.
+
+You do not need to specify a priority for every template. A normal priority is given to those templates which do not have a manually specified one.
+
+The most common priority level should be normal, which allows for Emora to rely on the salience system to do its job of determining relevant responses to the current conversation. 
+
+Low and high priorities should be used sparingly, in cases where we want to make sure Emora behaves a certain way.
+
+There are three priority categories:
+
+* **low** - for responses that should only be taken if there is no better option (e.g. general interactions)
+
+* **normal** - the default priority level. Supercedes low priority responses but high priority responses are preferred over these responses.
+
+* **high** - for responses that must be spoken in a given situation. This should be used sparingly, only for interactions that we need to address immediately (e.g. user mentions death, etc.)
+
+To specify a low priority response:
+
+```
+/* general activity */
+
+time(e/event(user), past)
+l/like(user, e)
+request_truth(emora, l)
+->
+_pr(_low)
+$ Did you have a good time doing that ? $
+;
+```
+
+To specify a high priority response:
+    
+```
+/* funeral interaction */
+
+time(g/go(user), past)
+to(g, funeral())
+esympathy(emora, g)
+feel(user, e/emotion())
+request(emora, e)
+->
+_pr(_high)
+$ I am so sorry to hear that . How are you doing ? $
+;
+```
+
+To specify a normal priority response:
+
+```
+like(emora, d/doggypaddle(emora))
+->
+$ Swimming is awesome ! I can only do the doggypaddle, but it would be cool to get better at it and learn other swimming strokes . $
+;
+```
