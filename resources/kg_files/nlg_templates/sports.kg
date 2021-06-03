@@ -12,6 +12,13 @@ request(emora, s)
 $ Out of all sports, what's your favorite? I like football, baseball, tennis, and soccer, but basketball is my favorite. $
 ;
 
+l/like(user, u/unknown_sport())
+pl/like(user, football)
+request_truth(emora, pl)
+->
+$ Do you like football, too? $
+;
+
 /* Likes specific sport */
 l/like(user, football)
 pl/play(user, football)
@@ -152,28 +159,24 @@ $ Oh, if you don't play any sports now, do you want to try any in the future? I 
 ;
 
 /* Likes some sport, ask about team */
-pl/like(user, basketball)
 l/like(user, g/basketball_team())
 request(emora, g)
 ->
 $ Since you like basketball, what's your favorite team? $
 ;
 
-pl/like(user, soccer)
 l/like(user, g/soccer_team())
 request(emora, g)
 ->
 $ If you like soccer, what's your favorite team? $
 ;
 
-pl/like(user, baseball)
 l/like(user, g/baseball_team())
 request(emora, g)
 ->
 $ What's your favorite baseball team? $
 ;
 
-pl/like(user, football)
 l/like(user, g/football_team())
 request(emora, g)
 ->
@@ -181,13 +184,19 @@ $ Which football team is your favorite? My favorite is the Texans$
 ;
 
 /* Sports Events */
-
-/* This takes two rounds to be triggered */
 w/watch(user, g/team_sports_event())
 c/compete(x/sports_team(), y/sports_team())
 request(emora, x)
 ->
-$ Oh nice, which two teams were playing in the game? $
+$ Nice, which two teams were playing in the game? $
+;
+
+pl/play(user)
+in(pl, s/team_sports_event())
+quality(d/do(play(user)), o/object())
+request(emora, o)
+->
+$ Oh cool, how did you play in the game? Hopefully it went well. $
 ;
 
 /* Transition to food */

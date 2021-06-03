@@ -13,6 +13,13 @@ op_more_info(s, l)
 request(emora, s)
 ;
 
+l/like(user, u/unknown_sport())
+user_aware(l)
+-> person_likes_sport_that_we_dont_handle ->
+pl:pl/like(user, football)
+request_truth(emora, pl)
+;
+
 /* Likes specific sport */
 pl/like(user, football)
 user_aware(pl)
@@ -192,7 +199,6 @@ request_truth(emora, l)
 ;
 
 /* More event-related rules for sports */
-
 w/watch(user, g/football_game())
 user_aware(w)
 -> person_watches_football_game ->
@@ -223,6 +229,15 @@ user_aware(w)
 l/like(user, soccer)
 x:<c/compete(x/soccer_team(), y/soccer_team())>
 request(emora, x)
+;
+
+time(pl/play(user), past)
+in(pl, s/team_sports_event())
+-> person_plays_in_sports_event ->
+watch(user, s)
+like(user, sport)
+o:<l/play(user) d/do(l) in(d, t:<t/team_sports_event()>) quality(d, o/object()) time(d, past)>
+request(emora, o)
 ;
 
 /* Does Not Play Sports */
