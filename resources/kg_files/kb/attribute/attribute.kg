@@ -53,3 +53,5 @@ affordable=(property)
 lost=(property)
 
 possess=(have, predicate, obj_essential)
+positive=(property)
+negative=(property)
