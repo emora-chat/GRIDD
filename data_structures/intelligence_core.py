@@ -108,7 +108,7 @@ class IntelligenceCore:
                             d['concepts'].append(item)
                     elif ind == 1:
                         d = a
-                    else:
+                    elif ind == 2:
                         d = list(a)
                 else:
                     if ind < 2:
@@ -126,9 +126,14 @@ class IntelligenceCore:
                         for item in a.concepts():
                             item = item.to_string() if hasattr(item, 'to_string') else str(item)
                             d['concepts'].append(item)
-                    else:
+                    elif ind == 2:
                         d = list(a)
                 te.append(d)
+            if isinstance(ii[1], list):
+                te.append(ii[0]._ids.namespace)
+            else:
+                te.append(ii[0]._ids.namespace)
+                te.append(ii[1]._ids.namespace)
             new[key] = te
         if json_filepath:
             with open(json_filepath, 'w') as f:
@@ -148,25 +153,29 @@ class IntelligenceCore:
         if not d:
             return d
         new = {}
-        for key, i in d.items():
+        for key, ii in d.items():
             te = []
-            for ind, a in enumerate(i):
-                if isinstance(i[1], list):
+            for ind, a in enumerate(ii):
+                if isinstance(ii[1], list):
                     if ind == 0:
-                        cg = ConceptGraph(namespace="_tmp")
+                        cg = ConceptGraph(namespace=ii[3])
                         cg.load(a)
                         dd = cg
                     elif ind == 1:
                         dd = a
-                    else:
+                    elif ind == 2:
                         dd = set(a)
+                    else:
+                        break
                 else:
                     if ind < 2:
-                        cg = ConceptGraph(namespace="_tmp")
+                        cg = ConceptGraph(namespace=ii[3+ind])
                         cg.load(a)
                         dd = cg
-                    else:
+                    elif ind == 2:
                         dd = set(a)
+                    else:
+                        break
                 te.append(dd)
             new[key] = te
         return new
