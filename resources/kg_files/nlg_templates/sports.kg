@@ -1,5 +1,4 @@
 /* Entering sports component */
-l/like(user, activity)
 l2/like(user, h/sport())
 request_truth(emora, l2)
 ->
@@ -13,10 +12,17 @@ $ Out of all sports, what's your favorite? I like football, baseball, tennis, an
 ;
 
 l/like(user, u/unknown_sport())
-pl/like(user, football)
-request_truth(emora, pl)
+X/property(u)
+request(emora, X)
 ->
-$ Do you like football, too? $
+$ Sorry I don't know a lot about u as it is not available in my virtual world. Tell me about it, though. I'll do my best to learn. $
+;
+
+l/play(user, u/unknown_sport())
+X/property(u)
+request(emora, X)
+->
+$ Sorry I don't know a lot about u as it is not available in my virtual world. Tell me about it, though. I'll do my best to learn. $
 ;
 
 /* Likes specific sport */
@@ -24,28 +30,28 @@ l/like(user, football)
 pl/play(user, football)
 request_truth(emora, pl)
 ->
-$ Have you ever played football? Figured I'd ask since it seems you like it. $
+$ Have you ever played football? Figured I'd ask. $
 ;
 
 l/like(user, baseball)
 pl/play(user, baseball)
 request_truth(emora, pl)
 ->
-$ Since you like baseball, I wanted to ask: have you played baseball before? $
+$ Have you played baseball before? Seems fun.$
 ;
 
 l/like(user, soccer)
 pl/play(user, soccer)
 request_truth(emora, pl)
 ->
-$ Sounds like you're a soccer fan. Have you played before? $
+$ Sounds like you enjoy soccer at least a little bit. Have you played before? $
 ;
 
 l/like(user, tennis)
 pl/play(user, tennis)
 request_truth(emora, pl)
 ->
-$ Have you played tennis at all in the past? I'm asking since it seems you like tennis. $
+$ Have you played tennis at all in the past? $
 ;
 
 l/like(user, basketball)

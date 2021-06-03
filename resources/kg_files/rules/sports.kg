@@ -13,13 +13,6 @@ op_more_info(s, l)
 request(emora, s)
 ;
 
-l/like(user, u/unknown_sport())
-user_aware(l)
--> person_likes_sport_that_we_dont_handle ->
-pl:pl/like(user, football)
-request_truth(emora, pl)
-;
-
 /* Likes specific sport */
 pl/like(user, football)
 user_aware(pl)
@@ -64,7 +57,21 @@ s:<f/like(user, s/basketball_team())>
 request(emora, s)
 ;
 
+l/like(user, u/unknown_sport())
+user_aware(l)
+-> person_likes_sport_that_we_dont_handle ->
+i:<i/property(u)>
+request(emora, i)
+;
+
 /* Plays some sport */
+l/play(user, u/unknown_sport())
+user_aware(pl)
+-> person_plays_sport_that_we_dont_handle ->
+i:<i/property(u)>
+request(emora, i)
+;
+
 pl/play(user, s/sport())
 category(s)
 user_aware(pl)
@@ -274,4 +281,11 @@ healthy(user)
 time(do(user, p/predicate()), today)
 ->
 time(p, today)
+;
+
+s/sports_event()
+user_aware(s)
+->
+l/like(user, sp/sport())
+request_truth(emora, l)
 ;
