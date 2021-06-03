@@ -2,7 +2,7 @@ import time, json, requests
 from os.path import join
 from itertools import chain
 
-from GRIDD.utilities.utilities import collect
+from GRIDD.utilities.utilities import collect, collectold
 from GRIDD.data_structures.span import Span
 from GRIDD.globals import *
 from GRIDD.intcore_server_globals import *
@@ -46,7 +46,7 @@ class ChatbotServer:
         s = time.time()
         knowledge = collect(*knowledge_base)
         inference_rules = collect(*inference_rules)
-        self.starting_wm = None if starting_wm is None else collect(*starting_wm)
+        self.starting_wm = None if starting_wm is None else collectold(*starting_wm)
         nlg_templates = collect(*nlg_templates)
         self.dialogue_intcore = IntelligenceCore(knowledge_base=knowledge + inference_rules + nlg_templates,
                                                  device=device)
@@ -844,8 +844,8 @@ if __name__ == '__main__':
     import torch
     kb, rules, nlg_templates, wm = get_filepaths()
 
-    device = input('device (cpu/cuda:0/cuda:1/...) >>> ').strip()
-    print_wm = input('debug (n/y) >>> ').strip()
+    device = 'cpu'
+    print_wm = 'n'
     # global PRINT_WM
     PRINT_WM = True if print_wm == 'y' else False
     if len(device) == 0:

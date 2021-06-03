@@ -89,3 +89,5 @@ PRIM = {SPAN_DEF, SPAN_REF,
 
 
 UNKNOWN_TYPES = {'unknown_verb', 'unknown_noun', 'unknown_pron', 'unknown_adj', 'unknown_adv', 'unknown_other'}
+
+CACHE = 'cache'

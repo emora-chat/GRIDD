@@ -4,7 +4,9 @@ import os
 from inspect import getmembers, isfunction
 from itertools import cycle, islice
 CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-
+from os import listdir
+from os.path import isfile, join
+from GRIDD.globals import *
 
 def _get_digit(x, i, n=10):
     return x // n**i % n
@@ -28,7 +30,7 @@ def identification_string(x, chars=None):
         string = chars[d] + string
     return string
 
-def collect(*files_folders_or_strings, extension=None, directory=None):
+def collectold(*files_folders_or_strings, extension=None, directory=None):
     collected = []
     files_or_strings = []
     for ffs in files_folders_or_strings:
@@ -46,6 +48,34 @@ def collect(*files_folders_or_strings, extension=None, directory=None):
                 with open(ffs, 'r') as f:
                     collected.append(f.read())
             else:
+                collected.append(ffs)
+        else:
+            collected.append(ffs)
+    return collected
+
+def collect(*files_folders_or_strings, extension=None, directory=None):
+    collected = []
+    files_or_strings = []
+    cached = set()
+    if(os.path.isdir(files_folders_or_strings[0])):
+        for f in listdir(CACHE):
+            if isfile(join(CACHE, f)):
+                cached.add(f[:-5])
+    for ffs in files_folders_or_strings:
+        if isinstance(ffs, str) and os.path.isdir(ffs):
+            for fs in os.listdir(ffs):
+                if not extension or fs.endswith(extension):
+                    files_or_strings.append(os.path.join(ffs, fs))
+        else:
+            files_or_strings.append(ffs)
+    for ffs in sorted(files_or_strings):
+        if not extension or (isinstance(ffs, str) and ffs.endswith(extension)):
+            if os.path.isdir(ffs):
+                collected.extend(collect(ffs))
+            elif os.path.isfile(ffs) and os.path.split(ffs)[1] not in cached:
+                with open(ffs, 'r') as f:
+                    collected.append((ffs, f.read()))
+            elif not os.path.isfile(ffs):
                 collected.append(ffs)
         else:
             collected.append(ffs)

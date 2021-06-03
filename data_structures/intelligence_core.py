@@ -1,8 +1,8 @@
 
 from GRIDD.data_structures.intelligence_core_spec import IntelligenceCoreSpec
 from GRIDD.intcore_server_globals import *
-
-from GRIDD.data_structures.concept_graph import ConceptGraph
+import json
+from GRIDD.data_structures.concept_graph import ConceptGraph, Counter
 if INFERENCE:
     from GRIDD.data_structures.inference_engine import InferenceEngine
 from GRIDD.data_structures.concept_compiler import ConceptCompiler
@@ -13,9 +13,12 @@ from GRIDD.globals import *
 from GRIDD.data_structures.assertions import assertions
 from GRIDD.data_structures.confidence import *
 from GRIDD.data_structures.id_map import IdMap
+import os
+from json import JSONEncoder
 
 import GRIDD.data_structures.intelligence_core_operators as intcoreops
 
+CACHESIZE = len([name for name in os.listdir(CACHE) if os.path.isfile(name)])
 
 class IntelligenceCore:
 
@@ -29,8 +32,24 @@ class IntelligenceCore:
         if isinstance(knowledge_base, ConceptGraph):
             self.knowledge_base = knowledge_base
         else:
+            if knowledge_base:
+                filenames, knowledge_baseold = map(list, zip(*knowledge_base))
+                self.string_to_file = dict(zip(knowledge_baseold, filenames))
             self.knowledge_base = ConceptGraph(namespace=KB)
-            self.know(knowledge_base, emora_knowledge=True)
+            existing_files = [f for f in os.listdir(CACHE) if os.path.isfile(os.path.join(CACHE, f))]
+            for file in existing_files:
+                if ".nlg.json" in file:
+                    continue
+                if ".rules.json" in file:
+                    continue
+                cg_temp = ConceptGraph(namespace='_tm_')
+                cg_temp.load(os.path.join(CACHE, file))
+                self.my_know_cache(cg_temp, self.loaddict(os.path.join(CACHE, file[:-5]+".nlg.json")), self.loaddict(os.path.join(CACHE, file[:-5]+".rules.json")), emora_knowledge=True)
+                #self.knowledge_base.concatenate(cg_temp)
+            if knowledge_base:
+                for i in knowledge_baseold:
+                    self.my_know(i, emora_knowledge=True)
+
         if isinstance(working_memory, ConceptGraph):
             self.working_memory = working_memory
         else:
@@ -64,6 +83,147 @@ class IntelligenceCore:
         if INFERENCE:
             self.inference_engine.add(rules)
         self.knowledge_base.concatenate(cg)
+
+
+    def savedict(self, rules, json_filepath):
+        new = {}
+        for key, ii in rules.items():
+            te = []
+            for ind, a in enumerate(ii):
+                if isinstance(ii[1], list):
+                    if ind == 0:
+                        d = {
+                            'namespace': a._ids.namespace,
+                            'next_id': int(a._ids.index),
+                            'predicates': [],
+                            'concepts': [],
+                            'features': a.metagraph.to_json()
+                        }
+                        for item in a.predicates():
+                            item = [e.to_string() if hasattr(e, 'to_string') else str(e) for e in item]
+                            s, t, o, i = item
+                            d['predicates'].append([s, t, o, i])
+                        for item in a.concepts():
+                            item = item.to_string() if hasattr(item, 'to_string') else str(item)
+                            d['concepts'].append(item)
+                    elif ind == 1:
+                        d = a
+                    else:
+                        d = list(a)
+                else:
+                    if ind < 2:
+                        d = {
+                            'namespace': a._ids.namespace,
+                            'next_id': int(a._ids.index),
+                            'predicates': [],
+                            'concepts': [],
+                            'features': a.metagraph.to_json()
+                        }
+                        for item in a.predicates():
+                            item = [e.to_string() if hasattr(e, 'to_string') else str(e) for e in item]
+                            s, t, o, i = item
+                            d['predicates'].append([s, t, o, i])
+                        for item in a.concepts():
+                            item = item.to_string() if hasattr(item, 'to_string') else str(item)
+                            d['concepts'].append(item)
+                    else:
+                        d = list(a)
+                te.append(d)
+            new[key] = te
+        if json_filepath:
+            with open(json_filepath, 'w') as f:
+                json.dump(new, f, indent=2)
+
+
+
+    def loaddict(self, json_file_str_obj):
+        if isinstance(json_file_str_obj, str):
+            if json_file_str_obj.endswith('.json'):
+                with open(json_file_str_obj, 'r') as f:
+                    d = json.load(f)
+            else:
+                d = json.loads(json_file_str_obj)
+        else:
+            d = json_file_str_obj
+        if not d:
+            return d
+        new = {}
+        for key, i in d.items():
+            te = []
+            for ind, a in enumerate(i):
+                if isinstance(i[1], list):
+                    if ind == 0:
+                        cg = ConceptGraph(namespace="_tmp")
+                        cg.load(a)
+                        dd = cg
+                    elif ind == 1:
+                        dd = a
+                    else:
+                        dd = set(a)
+                else:
+                    if ind < 2:
+                        cg = ConceptGraph(namespace="_tmp")
+                        cg.load(a)
+                        dd = cg
+                    else:
+                        dd = set(a)
+                te.append(dd)
+            new[key] = te
+        return new
+
+    def my_know(self, knowledge, **options):
+        global CACHESIZE
+        cg = ConceptGraph(namespace=str(format(CACHESIZE,'x'))+'_')
+        CACHESIZE += 1
+        ConceptGraph.construct(cg, knowledge, compiler=self.compiler)
+        self._loading_options(cg, options)
+        self._assertions(cg)
+        nlg_templates = cg.nlg_templates()
+        for rule, (pre, _, vars) in nlg_templates.items():
+            for concept in vars:
+                cg.remove(concept)
+            cg.remove(rule)
+        for concept in set(cg.subtypes_of('response_token')):
+            cg.remove(concept)
+        if INFERENCE:
+            self.nlg_inference_engine.add(nlg_templates)
+        rules = cg.rules()
+        for rule, (pre, post, vars) in rules.items():
+            for concept in vars:
+                cg.remove(concept)
+            cg.remove(rule)
+        if INFERENCE:
+            self.inference_engine.add(rules)
+        self.knowledge_base.concatenate(cg)
+        name = os.path.join(CACHE, os.path.split(self.string_to_file[knowledge])[1])
+        if nlg_templates:
+            print('aaaa')
+        cg.save(name+'.json')
+        try:
+            with open(name+'.nlg.json', 'w') as fp:
+                json.dump(nlg_templates, fp)
+        except:
+            self.savedict(nlg_templates, name+'.nlg.json')
+        try:
+            with open(name+'.rules.json', 'w') as fp:
+                json.dump(rules, fp)
+        except:
+            self.savedict(rules, name+'.rules.json')
+
+    def my_know_cache(self, cg, nlg, rules, **options):
+        global CACHESIZE
+        nlg_templates = nlg
+        if INFERENCE:
+            self.nlg_inference_engine.add(nlg_templates)
+        for rule, (pre, post, vars) in rules.items():
+            for concept in vars:
+                cg.remove(concept)
+            cg.remove(rule)
+        if INFERENCE:
+            self.inference_engine.add(rules)
+        self.knowledge_base.concatenate(cg)
+
+
 
     def consider(self, concepts, namespace=None, associations=None, evidence=None, salience=1, **options):
         if isinstance(concepts, ConceptGraph):
