@@ -42,7 +42,7 @@ class IntelligenceCore:
                     continue
                 if ".rules.json" in file:
                     continue
-                cg_temp = ConceptGraph(namespace='_tm_')
+                cg_temp = ConceptGraph(namespace='_tmp_')
                 cg_temp.load(os.path.join(CACHE, file))
                 self.my_know_cache(cg_temp, self.loaddict(os.path.join(CACHE, file[:-5]+".nlg.json")), self.loaddict(os.path.join(CACHE, file[:-5]+".rules.json")), emora_knowledge=True)
                 #self.knowledge_base.concatenate(cg_temp)
@@ -196,8 +196,6 @@ class IntelligenceCore:
             self.inference_engine.add(rules)
         self.knowledge_base.concatenate(cg)
         name = os.path.join(CACHE, os.path.split(self.string_to_file[knowledge])[1])
-        if nlg_templates:
-            print('aaaa')
         cg.save(name+'.json')
         try:
             with open(name+'.nlg.json', 'w') as fp:
@@ -211,15 +209,8 @@ class IntelligenceCore:
             self.savedict(rules, name+'.rules.json')
 
     def my_know_cache(self, cg, nlg, rules, **options):
-        global CACHESIZE
-        nlg_templates = nlg
         if INFERENCE:
-            self.nlg_inference_engine.add(nlg_templates)
-        for rule, (pre, post, vars) in rules.items():
-            for concept in vars:
-                cg.remove(concept)
-            cg.remove(rule)
-        if INFERENCE:
+            self.nlg_inference_engine.add(nlg)
             self.inference_engine.add(rules)
         self.knowledge_base.concatenate(cg)
 

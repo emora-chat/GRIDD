@@ -1,8 +1,9 @@
 import time, json, requests
 from os.path import join
 from itertools import chain
-
-from GRIDD.utilities.utilities import collect, collectold
+import sys, os
+sys.path.append(os.getcwd())
+from GRIDD.utilities.utilities import collect, collectdan
 from GRIDD.data_structures.span import Span
 from GRIDD.globals import *
 from GRIDD.intcore_server_globals import *
@@ -44,11 +45,14 @@ class ChatbotServer:
 
     def __init__(self, knowledge_base, inference_rules, nlg_templates, starting_wm=None, device=None):
         s = time.time()
+        knowledge2 = collectdan(*knowledge_base)
         knowledge = collect(*knowledge_base)
+        inference_rules2 = collectdan(*inference_rules)
         inference_rules = collect(*inference_rules)
-        self.starting_wm = None if starting_wm is None else collectold(*starting_wm)
+        self.starting_wm = None if starting_wm is None else collect(*starting_wm)
+        nlg_templates2 = collectdan(*nlg_templates)
         nlg_templates = collect(*nlg_templates)
-        self.dialogue_intcore = IntelligenceCore(knowledge_base=knowledge + inference_rules + nlg_templates,
+        self.dialogue_intcore = IntelligenceCore(knowledge_base=knowledge2 + inference_rules2 + nlg_templates2,
                                                  device=device)
         if self.starting_wm is not None:
             self.dialogue_intcore.consider(self.starting_wm)

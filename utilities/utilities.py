@@ -30,7 +30,7 @@ def identification_string(x, chars=None):
         string = chars[d] + string
     return string
 
-def collectold(*files_folders_or_strings, extension=None, directory=None):
+def collect(*files_folders_or_strings, extension=None, directory=None):
     collected = []
     files_or_strings = []
     for ffs in files_folders_or_strings:
@@ -53,7 +53,7 @@ def collectold(*files_folders_or_strings, extension=None, directory=None):
             collected.append(ffs)
     return collected
 
-def collect(*files_folders_or_strings, extension=None, directory=None):
+def collectdan(*files_folders_or_strings, extension=None, directory=None):
     collected = []
     files_or_strings = []
     cached = set()
@@ -71,7 +71,7 @@ def collect(*files_folders_or_strings, extension=None, directory=None):
     for ffs in sorted(files_or_strings):
         if not extension or (isinstance(ffs, str) and ffs.endswith(extension)):
             if os.path.isdir(ffs):
-                collected.extend(collect(ffs))
+                collected.extend(collectdan(ffs))
             elif os.path.isfile(ffs) and os.path.split(ffs)[1] not in cached:
                 with open(ffs, 'r') as f:
                     collected.append((ffs, f.read()))
