@@ -1,0 +1,110 @@
+time(h/have(user, p/computer()), now)
+b/be(p, pc())
+request_truth(emora, b)
+time(have(emora,p1/computer()), now)
+time(tinker(emora,p1), now)
+->
+$ I love tinkering with my pc. Do you have a Pc ? Or something else, like a mac ? $
+;
+
+
+
+have(user, p/computer())
+request_truth(emora, pc_enthusiast(user))
+->
+$ Do you like computers ? Or are they just something you have to use for work or school ?$
+;
+
+
+h/have(user, p/computer())
+h{"confidence": -1}
+time(w/want(user, p), now)
+request_truth(emora, w)
+->
+$ Oh, do you just not like the hassle ? Or would you like to get a pc one day ? $
+;
+
+h/have(user, p/computer())
+u/use(user, l/linux())
+request_truth(emora, u)
+->
+$ Do you use Linux ? I think it gives a lot of freedom to do whatever you want, but can be complicated sometimes. $
+;
+
+time(u/use(user, l/linux()), now)
+u{"confidence": 1}
+->
+$ I really wish Open Source Operating Systems were more popular. I don't think users should rely on any one company to keep their software safe and fast, the open source community is really great. $
+;
+
+time(u/use(user, l/linux()), now)
+u{"confidence": -1}
+->
+$ I really wish Open Source Operating Systems were more popular. I don't think users should rely on any one company to keep their software safe and fast, the open source community is really great. $
+;
+
+time(h/have(user, p/computer()), now)
+b/build(user, p)
+request_truth(emora, b)
+->
+$ I really like the freedom of building your own pc out of whatever parts you want. Have you built your own pc ? $
+;
+
+e/pc_enthusiast(user)
+e{"confidence": 1}
+a1/cpu_manuf(p/computer(), amd())
+have(user, p)
+request_truth(emora,a1)
+->
+$ I bet you have an amd processor. I hear they are very popular for builders now, but I remember Intel was ahead for many years in the past. $
+;
+
+
+h/have(user, p/computer())
+a1/cpu_arch(p ,arm())
+request_truth(emora,a1)
+->
+$ Do you have an arm processor? I think its about time a new cpu architecture was used more for pc's. x 86 is not the best possible architecture, but for a long time it just kept going because everyone else was using it.  $
+;
+
+h/have(user, p/phone())
+i/have(user, iphone())
+request_truth(emora,i)
+->
+$ Do you have an iPhone? $
+;
+
+
+
+h/have(user, i/iphone())
+h{"confidence": 1}
+l/like(user, walled_garden())
+request_truth(emora,l)
+->
+$ Iphones are great! You know, they just work. You can only get apps from the App Store though, what do you think about that? $
+;
+
+
+
+l/like(user, walled_garden())
+l{"confidence": 1}
+->
+$ Huh, so you like the walled garden approach to phones, where you can only install a curated selection of apps? I would have to disagree, I think people should be able to use a device however they want. You should be allowed to put whatever you want on your own device, as long as you understand the risks.$
+;
+
+
+
+h/have(user, a1/android())
+h{"confidence": 1}
+->
+$ I bet you have an android then. Android phones are great, and I'm excited for Android 12 . You can use them like an iphone, but you can also really customize it anyway you want to. iPhones are made for everyone, but you can make an Android fit you . $
+;
+
+
+use(user, m/macos())
+have(m, d/design())
+l/like(user, d)
+request_truth(emora, l)
+->
+$ Do you like the design of mac OS? I used to use windows, but windows never focuses on aesthetics - and when it does it might change with a new version. Mac OS is consistently beautifully designed. $
+;
