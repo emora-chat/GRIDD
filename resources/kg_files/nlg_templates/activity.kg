@@ -1,3 +1,14 @@
+
+time(e/event(user), past)
+l/like(user, e)
+request_truth(emora, l)
+->
+_pr(_low)
+$ Did you have a good time doing that ? $
+;
+
+/* house purchase */
+
 econgrat(emora, X/object())
 -> congratulate ->
 $ Oh , wow, that is great ! Congratulations ! $
@@ -10,6 +21,7 @@ $ So , what are you most looking forward to about the new house ? $
 
 epositive(emora, look_forward(user, house()))
 ->
+_pr(_low)
 $ Sounds cool , I am really happy for you . $
 ;
 
@@ -24,4 +36,5 @@ request_truth(emora, h)
 ->
 $ Oh really ? I wish I had a big yard , my dog would absolutely love it . Do you have a pet ? $
 ;
+
 

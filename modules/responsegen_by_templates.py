@@ -1,8 +1,4 @@
-from GRIDD.data_structures.concept_compiler import ConceptCompiler
-from GRIDD.data_structures.concept_graph import ConceptGraph
-from GRIDD.utilities.utilities import collect
 from GRIDD.globals import *
-import time, re
 
 from simplenlg.framework.NLGFactory         import *
 from simplenlg.realiser.english.Realiser    import *
@@ -39,18 +35,19 @@ class ResponseTemplateFiller:
         candidates = []
         for rule, (pre_graph, post, solutions_list) in matches.items():
             for match_dict in solutions_list:
-                string_spec_ls = list(post)  # need to create copy so as to not mutate the postcondition in the rule
+                string_spec_ls = list(post.string_spec_ls)  # need to create copy so as to not mutate the postcondition in the rule
                 response_str = self.fill_string(match_dict, expr_dict, string_spec_ls, cg)
                 # print(string_spec_ls)
                 if response_str not in aux_state.get('spoken_responses', []):
-                    candidates.append((match_dict, response_str))
+                    candidates.append((match_dict, response_str, post.priority))
         predicates, string, avg_sal = self.select_best_candidate(candidates, cg)
         return (string, predicates, 'template')
 
     def select_best_candidate(self, candidates, cg):
         # get highest salience candidate with at least one uncovered predicate
         with_sal = []
-        for match_dict, string in candidates:
+        print('\nResponse Options: ')
+        for match_dict, string, priority in candidates:
             preds = [cg.predicate(x) for x in match_dict.values() if cg.has(predicate_id=x)
                      and cg.type(x) not in {EXPR, TYPE, TIME}]
             req_pred = [cg.predicate(x) for x in match_dict.values() if cg.has(predicate_id=x)
@@ -63,12 +60,11 @@ class ResponseTemplateFiller:
             if False in user_awareness and (not user_req_awareness or True not in user_req_awareness):
                 sals = [cg.features.get(x, {}).get(SALIENCE, 0) for x in match_dict.values()]
                 avg = sum(sals) / len(sals)
-                with_sal.append((preds, string, avg))
-        print('\nResponse Options: ')
+                final_score = SAL_WEIGHT * avg + PRIORITY_WEIGHT * priority
+                with_sal.append((preds, string, final_score))
+                print('\t%s (s: %.2f, pr: %.2f)' % (string, avg, priority))
+        print()
         if len(with_sal) > 0:
-            for _, response, sal in with_sal:
-                print('\t%s (%.2f)'%(response, sal))
-            print()
             return max(with_sal, key=lambda x: x[2])
         else:
             return None, None, None
@@ -242,6 +238,12 @@ class ResponseTemplateFiller:
             noun.setFeature(Feature.NUMBER, NumberAgreement.SINGULAR)
         return noun
 
+class Template:
+
+    def __init__(self, string_spec_ls, priority):
+        self.string_spec_ls = string_spec_ls
+        self.priority = priority
+
 if __name__ == '__main__':
     from GRIDD.modules.responsegen_by_templates_spec import ResponseTemplatesSpec
     print(ResponseTemplatesSpec.verify(ResponseTemplateFiller))
@@ -256,7 +258,7 @@ if __name__ == '__main__':
     # '''
     # cg = ConceptGraph(namespace='wm')
     # ConceptGraph.construct(cg, logic)
-
+    #
     # tfill = ResponseTemplateFiller()
     # tfill.test()
 

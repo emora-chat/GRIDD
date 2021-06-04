@@ -1,11 +1,10 @@
-[p_personality_trait, n_personality_trait]=(personality_trait)
 
-[obedient,sweet,smart,playful,energetic]=(p_personality_trait)
+[obedient,sweet,smart,playful,energetic]=(personality_trait, positive)
 expr("kind, nice, loving, sweetheart", sweet)
 expr("intelligent", smart)
 expr("lively, spunky, rambunctious", energetic)
 
-[mean,jealous,lazy,annoying,stupid]=(n_personality_trait)
+[mean,jealous,lazy,annoying,stupid]=(personality_trait, negative)
 expr("bothersome, nuisance", annoying)
 expr("dumb, idiotic", stupid)
 

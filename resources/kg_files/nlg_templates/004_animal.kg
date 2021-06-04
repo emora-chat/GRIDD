@@ -3,6 +3,7 @@ time(h/have(user, p/pet()), now)
 request_truth(emora, h)
 time(walk(emora, emora_dog), today)
 -> q_user_has_pet ->
+_pr(_low)
 $ For me , I took my dog on a walk today . Do you have a pet ? $
 ;
 

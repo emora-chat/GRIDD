@@ -51,3 +51,7 @@ pristine=(property)
 vibrant=(property)
 affordable=(property)
 lost=(property)
+
+possess=(have, predicate, obj_essential)
+positive=(property)
+negative=(property)

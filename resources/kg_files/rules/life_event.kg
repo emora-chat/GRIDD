@@ -1,0 +1,17 @@
+time(g/go(user), past)
+to(g, ga/gathering())
+type(ga, negative)
+->
+esympathy(emora, g)
+e:<feel(user, e/emotion())>
+request(emora, e)
+;
+
+time(g/go(user), past)
+to(g, ga/gathering())
+type(ga, positive)
+->
+epositive(emora, g)
+e/event(object())
+at(e, ga)
+;
