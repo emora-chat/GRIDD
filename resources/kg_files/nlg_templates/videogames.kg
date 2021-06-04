@@ -23,7 +23,7 @@ $ Oh, that's really cool. I love video games too! What's your favorite game? $
 ;
 
 p/play(x/person(), v/videogame())
-like(x, d/device())
+play(x, d/device())
 request(emora, d)
 for(d, v)
 ->
@@ -32,7 +32,7 @@ $ There's so many different options to play videogames with, and they all have t
 ;
 
 l/like(x/person(), v/videogame())
-like(x, d/device())
+play(x, d/device())
 request(emora, d)
 for(d, v)
 ->
@@ -175,7 +175,7 @@ not(epc)
 cause(pred/predicate(), play(x/person(), csgo))
 request(emora, pred)
 ->
-$ Oh, C.S.G.O. is pretty cool right? I've never actually played it, but I've heard that it's pretty fun. What do you like about C.S.G.O. ? $
+$ Oh, C.S.G.O. is pretty cool right? I've never really played it, but I've heard that it's pretty fun. What do you like about C.S.G.O. ? $
 ;
 
 epc/play(emora, csgo)
@@ -183,7 +183,7 @@ not(epc)
 cause(pred/predicate(), like(x/person(), csgo))
 request(emora, pred)
 ->
-$ Oh, C.S.G.O. is pretty cool right? I've never actually played it, but I've heard that it's pretty fun. Why do you play C.S.G.O. ? $
+$ Oh, C.S.G.O. is pretty cool right? I've never really played it, but I've heard that it's pretty fun. Why do you play C.S.G.O. ? $
 ;
 
 

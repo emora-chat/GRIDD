@@ -35,7 +35,7 @@ r/request(emora, g)
 of(g, vg/videogame())
 user_aware(r)
 ->
-d:<time(like(x, d/device()), now)>
+d:<time(play(x, d/device()), now)>
 for(d, v)
 request(emora, d)
 ;
@@ -63,7 +63,7 @@ r/request(emora, g)
 of(g, vg/videogame())
 user_aware(r)
 ->
-d:<time(like(x, d/device()), now)>
+d:<time(play(x, d/device()), now)>
 for(d, v)
 request(emora, d)
 ;
