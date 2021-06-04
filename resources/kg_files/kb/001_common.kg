@@ -51,5 +51,6 @@ admire=(predicate)
 listen=(predicate)
 change=(predicate)
 work=(predicate)
+attend=(predicate)
 
 ;

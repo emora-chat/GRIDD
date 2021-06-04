@@ -237,3 +237,36 @@ awesome(l)
 ->
 $ Having a group of lifelong friends who share similarities with you is really one of the best outcomes you may get from college . $
 ;
+
+ebf/be(emora,fm/freshman())
+time(ebf,past)
+eac/attend(emora,c/club())
+type(c,group)
+time(eac,past)
+->
+$ When I was a freshman , I attended a lot of different clubs and volunteered every week . I also got to know most of my best friends now in my freshman year . $
+;
+
+ebs/be(emora,sm/sophomore())
+time(ebs,past)
+eh/happy(emora)
+as(eh,sm)
+time(eh,past)
+->
+$ I was really happy as a sophomore because it was the time when I decided my majors . You know , the transition from uncertainty to certainty always makes people excited . $
+;
+
+se/search(emora)
+for(se,ip/internship())
+type(ip,group)
+time(se,past)
+->
+$ I remember searching for summer internships as a junior . It was a stressful time for me because I was not that good at doing interviews , but it was really exciting when I actually got the job offer . $
+;
+
+ip/important(g/graduation())
+for(ip,sn/senior())
+type(sn,group)
+->
+$ I think college graduation is one of the most important events in life . I feel sorry for seniors this year though because I heard that many of them still had online commencements . $
+;
