@@ -62,7 +62,7 @@ $ Have you played basketball before? Sounds like you enjoy it. $
 ;
 
 /* Plays some sport */
-time(play(user, s/sport()), now)
+play(user, s/sport())
 request(emora, s)
 ->
 $ What sport do you play? I've enjoyed soccer in the past. Something about working with a team makes the experience more fulfilling, in my opinion.$
@@ -202,6 +202,14 @@ request(emora, x)
 ->
 _pr(_high)
 $ Nice, which two teams were playing in the game? $
+;
+
+watch(user, s/sports_event())
+category(s)
+request(emora, s)
+->
+_pr(_high)
+$ What game was that? Who was playing? Sorry I don't know off-hand what game you're referring to. $ 
 ;
 
 pl/play(user)

@@ -238,6 +238,14 @@ x:<c/compete(x/soccer_team(), y/soccer_team())>
 request(emora, x)
 ;
 
+w/watch(user, g/sports_event())
+category(g)
+user_aware(w)
+-> 
+op_more_info(g, w)
+request(emora, g)
+;
+
 time(pl/play(user), past)
 in(pl, s/team_sports_event())
 -> person_plays_in_sports_event ->
