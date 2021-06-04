@@ -20,11 +20,13 @@ have(p,l)
 ;
 
 
-build(user, p/computer())
+b/build(user, p/computer())
 ->
 pc_enthusiast(user)
 a:<a/cpu_manuf(p, amd())>
 request_truth(emora,a)
+r:<r/reason(b)>
+request(emora, r)
 ;
 
 
@@ -198,5 +200,12 @@ h1/have(user, i/iphone())
 h1{"confidence": -1}
 ->
 have(user, android())
+;
+
+h/have(user, i/iphone())
+h{"confidence": 0}
+->
+i:<i/improve(life, p/phone())>
+request_truth(emora, i)
 ;
 
