@@ -102,7 +102,9 @@ class ResponseExpansion:
         if concepts is None:
             concepts = graph.concepts()
         for concept in concepts:
-            graph.features[concept][BASE_UCONFIDENCE] = graph.features.get(concept, {}).get(BASE_CONFIDENCE, 0.0)
+            if graph.features[concept].get(BASE_UCONFIDENCE, 0.0) == 0.0:
+                # only update base_uconfidence based on emora speaking the predicate if the base_uconfidence is 0 (i.e. uncertainty)
+                graph.features[concept][BASE_UCONFIDENCE] = graph.features.get(concept, {}).get(BASE_CONFIDENCE, 0.0)
 
 if __name__ == '__main__':
     from GRIDD.modules.response_expansion_spec import ResponseExpansionSpec

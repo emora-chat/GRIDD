@@ -1,3 +1,15 @@
+/* general activity */
+
+time(e/event(user), past)
+type(e, positive)
+->
+l:<l/like(user, e)>
+request_truth(emora, l)
+;
+
+
+/* house purchase */
+
 time(b/buy(user, h/house()), past)
 ->
 econgrat(emora, b)
@@ -22,3 +34,6 @@ lo/love(emora_dog, y)
 would(lo)
 cause(lo, w)
 ;
+
+
+

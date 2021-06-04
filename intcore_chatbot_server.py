@@ -96,6 +96,20 @@ class ChatbotServer:
                 elit_results = {}
             else:
                 elit_results = self.elit_models(user_utterance, aux_state)
+        # span updates for errors in elit models (lemmatization, pos)
+        PARSE_ERRORS = {
+            'swam': ('swim', 'VBD')
+        }
+        for i,span in enumerate(elit_results.get("tok", [])):
+            updates = PARSE_ERRORS.get(span.string, None)
+            if updates is not None:
+                lemma, pos = updates[0], updates[1]
+                if lemma is not None:
+                    span.expression = lemma
+                    elit_results['lem'][i] = lemma
+                if pos is not None:
+                    span.pos_tag = pos.lower()
+                    elit_results['pos'][i] = pos
         return elit_results
 
     def init_parse2logic(self, device=None):

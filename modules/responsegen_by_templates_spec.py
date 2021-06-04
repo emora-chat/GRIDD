@@ -14,7 +14,7 @@ class ResponseTemplatesSpec:
         response_template_filler = ResponseTemplateFiller()
         return response_template_filler
 
-    def __call__(response_template_filler, matches, wm, aux_state):
+    def __call__(response_template_filler, matches, expr_dict, cg, aux_state):
         """
          Fills the corresponding template for each match found
 

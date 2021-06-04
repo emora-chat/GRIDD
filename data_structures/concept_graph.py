@@ -10,12 +10,15 @@ from GRIDD.data_structures.span import Span
 from GRIDD.data_structures.concept_compiler import compile_concepts
 from GRIDD.data_structures.meta_graph import MetaGraph
 
-CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+from GRIDD.modules.responsegen_by_templates import Template
+
 from collections import defaultdict, deque
 import json
 from GRIDD.utilities import Counter
 from GRIDD.globals import *
 from itertools import chain
+
+CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 
 class ConceptGraph:
@@ -456,6 +459,8 @@ class ConceptGraph:
         return rules
 
     def nlg_templates(self):
+        priority_map = {'_low': 0.1, '_high': 1.0}
+
         templates = {}
         template_instances = set(self.subtypes_of('response')) - {'response'}
 
@@ -488,12 +493,20 @@ class ConceptGraph:
                             string_data[key] = node
                 final_element = (string_repr, string_data) if string_data is not None else string_repr
                 string_spec_ls.append(final_element)
+            post_inst = list(self.metagraph.targets(rule, POST))
+            priority_tag = None
+            for inst in post_inst:
+                if self.has(predicate_id=inst) and self.type(inst) == PRIORITY_PRED:
+                    priority_tag = self.subject(inst)
+            if priority_tag is not None and priority_tag not in priority_map:
+                print('[WARNING] Priority tag %s must be one of %s'%(str(priority_tag), str(priority_map.keys())))
+            template_obj = Template(string_spec_ls, priority=priority_map.get(priority_tag, DEFAULT_PRIORITY))
             instance_exclusions.update(chain(pre_inst, vars_inst))
-            template_links[rule] = (pre, string_spec_ls, vars)
+            template_links[rule] = (pre, template_obj, vars)
 
-        for rule, (pre, string_spec_ls, vars) in template_links.items():
+        for rule, (pre, template_obj, vars) in template_links.items():
             pre = self.subgraph(pre, meta_exclusions=instance_exclusions)
-            templates[rule] = (pre, string_spec_ls, vars)
+            templates[rule] = (pre, template_obj, vars)
         return templates
 
 

@@ -30,6 +30,7 @@ casino=(location, indoor)
 body_of_water = (location, outdoor)
 lake = (body_of_water)
 ocean = (body_of_water)
+pool = (body_of_water)
 
 beach = (location, outdoor)
 ;

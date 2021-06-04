@@ -3,7 +3,7 @@ event = (predicate)
 go = (event)
 enter=(event)
 
-activity = (event)
+[life_event, activity] = (event)
 
 get=(event)
 make=(event)
