@@ -48,10 +48,10 @@ class ChatbotServer:
         inference_rules = collect(*inference_rules)
         self.starting_wm = None if starting_wm is None else collect(*starting_wm)
         nlg_templates = collect(*nlg_templates)
-        self.dialogue_intcore = IntelligenceCore(knowledge_base=knowledge + inference_rules + nlg_templates,
-                                                 device=device)
+        self.dialogue_intcore = IntelligenceCore(knowledge_base=knowledge, inference_rules=inference_rules,
+                                                 nlg_templates=nlg_templates, device=device)
         if self.starting_wm is not None:
-            self.dialogue_intcore.consider(self.starting_wm)
+            self.dialogue_intcore.consider(list(self.starting_wm.values()))
         print('IntelligenceCore load: %.2f' % (time.time() - s))
 
     ###################################################

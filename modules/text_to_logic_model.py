@@ -16,12 +16,12 @@ class ParseToLogic:
     # Affects _get_mentions() and _get_merges()!
 
     def __init__(self, kb, template_file, device='cpu'):
-        cg = ConceptGraph(collect(template_file), namespace='r_')
+        cg = ConceptGraph(list(collect(template_file).values()), namespace='r_')
         rules = cg.rules()
         rules = dict(sorted(rules.items(), key=lambda item: cg.features[item[0]]['rindex']))
         for rule_id, rule in rules.items():
             self._reference_expansion(rule[0], rule[2])
-        parse_inference = InferenceEngine(rules, device=device)
+        parse_inference = InferenceEngine(rules, cg.id_map().namespace, device=device)
         self.intcore = IntelligenceCore(knowledge_base=kb,
                                         inference_engine=parse_inference,
                                         device=device)

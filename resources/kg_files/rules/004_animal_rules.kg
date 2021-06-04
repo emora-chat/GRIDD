@@ -11,13 +11,6 @@ request_truth(emora, h)
 h{"coldstart": 1}
 ;
 
-time(h/have(user, p/pet()), now)
-user_aware(h)
--> user_own_pet ->
-time(o/possess(user, p), now)
-user_aware(o)
-;
-
 t/time(h/have(user, p/pet()), now)
 category(p)
 user_aware(h)
@@ -44,7 +37,7 @@ request(emora, pred)
 
 
 energetic(X/pet())
-possess(user, X)
+have(user, X)
 -> energy_handful ->
 t:<t/think(user, handful(X))>
 request_truth(emora, t)
@@ -125,7 +118,7 @@ lazy(X)
 
 type(X/object(), park)
 ->
-n:<locate(X, l/location()) n/near(l, h/home()) possess(user, h)>
+n:<locate(X, l/location()) n/near(l, h/home()) have(user, h)>
 request_truth(emora, n)
 
 s:<s/size(X)>
@@ -147,7 +140,7 @@ C/crowded(X)
 ;
 
 Z/chew(X/pet(), Y/object())
-possess(user, Y)
+have(user, Y)
 ->
 esympathy(emora, Z)
 ;

@@ -33,7 +33,7 @@ would(lo)
 cause(lo, w)
 time(h/have(user, p/pet()), now)
 request_truth(emora, h)
-->
+-> yard_to_pets ->
 $ Oh really ? I wish I had a big yard , my dog would absolutely love it . Do you have a pet ? $
 ;
 

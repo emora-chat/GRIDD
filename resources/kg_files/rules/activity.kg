@@ -11,7 +11,7 @@ request_truth(emora, l)
 /* house purchase */
 
 time(b/buy(user, h/house()), past)
-->
+-> user_bought_house ->
 econgrat(emora, b)
 ;
 

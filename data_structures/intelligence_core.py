@@ -15,22 +15,42 @@ from GRIDD.data_structures.confidence import *
 from GRIDD.data_structures.id_map import IdMap
 
 import GRIDD.data_structures.intelligence_core_operators as intcoreops
-
+from time import time
 
 class IntelligenceCore:
 
-    def __init__(self, knowledge_base=None, working_memory=None, inference_engine=None, device='cpu'):
+    def __init__(self, knowledge_base=None, inference_rules=None, nlg_templates=None, working_memory=None, inference_engine=None, device='cpu'):
+        """
+        knowledge_base is a dict of identifiers (usually filenames) to logicstrings
+        """
         self.compiler = ConceptCompiler(namespace='__c__', warn=True)
-        if INFERENCE:
-            self.nlg_inference_engine = InferenceEngine(device=device)
-            if inference_engine is None:
-                inference_engine = InferenceEngine(device=device)
-            self.inference_engine = inference_engine
+
         if isinstance(knowledge_base, ConceptGraph):
             self.knowledge_base = knowledge_base
         else:
             self.knowledge_base = ConceptGraph(namespace=KB)
-            self.know(knowledge_base, emora_knowledge=True)
+            for k, v in knowledge_base.items():
+                self.know(v, self.knowledge_base, emora_knowledge=True)
+
+        if INFERENCE:
+            self.nlg_inference_engine = InferenceEngine(device=device)
+            if nlg_templates is not None and not isinstance(nlg_templates, ConceptGraph):
+                nlg = nlg_templates.items()
+                for k,v in nlg:
+                    nlg_templates = ConceptGraph(namespace='t_')
+                    self.know(v, nlg_templates, emora_knowledge=True, identify_nonasserts=True)
+                    self.add_templates_from_cg(nlg_templates)
+
+            if inference_engine is None:
+                inference_engine = InferenceEngine(device=device)
+            self.inference_engine = inference_engine
+            if inference_rules is not None and not isinstance(inference_rules, ConceptGraph):
+                rules = inference_rules.items()
+                for k,v in rules:
+                    inference_rules = ConceptGraph(namespace='r_')
+                    self.know(v, inference_rules, emora_knowledge=True, identify_nonasserts=True)
+                    self.add_rules_from_cg(inference_rules)
+
         if isinstance(working_memory, ConceptGraph):
             self.working_memory = working_memory
         else:
@@ -42,28 +62,24 @@ class IntelligenceCore:
         self.obj_essential_types = {i for i in self.knowledge_base.subtypes_of(OBJ_ESSENTIAL)
                                 if not self.knowledge_base.has(predicate_id=i)}
 
-    def know(self, knowledge, **options):
+    def know(self, knowledge, source_cg, **options):
         cg = ConceptGraph(namespace='_tmp_')
         ConceptGraph.construct(cg, knowledge, compiler=self.compiler)
         self._loading_options(cg, options)
         self._assertions(cg)
-        nlg_templates = cg.nlg_templates()
-        for rule, (pre, _, vars) in nlg_templates.items():
-            for concept in vars:
-                cg.remove(concept)
-            cg.remove(rule)
-        for concept in set(cg.subtypes_of('response_token')):
-            cg.remove(concept)
-        if INFERENCE:
-            self.nlg_inference_engine.add(nlg_templates)
+        source_cg.concatenate(cg)
+
+    def add_rules_from_cg(self, cg):
+        # s = time()
         rules = cg.rules()
-        for rule, (pre, post, vars) in rules.items():
-            for concept in vars:
-                cg.remove(concept)
-            cg.remove(rule)
-        if INFERENCE:
-            self.inference_engine.add(rules)
-        self.knowledge_base.concatenate(cg)
+        self.inference_engine.add(rules, cg.id_map().namespace)
+        # print('rules %.2f' % (time() - s))
+
+    def add_templates_from_cg(self, cg):
+        # s = time()
+        nlg_templates = cg.nlg_templates()
+        self.nlg_inference_engine.add(nlg_templates, cg.id_map().namespace)
+        # print('templates %.2f' % (time() - s))
 
     def consider(self, concepts, namespace=None, associations=None, evidence=None, salience=1, **options):
         if isinstance(concepts, ConceptGraph):
@@ -540,13 +556,18 @@ class IntelligenceCore:
         if 'attention_shift' in options:
             pass
         if 'emora_knowledge' in options:
-            # convincable predicates are predicate instances that are objects of any request predicate
+            # convincable predicates are predicate instances that are objects of a request_truth predicate
             for s,t,o,i in cg.predicates():
                 if cg.has('emora', REQ_TRUTH, i) or cg.has('emora', REQ_ARG, i):
                     cg.features[i][CONVINCABLE] = 1.0
                 else:
                     cg.features[i][CONVINCABLE] = 0.0
-
+        if 'identify_nonasserts' in options:
+            # loading rules and templates separate from KB disassociates the predicates from their types
+            # to preserve nonassertion of confidence, need to retrieve nonassert types where appropriate
+            for s,t,o,i in list(cg.predicates()):
+                if NONASSERT in self.knowledge_base.types(t) and not cg.has(t, 'type', NONASSERT):
+                    cg.add(t,'type', NONASSERT)
         if 'assert_conf' in options:
             self._assertions(cg)
 

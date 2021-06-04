@@ -43,10 +43,10 @@ class Chatbot:
         starting_wm = None if starting_wm is None else collect(*starting_wm)
         nlg_templates = collect(join('GRIDD', 'resources', 'kg_files', 'nlg_templates'))
 
-        self.dialogue_intcore = IntelligenceCore(knowledge_base=knowledge+inference_rules+nlg_templates,
+        self.dialogue_intcore = IntelligenceCore(knowledge_base=dict(knowledge, **inference_rules, **nlg_templates),
                                                  device=device)
         if starting_wm is not None:
-            self.dialogue_intcore.consider(starting_wm)
+            self.dialogue_intcore.consider(starting_wm.values())
         print('IntelligenceCore load: %.2f'%(time.time()-s))
 
         nlu_templates = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')

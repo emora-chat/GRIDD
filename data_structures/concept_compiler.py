@@ -159,7 +159,7 @@ class ConceptVisitor(Visitor_Recursive):
         self.entries = []
         self.rules = set()
         self.metadatas = {}
-        self.expr_added = set()
+        # self.expr_added = set()
 
     def rule(self, tree):
         if not hasattr(tree.children[1], 'data'):
