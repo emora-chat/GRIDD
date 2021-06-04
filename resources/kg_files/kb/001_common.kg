@@ -49,5 +49,7 @@ embrace=(predicate)
 open=(predicate)
 admire=(predicate)
 listen=(predicate)
+change=(predicate)
+work=(predicate)
 
 ;

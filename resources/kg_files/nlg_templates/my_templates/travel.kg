@@ -4,8 +4,37 @@ r/request_truth(emora, l)
 ->
 $ Gotcha. You know, I was actually just wondering, do you like to travel ? $
 ;
-
 /* COLDSTART LINKING */
+
+t/travel(x/person())
+l/like(x,t)
+l{"confidence":-1}
+es/stay(emora)
+at(es,home)
+->
+$ Ah , I see . Sometimes I like staying at home too . Do you prefer cooking at home over going to restaurants then ? $
+;
+
+time(possess(user,tp/trip()),Z/datetime())
+p/property(tp)
+request(emora,p)
+->
+$ How is{"t":"Z"} your trip ? I hope everything go{"t":"Z"} well for you . $
+;
+
+l/like(user,tp/trip())
+request_truth(emora,l)
+->
+$ Do you like the trip ? I have actually traveled to many places . I like most of my trips , but sometimes unpleasant things still happen . $
+;
+
+like(user, pred/event(object()))
+for(pred, tp/trip())
+type(tp,group)
+request(emora, pred)
+->
+$ What do you like to do for trips ? I love going to beaches during my vacations . $
+;
 
 gx/go(x/person())
 to(gx,c/country())
@@ -278,7 +307,7 @@ $ I know ! Living in a big city like Y is so convenient . Also , it’s a city o
 
 xll/like(x/person(),Y/big_city())
 xll{"confidence":-1}
-understand(emora)
+understand(emora,xll)
 ib/ideal(Y)
 yg/young(g/generation())
 type(g,group)
@@ -379,7 +408,9 @@ in(etp,bl)
 $ I wish I could see it with my own eyes . I bet I could take a lot of beautiful pictures there . $
 ;
 
-understand(emora)
+xme/miss(x/person(),e/entity())
+from(e,childhood())
+understand(emora,xme)
 miss(emora,ic/ice_cream())
 ->
 $ I totally get you . I really miss hearing the ice cream van music . I always asked my mom to take me out when I heard it , but I wasn’t able to get ice cream every time . $

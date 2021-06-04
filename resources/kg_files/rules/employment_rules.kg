@@ -1,0 +1,6 @@
+time(work(x/person()),now)
+->
+busy(x)
+xr:<xr/return(x) xro/to(xr,o/office()) time(xr,now)>
+request_truth(emora,xr)
+;

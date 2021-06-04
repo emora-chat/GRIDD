@@ -1,3 +1,38 @@
+l/like(user,c/college())
+time(l,Z/datetime())
+request_truth(emora,l)
+->
+$ Do{"t":"#Z"} you like your college ? $
+;
+
+time(pc/possess(user,c/college()),z/datetime())
+request(emora, c)
+-> college_type ->
+$ What kind of college do{"t":"#Z"} you go to ? I know that there are public and private universities as well as liberal arts and research colleges . $
+;
+
+time(pc/possess(user,c/college()),Z/datetime())
+p/property(c)
+time(p,Z)
+request(emora,p)
+->
+$ What is{"t":"#Z"} your college like ? $
+;
+
+like(user, pred/event(object()))
+in(pred,c/college())
+time(pred,Z/datetime())
+request(emora, pred)
+->
+$ What do{"t":"#Z"} you like to do in college ? I really enjoy studying in the library because it makes me motivated . $
+;
+
+time(udr/do(user,r/research()),z/datetime())
+request(emora, r)
+->
+$ What is{"t":"#Z"} your research about ? $
+;
+
 meaningful(X/social_science())
 ->
 $ I think X is a really meaningful area to study ! Social science is so cool because people learn about human behaviors and then transform their knowledge into practical policies . $
@@ -154,10 +189,11 @@ difficult(ekb)
 $ Yeah , I agree . It’s especially not easy to keep a balance between academics and social life . $
 ;
 
-sorry(emora)
+sc/stressful(c/college())
+sorry(emora,sc)
 el/listen(emora)
 to(el,user)
-about(el,c/college())
+about(el,c)
 time(el,always)
 ->
 $ I’m sorry to hear that . I know college can be overwhelming for different reasons , especially given the current situation .  But I’m always here if you would like to talk about anything . $
@@ -183,3 +219,21 @@ awesome(pr)
 $ Having a group of lifelong friends who share similarities with you is really one of the best outcomes you may get from college . $
 ;
 
+time(change(c/college()),always)
+->
+$ Yeah ? I guess college is always changing . The transition to remote learning that happened last year was one good example. $
+;
+
+ul/learn(user)
+from(ul,c/college())
+time(ul,Z/datetime())
+->
+$ I love keeping myself busy too ! A busy college may sometimes get you overwhelmed , but the good side about it is that you can learn a lot from your college experience . $
+;
+
+l/like(x/person(),pr/peer())
+type(pr,group)
+awesome(l)
+->
+$ Having a group of lifelong friends who share similarities with you is really one of the best outcomes you may get from college . $
+;

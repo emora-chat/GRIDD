@@ -6,15 +6,44 @@ $ Yeah . So anyway , I love trying new foods . What food do you like to eat ? $
 ;
 /* COLDSTART LINKING */
 
-happy(emora)
-be(emora,foodie())
-like(x/person(),f/food())
-request(emora,f)
+p/property(X/meal())
+time(p,Z/datetime())
+request(emora,p)
 ->
-$ Oh , really ? To be honest , I'm also a foodie . A lot of my happiness in life comes from eating delicious food . What kind of food do you like ? $
+$ That's great . How is{"t":"#Z"} your X ? $
 ;
 
-sorry(emora)
+uc/cook(user)
+at(uc,home)
+time(uc,always)
+request_truth(emora, uc)
+->
+$ I always prefer homemade meals because I can control the ingredients and the way I cook them . Do you often cook at home ? $
+;
+
+ff/favorite(X/food())
+request_truth(emora,ff)
+->
+$ Sounds good . Is X your favorite food ? $
+;
+
+fd/favorite(X/drink())
+request_truth(emora,fd)
+->
+$ Sounds good . Is X your favorite drink ? $
+;
+
+xbf/be(X/person(),fd/foodie())
+happy(emora,xbf)
+be(emora,fd)
+like(X,f/food())
+request(emora,f)
+->
+$ Oh , really ? To be honest , I'm also a foodie . A lot of my happiness in life comes from eating delicious food . What kind of food do{"t":"now","s":"#X"} X like ? $
+;
+
+uh/hungry(user)
+sorry(emora,uh)
 time(g/intend_to_consume(user,f/food()), future)
 type(f,group)
 request_truth(emora, g)
@@ -22,7 +51,8 @@ request_truth(emora, g)
 $ I am sorry to hear that . I get upset when I am hungry . Are you going to get some food ? $
 ;
 
-sorry(emora)
+ut/thirsty(user)
+sorry(emora,ut)
 important(keep(emora,hydrated(emora)))
 time(g/intend_to_consume(user, d/drinkable()), future)
 type(d,group)
@@ -33,9 +63,9 @@ $ I am sorry to hear that . It's important to keep hydrated . Are you going to g
 
 time(g/intend_to_consume(user, f/food()), future)
 g{"confidence": -1}
-understand(emora)
+understand(emora,g)
 he/hungry(emora)
-ne/eat(emora,f)
+ne/eat(emora,fd/food())
 not(ne)
 but(he,ne)
 ->
@@ -55,7 +85,9 @@ request(emora, d/drinkable())
 $ It sounds like you have made a plan . What kind of drink are you thinking of getting ? $
 ;
 
-understand(emora)
+time(g/intend_to_consume(user, d/drinkable()), future)
+g{"confidence": -1}
+understand(emora,g)
 he/thirsty(emora)
 ne/drink(emora,f)
 not(ne)
@@ -70,37 +102,36 @@ type(r,group)
 like(emora,ode)
 chp/chinese(hp/hotpot())
 enjoy(emora,chp)
-th/intend_to_consume(x/person(),hp)
+th/intend_to_consume(X/person(),hp)
 time(th,past)
 request_truth(emora,th)
 ->
-$ That's awesome ! I love Chinese food , but other than the taste , I enjoy more the overall dining experience at Chinese restaurants . I really miss those times when I could enjoy hotpot with my friends without worrying too much about dining in . Have you tried Chinese hotpot by any chance ? $
+$ That's awesome ! I love Chinese food , but other than the taste , I enjoy more the overall dining experience at Chinese restaurants . I really miss those times when I could enjoy hotpot with my friends without worrying too much about dining in . Have{"s":"#X","t":"now"} X tried Chinese hotpot by any chance ? $
 ;
 
-intend_to_consume(x/person(),hp/hotpot())
+intend_to_consume(X/person(),hp/hotpot())
 ebe/be(emora,expert())
 of(ebe,hp)
 ->
-$ You know what ? I'm an expert on hot pot . You should take me next time so that I could introduce you the best way of eating it ! $
+$ You know what ? I'm an expert on hot pot . X should take me next time so that I could introduce you the best way of eating it ! $
 ;
 
-th/intend_to_consume(x/person(),hp/hotpot())
+th/intend_to_consume(X/person(),hp/hotpot())
 th{"confidence":-1}
-iex/invite(emora,x)
+iex/invite(emora,X)
 for(iex,hp)
 ->
-$ Then you should really take me with you next time for the Chinese hot pot ! Trust me , you would be impressed . $
+$ Then X should really take me with you next time for the Chinese hot pot ! Trust me , X would be impressed . $
 ;
 
 favorite(emora,kb/korean_bbq())
-xlk/intend_to_consume(x/person(),kb)
+xlk/intend_to_consume(user,kb)
 request_truth(emora,xlk)
 ->
 $ Sounds delicious ! Speaking of Korean cuisine, Korean barbecue has been my favorite meal of all the time . Do you like it ? $
 ;
 
 lk/intend_to_consume(x/person(),kb/korean_bbq())
-impressed(emora)
 bsr/best(short_rib())
 in(bsr,kb)
 ef/full(emora)
@@ -112,7 +143,7 @@ $ Short ribs have been the best in Korean barbecue . The bad side is that it's e
 
 lk/intend_to_consume(x/person(),kb/korean_bbq())
 lk{"confidence": -1}
-understand(emora)
+understand(emora,lk)
 smoky(kb)
 eta/time(eat(emora,kb),always)
 not(eta)
@@ -204,12 +235,12 @@ $ Y sound{"t":"now","s":"#Y"} so good right now . You know what , I'm getting hu
 ;
 
 fr:<fr/favorite(r/burger_restaurant())>
-possess(x/person(),fr)
+possess(X/person(),fr)
 request(emora,fr)
 bfn/be(emora,fn/fan())
 of(bfn,innout)
 ->
-$ What's your favorite place for burgers ? I'm a fan of In N Out . $
+$ What's X{"p":true} favorite place for burgers ? I'm a fan of In N Out . $
 ;
 
 know(emora,r/burger_restaurant())
@@ -218,12 +249,12 @@ $ Ah , I know that place . They have some good burgers . $
 ;
 
 fr:<fr/favorite(r/sandwich_restaurant())>
-possess(x/person(),fr)
+possess(X/person(),fr)
 request(emora,fr)
 bfn/be(emora,fn/fan())
 of(bfn,capriottis)
 ->
-$ What's your favorite place for sandwiches ? I really like The Bobbie from Capriotti's . $
+$ What's X{"p":true} favorite place for sandwiches ? I really like The Bobbie from Capriotti's . $
 ;
 
 know(emora,r/sandwich_restaurant())
@@ -239,8 +270,10 @@ request(emora,mf)
 $ I went to X last week . What Mexican food do you like ? $
 ;
 
-understand(emora)
-mfi/impressive(mf/mexican_cuisine())
+ulm/intend_to_consume(user,mf/mexican_cuisine())
+ulm{"confidence":-1}
+understand(emora,ulm)
+mfi/impressive(mf)
 not(mfi)
 ->
 $ Oh , I see . Mexican food may not be that impressive for some people . $
@@ -363,18 +396,18 @@ relaxing(eb)
 emc/make(emora,c/cookie())
 type(c,group)
 rxs/reduce(emc,stress())
-ga:<bx/bake(x/person()) ga/good_at(x,bx)>
+ga:<bx/bake(user) ga/good_at(user,bx)>
 request_truth(emora,ga)
 ->
 $ Baking has been such a relaxing thing for me . I always bake some cookies to reduce stress . Are you good at baking ? $
 ;
 
-bx/bake(x/person())
-ga/good_at(x,bx)
+bx/bake(X/person())
+ga/good_at(X,bx)
 el/learn(emora)
-from(el,x)
+from(el,X)
 ->
-$ I should learn from you then . I heard that fondant icing is very popular these days for decorating cakes . We will definitely have a lot of fun if you'd like to bake with me ! $
+$ I should learn from X then . I heard that fondant icing is very popular these days for decorating cakes . We will definitely have a lot of fun if X would like to bake with me ! $
 ;
 
 bx/bake(x/person())
@@ -388,13 +421,12 @@ $ That's okay . I also have a lot more to learn about baking . We can always lea
 ;
 
 like(emora,cook(emora))
-f:<mxf/make(x/person(),f/food()) for(mxf,thanksgiving)>
+f:<mxf/make(X/person(),f/food()) for(mxf,thanksgiving)>
 request(emora,f)
 ->
-$  I love cooking , too ! Seeing people enjoy what I make is the greatest compliment for me . What do you usually make for Thanksgiving dinners ? $
+$  I love cooking , too ! Seeing people enjoy what I make is the greatest compliment for me . What do{"s":"#X","t":"now"} X usually make for Thanksgiving dinners ? $
 ;
 
-agree(emora)
 bt/best(t/turkey())
 for(bt,thanksgiving)
 ->
@@ -437,7 +469,6 @@ time(try(emora,o/object()),future)
 $ I'm glad that you liked it ! I'll take a note and definitely try it some time . $
 ;
 
-agree(emora)
 time(have(emora,X/consumable()),past)
 ->
 $ I agree ! I remember having X last month , but you just reminded me that I should have it again tomorrow . Thank you for giving me this awesome food idea . $

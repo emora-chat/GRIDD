@@ -1,3 +1,38 @@
+/* User Travels */
+
+time(t/travel(user),z/datetime())
+t{"confidence": 0}
+user_aware(t)
+-> user_travel ->
+p:<time(possess(user,tp/trip()),z) p/property(tp)>
+request(emora,p)
+;
+
+time(t/travel(user),z/datetime())
+t{"confidence": 0}
+user_aware(t)
+-> ask_if_user_likes_trip ->
+l:<l/like(user,tp/trip())>
+request_truth(emora,l)
+;
+
+time(t/travel(user),z/datetime())
+t{"confidence": 0}
+user_aware(t)
+-> ask_what_user_does_in_trips ->
+pred:<like(user, pred/event(object())) for(pred, tp/trip()) type(tp,group)>
+request(emora, pred)
+;
+
+prop_i/property(tp/trip())
+prop_i{"confidence": 0}
+req/request(emora, prop_i)
+user_aware(req)
+-> ask_user_like_travel ->
+l:<l/like(user,travel(user))>
+request_truth(emora,l)
+;
+
 t/travel(x/person()) like(x,t)
 ->
 c:<gx/go(x) to(gx,c/country()) time(gx,past)>
@@ -8,6 +43,16 @@ elt/love(emora,tp/trip())
 type(tp,group)
 gi/get(emora,inspired())
 git/from(gi,te)
+;
+
+t/travel(x/person())
+lt/like(x,t)
+lt{"confidence":-1}
+->
+es/stay(emora)
+at(es,home)
+lc:<lc/like(x,cook(x))>
+request_truth(emora,lc)
 ;
 
 gx/go(x/person())
@@ -268,7 +313,7 @@ type(pb,group)
 xll/like(x/person(),bc/big_city())
 xll{"confidence":-1}
 ->
-understand(emora)
+understand(emora,xll)
 ib/ideal(bc)
 yg/young(g/generation())
 type(g,group)
@@ -369,10 +414,10 @@ type(p,group)
 in(etp,bl)
 ;
 
-miss(x/person(),e/entity())
+xme/miss(x/person(),e/entity())
 from(e,childhood())
 ->
-understand(emora)
+understand(emora,xme)
 miss(emora,ic/ice_cream())
 ;
 

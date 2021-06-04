@@ -1,0 +1,8 @@
+busy(X/person())
+xr/return(X)
+xro/to(xr,o/office())
+time(xr,now)
+request_truth(emora,xr)
+->
+$ I’m glad to hear that X be{"t":"now","s":"#X"} busy with X{"p":true} job . Be{"t":"now","s":"#X"} X starting to go back to the office ? $
+;

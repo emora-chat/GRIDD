@@ -62,3 +62,5 @@ balance=(entity)
 fav_part_college=(entity)
 fav_peer=(fav_part_college)
 expr("having great peers, having supportive peers",fav_peer)
+
+research=(entity)

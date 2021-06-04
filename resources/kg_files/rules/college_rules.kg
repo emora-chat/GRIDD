@@ -1,3 +1,45 @@
+time(pc/possess(user,c/college()),z/datetime())
+pc{"confidence": 0}
+user_aware(pc)
+-> ask_if_like_college ->
+l:<l/like(user,c) time(l,z)>
+request_truth(emora,l)
+;
+
+time(pc/possess(user,c/college()),z/datetime())
+pc{"confidence": 0}
+user_aware(pc)
+-> ask_college_property ->
+p:<p/property(c) time(p,z)>
+request(emora,p)
+;
+
+time(pc/possess(user,c/college()),z/datetime())
+pc{"confidence": 0}
+category(c)
+user_aware(pc)
+-> ask_college_type ->
+op_more_info(c, pc)
+request(emora, c)
+;
+
+time(prop_i/property(c/college()),z/datetime())
+prop_i{"confidence": 0}
+req/request(emora, prop_i)
+user_aware(req)
+-> ask_college_activity ->
+pred:<like(user, pred/event(object())) in(pred,c) time(pred,z)>
+request(emora, pred)
+;
+
+time(udr/do(user,r/research()),z/datetime())
+udr{"confidence": 0}
+user_aware(udr)
+->
+op_more_info(r, udr)
+request(emora, r)
+;
+
 xm/major(x/person())
 in(xm,ss/social_science())
 ->
@@ -143,9 +185,9 @@ ekb/keep(emora,b/balance())
 difficult(ekb)
 ;
 
-stressful(c/college())
+sc/stressful(c/college())
 ->
-sorry(emora)
+sorry(emora,sc)
 el/listen(emora)
 to(el,user)
 about(el,c)
@@ -158,4 +200,22 @@ eh/happy(emora)
 for(eh,user)
 fp:<possess(user,p/part()) favorite(p) about(p,c) be(p,fp/fav_part_college())>
 request(emora,fp)
+;
+
+different(c/college())
+->
+time(change(c),always)
+;
+
+time(busy(c/college(),z/datetime()))
+->
+ul/learn(user)
+from(ul,c)
+time(ul,z)
+;
+
+l/like(x/person(),pr/peer())
+type(pr,group)
+->
+awesome(l)
 ;
