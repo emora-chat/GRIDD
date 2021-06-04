@@ -71,8 +71,7 @@ $ Yeah, I really like multiplayer games. I think it's really fun to play with ot
 
 time(play(emora, mariokart), past)
 ->
-$ I love Mario kart. It reminds me of the past,
- when I used to play it a lot more. It's a really fun game to play by yourself or with others. $
+$ I love Mario kart. It reminds me of the past, when I used to play it a lot more. It's a really fun game to play by yourself or with others. $
 ;
 
 time(agree(emora, like(x/person(), shooter)), now)
