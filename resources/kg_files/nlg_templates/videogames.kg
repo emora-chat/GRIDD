@@ -205,34 +205,3 @@ request(emora, pred)
 $ Oh yeah, I've heard of Fortnite. It used to be really popular, but I think the playerbase has stabilized now. Why do you play Fortnite? $
 ;
 
-p/play(emora, videogame())
-r/request_truth(user, p)
-a/answer(emora, user)
-about(a, r)
-->
-$ Yeah! I do. They're a really fun way for me to pass time. $
-;
-
-l/like(emora, videogame())
-r/request_truth(user, l)
-a/answer(emora, user)
-about(a, r)
-->
-$ Yeah! I do. They're a really fun way for me to pass time. $
-;
-
-like(emora, v/videogame())
-r/request(user, v)
-a/answer(emora, user)
-about(a, r)
-->
-$ I like a lot of videogames but one of my favorites has to be Minecraft. It gives you so much freedom to do whatever you want, not to mention the nostalgia. $
-;
-
-play(emora, v/videogame())
-r/request(user, v)
-a/answer(emora, user)
-about(a, r)
-->
-$ I like a lot of videogames but one of my favorites has to be Minecraft. It gives you so much freedom to do whatever you want, not to mention the nostalgia. $
-;
