@@ -71,7 +71,8 @@ $ What sport do you play? I've enjoyed soccer in the past. Something about worki
 play(user, s/sport())
 request_truth(be(user, athlete()))
 ->
-$ Oh, are you an athlete ? $
+_pr(_low)
+$ Would you consider yourself an athlete ? $
 ;
 
 /* Plays some specific sport */
@@ -79,6 +80,7 @@ X/property(football)
 play(user, football)
 request(emora, X)
 -> q_football_opinion ->
+_pr(_high)
 $ How would you describe playing football? I've heard it can be a very tough sport to play. $
 ;
 
@@ -86,6 +88,7 @@ X/property(baseball)
 play(user, baseball)
 request(emora, X)
 -> q_baseball_opinion ->
+_pr(_high)
 $ How would you describe baseball in one word? For me, I always think of family. $
 ;
 
@@ -93,6 +96,7 @@ X/property(basketball)
 play(user, basketball)
 request(emora, X)
 -> q_basketball_opinion ->
+_pr(_high)
 $ What is playing basketball like? It seems like a cool sport, but I've never had the chance to play. $
 ;
 
@@ -100,6 +104,7 @@ X/property(tennis)
 play(user, tennis)
 request(emora, X)
 -> q_tennis_opinion ->
+_pr(_high)
 $ Tennis is a great sport. How would you describe playing it? $
 ;
 
@@ -107,6 +112,7 @@ X/property(soccer)
 play(user, soccer)
 request(emora, X)
 -> q_soccer_opinion ->
+_pr(_high)
 $ I play soccer too! Well, I try to in my free time. Would you say soccer is more fun or more tiring? $
 ;
 
@@ -194,6 +200,7 @@ w/watch(user, g/team_sports_event())
 c/compete(x/sports_team(), y/sports_team())
 request(emora, x)
 ->
+_pr(_high)
 $ Nice, which two teams were playing in the game? $
 ;
 
@@ -202,6 +209,7 @@ in(pl, s/team_sports_event())
 quality(d/do(play(user)), o/object())
 request(emora, o)
 ->
+_pr(_high)
 $ Oh cool, how did you play in the game? Hopefully it went well. $
 ;
 
@@ -216,5 +224,6 @@ $ Hmm. Seems like sports might not be your thing. Would you say that you are a f
 
 energetic(user)
 -> user_is_energetic ->
+_pr(_low)
 $ Sounds like you are an energetic person! $
 ;
