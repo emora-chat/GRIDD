@@ -67,6 +67,9 @@ class Counter:
     def __iadd__(self, other):
         self.value += other
         return self
+    def __add__(self, other):
+        self.value += other
+        return self
     def __int__(self):
         return self.value
 
