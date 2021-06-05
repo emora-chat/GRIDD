@@ -3,7 +3,7 @@ from os.path import join
 import os
 from itertools import chain
 
-from GRIDD.utilities.utilities import collect
+from GRIDD.utilities.utilities import collect, _process_requests, _process_answers
 from GRIDD.data_structures.span import Span
 from GRIDD.globals import *
 from GRIDD.intcore_server_globals import *
@@ -249,7 +249,7 @@ class ChatbotServer:
                 update = True
             if update and not mega_mention_graph.has(s,t,l):
                 mega_mention_graph.metagraph.add(s,t,l)
-
+        _process_requests(mega_mention_graph)
         self.dialogue_intcore.consider(mega_mention_graph)
         return subspans, self.dialogue_intcore.working_memory
 
@@ -304,6 +304,10 @@ class ChatbotServer:
                 working_memory.metagraph.update(self.dialogue_intcore.knowledge_base.metagraph,
                                                                       self.dialogue_intcore.knowledge_base.metagraph.features,
                                                                       concepts=[pred[3]])
+                if pred[1] in {REQ_ARG, REQ_TRUTH}:
+                    # if request pulled from KB, add req_unsat to it
+                    i = working_memory.add(pred[3], REQ_UNSAT)
+                    working_memory.features[i][BASE_CONFIDENCE] = 1.0
         self._update_types(working_memory)
         self.dialogue_intcore.operate()
         return self.dialogue_intcore.working_memory
@@ -611,16 +615,14 @@ class ChatbotServer:
             if not wm.metagraph.out_edges(match_node, REF):
                 truths = list(wm.predicates('emora', REQ_TRUTH, ref_node))
                 if truths:
-                    i2 = wm.add(truths[0][3], REQ_SAT)
-                    wm.features[i2][BASE_UCONFIDENCE] = 1.0
+                    _process_answers(wm, truths[0][3])
                     if not wm.has(truths[0][3], USER_AWARE):
                         i2 = wm.add(truths[0][3], USER_AWARE)
                         wm.features[i2][BASE_UCONFIDENCE] = 1.0
                 else:
                     args = list(wm.predicates('emora', REQ_ARG, ref_node))
                     if args:
-                        i2 = wm.add(args[0][3], REQ_SAT)
-                        wm.features[i2][BASE_UCONFIDENCE] = 1.0
+                        _process_answers(wm, args[0][3])
                         if not wm.has(args[0][3], USER_AWARE):
                             i2 = wm.add(args[0][3], USER_AWARE)
                             wm.features[i2][BASE_UCONFIDENCE] = 1.0

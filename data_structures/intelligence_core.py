@@ -6,7 +6,7 @@ from GRIDD.data_structures.concept_graph import ConceptGraph
 if INFERENCE:
     from GRIDD.data_structures.inference_engine import InferenceEngine
 from GRIDD.data_structures.concept_compiler import ConceptCompiler
-from GRIDD.utilities.utilities import uniquify, operators, interleave
+from GRIDD.utilities.utilities import uniquify, operators, interleave, _process_requests
 from itertools import chain, combinations
 from GRIDD.data_structures.update_graph import UpdateGraph
 from GRIDD.globals import *
@@ -126,6 +126,7 @@ class IntelligenceCore:
                 with open(os.path.join(dir, cache_version), 'r') as f:
                     d = json.load(f)
                 templates = {}
+                mega_template_cg = None
                 for rule, (pre, post, vars) in d.items():
                     pre_cg = ConceptGraph(namespace=pre['namespace'])
                     pre_cg.load(pre)
@@ -133,7 +134,12 @@ class IntelligenceCore:
                     template_obj.load(post)
                     vars = set(vars)
                     templates[rule] = (pre_cg, template_obj, vars)
+                    if mega_template_cg is None:
+                        mega_template_cg = ConceptGraph(namespace=pre['namespace'])
+                    mega_template_cg.concatenate(pre_cg)
                 self.nlg_inference_engine.add(templates, pre_cg.id_map().namespace)
+                if mega_template_cg is not None:
+                    self._check(mega_template_cg, use_kb=True, file=file)
             elif file in new_content:
                 v = source[file]
                 nlg_templates = ConceptGraph(namespace='t_')
@@ -155,6 +161,7 @@ class IntelligenceCore:
                 with open(os.path.join(dir, cache_version), 'r') as f:
                     d = json.load(f)
                 rules = {}
+                mega_rule_cg = None
                 for rule, (pre, post, vars) in d.items():
                     pre_cg = ConceptGraph(namespace=pre['namespace'])
                     pre_cg.load(pre)
@@ -162,7 +169,13 @@ class IntelligenceCore:
                     post_cg.load(post)
                     vars = set(vars)
                     rules[rule] = (pre_cg, post_cg, vars)
+                    if mega_rule_cg is None:
+                        mega_rule_cg = ConceptGraph(namespace=pre['namespace'])
+                    mega_rule_cg.concatenate(pre_cg)
+                    mega_rule_cg.concatenate(post_cg)
                 self.inference_engine.add(rules, pre_cg.id_map().namespace)
+                if mega_rule_cg is not None:
+                    self._check(mega_rule_cg, use_kb=True, file=file)
             elif file in new_content:
                 v = source[file]
                 inference_rules = ConceptGraph(namespace='t_')
@@ -288,6 +301,7 @@ class IntelligenceCore:
                             old_solution = True
                             break
                 if not old_solution:
+                    _process_requests(implication)
                     implied_nodes = self.consider(implication, evidence=evidence.values())
                     and_node = self.working_memory.id_map().get()
                     self.working_memory.features[and_node]['origin_rule'] = rule # store the implication rule that resulted in this and_node as metadata
