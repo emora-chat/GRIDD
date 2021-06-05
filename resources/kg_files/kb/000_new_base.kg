@@ -57,9 +57,8 @@ expr(["bye", "goodbye"], dismiss)
 ack_conf = (predicate)
 user_aware = (predicate)
 
-request = (predicate, nonassert, obj_essential)
-request_truth = (predicate, nonassert, obj_essential)
-req_sat = (predicate)
+[request, request_truth] = (predicate, nonassert, obj_essential)
+[req_unsat, req_sat] = (predicate, obj_essential)
 
 _pr=(predicate)
 [_low,_high]=(object)
