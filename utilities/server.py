@@ -102,4 +102,6 @@ def load(key, value):
                 pre.load(pre_json)
                 vars_json = set(vars_json)
                 value[rule] = (pre, vars_json)
+        elif key == 'user_utterance':
+            value = str(value)
     return value
