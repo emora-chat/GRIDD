@@ -1,8 +1,9 @@
 import time, json, requests
 from os.path import join
+import os
 from itertools import chain
 
-from GRIDD.utilities.utilities import collect
+from GRIDD.utilities.utilities import collect, _process_requests, _process_answers
 from GRIDD.data_structures.span import Span
 from GRIDD.globals import *
 from GRIDD.intcore_server_globals import *
@@ -48,10 +49,10 @@ class ChatbotServer:
         inference_rules = collect(*inference_rules)
         self.starting_wm = None if starting_wm is None else collect(*starting_wm)
         nlg_templates = collect(*nlg_templates)
-        self.dialogue_intcore = IntelligenceCore(knowledge_base=knowledge + inference_rules + nlg_templates,
-                                                 device=device)
+        self.dialogue_intcore = IntelligenceCore(knowledge_base=knowledge, inference_rules=inference_rules,
+                                                 nlg_templates=nlg_templates, device=device)
         if self.starting_wm is not None:
-            self.dialogue_intcore.consider(self.starting_wm)
+            self.dialogue_intcore.consider(list(self.starting_wm.values()))
         print('IntelligenceCore load: %.2f' % (time.time() - s))
 
     ###################################################
@@ -114,10 +115,37 @@ class ChatbotServer:
 
     def init_parse2logic(self, device=None):
         from GRIDD.modules.elit_dp_to_logic_model import ElitDPToLogic
-        nlu_templates = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
-        self.elit_dp = ElitDPToLogic(self.dialogue_intcore.knowledge_base,
-                                     nlu_templates,
-                                     device=device)
+        file = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
+        if USECACHE:
+            if not os.path.exists(NLUCACHE):
+                os.mkdir(NLUCACHE)
+            cached = {f for f in os.listdir(NLUCACHE) if os.path.isfile(os.path.join(NLUCACHE, f))}
+            cache_version = (file + '.json').replace(os.sep, CACHESEP)
+            if cache_version in cached:
+                with open(os.path.join(NLUCACHE, cache_version), 'r') as f:
+                    d = json.load(f)
+                rules = {}
+                for rule, (pre, post, vars) in d.items():
+                    pre_cg = ConceptGraph(namespace=pre['namespace'])
+                    pre_cg.load(pre)
+                    post_cg = ConceptGraph(namespace=post['namespace'])
+                    post_cg.load(post)
+                    vars = set(vars)
+                    rules[rule] = (pre_cg, post_cg, vars)
+                self.elit_dp = ElitDPToLogic(self.dialogue_intcore.knowledge_base,
+                                             rules, device=device)
+            else:
+                savefile = os.path.join(NLUCACHE, (file + '.json').replace(os.sep, CACHESEP))
+                self.elit_dp = ElitDPToLogic(self.dialogue_intcore.knowledge_base,
+                                             None, device=device)
+                rules = self.elit_dp.parse_rules_from_file(file)
+                d = {rule: (pre.save(), post.save(), list(vars)) for rule, (pre, post, vars) in rules.items()}
+                with open(savefile, 'w') as f:
+                    json.dump(d, f, indent=2)
+                self.elit_dp.intcore.inference_engine.add(rules, NLU_NAMESPACE)
+        else:
+            self.elit_dp = ElitDPToLogic(self.dialogue_intcore.knowledge_base,
+                                         file, device=device)
 
     @serialized('mentions', 'merges')
     def run_parse2logic(self, elit_results):
@@ -221,7 +249,7 @@ class ChatbotServer:
                 update = True
             if update and not mega_mention_graph.has(s,t,l):
                 mega_mention_graph.metagraph.add(s,t,l)
-
+        _process_requests(mega_mention_graph)
         self.dialogue_intcore.consider(mega_mention_graph)
         return subspans, self.dialogue_intcore.working_memory
 
@@ -276,6 +304,10 @@ class ChatbotServer:
                 working_memory.metagraph.update(self.dialogue_intcore.knowledge_base.metagraph,
                                                                       self.dialogue_intcore.knowledge_base.metagraph.features,
                                                                       concepts=[pred[3]])
+                if pred[1] in {REQ_ARG, REQ_TRUTH}:
+                    # if request pulled from KB, add req_unsat to it
+                    i = working_memory.add(pred[3], REQ_UNSAT)
+                    working_memory.features[i][BASE_CONFIDENCE] = 1.0
         self._update_types(working_memory)
         self.dialogue_intcore.operate()
         return self.dialogue_intcore.working_memory
@@ -583,16 +615,14 @@ class ChatbotServer:
             if not wm.metagraph.out_edges(match_node, REF):
                 truths = list(wm.predicates('emora', REQ_TRUTH, ref_node))
                 if truths:
-                    i2 = wm.add(truths[0][3], REQ_SAT)
-                    wm.features[i2][BASE_UCONFIDENCE] = 1.0
+                    _process_answers(wm, truths[0][3])
                     if not wm.has(truths[0][3], USER_AWARE):
                         i2 = wm.add(truths[0][3], USER_AWARE)
                         wm.features[i2][BASE_UCONFIDENCE] = 1.0
                 else:
                     args = list(wm.predicates('emora', REQ_ARG, ref_node))
                     if args:
-                        i2 = wm.add(args[0][3], REQ_SAT)
-                        wm.features[i2][BASE_UCONFIDENCE] = 1.0
+                        _process_answers(wm, args[0][3])
                         if not wm.has(args[0][3], USER_AWARE):
                             i2 = wm.add(args[0][3], USER_AWARE)
                             wm.features[i2][BASE_UCONFIDENCE] = 1.0
@@ -657,7 +687,9 @@ class ChatbotServer:
         self.init_sentence_caser()
         if not LOCAL:
             self.init_elit_models()
+        s = time.time()
         self.init_parse2logic(device=device)
+        print('NLU load: %.2f'%(time.time()-s))
         self.init_multiword_matcher()
         self.init_template_nlg()
         self.init_response_selection()

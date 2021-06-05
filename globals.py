@@ -19,6 +19,7 @@ OBJ_ESSENTIAL = 'obj_essential'         # predicate type indicating required att
 ASSERT = 'assert'               # monopredicate indicating argument is asserted
 USER_AWARE = 'user_aware'       # monopredicate indicating user is aware of the concept
 REQ_SAT = 'req_sat'             # monopredicate indicating request was answered
+REQ_UNSAT = 'req_unsat'         # monopredicate indicating request is unresolved
 
 TYPE = 'type'                   # bipredicate indicating a type/subtype relationship
 EXPR = 'expr'                   # bipredicate indicating ARG0 is an expression of ARG1
@@ -81,11 +82,11 @@ META = {COMPS, VAR,
 
 SAL_FREE = {ASSERT, NONASSERT, AFFIRM,
             REJECT, TIME, SPAN_DEF,
-            SPAN_REF, USER_AWARE, REQ_SAT}    # Predicate types that do not propogate salience to subtypes and whose salience does not decrease
+            SPAN_REF, USER_AWARE, REQ_SAT, REQ_UNSAT}    # Predicate types that do not propogate salience to subtypes and whose salience does not decrease
 
 PRIM = {SPAN_DEF, SPAN_REF,
         ASSERT, NONASSERT,
-        USER_AWARE, EXPR, REQ_SAT}             # Predicate types that are primitive
+        USER_AWARE, EXPR, REQ_SAT, REQ_UNSAT}             # Predicate types that are primitive
 
 
 UNKNOWN_TYPES = {'unknown_verb', 'unknown_noun', 'unknown_pron', 'unknown_adj', 'unknown_adv', 'unknown_other'}
@@ -95,3 +96,5 @@ PRIORITY_WEIGHT = 0.5
 SAL_WEIGHT = 0.5
 DEFAULT_PRIORITY = 0.5
 PRIORITY_PRED = '_pr'
+
+NLU_NAMESPACE = 'r_'

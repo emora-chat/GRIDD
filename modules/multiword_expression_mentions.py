@@ -47,9 +47,9 @@ class ExpressionMatcher:
                 if (j[0] >= i[0] and j[1] <= i[1]):
                     overlaps[i].add(j)
                     contains[i].add(j)
-            if (len(overlaps[i]) is 0):
+            if (len(overlaps[i]) == 0):
                 overlaps.pop(i)
-            if (len(contains[i]) is 0):
+            if (len(contains[i]) == 0):
                 contains.pop(i)
         return matched, overlaps, contains
 

@@ -3,6 +3,8 @@ from math import log
 import os
 from inspect import getmembers, isfunction
 from itertools import cycle, islice
+from itertools import chain
+from GRIDD.globals import *
 CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 
@@ -28,8 +30,7 @@ def identification_string(x, chars=None):
         string = chars[d] + string
     return string
 
-def collect(*files_folders_or_strings, extension=None, directory=None):
-    collected = []
+def collect(*files_folders_or_strings, extension=None):
     files_or_strings = []
     for ffs in files_folders_or_strings:
         if isinstance(ffs, str) and os.path.isdir(ffs):
@@ -38,17 +39,21 @@ def collect(*files_folders_or_strings, extension=None, directory=None):
                     files_or_strings.append(os.path.join(ffs, fs))
         else:
             files_or_strings.append(ffs)
+    counter = 0
+    collected = {}
     for ffs in sorted(files_or_strings):
         if not extension or (isinstance(ffs, str) and ffs.endswith(extension)):
             if os.path.isdir(ffs):
-                collected.extend(collect(ffs))
+                collected.update(collect(ffs))
             elif os.path.isfile(ffs):
                 with open(ffs, 'r') as f:
-                    collected.append(f.read())
+                    collected[ffs] = f.read()
             else:
-                collected.append(ffs)
+                collected[str(counter)] = ffs
+                counter += 1
         else:
-            collected.append(ffs)
+            collected[str(counter)] = ffs
+            counter += 1
     return collected
 
 class hashabledict(dict):
@@ -65,6 +70,9 @@ class Counter:
     def __init__(self, value=0):
         self.value = value
     def __iadd__(self, other):
+        self.value += other
+        return self
+    def __add__(self, other):
         self.value += other
         return self
     def __int__(self):
@@ -117,6 +125,19 @@ def interleave(*iterables):
             # Remove the iterator we just exhausted from the cycle.
             num_active -= 1
             nexts = cycle(islice(nexts, num_active))
+
+def _process_requests(cg):
+    # add req_unsat to all unresolved requests
+    for s,t,o,i in chain(cg.predicates(predicate_type=REQ_ARG), cg.predicates(predicate_type=REQ_TRUTH)):
+        if not cg.has(i, REQ_SAT):
+            i2 = cg.add(i, REQ_UNSAT)
+            cg.features[i2][BASE_CONFIDENCE] = 1.0
+
+def _process_answers(cg, request):
+    i = cg.add(request, REQ_SAT)
+    cg.features[i][BASE_UCONFIDENCE] = 1.0
+    cg.remove(request, REQ_UNSAT)
+
 
 #################################
 # ConceptGraph to Spanning Tree

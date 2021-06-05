@@ -5,27 +5,33 @@ from structpy.map import Bimap
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.assertions import assertions
 from GRIDD.globals import *
+from GRIDD.utilities.utilities import Counter
 
 
 class InferenceEngine:
 
-    def __init__(self, rules=None, device='cpu'):
+    def __init__(self, rules=None, namespace=None, device='cpu'):
         self.rules = {}
         self._preloaded_rules = {}
+        self.counter = Counter()
+        self._next = lambda x: x + 1
         if rules is not None:
-            self.add(rules)
+            self.add(rules, namespace)
         self.matcher = GraphMatchingEngine(device=device)
 
-    def add(self, rules):
+    def add(self, rules, namespace):
+        if namespace is None:
+            raise Exception('namespace param cannot be None!')
         if not isinstance(rules, dict):
             rules = ConceptGraph(rules, namespace='r_')
             assertions(rules)
             rules = rules.rules()
-        for rule in rules:
+        renamed_rules = {('rule%d'%self._next(self.counter) if k.startswith(namespace) else k): v for k,v in rules.items()}
+        for rule in renamed_rules:
             if rule in self.rules:
                 raise ValueError(f'Rule by name {rule} already exists!')
-        new_rules = self._convert_rules(rules)
-        self.rules.update(rules)
+        new_rules = self._convert_rules(renamed_rules)
+        self.rules.update(renamed_rules)
         self._preloaded_rules.update(new_rules)
 
     def _convert_rules(self, rules):
