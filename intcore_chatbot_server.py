@@ -1,5 +1,6 @@
 import time, json, requests
 from os.path import join
+import os
 from itertools import chain
 
 from GRIDD.utilities.utilities import collect
@@ -114,10 +115,37 @@ class ChatbotServer:
 
     def init_parse2logic(self, device=None):
         from GRIDD.modules.elit_dp_to_logic_model import ElitDPToLogic
-        nlu_templates = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
-        self.elit_dp = ElitDPToLogic(self.dialogue_intcore.knowledge_base,
-                                     nlu_templates,
-                                     device=device)
+        file = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
+        if USECACHE:
+            if not os.path.exists(NLUCACHE):
+                os.mkdir(NLUCACHE)
+            cached = {f for f in os.listdir(NLUCACHE) if os.path.isfile(os.path.join(NLUCACHE, f))}
+            cache_version = (file + '.json').replace(os.sep, CACHESEP)
+            if cache_version in cached:
+                with open(os.path.join(NLUCACHE, cache_version), 'r') as f:
+                    d = json.load(f)
+                rules = {}
+                for rule, (pre, post, vars) in d.items():
+                    pre_cg = ConceptGraph(namespace=pre['namespace'])
+                    pre_cg.load(pre)
+                    post_cg = ConceptGraph(namespace=post['namespace'])
+                    post_cg.load(post)
+                    vars = set(vars)
+                    rules[rule] = (pre_cg, post_cg, vars)
+                self.elit_dp = ElitDPToLogic(self.dialogue_intcore.knowledge_base,
+                                             rules, device=device)
+            else:
+                savefile = os.path.join(NLUCACHE, (file + '.json').replace(os.sep, CACHESEP))
+                self.elit_dp = ElitDPToLogic(self.dialogue_intcore.knowledge_base,
+                                             None, device=device)
+                rules = self.elit_dp.parse_rules_from_file(file)
+                d = {rule: (pre.save(), post.save(), list(vars)) for rule, (pre, post, vars) in rules.items()}
+                with open(savefile, 'w') as f:
+                    json.dump(d, f, indent=2)
+                self.elit_dp.intcore.inference_engine.add(rules, NLU_NAMESPACE)
+        else:
+            self.elit_dp = ElitDPToLogic(self.dialogue_intcore.knowledge_base,
+                                         file, device=device)
 
     @serialized('mentions', 'merges')
     def run_parse2logic(self, elit_results):
@@ -657,7 +685,9 @@ class ChatbotServer:
         self.init_sentence_caser()
         if not LOCAL:
             self.init_elit_models()
+        s = time.time()
         self.init_parse2logic(device=device)
+        print('NLU load: %.2f'%(time.time()-s))
         self.init_multiword_matcher()
         self.init_template_nlg()
         self.init_response_selection()

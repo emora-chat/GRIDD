@@ -7,6 +7,7 @@ from GRIDD.data_structures.intelligence_core import IntelligenceCore
 from GRIDD.data_structures.id_map import IdMap
 from GRIDD.utilities import collect
 from GRIDD.globals import *
+from GRIDD.intcore_server_globals import *
 from GRIDD.data_structures.reference_identifier import REFERENCES_BY_RULE, QUESTION_INST_REF, subtree_dependencies, parent_subtree_dependencies
 
 class ParseToLogic:
@@ -16,16 +17,29 @@ class ParseToLogic:
     # Affects _get_mentions() and _get_merges()!
 
     def __init__(self, kb, template_file, device='cpu'):
-        cg = ConceptGraph(list(collect(template_file).values()), namespace='r_')
+        if template_file is not None:
+            if not isinstance(template_file, dict):
+                rules = self.parse_rules_from_file(template_file)
+            else:
+                rules = template_file
+            parse_inference = InferenceEngine(rules, NLU_NAMESPACE, device=device)
+            self.intcore = IntelligenceCore(knowledge_base=kb,
+                                        inference_engine=parse_inference,
+                                        device=device)
+        else:
+            parse_inference = InferenceEngine(device=device)
+            self.intcore = IntelligenceCore(knowledge_base=kb,
+                                            inference_engine=parse_inference,
+                                            device=device)
+        self.spans = []
+
+    def parse_rules_from_file(self, file):
+        cg = ConceptGraph(list(collect(file).values()), namespace=NLU_NAMESPACE)
         rules = cg.rules()
         rules = dict(sorted(rules.items(), key=lambda item: cg.features[item[0]]['rindex']))
         for rule_id, rule in rules.items():
             self._reference_expansion(rule[0], rule[2])
-        parse_inference = InferenceEngine(rules, cg.id_map().namespace, device=device)
-        self.intcore = IntelligenceCore(knowledge_base=kb,
-                                        inference_engine=parse_inference,
-                                        device=device)
-        self.spans = []
+        return rules
 
     def _reference_expansion(self, pregraph, vars):
         """

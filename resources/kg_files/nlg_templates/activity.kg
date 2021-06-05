@@ -37,4 +37,18 @@ request_truth(emora, h)
 $ Oh really ? I wish I had a big yard , my dog would absolutely love it . Do you have a pet ? $
 ;
 
+/* work */
+
+on(w/work(user), t/task())
+request(emora, t)
+->
+$ What were you working on ? $
+;
+
+on(w/work(user), t/assignment())
+for(t, a/authority())
+request(emora, a)
+->
+$ Oh , what was your assignment for ? $
+;
 
