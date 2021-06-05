@@ -36,7 +36,11 @@ class ResponseTemplateFiller:
         for rule, (pre_graph, post, solutions_list) in matches.items():
             for match_dict in solutions_list:
                 string_spec_ls = list(post.string_spec_ls)  # need to create copy so as to not mutate the postcondition in the rule
-                response_str = self.fill_string(match_dict, expr_dict, string_spec_ls, cg)
+                try:
+                    response_str = self.fill_string(match_dict, expr_dict, string_spec_ls, cg)
+                except Exception as e:
+                    print('Error in NLG template filler => %s'%e)
+                    continue
                 # print(string_spec_ls)
                 if response_str not in aux_state.get('spoken_responses', []):
                     candidates.append((match_dict, response_str, post.priority))
@@ -54,10 +58,11 @@ class ResponseTemplateFiller:
                         and cg.type(x) in {REQ_ARG, REQ_TRUTH}]
             user_awareness = [cg.has(x[3], USER_AWARE) for x in preds]
             user_req_awareness = [cg.has(x[3], USER_AWARE) for x in req_pred]
-            # print()
-            # for i, pred in enumerate(preds):
-            #     print(pred, user_awareness[i])
             if False in user_awareness and (not user_req_awareness or True not in user_req_awareness):
+                # at least one predicate is not known by the user
+                # and all request predicates are not known by user, if there are requests in response
+                # todo - stress test emora not asking a question she already has answer to or has asked before
+                # this should work, but we do have req_unsat predicate as backup, if needed
                 sals = [cg.features.get(x, {}).get(SALIENCE, 0) for x in match_dict.values()]
                 avg = sum(sals) / len(sals)
                 final_score = SAL_WEIGHT * avg + PRIORITY_WEIGHT * priority
