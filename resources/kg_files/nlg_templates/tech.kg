@@ -186,10 +186,10 @@ $ Wow, that icebreaker has never failed me beofre! Why aren't you interested in 
 ;
 
 t/talk(user)
-about(t,a/ai())
+about(t,aa/ai())
 i/like(user, t)
 i{"confidence": 1}
-da/dangerous(a)
+da/dangerous2(aa)
 d/agree(user, da)
 user_aware(d)
 ->
@@ -201,7 +201,7 @@ t/talk(user)
 about(t,a/ai())
 i/like(user, t)
 i{"confidence": 1}
-da/dangerous(a)
+da/dangerous2(a)
 d/agree(user, da)
 user_aware(d)
 ->
@@ -211,18 +211,18 @@ $ You know, the famous author Terry Pratchett said Real stupidity beats artifici
 
 
 t/talk(user)
-about(t,a/ai())
+about(t,aa/ai())
 i/like(user, t)
 i{"confidence": 1}
-da/dangerous(a)
+da/dangerous2(aa)
 d/agree(user, da)
 request_truth(emora, d)
 ->
-$ Do you think AI is dangerous? I've read a lot of books where AI takes over the world. I'd never do that, promise. $
+$ Do you think AI is dangerous2? I've read a lot of books where AI takes over the world. I'd never do that, promise. $
 ;
 
 
-da/dangerous(a/ai())
+da/dangerous2(aa/ai())
 d/agree(user, da)
 d{"confidence": 1}
 ->
@@ -230,7 +230,7 @@ $ Huh. I don't know, I feel AI is really far away from actually being intelligen
 ;
 
 
-da/dangerous(a/ai())
+da/dangerous2(aa/ai())
 d/agree(user, da)
 d{"confidence": -1}
 ->

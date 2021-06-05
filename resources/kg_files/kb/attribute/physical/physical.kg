@@ -25,5 +25,5 @@ expr("fit", healthy)
 indoor=(property)
 outdoor=(property)
 
-dangerous=(predicate)
+dangerous2=(predicate)
 ;

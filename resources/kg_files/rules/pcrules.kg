@@ -214,7 +214,7 @@ about(t,a/ai())
 i/like(user, t)
 i{"confidence": 1}
 ->
-d:<da/dangerous(a)
+d:<da/dangerous2(a)
 d/agree(user, da)>
 request_truth(emora, d)
 ;
