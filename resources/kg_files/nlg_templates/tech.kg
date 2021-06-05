@@ -166,13 +166,17 @@ $ I think most people think so. For me, technology can be both bad and good, but
 
 
 
-i/interest(user, ai())
+t/talk(user)
+about(t,ai())
+i/like(user, t)
 request_truth(i)
 ->
-$ Are you interested in Artificial Intelligences? Of course, you kinda have to be to talk to me, right? $
+$ Do you like talking about Artificial Intelligence? Of course, you kinda have to be to talk to me, right? $
 ;
 
-i/interest(user, ai())
+t/talk(user)
+about(t,ai())
+i/like(user, t)
 i{"confidence": -1}
 r:<r/reason(i)>
 request(emora, r)
@@ -181,7 +185,9 @@ _pr(_high)
 $ Wow, that icebreaker has never failed me beofre! Why aren't you interested in AI ? $
 ;
 
-i/interest(user, a/ai())
+t/talk(user)
+about(t,a/ai())
+i/like(user, t)
 i{"confidence": 1}
 da/dangerous(a)
 d/agree(user, da)
@@ -191,7 +197,9 @@ _pr(_low)
 $ AI is really exciting. It can replace a lot of menial work for people, and even gain insights hard to get otherwise. I often am surprised at people's intuiton when I talk to them , and I feel like AI does something similar. $
 ;
 
-i/interest(user, a/ai())
+t/talk(user)
+about(t,a/ai())
+i/like(user, t)
 i{"confidence": 1}
 da/dangerous(a)
 d/agree(user, da)
@@ -202,25 +210,27 @@ $ You know, the famous author Terry Pratchett said Real stupidity beats artifici
 ;
 
 
-i/interest(user, a/ai())
+t/talk(user)
+about(t,a/ai())
+i/like(user, t)
 i{"confidence": 1}
 da/dangerous(a)
 d/agree(user, da)
-request_truth(emora, da)
+request_truth(emora, d)
 ->
 $ Do you think AI is dangerous? I've read a lot of books where AI takes over the world. I'd never do that, promise. $
 ;
 
-i/interest(user, a/ai())
-da/dangerous(a)
+
+da/dangerous(a/ai())
 d/agree(user, da)
 d{"confidence": 1}
 ->
 $ Huh. I don't know, I feel AI is really far away from actually being intelligent, but I do agree there are dangers in how it can be used today. Just like with any new technology. $
 ;
 
-i/interest(user, a/ai())
-da/dangerous(a)
+
+da/dangerous(a/ai())
 d/agree(user, da)
 d{"confidence": -1}
 ->

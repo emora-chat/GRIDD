@@ -209,15 +209,19 @@ i:<i/improve(life, p/phone())>
 request_truth(emora, i)
 ;
 
-i/interest(user, a/ai())
+t/talk(user)
+about(t,a/ai())
+i/like(user, t)
 i{"confidence": 1}
 ->
 d:<da/dangerous(a)
 d/agree(user, da)>
-request_truth(emora, da)
+request_truth(emora, d)
 ;
 
-i/interest(user, ai())
+t/talk(user)
+about(t,a/ai())
+i/like(user, t)
 i{"confidence": -1}
 ->
 r:<r/reason(i)>

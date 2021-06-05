@@ -24,4 +24,6 @@ software=(entity)
 photoshop=(software)
 operating_system=(software)
 linux=(operating_system)
+ai=(entity)
+expr("artificial intelligence", ai)
 ;

@@ -36,5 +36,7 @@ dream=(activity, mental)
 
 annoy=(activity,mental)
 use=(predicate)
+
+talk=(predicate)
 ;
 
