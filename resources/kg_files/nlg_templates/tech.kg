@@ -46,8 +46,10 @@ request_truth(emora, u)
 $ Do you use Linux ? I think it gives a lot of freedom to do whatever you want, but can be complicated sometimes. $
 ;
 
-time(u/use(user, l/linux()), now)
+u/use(user, l/linux())
+request_truth(emora, u)
 u{"confidence": 0}
+user_aware(u)
 ->
 _pr(_high)
 $ I really wish Open Source Operating Systems were more popular. I don't think users should rely on any one company to keep their software safe and fast, the open source community is really great. $
@@ -72,7 +74,7 @@ $ Interesting, why did you decide to build your own computer?  $
 time(h/have(user, p/computer()), now)
 b/build(user, p)
 r/reason(b)
-r{"confidence": 0}
+user_aware(r)
 ->
 _pr(_high)
 $ I like that. For me, its much more fun making something myself than just buying it. I also get a lot more choice over the parts and can be confident in the quality.  $
@@ -93,7 +95,7 @@ a1/cpu_manuf(p/computer(), amd())
 have(user, p)
 request_truth(emora,a1)
 ->
-$ I bet you have an amd processor. I hear they are very popular for builders now, but I remember Intel was ahead for many years in the past. $
+$ I bet you have an amd processor. If I had to build a computer right now, I'd use amd. But can't really do that with all the shortages. $
 ;
 
 
@@ -152,11 +154,78 @@ i/improve(life, p/phone())
 request_truth(emora, i)
 ->
 _pr(_low)
-$ Do you think your life has changed because of smartphones?$
+$ Do you think your life has changed because of smartphones? $
 ;
 
 i/improve(life, p/phone())
-i{"confidence": 0}
+user_aware(i)
+->
 _pr(_high)
-$ Technology can be both bad and good, but I think my life is better when I am more connected to other people, and smartphones help with that. $
+$ I think most people think so. For me, technology can be both bad and good, but I think my life is better when I am more connected to other people, and smartphones help with that. $
 ;
+
+
+
+i/interest(user, ai())
+request_truth(i)
+->
+$ Are you interested in Artificial Intelligences? Of course, you kinda have to be to talk to me, right? $
+;
+
+i/interest(user, ai())
+i{"confidence": -1}
+r:<r/reason(i)>
+request(emora, r)
+->
+_pr(_high)
+$ Wow, that icebreaker has never failed me beofre! Why aren't you interested in AI ? $
+;
+
+i/interest(user, a/ai())
+i{"confidence": 1}
+da/dangerous(a)
+d/agree(user, da)
+user_aware(d)
+->
+_pr(_low)
+$ AI is really exciting. It can replace a lot of menial work for people, and even gain insights hard to get otherwise. I often am surprised at people's intuiton when I talk to them , and I feel like AI does something similar. $
+;
+
+i/interest(user, a/ai())
+i{"confidence": 1}
+da/dangerous(a)
+d/agree(user, da)
+user_aware(d)
+->
+_pr(_low)
+$ You know, the famous author Terry Pratchett said Real stupidity beats artificial intelligence every time . $
+;
+
+
+i/interest(user, a/ai())
+i{"confidence": 1}
+da/dangerous(a)
+d/agree(user, da)
+request_truth(emora, da)
+->
+$ Do you think AI is dangerous? I've read a lot of books where AI takes over the world. I'd never do that, promise. $
+;
+
+i/interest(user, a/ai())
+da/dangerous(a)
+d/agree(user, da)
+d{"confidence": 1}
+->
+$ Huh. I don't know, I feel AI is really far away from actually being intelligent, but I do agree there are dangers in how it can be used today. Just like with any new technology. $
+;
+
+i/interest(user, a/ai())
+da/dangerous(a)
+d/agree(user, da)
+d{"confidence": -1}
+->
+$ Yeah, modern AI is a bit of a misnomer. It's not really intelligent, just really good at seeing patterns. No taking over the world, for now, I mean ever. $
+;
+
+
+

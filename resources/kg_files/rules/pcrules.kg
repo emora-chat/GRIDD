@@ -202,10 +202,24 @@ h1{"confidence": -1}
 have(user, android())
 ;
 
-h/have(user, i/iphone())
+h/have(user, ip/iphone())
 h{"confidence": 0}
 ->
 i:<i/improve(life, p/phone())>
 request_truth(emora, i)
 ;
 
+i/interest(user, a/ai())
+i{"confidence": 1}
+->
+d:<da/dangerous(a)
+d/agree(user, da)>
+request_truth(emora, da)
+;
+
+i/interest(user, ai())
+i{"confidence": -1}
+->
+r:<r/reason(i)>
+request(emora, r)
+;
