@@ -28,8 +28,7 @@ def identification_string(x, chars=None):
         string = chars[d] + string
     return string
 
-def collect(*files_folders_or_strings, extension=None, directory=None):
-    collected = []
+def collect(*files_folders_or_strings, extension=None):
     files_or_strings = []
     for ffs in files_folders_or_strings:
         if isinstance(ffs, str) and os.path.isdir(ffs):
@@ -38,17 +37,21 @@ def collect(*files_folders_or_strings, extension=None, directory=None):
                     files_or_strings.append(os.path.join(ffs, fs))
         else:
             files_or_strings.append(ffs)
+    counter = 0
+    collected = {}
     for ffs in sorted(files_or_strings):
         if not extension or (isinstance(ffs, str) and ffs.endswith(extension)):
             if os.path.isdir(ffs):
-                collected.extend(collect(ffs))
+                collected.update(collect(ffs))
             elif os.path.isfile(ffs):
                 with open(ffs, 'r') as f:
-                    collected.append(f.read())
+                    collected[ffs] = f.read()
             else:
-                collected.append(ffs)
+                collected[str(counter)] = ffs
+                counter += 1
         else:
-            collected.append(ffs)
+            collected[str(counter)] = ffs
+            counter += 1
     return collected
 
 class hashabledict(dict):

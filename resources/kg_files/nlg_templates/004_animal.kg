@@ -24,13 +24,13 @@ $ What kind of pet do you have ? $
 ;
 
 X/property(Z/pet())
-possess(user, Z)
+have(user, Z)
 request(emora, X)
 -> q_pet_property ->
 $ What is your Z like ? $
 ;
 
-possess(user, X/pet())
+have(user, X/pet())
 like(user, pred/event(object()))
 with(pred, X)
 request(emora, pred)
@@ -40,7 +40,7 @@ $ What do you like to do with your X ? $
 
 locate(X/park(), L/location())
 N/near(L, H/home())
-possess(user, H)
+have(user, H)
 request_truth(emora, N)
 ->
 $ Oh , is the park nearby where you live ? That would be so convenient ! $
@@ -62,14 +62,14 @@ $ I like to take my dog on walks because it motivates me to be healthy . $
 ;
 
 t/think(user, handful(X/pet()))
-possess(user, X)
+have(user, X)
 request_truth(emora, t)
 ->
 $ Well , your X must be a handful with so much energy , aren't they ? $
 ;
 
 e/event(X/pet()) crazy(e)
-possess(user, X)
+have(user, X)
 request(emora, e)
 ->
 $ I bet they keep your life interesting though. Like , what is the craziest thing they've ever done ? $
