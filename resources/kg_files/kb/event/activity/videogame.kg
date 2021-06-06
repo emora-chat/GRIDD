@@ -59,6 +59,7 @@ expr("final fantasy 15", finalfantasy15)
 
 machine=(entity)
 device=(machine)
+expr("console", device)
 xbox=(device)
 expr("xbox, xbox 1, xbox 360", xbox)
 playstation=(device)

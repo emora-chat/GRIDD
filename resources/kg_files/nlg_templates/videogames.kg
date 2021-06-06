@@ -302,3 +302,11 @@ be(v, o)
 ->
 $ I like a lot of videogames but one of my favorites has to be Minecraft. It gives you so much freedom to do whatever you want, not to mention the nostalgia. $
 ;
+
+possess(emora, d/device())
+favorite(d)
+req_unsat(request(user, o/object()))
+be(d, o)
+->
+$ I think that all the different devices you can play video games on are pretty great, but my personal favorite is the Nintendo. Their games are always a blast to play, and can usually be easily enjoyed with others. $
+;

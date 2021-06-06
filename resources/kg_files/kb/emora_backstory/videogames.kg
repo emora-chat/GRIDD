@@ -13,4 +13,8 @@ like(emora, smashbros)
 possess(emora, v/videogame())
 favorite(v)
 be(v, minecraft)
+possess(emora, d/device())
+for(d, videogame)
+favorite(d)
+be(v, nintendo)
 ;
