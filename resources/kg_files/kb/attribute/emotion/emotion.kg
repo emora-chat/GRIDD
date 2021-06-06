@@ -14,3 +14,8 @@ sorry=(emotion)
 glad=(emotion)
 
 inspired=(emotion)
+tired=(emotion)
+confident=(emotion)
+stressed=(emotion)
+expr("overwhelmed",stressed)
+excited=(emotion)

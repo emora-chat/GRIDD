@@ -22,6 +22,15 @@ friend=(person)
 girl=(person)
 boy=(person)
 
+peer=(person)
+colleague=(person)
+
+freshman=(person)
+sophomore=(person)
+junior=(person)
+senior=(person)
+
 sibling=(person)
 brother=(sibling)
 sister=(sibling)
+

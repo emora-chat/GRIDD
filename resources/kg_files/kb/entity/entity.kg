@@ -44,3 +44,27 @@ vitality=(entity)
 nightlife=(entity)
 diversity=(entity)
 background=(entity)
+
+;
+
+travel_reason=(entity)
+travelreason_business=(travel_reason)
+travelreason_family=(travel_reason)
+travelreason_friend=(travel_reason)
+travelreason_vacation=(travel_reason)
+
+;
+
+application=(entity)
+part=(entity)
+balance=(entity)
+
+fav_part_college=(entity)
+fav_peer=(fav_part_college)
+expr("having great peers, having supportive peers",fav_peer)
+
+research=(entity)
+meeting=(entity)
+club=(entity)
+internship=(entity)
+graduation=(entity)

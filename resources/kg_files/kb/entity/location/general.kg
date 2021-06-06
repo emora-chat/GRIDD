@@ -43,3 +43,7 @@ expr("close, near", near)
 
 nature=(entity)
 coastline=(nature)
+
+college=(location)
+library=(location)
+office=(location)
