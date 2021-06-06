@@ -1,5 +1,17 @@
-time(b/buy(user, h/house()), past)
+/* general activity */
+
+time(e/event(user), past)
+type(e, positive)
 ->
+l:<l/like(user, e)>
+request_truth(emora, l)
+;
+
+
+/* house purchase */
+
+time(b/buy(user, h/house()), past)
+-> user_bought_house ->
 econgrat(emora, b)
 ;
 
@@ -21,4 +33,20 @@ large(y)
 lo/love(emora_dog, y)
 would(lo)
 cause(lo, w)
+;
+
+
+/* work */
+
+time(w/work(user), past)
+->
+t:<on(w, t/task())>
+request(emora, t)
+;
+
+time(w/work(user), past)
+on(w, t/assignment())
+->
+a:<for(t, a/authority())>
+request(emora, a)
 ;

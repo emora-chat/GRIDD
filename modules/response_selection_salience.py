@@ -53,7 +53,7 @@ class ResponseSelectionSalience:
                         or not working_memory.has(node, USER_AWARE))
                    and working_memory.type(node) not in {'possess', 'referential', 'instantiative', 'ack_conf',
                                                          SPAN_DEF, SPAN_REF, ASSERT, USER_AWARE,
-                                                         TIME, EXPR, TYPE, REQ_ARG, REQ_TRUTH, REQ_SAT}]
+                                                         TIME, EXPR, TYPE, REQ_ARG, REQ_TRUTH, REQ_SAT, REQ_UNSAT}]
         salience_order = sorted(options, key=lambda x: x[1], reverse=True)
         if len(salience_order) > 0:
             return working_memory.predicate(salience_order[0][0]), 'nlg'

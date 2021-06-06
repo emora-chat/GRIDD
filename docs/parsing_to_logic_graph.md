@@ -85,8 +85,8 @@ Represented as `copula(sbj, request(user, question_concept))`.
 	cop(X/question_word(), Y/present_tense())
 	sbj(X, Z/pstg())
 	-> qw_copula_present ->
-	p/Y(Z, X)
-	request(user, X)
+	p/Y(Z, o/object())
+	request(user, o)
 	time(p, now)
 	focus(p)
 	center(X)
@@ -95,8 +95,8 @@ Represented as `copula(sbj, request(user, question_concept))`.
 	cop(X/question_word(), Y/past_tense())
 	sbj(X, Z/pstg())
 	-> qw_copula_past ->
-	p/Y(Z, X)
-	request(user, X)
+	p/Y(Z, o/object())
+	request(user, o)
 	time(p, past)
 	focus(p)
 	center(X)

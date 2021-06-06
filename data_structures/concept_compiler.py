@@ -50,12 +50,12 @@ class ConceptCompiler:
                 if block.strip():
                     parse_tree = self.parser.parse(block + ';')
                     self.visitor.visit(parse_tree)
-        if self.warn:
-            fr, ft = self.checks(self.visitor.entries, self.visitor.types,
-                                     self.visitor.instances, self.visitor.rmap)
-            for f, m in (fr, 'missing references'), (ft, 'missing types'):
-                if f:
-                    print(f'Found {m}:' + '\n  ' + "\n  ".join([str(e) for e in f]))
+        # if self.warn:
+        #     fr, ft = self.checks(self.visitor.entries, self.visitor.types,
+        #                              self.visitor.instances, self.visitor.rmap)
+        #     for f, m in (fr, 'missing references'), (ft, 'missing types'):
+        #         if f:
+        #             print(f'Found {m}:' + '\n  ' + "\n  ".join([str(e) for e in f]))
         return self.visitor.entries, self.visitor.links, self.visitor.metadatas
 
     def checks(self, entries, types, instances, rmap):
@@ -159,7 +159,7 @@ class ConceptVisitor(Visitor_Recursive):
         self.entries = []
         self.rules = set()
         self.metadatas = {}
-        self.expr_added = set()
+        # self.expr_added = set()
 
     def rule(self, tree):
         if not hasattr(tree.children[1], 'data'):
@@ -298,6 +298,9 @@ class ConceptVisitor(Visitor_Recursive):
             ei = self.globals.get()
             self.instances.add(ei)
             self.entries.append((f'"{instance}"', EXPR, instance, ei))
+            et = self.globals.get()
+            self.instances.add(et)
+            self.entries.append((f'"{instance}"', TYPE, "expression", et))
 
     def type_init(self, tree):
         newtype = [str(c) for c in tree.children[0].children]

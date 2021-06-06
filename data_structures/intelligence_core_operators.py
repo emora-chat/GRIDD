@@ -61,3 +61,6 @@ def op_more_info(cg, i):
     cg.metagraph.add_links(new, pre, REF)
     cg.metagraph.add_links(new, vars, VAR)
     cg.remove(i)
+
+def eturn(cg, i):
+    pass

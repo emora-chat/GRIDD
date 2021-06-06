@@ -63,3 +63,8 @@ remote=(property)
 stressful=(property)
 busy=(property)
 online=(property)
+
+possess=(have, predicate, obj_essential)
+positive=(property)
+negative=(property)
+

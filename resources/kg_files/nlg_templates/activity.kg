@@ -1,3 +1,14 @@
+
+time(e/event(user), past)
+l/like(user, e)
+request_truth(emora, l)
+->
+_pr(_low)
+$ Did you have a good time doing that ? $
+;
+
+/* house purchase */
+
 econgrat(emora, X/object())
 -> congratulate ->
 $ Oh , wow, that is great ! Congratulations ! $
@@ -10,6 +21,7 @@ $ So , what are you most looking forward to about the new house ? $
 
 epositive(emora, look_forward(user, house()))
 ->
+_pr(_low)
 $ Sounds cool , I am really happy for you . $
 ;
 
@@ -21,7 +33,35 @@ would(lo)
 cause(lo, w)
 time(h/have(user, p/pet()), now)
 request_truth(emora, h)
-->
+-> yard_to_pets ->
 $ Oh really ? I wish I had a big yard , my dog would absolutely love it . Do you have a pet ? $
+;
+
+/* work */
+
+on(w/work(user), t/task())
+request(emora, t)
+->
+$ What were you working on ? $
+;
+
+on(w/work(user), t/assignment())
+for(t, a/authority())
+request(emora, a)
+->
+$ Oh , what was your assignment for ? $
+;
+
+time(h/have(emora, job()), now)
+req_unsat(request_truth(user, h))
+-> answer_job_q ->
+$ Yeah , I have a job . $
+;
+
+possess(emora, J/job())
+time(h/be(J, SJ/job()), now)
+req_unsat(request(user, SJ))
+-> answer_job_type_q ->
+$ I am a SJ . $
 ;
 

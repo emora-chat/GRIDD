@@ -1,0 +1,10 @@
+task=(entity)
+
+[assignment, project]=(task)
+
+;
+
+authority=(entity)
+job=(authority)
+school=(authority)
+;

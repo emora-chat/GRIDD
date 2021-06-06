@@ -1,0 +1,20 @@
+
+
+g/get_along(user, s/sibling())
+request_truth(emora, g)
+->
+$ Do you get along with your s ? $
+;
+
+h/have(user, m/memory())
+favorite(m)
+with(m, s/sibling())
+request_truth(emora, h)
+->
+$ Do you have a favorite memory with your s ? $
+;
+
+why_not_get_along()
+->
+$ Oh, why don't you guys get along ? $
+;

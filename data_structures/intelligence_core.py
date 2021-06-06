@@ -6,7 +6,7 @@ from GRIDD.data_structures.concept_graph import ConceptGraph
 if INFERENCE:
     from GRIDD.data_structures.inference_engine import InferenceEngine
 from GRIDD.data_structures.concept_compiler import ConceptCompiler
-from GRIDD.utilities.utilities import uniquify, operators, interleave
+from GRIDD.utilities.utilities import uniquify, operators, interleave, _process_requests
 from itertools import chain, combinations
 from GRIDD.data_structures.update_graph import UpdateGraph
 from GRIDD.globals import *
@@ -14,23 +14,68 @@ from GRIDD.data_structures.assertions import assertions
 from GRIDD.data_structures.confidence import *
 from GRIDD.data_structures.id_map import IdMap
 
-import GRIDD.data_structures.intelligence_core_operators as intcoreops
+from GRIDD.modules.responsegen_by_templates import Template
 
+import GRIDD.data_structures.intelligence_core_operators as intcoreops
+from time import time
+import os, json
 
 class IntelligenceCore:
 
-    def __init__(self, knowledge_base=None, working_memory=None, inference_engine=None, device='cpu'):
+    def __init__(self, knowledge_base=None, inference_rules=None, nlg_templates=None, working_memory=None, inference_engine=None, device='cpu'):
+        """
+        knowledge_base is a dict of identifiers (usually filenames) to logicstrings
+        """
         self.compiler = ConceptCompiler(namespace='__c__', warn=True)
-        if INFERENCE:
-            self.nlg_inference_engine = InferenceEngine(device=device)
-            if inference_engine is None:
-                inference_engine = InferenceEngine(device=device)
-            self.inference_engine = inference_engine
+
         if isinstance(knowledge_base, ConceptGraph):
             self.knowledge_base = knowledge_base
         else:
             self.knowledge_base = ConceptGraph(namespace=KB)
-            self.know(knowledge_base, emora_knowledge=True)
+            if USECACHE:
+                cached_knowledge, new_knowledge = self.stratify_cached_files(KBCACHE, knowledge_base)
+                self.load_kb(cached_knowledge, new_knowledge, knowledge_base, KBCACHE)
+            else:
+                new_knowledge = knowledge_base.items()
+                for k, v in new_knowledge:
+                    self.know(v, self.knowledge_base, emora_knowledge=True)
+
+        print('checking kb')
+        self._check(self.knowledge_base)
+
+        if INFERENCE:
+            self.nlg_inference_engine = InferenceEngine(device=device)
+            if nlg_templates is not None and not isinstance(nlg_templates, ConceptGraph):
+                print('checking templates')
+                if USECACHE:
+                    cached_knowledge, new_knowledge = self.stratify_cached_files(NLGCACHE, nlg_templates)
+                    self.load_templates(cached_knowledge, new_knowledge, nlg_templates, NLGCACHE)
+                else:
+                    nlg = nlg_templates.items()
+                    for k,v in nlg:
+                        nlg_templates = ConceptGraph(namespace='t_')
+                        self.know(v, nlg_templates, emora_knowledge=True, identify_nonasserts=True)
+                        templates = nlg_templates.nlg_templates()
+                        self.nlg_inference_engine.add(templates, nlg_templates.id_map().namespace)
+                        self._check(nlg_templates, use_kb=True, file=k)
+
+            if inference_engine is None:
+                inference_engine = InferenceEngine(device=device)
+            self.inference_engine = inference_engine
+            if inference_rules is not None and not isinstance(inference_rules, ConceptGraph):
+                print('checking rules')
+                if USECACHE:
+                    cached_knowledge, new_knowledge = self.stratify_cached_files(INFCACHE, inference_rules)
+                    self.load_rules(cached_knowledge, new_knowledge, inference_rules, INFCACHE)
+                else:
+                    rules = inference_rules.items()
+                    for k, v in rules:
+                        inference_rules = ConceptGraph(namespace='t_')
+                        self.know(v, inference_rules, emora_knowledge=True, identify_nonasserts=True)
+                        inferences = inference_rules.rules()
+                        self.inference_engine.add(inferences, inference_rules.id_map().namespace)
+                        self._check(inference_rules, use_kb=True, file=k)
+
         if isinstance(working_memory, ConceptGraph):
             self.working_memory = working_memory
         else:
@@ -42,28 +87,131 @@ class IntelligenceCore:
         self.obj_essential_types = {i for i in self.knowledge_base.subtypes_of(OBJ_ESSENTIAL)
                                 if not self.knowledge_base.has(predicate_id=i)}
 
-    def know(self, knowledge, **options):
-        cg = ConceptGraph(namespace='_tmp_')
-        ConceptGraph.construct(cg, knowledge, compiler=self.compiler)
-        self._loading_options(cg, options)
-        self._assertions(cg)
-        nlg_templates = cg.nlg_templates()
-        for rule, (pre, _, vars) in nlg_templates.items():
-            for concept in vars:
-                cg.remove(concept)
-            cg.remove(rule)
-        for concept in set(cg.subtypes_of('response_token')):
-            cg.remove(concept)
-        if INFERENCE:
-            self.nlg_inference_engine.add(nlg_templates)
-        rules = cg.rules()
-        for rule, (pre, post, vars) in rules.items():
-            for concept in vars:
-                cg.remove(concept)
-            cg.remove(rule)
-        if INFERENCE:
-            self.inference_engine.add(rules)
-        self.knowledge_base.concatenate(cg)
+    def stratify_cached_files(self, type, sources):
+        if not os.path.exists(type):
+            os.mkdir(type)
+        cached_files = {f.replace(CACHESEP, os.sep).replace('.json', '') for f in os.listdir(type) if os.path.isfile(os.path.join(type, f))}
+        compat_knowledge_files = set(sources.keys())
+        cached_knowledge = cached_files.intersection(compat_knowledge_files)
+        new_knowledge = compat_knowledge_files.difference(cached_knowledge)
+
+        up_to_date_cached = {c for c in cached_knowledge
+                             if os.path.getmtime(os.path.join(type, (c+'.json').replace(os.sep, CACHESEP)))
+                             > os.path.getmtime(c)}
+        new_knowledge.update(cached_knowledge.difference(up_to_date_cached))
+        up_to_date_cached = {(c + '.json').replace(os.sep, CACHESEP) for c in up_to_date_cached}
+        return up_to_date_cached, new_knowledge
+
+    def load_kb(self, cached, new_content, source, dir):
+        for file in source:
+            cache_version = (file + '.json').replace(os.sep, CACHESEP)
+            if cache_version in cached:
+                with open(os.path.join(dir, cache_version), 'r') as f:
+                    d = json.load(f)
+                cached_cg = ConceptGraph(namespace=d['namespace'])
+                cached_cg.load(d)
+                self.know(cached_cg, self.knowledge_base)
+            elif file in new_content:
+                v = source[file]
+                new_cg = self.know(v, self.knowledge_base, emora_knowledge=True)
+                savefile = os.path.join(dir, (file + '.json').replace(os.sep, CACHESEP))
+                new_cg.save(savefile)
+            else:
+                raise Exception('File %s not in cached or new'%file)
+
+    def load_templates(self, cached, new_content, source, dir):
+        for file in source:
+            cache_version = (file + '.json').replace(os.sep, CACHESEP)
+            if cache_version in cached:
+                with open(os.path.join(dir, cache_version), 'r') as f:
+                    d = json.load(f)
+                templates = {}
+                mega_template_cg = None
+                for rule, (pre, post, vars) in d.items():
+                    pre_cg = ConceptGraph(namespace=pre['namespace'])
+                    pre_cg.load(pre)
+                    template_obj = Template(None, None)
+                    template_obj.load(post)
+                    vars = set(vars)
+                    templates[rule] = (pre_cg, template_obj, vars)
+                    if mega_template_cg is None:
+                        mega_template_cg = ConceptGraph(namespace=pre['namespace'])
+                    mega_template_cg.concatenate(pre_cg)
+                self.nlg_inference_engine.add(templates, pre_cg.id_map().namespace)
+                if mega_template_cg is not None:
+                    self._check(mega_template_cg, use_kb=True, file=file)
+            elif file in new_content:
+                v = source[file]
+                nlg_templates = ConceptGraph(namespace='t_')
+                self.know(v, nlg_templates, emora_knowledge=True, identify_nonasserts=True)
+                templates = nlg_templates.nlg_templates()
+                savefile = os.path.join(dir, (file + '.json').replace(os.sep, CACHESEP))
+                d = {rule: (pre.save(), post.save(), list(vars)) for rule,(pre,post,vars) in templates.items()}
+                with open(savefile, 'w') as f:
+                    json.dump(d, f, indent=2)
+                self.nlg_inference_engine.add(templates, nlg_templates.id_map().namespace)
+                self._check(nlg_templates, use_kb=True, file=file)
+            else:
+                raise Exception('File %s not in cached or new' % file)
+
+    def load_rules(self, cached, new_content, source, dir):
+        for file in source:
+            cache_version = (file + '.json').replace(os.sep, CACHESEP)
+            if cache_version in cached:
+                with open(os.path.join(dir, cache_version), 'r') as f:
+                    d = json.load(f)
+                rules = {}
+                mega_rule_cg = None
+                for rule, (pre, post, vars) in d.items():
+                    pre_cg = ConceptGraph(namespace=pre['namespace'])
+                    pre_cg.load(pre)
+                    post_cg = ConceptGraph(namespace=post['namespace'])
+                    post_cg.load(post)
+                    vars = set(vars)
+                    rules[rule] = (pre_cg, post_cg, vars)
+                    if mega_rule_cg is None:
+                        mega_rule_cg = ConceptGraph(namespace=pre['namespace'])
+                    mega_rule_cg.concatenate(pre_cg)
+                    mega_rule_cg.concatenate(post_cg)
+                self.inference_engine.add(rules, pre_cg.id_map().namespace)
+                if mega_rule_cg is not None:
+                    self._check(mega_rule_cg, use_kb=True, file=file)
+            elif file in new_content:
+                v = source[file]
+                inference_rules = ConceptGraph(namespace='t_')
+                self.know(v, inference_rules, emora_knowledge=True, identify_nonasserts=True)
+                inferences = inference_rules.rules()
+                savefile = os.path.join(dir, (file + '.json').replace(os.sep, CACHESEP))
+                d = {rule: (pre.save(), post.save(), list(vars)) for rule,(pre,post,vars) in inferences.items()}
+                with open(savefile, 'w') as f:
+                    json.dump(d, f, indent=2)
+                self.inference_engine.add(inferences, inference_rules.id_map().namespace)
+                self._check(inference_rules, use_kb=True, file=file)
+            else:
+                raise Exception('File %s not in cached or new' % file)
+
+    def _check(self, cg, file=None, use_kb=False):
+        for c in cg.concepts():
+            if c not in ConceptCompiler._default_predicates \
+                and c not in ConceptCompiler._default_types \
+                and not cg.has(predicate_id=c):
+                if len(cg.objects(c, TYPE)) == 0:
+                    if not use_kb:
+                        print('\t%s'%(c))
+                    else:
+                        if len(self.knowledge_base.objects(c, TYPE)) == 0:
+                            print('\t%s (%s)'%(c, file))
+
+    def know(self, knowledge, source_cg, **options):
+        if not isinstance(knowledge, ConceptGraph):
+            cg = ConceptGraph(namespace='_tmp_')
+            ConceptGraph.construct(cg, knowledge, compiler=self.compiler)
+            self._loading_options(cg, options)
+            self._assertions(cg)
+        else:
+            cg = knowledge
+        source_cg.concatenate(cg)
+        return cg
 
     def consider(self, concepts, namespace=None, associations=None, evidence=None, salience=1, **options):
         if isinstance(concepts, ConceptGraph):
@@ -101,8 +249,10 @@ class IntelligenceCore:
             for sol in sols:
                 implied = ConceptGraph(namespace=post._ids)
                 for pred in post.predicates():
-                    pred = [sol.get(x, x) for x in pred]
-                    implied.add(*pred)
+                    if pred[3] not in sol:
+                        # if predicate instance is not in solutions, add to implication; otherwise, it already exists in WM
+                        pred = [sol.get(x, x) for x in pred]
+                        implied.add(*pred)
                 for concept in post.concepts():
                     concept = sol.get(concept, concept)
                     implied.add(concept)
@@ -151,6 +301,7 @@ class IntelligenceCore:
                             old_solution = True
                             break
                 if not old_solution:
+                    _process_requests(implication)
                     implied_nodes = self.consider(implication, evidence=evidence.values())
                     and_node = self.working_memory.id_map().get()
                     self.working_memory.features[and_node]['origin_rule'] = rule # store the implication rule that resulted in this and_node as metadata
@@ -302,18 +453,20 @@ class IntelligenceCore:
         Convert `gather_link` predicate instances, which point to spans, to new predicate instances
         of types `promote_links` (list of predicate types), which will now point to the predicate components of the span
         """
+        ignore = {'focus', 'center', 'var'}
+        if gather_link == REF_SP:
+            ignore.update({REQ_TRUTH, REQ_ARG}) # also ignore request predicates when gathering reference constraints
         node_to_spans = {}
         for s, t, _ in self.working_memory.metagraph.edges(label=gather_link):
             node_to_spans.setdefault(s, []).append(t)
         for node, span in node_to_spans.items():
-            constraints = self.gather(node, span)
+            constraints = self.gather(node, span, ignore)
             for type in promote_links:
                 self.working_memory.metagraph.add_links(node, constraints, type)
             for t in span:
                 self.working_memory.metagraph.remove(node, t, gather_link)
 
-    def gather(self, reference_node, constraints_as_spans):
-        PRIMITIVES = {'focus', 'center', REQ_TRUTH, REQ_ARG, 'var'}
+    def gather(self, reference_node, constraints_as_spans, ignore):
         constraints = set()
         focal_nodes = set()
         for constraint_span in constraints_as_spans:
@@ -334,7 +487,7 @@ class IntelligenceCore:
             # constraint found if constraint predicate is connected to reference node
             for component in components:
                 if (not self.working_memory.has(predicate_id=component) or
-                    self.working_memory.type(component) not in PRIMITIVES) and \
+                    self.working_memory.type(component) not in ignore) and \
                         self.working_memory.graph_component_siblings(component, reference_node):
                     constraints.add(component)
         return list(constraints)
@@ -497,13 +650,16 @@ class IntelligenceCore:
     def prune_attended(self, keep):
         options = set()
         for s, t, o, i in self.working_memory.predicates():
-            if t == 'type':
-                if not self.working_memory.features.get(s, {}).get(IS_TYPE, False):
-                    preds = {pred for pred in self.working_memory.related(s) if self.working_memory.has(predicate_id=pred) and pred[1] != 'type'}
-                    if not preds:
-                        options.add(i)
-            elif t not in chain(self.subj_essential_types, self.obj_essential_types, PRIM):
-                options.add(i)
+            # cannot prune `i` if it is a reference constraint of another concept
+            is_constraint_of = self.working_memory.metagraph.sources(i, REF)
+            if len(is_constraint_of) == 0:
+                if t == 'type':
+                    if not self.working_memory.features.get(s, {}).get(IS_TYPE, False):
+                        preds = {pred for pred in self.working_memory.related(s) if self.working_memory.has(predicate_id=pred) and pred[1] != 'type'}
+                        if not preds:
+                            options.add(i)
+                elif t not in chain(self.subj_essential_types, self.obj_essential_types, PRIM):
+                    options.add(i)
 
         sconcepts = sorted(options,
                            key=lambda x: self.working_memory.features.get(x, {}).get(SALIENCE, 0),
@@ -538,13 +694,18 @@ class IntelligenceCore:
         if 'attention_shift' in options:
             pass
         if 'emora_knowledge' in options:
-            # convincable predicates are predicate instances that are objects of any request predicate
+            # convincable predicates are predicate instances that are objects of a request_truth predicate
             for s,t,o,i in cg.predicates():
                 if cg.has('emora', REQ_TRUTH, i) or cg.has('emora', REQ_ARG, i):
                     cg.features[i][CONVINCABLE] = 1.0
                 else:
                     cg.features[i][CONVINCABLE] = 0.0
-
+        if 'identify_nonasserts' in options:
+            # loading rules and templates separate from KB disassociates the predicates from their types
+            # to preserve nonassertion of confidence, need to retrieve nonassert types where appropriate
+            for s,t,o,i in list(cg.predicates()):
+                if NONASSERT in self.knowledge_base.types(t) and not cg.has(t, 'type', NONASSERT):
+                    cg.add(t,'type', NONASSERT)
         if 'assert_conf' in options:
             self._assertions(cg)
 

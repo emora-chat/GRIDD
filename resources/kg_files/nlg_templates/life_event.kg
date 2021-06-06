@@ -1,0 +1,17 @@
+time(g/go(user), past)
+esympathy(emora, g)
+feel(user, e/emotion())
+request(emora, e)
+->
+_pr(_high)
+$ I am so sorry to hear that . How are you doing ? $
+;
+
+time(g/go(user), past)
+to(g, ga/gathering())
+epositive(emora, g)
+e/event(object())
+at(e, ga)
+->
+$ Oh , that sounds nice ! Did anything exciting happen there ? $
+;
