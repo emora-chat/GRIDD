@@ -55,7 +55,7 @@ class ResponseTemplateFiller:
             preds = [cg.predicate(x) for x in match_dict.values() if cg.has(predicate_id=x)
                      and cg.type(x) not in {EXPR, TYPE, TIME}]
             req_pred = [cg.predicate(x) for x in match_dict.values() if cg.has(predicate_id=x)
-                        and cg.type(x) in {REQ_ARG, REQ_TRUTH}]
+                        and cg.type(x) in {REQ_ARG, REQ_TRUTH} and cg.subject(x) == 'emora'] # check if emora already asked question
             user_awareness = [cg.has(x[3], USER_AWARE) for x in preds]
             user_req_awareness = [cg.has(x[3], USER_AWARE) for x in req_pred]
             if False in user_awareness and (not user_req_awareness or True not in user_req_awareness):

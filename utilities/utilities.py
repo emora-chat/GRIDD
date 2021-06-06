@@ -131,7 +131,7 @@ def _process_requests(cg):
     for s,t,o,i in chain(cg.predicates(predicate_type=REQ_ARG), cg.predicates(predicate_type=REQ_TRUTH)):
         if not cg.has(i, REQ_SAT):
             i2 = cg.add(i, REQ_UNSAT)
-            cg.features[i2][BASE_CONFIDENCE] = 1.0
+            cg.features[i2][BASE_UCONFIDENCE] = 1.0
 
 def _process_answers(cg, request):
     i = cg.add(request, REQ_SAT)

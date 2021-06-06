@@ -52,3 +52,9 @@ request(emora, a)
 $ Oh , what was your assignment for ? $
 ;
 
+time(h/have(emora, job()), now)
+req_unsat(request_truth(user, h))
+-> answer_job_q ->
+$ Yeah , I have a job . $
+;
+
