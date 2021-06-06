@@ -73,7 +73,7 @@ class ResponseExpansion:
                     if t != EXPR:
                         spoken_predicates.add(i)
                         # emora turn tracking
-                        for c in [s,t,o,i]:
+                        for c in [s,o,i]:
                             if c is not None and not wm.has(c, ETURN, str(aux_state.get('turn_index', '_err_'))):
                                 i = wm.add(c, ETURN, str(aux_state.get('turn_index', '_err_')))
                                 wm.features[i][BASE_UCONFIDENCE] = 1.0

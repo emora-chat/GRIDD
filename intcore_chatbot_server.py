@@ -427,7 +427,7 @@ class ChatbotServer:
         emora_truth_requests = [pred for pred in wm.predicates('emora', REQ_TRUTH) if
                                 wm.has(pred[3], USER_AWARE) and not wm.has(pred[3], REQ_SAT)
                                 and (pred[2].startswith(KB) or pred[2].startswith(WM))
-                                and wm.features.get(pred[3], {}).get(SALIENCE, 0) >= 0.8]
+                                and wm.has(pred[3], ETURN, str(aux_state.get('turn_index', -1)-1))]
         if len(emora_truth_requests) > 0:
             salient_emora_truth_request = max(emora_truth_requests,
                                               key=lambda pred: wm.features.get(pred[3], {}).get(SALIENCE, 0))
@@ -435,7 +435,7 @@ class ChatbotServer:
         emora_arg_requests = [pred for pred in wm.predicates('emora', REQ_ARG) if
                               wm.has(pred[3], USER_AWARE) and not wm.has(pred[3], REQ_SAT)
                               and (pred[2].startswith(KB) or pred[2].startswith(WM)) # hotfix to avoid incorrect request predicate setups where thing being requested is not a variable
-                              and wm.features.get(pred[3], {}).get(SALIENCE, 0) >= 0.8]
+                              and wm.has(pred[3], ETURN, str(aux_state.get('turn_index', -1)-1))]
         if len(emora_arg_requests) > 0:
             salient_emora_arg_request = max(emora_arg_requests,
                                             key=lambda pred: wm.features.get(pred[3], {}).get(SALIENCE, 0))
