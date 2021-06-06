@@ -58,3 +58,10 @@ req_unsat(request_truth(user, h))
 $ Yeah , I have a job . $
 ;
 
+possess(emora, J/job())
+time(h/be(J, SJ/job()), now)
+req_unsat(request(user, SJ))
+-> answer_job_type_q ->
+$ I am a SJ . $
+;
+

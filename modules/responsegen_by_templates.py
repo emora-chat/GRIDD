@@ -226,15 +226,16 @@ class ResponseTemplateFiller:
             return None, expr_dict[match]
         else:  # not a named concept
             np = self.nlgFactory.createNounPhrase()
-            noun = self._unnamed_noun(cg, match)
+            noun = self._unnamed_noun(cg, match, expr_dict)
             np.setNoun(noun)
             return np, self.realiser.realiseSentence(np)[:-1]
 
 
-    def _unnamed_noun(self, cg, match):
+    def _unnamed_noun(self, cg, match, expr_dict):
         # need to get main type
         match_types = cg.types(match)
         main_type = self._concrete_type(cg, match)
+        main_type = expr_dict.get(main_type, main_type)
         noun = self.nlgFactory.createNLGElement(main_type, LexicalCategory.NOUN)
         # whether group
         if GROUP in match_types:

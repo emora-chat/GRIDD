@@ -453,18 +453,20 @@ class IntelligenceCore:
         Convert `gather_link` predicate instances, which point to spans, to new predicate instances
         of types `promote_links` (list of predicate types), which will now point to the predicate components of the span
         """
+        ignore = {'focus', 'center', 'var'}
+        if gather_link == REF_SP:
+            ignore.update({REQ_TRUTH, REQ_ARG}) # also ignore request predicates when gathering reference constraints
         node_to_spans = {}
         for s, t, _ in self.working_memory.metagraph.edges(label=gather_link):
             node_to_spans.setdefault(s, []).append(t)
         for node, span in node_to_spans.items():
-            constraints = self.gather(node, span)
+            constraints = self.gather(node, span, ignore)
             for type in promote_links:
                 self.working_memory.metagraph.add_links(node, constraints, type)
             for t in span:
                 self.working_memory.metagraph.remove(node, t, gather_link)
 
-    def gather(self, reference_node, constraints_as_spans):
-        PRIMITIVES = {'focus', 'center', 'var'} #REQ_TRUTH, REQ_ARG,
+    def gather(self, reference_node, constraints_as_spans, ignore):
         constraints = set()
         focal_nodes = set()
         for constraint_span in constraints_as_spans:
@@ -485,7 +487,7 @@ class IntelligenceCore:
             # constraint found if constraint predicate is connected to reference node
             for component in components:
                 if (not self.working_memory.has(predicate_id=component) or
-                    self.working_memory.type(component) not in PRIMITIVES) and \
+                    self.working_memory.type(component) not in ignore) and \
                         self.working_memory.graph_component_siblings(component, reference_node):
                     constraints.add(component)
         return list(constraints)

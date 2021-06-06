@@ -121,6 +121,7 @@ class ChatbotServer:
                 os.mkdir(NLUCACHE)
             cached = {f for f in os.listdir(NLUCACHE) if os.path.isfile(os.path.join(NLUCACHE, f))}
             cache_version = (file + '.json').replace(os.sep, CACHESEP)
+            cached = {c for c in cached if os.path.getmtime(os.path.join(NLUCACHE, c)) > os.path.getmtime(c.replace(CACHESEP, os.sep).replace('.json',''))}
             if cache_version in cached:
                 with open(os.path.join(NLUCACHE, cache_version), 'r') as f:
                     d = json.load(f)
@@ -380,7 +381,7 @@ class ChatbotServer:
                         for node in match:
                             if node != reference_node:
                                 compatible_pairs[reference_node][match[reference_node]].append((match[node], node))
-            pairs_to_merge = []
+            pairs_to_merge = [] # todo - make into a set???
             for ref_node, compatibilities in compatible_pairs.items():
                 resolution_options = []
                 span_def = None
