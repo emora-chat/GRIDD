@@ -169,7 +169,7 @@ $ I think most people think so. For me, technology can be both bad and good, but
 t/talk(user)
 about(t,ai())
 i/like(user, t)
-request_truth(i)
+request_truth(emora, i)
 ->
 $ Do you like talking about Artificial Intelligence? Of course, you kinda have to be to talk to me, right? $
 ;
@@ -182,7 +182,7 @@ r:<r/reason(i)>
 request(emora, r)
 ->
 _pr(_high)
-$ Wow, that icebreaker has never failed me beofre! Why aren't you interested in AI ? $
+$ Wow, that icebreaker has never failed me before! Why aren't you interested in AI ? $
 ;
 
 t/talk(user)
