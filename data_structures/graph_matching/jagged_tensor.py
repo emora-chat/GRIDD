@@ -36,6 +36,13 @@ class JaggedTensor:
         val_indices = linear[linear >= 0]
         return self.values[val_indices]
 
+    def map(self, indices):
+        padded = self.indices[indices]
+        results = padded >= 0
+        inverse = torch.nonzero(results)[:,0]
+        val_indices = torch.flatten(padded[results])
+        return self.values[val_indices], inverse
+
 if __name__ == '__main__':
     t = JaggedTensor([
         [4, 2, 5, 6],
@@ -45,3 +52,10 @@ if __name__ == '__main__':
 
     v = t[[2, 2, 0]]
     print(v)
+
+    k = torch.LongTensor([2, 2, 0, 1])
+    v, i = t.map(k)
+    print(v.long())
+    print(i)
+    print(k[i])
+    print(torch.cat([k[i].unsqueeze(1), v.unsqueeze(1)], 1))

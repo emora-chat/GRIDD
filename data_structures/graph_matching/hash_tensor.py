@@ -3,7 +3,7 @@ import torch
 from GRIDD.data_structures.graph_matching.primes import prime
 
 
-class GpuHashMap:
+class HashTensor:
     """
     Create a hash map to concurrently access integer -> integer
     values. Keys must be >= 0.
@@ -72,7 +72,7 @@ class GpuHashMap:
 
 
 if __name__ == '__main__':
-    m = GpuHashMap({
+    m = HashTensor({
         6: -6,
         2: -2,
         5: -5,
@@ -80,7 +80,7 @@ if __name__ == '__main__':
         17: -17
     })
 
-    k = torch.LongTensor([2, 6, 6, 5, 3, 2, 18, 17, 17, 18, 19, 19, 20])
+    k = torch.LongTensor([2, 6, 6, 5, 3, 2, 18, 17, 17, 18])
     v = m[k]
 
     print(v)

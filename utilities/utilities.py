@@ -244,5 +244,55 @@ def spanning_tree_linearized(wm, nlg_training_mode=True):
     rep = rep.replace('EMORA', '_bot_').replace('USER', '_user_')
     return rep
 
+class TensorDisplay:
+
+    def __init__(self, displaying=True):
+        self.displaying = displaying
+
+    def __call__(self, x, *ids, label=None):
+        """
+        Print tensor in a readable form with IdMaps to show element meanings.
+
+        ids: IdMap for each column (or dimension if 2D tensor)
+        label: label for display
+        """
+        return self.display(x, *ids, label=label)
+
+    def display(self, x, *ids, label=None):
+        """
+        Print tensor in a readable form with IdMaps to show element meanings.
+
+        ids: IdMap for each column (or dimension if 2D tensor)
+        label: label for display
+        """
+        if self.displaying:
+            if label is not None:
+                print(label, ':')
+            ids = [(e.reverse() if e is not None else e) for e in ids]
+            if len(ids) == x.size()[1]:
+                for row in x:
+                    to_print = []
+                    for i, e in enumerate(row):
+                        if hasattr(ids[i], '__getitem__'):
+                            e_ = ids[i].get(int(e), int(e))
+                        else:
+                            e_ = int(e)
+                        if isinstance(e_, tuple):
+                            _, e_ = e_
+                        to_print.append(str(e_))
+                    print(('{:10}'*len(row)).format(*to_print))
+            else:
+                colnames = [((ids[1][i]) if ids[1] is not None else '') for i in range(x.size(1))]
+                print((' '*9+'{:>9}'*x.size(1)).format(*colnames))
+                for i in range(x.size(0)):
+                    s = x.size(1)
+                    fmtstr = '{:>9}'+'{:>9}'*int(s)
+                    args = [ids[0][i], *[int(j) for j in x[i]]]
+                    for i, arg in enumerate(args):
+                        if isinstance(arg, tuple):
+                            args[i] = arg[1]
+                    print(fmtstr.format(*args))
+            print()
+
 if __name__ == '__main__':
     pass
