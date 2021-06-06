@@ -65,7 +65,7 @@ request(emora, i)
 ;
 
 /* Plays some sport */
-l/play(user, u/unknown_sport())
+pl/play(user, u/unknown_sport())
 user_aware(pl)
 -> person_plays_sport_that_we_dont_handle ->
 i:<i/property(u)>
