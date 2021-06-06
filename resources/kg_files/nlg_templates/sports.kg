@@ -105,7 +105,7 @@ play(user, tennis)
 request(emora, X)
 -> q_tennis_opinion ->
 _pr(_high)
-$ Tennis is a great sport. How would you describe playing it? $
+$ Tennis is a great sport, but I'm not too familiar with it. How would you describe playing it? $
 ;
 
 X/property(soccer)
@@ -174,7 +174,7 @@ $ Oh, if you don't play any sports now, do you want to try any in the future? I 
 l/like(user, g/basketball_team())
 request(emora, g)
 ->
-$ Since you like basketball, what's your favorite team? $
+$ Since you like basketball, what's your favorite team? Mine is the L A Lakers. It's too bad they got knocked out first round.$
 ;
 
 l/like(user, g/soccer_team())
