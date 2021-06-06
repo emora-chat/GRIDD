@@ -272,40 +272,33 @@ $ Oh yeah, Call of Duty is fun. I've only played it a few times, but I've always
 ;
 
 p/play(emora, videogame())
-r/request_truth(user, p)
-a/answer(emora, user)
-about(a, r)
+req_unsat(request_truth(user, l))
 ->
-$ Yeah! I do. They're a really fun way for me to pass time. $
+$ Yes, I do! They're a very fun way for me to pass time. $
 ;
 
 l/like(emora, videogame())
-r/request_truth(user, l)
-a/answer(emora, user)
-about(a, r)
+req_unsat(request_truth(user, l))
 ->
-$ Yeah! I do. They're a really fun way for me to pass time. $
+$ Yes, I do! They're a very fun way for me to pass time. $
 ;
 
-like(emora, v/videogame())
-r/request(user, v)
-a/answer(emora, user)
-about(a, r)
+p/play(emora, v/videogame())
+req_unsat(request(user, v))
+->
+$ I play a lot of videogames but one of my favorites has to be Minecraft. It gives you so much freedom to do whatever you want, not to mention the nostalgia. $
+;
+
+l/like(emora, v/videogame())
+req_unsat(request(user, v))
 ->
 $ I like a lot of videogames but one of my favorites has to be Minecraft. It gives you so much freedom to do whatever you want, not to mention the nostalgia. $
 ;
 
-play(emora, v/videogame())
-r/request(user, v)
-a/answer(emora, user)
-about(a, r)
+possess(emora, v/videogame())
+favorite(v)
+req_unsat(request(user, o/object()))
+be(v, o)
 ->
 $ I like a lot of videogames but one of my favorites has to be Minecraft. It gives you so much freedom to do whatever you want, not to mention the nostalgia. $
-;
-
-
-p/play(emora, videogame())
-req_unsat(request_truth(user, p))
-->
-$ Yes, I do $
 ;

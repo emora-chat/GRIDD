@@ -318,30 +318,3 @@ agree(emora, p)
 pred:<cause(pred/predicate(), p)>
 request(emora, pred)
 ;
-
-p/play(emora, videogame())
-r/request_truth(user, p)
-->
-affirm(emora, r)
-;
-
-l/like(emora, videogame())
-r/request_truth(user, l)
-->
-a/answer(emora, user)
-about(a, r)
-;
-
-like(emora, v/videogame())
-r/request(user, v)
-->
-a/answer(emora, user)
-about(a, r)
-;
-
-play(emora, v/videogame())
-r/request(user, v)
-->
-a/answer(emora, user)
-about(a, r)
-;
