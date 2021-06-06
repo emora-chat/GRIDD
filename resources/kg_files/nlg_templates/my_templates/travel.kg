@@ -36,7 +36,7 @@ request(emora, pred)
 $ What do you like to do for trips ? I love going to beaches during my vacations . $
 ;
 
-gx/go(x/person())
+gx/go(X/person())
 to(gx,c/country())
 time(gx,past)
 request(emora,c)

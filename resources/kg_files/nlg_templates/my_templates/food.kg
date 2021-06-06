@@ -89,7 +89,7 @@ time(g/intend_to_consume(user, d/drinkable()), future)
 g{"confidence": -1}
 understand(emora,g)
 he/thirsty(emora)
-ne/drink(emora,f)
+ne/drink(emora,d2/drinkable())
 not(ne)
 but(he,ne)
 ->
