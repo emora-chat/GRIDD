@@ -7,7 +7,7 @@ class ResponseExpansion:
     def __init__(self, kb):
         self.knowledge_base = kb
 
-    def __call__(self, main_predicates, working_memory):
+    def __call__(self, main_predicates, working_memory, aux_state):
         """
         Select the supporting predicates for the main predicates.
         Update the node features of the selected predicates.
@@ -55,10 +55,10 @@ class ResponseExpansion:
             elif generation_type == 'template':
                 # predicate is a tuple (response utterance, list of all selected predicates)
                 responses.append((predicate[0], predicate[1], generation_type))
-        responses = self.apply_dialogue_management_on_response(responses, wm)
+        responses = self.apply_dialogue_management_on_response(responses, wm, aux_state)
         return responses, working_memory
 
-    def apply_dialogue_management_on_response(self, responses, wm):
+    def apply_dialogue_management_on_response(self, responses, wm, aux_state):
         final_responses = []
         for main, exps, generation_type in responses: # exps contains main predicate too
             final_exps = []
@@ -72,6 +72,11 @@ class ResponseExpansion:
                     final_exps.append((s,t,o,i))
                     if t != EXPR:
                         spoken_predicates.add(i)
+                        # emora turn tracking
+                        for c in [s,o,i]:
+                            if c is not None and not wm.has(c, ETURN, str(aux_state.get('turn_index', '_err_'))):
+                                i = wm.add(c, ETURN, str(aux_state.get('turn_index', '_err_')))
+                                wm.features[i][BASE_UCONFIDENCE] = 1.0
             final_responses.append((main, final_exps, generation_type))
             self.assign_cover(wm, concepts=spoken_predicates)
             self.assign_salience(wm, concepts=spoken_predicates)

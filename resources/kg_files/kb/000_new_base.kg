@@ -62,4 +62,6 @@ user_aware = (predicate)
 
 _pr=(predicate)
 [_low,_high]=(object)
+
+[user_turn, _user_turn, emora_turn, _emora_turn]=(predicate, subj_essential)
 ;

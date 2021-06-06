@@ -1,3 +1,38 @@
+/* User Travels */
+
+time(t/travel(user),z/datetime())
+t{"confidence": 0}
+user_aware(t)
+-> user_travel ->
+p:<time(possess(user,tp/trip()),z) p/property(tp)>
+request(emora,p)
+;
+
+time(t/travel(user),z/datetime())
+t{"confidence": 0}
+user_aware(t)
+-> ask_if_user_likes_trip ->
+l:<l/like(user,tp/trip())>
+request_truth(emora,l)
+;
+
+time(t/travel(user),z/datetime())
+t{"confidence": 0}
+user_aware(t)
+-> ask_what_user_does_in_trips ->
+pred:<like(user, pred/event(object())) for(pred, tp/trip()) type(tp,group)>
+request(emora, pred)
+;
+
+prop_i/property(tp/trip())
+prop_i{"confidence": 0}
+req/request(emora, prop_i)
+user_aware(req)
+-> ask_user_like_travel ->
+l:<l/like(user,travel(user))>
+request_truth(emora,l)
+;
+
 t/travel(x/person()) like(x,t)
 ->
 c:<gx/go(x) to(gx,c/country()) time(gx,past)>
@@ -10,6 +45,16 @@ gi/get(emora,inspired())
 git/from(gi,te)
 ;
 
+t/travel(x/person())
+lt/like(x,t)
+lt{"confidence":-1}
+->
+es/stay(emora)
+at(es,home)
+lc:<lc/like(x,cook(x))>
+request_truth(emora,lc)
+;
+
 gx/go(x/person())
 to(gx,china)
 ->
@@ -17,7 +62,7 @@ possess(emora,f/friend())
 tf/travel(f)
 time(tf,past)
 to(tf,china)
-pa:<pa/pandemic()>
+pa/pandemic()
 before(tf,pa)
 
 giant(pd/panda())
@@ -99,7 +144,7 @@ dos/of(sp,sg/spaghetti())
 ide/impress(sp,emora)
 time(ide,always)
 in(dsg,italy)
-xls:<xls/like(x,sg)>
+xls:<xls/like(user,sg)>
 request_truth(emora,xls)
 ;
 
@@ -112,12 +157,12 @@ time(ge,past)
 dg/dream(g/girl())
 type(g,group)
 about(dg,disneyland_park)
-gt:<gt/to(go(x),disneyland_park) time(gt,past)>
-request_truth(emora,gt)
+gu:<gu/go(user) gt/to(gu,disneyland_park) time(gu,past)>
+request_truth(emora,gu)
 ;
 
 gx/go(x/person())
-gtd/to(gx,disneyland_park)
+to(gx,disneyland_park)
 ->
 possess(emora,m/memory())
 type(m,group)
@@ -125,8 +170,9 @@ carry(disneyland_park,m)
 miss(emora,ch/childhood())
 ;
 
-gt/to(go(x/person()),disneyland_park)
-gt{"confidence":-1}
+gx/go(x/person())
+to(gx,disneyland_park)
+gx{"confidence":-1}
 ->
 gm/good(m/memory())
 type(m,group)
@@ -140,8 +186,8 @@ to(gx,florida)
 fl/favorite(l/location())
 be(florida,fl)
 se/sit(emora)
-sbs/by(se,bc/beach())
-romantic(sbs)
+by(se,bc/beach())
+romantic(se)
 ws/watch(emora,ss/sunset())
 romantic(ws)
 ;
@@ -160,24 +206,23 @@ like(emora,gd)
 gx/go(x/person())
 to(gx,hawaii)
 ->
-good(hawaii)
 beautiful(bc/beach())
 type(bc,group)
 in(bc,hawaii)
 bh/best(hawaii)
 for(bh,h/holiday())
 type(h,group)
-gt:<gxx/go(x) gt/to(gxx,honolulu) time(gt,past)>
-request_truth(emora,gt)
+gu:<gu/go(user) to(gu,honolulu) time(gu,past)>
+request_truth(emora,gu)
 ;
 
 gx/go(x/person())
 to(gx,honolulu)
 ->
 se/sit(emora)
-sbs/by(se,bc/beach())
+by(se,bc/beach())
 ws/watch(emora,ss/sunset())
-love(emora,sbs)
+love(emora,se)
 love(ws)
 bp/beautiful(pc/picture())
 type(pc,group)
@@ -187,11 +232,11 @@ time(etp,past)
 ;
 
 gx/go(x/person())
-gt/to(gx,honolulu)
-gt{"confidence":-1}
+to(gx,honolulu)
+gx{"confidence":-1}
 ->
 gc/good(cm/camera())
-xtg/take(x,gc)
+xtg/take(x,cm)
 recommend(emora,xtg)
 ;
 
@@ -205,16 +250,12 @@ impress(grand_canyon,x)
 gx/go(x/person())
 to(gx,alaska)
 ->
-epf/possess(emora,f/friend())
+possess(emora,f/friend())
 type(f,group)
-eg/go(epf)
-eta/to(eg,alaska)
-for(eta,a/aurora())
+eg/go(f)
+to(eg,alaska)
+for(eg,a/aurora())
 type(a,group)
-
-esp/see(emora,p/picture())
-type(p,group)
-time(esp,always)
 
 ew/want(emora)
 to(ew,sa/see(emora,a))
@@ -222,31 +263,29 @@ time(sa,future)
 ;
 
 gx/go(x/person())
-gt/to(gx,s/state())
+to(gx,s/state())
 ->
-se/stay(emora)
-in(se,united_states)
 evs/visit(emora,s)
 tv/travel(emora)
 eft/for(evs,tv)
-time(eft,never)
-o:<for(gt,o/object())>
+time(evs,never)
+o:<for(gx,o/travel_reason())>
 request(emora,o)
 ;
 
 gx/go(x/person())
-gt/to(gx,s/state())
-for(gt,bs/business())
+to(gx,s/state())
+for(gx,bs/business())
 ->
-tob/of(trip(),bs)
-ft/fun(tob)
+of(tr/trip(),bs)
+ft/fun(tr)
 less(ft)
 ;
 
 gx/go(x/person())
-gt/to(gx,s/state())
+to(gx,s/state())
 xmf/meet(x,f/friend())
-gfx/for(gt,xmf)
+gfx/for(gx,xmf)
 ->
 exciting(gfx)
 ;
@@ -255,8 +294,8 @@ gx/go(x/person())
 to(gx,bc/big_city())
 ->
 eh/hear(emora)
-eal/about(eh,bc)
-from(eal,f/friend())
+about(eh,bc)
+from(eh,f/friend())
 type(f,group)
 xll:<xll/like(x,bc)>
 request_truth(emora,xll)
@@ -264,9 +303,7 @@ request_truth(emora,xll)
 
 like(x/person(),bc/big_city())
 ->
-xl/live(x)
-xil/in(xl,bc)
-convenient(xil)
+convenient(bc)
 numerous(op/opportunity())
 type(op,group)
 numerous(pb/possibility())
@@ -276,7 +313,7 @@ type(pb,group)
 xll/like(x/person(),bc/big_city())
 xll{"confidence":-1}
 ->
-understand(emora)
+understand(emora,xll)
 ib/ideal(bc)
 yg/young(g/generation())
 type(g,group)
@@ -332,7 +369,7 @@ to(gx,santa_monica)
 ge/go(emora)
 gts/to(ge,santa_monica)
 ewg/want(emora,gts)
-make(user,ewg)
+cause(user,ewg)
 ;
 
 gx/go(x/person())
@@ -342,8 +379,8 @@ ge/go(emora)
 gtc/to(ge,ct)
 ewg/want(emora,gtc)
 time(ewg,always)
-op_more_info(ct, gt)
-request(emora,ct)
+p:<p/property(ct)>
+request(emora,p)
 ;
 
 lc/large(ct/city())
@@ -376,6 +413,14 @@ etp/take(emora,p/picture())
 type(p,group)
 in(etp,bl)
 ;
+
+xme/miss(x/person(),e/entity())
+from(e,childhood())
+->
+understand(emora,xme)
+miss(emora,ic/ice_cream())
+;
+
 
 /* Common Sense */
 

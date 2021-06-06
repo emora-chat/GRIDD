@@ -59,7 +59,7 @@ type(vg, group)
 like(emora, multiplayer)
 ->
 _pr(_low)
-$ I love how much diversity there is video game choices. There's something for almost everyone. Multiplayer games are my personal favorite. Do you have a favorite genre of games? $
+$ I love how many options there are for video games, anyone can find something they like. Multiplayer games are my personal favorite. Do you have a favorite genre of games? $
 ;
 
 agree(emora, like(x/person(), multiplayer))

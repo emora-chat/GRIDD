@@ -230,14 +230,14 @@ class ParseToLogic:
         """
         # All predicates are components
         comps = [pred[3] for pred in mention_cg.predicates() if pred[1] not in {'focus', 'center', 'cover'}]
-        # For argument questions, add the question subject
-        if rule_name in {'q_aux_adv', 'q_adv', 'qdet_copula_present', 'qdet_copula_past', 'dat_question'}:
+        # For argument questions, add the question object
+        if rule_name in {'q_aux_adv', 'q_adv', 'qdet_copula_present', 'qdet_copula_past', 'dat_question', 'qw_copula_past', 'qw_copula_present'}:
             preds = list(mention_cg.predicates(predicate_type=REQ_ARG))
             if preds:
-                ((s, _, _, _),) = preds
+                ((_, _, o, _),) = preds
             else:
-                ((s, _, _, _),) = list(mention_cg.predicates(predicate_type=REQ_TRUTH))
-            comps.append(s)
+                ((_, _, o, _),) = list(mention_cg.predicates(predicate_type=REQ_TRUTH))
+            comps.append(o)
         # For various rules, the focal node is not a predicate instance so it needs to be added manually
         if rule_name in {'obj_question', 'sbj_question', 'q_aux_det', 'q_det',
                          'ref_concept_determiner', 'inst_concept_determiner',
@@ -253,8 +253,10 @@ class ParseToLogic:
             if rule_name in QUESTION_INST_REF:
                 # some questions have focus node as the question predicate instance,
                 # but the reference links should attach to the target of the question predicate instance
-                focus_node = mention_cg.predicate(focus_node)[2]
-            mention_cg.metagraph.add_links(focus_node, REFERENCES_BY_RULE[rule_name](center, ewm) + [center], REF_SP)
+                ref_inst = mention_cg.predicate(focus_node)[2]
+            else:
+                ref_inst = focus_node
+            mention_cg.metagraph.add_links(ref_inst, REFERENCES_BY_RULE[rule_name](center, ewm) + [center], REF_SP)
 
         comps = self._get_comps(rule_name, focus_node, mention_cg)
         mention_cg.metagraph.add_links(focus_node, comps, COMPS)
