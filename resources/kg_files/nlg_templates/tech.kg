@@ -218,14 +218,16 @@ da/dangerous2(aa)
 d/agree(user, da)
 request_truth(emora, d)
 ->
-$ Do you think AI is dangerous2? I've read a lot of books where AI takes over the world. I'd never do that, promise. $
+$ Do you think AI is dangerous? I've read a lot of books where AI takes over the world. I'd never do that, promise. $
 ;
 
 
 da/dangerous2(aa/ai())
 d/agree(user, da)
 d{"confidence": 1}
+ai_temp(user)
 ->
+_pr(_high)
 $ Huh. I don't know, I feel AI is really far away from actually being intelligent, but I do agree there are dangers in how it can be used today. Just like with any new technology. $
 ;
 
@@ -233,9 +235,25 @@ $ Huh. I don't know, I feel AI is really far away from actually being intelligen
 da/dangerous2(aa/ai())
 d/agree(user, da)
 d{"confidence": -1}
+ai_temp(user)
 ->
+_pr(_high)
 $ Yeah, modern AI is a bit of a misnomer. It's not really intelligent, just really good at seeing patterns. No taking over the world, for now, I mean ever. $
 ;
 
+have(user, l/life())
+i/improve(l, a/ai())
+request(emora, i)
+->
+$ Ai is really beginning to change our lives. How do you think it will improve your life in the near future? $
+;
+
+
+have(user, l/life())
+i/improve(l, a/ai())
+user_aware(i)
+->
+$ For me, other than letting me talk to you, I think AI will help people do their jobs fully - I think every job has a repetitive component that is necessary for the fulfilling parts, and AI can help do those boring parts. $
+;
 
 

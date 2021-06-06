@@ -217,6 +217,7 @@ i{"confidence": 1}
 d:<da/dangerous2(a)
 d/agree(user, da)>
 request_truth(emora, d)
+ai_temp(user)
 ;
 
 t/talk(user)
@@ -226,4 +227,12 @@ i{"confidence": -1}
 ->
 r:<r/reason(i)>
 request(emora, r)
+;
+
+da/dangerous2(a/ai())
+user_aware(da)
+->
+i:<have(user, l/life())
+i/improve(l, a)>
+request(emora, i)
 ;
