@@ -7,8 +7,6 @@ qualifier = (predicate)
 expr("how", qualifier)
 but=(predicate)
 
-possess = (predicate, obj_essential)
-
 what = (entity)
 who = (entity)
 
@@ -46,6 +44,12 @@ bring=(predicate)
 hear=(predicate)
 prefer=(predicate)
 embrace=(predicate)
+open=(predicate)
+admire=(predicate)
+listen=(predicate)
+change=(predicate)
+work=(predicate)
+attend=(predicate)
 
 contain=(predicate)
 agree=(predicate)

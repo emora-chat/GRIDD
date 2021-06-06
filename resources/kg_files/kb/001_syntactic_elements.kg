@@ -16,6 +16,7 @@ at=(predicate)
 by=(predicate)
 out_of=(predicate)
 expr("out of",out_of)
+as = (predicate)
 ;
 
 indirect_obj=(predicate, subj_essential)

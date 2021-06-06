@@ -33,8 +33,35 @@ would(lo)
 cause(lo, w)
 time(h/have(user, p/pet()), now)
 request_truth(emora, h)
-->
+-> yard_to_pets ->
 $ Oh really ? I wish I had a big yard , my dog would absolutely love it . Do you have a pet ? $
 ;
 
+/* work */
+
+on(w/work(user), t/task())
+request(emora, t)
+->
+$ What were you working on ? $
+;
+
+on(w/work(user), t/assignment())
+for(t, a/authority())
+request(emora, a)
+->
+$ Oh , what was your assignment for ? $
+;
+
+time(h/have(emora, job()), now)
+req_unsat(request_truth(user, h))
+-> answer_job_q ->
+$ Yeah , I have a job . $
+;
+
+possess(emora, J/job())
+time(h/be(J, SJ/job()), now)
+req_unsat(request(user, SJ))
+-> answer_job_type_q ->
+$ I am a SJ . $
+;
 
