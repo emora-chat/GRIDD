@@ -165,6 +165,18 @@ time(agree(emora, l), now)
 time(fun(racing), now)
 ;
 
+time(l/like(x/person(), fighter), now)
+->
+time(agree(emora, l), now)
+time(fun(fighter), now)
+;
+
+time(l/like(x/person(), rpg), now)
+->
+time(agree(emora, l), now)
+time(fun(rpg), now)
+;
+
 play(x/person(), finalfantasy)
 ->
 f:<time(possess(x, f/finalfantasy()), now)>
@@ -184,7 +196,7 @@ time(favorite(f), now)
 ->
 time(good(f), now)
 pred:<cause(pred/predicate(), p)>
-request(emora, c)
+request(emora, pred)
 ;
 
 play(x/person(), minecraft)
@@ -199,6 +211,7 @@ time(play(emora, minecraft), past)
 
 l/like(x/person(), leagueoflegends)
 ->
+time(like(x, multiplayer), now)
 frustrating(leagueoflegends)
 pred:<cause(pred/predicate(), l)>
 request(emora, pred)
@@ -206,6 +219,7 @@ request(emora, pred)
 
 p/play(x/person(), leagueoflegends)
 ->
+time(like(x, multiplayer), now)
 frustrating(leagueoflegends)
 pred:<cause(pred/predicate(), p)>
 request(emora, pred)
@@ -221,6 +235,8 @@ request(emora, pred)
 
 time(l/like(x/person(), csgo), now)
 ->
+like(x, multiplayer)
+like(x, shooter)
 pred:<cause(pred/predicate(), l)>
 request(emora, pred)
 ;
@@ -235,7 +251,97 @@ request(emora, pred)
 
 time(l/like(x/person(), fortnite), now)
 ->
+time(like(x, shooter), now)
+time(like(x, multiplayer), now)
 pred:<cause(pred/predicate(), l)>
 request(emora, pred)
 ;
 
+l/like(x/person(), smashbros)
+->
+time(like(x, fighter), now)
+time(like(x, multiplayer), now)
+c:<time(play(x, c/character()), now)>
+request(emora, c)
+in(c, l)
+;
+
+pl/play(x/person(), smashbros)
+->
+time(like(x, fighter), now)
+time(like(x, multiplayer), now)
+c:<time(play(x, c/character()), now)>
+request(emora, c)
+in(c, pl)
+;
+
+l/like(x/person(), smashbros)
+r/request(emora, c/character())
+in(c, l)
+user_aware(r)
+->
+like(emora, captain_falcon)
+;
+
+pl/play(x/person(), smashbros)
+r/request(emora, c/character())
+in(c, pl)
+user_aware(r)
+->
+like(emora, c)
+;
+
+l/like(x/person(), pokemon)
+->
+agree(emora, l)
+pred:<cause(pred/predicate(), l)>
+request(emora, pred)
+;
+
+p/play(x/person(), pokemon)
+->
+agree(emora, p)
+pred:<cause(pred/predicate(), p)>
+request(emora, pred)
+;
+
+l/like(x/person(), callofduty)
+->
+agree(emora, l)
+pred:<cause(pred/predicate(), l)>
+request(emora, pred)
+;
+
+p/play(x/person(), callofduty)
+->
+agree(emora, p)
+pred:<cause(pred/predicate(), p)>
+request(emora, pred)
+;
+
+p/play(emora, videogame())
+r/request_truth(user, p)
+->
+affirm(emora, r)
+;
+
+l/like(emora, videogame())
+r/request_truth(user, l)
+->
+a/answer(emora, user)
+about(a, r)
+;
+
+like(emora, v/videogame())
+r/request(user, v)
+->
+a/answer(emora, user)
+about(a, r)
+;
+
+play(emora, v/videogame())
+r/request(user, v)
+->
+a/answer(emora, user)
+about(a, r)
+;
