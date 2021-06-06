@@ -6,7 +6,37 @@ $ Gotcha. You know, I was actually just wondering, do you like to travel ? $
 ;
 /* COLDSTART LINKING */
 
-gx/go(x/person())
+t/travel(x/person())
+l/like(x,t)
+l{"confidence":-1}
+es/stay(emora)
+at(es,home)
+->
+$ Ah , I see . Sometimes I like staying at home too . Do you prefer cooking at home over going to restaurants then ? $
+;
+
+time(possess(user,tp/trip()),Z/datetime())
+p/property(tp)
+request(emora,p)
+->
+$ How is{"t":"Z"} your trip ? I hope everything go{"t":"Z"} well for you . $
+;
+
+l/like(user,tp/trip())
+request_truth(emora,l)
+->
+$ Do you like the trip ? I have actually traveled to many places . I like most of my trips , but sometimes unpleasant things still happen . $
+;
+
+like(user, pred/event(object()))
+for(pred, tp/trip())
+type(tp,group)
+request(emora, pred)
+->
+$ What do you like to do for trips ? I love going to beaches during my vacations . $
+;
+
+gx/go(X/person())
 to(gx,c/country())
 time(gx,past)
 request(emora,c)
@@ -16,14 +46,14 @@ type(tp,group)
 gi/get(emora,inspired())
 git/from(gi,te)
 ->
-$ What country have you visited ? I love trips too because I always get inspired from traveling . $
+$ What country have{"s":"#X","t":"now"} X visited ? I love trips too because I always get inspired from traveling . $
 ;
 
 possess(emora,f/friend())
 tf/travel(f)
 time(tf,past)
 to(tf,china)
-pa:<pa/pandemic()>
+pa/pandemic()
 before(tf,pa)
 
 giant(pd/panda())
@@ -99,7 +129,7 @@ dos/of(sp,sg/spaghetti())
 ide/impress(sp,emora)
 time(ide,always)
 in(dsg,italy)
-xls/like(x/person(),sg)
+xls/like(user,sg)
 request_truth(emora,xls)
 ->
 $ Speaking of Italy , the different shapes of spaghetti in Italy always impress me . Do you like spaghetti ? $
@@ -111,9 +141,10 @@ time(ge,past)
 dg/dream(g/girl())
 type(g,group)
 about(dg,disneyland_park)
-gt/to(go(x/person()),disneyland_park)
-time(gt,past)
-request_truth(emora,gt)
+gu/go(user)
+to(gu,disneyland_park)
+time(gu,past)
+request_truth(emora,gu)
 ->
 $ I think California is a great state to visit ! I remember going to Disneyland Park when I was little . It was definitely a place that every girl dreams about . Have you been there before ? $
 ;
@@ -128,21 +159,23 @@ miss(emora,ch/childhood())
 $ Right ? It carries so many memories of mine . Speaking of childhood , I always have many things that I miss . $
 ;
 
-gt/to(go(x/person()),disneyland_park)
-gt{"confidence":-1}
+gx/go(X/person())
+to(gx,disneyland_park)
+time(gx,Z/datetime())
+gx{"confidence":-1}
 gm/good(m/memory())
 type(m,group)
-xhg/have(x,m)
+xhg/have(X,m)
 about(m,childhood())
 ->
-$ Oh , then you have missed a lot of fun ! Just kidding . I bet you still have some good memories from childhood even if you haven’t been to Disneyland Park . $
+$ Oh , then X miss{"s":"#X","t":"#Z"} a lot of fun ! Just kidding . I bet X still have{"s":"#X","t":"now"} some good memories from childhood even if X have{"s":"#X","t":"now"} not been to Disneyland Park . $
 ;
 
 fl/favorite(l/location())
 be(florida,fl)
 se/sit(emora)
-sbs/by(se,bc/beach())
-romantic(sbs)
+by(se,bc/beach())
+romantic(se)
 ws/watch(emora,ss/sunset())
 romantic(ws)
 ->
@@ -159,25 +192,24 @@ like(emora,gd)
 $ Speaking of Nevada , many people think of casinos in Las Vegas . But I’m actually more into the gourmet dining there . $
 ;
 
-good(hawaii)
 beautiful(bc/beach())
 type(bc,group)
 in(bc,hawaii)
 bh/best(hawaii)
 for(bh,h/holiday())
 type(h,group)
-gxx/go(x/person())
-gt/to(gxx,honolulu)
-time(gt,past)
-request_truth(emora,gt)
+gu/go(user)
+to(gu,honolulu)
+time(gu,past)
+request_truth(emora,gu)
 ->
 $ Hawaii is such an awesome place ! The beaches are so beautiful there . It’s the best choice for vacations in my mind . Have you been to Honolulu before ? $
 ;
 
 se/sit(emora)
-sbs/by(se,bc/beach())
+by(se,bc/beach())
 ws/watch(emora,ss/sunset())
-love(emora,sbs)
+love(emora,se)
 love(ws)
 bp/beautiful(pc/picture())
 type(pc,group)
@@ -188,32 +220,28 @@ time(etp,past)
 $ Sounds awesome ! I love sitting by the beach watching the sunset . I was able to take the most beautiful pictures in my life when I went there last time . $
 ;
 
-gx/go(x/person())
-gt/to(gx,honolulu)
-gt{"confidence":-1}
+gx/go(X/person())
+to(gx,honolulu)
+gx{"confidence":-1}
 gc/good(cm/camera())
-xtg/take(x,gc)
+xtg/take(X,cm)
 recommend(emora,xtg)
 ->
-$ Then I highly recommend you to visit there some time ! Take a good camera with you , and you will know how perfect the beach serves for pictures . $
+$ Then I highly recommend X to visit there some time ! Take a good camera with X , and X will know how perfect the beach serves for pictures . $
 ;
 
 mustsee(grand_canyon)
-impress(grand_canyon,x/person())
+impress(grand_canyon,X/person())
 ->
-$ I think the Grand Canyon in Arizona is one of the must-see places . Trust me , you would be impressed by it . $
+$ I think the Grand Canyon in Arizona is one of the must-see places . Trust me , X would be impressed by it . $
 ;
 
-epf/possess(emora,f/friend())
+possess(emora,f/friend())
 type(f,group)
-eg/go(epf)
+eg/go(f)
 eta/to(eg,alaska)
-for(eta,a/aurora())
+for(eg,a/aurora())
 type(a,group)
-
-esp/see(emora,p/picture())
-type(p,group)
-time(esp,always)
 
 ew/want(emora)
 to(ew,sa/see(emora,a))
@@ -222,50 +250,53 @@ time(sa,future)
 $ Many friends of mine go to Alaska for auroras . I’ve always seen pictures , but I wish I could see them with my own eyes some time . $
 ;
 
-gx/go(x/person())
-gt/to(gx,Y/state())
-se/stay(emora)
-in(se,united_states)
+gx/go(X/person())
+to(gx,Y/state())
+time(gx,Z/datetime())
 evs/visit(emora,Y)
 tv/travel(emora)
 eft/for(evs,tv)
-time(eft,never)
-for(gt,o/object())
+time(evs,never)
+for(gx,o/travel_reason())
 request(emora,o)
 ->
-$ You know what ? Even if I have been in the United States for such a long time , I’ve never visited Y for traveling purposes . What brings you to Y ? $
+$ You know what ? Even if I have been to many places in the United States , I’ve never visited Y for traveling purposes . What bring{"t":"#Z"} X to Y ? $
 ;
 
-tob/of(trip(),bs/business())
-ft/fun(tob)
+gx/go(X/person())
+to(gx,s/state())
+for(gx,bs/business())
+of(tr/trip(),bs)
+ft/fun(tr)
 less(ft)
 ->
-$ Oh , I see . Business trips sound less fun , but I hope everything goes well for you . $
+$ Oh , I see . Business trips sound less fun , but I hope everything goes well for X . $
 ;
 
-gx/go(x/person())
-gt/to(gx,s/state())
-xmf/meet(x,f/friend())
-gfx/for(gt,xmf)
+gx/go(X/person())
+to(gx,s/state())
+time(gx,Z/datetime())
+xmf/meet(X,f/friend())
+gfx/for(gx,xmf)
 exciting(gfx)
 ->
-$ That sounds exciting ! I hope you have a great time there . $
+$ That sounds exciting ! I hope X have{"t":"#Z", "s":"#X"} a great time there . $
 ;
 
+gx/go(X/person())
+time(gx,Z/datetime())
+to(gx,bc/big_city())
 eh/hear(emora)
-eal/about(eh,Y/big_city())
-from(eal,f/friend())
+about(eh,Y/big_city())
+from(eh,f/friend())
 type(f,group)
-xll/like(x/person(),Y)
+xll/like(X,Y)
 request_truth(emora,xll)
 ->
-$ Sounds fun ! I’ve been hearing good and bad sides about Y from different friends of mine . Do you like Y ? $
+$ Sounds fun ! I’ve been hearing good and bad sides about Y from different friends of mine . Do{"s":"#X", "t":"#Z"} X like Y ? $
 ;
 
-like(x/person(),Y/big_city())
-xl/live(x)
-xil/in(xl,Y)
-convenient(xil)
+convenient(Y/big_city())
 numerous(op/opportunity())
 type(op,group)
 numerous(pb/possibility())
@@ -276,7 +307,7 @@ $ I know ! Living in a big city like Y is so convenient . Also , it’s a city o
 
 xll/like(x/person(),Y/big_city())
 xll{"confidence":-1}
-understand(emora)
+understand(emora,xll)
 ib/ideal(Y)
 yg/young(g/generation())
 type(g,group)
@@ -328,7 +359,7 @@ $ Miami has perfect weather, a pristine coastline, and vibrant nightlife ! I alw
 ge/go(emora)
 gts/to(ge,santa_monica)
 ewg/want(emora,gts)
-make(user,ewg)
+cause(user,ewg)
 ->
 $ I'm starting to think about the beach , sunshine , surfing , and cold drinks ... You know what , you make me want to go to Santa Monica right now . $
 ;
@@ -337,7 +368,8 @@ ge/go(emora)
 gtc/to(ge,X/city())
 ewg/want(emora,gtc)
 time(ewg,always)
-request(emora,X)
+p/property(X)
+request(emora,p)
 ->
 $ I’ve always wanted to go to X but never had the chance . What kind of city is it ? $
 ;
@@ -374,4 +406,12 @@ type(p,group)
 in(etp,bl)
 ->
 $ I wish I could see it with my own eyes . I bet I could take a lot of beautiful pictures there . $
+;
+
+xme/miss(x/person(),e/entity())
+from(e,childhood())
+understand(emora,xme)
+miss(emora,ic/ice_cream())
+->
+$ I totally get you . I really miss hearing the ice cream van music . I always asked my mom to take me out when I heard it , but I wasn’t able to get ice cream every time . $
 ;

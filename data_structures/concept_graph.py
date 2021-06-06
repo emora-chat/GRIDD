@@ -589,7 +589,7 @@ class ConceptGraph:
         return graph
 
     def merge(self, concept_a, concept_b, strict_order=False):
-        unique_preds = {USER_AWARE, TIME}
+        unique_preds = {USER_AWARE, TIME, ETURN, UTURN}
         unique_pred_merges = set()
         if concept_a != concept_b:
             if not strict_order and concept_a.startswith(self._ids.namespace) and not concept_b.startswith(self._ids.namespace):

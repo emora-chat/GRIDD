@@ -3,10 +3,8 @@
 have(user, x/sibling())
 ->
 g:<g/get_along(user, x)>
-request_truth(g)
+request_truth(emora, g)
 ;
-
-why_not_get_along=(object);
 
 not(g/get_along(user, sibling()))
 ->
@@ -18,7 +16,7 @@ get_along(user, sibling())
 h:<h/have(user, m/memory())
 favorite(m)
 with(m, sibling())>
-request_truth(h)
+request_truth(emora, h)
 ;
 
 

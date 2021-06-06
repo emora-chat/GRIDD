@@ -18,8 +18,6 @@ OBJ_ESSENTIAL = 'obj_essential'         # predicate type indicating required att
 
 ASSERT = 'assert'               # monopredicate indicating argument is asserted
 USER_AWARE = 'user_aware'       # monopredicate indicating user is aware of the concept
-REQ_SAT = 'req_sat'             # monopredicate indicating request was answered
-REQ_UNSAT = 'req_unsat'         # monopredicate indicating request is unresolved
 
 TYPE = 'type'                   # bipredicate indicating a type/subtype relationship
 EXPR = 'expr'                   # bipredicate indicating ARG0 is an expression of ARG1
@@ -31,10 +29,17 @@ SPAN_DEF = 'def'                # bipredicate linking span nodes to the concept 
 
 REQ_ARG = 'request'             # bipredicate of subject requesting disambiguation of the object (argument question)
 REQ_TRUTH = 'request_truth'     # bipredicate of subject requesting truth value of the object (y/n question)
+REQ_SAT = 'req_sat'             # monopredicate indicating request was answered
+REQ_UNSAT = 'req_unsat'         # monopredicate indicating request is unresolved
 
 OBJECT = 'object'               # base concept type
 GROUP = 'group'                 # entity type indicating subtypes are groups
 CLASS = 'class'                 # entity type indicating class definition
+
+UTURN = '_uturn'                # predicate used for user turn tracking in WM
+ETURN = '_eturn'                # predicate used for emora turn tracking in WM
+OP_UTURN = 'uturn'              # operator predicate used in rule creation to specify user turn information
+OP_ETURN = 'eturn'              # operator predicate used in rule creation to specify emora turn information
 
 SALIENCE_IN_LINK = 'salin'      # UpdateGraph label for salience propagation
 SALIENCE_OUT_LINK = 'salout'    # UpdateGraph label for salience propagation
@@ -82,11 +87,11 @@ META = {COMPS, VAR,
 
 SAL_FREE = {ASSERT, NONASSERT, AFFIRM,
             REJECT, TIME, SPAN_DEF,
-            SPAN_REF, USER_AWARE, REQ_SAT, REQ_UNSAT}    # Predicate types that do not propogate salience to subtypes and whose salience does not decrease
+            SPAN_REF, USER_AWARE, REQ_SAT, REQ_UNSAT, UTURN, ETURN}    # Predicate types that do not propogate salience to subtypes and whose salience does not decrease
 
 PRIM = {SPAN_DEF, SPAN_REF,
         ASSERT, NONASSERT,
-        USER_AWARE, EXPR, REQ_SAT, REQ_UNSAT}             # Predicate types that are primitive
+        USER_AWARE, EXPR, REQ_SAT, REQ_UNSAT, UTURN, ETURN}             # Predicate types that are primitive
 
 
 UNKNOWN_TYPES = {'unknown_verb', 'unknown_noun', 'unknown_pron', 'unknown_adj', 'unknown_adv', 'unknown_other'}

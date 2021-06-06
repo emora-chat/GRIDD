@@ -57,7 +57,21 @@ s:<f/like(user, s/basketball_team())>
 request(emora, s)
 ;
 
+l/like(user, u/unknown_sport())
+user_aware(l)
+-> person_likes_sport_that_we_dont_handle ->
+i:<i/property(u)>
+request(emora, i)
+;
+
 /* Plays some sport */
+pl/play(user, u/unknown_sport())
+user_aware(pl)
+-> person_plays_sport_that_we_dont_handle ->
+i:<i/property(u)>
+request(emora, i)
+;
+
 pl/play(user, s/sport())
 category(s)
 user_aware(pl)
@@ -106,7 +120,7 @@ request(emora,i)
 pl/play(user, s/sport())
 user_aware(pl)
 -> user_plays_known_sport ->
-request_truth(property(user, athlete()))
+request_truth(be(user, athlete()))
 ;
 
 /* Wants to Play Sports */
@@ -123,28 +137,28 @@ t/time(w/want(user, pl/play(user, football)), now)
 user_aware(w)
 -> Person_wants_to_play_football ->
 p:<c/want(user, pl) cause(p/predicate(), c)>
-request(me, p)
+request(emora, p)
 ;
 
 t/time(w/want(user, pl/play(user, soccer)), now)
 user_aware(w)
 -> Person_wants_to_play_soccer ->
 p:<c/want(user, pl) cause(p/predicate(), c)>
-request(me, p)
+request(emora, p)
 ;
 
 t/time(w/want(user, pl/play(user, tennis)), now)
 user_aware(w)
 -> Person_wants_to_play_tennis ->
 p:<c/want(user, pl) cause(p/predicate(), c)>
-request(me, p)
+request(emora, p)
 ;
 
 t/time(w/want(user, pl/play(user, basketball)), now)
 user_aware(w)
 -> Person_wants_to_play_basketball ->
 p:<c/want(user, pl) cause(p/predicate(), c)>
-request(me, p)
+request(emora, p)
 ;
 
 /* Likes General Sports Team */
@@ -160,12 +174,11 @@ pl/like(user, s/football_team())
 user_aware(pl)
 -> person_likes_football_team ->
 j/like(user, football)
-user_aware(j)
 l:<l/play(user, football)>
 request_truth(emora, l)
 ;
 
-t/time(pl/like(user, s/baseball_team()), today)
+pl/like(user, s/baseball_team())
 user_aware(pl)
 -> person_likes_baseball_team ->
 j/like(user, baseball)
@@ -174,7 +187,7 @@ l:<l/play(user, baseball)>
 request_truth(emora, l)
 ;
 
-t/time(pl/like(user, s/soccer_team()), today)
+pl/like(user, s/soccer_team())
 user_aware(pl)
 -> person_likes_soccer_team ->
 j/like(user, soccer)
@@ -183,7 +196,7 @@ l:<l/play(user, soccer)>
 request_truth(emora, l)
 ;
 
-t/time(pl/like(user, s/basketball_team()), today)
+pl/like(user, s/basketball_team())
 user_aware(pl)
 -> person_likes_basketball_team ->
 j/like(user, basketball)
@@ -192,8 +205,59 @@ l:<l/play(user, basketball)>
 request_truth(emora, l)
 ;
 
+/* More event-related rules for sports */
+w/watch(user, g/football_game())
+user_aware(w)
+-> person_watches_football_game ->
+l/like(user, football)
+x:<c/compete(x/football_team(), y/football_team())>
+request(emora, x)
+;
+
+w/watch(user, g/basketball_game())
+user_aware(w)
+-> person_watches_basketball_game ->
+l/like(user, basketball)
+x:<c/compete(x/basketball_team(), y/basketball_team())>
+request(emora, x)
+;
+
+w/watch(user, g/baseball_game())
+user_aware(w)
+-> person_watches_baseball_game ->
+l/like(user, baseball)
+x:<c/compete(x/baseball_team(), y/baseball_team())>
+request(emora, x)
+;
+
+w/watch(user, g/soccer_game())
+user_aware(w)
+-> person_watches_soccer_game ->
+l/like(user, soccer)
+x:<c/compete(x/soccer_team(), y/soccer_team())>
+request(emora, x)
+;
+
+w/watch(user, g/sports_event())
+category(g)
+user_aware(w)
+-> 
+op_more_info(g, w)
+request(emora, g)
+;
+
+time(pl/play(user), past)
+in(pl, s/team_sports_event())
+-> person_plays_in_sports_event ->
+watch(user, s)
+like(user, sport)
+o:<l/play(user) d/do(l) in(d, t:<t/team_sports_event()>) quality(d, o/object()) time(d, past)>
+request(emora, o)
+;
+
 /* Does Not Play Sports */
 time(pl/play(user, s/sport()), now)
+category(s)
 pl{"confidence": -1}
 -> not_play_sport ->
 w:<time(w/want(user, play(user, sp/sport())), now)>
@@ -202,6 +266,7 @@ request_truth(emora, w)
 
 /* Does not want to play Sports */
 time(w/want(user, play(user, s/sport())), now)
+category(s)
 w{"confidence": -1}
 -> not_want_to_play_sports ->
 b:<time(b/be(user, fd/foodie()), now)>
@@ -224,4 +289,11 @@ healthy(user)
 time(do(user, p/predicate()), today)
 ->
 time(p, today)
+;
+
+s/sports_event()
+user_aware(s)
+->
+l/like(user, sp/sport())
+request_truth(emora, l)
 ;

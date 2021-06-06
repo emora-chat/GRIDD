@@ -1,0 +1,13 @@
+time(like(emora, multiplayer), now)
+time(like(emora, vg/videogame()), now)
+type(vg, group)
+like(emora, nintendo)
+like(emora, playstation)
+like(emora, c/computer())
+like(emora, finalfantasy)
+like(emora, minecraft)
+epc/play(emora, csgo)
+not(epc)
+epf/play(emora, fortnite)
+not(epf)
+;
