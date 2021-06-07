@@ -36,7 +36,11 @@ class ResponseTemplateFiller:
         for rule, (pre_graph, post, solutions_list) in matches.items():
             for match_dict in solutions_list:
                 string_spec_ls = list(post.string_spec_ls)  # need to create copy so as to not mutate the postcondition in the rule
-                response_str = self.fill_string(match_dict, expr_dict, string_spec_ls, cg)
+                try:
+                    response_str = self.fill_string(match_dict, expr_dict, string_spec_ls, cg)
+                except Exception as e:
+                    print('Error in NLG template filler => %s'%e)
+                    continue
                 # print(string_spec_ls)
                 if response_str not in aux_state.get('spoken_responses', []):
                     candidates.append((match_dict, response_str, post.priority))
@@ -51,13 +55,14 @@ class ResponseTemplateFiller:
             preds = [cg.predicate(x) for x in match_dict.values() if cg.has(predicate_id=x)
                      and cg.type(x) not in {EXPR, TYPE, TIME}]
             req_pred = [cg.predicate(x) for x in match_dict.values() if cg.has(predicate_id=x)
-                        and cg.type(x) in {REQ_ARG, REQ_TRUTH}]
+                        and cg.type(x) in {REQ_ARG, REQ_TRUTH} and cg.subject(x) == 'emora'] # check if emora already asked question
             user_awareness = [cg.has(x[3], USER_AWARE) for x in preds]
             user_req_awareness = [cg.has(x[3], USER_AWARE) for x in req_pred]
-            # print()
-            # for i, pred in enumerate(preds):
-            #     print(pred, user_awareness[i])
             if False in user_awareness and (not user_req_awareness or True not in user_req_awareness):
+                # at least one predicate is not known by the user
+                # and all request predicates are not known by user, if there are requests in response
+                # todo - stress test emora not asking a question she already has answer to or has asked before
+                # this should work, but we do have req_unsat predicate as backup, if needed
                 sals = [cg.features.get(x, {}).get(SALIENCE, 0) for x in match_dict.values()]
                 avg = sum(sals) / len(sals)
                 final_score = SAL_WEIGHT * avg + PRIORITY_WEIGHT * priority
@@ -221,15 +226,16 @@ class ResponseTemplateFiller:
             return None, expr_dict[match]
         else:  # not a named concept
             np = self.nlgFactory.createNounPhrase()
-            noun = self._unnamed_noun(cg, match)
+            noun = self._unnamed_noun(cg, match, expr_dict)
             np.setNoun(noun)
             return np, self.realiser.realiseSentence(np)[:-1]
 
 
-    def _unnamed_noun(self, cg, match):
+    def _unnamed_noun(self, cg, match, expr_dict):
         # need to get main type
         match_types = cg.types(match)
         main_type = self._concrete_type(cg, match)
+        main_type = expr_dict.get(main_type, main_type)
         noun = self.nlgFactory.createNLGElement(main_type, LexicalCategory.NOUN)
         # whether group
         if GROUP in match_types:
@@ -243,6 +249,13 @@ class Template:
     def __init__(self, string_spec_ls, priority):
         self.string_spec_ls = string_spec_ls
         self.priority = priority
+
+    def save(self):
+        return {'string': self.string_spec_ls, 'priority': self.priority}
+
+    def load(self, d):
+        self.string_spec_ls = d['string']
+        self.priority = d['priority']
 
 if __name__ == '__main__':
     from GRIDD.modules.responsegen_by_templates_spec import ResponseTemplatesSpec
