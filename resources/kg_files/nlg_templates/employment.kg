@@ -4,6 +4,7 @@ xro/to(xr,o/office())
 time(xr,now)
 request_truth(emora,xr)
 ->
+_pr(_high)
 $ I’m glad to hear that X be{"t":"now","s":"#X"} busy with X{"p":true} job . Be{"t":"now","s":"#X"} X starting to go back to the office ? $
 ;
 
@@ -16,6 +17,7 @@ xe/excited(x)
 about(xe,xro)
 time(xe,now)
 ->
+_pr(_high)
 $ Then you can see your colleagues in person instead of working in front of computers all day long ! Are you excited about working in the office ? $
 ;
 
@@ -29,6 +31,7 @@ about(xe,xro)
 time(xe,now)
 request_truth(emora,xe)
 ->
+_pr(_high)
 $ I hope that you haven’t stressed out about often working from home . Are you looking forward to going back to the office ? $
 ;
 
@@ -42,6 +45,7 @@ online(m/meeting())
 type(m,group)
 dislike(emora,m)
 ->
+_pr(_high)
 $ I bet ! Talking to people face to face is much more interesting . I’m not a fan of online meetings . $
 ;
 
@@ -54,5 +58,6 @@ time(xe,now)
 xe{"confidence": -1}
 understand(emora,xe)
 ->
+_pr(_high)
 $ Ah , that’s understandable . I know that some people feel more comfortable working alone to keep concentrated . $
 ;
