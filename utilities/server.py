@@ -91,7 +91,7 @@ def load(key, value):
                     if isinstance(post_json, dict):
                         post = ConceptGraph(namespace=post_json["namespace"])
                         post.load(post_json)
-                    elif isinstance(post_json, tuple):
+                    elif isinstance(post_json, (list, tuple)):
                         post = Template(*post_json)
                     else:
                         post = post_json

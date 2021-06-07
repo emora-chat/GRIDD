@@ -253,6 +253,10 @@ class Template:
     def save(self):
         return (self.string_spec_ls, self.priority)
 
+    def load(self, d):
+        self.string_spec_ls = d[0]
+        self.priority = d[1]
+
 
 if __name__ == '__main__':
     from GRIDD.modules.responsegen_by_templates_spec import ResponseTemplatesSpec

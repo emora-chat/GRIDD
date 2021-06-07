@@ -130,8 +130,7 @@ class IntelligenceCore:
                 for rule, (pre, post, vars) in d.items():
                     pre_cg = ConceptGraph(namespace=pre['namespace'])
                     pre_cg.load(pre)
-                    template_obj = Template(None, None)
-                    template_obj.load(post)
+                    template_obj = Template(*post)
                     vars = set(vars)
                     templates[rule] = (pre_cg, template_obj, vars)
                     if mega_template_cg is None:
