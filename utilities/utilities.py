@@ -282,7 +282,7 @@ class TensorDisplay:
                         to_print.append(str(e_))
                     print(('{:10}'*len(row)).format(*to_print))
             else:
-                colnames = [((ids[1][i]) if ids[1] is not None else '') for i in range(x.size(1))]
+                colnames = [(str(ids[1][i]) if ids[1] is not None else '') for i in range(x.size(1))]
                 print((' '*9+'{:>9}'*x.size(1)).format(*colnames))
                 for i in range(x.size(0)):
                     s = x.size(1)
@@ -291,7 +291,7 @@ class TensorDisplay:
                     for i, arg in enumerate(args):
                         if isinstance(arg, tuple):
                             args[i] = arg[1]
-                    print(fmtstr.format(*args))
+                    print(fmtstr.format(*[str(arg) for arg in args]))
             print()
 
 if __name__ == '__main__':

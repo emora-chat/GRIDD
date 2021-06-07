@@ -70,7 +70,11 @@ class GraphMatchingEngineSpec:
         assert solutions_equal(
             solutions[query1],
             [
-                {'A': 'mary', 'B': 'sally'}
+                {'A': 'mary', 'B': 'sally'},
+                {'A': 'mary', 'B': 'john'},
+                {'A': 'sally', 'B': 'john'},
+                {'A': 'tom', 'B': 'mary'},
+                {'A': 'john', 'B': 'mary'}
             ])
 
         assert solutions_equal(
@@ -84,14 +88,18 @@ class GraphMatchingEngineSpec:
         assert solutions_equal(
             solutions[query3],
             [
-                {'X': 'mary', 'Y': 'sally', 'Z': 'john'}
+                {'X': 'mary', 'Y': 'sally', 'Z': 'john'},
+                {'X': 'sally', 'Y': 'john', 'Z': 'mary'},
+                {'X': 'john', 'Y': 'mary', 'Z': 'sally'}
             ])
 
         assert solutions_equal(
             solutions[query4],
             [
                 {'F': 'tom'},
-                {'F': 'mary'}
+                {'F': 'mary'},
+                {'F': 'sally'},
+                {'F': 'john'}
             ])
 
 def solutions_equal(a, b):

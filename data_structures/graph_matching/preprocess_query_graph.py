@@ -37,9 +37,11 @@ def preprocess_query_graph(graph, nodemap, varmap, edgemap):
             checklist.append((s, t, l))
             if t in left_nodes:
                 left_nodes.remove(t)
-                for s_, t_, l_ in graph.out_edges(t):
+                for s_, t_, l_ in sorted(graph.out_edges(t),
+                                         key=lambda e: 0 if e[1] in variables else 1):
                     stack.append((s_, t_, l_))
-                for s_, t_, l_ in graph.in_edges(t):
+                for s_, t_, l_ in sorted(graph.in_edges(t),
+                                         key=lambda e: 0 if e[0] in variables else 1):
                     stack.append((t_, s_, Rlabel(l_)))
     mapped_checklist = []
     for s, t, l in checklist:
@@ -50,6 +52,15 @@ def preprocess_query_graph(graph, nodemap, varmap, edgemap):
     return mapped_checklist
 
 
+def preprocess_query_tuples(query_graphs):
+    qgs = []
+    for qg in query_graphs:
+        if isinstance(qg, tuple):
+            qg, vars = qg
+            for var in vars:
+                qg.data(var)['var'] = True
+        qgs.append(qg)
+    return qgs
 
 
 

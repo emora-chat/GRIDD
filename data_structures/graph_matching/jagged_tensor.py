@@ -8,7 +8,7 @@ class JaggedTensor:
     def __init__(self, data=None, device='cpu'):
         self.device = device
         self.indices = torch.LongTensor(device=device)  # indices: rows x max_row_length
-        self.values = torch.Tensor(device=device)       # values: values
+        self.values = torch.LongTensor(device=device)       # values: values
         self.max_len = 0
         if data is not None:
             self.extend(data)
@@ -16,7 +16,7 @@ class JaggedTensor:
     def extend(self, data):
         i = len(self.values)
         values = list(chain(*data))
-        self.values = torch.cat([self.values, torch.Tensor(values)], 0)
+        self.values = torch.cat([self.values, torch.LongTensor(values)], 0)
         max_len = max([*[len(row) for row in data], self.max_len])
         indices = []
         for row in data:

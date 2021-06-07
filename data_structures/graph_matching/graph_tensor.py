@@ -8,18 +8,17 @@ from GRIDD.data_structures.graph_matching.root import root, rooted_edge
 from GRIDD.data_structures.id_map import IdMap
 
 
-
 class GraphTensor:
 
     def __init__(self, graph, nodemap=None, edgemap=None):
-        nodemap = nodemap or IdMap(namespace=int)
-        edgemap = edgemap or IdMap(namespace=int)
+        self.nodemap = nodemap or IdMap(namespace=int)
+        self.edgemap = edgemap or IdMap(namespace=int)
         nodes = set(graph.nodes())
         edges = set(graph.edges())
         edges.update({(t, s, Rlabel(l)) for s, t, l in edges})
         edges.update({(root, n, rooted_edge) for n in nodes})
-        medges = [(nodemap.get(s), nodemap.get(t), edgemap.get(l)) for s, t, l in edges]
-        self.ne = len(edgemap)
+        medges = [(self.nodemap.get(s), self.nodemap.get(t), self.edgemap.get(l)) for s, t, l in edges]
+        self.ne = len(self.edgemap)
         dedges = {}
         for s, t, l in medges:
             dedges.setdefault((s * self.ne + l), []).append(t)
@@ -34,8 +33,37 @@ class GraphTensor:
         return targets
 
     def map(self, source_label):
-        inodes = self._keytensor[source_label[:, 0] * self.ne + source_label[:, 1]]
+        transform = source_label[:,0] * self.ne + source_label[:,1]
+        inodes = self._keytensor[transform]
+        exists = torch.nonzero(torch.ne(inodes, -1)).squeeze(1)
+        inodes = inodes[exists]
         targets, inverse = self._edgetensor.map(inodes)
+        inverse = exists[inverse]
         return targets, inverse
+
+
+if __name__ == '__main__':
+    from structpy.graph.directed.labeled.multilabeled_digraph_networkx import MultiLabeledDigraphNX as Graph
+
+    g = Graph({
+        ('john', 'mary', 'likes'),
+        ('john', 'tom', 'likes'),
+        ('mary', 'john', 'likes')
+    })
+    gt = GraphTensor(g)
+
+    st = [
+        [gt.nodemap.get('john'), gt.edgemap.get('likes')],
+        [gt.nodemap.get('tom'), gt.edgemap.get('likes')]
+    ]
+
+    targets, inv = gt.map(torch.LongTensor(st))
+
+    for i, target in enumerate(targets):
+        print(gt.nodemap.identify(st[inv[i].item()][0]),
+              '->', gt.nodemap.identify(target.item()) )
+
+
+
 
 

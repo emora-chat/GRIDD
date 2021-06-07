@@ -3,7 +3,7 @@ import torch
 
 from GRIDD.data_structures.id_map import IdMap
 from GRIDD.data_structures.graph_matching.graph_tensor import GraphTensor
-from GRIDD.data_structures.graph_matching.preprocess_query_graph import preprocess_query_graph
+from GRIDD.data_structures.graph_matching.preprocess_query_graph import preprocess_query_graph, preprocess_query_tuples
 from GRIDD.utilities.utilities import TensorDisplay as Display
 from GRIDD.data_structures.graph_matching.root import root
 
@@ -19,13 +19,17 @@ class GraphMatchingEngine:
             start_index=-1, next_function=(lambda x: x-1) )
         self.l = IdMap(namespace=int)   # labels
         self.q = IdMap(namespace=int)   # query graphs
+        self.qlengths = torch.empty(0,  # length of query requirements lists
+            dtype=torch.long, device=self.device )
 
     def add_queries(self, *query_graphs):
-        self.checklist = self._add_queries(query_graphs)
+        self.checklist, self.querylist, self.qlengths = self._add_queries(query_graphs)
 
     def _add_queries(self, query_graphs):
+        query_graphs = preprocess_query_tuples(query_graphs)
         querylist = []
         checklist = []
+        qlengths = []
         for query_graph in query_graphs:
             cl = preprocess_query_graph(query_graph, self.n, self.v, self.l)
             for i, req in enumerate(cl):
@@ -34,6 +38,8 @@ class GraphMatchingEngine:
                     querylist.append([])
                 checklist[i].append(req)
                 querylist[i].append(self.q.get(query_graph))
+            qlengths.append(len(cl))
+        query_lengths = torch.cat([self.qlengths, torch.LongTensor(qlengths, device=self.device)], 0)
         checklist = [torch.LongTensor(req) for req in checklist]
         querylist = [torch.LongTensor(query) for query in querylist]
         combined_cl = []
@@ -56,38 +62,97 @@ class GraphMatchingEngine:
             bclq = bql[i]
             combined_cl.append(bclr)
             combined_ql.append(bclq)
-        return combined_cl, combined_ql
+        return combined_cl, combined_ql, query_lengths
 
     def match(self, data_graph, *query_graphs):
+        query_graphs = preprocess_query_tuples(query_graphs)
         display = Display()
-        complete = []                                                       # list<Tensor<steps: ((qn1, dn1), (qn2, dn2), ...)>> completed solutions
-        checklist, querylist = self._add_queries(query_graphs)              # list<Tensor<query x 3: (s, l, t)>> list of required next edge lists
+        complete = {}                                                       # list<Tensor<steps: ((qn1, dn1), (qn2, dn2), ...)>> completed solutions
+        query_id_index = self.q.index                                       # Query index to reset after match is complete
+        checklist, querylist, qlengths = self._add_queries(query_graphs)    # list<Tensor<query x 3: (s, l, t)>> list of required next edge lists
         edges = GraphTensor(data_graph, self.n, self.l)                     # GraphTensor<Tensor<X x 2: (s, l)>) -> (Tensor<Y: t>, Tensor<Y: inverse_index>>
-        solutions = torch.full((len(querylist[0]), 2), self.n.get(root),    # Tensor<solution x step: ((qn1, dn1), (qn2, dn2), ...)> in-progress solutions
+        solutions = torch.full((len(checklist[0]), 2), self.n.get(root),    # Tensor<solution x step: ((qn1, dn1), (qn2, dn2), ...)> in-progress solutions
                                dtype=torch.long, device=self.device)
-        queries = torch.arange(0, len(querylist[0]),                        # Tensor<solution: query> inverse indices for solutions and checklist requirements
+        queries = torch.arange(0, len(self.q),                              # Tensor<solution: query> inverse indices for solutions
                                dtype=torch.long, device=self.device)
-        for req in checklist:                                               # Tensor<query x 3: (s, l, t)>: required next edges
+
+        for rlen, req in enumerate(checklist):                              # Tensor<query x 3: (s, l, t)>: required next edges
+            ql = querylist[rlen]
 
             display(req, self.n, self.l, self.n, label='Requirements')
 
             # get assignments
-            hi = torch.nonzero(torch.eq(req[queries], solutions[:,::2]))
-            hi = torch.cat([hi[:,0:1], (hi[:,1:2] + 1)], 1)
-            ei = hi[:,0]
-            ev = solutions[hi]
-            expander = torch.full(solutions.size(), -1, device=self.device)
+            req_ = torch.full((len(self.q), 3), 0, dtype=torch.long, device=self.device)
+            req_[ql] = req
+            var_i = torch.nonzero(torch.eq(req_[queries][:,0:1], solutions[:,::2]))
+            var_i = torch.cat([var_i[:,0:1], var_i[:,1:2]*2], 1)
+            val_i = torch.cat([var_i[:,0:1], (var_i[:,1:2] + 1)], 1)
+
+            # expand assigned to targets
+            ei = val_i[:,0]
+            ev = solutions[val_i.T[0], val_i.T[1]]
+            expander = torch.full((solutions.size()[0],), -1, dtype=torch.long, device=self.device)
             expander[ei] = ev
+            expander = torch.cat([expander.unsqueeze(1), req_[queries][:,1:2]], 1)
 
-            # expand solutions
+            display(expander, self.n, self.l, label='Expanders')
+
+            # check targets against requirements
             t, inv = edges.map(expander)
-            r = req[queries][inv][:,2]
-            isvar = r < 0
-            match = torch.logical_or(isvar, torch.eq(r, t))
-            m = torch.nonzero(match)
-            solutions = torch.cat([solutions[inv][m], req[queries][inv][m][:,2], t[m]], 1)
 
-            # CHECK AND PUBLISH FULL SOLUTIONS (???)
+            # FOR DEBUGGING
+            # e = torch.cat([expander[inv], t.unsqueeze(1)], 1)
+            # display(e, self.n, self.l, self.n, label='Expanded edges:')
+            # -------------
+
+            var_i = torch.nonzero(torch.eq(req_[queries][:,2:3], solutions[:,::2]))
+            var_i = torch.cat([var_i[:,0:1], var_i[:,1:2]*2], 1)
+            val_i = torch.cat([var_i[:,0:1], (var_i[:,1:2]+1)], 1)
+            ei = val_i[:,0]
+            ev = solutions[val_i.T[0], val_i.T[1]]
+            req_tar = req_[queries][:,2]
+            req_tar[ei] = ev
+            req_targets = req_tar[inv]
+
+            match = torch.logical_or(req_targets < 0, torch.eq(req_targets, t))
+            m = torch.nonzero(match).squeeze(1)
+
+            # expand solutions for matching targets
+            solutions = torch.cat([
+                solutions[inv][m],
+                req_[queries][inv][m][:,2:3],
+                t[m].unsqueeze(1)
+            ], 1 )
+            queries = queries[inv][m]
+
+            display(solutions, *[self.n for _ in range(solutions.size()[1])], label='Intermediate')
+
+            # publish solutions
+            solved = torch.eq(qlengths[queries], rlen + 1)
+            solvedi = torch.nonzero(solved).squeeze(1)
+            unsolvedi = torch.nonzero(~solved).squeeze(1)
+            full_solutions = solutions[solvedi]
+            solution_queries = queries[solvedi]
+            for i, sol in enumerate(full_solutions):
+                q = self.q.identify(solution_queries[i].item())
+                assignments = {}
+                for i, vi in enumerate(sol[2::2]):
+                    v = vi.item()
+                    if v < 0:
+                        assignments[self.v.identify(v)] = self.n.identify(sol[i*2+3].item())
+                complete.setdefault(q, []).append(assignments)
+            solutions = solutions[unsolvedi]
+            queries = queries[unsolvedi]
+
+            print('Complete solutions:')
+            for s in complete.values():
+                print(s)
+
+        for query_graph in query_graphs:
+            del self.q[query_graph]
+        self.q.index = query_id_index
+
+        return complete
 
 
 
