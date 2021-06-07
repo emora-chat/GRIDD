@@ -1,6 +1,6 @@
 from GRIDD.data_structures.inference_engine_spec import InferenceEngineSpec
 
-from GRIDD.data_structures.graph_matching_engine import GraphMatchingEngine
+from GRIDD.data_structures.graph_matching.graph_matching_engine import GraphMatchingEngine
 from structpy.map import Bimap
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.assertions import assertions
@@ -74,6 +74,9 @@ class InferenceEngine:
         for c in facts.concepts():
             if isinstance(c, int) or isinstance(c, float):
                 quantities.add(c)
+        # flatten types
+        type_predicates = facts.type_predicates()
+
         facts_graph = facts.to_graph()
         for node in quantities:
             facts_graph.data(node)['num'] = node
@@ -178,3 +181,7 @@ if __name__ == '__main__':
     rule_cg = engine._convert_rules(ConceptGraph(rules).rules())
     fact_cg = engine._convert_facts(ConceptGraph(facts))
     x = 1
+
+    results = engine.infer(facts, rules)
+    for k,v in results.items():
+        print(k, v)

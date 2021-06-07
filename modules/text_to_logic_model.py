@@ -2,7 +2,8 @@
 from abc import abstractmethod
 from itertools import chain
 from GRIDD.data_structures.concept_graph import ConceptGraph
-from GRIDD.data_structures.inference_engine import InferenceEngine
+# from GRIDD.data_structures.inference_engine import InferenceEngine
+from GRIDD.data_structures.graph_matching.inference_engine import InferenceEngine
 from GRIDD.data_structures.intelligence_core import IntelligenceCore
 from GRIDD.data_structures.id_map import IdMap
 from GRIDD.utilities import collect

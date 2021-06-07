@@ -7,6 +7,7 @@ from GRIDD.data_structures.graph_matching.preprocess_query_graph import preproce
 from GRIDD.utilities.utilities import TensorDisplay as Display
 from GRIDD.data_structures.graph_matching.root import root
 
+DISPLAY = False
 
 class GraphMatchingEngine:
 
@@ -79,7 +80,7 @@ class GraphMatchingEngine:
         for rlen, req in enumerate(checklist):                              # Tensor<query x 3: (s, l, t)>: required next edges
             ql = querylist[rlen]
 
-            display(req, self.n, self.l, self.n, label='Requirements')
+            if DISPLAY: display(req, self.n, self.l, self.n, label='Requirements')
 
             # get assignments
             req_ = torch.full((len(self.q), 3), 0, dtype=torch.long, device=self.device)
@@ -95,7 +96,7 @@ class GraphMatchingEngine:
             expander[ei] = ev
             expander = torch.cat([expander.unsqueeze(1), req_[queries][:,1:2]], 1)
 
-            display(expander, self.n, self.l, label='Expanders')
+            if DISPLAY: display(expander, self.n, self.l, label='Expanders')
 
             # check targets against requirements
             t, inv = edges.map(expander)
@@ -125,7 +126,7 @@ class GraphMatchingEngine:
             ], 1 )
             queries = queries[inv][m]
 
-            display(solutions, *[self.n for _ in range(solutions.size()[1])], label='Intermediate')
+            if DISPLAY: display(solutions, *[self.n for _ in range(solutions.size()[1])], label='Intermediate')
 
             # publish solutions
             solved = torch.eq(qlengths[queries], rlen + 1)
@@ -144,9 +145,10 @@ class GraphMatchingEngine:
             solutions = solutions[unsolvedi]
             queries = queries[unsolvedi]
 
-            print('Complete solutions:')
-            for s in complete.values():
-                print(s)
+            if DISPLAY:
+                print('Complete solutions:')
+                for s in complete.values():
+                    print(s)
 
         for query_graph in query_graphs:
             del self.q[query_graph]
