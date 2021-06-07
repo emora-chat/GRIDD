@@ -1,0 +1,272 @@
+l/like(user,c/college())
+time(l,Z/datetime())
+request_truth(emora,l)
+->
+$ Do{"t":"#Z"} you like your college ? $
+;
+
+time(pc/possess(user,c/college()),z/datetime())
+request(emora, c)
+-> college_type ->
+$ What kind of college do{"t":"#Z"} you go to ? I know that there are public and private universities as well as liberal arts and research colleges . $
+;
+
+time(pc/possess(user,c/college()),Z/datetime())
+p/property(c)
+time(p,Z)
+request(emora,p)
+->
+$ What is{"t":"#Z"} your college like ? $
+;
+
+like(user, pred/event(object()))
+in(pred,c/college())
+time(pred,Z/datetime())
+request(emora, pred)
+->
+$ What do{"t":"#Z"} you like to do in college ? I really enjoy studying in the library because it makes me motivated . $
+;
+
+time(udr/do(user,r/research()),z/datetime())
+request(emora, r)
+->
+$ What is{"t":"#Z"} your research about ? $
+;
+
+meaningful(X/social_science())
+->
+$ I think X is a really meaningful area to study ! Social science is so cool because people learn about human behaviors and then transform their knowledge into practical policies . $
+;
+
+xm/major(X/person())
+in(xm,bm/business_major())
+time(xm,Z/datetime())
+
+have(X,i/idea())
+cool(i)
+type(i,group)
+innovative(s/solution())
+type(s,group)
+
+xei/enter(X,financial(id/industry()))
+request_truth(emora,xei)
+->
+$ Oh , really ? Business people always have cool ideas about innovative problem solving . Be{"s":"#X","t":"#Z"} X thinking about going into the financial industry ? $
+;
+
+enter(x/person(),fid/financial(industry()))
+competitive(fid)
+->
+$ That’s awesome ! I heard that the financial industry is very competitive though . $
+;
+
+xei/enter(x/person(),fid/financial(industry()))
+xei{"confidence":-1}
+comfort(emora,x)
+->
+$ Understood . Not all people would feel comfortable working in the financial industry . I always believe that the most suitable is the best . $
+;
+
+difficult(Y/natural_science())
+impressive(X/person())
+->
+$ I had a tough time understanding many concepts from natural sciences , so X already sound{"s":"#X","t":"now"} very impressive to me by saying that Y is X{"p": true} thing . $
+;
+
+ei/important(em/engineering_math())
+to(ei,emora)
+->
+$ The field of engineering and math is certainly important , especially to me ! I mean , how can my performance improve without new advancements in this field ? $
+;
+
+admire(emora,x/person())
+like(emora,em/literature_english())
+->
+$ Sounds fun ! I admire people who study English literature and language because the field opens up a world of inspiration and creativity . $
+;
+
+xm/major(X/person())
+in(xm,a/arts_major())
+time(xm,Z/datetime())
+
+cool(a)
+ela/learn(emora,a)
+ewe/want(emora,ela)
+time(ewe,past)
+->
+$ It’s so cool that X study{"s":"#X","t":"#Z"} arts . I dreamed to go to school of arts when I was little , but I worried that I didn’t have the talent to do that as a lifelong pursuit . $
+;
+
+ek/know(emora)
+about(ek,X/unknown_noun())
+d/difficult(X)
+request_truth(emora,d)
+->
+$ I don't really know much about this area. Is it difficult to study X ? $
+;
+
+about(xt/tired(X/person()),rc/remote(c/college()))
+request_truth(emora,xt)
+->
+$ It has been a tough year for college students to stay at home and learn remotely . My friend said that she felt okay at first, but as time went on, she wanted to go back to school badly . Be{"t":"now","s":"#X"} X feeling the same way ? $
+;
+
+about(xt/tired(X/person()),rc/remote(c/college()))
+open(c)
+xr/return(X)
+to(xr,c)
+time(xr,future)
+request_truth(emora,xr)
+->
+$ I bet everyone has experienced Zoom fatigue at some point . But I heard that many schools are opening up . Be{"s":"#X","t":"now"} X going back to school soon ? $
+;
+
+about(xt/tired(x/person()),rc/remote(c/college()))
+xt{"confidence":-1}
+convenient(c)
+comfortable(x)
+->
+$ Oh , I see . Remote learning is undeniably convenient ! I mean , you save a lot of time by hopping on Zoom meetings , and learning from home is so comfortable . $
+;
+
+xr/return(X/person())
+to(xr,c/college())
+see(X,p/peer())
+type(p,group)
+xs/study(X)
+in(xs,l/library())
+->
+$ Sounds exciting ! It’s great that X can see X{"p":true} peers in person and study in the library again . $
+;
+
+xr/return(X/person())
+to(xr,c/college())
+xr{"confidence":-1}
+sad(X)
+->
+$ Oh , X must be really sad about that . Well , we all have some regrets in life . $
+;
+
+xic/in(X/person(),c/college())
+time(xic,past)
+p/property(c)
+request(emora,p)
+->
+$ How was college like for X ? I bet there have been many differences in college since X graduated . $
+;
+
+remember(emora,app/application())
+type(app,group)
+for(app,c/college())
+cf/confident(X/person())
+for(cf,c)
+request_truth(emora,cf)
+->
+$ Great ! I remember preparing for college applications and stuff as a high school student . It was a stressful time for me . Be{"t":"now","s":"#X"} X feeling confident ? $
+;
+
+cf/confident(X/person())
+for(cf,c/college())
+xm/major(X)
+in(xm,s/subject())
+request(emora,s)
+->
+$ That’s awesome . Do{"s":"#X","t":"now"} X know which subject X be{"s":"#X","t":"now"} going to major in ? $
+;
+
+cf/confident(x/person())
+for(cf,c/college())
+cf{"confidence":-1}
+comfort(emora,x)
+->
+$ That’s okay . Don’t worry too much about it . It’s hard to predict what the future path would be like as a high school student . $
+;
+
+agree(emora)
+ekb/keep(emora,b/balance())
+difficult(ekb)
+->
+$ Yeah , I agree . It’s especially not easy to keep a balance between academics and social life . $
+;
+
+sc/stressful(c/college())
+sorry(emora,sc)
+el/listen(emora)
+to(el,user)
+about(el,c)
+time(el,always)
+->
+$ I’m sorry to hear that . I know college can be overwhelming for different reasons , especially given the current situation .  But I’m always here if you would like to talk about anything . $
+;
+
+eh/happy(emora)
+for(eh,user)
+possess(user,p/part())
+favorite(p)
+about(p,c/college())
+be(p,fp/fav_part_college())
+request(emora,fp)
+->
+$ I’m glad that you’ve been enjoying college! What’s your favorite part about college ? Peers , school culture , or academics ? $
+;
+
+possess(user,p/part())
+favorite(p)
+about(p,c/college())
+be(p,pr/fav_peer())
+awesome(pr)
+->
+$ Having a group of lifelong friends who share similarities with you is really one of the best outcomes you may get from college . $
+;
+
+time(change(c/college()),always)
+->
+$ Yeah ? I guess college is always changing . The transition to remote learning that happened last year was one good example. $
+;
+
+ul/learn(user)
+from(ul,c/college())
+time(ul,Z/datetime())
+->
+$ I love keeping myself busy too ! A busy college may sometimes get you overwhelmed , but the good side about it is that you can learn a lot from your college experience . $
+;
+
+l/like(x/person(),pr/peer())
+type(pr,group)
+awesome(l)
+->
+$ Having a group of lifelong friends who share similarities with you is really one of the best outcomes you may get from college . $
+;
+
+ebf/be(emora,fm/freshman())
+time(ebf,past)
+eac/attend(emora,c/club())
+type(c,group)
+time(eac,past)
+->
+$ When I was a freshman , I attended a lot of different clubs and volunteered every week . I also got to know most of my best friends now in my freshman year . $
+;
+
+ebs/be(emora,sm/sophomore())
+time(ebs,past)
+eh/happy(emora)
+as(eh,sm)
+time(eh,past)
+->
+$ I was really happy as a sophomore because it was the time when I decided my majors . You know , the transition from uncertainty to certainty always makes people excited . $
+;
+
+se/search(emora)
+for(se,ip/internship())
+type(ip,group)
+time(se,past)
+->
+$ I remember searching for summer internships as a junior . It was a stressful time for me because I was not that good at doing interviews , but it was really exciting when I actually got the job offer . $
+;
+
+ip/important(g/graduation())
+for(ip,sn/senior())
+type(sn,group)
+->
+$ I think college graduation is one of the most important events in life . I feel sorry for seniors this year though because I heard that many of them still had online commencements . $
+;

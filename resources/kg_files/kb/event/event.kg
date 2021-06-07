@@ -1,6 +1,7 @@
 event = (predicate)
 
 go = (event)
+enter=(event)
 
 [life_event, activity] = (event)
 
@@ -13,3 +14,9 @@ keep=(event)
 visit=(event)
 come=(event)
 live=(event)
+
+
+return=(event)
+expr("go back",return)
+
+why_not_get_along=(object);

@@ -1,0 +1,49 @@
+time(work(x/person()),now)
+->
+busy(x)
+xr:<xr/return(x) xro/to(xr,o/office()) time(xr,now)>
+request_truth(emora,xr)
+;
+
+xr/return(x/person())
+xro/to(xr,o/office())
+time(xr,now)
+->
+see(x,c/colleague())
+type(c,group)
+xe:<xe/excited(x) about(xe,xro) time(xe,now)>
+request_truth(emora,xe)
+;
+
+xr/return(x/person())
+xro/to(xr,o/office())
+time(xr,now)
+xr{"confidence": -1}
+->
+not(stressed(x))
+xe:<xe/excited(x) about(xe,xro) time(xe,now)>
+request_truth(emora,xe)
+;
+
+xe/excited(x/person())
+xr/return(x)
+xro/to(xr,o/office())
+time(xr,now)
+about(xe,xro)
+time(xe,now)
+->
+online(m/meeting())
+type(m,group)
+dislike(emora,m)
+;
+
+xe/excited(x/person())
+xr/return(x)
+xro/to(xr,o/office())
+time(xr,now)
+about(xe,xro)
+time(xe,now)
+xe{"confidence": -1}
+->
+understand(emora,xe)
+;
