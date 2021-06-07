@@ -2,7 +2,7 @@
 locate = (predicate)
 expr("where", locate)
 cause = (predicate)
-expr("why", cause)
+expr("why, because", cause)
 qualifier = (predicate)
 expr("how", qualifier)
 but=(predicate)
@@ -51,4 +51,9 @@ change=(predicate)
 work=(predicate)
 attend=(predicate)
 
+contain=(predicate)
+agree=(predicate)
+drive=(predicate)
+research=(predicate)
+answer=(predicate)
 ;

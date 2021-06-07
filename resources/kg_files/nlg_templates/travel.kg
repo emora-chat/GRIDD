@@ -2,6 +2,7 @@
 l/like(user, travel(user))
 r/request_truth(emora, l)
 ->
+_pr(_low)
 $ Gotcha. You know, I was actually just wondering, do you like to travel ? $
 ;
 /* COLDSTART LINKING */
@@ -36,7 +37,7 @@ request(emora, pred)
 $ What do you like to do for trips ? I love going to beaches during my vacations . $
 ;
 
-gx/go(x/person())
+gx/go(X/person())
 to(gx,c/country())
 time(gx,past)
 request(emora,c)

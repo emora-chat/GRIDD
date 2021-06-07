@@ -597,7 +597,7 @@ class ChatbotServer:
             self.dialogue_intcore.working_memory = working_memory
         else:
             self.dialogue_intcore.working_memory = ConceptGraph(namespace='wm', supports={AND_LINK: False})
-            self.dialogue_intcore.consider(self.starting_wm)
+            self.dialogue_intcore.consider(list(self.starting_wm.values()))
 
     def assign_cover(self, graph, concepts=None):
         if concepts is None:
@@ -799,10 +799,6 @@ class ChatbotServer:
         state_update = self.run_knowledge_pull(state)
         state.update(state_update)
 
-        state_update = self.run_dialogue_inference(state)
-        state.update(state_update)
-        state_update = self.run_apply_dialogue_inferences(state)
-        state.update(state_update)
         state_update = self.run_reference_identification(state)
         state.update(state_update)
         state_update = self.run_multi_inference(state)
@@ -810,12 +806,12 @@ class ChatbotServer:
         state_update = self.run_reference_resolution(state)
         state.update(state_update)
         state_update = self.run_fragment_resolution(state)
+        state.update(state_update)
+        state_update = self.run_dialogue_inference(state)
+        state.update(state_update)
+        state_update = self.run_apply_dialogue_inferences(state)
         state.update(state_update)
 
-        state_update = self.run_dialogue_inference(state)
-        state.update(state_update)
-        state_update = self.run_apply_dialogue_inferences(state)
-        state.update(state_update)
         state_update = self.run_reference_identification(state)
         state.update(state_update)
         state_update = self.run_multi_inference(state)
@@ -823,6 +819,10 @@ class ChatbotServer:
         state_update = self.run_reference_resolution(state)
         state.update(state_update)
         state_update = self.run_fragment_resolution(state)
+        state.update(state_update)
+        state_update = self.run_dialogue_inference(state)
+        state.update(state_update)
+        state_update = self.run_apply_dialogue_inferences(state)
         state.update(state_update)
 
         state_update = self.run_prepare_template_nlg(state)
@@ -837,8 +837,7 @@ class ChatbotServer:
         state.update(state_update)
         state_update = self.run_response_by_rules(state)
         state.update(state_update)
-        state_update = self.run_response_nlg_model(state)
-        state.update(state_update)
+        state.update({'nlg_responses': None})
         state_update = self.run_response_assembler(state)
         state.update(state_update)
 

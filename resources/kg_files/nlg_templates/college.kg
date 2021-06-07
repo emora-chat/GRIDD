@@ -222,7 +222,7 @@ $ I’m glad that you’ve been enjoying college! What’s your favorite part ab
 
 possess(user,p/part())
 favorite(p)
-about(p,c)
+about(p,c/college())
 be(p,pr/fav_peer())
 awesome(pr)
 ->
