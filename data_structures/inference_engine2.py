@@ -159,7 +159,22 @@ if __name__ == '__main__':
     # print(InferenceEngineSpec.verify(InferenceEngine))
 
     rules = '''
+    xsm=see(x=person(), m=movie())
+    mta=type(m, action)
+    ->
+    watch(x, m)
+    ;
     '''
 
     facts = '''
+    jane=person()
+    jtw=type(jane, woman)
+    avengers=movie()
+    ata=type(avengers, action)
+    jsa=see(jane, avengers)
     '''
+
+    engine = InferenceEngine()
+    rule_cg = engine._convert_rules(ConceptGraph(rules).rules())
+    fact_cg = engine._convert_facts(ConceptGraph(facts))
+    x = 1
