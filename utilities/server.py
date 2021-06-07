@@ -1,6 +1,7 @@
 import json
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.span import Span
+from GRIDD.modules.responsegen_by_templates import Template
 
 ##############################
 # Serialization functions
@@ -33,6 +34,8 @@ def save(key, object):
                 pre, post, match_dict = info
                 pre_json = pre.save()
                 if isinstance(post, ConceptGraph):
+                    post_json = post.save()
+                elif isinstance(post, Template):
                     post_json = post.save()
                 else:
                     post_json = post
@@ -88,6 +91,8 @@ def load(key, value):
                     if isinstance(post_json, dict):
                         post = ConceptGraph(namespace=post_json["namespace"])
                         post.load(post_json)
+                    elif isinstance(post_json, (list, tuple)):
+                        post = Template(*post_json)
                     else:
                         post = post_json
                     value[rule] = (pre, post, match_dict)
