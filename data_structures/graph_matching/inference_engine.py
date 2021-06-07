@@ -58,7 +58,8 @@ class InferenceEngine:
                 pre.remove(predicate_type='specific')
                 if pre.has('specific'):
                     pre.remove('specific')
-            precondition = pre.to_graph()
+            precondition = pre.to_infcompat_graph()
+            precondition = self._flatten_types(pre, precondition, insert_vars=True)
             for node in categories:
                 precondition.data(node)['category'] = True
             for node in specifics:
@@ -74,19 +75,49 @@ class InferenceEngine:
         for c in facts.concepts():
             if isinstance(c, int) or isinstance(c, float):
                 quantities.add(c)
-        facts_graph = facts.to_graph()
-        # flatten types
-        for c in facts.concepts():
-            type_predicates = list(facts.type_predicates(c))
-            if facts.has(predicate_id=c):
-                for s, t, o, i in type_predicates:
-                    facts_graph.add(c, o, 't')
-            else:
-                for s,t,o,i in type_predicates:
-                    facts_graph.add(i,c,'s')
+        facts_graph = facts.to_infcompat_graph()
+        facts_graph = self._flatten_types(facts, facts_graph)
         for node in quantities:
             facts_graph.data(node)['num'] = node
         return facts_graph
+
+    def _flatten_types(self, orig_cg, cg, insert_vars=False):
+        counter = 0
+        for c in orig_cg.concepts():
+            type_predicates = list(orig_cg.type_predicates(c))
+            handled = set()
+            if orig_cg.has(predicate_id=c):
+                pred_type = orig_cg.type(c)
+                if pred_type != TYPE:  # add predicate type as a type predicate, if not type predicate itself
+                    handled.add(pred_type)
+                    new_id = '__virt_%d' % counter
+                    counter += 1
+                    cg.add(new_id, c, 's')
+                    cg.add(new_id, TYPE, 't')
+                    cg.add(new_id, pred_type, 'o')
+                    if insert_vars: cg.data(new_id)['var'] = True
+                for s, t, o, i in type_predicates:
+                    if s == c: handled.add(o) # if there is a direct type predicate to o, do not add any indirect links
+                for s, t, o, i in type_predicates:
+                    if s != c and o not in handled:  # only indirect type links need to be manually added
+                        handled.add(o)
+                        new_id = '__virt_%d' % counter
+                        counter += 1
+                        cg.add(new_id, c, 's')
+                        cg.add(new_id, t, 't')
+                        cg.add(new_id, o, 'o')
+                        if insert_vars: cg.data(new_id)['var'] = True
+            else:
+                for s, t, o, i in type_predicates:
+                    if s != c and o not in handled:
+                        handled.add(o)
+                        new_id = '__virt_%d' % counter
+                        counter += 1
+                        cg.add(new_id, c, 's')
+                        cg.add(new_id, t, 't')
+                        cg.add(new_id, o, 'o')
+                        if insert_vars: cg.data(new_id)['var'] = True
+        return cg
 
     def infer(self, facts, dynamic_rules=None, cached=True):
         """
@@ -128,13 +159,19 @@ class InferenceEngine:
             precondition_cg = all_rules[precondition_id][0]
             solset = []
             for sol in sols:
+                virtual_preds = {}
                 for variable, value in sol.items():
+                    if value.startswith('__virt_'):
+                        s = next(iter(facts_graph.out_edges(value, 's')))[1]
+                        t = next(iter(facts_graph.out_edges(value, 't')))[1]
+                        o = next(iter(facts_graph.out_edges(value, 'o')))[1]
+                        virtual_preds[value] = (s, t, o)
                     if precondition_cg.has(predicate_id=variable):
                         var_conf = precondition_cg.features.get_confidence(variable, None)
                         val_conf = facts_concept_graph.features.get_confidence(value, 1.0)
-                        if (var_conf is None and val_conf <= 0) or \
+                        if precondition_cg.type(variable) != TYPE and ((var_conf is None and val_conf <= 0) or \
                            (var_conf is not None and var_conf > 0 and val_conf - var_conf < 0) or \
-                           (var_conf is not None and var_conf < 0 and val_conf - var_conf > 0):
+                           (var_conf is not None and var_conf < 0 and val_conf - var_conf > 0)):
                             break
                     if variable in categories:
                         not_category = True
@@ -159,7 +196,7 @@ class InferenceEngine:
                         if not_specific:
                             break
                 else:
-                    solset.append(sol)
+                    solset.append((sol, virtual_preds))
             if len(solset) > 0:
                 solutions[precondition_id] = solset
         final_sols = {}
@@ -172,6 +209,8 @@ class InferenceEngine:
 
 if __name__ == '__main__':
     # print(InferenceEngineSpec.verify(InferenceEngine))
+
+    engine = InferenceEngine()
 
     rules = '''
     xsm=see(x=person(), m=movie())
@@ -191,7 +230,6 @@ if __name__ == '__main__':
     jsa=see(jane, avengers)
     '''
 
-    engine = InferenceEngine()
     rule_cg = engine._convert_rules(ConceptGraph(rules).rules())
     fact_cg = engine._convert_facts(ConceptGraph(facts))
     x = 1
@@ -211,3 +249,56 @@ if __name__ == '__main__':
     results = engine.infer(facts, rules2)
     for k,v in results.items():
         print(k, v)
+
+
+    rules3 = '''
+    econgrat(emora, X/object())
+    t/type(X, predicate)
+    ->
+    like(emora, t)
+    '''
+
+    facts = '''
+    econgrat(emora, wm2)
+    wm2=buy(user,wm5=house())
+    user=(person)
+    person=(living_thing)
+    buy=(predicate)
+    predicate=(object)
+    '''
+
+    results = engine.infer(facts, rules3)
+    for k,v in results.items():
+        print(k, v)
+
+
+    def apply(inferences):
+        implications = {}
+        for rid, (pre, post, sols) in inferences.items():
+            for sol, virtual_preds in sols:
+                implied = ConceptGraph(namespace=post._ids)
+                for pred in post.predicates():
+                    if pred[3] not in sol:
+                        # if predicate instance is not in solutions, add to implication; otherwise, it already exists in WM
+                        new_pred = []
+                        for x in pred:
+                            m = sol.get(x, x)
+                            if m.startswith('__virt_'):
+                                m = implied.add(*virtual_preds[m])
+                                sol[x] = m
+                            new_pred.append(m)
+                        implied.add(*new_pred)
+                for concept in post.concepts():
+                    concept = sol.get(concept, concept)
+                    implied.add(concept)
+                for s, t, l in post.metagraph.edges():
+                    implied.metagraph.add(sol.get(s, s), sol.get(t, t), l)
+                for s in post.metagraph.nodes():
+                    implied.metagraph.add(sol.get(s, s))
+                features = {sol.get(k, k): v for k, v in post.features.items()}
+                implied.features.update(features)
+                implications.setdefault(rid, []).append((sol, implied))
+        return implications
+
+    imps = apply(results)
+    x = 1

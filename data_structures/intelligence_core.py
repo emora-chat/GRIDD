@@ -245,13 +245,19 @@ class IntelligenceCore:
     def apply(self, inferences):
         implications = {}
         for rid, (pre, post, sols) in inferences.items():
-            for sol in sols:
+            for sol, virtual_preds in sols:
                 implied = ConceptGraph(namespace=post._ids)
                 for pred in post.predicates():
                     if pred[3] not in sol:
                         # if predicate instance is not in solutions, add to implication; otherwise, it already exists in WM
-                        pred = [sol.get(x, x) for x in pred]
-                        implied.add(*pred)
+                        new_pred = []
+                        for x in pred:
+                            m = sol.get(x, x)
+                            if m is not None and m.startswith('__virt_'):
+                                m = implied.add(*virtual_preds[m])
+                                sol[x] = m
+                            new_pred.append(m)
+                        implied.add(*new_pred)
                 for concept in post.concepts():
                     concept = sol.get(concept, concept)
                     implied.add(concept)

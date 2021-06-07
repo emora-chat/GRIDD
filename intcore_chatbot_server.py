@@ -375,12 +375,13 @@ class ChatbotServer:
         if len(inference_results) > 0:
             for reference_node, (pre, matches) in inference_results.items():
                 compatible_pairs[reference_node] = {}
-                for match in matches:
+                for match, virtual_preds in matches:
                     if reference_node in match and reference_node != match[reference_node]:
                         compatible_pairs[reference_node][match[reference_node]] = []
                         for node in match:
                             if node != reference_node:
-                                compatible_pairs[reference_node][match[reference_node]].append((match[node], node))
+                                if not node.startswith('__virt_'): # nothing to merge if matched node is virtual type
+                                    compatible_pairs[reference_node][match[reference_node]].append((match[node], node))
             pairs_to_merge = [] # todo - make into a set???
             for ref_node, compatibilities in compatible_pairs.items():
                 resolution_options = []

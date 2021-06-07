@@ -108,7 +108,7 @@ class ParseToLogic:
         for s,_,_,_ in wm.predicates(predicate_type='expr'):
             if not wm.has(s, 'type', 'expression'):
                 wm.add(s, 'type', 'expression')
-        rule_assignments = {(pre, post, rule): sols for rule, (pre, post, sols) in self.intcore.infer().items()}
+        rule_assignments = {(pre, post, rule): [s[0] for s in sols] for rule, (pre, post, sols) in self.intcore.infer().items()}
         mentions = self._get_mentions(rule_assignments, wm)
         merges = self._get_merges(rule_assignments, wm)
         return mentions, merges

@@ -588,8 +588,20 @@ class ConceptGraph:
             graph.add(c)
         return graph
 
+    def to_infcompat_graph(self):
+        graph = Graph()
+        for s, t, o, i in self.predicates():
+            graph.add(i, s, 's')
+            if t == TYPE:
+                graph.add(i, t, 't')
+            if o is not None:
+                graph.add(i, o, 'o')
+        for c in self.concepts():
+            graph.add(c)
+        return graph
+
     def merge(self, concept_a, concept_b, strict_order=False):
-        unique_preds = {USER_AWARE, TIME, ETURN, UTURN}
+        unique_preds = {USER_AWARE, TIME, ETURN, UTURN, TYPE}
         unique_pred_merges = set()
         if concept_a != concept_b:
             if not strict_order and concept_a.startswith(self._ids.namespace) and not concept_b.startswith(self._ids.namespace):

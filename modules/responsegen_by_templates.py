@@ -34,7 +34,7 @@ class ResponseTemplateFiller:
     def __call__(self, matches, expr_dict, cg, aux_state):
         candidates = []
         for rule, (pre_graph, post, solutions_list) in matches.items():
-            for match_dict in solutions_list:
+            for match_dict, virtual_preds in solutions_list:
                 string_spec_ls = list(post.string_spec_ls)  # need to create copy so as to not mutate the postcondition in the rule
                 try:
                     response_str = self.fill_string(match_dict, expr_dict, string_spec_ls, cg)
