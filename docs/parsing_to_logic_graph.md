@@ -1452,10 +1452,33 @@ is a noun or pronoun; otherwise, instantiate it as a lone concept.
 	center(Y)
     ;
     
-    X/singular()
+    X/nn()
     ltype(X, object)
-    -> singular_noun ->
+    -> singular_nonproper_noun ->
+    focus(X())
+    center(X)
+    ;
+    
+    X/nnp()
+    ltype(X, object)
+    -> singular_proper_noun ->
     focus(X)
+    center(X)
+    ;
+    
+    X/nns()
+    ltype(X, object)
+    -> plural_nonproper_noun ->
+    focus(g/X())
+    type(g, group)
+    center(X)
+    ;
+    
+    X/nnps()
+    ltype(X, object)
+    -> plural_proper_noun ->
+    focus(g/X())
+    type(g, group)
     center(X)
     ;
     
