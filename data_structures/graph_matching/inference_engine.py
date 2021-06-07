@@ -74,10 +74,16 @@ class InferenceEngine:
         for c in facts.concepts():
             if isinstance(c, int) or isinstance(c, float):
                 quantities.add(c)
-        # flatten types
-        type_predicates = facts.type_predicates()
-
         facts_graph = facts.to_graph()
+        # flatten types
+        for c in facts.concepts():
+            type_predicates = list(facts.type_predicates(c))
+            if facts.has(predicate_id=c):
+                for s, t, o, i in type_predicates:
+                    facts_graph.add(c, o, 't')
+            else:
+                for s,t,o,i in type_predicates:
+                    facts_graph.add(i,c,'s')
         for node in quantities:
             facts_graph.data(node)['num'] = node
         return facts_graph
@@ -103,8 +109,14 @@ class InferenceEngine:
         if len(converted_rules) == 0:
             return {}
         all_sols = self.matcher.match(facts_graph, *list(converted_rules.values()))
+        sorted_all_sols = {}
+        for k2 in converted_rules:
+            for k,v in all_sols.items():
+                rule = converted_rules.reverse()[k]
+                if rule == k2:
+                    sorted_all_sols[k] = v
         solutions = {}
-        for precondition, sols in all_sols.items():
+        for precondition, sols in sorted_all_sols.items():
             categories = set()
             specifics = set()
             for node in precondition.nodes():
@@ -170,10 +182,12 @@ if __name__ == '__main__':
     '''
 
     facts = '''
+    person=(living_thing)
     jane=person()
     jtw=type(jane, woman)
     avengers=movie()
     ata=type(avengers, action)
+    see=(view)
     jsa=see(jane, avengers)
     '''
 
@@ -183,5 +197,17 @@ if __name__ == '__main__':
     x = 1
 
     results = engine.infer(facts, rules)
+    for k,v in results.items():
+        print(k, v)
+
+    rules2 = '''
+    xsm=view(x=living_thing(), m=movie())
+    mta=type(m, action)
+    ->
+    watch(x, m)
+    ;
+    '''
+
+    results = engine.infer(facts, rules2)
     for k,v in results.items():
         print(k, v)

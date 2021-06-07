@@ -4,7 +4,7 @@ from GRIDD.intcore_server_globals import *
 
 from GRIDD.data_structures.concept_graph import ConceptGraph
 if INFERENCE:
-    from GRIDD.data_structures.inference_engine import InferenceEngine
+    from GRIDD.data_structures.graph_matching.inference_engine import InferenceEngine
 from GRIDD.data_structures.concept_compiler import ConceptCompiler
 from GRIDD.utilities.utilities import uniquify, operators, interleave, _process_requests
 from itertools import chain, combinations
