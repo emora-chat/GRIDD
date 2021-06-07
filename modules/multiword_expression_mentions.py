@@ -58,7 +58,7 @@ class MultiwordExpressionMatcher:
     def __init__(self, knowledge_base):
         self.multiword_expressions = {s.replace('"','').lower(): o
                                       for s, _, o, _ in knowledge_base.predicates(predicate_type='expr')
-                                      if len(s.split()) > 1 or "'" in s}
+                                      if len(s.split()) > 1 or "'" in s or "-" in s}
         self.matcher = ExpressionMatcher(self.multiword_expressions.keys())
         if len(self.multiword_expressions.keys()) == 0:
             self.run = False
@@ -70,7 +70,7 @@ class MultiwordExpressionMatcher:
         """
         :param elit_results - dictionary of outputs from ELIT models
         """
-        tokens = elit_results["tok"]
+        tokens = elit_results.get("tok", [])
         mentions = {}
         if len(tokens) > 0 and self.run:
             surface_form_tokens = [span.string for span in tokens]

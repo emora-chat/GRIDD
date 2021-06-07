@@ -1,9 +1,4 @@
 /* Methods for entering sports component */
-t/time(l/like(user, activity), now)
-user_aware(l)
--> person_likes_activity ->
-request_truth(emora, like(user, sport()))
-;
 
 l/like(user, s/sport())
 category(s)

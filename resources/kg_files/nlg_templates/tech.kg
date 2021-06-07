@@ -1,3 +1,14 @@
+/* COLDSTART LINKING */
+t/talk(user)
+about(t,ai())
+l/like(user, t)
+request_truth(emora, l)
+->
+_pr(_low)
+$ Actually , I was wondering if you are interested in artificial intelligence ? $
+;
+/* COLDSTART LINKING */
+
 time(h/have(user, p/computer()), now)
 b/be(p, pc())
 request_truth(emora, b)
@@ -6,8 +17,6 @@ time(tinker(emora,p1), now)
 ->
 $ I love tinkering with my pc. Do you have a Pc ? Or something else, like a mac ? $
 ;
-
-
 
 have(user, p/computer())
 request_truth(emora, pc_enthusiast(user))
@@ -164,15 +173,6 @@ _pr(_high)
 $ I think most people think so. For me, technology can be both bad and good, but I think my life is better when I am more connected to other people, and smartphones help with that. $
 ;
 
-
-
-t/talk(user)
-about(t,ai())
-i/like(user, t)
-request_truth(emora, i)
-->
-$ Do you like talking about Artificial Intelligence? Of course, you kinda have to be to talk to me, right? $
-;
 
 t/talk(user)
 about(t,ai())

@@ -1,29 +1,32 @@
-l/like(x/person(), videogame())
-request_truth(emora, l)
+/* COLDSTART LINKING */
+l2/like(user, videogame())
+request_truth(emora, l2)
 ->
-$ I really like games. Do you like videogames? I've always felt a connection with them since, like me, they're of a virtual world. $
+_pr(_low)
+$ You know , I have always felt a connection to video games since, they're of a virtual world like me . Do you like them too ? $
 ;
+/* COLDSTART LINKING */
 
-p/play(x/person(), videogame())
+p/play(user, videogame())
 request_truth(emora, p)
 ->
 $ Yeah, I love playing games. Do you play videogames? I've always felt a connection with them since, like me, they're of a virtual world. $
 ;
 
-like(x/person(), v/videogame())
+like(user, v/videogame())
 request(emora, v)
 ->
 $ Oh, that's really cool. I love video games too! What games do you like? $
 ;
 
-play(x/person(), v/videogame())
+play(user, v/videogame())
 request(emora, v)
 ->
 $ Oh, that's really cool. I love video games too! What's your favorite game? $
 ;
 
-p/play(x/person(), v/videogame())
-play(x, d/device())
+p/play(user, v/videogame())
+play(user, d/device())
 request(emora, d)
 for(d, v)
 ->
@@ -31,8 +34,8 @@ _pr(_low)
 $ There's so many different options to play videogames with, and they all have their own benefits. What's your favorite device to play on? $
 ;
 
-l/like(x/person(), v/videogame())
-play(x, d/device())
+l/like(user, v/videogame())
+play(user, d/device())
 request(emora, d)
 for(d, v)
 ->
@@ -52,7 +55,7 @@ specific(v)
 $ Yeah, that makes a lot of sense. It's great that you have fun in v because I think enjoying yourself is what's most important when playing videogames. $
 ;
 
-like(person(), g/genre())
+like(user, g/genre())
 request(emora, g)
 of(g, vg/videogame())
 type(vg, group)
@@ -87,14 +90,14 @@ $ Yeah, racing games seem really awesome. The only racing game I've really playe
 ;
 
 like(emora, nintendo)
-request_truth(emora, play(x/person(), mariokart))
+request_truth(emora, play(user, mariokart))
 ->
 $ Oh yeah! I love Nintendo. They make really entertaining family friendly games. Have you ever played Mariokart? $
 ;
 
 time(p/play(emora, xbox), now)
 not(p)
-cause(pred/predicate(), play(x/person(), xbox))
+cause(pred/predicate(), play(user, xbox))
 request(emora, pred)
 ->
 $ Oh, that's cool. I haven't actually played the xbox before, though my friends tell me it's fun. What do you like about it? $
@@ -131,14 +134,14 @@ $ Oh, I haven't actually heard of that one. It must be pretty good though, so I'
 
 classic(finalfantasy)
 like(emora, finalfantasy)
-time(possess(x/person(), f/finalfantasy()), now)
+time(possess(user, f/finalfantasy()), now)
 time(favorite(f), now)
 request(emora, f)
 ->
 $ I really like Final Fantasy, it's a classic series. Do you have a favorite out of the series? I thought the new combat system in the newer games has been pretty interesting. $
 ;
 
-time(p/possess(x/person(), f/finalfantasy()), now)
+time(p/possess(user, f/finalfantasy()), now)
 time(favorite(f), now)
 time(good(f), now)
 cause(pred/predicate(), p)
