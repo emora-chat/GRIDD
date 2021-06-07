@@ -7,7 +7,7 @@ class GraphMatchingEngineSpec:
 
     @specification.init
     def GRAPH_MATCHING_ENGINE(GraphMatchingEngine):
-        matcher = GraphMatchingEngine()
+        matcher = GraphMatchingEngine(device='cuda')
         return matcher
 
     def match(matcher, data_graph, query_graphs):

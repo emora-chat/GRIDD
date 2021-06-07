@@ -10,7 +10,8 @@ from GRIDD.data_structures.id_map import IdMap
 
 class GraphTensor:
 
-    def __init__(self, graph, nodemap=None, edgemap=None):
+    def __init__(self, graph, nodemap=None, edgemap=None, device='cpu'):
+        self.device = device
         self.nodemap = nodemap or IdMap(namespace=int)
         self.edgemap = edgemap or IdMap(namespace=int)
         nodes = set(graph.nodes())
@@ -24,8 +25,8 @@ class GraphTensor:
             dedges.setdefault((s * self.ne + l), []).append(t)
         keys = {k: i for i, k in enumerate(dedges.keys())}
         vedges = {keys[k]: ts for k, ts in dedges.items()}
-        self._keytensor = HashTensor(keys)
-        self._edgetensor = JaggedTensor([vedges[i] for i in range(len(vedges))])
+        self._keytensor = HashTensor(keys, device=self.device)
+        self._edgetensor = JaggedTensor([vedges[i] for i in range(len(vedges))], device=self.device)
 
     def __getitem__(self, source_label):
         inodes = self._keytensor[source_label[:,0] * self.ne + source_label[:,1]]
@@ -57,7 +58,7 @@ if __name__ == '__main__':
         [gt.nodemap.get('tom'), gt.edgemap.get('likes')]
     ]
 
-    targets, inv = gt.map(torch.LongTensor(st))
+    targets, inv = gt.map(torch.tensor(st, dtype=torch.long))
 
     for i, target in enumerate(targets):
         print(gt.nodemap.identify(st[inv[i].item()][0]),
