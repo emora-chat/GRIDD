@@ -597,7 +597,7 @@ class ChatbotServer:
             self.dialogue_intcore.working_memory = working_memory
         else:
             self.dialogue_intcore.working_memory = ConceptGraph(namespace='wm', supports={AND_LINK: False})
-            self.dialogue_intcore.consider(self.starting_wm)
+            self.dialogue_intcore.consider(list(self.starting_wm.values()))
 
     def assign_cover(self, graph, concepts=None):
         if concepts is None:

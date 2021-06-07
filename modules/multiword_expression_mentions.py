@@ -70,7 +70,7 @@ class MultiwordExpressionMatcher:
         """
         :param elit_results - dictionary of outputs from ELIT models
         """
-        tokens = elit_results["tok"]
+        tokens = elit_results.get("tok", [])
         mentions = {}
         if len(tokens) > 0 and self.run:
             surface_form_tokens = [span.string for span in tokens]
