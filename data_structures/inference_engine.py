@@ -17,7 +17,7 @@ class InferenceEngine:
         self._next = lambda x: x + 1
         if rules is not None:
             self.add(rules, namespace)
-        self.matcher = GraphMatchingEngine(device=device)
+        self.matcher = GraphMatchingEngine(self._preloaded_rules, device=device)
 
     def add(self, rules, namespace):
         if namespace is None:

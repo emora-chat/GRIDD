@@ -15,9 +15,9 @@ class InferenceEngine:
         self._preloaded_rules = {}
         self.counter = Counter()
         self._next = lambda x: x + 1
+        self.matcher = GraphMatchingEngine(device=device)
         if rules is not None:
             self.add(rules, namespace)
-        self.matcher = GraphMatchingEngine(device=device)
 
     def add(self, rules, namespace):
         if namespace is None:
@@ -33,6 +33,7 @@ class InferenceEngine:
         new_rules = self._convert_rules(renamed_rules)
         self.rules.update(renamed_rules)
         self._preloaded_rules.update(new_rules)
+        self.matcher.add_queries(*list(new_rules.values()))
 
     def _convert_rules(self, rules):
         converted_rules = {}
@@ -132,9 +133,8 @@ class InferenceEngine:
         elif dynamic_rules is None:
             dynamic_rules = {}
         dynamic_converted_rules = self._convert_rules(dynamic_rules)
-        if cached:
-            all_rules = {**self.rules, **dynamic_rules}
-            converted_rules = Bimap({**self._preloaded_rules, **dynamic_converted_rules})
+        if cached: #cached rules are already preloaded, cache is only true when there are no dynamic rules
+            converted_rules = Bimap({})
         else:
             all_rules = dynamic_rules
             converted_rules = Bimap(dynamic_converted_rules)

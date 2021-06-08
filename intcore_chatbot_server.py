@@ -922,4 +922,6 @@ if __name__ == '__main__':
             device = 'cpu'
     chatbot = ChatbotServer(kb, rules, nlg_templates, wm, device=device)
     chatbot.full_init(device=device)
-    chatbot.run()
+
+    import cProfile
+    cProfile.run('chatbot.run()')

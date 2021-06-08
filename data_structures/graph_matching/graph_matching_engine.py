@@ -11,7 +11,7 @@ DISPLAY = False
 
 class GraphMatchingEngine:
 
-    def __init__(self, device='cpu'):
+    def __init__(self, *query_graphs, device='cpu'):
         self.device = device
         self.checklist = []             # list<Tensor<q x 3: (n, l, n)>> list of required next edge lists
         self.querylist = []             # list<Tensor<q: query>> list of queries corresponding to checklist requirements
@@ -22,6 +22,7 @@ class GraphMatchingEngine:
         self.q = IdMap(namespace=int)   # query graphs
         self.qlengths = torch.empty(0,  # length of query requirements lists
             dtype=torch.long, device=self.device )
+        self.add_queries(*query_graphs)
 
     def add_queries(self, *query_graphs):
         self.checklist, self.querylist, self.qlengths = self._add_queries(query_graphs)
@@ -68,6 +69,7 @@ class GraphMatchingEngine:
 
     def match(self, data_graph, *query_graphs):
         query_graphs = preprocess_query_tuples(query_graphs)
+        display = None
         if DISPLAY: display = Display()
         complete = {}                                                       # list<Tensor<steps: ((qn1, dn1), (qn2, dn2), ...)>> completed solutions
         query_id_index = self.q.index                                       # Query index to reset after match is complete
