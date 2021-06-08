@@ -97,27 +97,17 @@ class InferenceEngine:
                     cg.add(new_id, TYPE, 't')
                     cg.add(new_id, pred_type, 'o')
                     if insert_vars: cg.data(new_id)['var'] = True
-                for s, t, o, i in type_predicates:
-                    if s == c: handled.add(o) # if there is a direct type predicate to o, do not add any indirect links
-                for s, t, o, i in type_predicates:
-                    if s != c and o not in handled:  # only indirect type links need to be manually added
-                        handled.add(o)
-                        new_id = '__virt_%d' % counter
-                        counter += 1
-                        cg.add(new_id, c, 's')
-                        cg.add(new_id, t, 't')
-                        cg.add(new_id, o, 'o')
-                        if insert_vars: cg.data(new_id)['var'] = True
-            else:
-                for s, t, o, i in type_predicates:
-                    if s != c and o not in handled:
-                        handled.add(o)
-                        new_id = '__virt_%d' % counter
-                        counter += 1
-                        cg.add(new_id, c, 's')
-                        cg.add(new_id, t, 't')
-                        cg.add(new_id, o, 'o')
-                        if insert_vars: cg.data(new_id)['var'] = True
+            for s, t, o, i in type_predicates:
+                if s == c: handled.add(o) # if there is a direct type predicate to o, do not add any indirect links
+            for s, t, o, i in type_predicates:
+                if s != c and o not in handled:  # only indirect type links need to be manually added
+                    handled.add(o)
+                    new_id = '__virt_%d' % counter
+                    counter += 1
+                    cg.add(new_id, c, 's')
+                    cg.add(new_id, t, 't')
+                    cg.add(new_id, o, 'o')
+                    if insert_vars: cg.data(new_id)['var'] = True
         return cg
 
     def infer(self, facts, dynamic_rules=None, cached=True):

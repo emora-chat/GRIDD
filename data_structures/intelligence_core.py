@@ -546,7 +546,9 @@ class IntelligenceCore:
         pullers = [c for c in wm.concepts()
                    if not (wm.subjects(c,'type') or wm.objects(c,'expr') or wm.objects(c,'ref') or wm.objects(c,'def'))
                    and (wm.subjects(c) or wm.objects(c))
-                   and wm.features.get(c, {}).get(SALIENCE, 0) > 0.0]
+                   and wm.features.get(c, {}).get(SALIENCE, 0) > 0.0
+                   and not c.isdigit()
+                   and c not in {TIME, 'now', 'past', 'future'}]
         pullers = sorted(pullers,
                          key=lambda c: self.working_memory.features.get(c, {}).get(SALIENCE, 0),
                          reverse=True)
@@ -571,6 +573,8 @@ class IntelligenceCore:
         for length in range(2, 0, -1): # todo - inefficient; identify combinations -> empty intersection and ignore in further processing
             combos = combinations(pullers, length)
             for combo in combos:
+                if len(combo) == 1 and ('emora' in combo or 'user' in combo):
+                    continue
                 related = set(neighbors[combo[0]])
                 concepts = [combo[0]]
                 for c in combo[1:]:
