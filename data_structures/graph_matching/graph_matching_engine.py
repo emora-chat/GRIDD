@@ -40,9 +40,10 @@ class GraphMatchingEngine:
                 checklist[i].append(req)
                 querylist[i].append(self.q.get(query_graph))
             qlengths.append(len(cl))
-        query_lengths = torch.cat([self.qlengths, torch.LongTensor(qlengths, device=self.device)], 0)
-        checklist = [torch.LongTensor(req) for req in checklist]
-        querylist = [torch.LongTensor(query) for query in querylist]
+        qlengths = torch.tensor(qlengths, dtype=torch.long, device=self.device)
+        query_lengths = torch.cat([self.qlengths, qlengths], 0)
+        checklist = [torch.tensor(req, dtype=torch.long, device=self.device) for req in checklist]
+        querylist = [torch.tensor(query, dtype=torch.long, device=self.device) for query in querylist]
         combined_cl = []
         combined_ql = []
         acl, aql = (self.checklist, self.querylist)
@@ -67,11 +68,11 @@ class GraphMatchingEngine:
 
     def match(self, data_graph, *query_graphs):
         query_graphs = preprocess_query_tuples(query_graphs)
-        display = Display()
+        if DISPLAY: display = Display()
         complete = {}                                                       # list<Tensor<steps: ((qn1, dn1), (qn2, dn2), ...)>> completed solutions
         query_id_index = self.q.index                                       # Query index to reset after match is complete
         checklist, querylist, qlengths = self._add_queries(query_graphs)    # list<Tensor<query x 3: (s, l, t)>> list of required next edge lists
-        edges = GraphTensor(data_graph, self.n, self.l)                     # GraphTensor<Tensor<X x 2: (s, l)>) -> (Tensor<Y: t>, Tensor<Y: inverse_index>>
+        edges = GraphTensor(data_graph, self.n, self.l, device=self.device) # GraphTensor<Tensor<X x 2: (s, l)>) -> (Tensor<Y: t>, Tensor<Y: inverse_index>>
         solutions = torch.full((len(checklist[0]), 2), self.n.get(root),    # Tensor<solution x step: ((qn1, dn1), (qn2, dn2), ...)> in-progress solutions
                                dtype=torch.long, device=self.device)
         queries = torch.arange(0, len(self.q),                              # Tensor<solution: query> inverse indices for solutions

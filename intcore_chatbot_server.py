@@ -257,7 +257,7 @@ class ChatbotServer:
                 if t == SPAN_REF: # will get floating concepts (e.g. not involved in any other predicate)
                     elements = [o]
                 elif t == TYPE:
-                    if o is not 'span':
+                    if o != 'span':
                         elements = [s, o, i]
                     else: # do not include type predicates on spans
                         elements = []

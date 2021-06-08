@@ -123,6 +123,7 @@ class InferenceEngine:
         """
         facts should have already had all types pulled (aka don't do type pull within inference engine)
         """
+        print('new inference engine!!!')
         facts_concept_graph = ConceptGraph(facts, namespace=(facts._ids if isinstance(facts, ConceptGraph) else "facts_"))
         facts_types = facts_concept_graph.types()
         facts_graph = self._convert_facts(facts_concept_graph)
