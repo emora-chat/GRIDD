@@ -10,6 +10,7 @@ from GRIDD.intcore_server_globals import *
 
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.intelligence_core import IntelligenceCore
+from GRIDD.data_structures.graph_matching.inference_engine import InferenceEngine
 from GRIDD.modules.ner_mentions import get_ner_mentions
 
 from GRIDD.utilities.server import save, load
@@ -51,6 +52,8 @@ class ChatbotServer:
         nlg_templates = collect(*nlg_templates)
         self.dialogue_intcore = IntelligenceCore(knowledge_base=knowledge, inference_rules=inference_rules,
                                                  nlg_templates=nlg_templates, device=device)
+        if INFERENCE:
+            self.reference_engine = InferenceEngine(device=device)
         if self.starting_wm is not None:
             self.dialogue_intcore.consider(list(self.starting_wm.values()))
         print('IntelligenceCore load: %.2f' % (time.time() - s))
@@ -356,13 +359,16 @@ class ChatbotServer:
         return rules, use_cached
 
     @serialized('inference_results', 'rules')
-    def run_multi_inference(self, rules, use_cached, working_memory):
+    def run_reference_inference(self, rules, working_memory):
         self.load_working_memory(working_memory)
-        inference_results = self.dialogue_intcore.nlg_inference_engine.infer(self.dialogue_intcore.working_memory,
-                                                                              rules,
-                                                                             cached=use_cached)
-        rules = {}
-        return inference_results, rules
+        inference_results = self.reference_engine.infer(self.dialogue_intcore.working_memory, rules, cached=False)
+        return inference_results, {}
+
+    @serialized('inference_results')
+    def run_template_inference(self, working_memory):
+        self.load_working_memory(working_memory)
+        inference_results = self.dialogue_intcore.nlg_inference_engine.infer(self.dialogue_intcore.working_memory)
+        return inference_results
 
     @serialized('working_memory')
     def run_reference_resolution(self, inference_results, working_memory):
@@ -743,14 +749,14 @@ class ChatbotServer:
         working_memory = self.run_knowledge_pull(working_memory)
 
         rules, use_cached = self.run_reference_identification(working_memory)
-        inference_results, rules = self.run_multi_inference(rules, use_cached, working_memory)
+        inference_results, rules = self.run_reference_inference(rules, working_memory)
         working_memory = self.run_reference_resolution(inference_results, working_memory)
         working_memory = self.run_fragment_resolution(working_memory, aux_state)
         inference_results = self.run_dialogue_inference(working_memory)
         working_memory = self.run_apply_dialogue_inferences(inference_results, working_memory)
 
         rules, use_cached = self.run_reference_identification(working_memory)
-        inference_results, rules = self.run_multi_inference(rules, use_cached, working_memory)
+        inference_results, rules = self.run_reference_inference(rules, working_memory)
         working_memory = self.run_reference_resolution(inference_results, working_memory)
         working_memory = self.run_fragment_resolution(working_memory, aux_state)
         inference_results = self.run_dialogue_inference(working_memory)
@@ -761,7 +767,7 @@ class ChatbotServer:
             print(working_memory.pretty_print(exclusions={SPAN_DEF, SPAN_REF, USER_AWARE, ASSERT, 'imp_trigger', ETURN, UTURN}))
 
         working_memory, expr_dict, use_cached = self.run_prepare_template_nlg(working_memory)
-        inference_results, rules = self.run_multi_inference(rules, use_cached, working_memory)
+        inference_results = self.run_template_inference(working_memory)
         template_response_sel, aux_state = self.run_template_fillers(inference_results, expr_dict,
                                                                      working_memory, aux_state)
         aux_state, response_predicates = self.run_response_selection(working_memory, aux_state,
@@ -922,6 +928,7 @@ if __name__ == '__main__':
             device = 'cpu'
     chatbot = ChatbotServer(kb, rules, nlg_templates, wm, device=device)
     chatbot.full_init(device=device)
+    chatbot.run()
 
-    import cProfile
-    cProfile.run('chatbot.run()')
+    # import cProfile
+    # cProfile.run('chatbot.run()')

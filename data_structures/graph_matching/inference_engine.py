@@ -12,7 +12,7 @@ class InferenceEngine:
 
     def __init__(self, rules=None, namespace=None, device='cpu'):
         self.rules = {}
-        self._preloaded_rules = {}
+        self._preloaded_rules = Bimap()
         self.counter = Counter()
         self._next = lambda x: x + 1
         self.matcher = GraphMatchingEngine(device=device)
@@ -23,7 +23,7 @@ class InferenceEngine:
         if namespace is None:
             raise Exception('namespace param cannot be None!')
         if not isinstance(rules, dict):
-            rules = ConceptGraph(rules, namespace='r_')
+            rules = ConceptGraph(rules, namespace=namespace)
             assertions(rules)
             rules = rules.rules()
         renamed_rules = {('rule%d'%self._next(self.counter) if k.startswith(namespace) else k): v for k,v in rules.items()}
@@ -124,7 +124,6 @@ class InferenceEngine:
         """
         facts should have already had all types pulled (aka don't do type pull within inference engine)
         """
-        print('new inference engine!!!')
         facts_concept_graph = ConceptGraph(facts, namespace=(facts._ids if isinstance(facts, ConceptGraph) else "facts_"))
         facts_types = facts_concept_graph.types()
         facts_graph = self._convert_facts(facts_concept_graph)
@@ -135,20 +134,15 @@ class InferenceEngine:
         dynamic_converted_rules = self._convert_rules(dynamic_rules)
         if cached: #cached rules are already preloaded, cache is only true when there are no dynamic rules
             converted_rules = Bimap({})
+            all_rules = self.rules
         else:
             all_rules = dynamic_rules
             converted_rules = Bimap(dynamic_converted_rules)
-        if len(converted_rules) == 0:
-            return {}
+        # if len(converted_rules) == 0:
+        #     return {}
         all_sols = self.matcher.match(facts_graph, *list(converted_rules.values()))
-        sorted_all_sols = {}
-        for k2 in converted_rules:
-            for k,v in all_sols.items():
-                rule = converted_rules.reverse()[k]
-                if rule == k2:
-                    sorted_all_sols[k] = v
         solutions = {}
-        for precondition, sols in sorted_all_sols.items():
+        for precondition, sols in all_sols.items():
             categories = set()
             specifics = set()
             for node in precondition.nodes():
@@ -156,7 +150,10 @@ class InferenceEngine:
                     categories.add(node)
                 if 'specific' in precondition.data(node):
                     specifics.add(node)
-            precondition_id = converted_rules.reverse()[precondition]
+            if not cached:
+                precondition_id = converted_rules.reverse()[precondition]
+            else:
+                precondition_id = self._preloaded_rules.reverse()[precondition]
             precondition_cg = all_rules[precondition_id][0]
             solset = []
             for sol in sols:
@@ -235,7 +232,7 @@ if __name__ == '__main__':
     fact_cg = engine._convert_facts(ConceptGraph(facts))
     x = 1
 
-    results = engine.infer(facts, rules)
+    results = engine.infer(facts, rules, cached=False)
     for k,v in results.items():
         print(k, v)
 
@@ -247,7 +244,7 @@ if __name__ == '__main__':
     ;
     '''
 
-    results = engine.infer(facts, rules2)
+    results = engine.infer(facts, rules2, cached=False)
     for k,v in results.items():
         print(k, v)
 
@@ -268,38 +265,11 @@ if __name__ == '__main__':
     predicate=(object)
     '''
 
-    results = engine.infer(facts, rules3)
+    results = engine.infer(facts, rules3, cached=False)
     for k,v in results.items():
         print(k, v)
 
-
-    def apply(inferences):
-        implications = {}
-        for rid, (pre, post, sols) in inferences.items():
-            for sol, virtual_preds in sols:
-                implied = ConceptGraph(namespace=post._ids)
-                for pred in post.predicates():
-                    if pred[3] not in sol:
-                        # if predicate instance is not in solutions, add to implication; otherwise, it already exists in WM
-                        new_pred = []
-                        for x in pred:
-                            m = sol.get(x, x)
-                            if m.startswith('__virt_'):
-                                m = implied.add(*virtual_preds[m])
-                                sol[x] = m
-                            new_pred.append(m)
-                        implied.add(*new_pred)
-                for concept in post.concepts():
-                    concept = sol.get(concept, concept)
-                    implied.add(concept)
-                for s, t, l in post.metagraph.edges():
-                    implied.metagraph.add(sol.get(s, s), sol.get(t, t), l)
-                for s in post.metagraph.nodes():
-                    implied.metagraph.add(sol.get(s, s))
-                features = {sol.get(k, k): v for k, v in post.features.items()}
-                implied.features.update(features)
-                implications.setdefault(rid, []).append((sol, implied))
-        return implications
-
-    imps = apply(results)
-    x = 1
+    engine = InferenceEngine(rules3, 'rules_')
+    results = engine.infer(facts)
+    for k,v in results.items():
+        print(k, v)
