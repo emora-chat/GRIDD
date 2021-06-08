@@ -68,94 +68,95 @@ class GraphMatchingEngine:
         return combined_cl, combined_ql, query_lengths
 
     def match(self, data_graph, *query_graphs):
+        # display = None
+        complete = {}                                                           # list<Tensor<steps: ((qn1, dn1), (qn2, dn2), ...)>> completed solutions
         query_graphs = preprocess_query_tuples(query_graphs)
-        display = None
         if DISPLAY: display = Display()
-        complete = {}                                                       # list<Tensor<steps: ((qn1, dn1), (qn2, dn2), ...)>> completed solutions
         query_id_index = self.q.index                                       # Query index to reset after match is complete
         checklist, querylist, qlengths = self._add_queries(query_graphs)    # list<Tensor<query x 3: (s, l, t)>> list of required next edge lists
-        edges = GraphTensor(data_graph, self.n, self.l, device=self.device) # GraphTensor<Tensor<X x 2: (s, l)>) -> (Tensor<Y: t>, Tensor<Y: inverse_index>>
-        solutions = torch.full((len(checklist[0]), 2), self.n.get(root),    # Tensor<solution x step: ((qn1, dn1), (qn2, dn2), ...)> in-progress solutions
-                               dtype=torch.long, device=self.device)
-        queries = torch.arange(0, len(self.q),                              # Tensor<solution: query> inverse indices for solutions
-                               dtype=torch.long, device=self.device)
+        if len(checklist) > 0:
+            edges = GraphTensor(data_graph, self.n, self.l, device=self.device) # GraphTensor<Tensor<X x 2: (s, l)>) -> (Tensor<Y: t>, Tensor<Y: inverse_index>>
+            solutions = torch.full((len(checklist[0]), 2), self.n.get(root),    # Tensor<solution x step: ((qn1, dn1), (qn2, dn2), ...)> in-progress solutions
+                                   dtype=torch.long, device=self.device)
+            queries = torch.arange(0, len(self.q),                              # Tensor<solution: query> inverse indices for solutions
+                                   dtype=torch.long, device=self.device)
 
-        for rlen, req in enumerate(checklist):                              # Tensor<query x 3: (s, l, t)>: required next edges
-            ql = querylist[rlen]
+            for rlen, req in enumerate(checklist):                              # Tensor<query x 3: (s, l, t)>: required next edges
+                ql = querylist[rlen]
 
-            if DISPLAY: display(req, self.n, self.l, self.n, label='Requirements')
+                if DISPLAY: display(req, self.n, self.l, self.n, label='Requirements')
 
-            # get assignments
-            req_ = torch.full((len(self.q), 3), 0, dtype=torch.long, device=self.device)
-            req_[ql] = req
-            var_i = torch.nonzero(torch.eq(req_[queries][:,0:1], solutions[:,::2]))
-            var_i = torch.cat([var_i[:,0:1], var_i[:,1:2]*2], 1)
-            val_i = torch.cat([var_i[:,0:1], (var_i[:,1:2] + 1)], 1)
+                # get assignments
+                req_ = torch.full((len(self.q), 3), 0, dtype=torch.long, device=self.device)
+                req_[ql] = req
+                var_i = torch.nonzero(torch.eq(req_[queries][:,0:1], solutions[:,::2]))
+                var_i = torch.cat([var_i[:,0:1], var_i[:,1:2]*2], 1)
+                val_i = torch.cat([var_i[:,0:1], (var_i[:,1:2] + 1)], 1)
 
-            # expand assigned to targets
-            ei = val_i[:,0]
-            ev = solutions[val_i.T[0], val_i.T[1]]
-            expander = torch.full((solutions.size()[0],), -1, dtype=torch.long, device=self.device)
-            expander[ei] = ev
-            expander = torch.cat([expander.unsqueeze(1), req_[queries][:,1:2]], 1)
+                # expand assigned to targets
+                ei = val_i[:,0]
+                ev = solutions[val_i.T[0], val_i.T[1]]
+                expander = torch.full((solutions.size()[0],), -1, dtype=torch.long, device=self.device)
+                expander[ei] = ev
+                expander = torch.cat([expander.unsqueeze(1), req_[queries][:,1:2]], 1)
 
-            if DISPLAY: display(expander, self.n, self.l, label='Expanders')
+                if DISPLAY: display(expander, self.n, self.l, label='Expanders')
 
-            # check targets against requirements
-            t, inv = edges.map(expander)
+                # check targets against requirements
+                t, inv = edges.map(expander)
 
-            # FOR DEBUGGING
-            # e = torch.cat([expander[inv], t.unsqueeze(1)], 1)
-            # display(e, self.n, self.l, self.n, label='Expanded edges:')
-            # -------------
+                # FOR DEBUGGING
+                # e = torch.cat([expander[inv], t.unsqueeze(1)], 1)
+                # display(e, self.n, self.l, self.n, label='Expanded edges:')
+                # -------------
 
-            var_i = torch.nonzero(torch.eq(req_[queries][:,2:3], solutions[:,::2]))
-            var_i = torch.cat([var_i[:,0:1], var_i[:,1:2]*2], 1)
-            val_i = torch.cat([var_i[:,0:1], (var_i[:,1:2]+1)], 1)
-            ei = val_i[:,0]
-            ev = solutions[val_i.T[0], val_i.T[1]]
-            req_tar = req_[queries][:,2]
-            req_tar[ei] = ev
-            req_targets = req_tar[inv]
+                var_i = torch.nonzero(torch.eq(req_[queries][:,2:3], solutions[:,::2]))
+                var_i = torch.cat([var_i[:,0:1], var_i[:,1:2]*2], 1)
+                val_i = torch.cat([var_i[:,0:1], (var_i[:,1:2]+1)], 1)
+                ei = val_i[:,0]
+                ev = solutions[val_i.T[0], val_i.T[1]]
+                req_tar = req_[queries][:,2]
+                req_tar[ei] = ev
+                req_targets = req_tar[inv]
 
-            match = torch.logical_or(req_targets < 0, torch.eq(req_targets, t))
-            m = torch.nonzero(match).squeeze(1)
+                match = torch.logical_or(req_targets < 0, torch.eq(req_targets, t))
+                m = torch.nonzero(match).squeeze(1)
 
-            # expand solutions for matching targets
-            solutions = torch.cat([
-                solutions[inv][m],
-                req_[queries][inv][m][:,2:3],
-                t[m].unsqueeze(1)
-            ], 1 )
-            queries = queries[inv][m]
+                # expand solutions for matching targets
+                solutions = torch.cat([
+                    solutions[inv][m],
+                    req_[queries][inv][m][:,2:3],
+                    t[m].unsqueeze(1)
+                ], 1 )
+                queries = queries[inv][m]
 
-            if DISPLAY: display(solutions, *[self.n for _ in range(solutions.size()[1])], label='Intermediate')
+                if DISPLAY: display(solutions, *[self.n for _ in range(solutions.size()[1])], label='Intermediate')
 
-            # publish solutions
-            solved = torch.eq(qlengths[queries], rlen + 1)
-            solvedi = torch.nonzero(solved).squeeze(1)
-            unsolvedi = torch.nonzero(~solved).squeeze(1)
-            full_solutions = solutions[solvedi]
-            solution_queries = queries[solvedi]
-            for i, sol in enumerate(full_solutions):
-                q = self.q.identify(solution_queries[i].item())
-                assignments = {}
-                for i, vi in enumerate(sol[2::2]):
-                    v = vi.item()
-                    if v < 0:
-                        assignments[self.v.identify(v)] = self.n.identify(sol[i*2+3].item())
-                complete.setdefault(q, []).append(assignments)
-            solutions = solutions[unsolvedi]
-            queries = queries[unsolvedi]
+                # publish solutions
+                solved = torch.eq(qlengths[queries], rlen + 1)
+                solvedi = torch.nonzero(solved).squeeze(1)
+                unsolvedi = torch.nonzero(~solved).squeeze(1)
+                full_solutions = solutions[solvedi]
+                solution_queries = queries[solvedi]
+                for i, sol in enumerate(full_solutions):
+                    q = self.q.identify(solution_queries[i].item())
+                    assignments = {}
+                    for i, vi in enumerate(sol[2::2]):
+                        v = vi.item()
+                        if v < 0:
+                            assignments[self.v.identify(v)] = self.n.identify(sol[i*2+3].item())
+                    complete.setdefault(q, []).append(assignments)
+                solutions = solutions[unsolvedi]
+                queries = queries[unsolvedi]
 
-            if DISPLAY:
-                print('Complete solutions:')
-                for s in complete.values():
-                    print(s)
+                if DISPLAY:
+                    print('Complete solutions:')
+                    for s in complete.values():
+                        print(s)
 
-        for query_graph in query_graphs:
-            del self.q[query_graph]
-        self.q.index = query_id_index
+            for query_graph in query_graphs:
+                del self.q[query_graph]
+            self.q.index = query_id_index
 
         return complete
 

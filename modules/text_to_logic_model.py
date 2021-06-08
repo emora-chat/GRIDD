@@ -108,9 +108,14 @@ class ParseToLogic:
         for s,_,_,_ in wm.predicates(predicate_type='expr'):
             if not wm.has(s, 'type', 'expression'):
                 wm.add(s, 'type', 'expression')
-        rule_assignments = {(pre, post, rule): [s[0] for s in sols] for rule, (pre, post, sols) in self.intcore.infer().items()}
-        mentions = self._get_mentions(rule_assignments, wm)
-        merges = self._get_merges(rule_assignments, wm)
+        rule_assignments = self.intcore.infer()
+        sorted_assignments = {}
+        for k2 in self.intcore.inference_engine.rules:
+            for rule, (pre, post, sols) in rule_assignments.items():
+                if rule == k2:
+                    sorted_assignments[(pre, post, rule)] = [s[0] for s in sols]
+        mentions = self._get_mentions(sorted_assignments, wm)
+        merges = self._get_merges(sorted_assignments, wm)
         return mentions, merges
 
     def _span_to_concepts(self):
