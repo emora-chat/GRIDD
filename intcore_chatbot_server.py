@@ -359,7 +359,7 @@ class ChatbotServer:
         return rules, use_cached
 
     @serialized('inference_results', 'rules')
-    def run_reference_inference(self, rules, working_memory):
+    def run_dynamic_inference(self, rules, working_memory):
         self.load_working_memory(working_memory)
         inference_results = self.reference_engine.infer(self.dialogue_intcore.working_memory, rules, cached=False)
         return inference_results, {}
@@ -749,14 +749,14 @@ class ChatbotServer:
         working_memory = self.run_knowledge_pull(working_memory)
 
         rules, use_cached = self.run_reference_identification(working_memory)
-        inference_results, rules = self.run_reference_inference(rules, working_memory)
+        inference_results, rules = self.run_dynamic_inference(rules, working_memory)
         working_memory = self.run_reference_resolution(inference_results, working_memory)
         working_memory = self.run_fragment_resolution(working_memory, aux_state)
         inference_results = self.run_dialogue_inference(working_memory)
         working_memory = self.run_apply_dialogue_inferences(inference_results, working_memory)
 
         rules, use_cached = self.run_reference_identification(working_memory)
-        inference_results, rules = self.run_reference_inference(rules, working_memory)
+        inference_results, rules = self.run_dynamic_inference(rules, working_memory)
         working_memory = self.run_reference_resolution(inference_results, working_memory)
         working_memory = self.run_fragment_resolution(working_memory, aux_state)
         inference_results = self.run_dialogue_inference(working_memory)
