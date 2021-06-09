@@ -63,6 +63,7 @@ expr("green bean",green_bean)
 celery=(vegetable)
 cilantro=(vegetable)
 potato=(vegetable)
+onion=(vegetable)
 
 ;
 

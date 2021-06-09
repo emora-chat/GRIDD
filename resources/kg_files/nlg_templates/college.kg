@@ -280,3 +280,11 @@ type(sn,group)
 ->
 $ I think college graduation is one of the most important events in life . I feel sorry for seniors this year though because I heard that many of them still had online commencements . $
 ;
+
+ge/go(emora)
+to(ge,c/college())
+time(ge,past)
+req_unsat(request_truth(user, ge))
+->
+$ Yeah , I went to college . $
+;

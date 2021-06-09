@@ -401,6 +401,12 @@ intend_to_consume(emora, cd)
 time(get(emora,cd),often)
 ;
 
+g/intend_to_consume(x/person(),cf/common_food())
+->
+intend_to_consume(emora, cf)
+time(get(emora,cf),often)
+;
+
 intend_to_consume(x/person(),m/milk())
 ->
 provide(m,protein)

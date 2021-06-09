@@ -86,3 +86,6 @@ visual_arts=(arts_major)
 expr("visual arts",visual_arts)
 
 ;
+
+art=(arts_major)
+music=(arts_major)
