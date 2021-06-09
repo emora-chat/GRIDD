@@ -29,7 +29,7 @@ about(xe,xro)
 time(xe,now)
 request_truth(emora,xe)
 ->
-$ I hope that you haven’t stressed out about often working from home . Are you looking forward to going back to the office ? $
+$ I hope that you haven’t stressed out about working from home so much recently. Are you looking forward to going back to the office ? $
 ;
 
 xe/excited(x/person())
@@ -42,7 +42,7 @@ online(m/meeting())
 type(m,group)
 dislike(emora,m)
 ->
-$ I bet ! Talking to people face to face is much more interesting . I’m not a fan of online meetings . $
+$ I bet ! Talking to people face to face is much more interesting . I’m not a fan of online meetings , though, a lot of my meetings, as you might imagine, are online . $
 ;
 
 xe/excited(x/person())

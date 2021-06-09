@@ -176,7 +176,7 @@ $ Oh, if you don't play any sports now, do you want to try any in the future? I 
 l/like(user, g/basketball_team())
 request(emora, g)
 ->
-$ Since you like basketball, what's your favorite team? Mine is the L A Lakers. It's too bad they got knocked out first round.$
+$ Since you like basketball, what's your favorite team? Mine is the L A Lakers. It's too bad they got knocked out first round of the playoffs.$
 ;
 
 l/like(user, g/soccer_team())
@@ -229,7 +229,7 @@ w{"confidence": -1}
 time(b/be(user, fd/foodie()), now)
 request_truth(emora, b)
 ->
-$ Hmm. Seems like sports might not be your thing. Would you say that you are a foodie? $
+$ Hmm. It seems like sports might not be your thing. Would you say that you are a foodie? $
 ;
 
 energetic(user)
