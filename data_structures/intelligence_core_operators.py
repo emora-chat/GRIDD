@@ -63,4 +63,41 @@ def op_more_info(cg, i):
     cg.remove(i)
 
 def eturn(cg, i):
-    pass
+    concept, _, turn_pos, _ = cg.predicate(i)
+    turn_pos = str(turn_pos)
+    rule = cg.metagraph.sources(i, PRE)
+    if len(rule) > 0:
+        if turn_pos.isdigit():
+            new_object = cg.id_map().get()
+            p1 = cg.add(new_object, TYPE, 'number')
+            p2 = cg.add(concept, ETURN, new_object)
+            cg.features[new_object][TURN_POS] = int(turn_pos)
+            rule = next(iter(rule))
+            for c in [p1, p2, new_object]:
+                cg.metagraph.add(rule, c, PRE)
+                cg.metagraph.add(rule, c, VAR)
+            cg.remove(predicate_id=i)
+            cg.remove(OP_ETURN)
+            cg.remove(turn_pos)
+        else:
+            print('[WARNING] an eturn predicate has been found that does not have a numeric object!')
+
+def uturn(cg, i):
+    concept, _, turn_pos, _ = cg.predicate(i)
+    turn_pos = str(turn_pos)
+    rule = cg.metagraph.sources(i, PRE)
+    if len(rule) > 0:
+        if turn_pos.isdigit():
+            new_object = cg.id_map().get()
+            p1 = cg.add(new_object, TYPE, 'number')
+            p2 = cg.add(concept, UTURN, new_object)
+            cg.features[new_object][TURN_POS] = int(turn_pos)
+            rule = next(iter(rule))
+            for c in [p1, p2, new_object]:
+                cg.metagraph.add(rule, c, PRE)
+                cg.metagraph.add(rule, c, VAR)
+            cg.remove(predicate_id=i)
+            cg.remove(OP_UTURN)
+            cg.remove(turn_pos)
+        else:
+            print('[WARNING] a uturn predicate has been found that does not have a numeric object!')

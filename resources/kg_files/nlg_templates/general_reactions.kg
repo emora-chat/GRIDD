@@ -1,0 +1,5 @@
+request(emora, r/object())
+eturn(r, 1)
+-> got_answer ->
+$ Gotcha . $
+;

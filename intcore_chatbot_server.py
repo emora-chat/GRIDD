@@ -331,9 +331,9 @@ class ChatbotServer:
         return self.dialogue_intcore.working_memory
 
     @serialized('inference_results')
-    def run_dialogue_inference(self, working_memory):
+    def run_dialogue_inference(self, working_memory, aux_state):
         self.load_working_memory(working_memory)
-        inference_results = self.dialogue_intcore.infer()
+        inference_results = self.dialogue_intcore.infer(aux_state)
         return inference_results
 
     @serialized('working_memory')
@@ -356,9 +356,10 @@ class ChatbotServer:
         return rules, use_cached
 
     @serialized('inference_results', 'rules')
-    def run_multi_inference(self, rules, use_cached, working_memory):
+    def run_multi_inference(self, rules, use_cached, working_memory, aux_state):
         self.load_working_memory(working_memory)
         inference_results = self.dialogue_intcore.nlg_inference_engine.infer(self.dialogue_intcore.working_memory,
+                                                                             aux_state,
                                                                               rules,
                                                                              cached=use_cached)
         rules = {}
@@ -742,17 +743,17 @@ class ChatbotServer:
         working_memory = self.run_knowledge_pull(working_memory)
 
         rules, use_cached = self.run_reference_identification(working_memory)
-        inference_results, rules = self.run_multi_inference(rules, use_cached, working_memory)
+        inference_results, rules = self.run_multi_inference(rules, use_cached, working_memory, aux_state)
         working_memory = self.run_reference_resolution(inference_results, working_memory)
         working_memory = self.run_fragment_resolution(working_memory, aux_state)
-        inference_results = self.run_dialogue_inference(working_memory)
+        inference_results = self.run_dialogue_inference(working_memory, aux_state)
         working_memory = self.run_apply_dialogue_inferences(inference_results, working_memory)
 
         rules, use_cached = self.run_reference_identification(working_memory)
-        inference_results, rules = self.run_multi_inference(rules, use_cached, working_memory)
+        inference_results, rules = self.run_multi_inference(rules, use_cached, working_memory, aux_state)
         working_memory = self.run_reference_resolution(inference_results, working_memory)
         working_memory = self.run_fragment_resolution(working_memory, aux_state)
-        inference_results = self.run_dialogue_inference(working_memory)
+        inference_results = self.run_dialogue_inference(working_memory, aux_state)
         working_memory = self.run_apply_dialogue_inferences(inference_results, working_memory)
 
         if PRINT_WM:
@@ -760,7 +761,7 @@ class ChatbotServer:
             print(working_memory.pretty_print(exclusions={SPAN_DEF, SPAN_REF, USER_AWARE, ASSERT, 'imp_trigger', ETURN, UTURN}))
 
         working_memory, expr_dict, use_cached = self.run_prepare_template_nlg(working_memory)
-        inference_results, rules = self.run_multi_inference(rules, use_cached, working_memory)
+        inference_results, rules = self.run_multi_inference(rules, use_cached, working_memory, aux_state)
         template_response_sel, aux_state = self.run_template_fillers(inference_results, expr_dict,
                                                                      working_memory, aux_state)
         aux_state, response_predicates = self.run_response_selection(working_memory, aux_state,
