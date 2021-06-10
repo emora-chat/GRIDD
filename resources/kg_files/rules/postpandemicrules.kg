@@ -1,0 +1,45 @@
+have(user, l/life())
+->
+have(emora,life())
+c:<c/change(pandemic(), l)>
+request_truth(emora, c)
+l2:<have(user, w1/job())
+c2/change(pandemic(), w1)
+qualifier(c2, remote_work())
+l2/like(user, c2)>
+request_truth(l2)
+;
+
+have(user, w1/job())
+c/change(pandemic(), w1)
+qualifier(c, remote_work())
+l/like(user, c)
+l{"confidence": 1}
+->
+temppred(l)
+;
+
+have(user, w1/job())
+c/change(pandemic(), w1)
+qualifier(c, remote_work())
+l/like(user, c)
+user_aware(request_truth(l))
+->
+m:<time(m/more(like(user, outside_activity())),now)>
+request_truth(emora, m)
+;
+
+
+
+m:<time(m/more(like(user, outside_activity())),now)>
+m{"confidence": -1}
+->
+r:<r/reason(m)>
+request(emora, r)
+;
+
+time(m/more(like(user, outside_activity())),now)
+user_aware(emora, m)
+->
+
+;
