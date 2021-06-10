@@ -58,6 +58,7 @@ class IntelligenceCore:
                         templates = nlg_templates.nlg_templates()
                         self.nlg_inference_engine.add(templates, nlg_templates.id_map().namespace)
                         self._check(nlg_templates, use_kb=True, file=k)
+                self.nlg_inference_engine.matcher.process_queries()
 
             if inference_engine is None:
                 inference_engine = InferenceEngine(device=device)
@@ -75,6 +76,7 @@ class IntelligenceCore:
                         inferences = inference_rules.rules()
                         self.inference_engine.add(inferences, inference_rules.id_map().namespace)
                         self._check(inference_rules, use_kb=True, file=k)
+                self.inference_engine.matcher.process_queries()
 
         if isinstance(working_memory, ConceptGraph):
             self.working_memory = working_memory

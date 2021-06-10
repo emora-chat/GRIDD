@@ -13,6 +13,7 @@ class GraphMatchingEngine:
 
     def __init__(self, *query_graphs, device='cpu'):
         self.device = device
+        self.query_graphs = []          # List<ConceptGraph> of unprocessed precondition concept graphs
         self.checklist = []             # list<Tensor<q x 3: (n, l, n)>> list of required next edge lists
         self.querylist = []             # list<Tensor<q: query>> list of queries corresponding to checklist requirements
         self.n = IdMap(namespace=int)   # nodes (both query and data nodes: static query nodes, dynamic query nodes, data nodes)
@@ -23,9 +24,13 @@ class GraphMatchingEngine:
         self.qlengths = torch.empty(0,  # length of query requirements lists
             dtype=torch.long, device=self.device )
         self.add_queries(*query_graphs)
+        self.process_queries()
 
     def add_queries(self, *query_graphs):
-        self.checklist, self.querylist, self.qlengths = self._add_queries(query_graphs)
+        self.query_graphs.extend(query_graphs)
+
+    def process_queries(self):
+        self.checklist, self.querylist, self.qlengths = self._add_queries(self.query_graphs)
 
     def _add_queries(self, query_graphs):
         checklist, querylist, qlengths = preprocess_query_graphs(query_graphs, self.n, self.v, self.l, self.q)
