@@ -147,6 +147,7 @@ class ChatbotServer:
                 with open(savefile, 'w') as f:
                     json.dump(d, f, indent=2)
                 self.elit_dp.intcore.inference_engine.add(rules, NLU_NAMESPACE)
+                self.elit_dp.intcore.inference_engine.matcher.process_queries()
         else:
             self.elit_dp = ElitDPToLogic(self.dialogue_intcore.knowledge_base,
                                          file, device=device)

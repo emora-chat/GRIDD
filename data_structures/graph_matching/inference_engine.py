@@ -18,6 +18,7 @@ class InferenceEngine:
         self.matcher = GraphMatchingEngine(device=device)
         if rules is not None:
             self.add(rules, namespace)
+            self.matcher.process_queries()
 
     def add(self, rules, namespace):
         if namespace is None:
