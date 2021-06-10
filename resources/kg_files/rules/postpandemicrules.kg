@@ -25,13 +25,13 @@ qualifier(c, remote_work())
 l/like(user, c)
 user_aware(request_truth(l))
 ->
-m:<time(m/more(like(user, outside_activity())),now)>
+m:<time(m/more(like(user, outdoor_activity())),now)>
 request_truth(emora, m)
 ;
 
 
 
-m:<time(m/more(like(user, outside_activity())),now)>
+m:<time(m/more(like(user, outdoor_activity())),now)>
 m{"confidence": -1}
 ->
 r:<r/reason(m)>
