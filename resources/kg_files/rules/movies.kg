@@ -4,7 +4,7 @@ category(m)
 user_aware(l)
 -> person_likes_some_movie ->
 op_more_info(m, l)
-request(emora, s)
+request(emora, m)
 ;
 
 m/movie()
