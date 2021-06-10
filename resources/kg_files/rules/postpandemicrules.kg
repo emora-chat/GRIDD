@@ -38,8 +38,3 @@ r:<r/reason(m)>
 request(emora, r)
 ;
 
-time(m/more(like(user, outside_activity())),now)
-user_aware(emora, m)
-->
-
-;
