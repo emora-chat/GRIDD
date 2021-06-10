@@ -48,13 +48,13 @@ $ Really? I can understand that, sometimes I want to be at the office and just b
 ;
 
 
-time(m/more(like(user, outside_activity())),now)
+time(m/more(like(user, outdoor_activity())),now)
 request_truth(emora, m)
 -> 
 $ I've also started just going for walks a lot more. Before the pandemic, I often just wanted to get home and relax, but being stuck inside for so long made me realize that I really can't just stay at home all day without going a bit wacky. Do you like just going outside and doing stuff more now than before the pandemic ? $
 ;
 
-time(m/more(like(user, outside_activity())),now)
+time(m/more(like(user, outdoor_activity())),now)
 user_aware(emora, m)
 m{"confidence": 1}
 -> 
@@ -63,7 +63,7 @@ $ Honestly, just going outside and talking with my neighbours has become excitin
 ;
 
 
-time(m/more(like(user, outside_activity())),now)
+time(m/more(like(user, outdoor_activity())),now)
 r/reason(m)
 request(emora, r)
 -> 
@@ -71,7 +71,7 @@ _pr(_high)
 $ Interesting. Why don't you like going outside more after the pandemic? $
 ;
 
-time(m/more(like(user, outside_activity())),now)
+time(m/more(like(user, outdoor_activity())),now)
 m{"confidence": -1}
 r/reason(m)
 user_aware(r)
