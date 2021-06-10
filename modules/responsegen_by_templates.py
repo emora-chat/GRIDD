@@ -1,4 +1,5 @@
 from GRIDD.globals import *
+import random
 
 from simplenlg.framework.NLGFactory         import *
 from simplenlg.realiser.english.Realiser    import *
@@ -20,6 +21,8 @@ Execution Sequence:
     InferenceEngine
     ResponseTemplateFiller
 """
+
+SPECIAL_NOT_CHECK_AWARE = {'unknown_answer_to_user_q'}
 
 class ResponseTemplateFiller:
     """
@@ -44,37 +47,41 @@ class ResponseTemplateFiller:
                     print('Error in NLG template filler for rule %s => %s'%(rule, e))
                     continue
                 if post.template_type == '_react':
-                    react_cands.append((match_dict, response_str, post.priority))
+                    react_cands.append((rule, match_dict, response_str, post.priority))
                 else:
                     if response_str not in aux_state.get('spoken_responses', []):
                         # don't allow for repeated followups or rfollowups
                         if post.template_type == '_present':
-                            followup_cands.append((match_dict, response_str, post.priority))
+                            followup_cands.append((rule, match_dict, response_str, post.priority))
                         elif post.template_type == '_rpresent':
-                            rfollowup_cands.append((match_dict, response_str, post.priority))
+                            rfollowup_cands.append((rule, match_dict, response_str, post.priority))
         if rfollowup_cands:
             predicates, string, avg_sal = self.select_best_candidate(rfollowup_cands, cg)
         else:
             predicates, string, avg_sal = self.select_best_candidate(followup_cands, cg)
-            p, s, a = self.select_best_candidate(react_cands, cg, check_aware=False)
-            if s is not None:
-                # Do not add reaction predicates to predicates list in order to avoid them being treated as spoken and getting the eturn predicate
-                string = s + ' ' + string
+            s = random.choice(['Yeah .', 'Gotcha .', 'I see .'])
+            curr_turn = aux_state.get('turn_index', 0)
+            if len(react_cands) > 0 and curr_turn > 0:
+                p, s, a = self.select_best_candidate(react_cands, cg, check_aware=False)
+            elif curr_turn == 0:
+                s = ""
+            # Do not add reaction predicates to predicates list in order to avoid them being treated as spoken and getting the eturn predicate
+            string = s + ' ' + string
         return (string, predicates, 'template')
 
     def select_best_candidate(self, candidates, cg, check_aware=True):
         # get highest salience candidate with at least one uncovered predicate
         with_sal = []
         print('\nResponse Options: ')
-        for match_dict, string, priority in candidates:
+        for rule, match_dict, string, priority in candidates:
             preds = [cg.predicate(x) for x in match_dict.values() if cg.has(predicate_id=x)
                      and cg.type(x) not in {EXPR, TYPE, TIME}]
-            if check_aware:
+            if check_aware and rule not in SPECIAL_NOT_CHECK_AWARE:
                 req_pred = [cg.predicate(x) for x in match_dict.values() if cg.has(predicate_id=x)
                             and cg.type(x) in {REQ_ARG, REQ_TRUTH} and cg.subject(x) == 'emora'] # check if emora already asked question
                 user_awareness = [cg.has(x[3], USER_AWARE) for x in preds]
                 user_req_awareness = [cg.has(x[3], USER_AWARE) for x in req_pred]
-            if not check_aware or (False in user_awareness and (not user_req_awareness or True not in user_req_awareness)):
+            if not check_aware or rule in SPECIAL_NOT_CHECK_AWARE or (False in user_awareness and (not user_req_awareness or True not in user_req_awareness)):
                 # at least one predicate is not known by the user
                 # and all request predicates are not known by user, if there are requests in response
                 # todo - stress test emora not asking a question she already has answer to or has asked before
