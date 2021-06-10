@@ -923,12 +923,12 @@ PRINT_WM = False
 if __name__ == '__main__':
     import torch
 
-    import sys
-    try:
-        f = open('GRIDD/scratch/input')
-        sys.stdin = f
-    except RuntimeError:
-        pass
+    # import sys
+    # try:
+    #     f = open('GRIDD/scratch/input')
+    #     sys.stdin = f
+    # except RuntimeError:
+    #     pass
 
     kb, rules, nlg_templates, wm = get_filepaths()
 
