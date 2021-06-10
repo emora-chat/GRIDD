@@ -921,13 +921,21 @@ PRINT_WM = False
 
 if __name__ == '__main__':
     import torch
+
+    import sys
+    try:
+        f = open('GRIDD/scratch/input')
+        sys.stdin = f
+    except RuntimeError:
+        pass
+
     kb, rules, nlg_templates, wm = get_filepaths()
 
     device = input('device (cpu/cuda:0/cuda:1/...) >>> ').strip()
     print_wm = input('debug (n/y) >>> ').strip()
     # global PRINT_WM
     PRINT_WM = True if print_wm == 'y' else False
-    if len(device) == 0:
+    if not device == 0:
         if torch.cuda.is_available():
             device = 'cuda:0'
         else:

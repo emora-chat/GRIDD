@@ -3,7 +3,7 @@ import torch
 
 from GRIDD.data_structures.id_map import IdMap
 from GRIDD.data_structures.graph_matching.graph_tensor import GraphTensor
-from GRIDD.data_structures.graph_matching.preprocess_query_graph import preprocess_query_graph, preprocess_query_tuples
+from GRIDD.data_structures.graph_matching.preprocess_query_graph import preprocess_query_graphs, preprocess_query_tuples
 from GRIDD.utilities.utilities import TensorDisplay as Display
 from GRIDD.data_structures.graph_matching.root import root
 
@@ -28,19 +28,7 @@ class GraphMatchingEngine:
         self.checklist, self.querylist, self.qlengths = self._add_queries(query_graphs)
 
     def _add_queries(self, query_graphs):
-        query_graphs = preprocess_query_tuples(query_graphs)
-        querylist = []
-        checklist = []
-        qlengths = []
-        for query_graph in query_graphs:
-            cl = preprocess_query_graph(query_graph, self.n, self.v, self.l)
-            for i, req in enumerate(cl):
-                while len(checklist) <= i:
-                    checklist.append([])
-                    querylist.append([])
-                checklist[i].append(req)
-                querylist[i].append(self.q.get(query_graph))
-            qlengths.append(len(cl))
+        checklist, querylist, qlengths = preprocess_query_graphs(query_graphs, self.n, self.v, self.l, self.q)
         qlengths = torch.tensor(qlengths, dtype=torch.long, device=self.device)
         query_lengths = torch.cat([self.qlengths, qlengths], 0)
         checklist = [torch.tensor(req, dtype=torch.long, device=self.device) for req in checklist]
@@ -68,12 +56,12 @@ class GraphMatchingEngine:
         return combined_cl, combined_ql, query_lengths
 
     def match(self, data_graph, *query_graphs):
-        # display = None
+        display = None
         complete = {}                                                           # list<Tensor<steps: ((qn1, dn1), (qn2, dn2), ...)>> completed solutions
         query_graphs = preprocess_query_tuples(query_graphs)
         if DISPLAY: display = Display()
-        query_id_index = self.q.index                                       # Query index to reset after match is complete
-        checklist, querylist, qlengths = self._add_queries(query_graphs)    # list<Tensor<query x 3: (s, l, t)>> list of required next edge lists
+        query_id_index = self.q.index                                           # Query index to reset after match is complete
+        checklist, querylist, qlengths = self._add_queries(query_graphs)        # list<Tensor<query x 3: (s, l, t)>> list of required next edge lists
         if len(checklist) > 0:
             edges = GraphTensor(data_graph, self.n, self.l, device=self.device) # GraphTensor<Tensor<X x 2: (s, l)>) -> (Tensor<Y: t>, Tensor<Y: inverse_index>>
             solutions = torch.full((len(checklist[0]), 2), self.n.get(root),    # Tensor<solution x step: ((qn1, dn1), (qn2, dn2), ...)> in-progress solutions

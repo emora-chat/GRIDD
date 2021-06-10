@@ -1,27 +1,48 @@
 
 import random
+from collections import defaultdict
 
 from GRIDD.data_structures.graph_matching.reverse_label import ReverseLabel as Rlabel
 from GRIDD.data_structures.graph_matching.root import root, rooted_edge
 
 
-def preprocess_query_graph(graph, nodemap, varmap, edgemap):
+def preprocess_query_graphs(query_graphs, nodemap, varmap, edgemap, querymap):
+    constant_counts = defaultdict(int)
+    query_graphs = preprocess_query_tuples(query_graphs)
+    querylist = []
     checklist = []
-    if isinstance(graph, tuple):
-        graph, variables = graph
-    else:
-        variables = set()
-    variables = set(variables)
-    variables.update({n for n in graph.nodes()
-                      if 'var' in graph.data(n)
-                      and graph.data(n)['var']})
+    qlengths = []
+    for query_graph in query_graphs:
+        constants = {n for n in query_graph.nodes()
+                     if 'var' not in query_graph.data(n)
+                     or not (query_graph.data(n)['var'])}
+        for c in constants:
+            constant_counts[c] += 1
+    for query_graph in query_graphs:
+        cl = preprocess_query_graph(query_graph, nodemap, varmap, edgemap, constant_counts)
+        for i, req in enumerate(cl):
+            while len(checklist) <= i:
+                checklist.append([])
+                querylist.append([])
+            checklist[i].append(req)
+            querylist[i].append(querymap.get(query_graph))
+        qlengths.append(len(cl))
+    return checklist, querylist, qlengths
+
+
+def preprocess_query_graph(graph, nodemap, varmap, edgemap, constant_counts):
+    checklist = []
+    variables = set()
+    variables = {n for n in graph.nodes()
+                 if 'var' in graph.data(n)
+                 and graph.data(n)['var']}
     constants = set(graph.nodes()) - variables
     left_nodes = set(graph.nodes())
     left_edges = set(graph.edges())
     while left_nodes:
         left_constants = left_nodes & constants
         if left_constants:
-            trunk = random.choice(list(left_constants))
+            trunk = min(left_constants, key=lambda c: constant_counts[c])
         else:
             trunk = random.choice(list(left_nodes))
         left_edges.add((root, trunk, rooted_edge))
@@ -38,10 +59,10 @@ def preprocess_query_graph(graph, nodemap, varmap, edgemap):
             if t in left_nodes:
                 left_nodes.remove(t)
                 for s_, t_, l_ in sorted(graph.out_edges(t),
-                                         key=lambda e: 0 if e[1] in variables else 1):
+                                         key=lambda e: 0 if e[1] in variables else 1/constant_counts.get(e, 1)):
                     stack.append((s_, t_, l_))
                 for s_, t_, l_ in sorted(graph.in_edges(t),
-                                         key=lambda e: 0 if e[0] in variables else 1):
+                                         key=lambda e: 0 if e[0] in variables else 1/constant_counts.get(e, 1)):
                     stack.append((t_, s_, Rlabel(l_)))
     mapped_checklist = []
     for s, t, l in checklist:
