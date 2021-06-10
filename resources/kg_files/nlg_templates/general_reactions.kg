@@ -1,5 +1,17 @@
-request(emora, r/object())
+r/request(emora, o/object())
 eturn(r, 1)
+uturn(o, 0)
 -> got_answer ->
+_t(_react)
+_pr(_low)
+$ Gotcha . $
+;
+
+r/request(emora, o/object())
+eturn(r, 1)
+uturn(o, 0)
+-> got_answer ->
+_t(_react)
+_pr(_low)
 $ Gotcha . $
 ;

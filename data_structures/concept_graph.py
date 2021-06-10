@@ -495,12 +495,16 @@ class ConceptGraph:
                 string_spec_ls.append(final_element)
             post_inst = list(self.metagraph.targets(rule, POST))
             priority_tag = None
+            template_type = DEFAULT_TEMPLATE_TYPE
             for inst in post_inst:
-                if self.has(predicate_id=inst) and self.type(inst) == PRIORITY_PRED:
-                    priority_tag = self.subject(inst)
+                if self.has(predicate_id=inst):
+                    if self.type(inst) == PRIORITY_PRED:
+                        priority_tag = self.subject(inst)
+                    elif self.type(inst) == TEMPLATE_TYPE:
+                        template_type = self.subject(inst)
             if priority_tag is not None and priority_tag not in priority_map:
                 print('[WARNING] Priority tag %s must be one of %s'%(str(priority_tag), str(priority_map.keys())))
-            template_obj = Template(string_spec_ls, priority=priority_map.get(priority_tag, DEFAULT_PRIORITY))
+            template_obj = Template(string_spec_ls, priority=priority_map.get(priority_tag, DEFAULT_PRIORITY), template_type=template_type)
             instance_exclusions.update(chain(pre_inst, vars_inst))
             template_links[rule] = (pre, template_obj, vars)
 

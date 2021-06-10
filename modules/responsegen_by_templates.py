@@ -32,33 +32,49 @@ class ResponseTemplateFiller:
         self.realiser = Realiser(self.lexicon)
 
     def __call__(self, matches, expr_dict, cg, aux_state):
-        candidates = []
+        react_cands = []
+        followup_cands = []
+        rfollowup_cands = []
         for rule, (pre_graph, post, solutions_list) in matches.items():
             for match_dict in solutions_list:
                 string_spec_ls = list(post.string_spec_ls)  # need to create copy so as to not mutate the postcondition in the rule
                 try:
                     response_str = self.fill_string(match_dict, expr_dict, string_spec_ls, cg)
                 except Exception as e:
-                    print('Error in NLG template filler => %s'%e)
+                    print('Error in NLG template filler for rule %s => %s'%(rule, e))
                     continue
-                # print(string_spec_ls)
-                if response_str not in aux_state.get('spoken_responses', []):
-                    candidates.append((match_dict, response_str, post.priority))
-        predicates, string, avg_sal = self.select_best_candidate(candidates, cg)
+                if post.template_type == '_react':
+                    react_cands.append((match_dict, response_str, post.priority))
+                else:
+                    if response_str not in aux_state.get('spoken_responses', []):
+                        # don't allow for repeated followups or rfollowups
+                        if post.template_type == '_present':
+                            followup_cands.append((match_dict, response_str, post.priority))
+                        elif post.template_type == '_rpresent':
+                            rfollowup_cands.append((match_dict, response_str, post.priority))
+        if rfollowup_cands:
+            predicates, string, avg_sal = self.select_best_candidate(rfollowup_cands, cg)
+        else:
+            predicates, string, avg_sal = self.select_best_candidate(followup_cands, cg)
+            p, s, a = self.select_best_candidate(react_cands, cg, check_aware=False)
+            if s is not None:
+                # Do not add reaction predicates to predicates list in order to avoid them being treated as spoken and getting the eturn predicate
+                string = s + ' ' + string
         return (string, predicates, 'template')
 
-    def select_best_candidate(self, candidates, cg):
+    def select_best_candidate(self, candidates, cg, check_aware=True):
         # get highest salience candidate with at least one uncovered predicate
         with_sal = []
         print('\nResponse Options: ')
         for match_dict, string, priority in candidates:
             preds = [cg.predicate(x) for x in match_dict.values() if cg.has(predicate_id=x)
                      and cg.type(x) not in {EXPR, TYPE, TIME}]
-            req_pred = [cg.predicate(x) for x in match_dict.values() if cg.has(predicate_id=x)
-                        and cg.type(x) in {REQ_ARG, REQ_TRUTH} and cg.subject(x) == 'emora'] # check if emora already asked question
-            user_awareness = [cg.has(x[3], USER_AWARE) for x in preds]
-            user_req_awareness = [cg.has(x[3], USER_AWARE) for x in req_pred]
-            if False in user_awareness and (not user_req_awareness or True not in user_req_awareness):
+            if check_aware:
+                req_pred = [cg.predicate(x) for x in match_dict.values() if cg.has(predicate_id=x)
+                            and cg.type(x) in {REQ_ARG, REQ_TRUTH} and cg.subject(x) == 'emora'] # check if emora already asked question
+                user_awareness = [cg.has(x[3], USER_AWARE) for x in preds]
+                user_req_awareness = [cg.has(x[3], USER_AWARE) for x in req_pred]
+            if not check_aware or (False in user_awareness and (not user_req_awareness or True not in user_req_awareness)):
                 # at least one predicate is not known by the user
                 # and all request predicates are not known by user, if there are requests in response
                 # todo - stress test emora not asking a question she already has answer to or has asked before
@@ -246,16 +262,18 @@ class ResponseTemplateFiller:
 
 class Template:
 
-    def __init__(self, string_spec_ls, priority):
+    def __init__(self, string_spec_ls, priority, template_type):
         self.string_spec_ls = string_spec_ls
         self.priority = priority
+        self.template_type = template_type
 
     def save(self):
-        return (self.string_spec_ls, self.priority)
+        return (self.string_spec_ls, self.priority, self.template_type)
 
     def load(self, d):
         self.string_spec_ls = d[0]
         self.priority = d[1]
+        self.template_type = d[2]
 
 
 if __name__ == '__main__':

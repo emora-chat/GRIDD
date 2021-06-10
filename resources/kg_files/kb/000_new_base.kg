@@ -64,4 +64,9 @@ _pr=(predicate)
 [_low,_high]=(object)
 
 [uturn, _uturn, eturn, _eturn]=(predicate, subj_essential)
+
+_t=(predicate)
+_react=object()
+_present=object()
+_rpresent=object()
 ;
