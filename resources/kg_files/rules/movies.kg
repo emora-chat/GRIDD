@@ -1,0 +1,17 @@
+/* User likes some movie */
+l/like(user, m/movie())
+category(m)
+user_aware(l)
+-> person_likes_some_movie ->
+op_more_info(m, l)
+request(emora, s)
+;
+
+m/movie()
+user_aware(m)
+-> movie_is_mentioned ->
+g:<possess(user, g/movie_genre()) favorite(g)>
+request(emora, g)
+pl/like(user, make(user, m2/movie()))
+request_truth(emora, pl)
+;

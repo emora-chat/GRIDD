@@ -1,0 +1,18 @@
+l/like(user, m/movie())
+request(emora, m)
+->
+$ What is your favorite movie? My favorite movie is the first Iron Man. $
+;
+
+possess(user, g/movie_genre)
+favorite(g)
+request(emora, g)
+->
+$ What is your favorite movie genre? $
+;
+
+l/like(user, make(user, m2/movies())
+request_truth(emora, l)
+->
+$ Have you ever tried making your own movie? I once made one in class for school. $
+;
