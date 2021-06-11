@@ -95,7 +95,7 @@ $ Honestly, just going outside and talking with my neighbours has become excitin
 ;
 
 
-time(m/more(like(user, outdoor_activity())),now)
+m/more(like(user, outdoor_activity()))
 r/reason(m)
 request(emora, r)
 -> 
@@ -103,7 +103,7 @@ _pr(_high)
 $ Interesting. Why don't you like going outside more after the pandemic? $
 ;
 
-time(m/more(like(user, outdoor_activity())),now)
+m/more(like(user, outdoor_activity()))
 m{"confidence": -1}
 r/reason(m)
 user_aware(r)

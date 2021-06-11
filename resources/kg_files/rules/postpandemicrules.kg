@@ -31,7 +31,7 @@ request_truth(emora, m)
 
 
 
-m:<time(m/more(like(user, outdoor_activity())),now)>
+m:<m/more(like(user, outdoor_activity()))>
 m{"confidence": -1}
 ->
 r:<r/reason(m)>
