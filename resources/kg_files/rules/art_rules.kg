@@ -19,6 +19,27 @@ uld:<uld/like(user,draw(user))>
 request_truth(emora,uld)
 ;
 
+X/artist()
+user_aware(X)
+->
+b:<b/be(X,ast/artist()) possess(user,ast) favorite(ast) time(b,now)>
+request_truth(emora,b)
+;
+
+ud/draw(user)
+user_aware(ud)
+->
+xtd:<xtd/try(user,digital(ud)) time(xtd,past)>
+request_truth(emora,xtd)
+;
+
+upp/paint(user)
+user_aware(upp)
+->
+o:<upo/paint(user,o/object())>
+request(emora,o)
+;
+
 xd/draw(user)
 like(user,xd)
 ->
@@ -31,6 +52,15 @@ xtd/try(user,digital(xd))
 time(xtd,past)
 ->
 interesting(xd)
+;
+
+xd/draw(user)
+xtd/try(user,dd/digital(xd))
+time(xtd,past)
+xtd{"confidence":-1}
+->
+uld/learn(user,dd)
+time(uld,future)
 ;
 
 xd/draw(user/person())

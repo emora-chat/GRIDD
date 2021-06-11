@@ -20,6 +20,23 @@ _pr(_low)
 $ Do you like drawing ? $
 ;
 
+b/be(X/artist(),ast/artist())
+possess(user,ast)
+favorite(ast)
+time(b,now)
+request_truth(emora,b)
+->
+_pr(_low)
+$ Is X your favorite artist ? $
+;
+
+upo/paint(user,o/object())
+request(emora,o)
+->
+_pr(_low)
+$ What do you usually paint ? $
+;
+
 xd/draw(user)
 like(user,xd)
 xtd/try(user,digital(xd))
@@ -35,6 +52,16 @@ time(xtd,past)
 interesting(xd)
 ->
 $ Digital drawing is fun , right ? I'm always amazed by how technology makes a lot of our lives different but more innovative than before . $
+;
+
+xd/draw(user)
+xtd/try(user,dd/digital(xd))
+time(xtd,past)
+xtd{"confidence":-1}
+uld/learn(user,dd)
+time(uld,future)
+->
+$ Then you should probably consider learning it some time ! I mean , since you like drawing , you will definitely have a lot of fun . $
 ;
 
 xd/draw(user)
