@@ -505,8 +505,6 @@ class ChatbotServer:
         if inference_results is None:
             inference_results = {}
         template_response_sel = self.template_filler(inference_results, expr_dict, working_memory, aux_state)
-        if template_response_sel[0] is not None:
-            aux_state.setdefault('spoken_responses', []).append(template_response_sel[0])
         return template_response_sel, aux_state
 
     def init_response_selection(self):

@@ -702,11 +702,13 @@ class IntelligenceCore:
             pass
         if 'emora_knowledge' in options:
             # convincable predicates are predicate instances that are objects of a request_truth predicate
+            # but this feature is not applicable to predicates in a precondition
             for s,t,o,i in cg.predicates():
-                if cg.has('emora', REQ_TRUTH, i) or cg.has('emora', REQ_ARG, i):
-                    cg.features[i][CONVINCABLE] = 1.0
-                else:
-                    cg.features[i][CONVINCABLE] = 0.0
+                if not cg.metagraph.sources(i, PRE):
+                    if cg.has('emora', REQ_TRUTH, i) or cg.has('emora', REQ_ARG, i):
+                        cg.features[i][CONVINCABLE] = 1.0
+                    else:
+                        cg.features[i][CONVINCABLE] = 0.0
         if 'identify_nonasserts' in options:
             # loading rules and templates separate from KB disassociates the predicates from their types
             # to preserve nonassertion of confidence, need to retrieve nonassert types where appropriate
