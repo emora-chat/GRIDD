@@ -36,8 +36,8 @@ class ResponseTemplateFiller:
 
     def __call__(self, matches, expr_dict, cg, aux_state):
         react_cands = []
-        followup_cands = []
-        rfollowup_cands = []
+        present_cands = []
+        rpresent_cands = []
         for rule, (pre_graph, post, solutions_list) in matches.items():
             for match_dict in solutions_list:
                 string_spec_ls = list(post.string_spec_ls)  # need to create copy so as to not mutate the postcondition in the rule
@@ -52,16 +52,25 @@ class ResponseTemplateFiller:
                     if response_str not in aux_state.get('spoken_responses', []):
                         # don't allow for repeated followups or rfollowups
                         if post.template_type == '_present':
-                            followup_cands.append((rule, match_dict, response_str, post.priority))
+                            present_cands.append((rule, match_dict, response_str, post.priority))
                         elif post.template_type == '_rpresent':
-                            rfollowup_cands.append((rule, match_dict, response_str, post.priority))
-        if rfollowup_cands:
-            predicates, string, avg_sal = self.select_best_candidate(rfollowup_cands, cg)
+                            rpresent_cands.append((rule, match_dict, response_str, post.priority))
+        print('\nReact + Present Options: ')
+        rp_predicates, rp_string, rp_score = self.select_best_candidate(rpresent_cands, cg)
+        print('\nPresent Options: ')
+        p_predicates, p_string, p_score = self.select_best_candidate(present_cands, cg)
+        if rp_score is not None and (p_score is None or rp_score >= p_score):
+            string = rp_string
+            predicates = rp_predicates
         else:
-            predicates, string, avg_sal = self.select_best_candidate(followup_cands, cg)
+            if p_string is None:
+                return (p_string, p_predicates, 'template')
+            string = p_string
+            predicates = p_predicates
             s = random.choice(['Yeah .', 'Gotcha .', 'I see .'])
             curr_turn = aux_state.get('turn_index', 0)
             if len(react_cands) > 0 and curr_turn > 0:
+                print('\nReact Options: ')
                 p, s, a = self.select_best_candidate(react_cands, cg, check_aware=False)
             elif curr_turn == 0:
                 s = ""
@@ -72,7 +81,6 @@ class ResponseTemplateFiller:
     def select_best_candidate(self, candidates, cg, check_aware=True):
         # get highest salience candidate with at least one uncovered predicate
         with_sal = []
-        print('\nResponse Options: ')
         for rule, match_dict, string, priority in candidates:
             preds = [cg.predicate(x) for x in match_dict.values() if cg.has(predicate_id=x)
                      and cg.type(x) not in {EXPR, TYPE, TIME}]
@@ -81,7 +89,7 @@ class ResponseTemplateFiller:
                             and cg.type(x) in {REQ_ARG, REQ_TRUTH} and cg.subject(x) == 'emora'] # check if emora already asked question
                 user_awareness = [cg.has(x[3], USER_AWARE) for x in preds]
                 user_req_awareness = [cg.has(x[3], USER_AWARE) for x in req_pred]
-            if not check_aware or rule in SPECIAL_NOT_CHECK_AWARE or (False in user_awareness and (not user_req_awareness or True not in user_req_awareness)):
+            if not check_aware or rule in SPECIAL_NOT_CHECK_AWARE or (False in user_awareness and (not user_req_awareness or False in user_req_awareness)):
                 # at least one predicate is not known by the user
                 # and all request predicates are not known by user, if there are requests in response
                 # todo - stress test emora not asking a question she already has answer to or has asked before

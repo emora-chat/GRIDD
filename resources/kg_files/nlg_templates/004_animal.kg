@@ -4,16 +4,18 @@ request_truth(emora, h)
 time(walk(emora, emora_dog), today)
 -> q_user_has_pet ->
 _pr(_low)
-$ For me , I took my dog on a walk today . Do you have a pet ? $
+$ I was just thinking , the most fun I had today was taking a walk with my dog . Do you have a pet ? $
 ;
 
 h/have(user, p/pet())
 h{"confidence": -1}
+uturn(h, 0)
 time(w2/want(emora, p3/cat()), past)
 time(w2, always)
 time(w/want(user, p2/pet()), now)
 request_truth(emora, w)
 -> q_want_pet ->
+_t(_rpresent)
 $ Oh , if you don't have any pets , do you want one ? I've always wanted a cat myself . $
 ;
 
@@ -42,7 +44,9 @@ locate(X/park(), L/location())
 N/near(L, H/home())
 have(user, H)
 request_truth(emora, N)
+uturn(X, 0)
 ->
+_t(_rpresent)
 $ Oh , is the park nearby where you live ? That would be so convenient ! $
 ;
 
@@ -50,7 +54,9 @@ love(emora, P/park())
 type(P, group)
 S/size(X/park())
 request(emora, S)
+uturn(X, 0)
 ->
+_t(_rpresent)
 $ There is really nothing better than a beautiful park ! How big is the one you mentioned ? $
 ;
 
@@ -58,6 +64,7 @@ el/like(emora, walk(emora, emora_dog))
 em/motivate(emora, healthy(emora))
 cause(em, el)
 ->
+_pr(_low)
 $ I like to take my dog on walks because it motivates me to be healthy . $
 ;
 
@@ -71,11 +78,17 @@ $ Well , your X must be a handful with so much energy , aren't they ? $
 e/event(X/pet()) crazy(e)
 have(user, X)
 request(emora, e)
+t/think(user, handful(X))
+r/request_truth(emora, t)
+eturn(r, 1)
 ->
+_t(_rpresent)
 $ I bet they keep your life interesting though. Like , what is the craziest thing they've ever done ? $
 ;
 
-esympathy(emora, event())
-->
+esympathy(emora, e/event())
+uturn(e, 0)
+-> esympathy_pet_reaction ->
+_t(_react)
 $ Oh no , that is unfortunate ! I hope it wasn't too bad . $
 ;

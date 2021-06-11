@@ -38,5 +38,7 @@ annoy=(activity,mental)
 use=(predicate)
 
 talk=(predicate)
+
+help=(activity, self_improvement)
 ;
 

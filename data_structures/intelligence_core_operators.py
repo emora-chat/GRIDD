@@ -2,6 +2,7 @@
 from GRIDD.utilities.utilities import aliases
 from GRIDD.data_structures.assertions import assertions
 from GRIDD.globals import *
+from itertools import chain
 
 @aliases('not')
 def _negation(cg, i):
@@ -76,11 +77,13 @@ def eturn(cg, i):
             for c in [p1, p2, new_object]:
                 cg.metagraph.add(rule, c, PRE)
                 cg.metagraph.add(rule, c, VAR)
+            if len(list(cg.predicates(predicate_type=OP_ETURN))) == 1:
+                cg.remove(OP_ETURN)
+            if len(list(chain(cg.subjects(turn_pos), cg.objects(turn_pos)))) == 1:
+                cg.remove(turn_pos)
             cg.remove(predicate_id=i)
-            cg.remove(OP_ETURN)
-            cg.remove(turn_pos)
         else:
-            print('[WARNING] an eturn predicate has been found that does not have a numeric object!')
+            print('[WARNING] eturn predicate has been found that does not have a numeric object!')
 
 def uturn(cg, i):
     concept, _, turn_pos, _ = cg.predicate(i)
@@ -96,8 +99,10 @@ def uturn(cg, i):
             for c in [p1, p2, new_object]:
                 cg.metagraph.add(rule, c, PRE)
                 cg.metagraph.add(rule, c, VAR)
+            if len(list(cg.predicates(predicate_type=OP_UTURN))) == 1:
+                cg.remove(OP_UTURN)
+            if len(list(chain(cg.subjects(turn_pos), cg.objects(turn_pos)))) == 1:
+                cg.remove(turn_pos)
             cg.remove(predicate_id=i)
-            cg.remove(OP_UTURN)
-            cg.remove(turn_pos)
         else:
-            print('[WARNING] a uturn predicate has been found that does not have a numeric object!')
+            print('[WARNING] uturn predicate has been found that does not have a numeric object!')

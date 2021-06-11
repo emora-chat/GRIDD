@@ -1,2 +1,4 @@
-customer_service_representative=job()
+customer_service_representative=(job)
 expr("customer service representative", customer_service_representative)
+
+nurse=(job)

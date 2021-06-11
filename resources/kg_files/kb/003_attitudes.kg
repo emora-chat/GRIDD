@@ -14,7 +14,7 @@ sounds=(attitude)
 ;
 
 
-[esympathy,econgrat,epositive,eproud]=(attitude)
+[esympathy,econgrat,epositive,eproud,eadmire]=(attitude)
 
 
 similar_to=(attitude)
