@@ -167,13 +167,3 @@ chilaquiles=(mexican_cuisine)
 enchilada=(mexican_cuisine)
 
 ;
-
-burger=(fast_food)
-french_fries=(fast_food)
-expr("french fries",french_fries)
-mashed_potatoes=(fast_food)
-expr("mashed potatoes",mashed_potatoes)
-fried_chicken=(fast_food)
-expr("fried chicken",fried_chicken)
-
-;
