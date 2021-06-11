@@ -20,27 +20,39 @@ class GraphTensor:
         edges.update({(root, n, rooted_edge) for n in nodes})
         medges = [(self.nodemap.get(s), self.nodemap.get(t), self.edgemap.get(l)) for s, t, l in edges]
         self.ne = len(self.edgemap)
+        self.nn = len(self.nodemap)
         dedges = {}
         for s, t, l in medges:
             dedges.setdefault((s * self.ne + l), []).append(t)
+        edgehashes = {}
+        for s, t, l in medges:
+            edgehashes[s * self.nn * self.ne + t * self.ne + l] = 1
         keys = {k: i for i, k in enumerate(dedges.keys())}
         vedges = {keys[k]: ts for k, ts in dedges.items()}
         self._keytensor = HashTensor(keys, device=self.device)
-        self._edgetensor = JaggedTensor([vedges[i] for i in range(len(vedges))], device=self.device)
+        self._targettensor = JaggedTensor([vedges[i] for i in range(len(vedges))], device=self.device)
+        self._edgestensor = HashTensor(edgehashes, device=self.device)
+        return
 
     def __getitem__(self, source_label):
-        inodes = self._keytensor[source_label[:,0] * self.ne + source_label[:,1]]
-        targets, inverse = self._edgetensor.map(inodes)
+        inodes = self._keytensor[source_label[:, 0] * self.ne + source_label[:, 1]]
+        targets, inverse = self._targettensor.map(inodes)
         return targets
 
-    def map(self, source_label):
+    def targets(self, source_label):
         transform = source_label[:,0] * self.ne + source_label[:,1]
         inodes = self._keytensor[transform]
         exists = torch.nonzero(torch.ne(inodes, -1)).squeeze(1)
         inodes = inodes[exists]
-        targets, inverse = self._edgetensor.map(inodes)
+        targets, inverse = self._targettensor.map(inodes)
         inverse = exists[inverse]
         return targets, inverse
+
+    def has(self, edges):
+        x = self.nn * self.ne
+        edgehashes = edges[:,0] * x + edges[:,2] * self.ne + edges[:,1]
+        result = self._edgestensor[edgehashes]
+        return result > 0
 
 
 if __name__ == '__main__':
@@ -58,11 +70,21 @@ if __name__ == '__main__':
         [gt.nodemap.get('tom'), gt.edgemap.get('likes')]
     ]
 
-    targets, inv = gt.map(torch.tensor(st, dtype=torch.long))
+    targets, inv = gt.targets(torch.tensor(st, dtype=torch.long))
 
     for i, target in enumerate(targets):
         print(gt.nodemap.identify(st[inv[i].item()][0]),
               '->', gt.nodemap.identify(target.item()) )
+
+    edgetest = torch.tensor([
+        [gt.nodemap.get('john'), gt.edgemap.get('likes'), gt.nodemap.get('mary')],
+        [gt.nodemap.get('john'), gt.edgemap.get('likes'), gt.nodemap.get('john')],
+        [gt.nodemap.get('mary'), gt.edgemap.get('likes'), gt.nodemap.get('tom')]
+    ], dtype=torch.long)
+
+    contains = gt.has(edgetest)
+
+    print(contains)
 
 
 

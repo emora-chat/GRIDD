@@ -75,20 +75,36 @@ class HashTensor:
         return self.index(key) >= 0
 
     def __getitem__(self, key):
-        return self.values[self.index(key)]
+        result = torch.full(key.size(), -1,                 # Tensor<key: index> mapping of keys to table indices (or -1 if no entry)
+                            device=self.device)
+        search = key % len(self.keys)                       # Tensor<remaining: index> mapping remaining keys to table indices
+        ri = torch.arange(0, len(key),                      # Tensor<remaining: rindex> mapping remaining keys to original key indices
+                          dtype=torch.long, device=self.device)
+        while len(search) > 0:                              # while there are undecided keys (neither found nor lost)
+            tkeys = self.keys[search]                       # Tensor<remaining: tablekey> keys in table corresponding with searched keys
+            cmp = tkeys == key[ri]                          # Tensor<remaining: bool> whether there is a match, tablekey==key
+            found = torch.nonzero(cmp)                      # Tensor<remaining_after_search: rindex_into_search> subset of search that is found
+            ki = ri[found]                                  # Tensor<found: keyindex> indices of found keys in original key tensor
+            result[ki] = self.values[search[found]]         # inserting table values into result
+            searching = torch.logical_and(~cmp, tkeys!=-1)  # Tensor<remaining: bool> whether still searching for key (neither lost nor found)
+            search = search[searching]                      # filtering search by keys still searching for
+            ri = ri[searching]                              # filtering rindex to match search
+            search = (search + 1) % len(self.keys)          # updating search with linear probe
+        return result
 
 
 
 if __name__ == '__main__':
     m = HashTensor({
-        6: -6,
-        2: -2,
-        5: -5,
-        18: -18,
-        17: -17
+        1: 2,
+        2: 3,
+        3: 4,
+        11: 12,
+        12: 13,
+        13: 14
     })
 
-    k = torch.tensor([2, 6, 6, 5, 3, 2, 18, 17, 17, 18], dtype=torch.long)
+    k = torch.tensor([1, 2, 12, 4, 14], dtype=torch.long)
     v = m[k]
 
     print(v)

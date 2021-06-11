@@ -49,12 +49,15 @@ def preprocess_query_graph(graph, nodemap, varmap, edgemap, constant_counts):
         stack = [(root, trunk, rooted_edge)]
         while stack:
             s, t, l = stack.pop()
-            if (s, t, l) not in left_edges and (t, s, Rlabel(l)) not in left_edges:
-                continue
+            if (s, t, l) not in left_edges or (t, s, Rlabel(l)) not in left_edges:
+                left_edges.discard((s, t, l))
+                left_edges.discard((t, s, Rlabel(l)))
             if isinstance(l, Rlabel):
-                left_edges.remove((t, s, Rlabel(l)))
+                left_edges.discard((t, s, Rlabel(l)))
+                left_edges.discard((s, t, l))
             else:
-                left_edges.remove((s, t, l))
+                left_edges.discard((s, t, l))
+                left_edges.discard((t, s, Rlabel(l)))
             checklist.append((s, t, l))
             if t in left_nodes:
                 left_nodes.remove(t)
