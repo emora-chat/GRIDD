@@ -11,7 +11,6 @@ DISPLAY = False
 
 torch.no_grad()
 
-
 class GraphMatchingEngine:
 
     def __init__(self, *query_graphs, device='cpu'):

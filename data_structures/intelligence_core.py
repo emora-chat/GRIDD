@@ -256,7 +256,7 @@ class IntelligenceCore:
                         for x in pred:
                             m = sol.get(x, x)
                             if m is not None and m.startswith('__virt_'):
-                                m = implied.add(*virtual_preds[m])
+                                m = implied.add(*virtual_preds[m]) # add the virtual type as a new predicate instance, m is the new id in the implied concept_graph
                                 sol[x] = m
                             new_pred.append(m)
                         implied.add(*new_pred)

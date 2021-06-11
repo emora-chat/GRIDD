@@ -2,7 +2,6 @@ eat=(event)
 expr("consume",eat)
 drink=(event)
 cook=(event)
-bake=(event)
 
 ;
 
@@ -21,7 +20,7 @@ melt=(predicate)
 
 ;
 
-cooking_method=(predicate)
+cooking_method=(event)
 boil=(cooking_method)
 steam=(cooking_method)
 bake=(cooking_method)

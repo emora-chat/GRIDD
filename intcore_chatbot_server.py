@@ -387,7 +387,7 @@ class ChatbotServer:
                         compatible_pairs[reference_node][match[reference_node]] = []
                         for node in match:
                             if node != reference_node:
-                                if not node.startswith('__virt_'): # nothing to merge if matched node is virtual type
+                                if not node.startswith('__virt_') and not match[node].startswith('__virt_'): # nothing to merge if matched node is virtual type
                                     compatible_pairs[reference_node][match[reference_node]].append((match[node], node))
             pairs_to_merge = [] # todo - make into a set???
             for ref_node, compatibilities in compatible_pairs.items():
@@ -929,7 +929,7 @@ if __name__ == '__main__':
         if 'off' in f.readline():
             raise RuntimeError
         sys.stdin = f
-    except RuntimeError:
+    except FileNotFoundError:
         pass
 
     kb, rules, nlg_templates, wm = get_filepaths()

@@ -1,7 +1,6 @@
 challenge=(entity)
 freedom=(entity)
 graphics=(entity)
-friend=(person)
 
 genre=(entity)
 shooter=(genre)
@@ -64,8 +63,6 @@ nintendo=(device)
 expr("nintendo, nintendo switch, wii, wii u, ds, nintendo ds, 3ds, nintendo 3ds", nintendo)
 computer=(device)
 expr("computer game, pc, desktop", computer)
-phone=(device)
-expr("phone, mobile, mobile game", phone)
 
 story=(entity)
 expr("story arc, storyline, narrative, campaign", story)
