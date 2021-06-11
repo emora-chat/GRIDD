@@ -23,7 +23,7 @@ $ Well, I think the isolation has helped me appreciate hanging out with friends 
 
 /* This one is if user asks "How has it changed your life?", "it" doesn't map to pandemic. This may interfere with otehr questions not related to the pandemic though, might be an issue */
 req_unsat(request(user, object_1/object()))
-time(change_1/change(object(), life_1/life()), past=datetime())
+time(change_1/change(object(), life_1/life()), past)
 qualifier(change_1, object_1)
 have_4/have(user, life_2/life())
 ->
