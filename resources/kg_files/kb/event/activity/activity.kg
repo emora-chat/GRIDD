@@ -40,3 +40,6 @@ use=(predicate)
 talk=(predicate)
 ;
 
+draw=(activity,physical)
+expr("paint",draw)
+jump=(activity,physical)

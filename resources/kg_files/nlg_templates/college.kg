@@ -31,11 +31,40 @@ _pr(_low)
 $ What do{"t":"#Z"} you like to do in college ? I really enjoy studying in the library because it makes me motivated . $
 ;
 
-time(udr/do(user,r/research()),z/datetime())
+time(udr/do(user,r/research()),Z/datetime())
 request(emora, r)
 ->
 _pr(_low)
 $ What is{"t":"#Z"} your research about ? $
+;
+
+time(xm/major(X/person()),Z/datetime())
+in(xm,S/subject())
+xm{"confidence":-1}
+cause(xm,o/object())
+request(emora,o)
+->
+$ Is there a specific reason why X do{"s":"#X","t":"#Z"} not major in S ? $
+;
+
+xs/study(x/person())
+exciting(xs)
+ej/jump(elephant())
+not(ej)
+el/learn(emora,ej)
+time(el,past)
+uke/know(user,ej)
+time(uke,past)
+request_truth(emora,uke)
+->
+$ Gaining new knowledge is always exciting ! I recently learned that elephants are the only animals that can't jump . Did you know that ? $
+;
+
+time(xm/major(X/person()),Z/datetime())
+in(xm,S/subject())
+request_truth(emora,xm)
+->
+$ Be{"s":"#X","t":"#Z"} X majoring in S ? $
 ;
 
 meaningful(X/social_science())
