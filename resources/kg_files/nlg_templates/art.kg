@@ -67,8 +67,9 @@ to(gt/go(x/person()),e/exhibition())
 type(e,group)
 time(gt,always)
 gt{"confidence":-1}
-eka/know(emora,a/art())
-not(eka)
+ge/go(emora)
+to(ge,e)
+time(ge,sometimes)
 ->
 $ I can definitely relate . I kind of like going to exhibitions , but the awkward part is that I cannot truly understand all the artworks . $
 ;
