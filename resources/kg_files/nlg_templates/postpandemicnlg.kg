@@ -47,7 +47,7 @@ $ Well, I think the isolation has helped me appreciate hanging out with friends 
 
 
 
-/* Next one is said if user doesnt ask question */
+/* Next one is said if user doesnt ask question or after answering it */
 have(user, w1/job())
 c/change(pandemic(), w1)
 qualifier(c, remote_work())

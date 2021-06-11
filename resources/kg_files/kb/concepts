@@ -1,2 +1,4 @@
 life=(entity)
 reason=(predicate)
+change=(predicate)
+gratefullness=(object)
