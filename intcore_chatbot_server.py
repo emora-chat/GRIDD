@@ -923,12 +923,14 @@ PRINT_WM = False
 if __name__ == '__main__':
     import torch
 
-    # import sys
-    # try:
-    #     f = open('GRIDD/scratch/input')
-    #     sys.stdin = f
-    # except RuntimeError:
-    #     pass
+    import sys
+    try:
+        f = open('GRIDD/scratch/input')
+        if 'off' in f.readline():
+            raise RuntimeError
+        sys.stdin = f
+    except RuntimeError:
+        pass
 
     kb, rules, nlg_templates, wm = get_filepaths()
 
@@ -950,4 +952,4 @@ if __name__ == '__main__':
     pr.enable()
     chatbot.run()
     pr.disable()
-    pr.print_stats(sort='time')
+    pr.print_stats(sort='cumtime')

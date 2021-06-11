@@ -10,23 +10,27 @@ class HashTensor:
     """
 
     def __init__(self, mapping, device='cpu'):
-        self.keys = torch.tensor([], dtype=torch.long, device=device)
-        self.values = torch.tensor([], dtype=torch.long, device=device)
-        self.device = device
+        self.device = torch.device(device)
+        self.keys = torch.tensor([], dtype=torch.long, device=self.device)
+        self.values = torch.tensor([], dtype=torch.long, device=self.device)
         self.update(mapping)
 
     def update(self, mapping):
         if self.keys is not None:
             mapping.update(self.keys)
         tablesize = prime(len(mapping) * 2) or len(mapping) * 2
-        self.keys = torch.full((tablesize,), -1, dtype=torch.long, device=self.device)
-        self.values = torch.full((tablesize,), -1, dtype=torch.long, device=self.device)
-        items = torch.tensor(list(mapping.items()), dtype=torch.long, device=self.device)
+        self.keys = torch.full((tablesize,), -1, dtype=torch.long, device='cpu')
+        self.values = torch.full((tablesize,), -1, dtype=torch.long, device='cpu')
+        items = torch.tensor(list(mapping.items()), dtype=torch.long, device='cpu')
         keys, values = items[:,0], items[:,1]
-        for i in range(len(keys)):
-            index = self.insertion_index(keys[i].unsqueeze(0))
+        for i, key in enumerate(keys):
+            index = key % tablesize
+            while self.keys[index] != -1:
+                index = (index + 1) % tablesize
             self.keys[index] = keys[i]
             self.values[index] = values[i]
+        self.keys = self.keys.to(self.device)
+        self.values = self.values.to(self.device)
 
     def index(self, key):
         """
