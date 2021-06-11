@@ -929,7 +929,7 @@ if __name__ == '__main__':
         if 'off' in f.readline():
             raise RuntimeError
         sys.stdin = f
-    except RuntimeError:
+    except FileNotFoundError:
         pass
 
     kb, rules, nlg_templates, wm = get_filepaths()

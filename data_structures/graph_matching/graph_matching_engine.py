@@ -7,7 +7,7 @@ from GRIDD.data_structures.graph_matching.preprocess_query_graph import preproce
 from GRIDD.utilities.utilities import TensorDisplay as Display
 from GRIDD.data_structures.graph_matching.root import root
 
-DISPLAY = True
+DISPLAY = False
 
 class GraphMatchingEngine:
 
