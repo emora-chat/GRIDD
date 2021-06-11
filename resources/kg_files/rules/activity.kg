@@ -42,6 +42,13 @@ time(w/work(user), past)
 ->
 t:<on(w, t/task())>
 request(emora, t)
+
+j2:<
+    possess(user, j/job())
+    best(j)
+    be(j, j2/job())
+>
+request(emora, j2)
 ;
 
 time(w/work(user), past)
@@ -50,3 +57,24 @@ on(w, t/assignment())
 a:<for(t, a/authority())>
 request(emora, a)
 ;
+
+possess(user, j/job())
+best(j)
+be(j, j2/job())
+specific(j2)
+->
+X:<
+    like(user, X/predicate(object()))
+    as(X, j2)
+>
+request(emora, X)
+;
+
+l/like(user, help(user, person()))
+->
+eadmire(emora, l)
+like(emora, help(emora, p2/person()))
+type(p2, group)
+;
+
+

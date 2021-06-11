@@ -1,4 +1,0 @@
-assert(P/predicate())
--> assign_ack ->
-ack_conf(P)
-;

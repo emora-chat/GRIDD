@@ -9,21 +9,26 @@ specific(N)
 h/happy(emora)
 time(m/meet(emora, user), now)
 cause(m, h)
-time(hope(emora, feel(user, good)), now)
-time(do(user, p/event(object())), today)
-request(emora, p)
+uturn(N, 0)
 -> greet_name_nlg ->
-$ I am really happy to meet you , N ! I hope you've been doing well today . What have you been up to ? $
+_t(_react)
+$ I am really happy to meet you , N ! $
 ;
 
-time(have(user, N/name()), now)
+time(uhn/have(user, N/name()), now)
 category(N)
 h/happy(emora)
 time(m/meet(emora, user), now)
 cause(m, h)
+eturn(uhn, 1)
+-> greet_no_name_nlg ->
+_t(_react)
+$ I am really happy to meet you ! $
+;
+
 time(hope(emora, feel(user, good)), now)
 time(do(user, p/event(object())), today)
 request(emora, p)
--> greet_no_name_nlg ->
-$ I am really happy to meet you ! I hope you've been doing well today . What have you been up to ? $
+-> first_prompt_nlg ->
+$ I hope you've been doing well today . What have you been up to ? $
 ;

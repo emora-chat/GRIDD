@@ -791,8 +791,8 @@ focus(p)
 center(Z)
 ;
 
-adv(X/pstg(), Y/pstg())
--> adv_rule ->
+adv(X/pstg(), Y/adv_pos())
+-> non_wh_adv_rule ->
 p/Y(X)
 focus(p)
 link(Y)

@@ -27,6 +27,7 @@ class IntelligenceCore:
         knowledge_base is a dict of identifiers (usually filenames) to logicstrings
         """
         self.compiler = ConceptCompiler(namespace='__c__', warn=True)
+        self.operators = operators(intcoreops)
 
         if isinstance(knowledge_base, ConceptGraph):
             self.knowledge_base = knowledge_base
@@ -81,7 +82,7 @@ class IntelligenceCore:
         else:
             self.working_memory = ConceptGraph(namespace='wm', supports={AND_LINK: False})
             self.consider(working_memory)
-        self.operators = operators(intcoreops)
+
         self.subj_essential_types = {i for i in self.knowledge_base.subtypes_of(SUBJ_ESSENTIAL)
                                 if not self.knowledge_base.has(predicate_id=i)}
         self.obj_essential_types = {i for i in self.knowledge_base.subtypes_of(OBJ_ESSENTIAL)
@@ -209,6 +210,7 @@ class IntelligenceCore:
             self._assertions(cg)
         else:
             cg = knowledge
+        self.operate(cg)
         source_cg.concatenate(cg)
         return cg
 
@@ -235,11 +237,11 @@ class IntelligenceCore:
         mapping = self.working_memory.concatenate(considered)
         return mapping
 
-    def infer(self, rules=None):
+    def infer(self, aux_state=None, rules=None):
         if rules is None:
-            solutions = self.inference_engine.infer(self.working_memory)
+            solutions = self.inference_engine.infer(self.working_memory, aux_state)
         else:
-            solutions = self.inference_engine.infer(self.working_memory, dynamic_rules=rules)
+            solutions = self.inference_engine.infer(self.working_memory, aux_state, dynamic_rules=rules)
         return solutions
 
     def apply(self, inferences):
@@ -491,12 +493,12 @@ class IntelligenceCore:
                     constraints.add(component)
         return list(constraints)
 
-    def resolve(self, references=None):
+    def resolve(self, aux_state, references=None):
         if references is None:
             references = self.working_memory.references()
         compatible_pairs = {}
         if len(references) > 0:
-            inferences = self.inference_engine.infer(self.working_memory, references, cached=False)
+            inferences = self.inference_engine.infer(self.working_memory, aux_state, references, cached=False)
             for reference_node, (pre, matches) in inferences.items():
                 compatible_pairs[reference_node] = {}
                 for match in matches:
@@ -536,11 +538,14 @@ class IntelligenceCore:
     def pull_knowledge(self, limit, num_pullers, association_limit=None, subtype_limit=None, degree=1):
         kb = self.knowledge_base
         wm = self.working_memory
-        # only consider concepts that are arguments of non-type/expr/ref/def predicates
+        # only consider concepts that are arguments of non-(type/expr/ref/def) predicates
         pullers = [c for c in wm.concepts()
-                   if not (wm.subjects(c,'type') or wm.objects(c,'expr') or wm.objects(c,'ref') or wm.objects(c,'def'))
+                   if
+                   not (wm.subjects(c, 'type') or wm.objects(c, 'expr') or wm.objects(c, 'ref') or wm.objects(c, 'def'))
                    and (wm.subjects(c) or wm.objects(c))
-                   and wm.features.get(c, {}).get(SALIENCE, 0) > 0.0]
+                   and wm.features.get(c, {}).get(SALIENCE, 0) > 0.0
+                   and not c.isdigit()
+                   and c not in {TIME, 'now', 'past', 'future'}]
         pullers = sorted(pullers,
                          key=lambda c: self.working_memory.features.get(c, {}).get(SALIENCE, 0),
                          reverse=True)
@@ -562,9 +567,12 @@ class IntelligenceCore:
         wmp = set(self.working_memory.predicates())
         memo = {}
         new_concepts_by_source = {}
-        for length in range(2, 0, -1): # todo - inefficient; identify combinations -> empty intersection and ignore in further processing
+        for length in range(2, 0,
+                            -1):  # todo - inefficient; identify combinations -> empty intersection and ignore in further processing
             combos = combinations(pullers, length)
             for combo in combos:
+                if len(combo) == 1 and ('emora' in combo or 'user' in combo):
+                    continue
                 related = set(neighbors[combo[0]])
                 concepts = [combo[0]]
                 for c in combo[1:]:
@@ -694,11 +702,13 @@ class IntelligenceCore:
             pass
         if 'emora_knowledge' in options:
             # convincable predicates are predicate instances that are objects of a request_truth predicate
+            # but this feature is not applicable to predicates in a precondition
             for s,t,o,i in cg.predicates():
-                if cg.has('emora', REQ_TRUTH, i) or cg.has('emora', REQ_ARG, i):
-                    cg.features[i][CONVINCABLE] = 1.0
-                else:
-                    cg.features[i][CONVINCABLE] = 0.0
+                if not cg.metagraph.sources(i, PRE):
+                    if cg.has('emora', REQ_TRUTH, i) or cg.has('emora', REQ_ARG, i):
+                        cg.features[i][CONVINCABLE] = 1.0
+                    else:
+                        cg.features[i][CONVINCABLE] = 0.0
         if 'identify_nonasserts' in options:
             # loading rules and templates separate from KB disassociates the predicates from their types
             # to preserve nonassertion of confidence, need to retrieve nonassert types where appropriate

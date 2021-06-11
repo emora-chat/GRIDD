@@ -132,7 +132,7 @@ class InferenceEngine:
             facts_graph.data(node)['num'] = node
         return facts_graph
 
-    def infer(self, facts, dynamic_rules=None, cached=True):
+    def infer(self, facts, aux_state=None, dynamic_rules=None, cached=True):
         facts_concept_graph = ConceptGraph(facts, namespace=(facts._ids if isinstance(facts, ConceptGraph) else "facts_"))
         facts_types = facts_concept_graph.types()
         facts_graph = self._convert_facts(facts_concept_graph)
@@ -172,6 +172,19 @@ class InferenceEngine:
                            (var_conf is not None and var_conf > 0 and val_conf - var_conf < 0) or \
                            (var_conf is not None and var_conf < 0 and val_conf - var_conf > 0):
                             break
+                    else:
+                        turn_pos = precondition_cg.features[variable].get(TURN_POS, None)
+                        if turn_pos is not None:
+                            if aux_state is None:
+                                print('[WARNING] Found turn checking rule but no aux state was passed to infer()')
+                                break
+                            current_turn = aux_state.get('turn_index', None)
+                            if current_turn is not None:
+                                relative_turn_check = int(current_turn) - int(turn_pos)
+                                if str(relative_turn_check) != value: # post process filter of turn checking rules
+                                    break
+                            else: # no turn information can be found in aux state so cannot do any turn checking
+                                break
                     if variable in categories:
                         not_category = True
                         value_types = facts_types.get(value, set())

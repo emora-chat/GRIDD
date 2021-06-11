@@ -1,8 +1,3 @@
-customer_service_representative=job()
-expr("customer service representative", customer_service_representative)
-
-;
-
 analyst=job()
 technical(analyst)
 
@@ -88,3 +83,10 @@ expr("school counselor",school_counselor)
 ;
 
 unknown_job=(unknown_noun)
+
+customer_service_representative=(job)
+expr("customer service representative", customer_service_representative)
+
+nurse=(job)
+
+;
