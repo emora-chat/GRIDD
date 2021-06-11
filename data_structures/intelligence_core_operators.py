@@ -2,6 +2,7 @@
 from GRIDD.utilities.utilities import aliases
 from GRIDD.data_structures.assertions import assertions
 from GRIDD.globals import *
+from itertools import chain
 
 @aliases('not')
 def _negation(cg, i):
@@ -63,4 +64,45 @@ def op_more_info(cg, i):
     cg.remove(i)
 
 def eturn(cg, i):
-    pass
+    concept, _, turn_pos, _ = cg.predicate(i)
+    turn_pos = str(turn_pos)
+    rule = cg.metagraph.sources(i, PRE)
+    if len(rule) > 0:
+        if turn_pos.isdigit():
+            new_object = cg.id_map().get()
+            p1 = cg.add(new_object, TYPE, 'number')
+            p2 = cg.add(concept, ETURN, new_object)
+            cg.features[new_object][TURN_POS] = int(turn_pos)
+            rule = next(iter(rule))
+            for c in [p1, p2, new_object]:
+                cg.metagraph.add(rule, c, PRE)
+                cg.metagraph.add(rule, c, VAR)
+            if len(list(cg.predicates(predicate_type=OP_ETURN))) == 1:
+                cg.remove(OP_ETURN)
+            if len(list(chain(cg.subjects(turn_pos), cg.objects(turn_pos)))) == 1:
+                cg.remove(turn_pos)
+            cg.remove(predicate_id=i)
+        else:
+            print('[WARNING] eturn predicate has been found that does not have a numeric object!')
+
+def uturn(cg, i):
+    concept, _, turn_pos, _ = cg.predicate(i)
+    turn_pos = str(turn_pos)
+    rule = cg.metagraph.sources(i, PRE)
+    if len(rule) > 0:
+        if turn_pos.isdigit():
+            new_object = cg.id_map().get()
+            p1 = cg.add(new_object, TYPE, 'number')
+            p2 = cg.add(concept, UTURN, new_object)
+            cg.features[new_object][TURN_POS] = int(turn_pos)
+            rule = next(iter(rule))
+            for c in [p1, p2, new_object]:
+                cg.metagraph.add(rule, c, PRE)
+                cg.metagraph.add(rule, c, VAR)
+            if len(list(cg.predicates(predicate_type=OP_UTURN))) == 1:
+                cg.remove(OP_UTURN)
+            if len(list(chain(cg.subjects(turn_pos), cg.objects(turn_pos)))) == 1:
+                cg.remove(turn_pos)
+            cg.remove(predicate_id=i)
+        else:
+            print('[WARNING] uturn predicate has been found that does not have a numeric object!')

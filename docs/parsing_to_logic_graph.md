@@ -1152,6 +1152,8 @@ like `when` in `I bought milk when I was hungry`.
 Sometimes, the adverb itself is used as a predicate involving the subject it is modifying, 
 as in `I ran quickly`.
 
+Wh-adverbs (`where`, `when`, etc.) occur with `advcl` and so do not need a lone rule unlike other adverbs.
+
  <details>
   <summary>Conversions</summary>
   
@@ -1170,8 +1172,8 @@ as in `I ran quickly`.
 	center(Z)
 	;
 	
-	adv(X/pstg(), Y/pstg())
-	-> adv_rule ->
+	adv(X/pstg(), Y/adv_pos())
+	-> non_wh_adv_rule ->
 	p/Y(X)
 	focus(p)
 	link(Y)

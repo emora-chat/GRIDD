@@ -57,11 +57,17 @@ expr(["bye", "goodbye"], dismiss)
 ack_conf = (predicate)
 user_aware = (predicate)
 
-[request, request_truth] = (predicate, nonassert, obj_essential)
+_request = (predicate, nonassert, obj_essential)
+[request, request_truth] = (_request)
 [req_unsat, req_sat] = (predicate, obj_essential)
 
 _pr=(predicate)
 [_low,_high]=(object)
 
-[user_turn, _user_turn, emora_turn, _emora_turn]=(predicate, subj_essential)
+[uturn, _uturn, eturn, _eturn]=(predicate, subj_essential)
+
+_t=(predicate)
+_react=object()
+_present=object()
+_rpresent=object()
 ;

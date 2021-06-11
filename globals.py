@@ -40,6 +40,7 @@ UTURN = '_uturn'                # predicate used for user turn tracking in WM
 ETURN = '_eturn'                # predicate used for emora turn tracking in WM
 OP_UTURN = 'uturn'              # operator predicate used in rule creation to specify user turn information
 OP_ETURN = 'eturn'              # operator predicate used in rule creation to specify emora turn information
+TURN_POS = 'turnpos'            # metadata feature used to indicate relative turn index used by OP_UTURN and OP_ETURN in rules
 
 SALIENCE_IN_LINK = 'salin'      # UpdateGraph label for salience propagation
 SALIENCE_OUT_LINK = 'salout'    # UpdateGraph label for salience propagation
@@ -101,5 +102,8 @@ PRIORITY_WEIGHT = 0.5
 SAL_WEIGHT = 0.5
 DEFAULT_PRIORITY = 0.5
 PRIORITY_PRED = '_pr'
+
+DEFAULT_TEMPLATE_TYPE = '_present'
+TEMPLATE_TYPE = '_t'
 
 NLU_NAMESPACE = 'r_'
