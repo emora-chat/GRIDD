@@ -7,7 +7,7 @@ l2:<have(user, w1/job())
 c2/change(pandemic(), w1)
 qualifier(c2, remote_work())
 l2/like(user, c2)>
-request_truth(l2)
+request_truth(emora, l2)
 ;
 
 have(user, w1/job())
@@ -23,7 +23,7 @@ have(user, w1/job())
 c/change(pandemic(), w1)
 qualifier(c, remote_work())
 l/like(user, c)
-user_aware(request_truth(l))
+user_aware(request_truth(emora, l))
 ->
 m:<time(m/more(like(user, outdoor_activity())),now)>
 request_truth(emora, m)
@@ -31,7 +31,7 @@ request_truth(emora, m)
 
 
 
-m:<m/more(like(user, outdoor_activity()))>
+m/more(like(user, outdoor_activity()))
 m{"confidence": -1}
 ->
 r:<r/reason(m)>

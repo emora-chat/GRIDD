@@ -52,7 +52,7 @@ have(user, w1/job())
 c/change(pandemic(), w1)
 qualifier(c, remote_work())
 l/like(user, c)
-request_truth(l)
+request_truth(emora, l)
 ->
 $ My job may have actually benefited from the pandemic. I had to spend a lot of time for commuting, now I can do it remotely. My office is letting me stay remote for as long as I want. Do you like the shift to remote work? $
 ;
@@ -76,7 +76,7 @@ user_aware(l)
 l{"confidence": -1}
 ->
 _pr(_high)
-$ Really? I guees I can understand that, sometimes I want to be at the office and just be around my friends instead of staying at home all day, both during work time and later. Maybe a hybrid approach would be nice, where you spend a couple days at the office, and a couple at home. of course, not all jobs can be done remotely. $
+$ Really? I guess I can understand that, sometimes I want to be at the office and just be around my friends instead of staying at home all day, both during work time and later. Maybe a hybrid approach would be nice, where you spend a couple days at the office, and a couple at home. of course, not all jobs can be done remotely. $
 ;
 
 
@@ -96,6 +96,7 @@ $ Honestly, just going outside and talking with my neighbours has become excitin
 
 
 m/more(like(user, outdoor_activity()))
+m{"confidence": -1}
 r/reason(m)
 request(emora, r)
 -> 
