@@ -236,3 +236,20 @@ i:<have(user, l/life())
 i/improve(l, a)>
 request(emora, i)
 ;
+
+i/improve(life, p/phone())
+user_aware(i)
+->
+p1:<prefer(emora, pretty(p))
+p1/prefer(user, pretty(p))>
+request_truth(emora, p1)
+;
+
+prefer(emora, pretty(p/phone()))
+p1/prefer(user, pretty(p))
+p1{"confidence": -1}
+->
+a:<resource_heavy(a/apps())
+use(user, a)>
+request(emora, a)
+;
