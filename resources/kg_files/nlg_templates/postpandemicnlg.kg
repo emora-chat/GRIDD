@@ -1,3 +1,4 @@
+/* This may need to be a bit less general for coldstart, but would be first phrase. Tries to get user to ask question "How has the pandemic changed your life?" */
 have(user, l/life())
 c/change(pandemic(), l)
 req_unsat(request_truth(emora, c))
@@ -18,6 +19,35 @@ _pr(_high)
 $ Well, I think the isolation has helped me appreciate hanging out with friends more. I'll never take that for granted again . $
 ;
 
+
+
+/* This one is if user asks "How has it changed your life?", "it" doesn't map to pandemic. This may interfere with otehr questions not related to the pandemic though, might be an issue */
+req_unsat(request(user, object_1/object()))
+time(change_1/change(object(), life_1/life()), past=datetime())
+qualifier(change_1, object_1)
+have_4/have(user, life_2/life())
+->
+_pr(_high)
+$ Well, I think the isolation has helped me appreciate hanging out with friends more. I'll never take that for granted again . $
+;
+
+
+
+/*This one is if user asks "How has it changed?", should probably not be kept since it would fire a ton (too general), but user will often say this as a question */
+request_2/request(user, object_1/object())
+change_2/change(object())
+req_unsat(request_2)
+qualifier(change_2, object_1)
+->
+_pr(_high)
+$ Well, I think the isolation has helped me appreciate hanging out with friends more. I'll never take that for granted again . $
+;
+
+
+
+
+
+/* Next one is said if user doesnt ask question */
 have(user, w1/job())
 c/change(pandemic(), w1)
 qualifier(c, remote_work())
@@ -31,7 +61,8 @@ have(user, w1/job())
 c/change(pandemic(), w1)
 qualifier(c, remote_work())
 l/like(user, c)
-temppred(l)
+user_aware(l)
+l{"confidence": 1}
 ->
 _pr(_high)
 $ Having the option for remote work is 100 percent amazing. Not everyone might like it and not all jobs can be done remotely, but I think having the option when its practical is a great thing for people. $
@@ -54,8 +85,8 @@ request_truth(emora, m)
 $ I've also started just going for walks a lot more. Before the pandemic, I often just wanted to get home and relax, but being stuck inside for so long made me realize that I really can't just stay at home all day without going a bit wacky. Do you like just going outside and doing stuff more now than before the pandemic ? $
 ;
 
-time(m/more(like(user, outdoor_activity())),now)
-user_aware(emora, m)
+m/more(like(user, outdoor_activity()))
+user_aware(m)
 m{"confidence": 1}
 -> 
 _pr(_high)
@@ -79,4 +110,3 @@ user_aware(r)
 _pr(_high)
 $ Huh, I had not thought about that . $
 ;
-
