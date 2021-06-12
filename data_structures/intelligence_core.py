@@ -22,7 +22,7 @@ import os, json
 
 class IntelligenceCore:
 
-    def __init__(self, knowledge_base=None, inference_rules=None, nlg_templates=None, working_memory=None, inference_engine=None, device='cpu'):
+    def __init__(self, knowledge_base=None, inference_rules=None, nlg_templates=None, fallbacks=None, working_memory=None, inference_engine=None, device='cpu'):
         """
         knowledge_base is a dict of identifiers (usually filenames) to logicstrings
         """
@@ -76,6 +76,37 @@ class IntelligenceCore:
                         inferences = inference_rules.rules()
                         self.inference_engine.add(inferences, inference_rules.id_map().namespace)
                         self._check(inference_rules, use_kb=True, file=k)
+
+        if fallbacks is not None:
+            if isinstance(fallbacks, ConceptGraph):
+                self.fallbacks = fallbacks.nlg_templates()
+            else:
+                fallback_cg = ConceptGraph(namespace='f_')
+                for k, v in fallbacks.items():
+                    self.know(v, fallback_cg, emora_knowledge=True, identify_nonasserts=True)
+                self.fallbacks = fallback_cg.nlg_templates()
+            if INFERENCE:
+                fallback_recording_rules = {}
+                for rule_id, (pre, post, vars) in self.fallbacks.items():
+                    rpre = pre.copy()
+                    rpost = ConceptGraph(predicates=[(rule_id, 'rfallback', None)], namespace='t_') #namespace should match inference_rules namespace above
+                    rvars = set(vars)
+                    truth_requests = rpre.subtypes_of(REQ_TRUTH)
+                    arg_requests = rpre.subtypes_of(REQ_ARG)
+                    for r in set(chain(truth_requests, arg_requests)) - {REQ_ARG, REQ_TRUTH}:
+                        sig = pre.predicate(r)
+                        rpre.remove(*sig)
+                        rvars.remove(sig[3])
+                    rpre.remove(REQ_TRUTH)
+                    rpre.remove(REQ_ARG)
+                    if len(set(rpre.related('emora'))) == 0:
+                        rpre.remove('emora')
+                    for s,t,o,i in list(rpre.predicates()):
+                        p = rpre.add(i, USER_AWARE)
+                        rvars.add(p)
+                    fallback_recording_rules[rule_id] = (rpre, rpost, rvars)
+                self.inference_engine.add(fallback_recording_rules, namespace='t_') #namespace should match inference_rules namespace above
+                # self.inference_engine.matcher.preprocess() todo- add once new graph matching engine is in place
 
         if isinstance(working_memory, ConceptGraph):
             self.working_memory = working_memory
@@ -210,7 +241,7 @@ class IntelligenceCore:
             self._assertions(cg)
         else:
             cg = knowledge
-        self.operate(cg)
+        self.operate(cg=cg)
         source_cg.concatenate(cg)
         return cg
 
@@ -681,13 +712,13 @@ class IntelligenceCore:
             if t in subj_removals and self.working_memory.has(s):
                 self.working_memory.remove(s)
 
-    def operate(self, cg=None):
+    def operate(self, aux_state=None, cg=None):
         if cg is None:
             cg = self.working_memory
-        for opname, opfunc in self.operators.items(): # todo - some operators should be run only once and then deleted
+        for opname, opfunc in self.operators.items():
             for _, _, _, i in list(cg.predicates(predicate_type=opname)):
                 if cg.has(predicate_id=i): # within-loop-mutation check
-                    opfunc(cg, i)
+                    opfunc(cg, i, aux_state)
 
     def display(self, verbosity=1):
         s = '#'*30 + ' Working Memory ' + '#'*30

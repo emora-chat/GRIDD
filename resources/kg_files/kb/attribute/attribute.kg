@@ -80,6 +80,7 @@ popular=(property)
 frustrating=(property)
 fast=(property)
 often=(property)
+expr("a lot, frequently", often)
 
 technical=(property)
 creative=(property)
@@ -91,3 +92,5 @@ big=(property)
 academic=(property)
 digital=(property)
 interesting=(property)
+
+;

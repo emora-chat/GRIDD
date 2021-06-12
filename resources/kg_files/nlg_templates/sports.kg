@@ -1,11 +1,3 @@
-/* COLDSTART LINKING */
-l2/like(user, h/sport())
-request_truth(emora, l2)
-->
-_pr(_low)
-$ You seem like someone who might like sports. Do you? $
-;
-/* COLDSTART LINKING */
 
 l/like(user, s/sport())
 request(emora, s)
