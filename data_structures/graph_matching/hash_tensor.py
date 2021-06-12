@@ -7,7 +7,7 @@ from GRIDD.utilities.profiler import profiler as p
 class HashTensor:
     """
     Create a hash map to concurrently access integer -> integer
-    values. Keys must be >= 0.
+    values. Keys and values must be >= 0.
     """
 
     def __init__(self, mapping, device='cpu'):
@@ -22,21 +22,20 @@ class HashTensor:
         if self.keys is not None:
             mapping.update(self.keys)
         tablesize = prime(len(mapping) * 2) or len(mapping) * 2
-        self.keys = torch.full((tablesize,), -1, dtype=torch.long, device='cpu')
-        self.values = torch.full((tablesize,), -1, dtype=torch.long, device='cpu')
+        self.keys = torch.full((tablesize,), -1, dtype=torch.long, device=self.device)
+        self.values = torch.full((tablesize,), -1, dtype=torch.long, device=self.device)
         p.next('tensor create')
-        items = torch.tensor(list(mapping.items()), dtype=torch.long, device='cpu')
+        items = torch.tensor(list(mapping.items()), dtype=torch.long, device=self.device)
         keys, values = items[:,0], items[:,1]
         p.next('insertion')
-        for i, key in enumerate(keys):
-            index = key % tablesize
-            while self.keys[index] != -1:
-                index = (index + 1) % tablesize
-            self.keys[index] = keys[i]
-            self.values[index] = values[i]
-        p.next('transfer to gpu')
-        self.keys = self.keys.to(self.device)
-        self.values = self.values.to(self.device)
+        while len(keys) > 0:
+            insert_index = self.insertion_index(keys)
+            collisions = torch.eq(insert_index.unsqueeze(1), insert_index.unsqueeze(1).T)
+            cooccupied = torch.sum(collisions, 1)
+            collided = cooccupied > 1
+            self.keys[insert_index] = keys
+            self.values[insert_index] = values
+            keys, values = keys[collided], values[collided]
         p.stop()
         p.stop()
 
@@ -70,7 +69,7 @@ class HashTensor:
                           dtype=torch.long, device=self.device)
         while len(search) > 0:                              # while there are undecided keys (neither found nor lost)
             tkeys = self.keys[search]                       # Tensor<remaining: tablekey> keys in table corresponding with searched keys
-            cmp = tkeys == -1                               # Tensor<remaining: bool> whether there is an empty slot, tkey==-1
+            cmp = torch.logical_or(tkeys==-1, tkeys==key[ri])   # Tensor<remaining: bool> whether there is an empty slot, tkey==-1, or key is found
             found = torch.nonzero(cmp)                      # Tensor<remaining_after_search: rindex_into_search> subset of search that is found
             ki = ri[found]                                  # Tensor<found: keyindex> indices of found keys in original key tensor
             result[ki] = search[found]                      # inserting table indices into result
