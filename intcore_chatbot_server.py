@@ -1,9 +1,10 @@
 import time, json, requests
 from os.path import join
-import os
+import sys, os
 from itertools import chain
 
 from GRIDD.utilities.utilities import collect, _process_requests, _process_answers
+
 from GRIDD.data_structures.span import Span
 from GRIDD.globals import *
 from GRIDD.intcore_server_globals import *
@@ -14,6 +15,9 @@ from GRIDD.modules.ner_mentions import get_ner_mentions
 
 from GRIDD.utilities.server import save, load
 from inspect import signature
+
+if LOCAL:
+  sys.path.append(os.getcwd())
 
 def serialized(*returns):
     def dectorator(f):
