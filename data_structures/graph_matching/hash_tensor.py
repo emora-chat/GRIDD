@@ -1,6 +1,7 @@
 
 import torch
 from GRIDD.data_structures.graph_matching.primes import prime
+from GRIDD.utilities.profiler import profiler as p
 
 
 class HashTensor:
@@ -16,21 +17,28 @@ class HashTensor:
         self.update(mapping)
 
     def update(self, mapping):
+        p.start('hash creation')
+        p.start('setup')
         if self.keys is not None:
             mapping.update(self.keys)
         tablesize = prime(len(mapping) * 2) or len(mapping) * 2
         self.keys = torch.full((tablesize,), -1, dtype=torch.long, device='cpu')
         self.values = torch.full((tablesize,), -1, dtype=torch.long, device='cpu')
+        p.next('tensor create')
         items = torch.tensor(list(mapping.items()), dtype=torch.long, device='cpu')
         keys, values = items[:,0], items[:,1]
+        p.next('insertion')
         for i, key in enumerate(keys):
             index = key % tablesize
             while self.keys[index] != -1:
                 index = (index + 1) % tablesize
             self.keys[index] = keys[i]
             self.values[index] = values[i]
+        p.next('transfer to gpu')
         self.keys = self.keys.to(self.device)
         self.values = self.values.to(self.device)
+        p.stop()
+        p.stop()
 
     def index(self, key):
         """

@@ -6,11 +6,14 @@ from GRIDD.data_structures.graph_matching.hash_tensor import HashTensor
 from GRIDD.data_structures.graph_matching.reverse_label import ReverseLabel as Rlabel
 from GRIDD.data_structures.graph_matching.root import root, rooted_edge
 from GRIDD.data_structures.id_map import IdMap
+from GRIDD.utilities.profiler import profiler as p
 
 
 class GraphTensor:
 
     def __init__(self, graph, nodemap=None, edgemap=None, device='cpu'):
+        p.start('graph tensor create')
+        p.start('setup')
         self.device = device
         self.nodemap = nodemap or IdMap(namespace=int)
         self.edgemap = edgemap or IdMap(namespace=int)
@@ -21,6 +24,7 @@ class GraphTensor:
         medges = [(self.nodemap.get(s), self.nodemap.get(t), self.edgemap.get(l)) for s, t, l in edges]
         self.ne = len(self.edgemap)
         self.nn = len(self.nodemap)
+        p.next('compute keys')
         dedges = {}
         for s, t, l in medges:
             dedges.setdefault((s * self.ne + l), []).append(t)
@@ -29,9 +33,14 @@ class GraphTensor:
             edgehashes[s * self.nn * self.ne + t * self.ne + l] = 1
         keys = {k: i for i, k in enumerate(dedges.keys())}
         vedges = {keys[k]: ts for k, ts in dedges.items()}
+        p.next('create key hash tensor')
         self._keytensor = HashTensor(keys, device=self.device)
+        p.next('create jagged target tensor')
         self._targettensor = JaggedTensor([vedges[i] for i in range(len(vedges))], device=self.device)
+        p.next('create edge hash tensor')
         self._edgestensor = HashTensor(edgehashes, device=self.device)
+        p.end()
+        p.report()
         return
 
     def __getitem__(self, source_label):
