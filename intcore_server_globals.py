@@ -7,4 +7,8 @@ KBCACHE = 'kbcache'
 NLGCACHE = 'nlgcache'
 INFCACHE = 'infcache'
 NLUCACHE = 'nlucache'
-CACHESEP = '>'
+import platform
+if platform.system()=="Windows":
+    CACHESEP = '___'
+else:
+    CACHESEP = '>'
