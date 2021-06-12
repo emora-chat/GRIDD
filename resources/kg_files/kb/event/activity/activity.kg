@@ -42,3 +42,7 @@ talk=(predicate)
 help=(activity, self_improvement)
 ;
 
+draw=(activity,physical)
+expr("paint",draw)
+jump=(activity,physical)
+paint=(activity,physical)

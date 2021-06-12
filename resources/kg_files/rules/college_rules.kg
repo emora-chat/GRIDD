@@ -40,6 +40,33 @@ op_more_info(r, udr)
 request(emora, r)
 ;
 
+time(study(x/person(),s/subject()),z/datetime())
+->
+xm:<time(xm/major(x),z) in(xm,s)>
+request_truth(emora,xm)
+;
+
+time(xm/major(x/person()),z/datetime())
+in(xm,s/subject())
+xm{"confidence":-1}
+->
+o:<cause(xm,o/object())>
+request(emora,o)
+;
+
+xs/study(x/person())
+->
+exciting(xs)
+ej/jump(elephant())
+not(ej)
+el/learn(emora,ej)
+time(el,past)
+uke:<uke/know(user,ej) time(uke,past)>
+request_truth(emora,uke)
+;
+
+
+
 xm/major(x/person())
 in(xm,ss/social_science())
 ->

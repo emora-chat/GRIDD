@@ -11,6 +11,7 @@ future=datetime()
 always=datetime()
 often=datetime()
 never=datetime()
+sometimes=datetime()
 
 habitual_present=(datetime)
 [always,frequent,usual]=(habitual_present)

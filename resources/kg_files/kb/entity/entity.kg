@@ -68,3 +68,7 @@ meeting=(entity)
 club=(entity)
 internship=(entity)
 graduation=(entity)
+
+opinion=(entity)
+decision=(entity)
+hobby=(entity)
