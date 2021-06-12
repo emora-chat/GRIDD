@@ -8,3 +8,5 @@ authority=(entity)
 job=(authority)
 school=(authority)
 ;
+
+teamwork=(entity)

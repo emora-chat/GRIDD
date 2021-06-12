@@ -49,7 +49,62 @@ e:<e/event(X) crazy(e)>
 request(emora, e)
 ;
 
+prop/property(pt/pet())
+r/request(emora, prop)
+user_aware(r)
+->
+a:<time(possess(user, a/animal()), now)>
+time(favorite(a), now)
+request(emora, a)
+;
 
+like(x/person(), animal())
+->
+a:<time(possess(user, a/animal()), now)>
+time(favorite(a), now)
+request(emora, a)
+;
+
+time(possess(user, a/animal()), now)
+r/request(emora, a)
+time(favorite(a), now)
+user_aware(r)
+->
+time(agree(emora, cool(a)), now)
+time(cause(fast(cheetah), like(emora, cheetah)), now)
+;
+
+time(like(user, z/zoo()), now)
+->
+v/visit(user, z)
+oft:<time(oft/often(v), now)>
+request_truth(emora, oft)
+;
+
+v/visit(user, z/zoo())
+often(v)
+->
+cause(funny(flamingo, appearance), like(emora, flamingo))
+possess(user, a/activity()) in(a, z)
+favorite(a)
+request(emora, a)
+;
+
+v/visit(user, z/zoo())
+not(often(v))
+->
+cause(funny(flamingo, appearance), like(emora, flamingo))
+possess(user, a/activity()) in(a, z)
+favorite(a)
+request(emora, a)
+;
+
+agr/agree(emora, cool(a/animal()))
+user_aware(agr)
+->
+l:<time(l/like(x/person(), zoo), now)>
+request_truth(emora, l)
+;
 
 /* Does Not Have Pet */
 
@@ -58,6 +113,30 @@ h{"confidence": -1}
 -> not_have_pet ->
 w:<time(w/want(user, p2/pet()), now)>
 request_truth(emora, w)
+;
+
+time(w/want(user, p/pet()), now)
+w{"confidence":-1}
+-> not_want_pet ->
+l:<time(l/like(user, a/animal()), now)>
+request_truth(emora, l)
+;
+
+time(like(user, a/animal()), now)
+time(w/want(user, p/pet()), now)
+w{"confidence":-1}
+->
+pred:<time(cause(pred/predicate(), w), now)>
+request(emora, pred)
+;
+
+time(l/like(user, a/animal()), now)
+l{"confidence":-1}
+time(w/want(user, p/pet()), now)
+w{"confidence":-1}
+->
+pred:<time(cause(pred/predicate(), l), now)>
+request(emora, pred)
 ;
 
 

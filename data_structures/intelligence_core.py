@@ -22,11 +22,12 @@ import os, json
 
 class IntelligenceCore:
 
-    def __init__(self, knowledge_base=None, inference_rules=None, nlg_templates=None, working_memory=None, inference_engine=None, device='cpu'):
+    def __init__(self, knowledge_base=None, inference_rules=None, nlg_templates=None, fallbacks=None, working_memory=None, inference_engine=None, device='cpu'):
         """
         knowledge_base is a dict of identifiers (usually filenames) to logicstrings
         """
         self.compiler = ConceptCompiler(namespace='__c__', warn=True)
+        self.operators = operators(intcoreops)
 
         if isinstance(knowledge_base, ConceptGraph):
             self.knowledge_base = knowledge_base
@@ -76,12 +77,43 @@ class IntelligenceCore:
                         self.inference_engine.add(inferences, inference_rules.id_map().namespace)
                         self._check(inference_rules, use_kb=True, file=k)
 
+        if fallbacks is not None:
+            if isinstance(fallbacks, ConceptGraph):
+                self.fallbacks = fallbacks.nlg_templates()
+            else:
+                fallback_cg = ConceptGraph(namespace='f_')
+                for k, v in fallbacks.items():
+                    self.know(v, fallback_cg, emora_knowledge=True, identify_nonasserts=True)
+                self.fallbacks = fallback_cg.nlg_templates()
+            if INFERENCE:
+                fallback_recording_rules = {}
+                for rule_id, (pre, post, vars) in self.fallbacks.items():
+                    rpre = pre.copy()
+                    rpost = ConceptGraph(predicates=[(rule_id, 'rfallback', None)], namespace='t_') #namespace should match inference_rules namespace above
+                    rvars = set(vars)
+                    truth_requests = rpre.subtypes_of(REQ_TRUTH)
+                    arg_requests = rpre.subtypes_of(REQ_ARG)
+                    for r in set(chain(truth_requests, arg_requests)) - {REQ_ARG, REQ_TRUTH}:
+                        sig = pre.predicate(r)
+                        rpre.remove(*sig)
+                        rvars.remove(sig[3])
+                    rpre.remove(REQ_TRUTH)
+                    rpre.remove(REQ_ARG)
+                    if len(set(rpre.related('emora'))) == 0:
+                        rpre.remove('emora')
+                    for s,t,o,i in list(rpre.predicates()):
+                        p = rpre.add(i, USER_AWARE)
+                        rvars.add(p)
+                    fallback_recording_rules[rule_id] = (rpre, rpost, rvars)
+                self.inference_engine.add(fallback_recording_rules, namespace='t_') #namespace should match inference_rules namespace above
+                # self.inference_engine.matcher.preprocess() todo- add once new graph matching engine is in place
+
         if isinstance(working_memory, ConceptGraph):
             self.working_memory = working_memory
         else:
             self.working_memory = ConceptGraph(namespace='wm', supports={AND_LINK: False})
             self.consider(working_memory)
-        self.operators = operators(intcoreops)
+
         self.subj_essential_types = {i for i in self.knowledge_base.subtypes_of(SUBJ_ESSENTIAL)
                                 if not self.knowledge_base.has(predicate_id=i)}
         self.obj_essential_types = {i for i in self.knowledge_base.subtypes_of(OBJ_ESSENTIAL)
@@ -209,6 +241,7 @@ class IntelligenceCore:
             self._assertions(cg)
         else:
             cg = knowledge
+        self.operate(cg=cg)
         source_cg.concatenate(cg)
         return cg
 
@@ -235,11 +268,11 @@ class IntelligenceCore:
         mapping = self.working_memory.concatenate(considered)
         return mapping
 
-    def infer(self, rules=None):
+    def infer(self, aux_state=None, rules=None):
         if rules is None:
-            solutions = self.inference_engine.infer(self.working_memory)
+            solutions = self.inference_engine.infer(self.working_memory, aux_state)
         else:
-            solutions = self.inference_engine.infer(self.working_memory, dynamic_rules=rules)
+            solutions = self.inference_engine.infer(self.working_memory, aux_state, dynamic_rules=rules)
         return solutions
 
     def apply(self, inferences):
@@ -491,12 +524,12 @@ class IntelligenceCore:
                     constraints.add(component)
         return list(constraints)
 
-    def resolve(self, references=None):
+    def resolve(self, aux_state, references=None):
         if references is None:
             references = self.working_memory.references()
         compatible_pairs = {}
         if len(references) > 0:
-            inferences = self.inference_engine.infer(self.working_memory, references, cached=False)
+            inferences = self.inference_engine.infer(self.working_memory, aux_state, references, cached=False)
             for reference_node, (pre, matches) in inferences.items():
                 compatible_pairs[reference_node] = {}
                 for match in matches:
@@ -536,11 +569,14 @@ class IntelligenceCore:
     def pull_knowledge(self, limit, num_pullers, association_limit=None, subtype_limit=None, degree=1):
         kb = self.knowledge_base
         wm = self.working_memory
-        # only consider concepts that are arguments of non-type/expr/ref/def predicates
+        # only consider concepts that are arguments of non-(type/expr/ref/def) predicates
         pullers = [c for c in wm.concepts()
-                   if not (wm.subjects(c,'type') or wm.objects(c,'expr') or wm.objects(c,'ref') or wm.objects(c,'def'))
+                   if
+                   not (wm.subjects(c, 'type') or wm.objects(c, 'expr') or wm.objects(c, 'ref') or wm.objects(c, 'def'))
                    and (wm.subjects(c) or wm.objects(c))
-                   and wm.features.get(c, {}).get(SALIENCE, 0) > 0.0]
+                   and wm.features.get(c, {}).get(SALIENCE, 0) > 0.0
+                   and not c.isdigit()
+                   and c not in {TIME, 'now', 'past', 'future'}]
         pullers = sorted(pullers,
                          key=lambda c: self.working_memory.features.get(c, {}).get(SALIENCE, 0),
                          reverse=True)
@@ -562,9 +598,12 @@ class IntelligenceCore:
         wmp = set(self.working_memory.predicates())
         memo = {}
         new_concepts_by_source = {}
-        for length in range(2, 0, -1): # todo - inefficient; identify combinations -> empty intersection and ignore in further processing
+        for length in range(2, 0,
+                            -1):  # todo - inefficient; identify combinations -> empty intersection and ignore in further processing
             combos = combinations(pullers, length)
             for combo in combos:
+                if len(combo) == 1 and ('emora' in combo or 'user' in combo):
+                    continue
                 related = set(neighbors[combo[0]])
                 concepts = [combo[0]]
                 for c in combo[1:]:
@@ -673,13 +712,13 @@ class IntelligenceCore:
             if t in subj_removals and self.working_memory.has(s):
                 self.working_memory.remove(s)
 
-    def operate(self, cg=None):
+    def operate(self, aux_state=None, cg=None):
         if cg is None:
             cg = self.working_memory
-        for opname, opfunc in self.operators.items(): # todo - some operators should be run only once and then deleted
+        for opname, opfunc in self.operators.items():
             for _, _, _, i in list(cg.predicates(predicate_type=opname)):
                 if cg.has(predicate_id=i): # within-loop-mutation check
-                    opfunc(cg, i)
+                    opfunc(cg, i, aux_state)
 
     def display(self, verbosity=1):
         s = '#'*30 + ' Working Memory ' + '#'*30
@@ -694,11 +733,13 @@ class IntelligenceCore:
             pass
         if 'emora_knowledge' in options:
             # convincable predicates are predicate instances that are objects of a request_truth predicate
+            # but this feature is not applicable to predicates in a precondition
             for s,t,o,i in cg.predicates():
-                if cg.has('emora', REQ_TRUTH, i) or cg.has('emora', REQ_ARG, i):
-                    cg.features[i][CONVINCABLE] = 1.0
-                else:
-                    cg.features[i][CONVINCABLE] = 0.0
+                if not cg.metagraph.sources(i, PRE):
+                    if cg.has('emora', REQ_TRUTH, i) or cg.has('emora', REQ_ARG, i):
+                        cg.features[i][CONVINCABLE] = 1.0
+                    else:
+                        cg.features[i][CONVINCABLE] = 0.0
         if 'identify_nonasserts' in options:
             # loading rules and templates separate from KB disassociates the predicates from their types
             # to preserve nonassertion of confidence, need to retrieve nonassert types where appropriate

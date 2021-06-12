@@ -42,6 +42,7 @@ $ Oh really ? I wish I had a big yard , my dog would absolutely love it . Do you
 on(w/work(user), t/task())
 request(emora, t)
 ->
+_pr(_high)
 $ What were you working on ? $
 ;
 
@@ -49,19 +50,62 @@ on(w/work(user), t/assignment())
 for(t, a/authority())
 request(emora, a)
 ->
+_pr(_high)
 $ Oh , what was your assignment for ? $
 ;
 
 time(h/have(emora, job()), now)
-req_unsat(request_truth(user, h))
+req_unsat(r/request_truth(user, h))
+uturn(r, 0)
 -> answer_job_q ->
+_t(_rpresent)
+_pr(_high)
 $ Yeah , I have a job . $
 ;
 
 possess(emora, J/job())
 time(h/be(J, SJ/job()), now)
-req_unsat(request(user, SJ))
+req_unsat(r/request(user, SJ))
+uturn(r, 0)
 -> answer_job_type_q ->
-$ I am an S J . $
+_t(_rpresent)
+_pr(_high)
+$ I am a SJ . $
 ;
 
+possess(user, j/job())
+best(j)
+be(j, j2/job())
+request(emora, j2)
+->
+$ Speaking of working, what is your dream job ? $
+;
+
+possess(user, j/job())
+best(j)
+be(j, j2/job())
+specific(j2)
+uturn(j2, 0)
+->
+_t(_react)
+$ That sounds neat ! $
+;
+
+like(user, X/predicate(object()))
+as(X, j2/job())
+request(emora, X)
+specific(j2)
+->
+_pr(_low)
+$ What do you find interesting about becoming a j2 ? $
+;
+
+l/like(user, help(user, person()))
+eadmire(emora, l)
+like(emora, help(emora, p2/person()))
+type(p2, group)
+uturn(l, 0)
+->
+_t(_rpresent)
+$ I admire that . I also like to help people as much as I can . $
+;

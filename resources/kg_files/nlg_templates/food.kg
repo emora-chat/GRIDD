@@ -1,16 +1,9 @@
-/* COLDSTART LINKING */
-l/like(user, f/food())
-r/request(emora, f)
-->
-_pr(_low)
-$ Yeah . So anyway , I love trying new foods . What food do you like to eat ? $
-;
-/* COLDSTART LINKING */
 
 p/property(X/meal())
 time(p,Z/datetime())
 request(emora,p)
 ->
+_pr(_low)
 $ That's great . How is{"t":"#Z"} your X ? $
 ;
 
@@ -19,18 +12,21 @@ at(uc,home)
 time(uc,always)
 request_truth(emora, uc)
 ->
+_pr(_low)
 $ I always prefer homemade meals because I can control the ingredients and the way I cook them . Do you often cook at home ? $
 ;
 
 ff/favorite(X/food())
 request_truth(emora,ff)
 ->
+_pr(_low)
 $ Sounds good . Is X your favorite food ? $
 ;
 
 fd/favorite(X/drink())
 request_truth(emora,fd)
 ->
+_pr(_low)
 $ Sounds good . Is X your favorite drink ? $
 ;
 
@@ -362,6 +358,12 @@ time(get(emora,X),often)
 $ I love drinking X too ! Honestly , I get two to three cups of X each week . $
 ;
 
+g/intend_to_consume(x/person(),X/common_food())
+time(get(emora,X),past)
+->
+$ You know what ? I just got X for lunch yesterday . It's been the most common food I have as part of my meals . $
+;
+
 bd/best(d/drinkable())
 be(w/water(),bd)
 ->
@@ -535,5 +537,6 @@ gif/from(egi,X)
 
 cause(gif,mkp)
 ->
+_pr(_high)
 $ What do{"t":"#Z","s":"#X"} X have for Y ? I'm making plans for my Y tomorrow , so I would like to see if I could get some ideas from X . $
 ;

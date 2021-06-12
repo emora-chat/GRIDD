@@ -1,13 +1,3 @@
-/* COLDSTART LINKING */
-t/talk(user)
-about(t,ai())
-l/like(user, t)
-request_truth(emora, l)
-->
-_pr(_low)
-$ Actually , I was wondering if you are interested in artificial intelligence ? $
-;
-/* COLDSTART LINKING */
 
 time(h/have(user, p/computer()), now)
 b/be(p, pc())
