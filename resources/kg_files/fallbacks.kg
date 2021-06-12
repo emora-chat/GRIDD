@@ -20,7 +20,7 @@ $ Yeah . So anyway , I love trying new foods . What food do you like to eat ? $
 l2:<l2/like(user, h/sport())>
 request_truth(emora, l2)
 -> sport_fallback ->
-$ You seem like someone who might like sports. Do you? $
+$ Anyway , you seem like someone who might like sports. Do you? $
 ;
 
 l2:<l2/like(user, videogame())>

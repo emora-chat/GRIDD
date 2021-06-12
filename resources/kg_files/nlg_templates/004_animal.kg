@@ -10,8 +10,6 @@ $ I was just thinking , the most fun I had today was taking a walk with my dog .
 h/have(user, p/pet())
 h{"confidence": -1}
 uturn(h, 0)
-time(w2/want(emora, p3/cat()), past)
-time(w2, always)
 time(w/want(user, p2/pet()), now)
 request_truth(emora, w)
 -> q_want_pet ->
