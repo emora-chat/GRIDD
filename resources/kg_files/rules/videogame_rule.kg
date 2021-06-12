@@ -1,27 +1,75 @@
-l/like(x/person(), v/videogame())
+like(x/person(), g/game())
+category(g)
 ->
-time(be(x, gamer()), now)
+l:l/like(x, videogame())
+request_truth(emora, l)
+;
+
+play(x/person(), g/game())
+category(g)
+->
+p:p/play(x, videogame())
+request_truth(emora, p)
+;
+
+l/like(x/person(), v/videogame())
+category(v)
+->
+op_more_info(v, l)
 request(emora, v)
-time(like(emora, vg/videogame()), now)
-type(vg, group)
+;
+
+l/like(x/person(), v/videogame())
+r/request(emora, v)
+user_aware(r)
+->
 g:<time(like(x, g/genre()), now)>
 request(emora, g)
-time(like(emora, multiplayer), now)
+of(g, vg/videogame())
+type(vg, group)
+;
+
+like(x/person(), g/genre())
+like(x, v/videogame())
+r/request(emora, g)
+of(g, vg/videogame())
+user_aware(r)
+->
+d:<time(play(x, d/device()), now)>
+for(d, v)
+request(emora, d)
 ;
 
 p/play(x/person(), v/videogame())
+category(v)
 ->
-be(x, gamer)
+op_more_info(v, p)
 request(emora, v)
-time(like(emora, vg/videogame()), now)
+;
+
+p/play(x/person(), v/videogame())
+r/request(emora, v)
+user_aware(r)
+->
+g:<time(like(x, g/genre()), now)>
+request(emora, g)
+of(g, vg/videogame())
 type(vg, group)
+;
+
+like(x/person(), g/genre())
+play(x, v/videogame())
+r/request(emora, g)
+of(g, vg/videogame())
+user_aware(r)
+->
 d:<time(play(x, d/device()), now)>
+for(d, v)
 request(emora, d)
 ;
 
 time(play(x/person(), nintendo), now)
 ->
-like(emora, nintendo)
 m:<time(m/play(x, mariokart), now)>
 request_truth(emora, m)
 ;
@@ -30,20 +78,18 @@ time(xpx/play(x/person(), xbox), now)
 ->
 time(p/play(emora, xbox), now)
 not(p)
-c:<time(c/cause(x, xpx), now)>
+pred:<time(cause(pred/predicate(), xpx), now)>
 request(emora, c)
 ;
 
 time(xpp/play(x/person(), playstation), now)
 ->
-like(emora, playstation)
 f:<time(f/play(x, finalfantasy), now)>
-request(emora, f)
+request_truth(emora, f)
 ;
 
 time(xpc/play(x/person(), computer()))
 ->
-like(emora, c/computer())
 type(c, group)
 possess(computer, diverse(v/videogame()))
 type(v, group)
@@ -57,9 +103,9 @@ epn/prefer(emora, nintendo)
 to(epn, p)
 ;
 
-time(p/play(x/person(), u/unknown_noun()))
-<time(play(x, d/device()), now)>
-request(emora, device())
+time(p/play(x/person(), u/unknown_noun()), now)
+time(play(x, v/videogame()), now)
+request(emora, v)
 ->
 k/know(emora, u)
 not(k)
@@ -71,15 +117,27 @@ time(f/fun(videogame()), now)
 time(agree(emora, f), now)
 ;
 
+cause(fun(object()), like(x/person(), v/videogame()))
+specific(v)
+->
+time(agree(emora, fun(v)), now)
+;
+
+cause(fun(object()), play(x/person(), v/videogame()))
+specific(v)
+->
+time(agree(emora, fun(v)), now)
+;
 
 time(l/like(x/person(), multiplayer), now)
 ->
 agree(emora, l)
 fun(multiplayer)
-play(x, with(other(person())))
+p/play(x)
+with(p, other(person()))
 ;
 
-time(like(x/person(), mariokart), now)
+like(x/person(), mariokart)
 ->
 time(play(emora, mariokart), past)
 time(like(x, racing), now)
@@ -87,7 +145,7 @@ g:<play(x, g/gamemode())>
 request(emora, g)
 ;
 
-time(play(x/person(), mariokart), now)
+play(x/person(), mariokart)
 ->
 time(play(emora, mariokart), past)
 time(like(x, racing), now)
@@ -95,79 +153,168 @@ g:<play(x, g/gamemode())>
 request(emora, g)
 ;
 
-time(l/like(x/person(), s/shooter()), now)
+time(l/like(x/person(), shooter), now)
 ->
 time(agree(emora, l), now)
-time(fun(s), now)
+time(fun(shooter), now)
 ;
 
-time(play(x/person(), finalfantasy), now)
+time(l/like(x/person(), racing), now)
 ->
-classic(finalfantasy)
-like(emora, finalfantasy)
-f:<time(possess(x, favorite(f/finalfantasy())), now)>
+time(agree(emora, l), now)
+time(fun(racing), now)
+;
+
+time(l/like(x/person(), fighter), now)
+->
+time(agree(emora, l), now)
+time(fun(fighter), now)
+;
+
+time(l/like(x/person(), rpg), now)
+->
+time(agree(emora, l), now)
+time(fun(rpg), now)
+;
+
+play(x/person(), finalfantasy)
+->
+f:<time(possess(x, f/finalfantasy()), now)>
+time(favorite(f), now)
 request(emora, f)
 ;
 
-time(like(x/person(), finalfantasy), now)
+like(x/person(), finalfantasy)
 ->
-classic(finalfantasy)
-like(emora, finalfantasy)
-f:<time(possess(x, favorite(f/finalfantasy())), now)>
+f:<time(possess(x, f/finalfantasy()), now)>
+time(favorite(f), now)
 request(emora, f)
 ;
 
-time(possess(x/person(), fav/favorite(f/finalfantasy())), now)
+time(p/possess(x/person(), f/finalfantasy()), now)
+time(favorite(f), now)
 ->
 time(good(f), now)
-c:<time(c/cause(x, fav), now)>
-request(emora, c)
+pred:<cause(pred/predicate(), p)>
+request(emora, pred)
 ;
 
-time(play(x/person(), minecraft), now)
+play(x/person(), minecraft)
 ->
 time(play(emora, minecraft), past)
-like(emora, minecraft)
-time(popular(minecraft), now)
 ;
 
-time(like(x/person(), minecraft), now)
+like(x/person(), minecraft)
 ->
 time(play(emora, minecraft), past)
-like(emora, minecraft)
-time(popular(minecraft), now)
 ;
 
-time(l/like(x/person(), leagueoflegends), now)
+l/like(x/person(), leagueoflegends)
 ->
-time(popular(leagueoflegends), now)
+time(like(x, multiplayer), now)
 frustrating(leagueoflegends)
-c:<c/cause(x, l)>
-request(emora, c)
+pred:<cause(pred/predicate(), l)>
+request(emora, pred)
 ;
 
-time(p/play(x/person(), leagueoflegends), now)
+p/play(x/person(), leagueoflegends)
 ->
-time(popular(leagueoflegends), now)
+time(like(x, multiplayer), now)
 frustrating(leagueoflegends)
-c:<c/cause(x, p)>
-request(emora, c)
+pred:<cause(pred/predicate(), p)>
+request(emora, pred)
 ;
 
 time(p/play(x/person(), csgo), now)
 ->
 like(x, multiplayer)
 like(x, shooter)
-epc/play(emora, csgo)
-not(epc)
-c:<c/cause(x, p)>
-request(emora, c)
+pred:<cause(pred/predicate(), p)>
+request(emora, pred)
 ;
 
 time(l/like(x/person(), csgo), now)
 ->
-epc/play(emora, csgo)
-not(epc)
-c:<c/cause(x, l)>
+like(x, multiplayer)
+like(x, shooter)
+pred:<cause(pred/predicate(), l)>
+request(emora, pred)
+;
+
+time(p/play(x/person(), fortnite), now)
+->
+time(like(x, shooter), now)
+time(like(x, multiplayer), now)
+pred:<cause(pred/predicate(), p)>
+request(emora, pred)
+;
+
+time(l/like(x/person(), fortnite), now)
+->
+time(like(x, shooter), now)
+time(like(x, multiplayer), now)
+pred:<cause(pred/predicate(), l)>
+request(emora, pred)
+;
+
+l/like(x/person(), smashbros)
+->
+time(like(x, fighter), now)
+time(like(x, multiplayer), now)
+c:<time(play(x, c/character()), now)>
 request(emora, c)
+in(c, l)
+;
+
+pl/play(x/person(), smashbros)
+->
+time(like(x, fighter), now)
+time(like(x, multiplayer), now)
+c:<time(play(x, c/character()), now)>
+request(emora, c)
+in(c, pl)
+;
+
+l/like(x/person(), smashbros)
+r/request(emora, c/character())
+in(c, l)
+user_aware(r)
+->
+like(emora, captain_falcon)
+;
+
+pl/play(x/person(), smashbros)
+r/request(emora, c/character())
+in(c, pl)
+user_aware(r)
+->
+like(emora, c)
+;
+
+l/like(x/person(), pokemon)
+->
+agree(emora, l)
+pred:<cause(pred/predicate(), l)>
+request(emora, pred)
+;
+
+p/play(x/person(), pokemon)
+->
+agree(emora, p)
+pred:<cause(pred/predicate(), p)>
+request(emora, pred)
+;
+
+l/like(x/person(), callofduty)
+->
+agree(emora, l)
+pred:<cause(pred/predicate(), l)>
+request(emora, pred)
+;
+
+p/play(x/person(), callofduty)
+->
+agree(emora, p)
+pred:<cause(pred/predicate(), p)>
+request(emora, pred)
 ;

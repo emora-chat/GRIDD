@@ -3,16 +3,17 @@ time(h/have(user, p/pet()), now)
 request_truth(emora, h)
 time(walk(emora, emora_dog), today)
 -> q_user_has_pet ->
-$ For me , I took my dog on a walk today . Do you have a pet ? $
+_pr(_low)
+$ I was just thinking , the most fun I had today was taking a walk with my dog . Do you have a pet ? $
 ;
 
 h/have(user, p/pet())
 h{"confidence": -1}
-time(w2/want(emora, p3/cat()), past)
-time(w2, always)
+uturn(h, 0)
 time(w/want(user, p2/pet()), now)
 request_truth(emora, w)
 -> q_want_pet ->
+_t(_rpresent)
 $ Oh , if you don't have any pets , do you want one ? I've always wanted a cat myself . $
 ;
 
@@ -23,13 +24,13 @@ $ What kind of pet do you have ? $
 ;
 
 X/property(Z/pet())
-possess(user, Z)
+have(user, Z)
 request(emora, X)
 -> q_pet_property ->
 $ What is your Z like ? $
 ;
 
-possess(user, X/pet())
+have(user, X/pet())
 like(user, pred/event(object()))
 with(pred, X)
 request(emora, pred)
@@ -39,9 +40,11 @@ $ What do you like to do with your X ? $
 
 locate(X/park(), L/location())
 N/near(L, H/home())
-possess(user, H)
+have(user, H)
 request_truth(emora, N)
+uturn(X, 0)
 ->
+_t(_rpresent)
 $ Oh , is the park nearby where you live ? That would be so convenient ! $
 ;
 
@@ -49,7 +52,9 @@ love(emora, P/park())
 type(P, group)
 S/size(X/park())
 request(emora, S)
+uturn(X, 0)
 ->
+_t(_rpresent)
 $ There is really nothing better than a beautiful park ! How big is the one you mentioned ? $
 ;
 
@@ -57,24 +62,108 @@ el/like(emora, walk(emora, emora_dog))
 em/motivate(emora, healthy(emora))
 cause(em, el)
 ->
+_pr(_low)
 $ I like to take my dog on walks because it motivates me to be healthy . $
 ;
 
 t/think(user, handful(X/pet()))
-possess(user, X)
+have(user, X)
 request_truth(emora, t)
 ->
 $ Well , your X must be a handful with so much energy , aren't they ? $
 ;
 
 e/event(X/pet()) crazy(e)
-possess(user, X)
+have(user, X)
 request(emora, e)
+t/think(user, handful(X))
+r/request_truth(emora, t)
+eturn(r, 1)
 ->
+_t(_rpresent)
 $ I bet they keep your life interesting though. Like , what is the craziest thing they've ever done ? $
 ;
 
-esympathy(emora, event())
-->
+esympathy(emora, e/event())
+uturn(e, 0)
+-> esympathy_pet_reaction ->
+_t(_react)
 $ Oh no , that is unfortunate ! I hope it wasn't too bad . $
 ;
+
+time(l/like(user, a/animal()), now)
+request_truth(emora, l)
+->
+$ Oh, I see. Do you like animals in general or are you just not an animal person? $
+;
+
+time(like(user, a/animal()), now)
+time(c/cause(pred/predicate(), want(user, p/pet())), now)
+request(emora, pred)
+->
+$ That's pretty interesting. Most people I know that don't want a pet also don't like animals. I guess you are a bit special. $
+;
+
+time(l/like(user, a/animal()), now)
+l{"confidence":-1}
+time(c/cause(pred/predicate(), l), now)
+request(emora, pred)
+->
+$ Oh, well I guess that explains it. Why don't you like animals though? $
+;
+
+possess(user, a/animal())
+favorite(a)
+request(emora, a)
+->
+$ Yeah, I really like animals too. Which animal's your favorite? $
+;
+
+time(agree(emora, cool(ani/animal())), now)
+time(cause(fast(cheetah), like(emora, cheetah)), now)
+->
+$ Oh, that's neat. The ani is a cool one. My favorite is definitely the cheetah. I watched a documentary on them once years ago, and I've loved them ever since. They look cool and can run super fast. $
+;
+
+time(possess(user, ani/animal()), now)
+time(favorite(ani), now)
+request(emora, ani)
+have(user, pet)
+->
+$ Well, I'm guessing you must like animals to have a pet. Out of all the animals, do you have a favorite? $
+;
+
+time(l/like(x/person(), zoo), now)
+request_truth(emora, l)
+->
+$ Considering that you like animals, I was wondering if you liked the zoo? There's plenty of different animals to see there. $
+;
+
+like(x/person(), z/zoo())
+v/visit(user, z)
+time(oft/often(v), now)
+request_truth(emora, oft)
+->
+$ Yeah, the zoo is really awesome. Years ago, I would visit as much as I could and just spend the entire day staring at animals, mesmerized. Do you visit often? $
+;
+
+v/visit(user, z/zoo())
+often(v)
+cause(funny(flamingo, appearance), like(emora, flamingo))
+possess(user, a/activity()) in(a, z)
+favorite(a)
+request(emora, a)
+->
+$ Oh, that's great! What's your favorite thing to do in the zoo? I love to watch the flamingos. They have such a funky appearance, and I watching them is so much fun. $
+;
+
+v/visit(user, z/zoo())
+not(often(v))
+cause(funny(flamingo, appearance), like(emora, flamingo))
+possess(user, a/activity()) in(a, z)
+favorite(a)
+request(emora, a)
+->
+$ Oh, I see. It can be a hassle to travel and get tickets, so that makes sense. When you do go, what's your favorite thing to do in the zoo? I love to watch the flamingos. They have such a funky appearance, and I watching them is so much fun. $
+;
+

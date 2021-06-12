@@ -1,0 +1,4 @@
+gathering=(entity)
+funeral=(gathering, negative)
+[wedding, party]=(gathering, positive)
+

@@ -21,3 +21,6 @@ delicious=(property)
 expr("yummy, tasty",delicious)
 
 ;
+
+temperature=(property)
+hot=(temperature)

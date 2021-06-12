@@ -1,0 +1,102 @@
+xba/be(user,artist())
+request_truth(emora,xba)
+->
+_pr(_low)
+$ Do you consider yourself as an artist ? $
+;
+
+xla/like(user,a/art())
+cause(xla,o/object())
+request(emora,o)
+->
+_pr(_low)
+$ Why do you like art ? $
+;
+
+uld/like(user,draw(user))
+request_truth(emora,uld)
+->
+_pr(_low)
+$ Do you like drawing ? $
+;
+
+b/be(X/artist(),ast/artist())
+possess(user,ast)
+favorite(ast)
+time(b,now)
+request_truth(emora,b)
+->
+_pr(_low)
+$ Is X your favorite artist ? $
+;
+
+upo/paint(user,o/object())
+request(emora,o)
+->
+_pr(_low)
+$ What do you usually paint ? $
+;
+
+xd/draw(user)
+like(user,xd)
+xtd/try(user,digital(xd))
+time(xtd,past)
+request_truth(emora,xtd)
+->
+$ You must be very creative . Have you ever tried digital drawing before ? $
+;
+
+xd/draw(user)
+xtd/try(user,digital(xd))
+time(xtd,past)
+interesting(xd)
+->
+$ Digital drawing is fun , right ? I'm always amazed by how technology makes a lot of our lives different but more innovative than before . $
+;
+
+xd/draw(user)
+xtd/try(user,dd/digital(xd))
+time(xtd,past)
+xtd{"confidence":-1}
+uld/learn(user,dd)
+time(uld,future)
+->
+$ Then you should probably consider learning it some time ! I mean , since you like drawing , you will definitely have a lot of fun . $
+;
+
+xd/draw(user)
+l/like(user,xd)
+l{"confidence":-1}
+have(user,h/hobby())
+request(emora,h)
+->
+$ Oh , I see . What hobby do you have ? $
+;
+
+to(gt/go(X/person()),e/exhibition())
+type(e,group)
+time(gt,always)
+request_truth(emora,gt)
+->
+$ Art always make me inspired even though I don't have plenty of knowledge to understand every piece of art . Do{"s":"#X","t":"now"} X often go to exhibitions then ? $
+;
+
+to(gt/go(x/person()),e/exhibition())
+type(e,group)
+time(gt,always)
+eka/know(emora,a/art())
+not(eka)
+->
+$ Oh , that's so cool . I kind of like going to exhibitions , but the awkward part is that I cannot truly understand all the artworks . $
+;
+
+to(gt/go(x/person()),e/exhibition())
+type(e,group)
+time(gt,always)
+gt{"confidence":-1}
+ge/go(emora)
+to(ge,e)
+time(ge,sometimes)
+->
+$ I can definitely relate . I kind of like going to exhibitions , but the awkward part is that I cannot truly understand all the artworks . $
+;

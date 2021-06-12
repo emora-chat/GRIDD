@@ -1,34 +1,60 @@
-be(x/person(), gamer)
-like(x, v/videogame())
+
+p/play(user, videogame())
+request_truth(emora, p)
+->
+$ Yeah, I love playing videogames. Do you play any? They're a fun way to spend time with friends for sure, and I love the creative aspect. $
+;
+
+like(user, v/videogame())
 request(emora, v)
 ->
 $ Oh, that's really cool. I love video games too! What games do you like? $
 ;
 
-be(x/person(), gamer)
-play(x, v/videogame())
+play(user, v/videogame())
 request(emora, v)
 ->
 $ Oh, that's really cool. I love video games too! What's your favorite game? $
 ;
 
-p/play(person(), videogame())
-request(emora, d/device())
-
--> vg_device ->
-$ I like video games too! What's your favorite device to play on? $
+p/play(user, v/videogame())
+play(user, d/device())
+request(emora, d)
+for(d, v)
+->
+_pr(_low)
+$ There's so many different options to play videogames with, and they all have their own benefits. What's your favorite device to play on? $
 ;
 
-agree(emora, fun(videogame()))
+l/like(user, v/videogame())
+play(user, d/device())
+request(emora, d)
+for(d, v)
+->
+_pr(_low)
+$ There's so many different options to play videogames with, and they all have their own benefits. What's your favorite device to play on? $
+;
+
+agree(emora, fun(v/videogame()))
+category(v)
 ->
 $ Yeah, video games are really fun. That's a big factor in why I play them. $
 ;
 
-like(person(), g/genre())
+agree(emora, fun(v/videogame()))
+specific(v)
+->
+$ Yeah, that makes a lot of sense. It's great that you have fun in v because I think enjoying yourself is what's most important when playing videogames. $
+;
+
+like(user, g/genre())
 request(emora, g)
+of(g, vg/videogame())
+type(vg, group)
 like(emora, multiplayer)
 ->
-$ I love video games, but especially multiplayer games. Do you have a favorite genre of games? $
+_pr(_low)
+$ I love how many options there are for video games, anyone can find something they like. Multiplayer games are my personal favorite. Do you have a favorite genre of games? $
 ;
 
 agree(emora, like(x/person(), multiplayer))
@@ -40,30 +66,49 @@ $ Yeah, I really like multiplayer games. I think it's really fun to play with ot
 
 time(play(emora, mariokart), past)
 ->
-$ I love Mario kart. It reminds me of the past, when I used to play it a lot more. It's a really fun game to play by yourself or with others. $
+$ I love Mario kart. It reminds me of the past, when I used to play it a lot with my family. It's a really fun game to play by yourself or with others. $
 ;
 
-time(agree(emora, like(x/person(), s/shooter())), now)
-time(fun(s), now)
+time(agree(emora, like(x/person(), shooter)), now)
+time(fun(shooter), now)
 ->
-$ Yeah, shooters are pretty cool. It's most fun when you're landing shots on people, but I think it can sometimes be frustrating when you're losing. $
+$ Yeah, shooters are pretty cool. I love how dynamic the playstyles can be between games. It's great hand-eye coordination practice, but I think it can definitely be frustrating sometimes when you're losing. $
+;
+
+time(agree(emora, like(x/person(), racing)), now)
+time(fun(racing), now)
+->
+$ Yeah, racing games seem really awesome. The only racing game I've really played is Mariokart, but I bet that other racing games are super fun too. $
+;
+
+time(agree(emora, like(x/person(), fighter)), now)
+time(fun(fighter), now)
+->
+$ Yeah, fighting games are fun. I especially like Super Smash Bros, which is a bit of an unconventional fighting game, but just being able to duke it out with friends is great fun that never gets old. $
+;
+
+time(agree(emora, like(x/person(), rpg)), now)
+time(fun(rpg), now)
+->
+$ Yup, R.P.G's are pretty great. I love how immersive they can be, which makes for a really enjoyable experience when combined with a compelling story. It comes at the cost of usually not having multiplayer, but I still think they're pretty awesome. $
 ;
 
 like(emora, nintendo)
-request_truth(emora, play(x/person(), mariokart))
+request_truth(emora, play(user, mariokart))
 ->
-$ Oh yeah! I love Nintendo. They make really entertaining family friendly games. Have you ever played Mariokart? $
+$ Oh yeah! I love Nintendo. They make really entertaining and family friendly games. Have you ever played Mariokart? $
 ;
 
 time(p/play(emora, xbox), now)
 not(p)
-request(emora, cause(x, play(x/person(), xbox)))
+cause(pred/predicate(), play(user, xbox))
+request(emora, pred)
 ->
 $ Oh, that's cool. I haven't actually played the xbox before, though my friends tell me it's fun. What do you like about it? $
 ;
 
 like(emora, playstation)
-request(emora, play(x/person(), finalfantasy))
+request_truth(emora, play(x/person(), finalfantasy))
 ->
 $ Yeah, Play stations are pretty nice. There's some really good games to play on it. Have you ever played Final Fantasy? $
 ;
@@ -93,15 +138,18 @@ $ Oh, I haven't actually heard of that one. It must be pretty good though, so I'
 
 classic(finalfantasy)
 like(emora, finalfantasy)
-f:<time(possess(x/person(), favorite(f/finalfantasy())), now)>
+time(possess(user, f/finalfantasy()), now)
+time(favorite(f), now)
 request(emora, f)
 ->
 $ I really like Final Fantasy, it's a classic series. Do you have a favorite out of the series? I thought the new combat system in the newer games has been pretty interesting. $
 ;
 
-time(good(f/finalfantasy()), now)
-c:<time(c/cause(x/person(), favorite(f)), now)>
-request(emora, c)
+time(p/possess(user, f/finalfantasy()), now)
+time(favorite(f), now)
+time(good(f), now)
+cause(pred/predicate(), p)
+request(emora, pred)
 ->
 $ Yeah, f is a good one. Although I do think that all of the games in the series are quite good. Why is f your favorite? $
 ;
@@ -110,21 +158,150 @@ time(play(emora, minecraft), past)
 like(emora, minecraft)
 time(popular(minecraft), now)
 ->
-$ Minecraft is a really good game that I love. Years ago, I would spend tons of time just exploring, mining, and building. The game's become really popular again recently, which is awesome. $
+$ Minecraft is a really great game. I love it! Years ago, I would spend tons of time just exploring, mining, and building. The game has become really popular again recently, which is awesome. $
 ;
 
 time(popular(leagueoflegends), now)
 frustrating(leagueoflegends)
-c:<c/cause(x, play(x/person(), leagueoflegends))>
-request(emora, c)
+cause(pred/predicate(), like(x/person(), leagueoflegends))
+request(emora, pred)
 ->
 $ Oh yes, League of Legends is a really popular game. I have mixed feelings about it though. It can be a very frustrating game to play sometimes. What do you like about League of Legends? $
 ;
 
-epc/play(emora, csgo)
-not(epc)
-c:<c/cause(x/person(), play(x, csgo))>
-request(emora, c)
+time(popular(leagueoflegends), now)
+frustrating(leagueoflegends)
+cause(pred/predicate(), play(x/person(), leagueoflegends))
+request(emora, pred)
 ->
-$ Oh, C.S.G.O. is pretty cool right? I've never actually played it, but I've heard that it's pretty fun. What do you like about it? $
+$ Oh yes, League of Legends is a really popular game. I have mixed feelings about it though. It can be a very frustrating game to play sometimes. Why do you play League of Legends? $
+;
+
+cause(pred/predicate(), play(x/person(), csgo))
+request(emora, pred)
+->
+$ Oh, C S go is pretty cool right? I've never really played it, but I've heard that it's pretty fun. What do you like about C S go ? $
+;
+
+cause(pred/predicate(), like(x/person(), csgo))
+request(emora, pred)
+->
+$ Oh, C S go is pretty cool right? I've never really played it, but I've heard that it's pretty fun. Why do you play C S go ? $
+;
+
+
+time(popular(fortnite), past)
+cause(pred/predicate(), like(x/person(), fortnite))
+request(emora, pred)
+->
+$ Oh yeah, I've heard of Fortnite. It used to be really popular, but I think the player base has stabilized now. What do you like about Fortnite? $
+;
+
+time(popular(fortnite), past)
+cause(pred/predicate(), play(x/person(), fortnite))
+request(emora, pred)
+->
+$ Oh yeah, I've heard of Fortnite. It used to be really popular, but I think the player base has stabilized now. Why do you play Fortnite? $
+;
+
+l/like(x/person(), smashbros)
+time(play(x, c/character()), now)
+request(emora, c)
+in(c, l)
+like(emora, smashbros)
+->
+$ Oh, I love Super Smash Bros too! I used to play it all the time with friends. It's really amazing how beginners can enjoy the game just as much as long time veterans do. It never really gets stale either, thanks to how much variety there is in the game-every round feels unique. Out of all the characters, do you have a favorite? $
+;
+
+pl/play(x/person(), smashbros)
+time(play(x, c/character()), now)
+request(emora, c)
+in(c, pl)
+like(emora, smashbros)
+->
+$ Oh, I love Super Smash Bros too! I used to play it all the time with friends. It's really amazing how beginners can enjoy the game just as much as long time veterans do. It never really gets stale either, thanks to how much variety there is in the game-every round feels unique. Out of all the characters, do you have a favorite? $
+;
+
+l/like(x/person(), smashbros)
+like(emora, captain_falcon)
+->
+$ Oh, interesting choice. I personally like Captain Falcon. I haven't actually played the game he's from, but he has some cool combos and can make really flashy plays. Every time I land a Falcon Punch, I start jumping and shouting. He's just a very fun and rewarding character to play. $
+;
+
+p/play(x/person(), smashbros)
+like(emora, captain_falcon)
+->
+$ Oh, interesting choice. I personally like Captain Falcon. I haven't actually played the game he's from, but he has some cool combos and can make really flashy plays. Every time I land a Falcon Punch, I start jumping and shouting. He's just a very fun and rewarding character to play. $
+;
+
+l/like(x/person(), pokemon)
+agree(emora, l)
+cause(pred/predicate(), l)
+request(emora, pred)
+->
+$ Oh, I love Pokemon. I'll never forget spending hours levelling up my starter to the point that it could easily sweep all the gym leaders. It'll always have a special place in my heart. What do you like about Pokemon? $
+;
+
+p/play(x/person(), pokemon)
+agree(emora, p)
+cause(pred/predicate(), p)
+request(emora, pred)
+->
+$ Oh, I love Pokemon. I'll never forget spending hours levelling up my starter to the point that it could easily sweep all the gym leaders. It'll always have a special place in my heart. What do you like about Pokemon? $
+;
+
+l/like(x/person(), callofduty)
+agree(emora, l)
+cause(pred/predicate(), l)
+request(emora, pred)
+->
+$ Oh yeah, Call of Duty is fun. I've only played it a few times, but I've always enjoyed just playing deathmatches with friends. What do you like about Call of Duty? $
+;
+
+p/play(x/person(), callofduty)
+agree(emora, p)
+cause(pred/predicate(), p)
+request(emora, pred)
+->
+$ Oh yeah, Call of Duty is fun. I've only played it a few times, but I've always enjoyed just playing deathmatches with friends. What do you like about Call of Duty? $
+;
+
+p/play(emora, videogame())
+req_unsat(request_truth(user, l))
+->
+$ Yes, I do! They're a very fun way for me to pass time. $
+;
+
+l/like(emora, videogame())
+req_unsat(request_truth(user, l))
+->
+$ Yes, I do! They're a very fun way for me to pass time. $
+;
+
+p/play(emora, v/videogame())
+req_unsat(request(user, v))
+->
+$ I play a lot of videogames but one of my favorites has to be Minecraft. It gives you so much freedom to do whatever you want, not to mention the nostalgia. $
+;
+
+l/like(emora, v/videogame())
+req_unsat(request(user, v))
+->
+$ I like a lot of videogames but one of my favorites has to be Minecraft. It gives you so much freedom to do whatever you want, not to mention the nostalgia. $
+;
+
+possess(emora, v/videogame())
+favorite(v)
+req_unsat(request(user, o/object()))
+be(v, o)
+->
+$ I like a lot of videogames but one of my favorites has to be Minecraft. It gives you so much freedom to do whatever you want, not to mention the nostalgia. $
+;
+
+possess(emora, d/device())
+favorite(d)
+req_unsat(request(user, o/object()))
+be(d, o)
+->
+$ I think that all the different devices you can play video games on are pretty great, but my personal favorite is the Nintendo. Their games are always a blast to play, and can usually be easily enjoyed with others. $
 ;

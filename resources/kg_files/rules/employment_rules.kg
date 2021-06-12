@@ -1,0 +1,199 @@
+uw/work(user)
+uw{"confidence": 0}
+user_aware(uw)
+-> ask_if_like_job ->
+l:<possess(user,j/job()) l/like(user,j) time(l,now)>
+request_truth(emora,l)
+;
+
+time(uw/work(user),future)
+uw{"confidence": 0}
+user_aware(uw)
+-> ask_if_excited ->
+upj/possess(user,j/job())
+time(upj,future)
+xe:<xe/excited(user) for(xe,j) time(xe,now)>
+request_truth(emora,xe)
+;
+
+xe/excited(x/person())
+for(xe,j/job())
+->
+xhf/have(x,f/fun())
+he/happy(emora)
+for(he,xhf)
+;
+
+xe/excited(x/person())
+for(xe,j/job())
+xe{"confidence":-1}
+->
+he/sorry(emora)
+for(he,x)
+;
+
+upc/possess(user,j/job())
+upc{"confidence": 0}
+user_aware(upc)
+->
+l:<possess(user,j) l/like(user,j) time(l,now)>
+request_truth(emora,l)
+;
+
+time(uw/work(user),now)
+uw{"confidence": 0}
+user_aware(uw)
+-> ask_if_like_colleagues ->
+l:<possess(user,cl/colleague()) type(cl,group) l/like(user,cl) time(l,now)>
+request_truth(emora,l)
+;
+
+upc/possess(user,cl/colleague())
+upc{"confidence": 0}
+user_aware(upc)
+->
+l:<type(cl,group) l/like(user,cl) time(l,now)>
+request_truth(emora,l)
+;
+
+like(x/person(),cl/colleague())
+->
+l:<l/like(x,teamwork())>
+request_truth(emora,l)
+;
+
+l/like(x/person(),cl/colleague())
+l{"confidence":-1}
+->
+comfort(emora,x)
+;
+
+like(x/person(),tw/teamwork())
+->
+helpful(tw)
+hear(x,o/opinion())
+type(o,group)
+;
+
+l/like(x/person(),tw/teamwork())
+l{"confidence":-1}
+->
+understand(emora,l)
+et/effective(tw)
+not(et)
+;
+
+l/like(x/person(),j/job())
+->
+awesome(l)
+possess(emora,jb/job())
+like(emora,jb)
+motivated(emora)
+;
+
+l/like(x/person(),j/job())
+l{"confidence":-1}
+->
+he/sorry(emora)
+for(he,x)
+;
+
+time(work(x/person()),now)
+->
+xr:<xr/return(x) xro/to(xr,o/office()) time(xr,now)>
+request_truth(emora,xr)
+;
+
+xr/return(x/person())
+xro/to(xr,o/office())
+->
+see(x,c/colleague())
+type(c,group)
+xe:<xe/excited(x) about(xe,xr) time(xe,now)>
+request_truth(emora,xe)
+;
+
+xr/return(x/person())
+xro/to(xr,o/office())
+xr{"confidence": -1}
+->
+not(stressed(x))
+xe:<xe/excited(x) about(xe,xr) time(xe,now)>
+request_truth(emora,xe)
+;
+
+xr/return(x/person())
+xro/to(xr,o/office())
+xe/excited(x)
+about(xe,xr)
+->
+online(m/meeting())
+type(m,group)
+dislike(emora,m)
+;
+
+xr/return(x/person())
+xro/to(xr,o/office())
+xe/excited(x)
+about(xe,xr)
+xe{"confidence": -1}
+->
+understand(emora,xe)
+;
+
+j/job()
+technical(j)
+->
+cool(j)
+admire(emora,j)
+;
+
+j/job()
+creative(j)
+->
+cool(j)
+de/dream(emora)
+ebj/be(emora,jewelry_designer)
+to(de,ebj)
+time(de,past)
+;
+
+j/job()
+artistic(j)
+->
+cool(j)
+l:<l/like(user,m/music()) time(l,now)>
+request_truth(emora,l)
+;
+
+j/job()
+managing(j)
+->
+difficult(j)
+make(j,d/decision())
+type(d,group)
+big(d)
+;
+
+j/job()
+academic(j)
+->
+respect(emora,j)
+;
+
+xw/work(x/person())
+as(xw,un/unknown_job())
+->
+eku/know(emora,un)
+not(eku)
+p:<p/property(un)>
+request(emora,p)
+;
+
+time(prop_i/property(uj/unknown_job()),z/datetime())
+prop_i{"confidence": 0}
+req/request(emora, prop_i)
+user_aware(req)
+->
+understand(emora,uj)
+;

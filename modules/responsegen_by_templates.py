@@ -1,8 +1,5 @@
-from GRIDD.data_structures.concept_compiler import ConceptCompiler
-from GRIDD.data_structures.concept_graph import ConceptGraph
-from GRIDD.utilities.utilities import collect
 from GRIDD.globals import *
-import time, re
+import random
 
 from simplenlg.framework.NLGFactory         import *
 from simplenlg.realiser.english.Realiser    import *
@@ -25,6 +22,8 @@ Execution Sequence:
     ResponseTemplateFiller
 """
 
+SPECIAL_NOT_CHECK_AWARE = {'unknown_answer_to_user_q'}
+
 class ResponseTemplateFiller:
     """
     Fills out a template based on the provided variable matches and concept expressions.
@@ -35,40 +34,87 @@ class ResponseTemplateFiller:
         self.nlgFactory = NLGFactory(self.lexicon)
         self.realiser = Realiser(self.lexicon)
 
-    def __call__(self, matches, expr_dict, cg, aux_state):
-        candidates = []
+    def __call__(self, matches, expr_dict, cg, aux_state, fallback_options):
+        react_cands = []
+        present_cands = []
+        rpresent_cands = []
         for rule, (pre_graph, post, solutions_list) in matches.items():
             for match_dict in solutions_list:
-                string_spec_ls = list(post)  # need to create copy so as to not mutate the postcondition in the rule
-                response_str = self.fill_string(match_dict, expr_dict, string_spec_ls, cg)
-                # print(string_spec_ls)
-                if response_str not in aux_state.get('spoken_responses', []):
-                    candidates.append((match_dict, response_str))
-        predicates, string, avg_sal = self.select_best_candidate(candidates, cg)
-        return (string, predicates, 'template')
+                string_spec_ls = list(post.string_spec_ls)  # need to create copy so as to not mutate the postcondition in the rule
+                try:
+                    response_str = self.fill_string(match_dict, expr_dict, string_spec_ls, cg)
+                except Exception as e:
+                    print('Error in NLG template filler for rule %s => %s'%(rule, e))
+                    continue
+                if post.template_type == '_react':
+                    react_cands.append((rule, match_dict, response_str, post.priority))
+                else:
+                    if response_str not in aux_state.get('spoken_responses', []):
+                        # don't allow for repeated followups or rfollowups
+                        if post.template_type == '_present':
+                            present_cands.append((rule, match_dict, response_str, post.priority))
+                        elif post.template_type == '_rpresent':
+                            rpresent_cands.append((rule, match_dict, response_str, post.priority))
+        print('\nReact + Present Options: ')
+        rp_predicates, rp_string, rp_score = self.select_best_candidate(rpresent_cands, cg)
+        print('\nPresent Options: ')
+        p_predicates, p_string, p_score = self.select_best_candidate(present_cands, cg)
+        if rp_score is not None and (p_score is None or rp_score >= p_score):
+            string = rp_string
+            predicates = rp_predicates
+            aux_state.setdefault('spoken_responses', []).append(string)
+        else:
+            if p_string is None:
+                string, predicates = (p_string, p_predicates)
+            else:
+                string = p_string
+                aux_state.setdefault('spoken_responses', []).append(string)
+                predicates = p_predicates
+                s = random.choice(['Yeah .', 'Gotcha .', 'I see .'])
+                curr_turn = aux_state.get('turn_index', 0)
+                if len(react_cands) > 0 and curr_turn > 0:
+                    print('\nReact Options: ')
+                    p, s, a = self.select_best_candidate(react_cands, cg, check_aware=False)
+                elif curr_turn == 0:
+                    s = ""
+                # Do not add reaction predicates to predicates list in order to avoid them being treated as spoken and getting the eturn predicate
+                string = s + ' ' + string
 
-    def select_best_candidate(self, candidates, cg):
+        type = "template"
+        if string is None: # PICK UNUSED FALLBACK
+            print('Picking Fallback!!')
+            candidates = list(set(fallback_options.keys()) - set(aux_state.get('fallbacks', [])))
+            print('Candidates: %s'%candidates)
+            print()
+            predicates, template_obj, _ = fallback_options[random.choice(candidates)]
+            string = ' '.join(template_obj.string_spec_ls)
+            type = "fallback"
+
+        return (string, predicates, type)
+
+    def select_best_candidate(self, candidates, cg, check_aware=True):
         # get highest salience candidate with at least one uncovered predicate
         with_sal = []
-        for match_dict, string in candidates:
+        for rule, match_dict, string, priority in candidates:
             preds = [cg.predicate(x) for x in match_dict.values() if cg.has(predicate_id=x)
                      and cg.type(x) not in {EXPR, TYPE, TIME}]
-            req_pred = [cg.predicate(x) for x in match_dict.values() if cg.has(predicate_id=x)
-                        and cg.type(x) in {REQ_ARG, REQ_TRUTH}]
-            user_awareness = [cg.has(x[3], USER_AWARE) for x in preds]
-            user_req_awareness = [cg.has(x[3], USER_AWARE) for x in req_pred]
-            # print()
-            # for i, pred in enumerate(preds):
-            #     print(pred, user_awareness[i])
-            if False in user_awareness and (not user_req_awareness or True not in user_req_awareness):
+            if check_aware and rule not in SPECIAL_NOT_CHECK_AWARE:
+                req_pred = [cg.predicate(x) for x in match_dict.values() if cg.has(predicate_id=x)
+                            and cg.type(x) in {REQ_ARG, REQ_TRUTH} and cg.subject(x) == 'emora'] # check if emora already asked question
+                user_awareness = [cg.has(x[3], USER_AWARE) for x in preds]
+                user_req_awareness = [cg.has(x[3], USER_AWARE) for x in req_pred]
+            if not check_aware or rule in SPECIAL_NOT_CHECK_AWARE or (False in user_awareness and (not user_req_awareness or False in user_req_awareness)):
+                # at least one predicate is not known by the user
+                # and all request predicates are not known by user, if there are requests in response
+                # todo - stress test emora not asking a question she already has answer to or has asked before
+                # this should work, but we do have req_unsat predicate as backup, if needed
                 sals = [cg.features.get(x, {}).get(SALIENCE, 0) for x in match_dict.values()]
                 avg = sum(sals) / len(sals)
-                with_sal.append((preds, string, avg))
-        print('\nResponse Options: ')
+                final_score = SAL_WEIGHT * avg + PRIORITY_WEIGHT * priority
+                with_sal.append((preds, string, final_score))
+                print('\t%s (s: %.2f, pr: %.2f)' % (string, avg, priority))
+        print()
         if len(with_sal) > 0:
-            for _, response, sal in with_sal:
-                print('\t%s (%.2f)'%(response, sal))
-            print()
             return max(with_sal, key=lambda x: x[2])
         else:
             return None, None, None
@@ -225,15 +271,16 @@ class ResponseTemplateFiller:
             return None, expr_dict[match]
         else:  # not a named concept
             np = self.nlgFactory.createNounPhrase()
-            noun = self._unnamed_noun(cg, match)
+            noun = self._unnamed_noun(cg, match, expr_dict)
             np.setNoun(noun)
             return np, self.realiser.realiseSentence(np)[:-1]
 
 
-    def _unnamed_noun(self, cg, match):
+    def _unnamed_noun(self, cg, match, expr_dict):
         # need to get main type
         match_types = cg.types(match)
         main_type = self._concrete_type(cg, match)
+        main_type = expr_dict.get(main_type, main_type)
         noun = self.nlgFactory.createNLGElement(main_type, LexicalCategory.NOUN)
         # whether group
         if GROUP in match_types:
@@ -241,6 +288,22 @@ class ResponseTemplateFiller:
         else:
             noun.setFeature(Feature.NUMBER, NumberAgreement.SINGULAR)
         return noun
+
+class Template:
+
+    def __init__(self, string_spec_ls, priority, template_type):
+        self.string_spec_ls = string_spec_ls
+        self.priority = priority
+        self.template_type = template_type
+
+    def save(self):
+        return (self.string_spec_ls, self.priority, self.template_type)
+
+    def load(self, d):
+        self.string_spec_ls = d[0]
+        self.priority = d[1]
+        self.template_type = d[2]
+
 
 if __name__ == '__main__':
     from GRIDD.modules.responsegen_by_templates_spec import ResponseTemplatesSpec
@@ -256,7 +319,7 @@ if __name__ == '__main__':
     # '''
     # cg = ConceptGraph(namespace='wm')
     # ConceptGraph.construct(cg, logic)
-
+    #
     # tfill = ResponseTemplateFiller()
     # tfill.test()
 

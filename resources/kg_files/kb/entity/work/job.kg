@@ -1,0 +1,94 @@
+analyst=job()
+technical(analyst)
+
+data_analyst=job()
+technical(data_analyst)
+expr("data analyst",data_analyst)
+
+data_scientist=job()
+technical(data_scientist)
+expr("data scientist",data_scientist)
+
+data_engineer=job()
+technical(data_engineer)
+expr("data engineer",data_engineer)
+
+software_engineer=job()
+technical(software_engineer)
+expr("software engineer",software_engineer)
+
+technician=job()
+technical(technician)
+expr("I T support, I T specialist, technician",technician)
+
+developer=job()
+technical(developer)
+
+;
+
+designer=job()
+creative(designer)
+expr("graphic designer, U X designer, U I designer",designer)
+
+film_director=job()
+creative(film_director)
+expr("film director, producer",film_director)
+
+creative_director=job()
+creative(creative_director)
+expr("creative director",creative_director)
+
+jewelry_designer=job()
+creative(jewelry_designer)
+expr("jewelry designer",jewelry_designer)
+
+;
+
+artist=job()
+artistic(artist)
+
+musician=job()
+artistic(artist)
+
+singer=job()
+artistic(singer)
+
+songwriter=job()
+artistic(songwriter)
+
+;
+
+ceo=job()
+managing(ceo)
+expr("C E O, chief executive officer",ceo)
+
+manager=job()
+managing(manager)
+
+;
+
+researcher=job()
+academic(researcher)
+
+teacher=job()
+academic(teacher)
+
+professor=job()
+academic(professor)
+
+school_counselor=job()
+academic(school_counselor)
+expr("school counselor",school_counselor)
+
+;
+
+unknown_job=(unknown_noun)
+
+customer_service_representative=(job)
+expr("customer service representative", customer_service_representative)
+
+nurse=(job)
+
+remote_work=(object)
+;
+

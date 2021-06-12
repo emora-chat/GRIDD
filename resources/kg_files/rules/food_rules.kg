@@ -1,14 +1,55 @@
-be(x/person(),fd/foodie())
+time(upm/possess(user,m/meal()),z/datetime())
+upm{"confidence": 0}
+user_aware(upm)
+-> user_has_meal ->
+p:<p/property(m) time(p,z)>
+request(emora,p)
+;
+
+time(upm/possess(user,m/meal()),z/datetime())
+upm{"confidence": 0}
+user_aware(upm)
 ->
-happy(emora)
+uc:<uc/cook(user) at(uc,home) time(uc,always)>
+request_truth(emora, uc)
+;
+
+time(prop_i/property(m/meal()),z/datetime())
+prop_i{"confidence": 0}
+req/request(emora, prop_i)
+user_aware(req)
+-> ask_meal_habit ->
+uc:<uc/cook(user) at(uc,home) time(uc,always)>
+request_truth(emora, uc)
+;
+
+f/food()
+f{"confidence": 0}
+user_aware(f)
+-> ask_if_favorite_food ->
+ff:<ff/favorite(f)>
+request_truth(emora,ff)
+;
+
+d/drink()
+d{"confidence": 0}
+user_aware(d)
+-> ask_if_favorite_drink ->
+fd:<fd/favorite(d)>
+request_truth(emora,fd)
+;
+
+xbf/be(x/person(),fd/foodie())
+->
+happy(emora,xbf)
 be(emora,fd)
 f:<like(x, f/food())>
 request(emora,f)
 ;
 
-hungry(user)
+uh/hungry(user)
 ->
-sorry(emora)
+sorry(emora,uh)
 g:<time(g/intend_to_consume(user,f/food()), future) type(f,group)>
 request_truth(emora, g)
 ;
@@ -16,9 +57,9 @@ request_truth(emora, g)
 time(g/intend_to_consume(user, f/food()), future)
 g{"confidence": -1}
 ->
-understand(emora)
+understand(emora,g)
 he/hungry(emora)
-ne/eat(emora,f)
+ne/eat(emora,fd/food())
 not(ne)
 but(he,ne)
 ;
@@ -75,13 +116,12 @@ type(r,group)
 intend_to_consume(x/person(),kf/korean_cuisine())
 ->
 favorite(emora,kb/korean_bbq())
-xlk:<xlk/intend_to_consume(x,kb)>
+xlk:<xlk/intend_to_consume(user,kb)>
 request_truth(emora,xlk)
 ;
 
 lk/intend_to_consume(x/person(),kb/korean_bbq())
 ->
-impressed(emora)
 bsr/best(short_rib())
 in(bsr,kb)
 ef/full(emora)
@@ -92,7 +132,7 @@ by(ef,em)
 lk/intend_to_consume(x/person(),kb/korean_bbq())
 lk{"confidence": -1}
 ->
-understand(emora)
+understand(emora,lk)
 smoky(kb)
 eta/time(eat(emora,kb),always)
 not(eta)
@@ -119,7 +159,7 @@ request(emora,mf)
 ulm/intend_to_consume(user,mf/mexican_cuisine())
 ulm{"confidence":-1}
 ->
-understand(emora)
+understand(emora,ulm)
 mfi/impressive(mf)
 not(mfi)
 ;
@@ -264,9 +304,9 @@ r/sandwich_restaurant()
 know(emora,r)
 ;
 
-thirsty(user)
+ut/thirsty(user)
 ->
-sorry(emora)
+sorry(emora,ut)
 important(keep(emora,hydrated(emora)))
 g:<time(g/intend_to_consume(user, d/drinkable()), future) type(d,group)>
 request_truth(emora, g)
@@ -282,9 +322,9 @@ request(emora, d)
 time(g/intend_to_consume(user, d/drinkable()), future)
 g{"confidence": -1}
 ->
-understand(emora)
+understand(emora,g)
 he/thirsty(emora)
-ne/drink(emora,f)
+ne/drink(emora, d2/drinkable())
 not(ne)
 but(he,ne)
 ;
@@ -361,6 +401,12 @@ intend_to_consume(emora, cd)
 time(get(emora,cd),often)
 ;
 
+g/intend_to_consume(x/person(),cf/common_food())
+->
+intend_to_consume(emora, cf)
+time(get(emora,cf),often)
+;
+
 intend_to_consume(x/person(),m/milk())
 ->
 provide(m,protein)
@@ -394,7 +440,7 @@ relaxing(eb)
 emc/make(emora,c/cookie())
 type(c,group)
 rxs/reduce(emc,stress())
-ga:<ga/good_at(x,bx)>
+ga:<bxx/bake(user) ga/good_at(user,bxx)>
 request_truth(emora,ga)
 ;
 
@@ -443,7 +489,6 @@ make(x/person(),t/turkey())
 for(d/dinner(),thanksgiving)
 type(d,group)
 ->
-agree(emora)
 bt/best(t)
 for(bt,thanksgiving)
 ;
@@ -480,7 +525,6 @@ time(try(emora,o),future)
 
 delicious(c/consumable())
 ->
-agree(emora)
 time(have(emora,c),past)
 ;
 

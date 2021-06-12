@@ -1,6 +1,7 @@
 import json
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.span import Span
+from GRIDD.modules.responsegen_by_templates import Template
 
 ##############################
 # Serialization functions
@@ -34,6 +35,8 @@ def save(key, object):
                 pre_json = pre.save()
                 if isinstance(post, ConceptGraph):
                     post_json = post.save()
+                elif isinstance(post, Template):
+                    post_json = post.save()
                 else:
                     post_json = post
                 object[rule] = (pre_json, post_json, match_dict)
@@ -46,6 +49,19 @@ def save(key, object):
             pre_json = pre.save()
             vars_json = list(vars)
             object[rule] = (pre_json, vars_json)
+    elif key == 'template_response_sel':
+        string, predicates, type = object
+        if isinstance(predicates, ConceptGraph):
+            predicates = predicates.save()
+        object = (string, predicates, type)
+    elif key == 'response_predicates':
+        new_l = []
+        for item in object:
+            (string, predicates), type = item
+            if isinstance(predicates, ConceptGraph):
+                predicates = predicates.save()
+            new_l.append(((string, predicates), type))
+        object = new_l
     object = json.dumps(object, cls=DataEncoder)
     return object
 
@@ -88,6 +104,8 @@ def load(key, value):
                     if isinstance(post_json, dict):
                         post = ConceptGraph(namespace=post_json["namespace"])
                         post.load(post_json)
+                    elif isinstance(post_json, (list, tuple)):
+                        post = Template(*post_json)
                     else:
                         post = post_json
                     value[rule] = (pre, post, match_dict)
@@ -102,4 +120,25 @@ def load(key, value):
                 pre.load(pre_json)
                 vars_json = set(vars_json)
                 value[rule] = (pre, vars_json)
+        elif key == 'user_utterance':
+            value = str(value)
+        elif key == 'template_response_sel':
+            string, predicates, type = value
+            if isinstance(predicates, dict):
+                # is saved ConceptGraph
+                cg = ConceptGraph(namespace=predicates["namespace"])
+                ConceptGraph.load(cg, predicates)
+                predicates = cg
+            value = (string, predicates, type)
+        elif key == 'response_predicates':
+            new_l = []
+            for item in value:
+                (string, predicates), type = item
+                if isinstance(predicates, dict):
+                    # is saved ConceptGraph
+                    cg = ConceptGraph(namespace=predicates["namespace"])
+                    ConceptGraph.load(cg, predicates)
+                    predicates = cg
+                new_l.append(((string, predicates), type))
+            value = new_l
     return value

@@ -5,27 +5,33 @@ from structpy.map import Bimap
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.assertions import assertions
 from GRIDD.globals import *
+from GRIDD.utilities.utilities import Counter
 
 
 class InferenceEngine:
 
-    def __init__(self, rules=None, device='cpu'):
+    def __init__(self, rules=None, namespace=None, device='cpu'):
         self.rules = {}
         self._preloaded_rules = {}
+        self.counter = Counter()
+        self._next = lambda x: x + 1
         if rules is not None:
-            self.add(rules)
+            self.add(rules, namespace)
         self.matcher = GraphMatchingEngine(device=device)
 
-    def add(self, rules):
+    def add(self, rules, namespace):
+        if namespace is None:
+            raise Exception('namespace param cannot be None!')
         if not isinstance(rules, dict):
             rules = ConceptGraph(rules, namespace='r_')
             assertions(rules)
             rules = rules.rules()
-        for rule in rules:
+        renamed_rules = {('rule%d'%self._next(self.counter) if k.startswith(namespace) else k): v for k,v in rules.items()}
+        for rule in renamed_rules:
             if rule in self.rules:
                 raise ValueError(f'Rule by name {rule} already exists!')
-        new_rules = self._convert_rules(rules)
-        self.rules.update(rules)
+        new_rules = self._convert_rules(renamed_rules)
+        self.rules.update(renamed_rules)
         self._preloaded_rules.update(new_rules)
 
     def _convert_rules(self, rules):
@@ -126,7 +132,7 @@ class InferenceEngine:
             facts_graph.data(node)['num'] = node
         return facts_graph
 
-    def infer(self, facts, dynamic_rules=None, cached=True):
+    def infer(self, facts, aux_state=None, dynamic_rules=None, cached=True):
         facts_concept_graph = ConceptGraph(facts, namespace=(facts._ids if isinstance(facts, ConceptGraph) else "facts_"))
         facts_types = facts_concept_graph.types()
         facts_graph = self._convert_facts(facts_concept_graph)
@@ -166,6 +172,19 @@ class InferenceEngine:
                            (var_conf is not None and var_conf > 0 and val_conf - var_conf < 0) or \
                            (var_conf is not None and var_conf < 0 and val_conf - var_conf > 0):
                             break
+                    else:
+                        turn_pos = precondition_cg.features[variable].get(TURN_POS, None)
+                        if turn_pos is not None:
+                            if aux_state is None:
+                                print('[WARNING] Found turn checking rule but no aux state was passed to infer()')
+                                break
+                            current_turn = aux_state.get('turn_index', None)
+                            if current_turn is not None:
+                                relative_turn_check = int(current_turn) - int(turn_pos)
+                                if str(relative_turn_check) != value: # post process filter of turn checking rules
+                                    break
+                            else: # no turn information can be found in aux state so cannot do any turn checking
+                                break
                     if variable in categories:
                         not_category = True
                         value_types = facts_types.get(value, set())

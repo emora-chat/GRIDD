@@ -2,16 +2,17 @@
 from GRIDD.utilities.utilities import aliases
 from GRIDD.data_structures.assertions import assertions
 from GRIDD.globals import *
+from itertools import chain
 
 @aliases('not')
-def _negation(cg, i):
+def _negation(cg, i, aux_state=None):
     wrt, _, sub, _ = cg.predicate(i)
     if wrt == 'user':
         cg.features[sub][BASE_UCONFIDENCE] = -1.0
     elif wrt == 'emora':
         cg.features[sub][BASE_CONFIDENCE] = -1.0
 
-def maybe(cg, i):
+def maybe(cg, i, aux_state=None):
     wrt, _, sub, _ = cg.predicate(i)
     if wrt == 'user':
         cg.features[sub][BASE_UCONFIDENCE] = 0.0
@@ -19,7 +20,7 @@ def maybe(cg, i):
         cg.features[sub][BASE_CONFIDENCE] = 0.0
 
 @aliases('assert')
-def _assert(cg, i):
+def _assert(cg, i, aux_state=None):
     wrt, _, sub, _ = cg.predicate(i)
     if wrt == 'user':
         cg.features[sub][BASE_UCONFIDENCE] = 1.0
@@ -35,21 +36,21 @@ def _assert(cg, i):
     #         if BASE_CONFIDENCE not in cg.features.get(sub, {}):
     #             assertions(cg, [cg.predicate(sub)], conf=CONFIDENCE, bconf=BASE_CONFIDENCE)
 
-def affirm(cg, i):
+def affirm(cg, i, aux_state=None):
     wrt, _, sub, _ = cg.predicate(i)
     if wrt == 'user':
         cg.features[sub][BASE_UCONFIDENCE] = 1.0
     elif wrt == 'emora':
         cg.features[sub][BASE_CONFIDENCE] = 1.0
 
-def reject(cg, i):
+def reject(cg, i, aux_state=None):
     wrt, _, sub, _ = cg.predicate(i)
     if wrt == 'user':
         cg.features[sub][BASE_UCONFIDENCE] = -1.0
     elif wrt == 'emora':
         cg.features[sub][BASE_CONFIDENCE] = -1.0
 
-def op_more_info(cg, i):
+def op_more_info(cg, i, aux_state=None):
     new, _, old, _ = cg.predicate(i)
     pre = cg.metagraph.targets(old, RREF)
     vars = set(cg.metagraph.targets(old, RVAR))
@@ -61,3 +62,58 @@ def op_more_info(cg, i):
     cg.metagraph.add_links(new, pre, REF)
     cg.metagraph.add_links(new, vars, VAR)
     cg.remove(i)
+
+def eturn(cg, i, aux_state=None):
+    concept, _, turn_pos, _ = cg.predicate(i)
+    turn_pos = str(turn_pos)
+    rule = cg.metagraph.sources(i, PRE)
+    if len(rule) > 0:
+        if turn_pos.isdigit():
+            new_object = cg.id_map().get()
+            p1 = cg.add(new_object, TYPE, 'number')
+            p2 = cg.add(concept, ETURN, new_object)
+            cg.features[new_object][TURN_POS] = int(turn_pos)
+            rule = next(iter(rule))
+            for c in [p1, p2, new_object]:
+                cg.metagraph.add(rule, c, PRE)
+                cg.metagraph.add(rule, c, VAR)
+            if len(list(cg.predicates(predicate_type=OP_ETURN))) == 1:
+                cg.remove(OP_ETURN)
+            if len(list(chain(cg.subjects(turn_pos), cg.objects(turn_pos)))) == 1:
+                cg.remove(turn_pos)
+            cg.remove(predicate_id=i)
+        else:
+            print('[WARNING] eturn predicate has been found that does not have a numeric object!')
+
+def uturn(cg, i, aux_state=None):
+    concept, _, turn_pos, _ = cg.predicate(i)
+    turn_pos = str(turn_pos)
+    rule = cg.metagraph.sources(i, PRE)
+    if len(rule) > 0:
+        if turn_pos.isdigit():
+            new_object = cg.id_map().get()
+            p1 = cg.add(new_object, TYPE, 'number')
+            p2 = cg.add(concept, UTURN, new_object)
+            cg.features[new_object][TURN_POS] = int(turn_pos)
+            rule = next(iter(rule))
+            for c in [p1, p2, new_object]:
+                cg.metagraph.add(rule, c, PRE)
+                cg.metagraph.add(rule, c, VAR)
+            if len(list(cg.predicates(predicate_type=OP_UTURN))) == 1:
+                cg.remove(OP_UTURN)
+            if len(list(chain(cg.subjects(turn_pos), cg.objects(turn_pos)))) == 1:
+                cg.remove(turn_pos)
+            cg.remove(predicate_id=i)
+        else:
+            print('[WARNING] uturn predicate has been found that does not have a numeric object!')
+
+def rfallback(cg, i, aux_state=None):
+    s,t,o,i = cg.predicate(i)
+    cg.remove(s,t,o,i)
+    if aux_state is None:
+        print('[WARNING] No aux_state parameter was passed to rfallback operator')
+        return
+    if 'fallbacks' not in aux_state:
+        aux_state['fallbacks'] = []
+    if s not in aux_state['fallbacks']:
+        aux_state['fallbacks'].append(s)

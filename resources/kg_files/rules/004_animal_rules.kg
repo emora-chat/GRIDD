@@ -11,13 +11,6 @@ request_truth(emora, h)
 h{"coldstart": 1}
 ;
 
-time(h/have(user, p/pet()), now)
-user_aware(h)
--> user_own_pet ->
-time(o/possess(user, p), now)
-user_aware(o)
-;
-
 t/time(h/have(user, p/pet()), now)
 category(p)
 user_aware(h)
@@ -44,7 +37,7 @@ request(emora, pred)
 
 
 energetic(X/pet())
-possess(user, X)
+have(user, X)
 -> energy_handful ->
 t:<t/think(user, handful(X))>
 request_truth(emora, t)
@@ -56,7 +49,62 @@ e:<e/event(X) crazy(e)>
 request(emora, e)
 ;
 
+prop/property(pt/pet())
+r/request(emora, prop)
+user_aware(r)
+->
+a:<time(possess(user, a/animal()), now)>
+time(favorite(a), now)
+request(emora, a)
+;
 
+like(x/person(), animal())
+->
+a:<time(possess(user, a/animal()), now)>
+time(favorite(a), now)
+request(emora, a)
+;
+
+time(possess(user, a/animal()), now)
+r/request(emora, a)
+time(favorite(a), now)
+user_aware(r)
+->
+time(agree(emora, cool(a)), now)
+time(cause(fast(cheetah), like(emora, cheetah)), now)
+;
+
+time(like(user, z/zoo()), now)
+->
+v/visit(user, z)
+oft:<time(oft/often(v), now)>
+request_truth(emora, oft)
+;
+
+v/visit(user, z/zoo())
+often(v)
+->
+cause(funny(flamingo, appearance), like(emora, flamingo))
+possess(user, a/activity()) in(a, z)
+favorite(a)
+request(emora, a)
+;
+
+v/visit(user, z/zoo())
+not(often(v))
+->
+cause(funny(flamingo, appearance), like(emora, flamingo))
+possess(user, a/activity()) in(a, z)
+favorite(a)
+request(emora, a)
+;
+
+agr/agree(emora, cool(a/animal()))
+user_aware(agr)
+->
+l:<time(l/like(x/person(), zoo), now)>
+request_truth(emora, l)
+;
 
 /* Does Not Have Pet */
 
@@ -65,6 +113,30 @@ h{"confidence": -1}
 -> not_have_pet ->
 w:<time(w/want(user, p2/pet()), now)>
 request_truth(emora, w)
+;
+
+time(w/want(user, p/pet()), now)
+w{"confidence":-1}
+-> not_want_pet ->
+l:<time(l/like(user, a/animal()), now)>
+request_truth(emora, l)
+;
+
+time(like(user, a/animal()), now)
+time(w/want(user, p/pet()), now)
+w{"confidence":-1}
+->
+pred:<time(cause(pred/predicate(), w), now)>
+request(emora, pred)
+;
+
+time(l/like(user, a/animal()), now)
+l{"confidence":-1}
+time(w/want(user, p/pet()), now)
+w{"confidence":-1}
+->
+pred:<time(cause(pred/predicate(), l), now)>
+request(emora, pred)
 ;
 
 
@@ -125,7 +197,7 @@ lazy(X)
 
 type(X/object(), park)
 ->
-n:<locate(X, l/location()) n/near(l, h/home()) possess(user, h)>
+n:<locate(X, l/location()) n/near(l, h/home()) have(user, h)>
 request_truth(emora, n)
 
 s:<s/size(X)>
@@ -147,9 +219,7 @@ C/crowded(X)
 ;
 
 Z/chew(X/pet(), Y/object())
-possess(user, Y)
+have(user, Y)
 ->
 esympathy(emora, Z)
 ;
-
-

@@ -7,6 +7,7 @@ from GRIDD.data_structures.intelligence_core import IntelligenceCore
 from GRIDD.data_structures.id_map import IdMap
 from GRIDD.utilities import collect
 from GRIDD.globals import *
+from GRIDD.intcore_server_globals import *
 from GRIDD.data_structures.reference_identifier import REFERENCES_BY_RULE, QUESTION_INST_REF, subtree_dependencies, parent_subtree_dependencies
 
 class ParseToLogic:
@@ -16,16 +17,29 @@ class ParseToLogic:
     # Affects _get_mentions() and _get_merges()!
 
     def __init__(self, kb, template_file, device='cpu'):
-        cg = ConceptGraph(collect(template_file), namespace='r_')
+        if template_file is not None:
+            if not isinstance(template_file, dict):
+                rules = self.parse_rules_from_file(template_file)
+            else:
+                rules = template_file
+            parse_inference = InferenceEngine(rules, NLU_NAMESPACE, device=device)
+            self.intcore = IntelligenceCore(knowledge_base=kb,
+                                        inference_engine=parse_inference,
+                                        device=device)
+        else:
+            parse_inference = InferenceEngine(device=device)
+            self.intcore = IntelligenceCore(knowledge_base=kb,
+                                            inference_engine=parse_inference,
+                                            device=device)
+        self.spans = []
+
+    def parse_rules_from_file(self, file):
+        cg = ConceptGraph(list(collect(file).values()), namespace=NLU_NAMESPACE)
         rules = cg.rules()
         rules = dict(sorted(rules.items(), key=lambda item: cg.features[item[0]]['rindex']))
         for rule_id, rule in rules.items():
             self._reference_expansion(rule[0], rule[2])
-        parse_inference = InferenceEngine(rules, device=device)
-        self.intcore = IntelligenceCore(knowledge_base=kb,
-                                        inference_engine=parse_inference,
-                                        device=device)
-        self.spans = []
+        return rules
 
     def _reference_expansion(self, pregraph, vars):
         """
@@ -216,14 +230,14 @@ class ParseToLogic:
         """
         # All predicates are components
         comps = [pred[3] for pred in mention_cg.predicates() if pred[1] not in {'focus', 'center', 'cover'}]
-        # For argument questions, add the question subject
-        if rule_name in {'q_aux_adv', 'q_adv', 'qdet_copula_present', 'qdet_copula_past', 'dat_question'}:
+        # For argument questions, add the question object
+        if rule_name in {'q_aux_adv', 'q_adv', 'qdet_copula_present', 'qdet_copula_past', 'dat_question', 'qw_copula_past', 'qw_copula_present'}:
             preds = list(mention_cg.predicates(predicate_type=REQ_ARG))
             if preds:
-                ((s, _, _, _),) = preds
+                ((_, _, o, _),) = preds
             else:
-                ((s, _, _, _),) = list(mention_cg.predicates(predicate_type=REQ_TRUTH))
-            comps.append(s)
+                ((_, _, o, _),) = list(mention_cg.predicates(predicate_type=REQ_TRUTH))
+            comps.append(o)
         # For various rules, the focal node is not a predicate instance so it needs to be added manually
         if rule_name in {'obj_question', 'sbj_question', 'q_aux_det', 'q_det',
                          'ref_concept_determiner', 'inst_concept_determiner',
@@ -239,8 +253,10 @@ class ParseToLogic:
             if rule_name in QUESTION_INST_REF:
                 # some questions have focus node as the question predicate instance,
                 # but the reference links should attach to the target of the question predicate instance
-                focus_node = mention_cg.predicate(focus_node)[2]
-            mention_cg.metagraph.add_links(focus_node, REFERENCES_BY_RULE[rule_name](center, ewm) + [center], REF_SP)
+                ref_inst = mention_cg.predicate(focus_node)[2]
+            else:
+                ref_inst = focus_node
+            mention_cg.metagraph.add_links(ref_inst, REFERENCES_BY_RULE[rule_name](center, ewm) + [center], REF_SP)
 
         comps = self._get_comps(rule_name, focus_node, mention_cg)
         mention_cg.metagraph.add_links(focus_node, comps, COMPS)

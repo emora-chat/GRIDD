@@ -30,6 +30,7 @@ casino=(location, indoor)
 body_of_water = (location, outdoor)
 lake = (body_of_water)
 ocean = (body_of_water)
+pool = (body_of_water)
 
 beach = (location, outdoor)
 ;
@@ -42,3 +43,13 @@ expr("close, near", near)
 
 nature=(entity)
 coastline=(nature)
+
+
+zoo=(location)
+
+college=(location)
+library=(location)
+office=(location)
+
+museum=(location)
+exhibition=(location)

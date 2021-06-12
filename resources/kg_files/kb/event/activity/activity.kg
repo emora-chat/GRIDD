@@ -1,5 +1,5 @@
 
-[leisure, self_improvement]=(object)
+[leisure, self_improvement, obligatory]=(object)
 [solo, social, solo_or_social]=(object)
 [physical, mental]=(object)
 [learnable]=(object)
@@ -16,9 +16,13 @@ expr("sleep", nap)
 
 [exercise, clean]=(activity, physical, self_improvement, solo_or_social)
 [hike, run, bike, walk, swim, climb]=(exercise, outdoor)
+outdoor_activity=(activity, outdoor)
+doggypaddle=(swim)
 [wash, sweep, vacuum, dust]=(clean)
 
 [play, watch, relax]=(activity, solo_or_social, leisure)
+
+work=(activity, obligatory)
 
 [teach, learn, practice]=(activity, mental, self_improvement)
 
@@ -31,5 +35,15 @@ travel=(activity, physical)
 
 dream=(activity, mental)
 
+annoy=(activity,mental)
+use=(predicate)
+
+talk=(predicate)
+
+help=(activity, self_improvement)
 ;
 
+draw=(activity,physical)
+expr("paint",draw)
+jump=(activity,physical)
+paint=(activity,physical)

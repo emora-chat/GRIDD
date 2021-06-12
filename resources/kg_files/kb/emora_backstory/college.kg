@@ -1,0 +1,7 @@
+eg/go(emora)
+to(eg,c/college())
+time(eg,past)
+
+like(emora,computer_science())
+
+dislike(emora,biology())

@@ -42,7 +42,7 @@ class ResponseGeneration:
             print(selection[0]) # DEBUGGING
             print(selection[1]) # DEBUGGING
             print(selection[2]) # DEBUGGING
-            if selection[2] in {'nlg', 'backup'}:
+            if selection[2] in {'nlg', 'fallback'}:
                 generations.append(self.generate(selection[0], selection[1]))
             else:
                 generations.append(None)

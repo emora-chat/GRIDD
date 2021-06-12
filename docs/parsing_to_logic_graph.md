@@ -85,8 +85,8 @@ Represented as `copula(sbj, request(user, question_concept))`.
 	cop(X/question_word(), Y/present_tense())
 	sbj(X, Z/pstg())
 	-> qw_copula_present ->
-	p/Y(Z, X)
-	request(user, X)
+	p/Y(Z, o/object())
+	request(user, o)
 	time(p, now)
 	focus(p)
 	center(X)
@@ -95,8 +95,8 @@ Represented as `copula(sbj, request(user, question_concept))`.
 	cop(X/question_word(), Y/past_tense())
 	sbj(X, Z/pstg())
 	-> qw_copula_past ->
-	p/Y(Z, X)
-	request(user, X)
+	p/Y(Z, o/object())
+	request(user, o)
 	time(p, past)
 	focus(p)
 	center(X)
@@ -1152,6 +1152,8 @@ like `when` in `I bought milk when I was hungry`.
 Sometimes, the adverb itself is used as a predicate involving the subject it is modifying, 
 as in `I ran quickly`.
 
+Wh-adverbs (`where`, `when`, etc.) occur with `advcl` and so do not need a lone rule unlike other adverbs.
+
  <details>
   <summary>Conversions</summary>
   
@@ -1170,8 +1172,8 @@ as in `I ran quickly`.
 	center(Z)
 	;
 	
-	adv(X/pstg(), Y/pstg())
-	-> adv_rule ->
+	adv(X/pstg(), Y/adv_pos())
+	-> non_wh_adv_rule ->
 	p/Y(X)
 	focus(p)
 	link(Y)
@@ -1452,10 +1454,33 @@ is a noun or pronoun; otherwise, instantiate it as a lone concept.
 	center(Y)
     ;
     
-    X/singular()
+    X/nn()
     ltype(X, object)
-    -> singular_noun ->
+    -> singular_nonproper_noun ->
+    focus(X())
+    center(X)
+    ;
+    
+    X/nnp()
+    ltype(X, object)
+    -> singular_proper_noun ->
     focus(X)
+    center(X)
+    ;
+    
+    X/nns()
+    ltype(X, object)
+    -> plural_nonproper_noun ->
+    focus(g/X())
+    type(g, group)
+    center(X)
+    ;
+    
+    X/nnps()
+    ltype(X, object)
+    -> plural_proper_noun ->
+    focus(g/X())
+    type(g, group)
     center(X)
     ;
     

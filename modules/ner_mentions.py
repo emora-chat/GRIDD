@@ -15,7 +15,7 @@ def get_ner_mentions(elit_results):
         the fourth of july is my favorite holiday -> ['DATE', 1, 4, '4th of July']
     """
     mentions = {}
-    if len(elit_results["tok"]) > 0:
+    if len(elit_results.get("tok", [])) > 0:
         token = elit_results["tok"][0]
         ner = elit_results["ner"]
         for ner_type, sidx, eidx, string in ner:
