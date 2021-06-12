@@ -17,41 +17,11 @@ class ResponseExpansion:
         wm = working_memory
         responses = []
         for predicate, generation_type in main_predicates:
-            if generation_type == 'nlg':
-                # predicate is the main predicate tuple signature (subj, type, obj, id)
-                expansions = wm.structure(predicate[3],
-                                          subj_emodifiers={'time', 'mode', 'qualifier', 'property',
-                                                           'indirect_obj', 'negate'},
-                                          obj_emodifiers={'possess', REQ_TRUTH, REQ_ARG})
-                expansions = set(expansions) # todo - fix this list to set to list conversion
-                for pred in list(expansions):
-                    for c in pred:
-                        expansions.update(self.knowledge_base.predicates(c, 'expr'))
-                        expansions.update(self.knowledge_base.predicates(predicate_type='expr', object=c))
-                expansions = list(expansions)
-                # check for unresolved user request
-                emora_idk = False
-                for s, t, o, i in expansions:
-                    if s == 'user' and t in {REQ_TRUTH, REQ_ARG} and wm.metagraph.out_edges(o, REF):
-                        emora_idk = True
-                        break
-
-                if emora_idk:
-                    responses.append((predicate, expansions, 'idk'))
-                else:
-                    responses.append((predicate, expansions, generation_type))
-            elif generation_type in {'ack_conf'}:
-                # predicate is the main predicate tuple signature (subj, type, obj, id)
-                responses.append((predicate, [], generation_type))
-            elif generation_type == "backup":
-                # predicate is a tuple (main predicate signature, list of all selected predicates)
-                cg = ConceptGraph(namespace='bu_', predicates=predicate[1])
-                mapped_ids = wm.concatenate(cg)
-                main_pred = mapped_ids[predicate[0][3]]
-                main_pred_sig = wm.predicate(main_pred)
-                exp_preds = [mapped_ids[pred[3]] for pred in predicate[1]]
-                exp_pred_sigs = [wm.predicate(pred) for pred in exp_preds if pred != main_pred]
-                responses.append((main_pred_sig, exp_pred_sigs, generation_type))
+            if generation_type == "fallback":
+                # predicate is a tuple (main predicate signature, CG of response)
+                mapped_ids = wm.concatenate(predicate[1])
+                exp_pred_sigs = [wm.predicate(c) for c in mapped_ids.values() if wm.has(predicate_id=c)]
+                responses.append((predicate[0], exp_pred_sigs, generation_type))
             elif generation_type == 'template':
                 # predicate is a tuple (response utterance, list of all selected predicates)
                 responses.append((predicate[0], predicate[1], generation_type))

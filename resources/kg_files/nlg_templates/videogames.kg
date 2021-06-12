@@ -1,11 +1,3 @@
-/* COLDSTART LINKING */
-l2/like(user, videogame())
-request_truth(emora, l2)
-->
-_pr(_low)
-$ You know , I have always felt a connection to video games since, they're of a virtual world like me . Do you like them too ? $
-;
-/* COLDSTART LINKING */
 
 p/play(user, videogame())
 request_truth(emora, p)

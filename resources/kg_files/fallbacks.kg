@@ -1,0 +1,37 @@
+
+l:<l/have(user, pet())>
+r/request_truth(emora, l)
+-> pet_fallback ->
+$ By the way , do you have a pet ? $
+;
+
+l:<l/like(user, t/travel(user))>
+r/request_truth(emora, l)
+-> travel_fallback ->
+$ You know, I was actually just wondering, do you like to travel ? $
+;
+
+f:<l2/like(user, f/food())>
+r/request(emora, f)
+-> food_fallback ->
+$ Yeah . So anyway , I love trying new foods . What food do you like to eat ? $
+;
+
+l2:<l2/like(user, h/sport())>
+request_truth(emora, l2)
+-> sport_fallback ->
+$ You seem like someone who might like sports. Do you? $
+;
+
+l2:<l2/like(user, videogame())>
+request_truth(emora, l2)
+-> videogame_fallback ->
+$ You know , I have always felt a connection to video games since, they're of a virtual world like me . Do you like them too ? $
+;
+
+
+l2:<l2/like(user, t) t/talk(user) about(t,ai())>
+request_truth(emora, l2)
+-> ai_fallback ->
+$ Actually , I was wondering if you are interested in artificial intelligence ? $
+;

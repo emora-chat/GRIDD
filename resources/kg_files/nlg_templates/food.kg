@@ -1,11 +1,3 @@
-/* COLDSTART LINKING */
-l/like(user, f/food())
-r/request(emora, f)
-->
-_pr(_low)
-$ Yeah . So anyway , I love trying new foods . What food do you like to eat ? $
-;
-/* COLDSTART LINKING */
 
 p/property(X/meal())
 time(p,Z/datetime())

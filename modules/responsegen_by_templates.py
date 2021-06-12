@@ -34,7 +34,7 @@ class ResponseTemplateFiller:
         self.nlgFactory = NLGFactory(self.lexicon)
         self.realiser = Realiser(self.lexicon)
 
-    def __call__(self, matches, expr_dict, cg, aux_state):
+    def __call__(self, matches, expr_dict, cg, aux_state, fallback_options):
         react_cands = []
         present_cands = []
         rpresent_cands = []
@@ -65,21 +65,32 @@ class ResponseTemplateFiller:
             aux_state.setdefault('spoken_responses', []).append(string)
         else:
             if p_string is None:
-                return (p_string, p_predicates, 'template')
-            string = p_string
-            aux_state.setdefault('spoken_responses', []).append(string)
-            predicates = p_predicates
-            s = random.choice(['Yeah .', 'Gotcha .', 'I see .'])
-            curr_turn = aux_state.get('turn_index', 0)
-            if len(react_cands) > 0 and curr_turn > 0:
-                print('\nReact Options: ')
-                p, s, a = self.select_best_candidate(react_cands, cg, check_aware=False)
-            elif curr_turn == 0:
-                s = ""
-            # Do not add reaction predicates to predicates list in order to avoid them being treated as spoken and getting the eturn predicate
-            string = s + ' ' + string
+                string, predicates = (p_string, p_predicates)
+            else:
+                string = p_string
+                aux_state.setdefault('spoken_responses', []).append(string)
+                predicates = p_predicates
+                s = random.choice(['Yeah .', 'Gotcha .', 'I see .'])
+                curr_turn = aux_state.get('turn_index', 0)
+                if len(react_cands) > 0 and curr_turn > 0:
+                    print('\nReact Options: ')
+                    p, s, a = self.select_best_candidate(react_cands, cg, check_aware=False)
+                elif curr_turn == 0:
+                    s = ""
+                # Do not add reaction predicates to predicates list in order to avoid them being treated as spoken and getting the eturn predicate
+                string = s + ' ' + string
 
-        return (string, predicates, 'template')
+        type = "template"
+        if string is None: # PICK UNUSED FALLBACK
+            print('Picking Fallback!!')
+            candidates = list(set(fallback_options.keys()) - set(aux_state.get('fallbacks', [])))
+            print('Candidates: %s'%candidates)
+            print()
+            predicates, template_obj, _ = fallback_options[random.choice(candidates)]
+            string = ' '.join(template_obj.string_spec_ls)
+            type = "fallback"
+
+        return (string, predicates, type)
 
     def select_best_candidate(self, candidates, cg, check_aware=True):
         # get highest salience candidate with at least one uncovered predicate
