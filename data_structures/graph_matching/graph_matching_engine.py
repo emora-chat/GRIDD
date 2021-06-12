@@ -65,6 +65,7 @@ class GraphMatchingEngine:
     def match(self, data_graph, *query_graphs):
         p = Profiler()
         p.start('match')
+        p.start('querygen')
 
         display = None
         complete = {}                                                       # list<Tensor<steps: ((qn1, dn1), (qn2, dn2), ...)>> completed solutions
@@ -74,7 +75,7 @@ class GraphMatchingEngine:
         checklist, querylist, qlengths = self._add_queries(query_graphs)    # list<Tensor<query x 3: (s, l, t)>> list of required next edge lists
         if len(checklist) <= 0: return complete
 
-        p.start(f'creating graph tensor ({len(data_graph.nodes())} nodes, {len(data_graph.edges())} edges)')
+        p.next(f'creating graph tensor ({len(data_graph.nodes())} nodes, {len(data_graph.edges())} edges)')
         edges = GraphTensor(data_graph, self.n, self.l, device=self.device) # GraphTensor<Tensor<X x 2: (s, l)>) -> (Tensor<Y: t>, Tensor<Y: inverse_index>>
 
         p.next('initializing solutions matrix')
@@ -89,13 +90,9 @@ class GraphMatchingEngine:
             if len(solutions) == 0:
                 break
 
-            p.start(f'loop {rlen} ({len(req)} reqs, {len(solutions)} sols, ({len({int(e) for e in queries})} unique queries))')
+            p.start(f'loop {rlen} ({len(req)} reqs, {len(solutions)} sols)')
 
             p.start('assign reqs to sols')
-
-            target_is_constant = req[:,2] >= 0
-            req_constants_indices = torch.nonzero(target_is_constant)
-            req_variables_indices = torch.nonzero(~target_is_constant)
 
             ql = querylist[rlen]
             req_ = torch.full((len(self.q), 3), 0, dtype=torch.long, device=self.device)
@@ -185,11 +182,14 @@ class GraphMatchingEngine:
                     print(s)
 
         p.end()
-        p.report()
+        p.start('postprocessing')
 
         for query_graph in query_graphs:
             del self.q[query_graph]
         self.q.index = query_id_index
+
+        p.end()
+        p.report()
 
         return complete
 
