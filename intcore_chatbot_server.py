@@ -1,6 +1,8 @@
-import time, json, requests
 from os.path import join
 import sys, os
+sys.path.append(os.getcwd())
+
+import time, json, requests
 from itertools import chain
 
 from GRIDD.utilities.utilities import collect, _process_requests, _process_answers
@@ -15,9 +17,6 @@ from GRIDD.modules.ner_mentions import get_ner_mentions
 
 from GRIDD.utilities.server import save, load
 from inspect import signature
-
-if LOCAL:
-  sys.path.append(os.getcwd())
 
 def serialized(*returns):
     def dectorator(f):
