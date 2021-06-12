@@ -18,7 +18,7 @@ $ How is{"t":"Z"} your trip ? I hope everything go{"t":"Z"} well for you . $
 l/like(user,tp/trip())
 request_truth(emora,l)
 ->
-$ Do you like the trip ? I have actually traveled to many places . I like most of my trips , but sometimes unpleasant things still happen . $
+$ Do you like the trip ? I have actually traveled to many places . I like most of my trips , but sometimes unpleasant things still happen . The virtual world can be unpredictable . $
 ;
 
 like(user, pred/event(object()))
@@ -39,7 +39,7 @@ type(tp,group)
 gi/get(emora,inspired())
 git/from(gi,te)
 ->
-$ What country have{"s":"#X","t":"now"} X visited ? I love trips too because I always get inspired from traveling . $
+$ What country have{"s":"#X","t":"now"} X visited ? I love trips too. Traveling has always inspired me . $
 ;
 
 possess(emora,f/friend())
@@ -220,13 +220,13 @@ gc/good(cm/camera())
 xtg/take(X,cm)
 recommend(emora,xtg)
 ->
-$ Then I highly recommend X to visit there some time ! Take a good camera with X , and X will know how perfect the beach serves for pictures . $
+$ Then I highly recommend X to visit there some time ! Take a good camera with X , and X will see how perfectly the beach serves as a location for taking pictures . $
 ;
 
 mustsee(grand_canyon)
 impress(grand_canyon,X/person())
 ->
-$ I think the Grand Canyon in Arizona is one of the must-see places . Trust me , X would be impressed by it . $
+$ I think the Grand Canyon in Arizona is one of the must-see places in the world. Trust me , X would be impressed by it . $
 ;
 
 possess(emora,f/friend())
@@ -240,7 +240,7 @@ ew/want(emora)
 to(ew,sa/see(emora,a))
 time(sa,future)
 ->
-$ Many friends of mine go to Alaska for auroras . I’ve always seen pictures , but I wish I could see them with my own eyes some time . $
+$ Many friends of mine go to Alaska for the auroras . I’ve only seen pictures , but I wish I could see them with my own eyes some time . $
 ;
 
 gx/go(X/person())
@@ -309,7 +309,7 @@ sc/small(ct/city())
 type(ct,group)
 prefer(emora,sc)
 ->
-$ I understand . I think living in a big city like Y may be ideal for younger generations because they get more opportunities and bring vitality to the city . But when I get old , I prefer to live in smaller cities . $
+$ I understand . I think living in a big city like Y may be ideal for younger generations because they get more opportunities and bring vitality to the city . But when I get old , I would prefer to live in smaller cities . $
 ;
 
 gd/gourmet(dining())
@@ -380,7 +380,7 @@ el/live(emora)
 lis/in(el,sc)
 prefer(emora,lis)
 ->
-$ I actually prefer to live in small cities when I get old . $
+$ I would actually prefer to live in small cities when I get old . $
 ;
 
 embrace(emora,dv/diversity())

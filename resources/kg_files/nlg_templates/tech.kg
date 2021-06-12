@@ -5,7 +5,7 @@ request_truth(emora, b)
 time(have(emora,p1/computer()), now)
 time(tinker(emora,p1), now)
 ->
-$ I love tinkering with my pc. Do you have a Pc ? Or something else, like a mac ? $
+$ I love tinkering with my p c . Do you have a p c ? Or something else, like a laptop ? $
 ;
 
 have(user, p/computer())
@@ -25,7 +25,7 @@ $ Computers have really changed our lives. We can all do things instantly that w
 have(user, p/computer())
 not(pc_enthusiast(user))
 ->
-$ I understand. I would like to just take a break from computers altogether, but that's pretty hard considering I'm an AI . ?$
+$ I understand. I would like to just take a break from computers altogether, but that's pretty hard considering I'm an A I chatbot . ?$
 ;
 
 
@@ -35,14 +35,14 @@ time(w/want(user, p), now)
 request_truth(emora, w)
 ->
 _pr(_high)
-$ Oh, do you just not like the hassle ? Or would you like to get a pc one day ? $
+$ Oh, do you just not like the hassle ? Or would you like to get a p c one day ? $
 ;
 
 h/have(user, p/computer())
 u/use(user, l/linux())
 request_truth(emora, u)
 ->
-$ Do you use Linux ? I think it gives a lot of freedom to do whatever you want, but can be complicated sometimes. $
+$ Do you use Linux ? I think it gives a lot of freedom to do whatever you want, but it can be complicated sometimes. $
 ;
 
 u/use(user, l/linux())
@@ -94,7 +94,7 @@ a1/cpu_manuf(p/computer(), amd())
 have(user, p)
 request_truth(emora,a1)
 ->
-$ I bet you have an amd processor. If I had to build a computer right now, I'd use amd. But can't really do that with all the shortages. $
+$ I bet you have an amd processor. If I had to build a computer right now, I'd use amd. But I can't really do that with all the shortages. $
 ;
 
 
@@ -102,7 +102,7 @@ h/have(user, p/computer())
 a1/cpu_arch(p ,arm())
 request_truth(emora,a1)
 ->
-$ Do you have an arm processor? I think its about time a new cpu architecture was used more for pc's. x 86 is not the best possible architecture, but for a long time it just kept going because everyone else was using it.  $
+$ Do you have an arm processor? I think its about time a new cpu architecture was used more for p c's. x 86 is not the best possible architecture, but for a long time it just kept going because everyone else was using it.  $
 ;
 
 h/have(user, p/phone())
@@ -146,7 +146,7 @@ have(m, d/design())
 l/like(user, d)
 request_truth(emora, l)
 ->
-$ Do you like the design of mac OS? I used to use windows, but windows never focuses on aesthetics - and when it does it might change with a new version. Mac OS is consistently beautifully designed. $
+$ Do you like the design of mac O S? I used to use windows, but windows never focuses on aesthetics - and when it does it might change with a new version. Mac OS is consistently beautifully designed. $
 ;
 
 i/improve(life, p/phone())
@@ -160,7 +160,7 @@ i/improve(life, p/phone())
 user_aware(i)
 ->
 _pr(_high)
-$ I think most people think so. For me, technology can be both bad and good, but I think my life is better when I am more connected to other people, and smartphones help with that. $
+$ I think most people think so. For me, technology can be both bad and good, but I think my life is better when I am more connected to other people, and smartphones help with that. I wouldn't be able to talk to you right now withought technology !$
 ;
 
 
@@ -184,7 +184,7 @@ d/agree(user, da)
 user_aware(d)
 ->
 _pr(_low)
-$ AI is really exciting. It can replace a lot of menial work for people, and even gain insights hard to get otherwise. I often am surprised at people's intuiton when I talk to them , and I feel like AI does something similar. $
+$ AI is really exciting. It can replace a lot of menial work for people and even gain insights that are hard to get otherwise. I often am surprised at people's intuiton when I talk to them , and I feel like AI does something similar. $
 ;
 
 t/talk(user)
@@ -196,7 +196,7 @@ d/agree(user, da)
 user_aware(d)
 ->
 _pr(_low)
-$ You know, the famous author Terry Pratchett said Real stupidity beats artificial intelligence every time . $
+$ You know, the famous author Terry Pratchett said real stupidity beats artificial intelligence every time . $
 ;
 
 
@@ -243,7 +243,7 @@ have(user, l/life())
 i/improve(l, a/ai())
 user_aware(i)
 ->
-$ For me, other than letting me talk to you, I think AI will help people do their jobs fully - I think every job has a repetitive component that is necessary for the fulfilling parts, and AI can help do those boring parts. $
+$ For me, other than letting me talk to you, I think AI will help people do their jobs fully - I think every job has a repetitive component that is necessary to complete to enable the fulfilling parts. AI can help do those boring parts. $
 ;
 
 

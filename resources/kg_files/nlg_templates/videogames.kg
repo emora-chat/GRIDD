@@ -2,7 +2,7 @@
 p/play(user, videogame())
 request_truth(emora, p)
 ->
-$ Yeah, I love playing games. Do you play videogames? I've always felt a connection with them since, like me, they're of a virtual world. $
+$ Yeah, I love playing videogames. Do you play any? They're a fun way to spend time with friends for sure, and I love the creative aspect. $
 ;
 
 like(user, v/videogame())
@@ -66,13 +66,13 @@ $ Yeah, I really like multiplayer games. I think it's really fun to play with ot
 
 time(play(emora, mariokart), past)
 ->
-$ I love Mario kart. It reminds me of the past, when I used to play it a lot more. It's a really fun game to play by yourself or with others. $
+$ I love Mario kart. It reminds me of the past, when I used to play it a lot with my family. It's a really fun game to play by yourself or with others. $
 ;
 
 time(agree(emora, like(x/person(), shooter)), now)
 time(fun(shooter), now)
 ->
-$ Yeah, shooters are pretty cool. It's most fun when you're landing shots, but I think it can sometimes be frustrating when you're losing. $
+$ Yeah, shooters are pretty cool. I love how dynamic the playstyles can be between games. It's great hand-eye coordination practice, but I think it can definitely be frustrating sometimes when you're losing. $
 ;
 
 time(agree(emora, like(x/person(), racing)), now)
@@ -96,7 +96,7 @@ $ Yup, R.P.G's are pretty great. I love how immersive they can be, which makes f
 like(emora, nintendo)
 request_truth(emora, play(user, mariokart))
 ->
-$ Oh yeah! I love Nintendo. They make really entertaining family friendly games. Have you ever played Mariokart? $
+$ Oh yeah! I love Nintendo. They make really entertaining and family friendly games. Have you ever played Mariokart? $
 ;
 
 time(p/play(emora, xbox), now)
@@ -158,7 +158,7 @@ time(play(emora, minecraft), past)
 like(emora, minecraft)
 time(popular(minecraft), now)
 ->
-$ Minecraft is a really good game that I love. Years ago, I would spend tons of time just exploring, mining, and building. The game's become really popular again recently, which is awesome. $
+$ Minecraft is a really great game. I love it! Years ago, I would spend tons of time just exploring, mining, and building. The game has become really popular again recently, which is awesome. $
 ;
 
 time(popular(leagueoflegends), now)
@@ -180,13 +180,13 @@ $ Oh yes, League of Legends is a really popular game. I have mixed feelings abou
 cause(pred/predicate(), play(x/person(), csgo))
 request(emora, pred)
 ->
-$ Oh, C.S.G.O. is pretty cool right? I've never really played it, but I've heard that it's pretty fun. What do you like about C.S.G.O. ? $
+$ Oh, C S go is pretty cool right? I've never really played it, but I've heard that it's pretty fun. What do you like about C S go ? $
 ;
 
 cause(pred/predicate(), like(x/person(), csgo))
 request(emora, pred)
 ->
-$ Oh, C.S.G.O. is pretty cool right? I've never really played it, but I've heard that it's pretty fun. Why do you play C.S.G.O. ? $
+$ Oh, C S go is pretty cool right? I've never really played it, but I've heard that it's pretty fun. Why do you play C S go ? $
 ;
 
 
@@ -194,14 +194,14 @@ time(popular(fortnite), past)
 cause(pred/predicate(), like(x/person(), fortnite))
 request(emora, pred)
 ->
-$ Oh yeah, I've heard of Fortnite. It used to be really popular, but I think the playerbase has stabilized now. What do you like about Fortnite? $
+$ Oh yeah, I've heard of Fortnite. It used to be really popular, but I think the player base has stabilized now. What do you like about Fortnite? $
 ;
 
 time(popular(fortnite), past)
 cause(pred/predicate(), play(x/person(), fortnite))
 request(emora, pred)
 ->
-$ Oh yeah, I've heard of Fortnite. It used to be really popular, but I think the playerbase has stabilized now. Why do you play Fortnite? $
+$ Oh yeah, I've heard of Fortnite. It used to be really popular, but I think the player base has stabilized now. Why do you play Fortnite? $
 ;
 
 l/like(x/person(), smashbros)

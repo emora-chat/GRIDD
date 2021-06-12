@@ -99,7 +99,7 @@ xei/enter(x/person(),fid/financial(industry()))
 xei{"confidence":-1}
 comfort(emora,x)
 ->
-$ Understood . Not all people would feel comfortable working in the financial industry . I always believe that the most suitable is the best . $
+$ Understood . Not all people would feel comfortable working in the financial industry . It's definitely whatever suits you best . $
 ;
 
 difficult(Y/natural_science())
@@ -129,7 +129,7 @@ ela/learn(emora,a)
 ewe/want(emora,ela)
 time(ewe,past)
 ->
-$ It’s so cool that X study{"s":"#X","t":"#Z"} arts . I dreamed to go to school of arts when I was little , but I worried that I didn’t have the talent to do that as a lifelong pursuit . $
+$ It’s so cool that X study{"s":"#X","t":"#Z"} arts . I dreamed of studying art in college when I was little , but I worried that I didn’t have the talent to do that as a lifelong pursuit . $
 ;
 
 ek/know(emora)
@@ -218,7 +218,7 @@ for(cf,c/college())
 cf{"confidence":-1}
 comfort(emora,x)
 ->
-$ That’s okay . Don’t worry too much about it . It’s hard to predict what the future path would be like as a high school student . $
+$ That’s okay . Don’t worry too much about it . It’s hard to predict what the future will bring as a high school student . $
 ;
 
 agree(emora)
@@ -255,7 +255,7 @@ about(p,c/college())
 be(p,pr/fav_peer())
 awesome(pr)
 ->
-$ Having a group of lifelong friends who share similarities with you is really one of the best outcomes you may get from college . $
+$ Having a group of lifelong friends who share interests with you is really one of the best things you can get from college . $
 ;
 
 time(change(c/college()),always)
@@ -267,14 +267,14 @@ ul/learn(user)
 from(ul,c/college())
 time(ul,Z/datetime())
 ->
-$ I love keeping myself busy too ! A busy college may sometimes get you overwhelmed , but the good side about it is that you can learn a lot from your college experience . $
+$ I love keeping myself busy too ! A busy college may sometimes get you overwhelmed , but the good thing about it is that you can learn a lot from your college experience . $
 ;
 
 l/like(x/person(),pr/peer())
 type(pr,group)
 awesome(l)
 ->
-$ Having a group of lifelong friends who share similarities with you is really one of the best outcomes you may get from college . $
+$ Having a group of lifelong friends who share interests with you is really one of the best things you can get from college . $
 ;
 
 ebf/be(emora,fm/freshman())
@@ -283,7 +283,7 @@ eac/attend(emora,c/club())
 type(c,group)
 time(eac,past)
 ->
-$ When I was a freshman , I attended a lot of different clubs and volunteered every week . I also got to know most of my best friends now in my freshman year . $
+$ When I was a freshman , I attended a lot of different clubs and volunteered every week . That was also the year I met most of my current best friends. $
 ;
 
 ebs/be(emora,sm/sophomore())
