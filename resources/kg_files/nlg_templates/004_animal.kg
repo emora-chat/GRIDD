@@ -90,3 +90,80 @@ uturn(e, 0)
 _t(_react)
 $ Oh no , that is unfortunate ! I hope it wasn't too bad . $
 ;
+
+time(l/like(user, a/animal()), now)
+request_truth(emora, l)
+->
+$ Oh, I see. Do you like animals in general or are you just not an animal person? $
+;
+
+time(like(user, a/animal()), now)
+time(c/cause(pred/predicate(), want(user, p/pet())), now)
+request(emora, pred)
+->
+$ That's pretty interesting. Most people I know that don't want a pet also don't like animals. I guess you are a bit special. $
+;
+
+time(l/like(user, a/animal()), now)
+l{"confidence":-1}
+time(c/cause(pred/predicate(), l), now)
+request(emora, pred)
+->
+$ Oh, well I guess that explains it. Why don't you like animals though? $
+;
+
+possess(user, a/animal())
+favorite(a)
+request(emora, a)
+->
+$ Yeah, I really like animals too. Which animal's your favorite? $
+;
+
+time(agree(emora, cool(ani/animal())), now)
+time(cause(fast(cheetah), like(emora, cheetah)), now)
+->
+$ Oh, that's neat. The ani is a cool one. My favorite is definitely the cheetah. I watched a documentary on them once years ago, and I've loved them ever since. They look cool and can run super fast. $
+;
+
+time(possess(user, ani/animal()), now)
+time(favorite(ani), now)
+request(emora, ani)
+have(user, pet)
+->
+$ Well, I'm guessing you must like animals to have a pet. Out of all the animals, do you have a favorite? $
+;
+
+time(l/like(x/person(), zoo), now)
+request_truth(emora, l)
+->
+$ Considering that you like animals, I was wondering if you liked the zoo? There's plenty of different animals to see there. $
+;
+
+like(x/person(), z/zoo())
+v/visit(user, z)
+time(oft/often(v), now)
+request_truth(emora, oft)
+->
+$ Yeah, the zoo is really awesome. Years ago, I would visit as much as I could and just spend the entire day staring at animals, mesmerized. Do you visit often? $
+;
+
+v/visit(user, z/zoo())
+often(v)
+cause(funny(flamingo, appearance), like(emora, flamingo))
+possess(user, a/activity()) in(a, z)
+favorite(a)
+request(emora, a)
+->
+$ Oh, that's great! What's your favorite thing to do in the zoo? I love to watch the flamingos. They have such a funky appearance, and I watching them is so much fun. $
+;
+
+v/visit(user, z/zoo())
+not(often(v))
+cause(funny(flamingo, appearance), like(emora, flamingo))
+possess(user, a/activity()) in(a, z)
+favorite(a)
+request(emora, a)
+->
+$ Oh, I see. It can be a hassle to travel and get tickets, so that makes sense. When you do go, what's your favorite thing to do in the zoo? I love to watch the flamingos. They have such a funky appearance, and I watching them is so much fun. $
+;
+
