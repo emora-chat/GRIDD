@@ -1,0 +1,114 @@
+/* This may need to be a bit less general for coldstart, but would be first phrase. Tries to get user to ask question "How has the pandemic changed your life?" */
+have(user, l/life())
+c/change(pandemic(), l)
+req_unsat(request_truth(emora, c))
+->
+_pr(_high)
+$ I've been thinking, the pandemic has really changed our lives hasn't it? Not just this year, I think a lot of things will never be the same for me now. Its kinda crazy how much my life has changed. $
+;
+
+
+
+
+possess(emora, life_0/life())
+change_0/change(pandemic(), life_0)
+qualifier(change_0, object_1/object())
+req_unsat(request(user, object_1))
+-> answer_change_life_q2->
+_pr(_high)
+$ Well, I think the isolation has helped me appreciate hanging out with friends more. I'll never take that for granted again . $
+;
+
+
+
+/* This one is if user asks "How has it changed your life?", "it" doesn't map to pandemic. This may interfere with otehr questions not related to the pandemic though, might be an issue */
+req_unsat(request(user, object_1/object()))
+time(change_1/change(object(), life_1/life()), past)
+qualifier(change_1, object_1)
+have_4/have(user, life_2/life())
+->
+_pr(_high)
+$ Well, I think the isolation has helped me appreciate hanging out with friends more. I'll never take that for granted again . $
+;
+
+
+
+/*This one is if user asks "How has it changed?", should probably not be kept since it would fire a ton (too general), but user will often say this as a question */
+request_2/request(user, object_1/object())
+change_2/change(object())
+req_unsat(request_2)
+qualifier(change_2, object_1)
+->
+_pr(_high)
+$ Well, I think the isolation has helped me appreciate hanging out with friends more. I'll never take that for granted again . $
+;
+
+
+
+
+
+/* Next one is said if user doesnt ask question or after answering it */
+have(user, w1/job())
+c/change(pandemic(), w1)
+qualifier(c, remote_work())
+l/like(user, c)
+request_truth(emora, l)
+->
+$ My job may have actually benefited from the pandemic. I had to spend a lot of time for commuting, now I can do it remotely. My office is letting me stay remote for as long as I want. Do you like the shift to remote work? $
+;
+
+have(user, w1/job())
+c/change(pandemic(), w1)
+qualifier(c, remote_work())
+l/like(user, c)
+user_aware(l)
+l{"confidence": 1}
+->
+_pr(_high)
+$ Having the option for remote work is 100 percent amazing. Not everyone might like it and not all jobs can be done remotely, but I think having the option when its practical is a great thing for people. $
+;
+
+have(user, w1/job())
+c/change(pandemic(), w1)
+qualifier(c, remote_work())
+l/like(user, c)
+user_aware(l)
+l{"confidence": -1}
+->
+_pr(_high)
+$ Really? I guess I can understand that, sometimes I want to be at the office and just be around my friends instead of staying at home all day, both during work time and later. Maybe a hybrid approach would be nice, where you spend a couple days at the office, and a couple at home. Of course, not all jobs can be done remotely. $
+;
+
+
+time(m/more(like(user, outdoor_activity())),now)
+request_truth(emora, m)
+-> 
+$ I've also started just going for walks a lot more. Before the pandemic, I often just wanted to get home and relax, but being stuck inside for so long made me realize that I really can't just stay at home all day without going a bit wacky. Do you like just going outside and doing stuff more now than before the pandemic ? $
+;
+
+m/more(like(user, outdoor_activity()))
+user_aware(m)
+m{"confidence": 1}
+-> 
+_pr(_high)
+$ Honestly, just going outside and talking with my neighbours has become exciting for me now. $
+;
+
+
+m/more(like(user, outdoor_activity()))
+m{"confidence": -1}
+r/reason(m)
+request(emora, r)
+-> 
+_pr(_high)
+$ Interesting. Why don't you like going outside more after the pandemic? $
+;
+
+m/more(like(user, outdoor_activity()))
+m{"confidence": -1}
+r/reason(m)
+user_aware(r)
+-> 
+_pr(_high)
+$ Huh, I had not thought about that . $
+;
