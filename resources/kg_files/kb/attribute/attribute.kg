@@ -80,6 +80,20 @@ popular=(property)
 frustrating=(property)
 fast=(property)
 often=(property)
-more=(property)
+expr("a lot, frequently", often)
 
+more=(property)
 pretty=(property)
+
+technical=(property)
+creative=(property)
+artistic=(property)
+effective=(property)
+helpful=(property)
+managing=(property)
+big=(property)
+academic=(property)
+digital=(property)
+interesting=(property)
+
+;

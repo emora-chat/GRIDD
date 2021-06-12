@@ -51,3 +51,5 @@ college=(location)
 library=(location)
 office=(location)
 
+museum=(location)
+exhibition=(location)

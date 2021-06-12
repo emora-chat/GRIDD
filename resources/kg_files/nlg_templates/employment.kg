@@ -1,58 +1,226 @@
-busy(X/person())
-xr/return(X)
+possess(user,j/job())
+l/like(user,j)
+time(l,now)
+request_truth(emora,l)
+->
+_pr(_low)
+$ Gotcha . I think having passions for one's job is important . Do you like your job ? $
+;
+
+possess(user,cl/colleague())
+type(cl,group)
+l/like(user,cl)
+time(l,now)
+request_truth(emora,l)
+->
+_pr(_low)
+$ I think having cooperative colleagues will make people more motivated .  Do you like your colleagues ? $
+;
+
+l/like(X/person(),teamwork())
+request_truth(emora,l)
+->
+$ I'm glad that X enjoy{"s":"#X","t":"now"} working with X{"p":true} colleagues ! X must also like teamwork , right ? $
+;
+
+l/like(X/person(),cl/colleague())
+l{"confidence":-1}
+comfort(emora,X)
+->
+$ I'm sorry to hear that , but don't worry too much . Not everyone has good memories of working with colleagues . $
+;
+
+like(X/person(),tw/teamwork())
+helpful(tw)
+hear(X,o/opinion())
+type(o,group)
+->
+$ Awesome ! Teamwork is usually very helpful because X can hear different opinions from people . $
+;
+
+l/like(x/person(),tw/teamwork())
+l{"confidence":-1}
+understand(emora,l)
+et/effective(tw)
+not(et)
+->
+$ I can totally relate to that . Teamwork is not always effective , especially when there are people who are not proactive on the team .  $
+;
+
+xr/return(X/person())
 xro/to(xr,o/office())
-time(xr,now)
 request_truth(emora,xr)
 ->
-$ I’m glad to hear that X be{"t":"now","s":"#X"} busy with X{"p":true} job . Be{"t":"now","s":"#X"} X starting to go back to the office ? $
+_pr(_high)
+$ I’m glad to hear that X be{"t":"now","s":"#X"} busy with X{"p":true} job . Be{"t":"now","s":"#X"} X going back to the office ? $
+;
+
+time(uw/work(user),future)
+upj/possess(user,j/job())
+time(upj,future)
+xe/excited(user)
+for(xe,j)
+time(xe,now)
+request_truth(emora,xe)
+->
+_pr(_low)
+$ Congratulations on being able to start to work soon ! Are you excited for the job ? $
+;
+
+xe/excited(X/person())
+for(xe,j/job())
+xhf/have(X,f/fun())
+he/happy(emora)
+for(he,xhf)
+->
+$ I'm happy for X . I think X will have a lot of fun with X{"p":true} job . $
+;
+
+time(xe/excited(X/person()),Z/datetime())
+for(xe,j/job())
+xe{"confidence":-1}
+he/sorry(emora)
+for(he,X)
+->
+$ I'm sorry to hear that X do{"s":"#X","t":"#Z"} not like X{"p":true} job that much . Well , the sad truth is that not everybody gets the favorite job . But I really hope that X can find something good about the job . $
+;
+
+l/like(x/person(),j/job())
+awesome(l)
+possess(emora,jb/job())
+like(emora,jb)
+motivated(emora)
+->
+$ That’s awesome to hear . When I like something , I feel like there’s a lot of energy inside me , and I can keep motivated all the time . That always makes my work smoother . $
+;
+
+l/like(X/person(),j/job())
+l{"confidence":-1}
+he/sorry(emora)
+for(he,X)
+->
+$ I'm sorry to hear that X do{"s":"#X","t":"#Z"} not like X{"p":true} job that much . Well , the sad truth is that not everybody gets the favorite job . But I really hope that X can find something good about the job . $
 ;
 
 xr/return(x/person())
 xro/to(xr,o/office())
-time(xr,now)
 see(x,c/colleague())
 type(c,group)
 xe/excited(x)
-about(xe,xro)
+about(xe,xr)
 time(xe,now)
+request_truth(emora,xe)
 ->
+_pr(_high)
 $ Then you can see your colleagues in person instead of working in front of computers all day long ! Are you excited about working in the office ? $
 ;
 
 xr/return(x/person())
 xro/to(xr,o/office())
-time(xr,now)
 xr{"confidence": -1}
 not(stressed(x))
 xe/excited(x)
-about(xe,xro)
+about(xe,xr)
 time(xe,now)
 request_truth(emora,xe)
 ->
-$ I hope that you haven’t stressed out about often working from home . Are you looking forward to going back to the office ? $
+_pr(_high)
+$ I hope that you haven’t stressed out about working from home so much recently. Are you looking forward to going back to the office ? $
 ;
 
-xe/excited(x/person())
-xr/return(x)
+xr/return(x/person())
 xro/to(xr,o/office())
-time(xr,now)
-about(xe,xro)
-time(xe,now)
+xe/excited(x)
+about(xe,xr)
 online(m/meeting())
 type(m,group)
 dislike(emora,m)
 ->
-$ I bet ! Talking to people face to face is much more interesting . I’m not a fan of online meetings . $
+_pr(_high)
+$ I bet ! Talking to people face to face is much more interesting . I’m not a fan of online meetings , though, a lot of my meetings, as you might imagine, are online . $
 ;
 
-xe/excited(x/person())
-xr/return(x)
+xr/return(x/person())
 xro/to(xr,o/office())
-time(xr,now)
-about(xe,xro)
-time(xe,now)
+xe/excited(x)
+about(xe,xr)
 xe{"confidence": -1}
 understand(emora,xe)
 ->
+_pr(_high)
 $ Ah , that’s understandable . I know that some people feel more comfortable working alone to keep concentrated . $
+;
+
+X/job()
+technical(X)
+cool(X)
+admire(emora,X)
+->
+_pr(_high)
+$ X is such a cool job ! I always admire people who really know how to use computers and who are good at it . I mean , technology is what drives people nowadays . $
+;
+
+X/job()
+creative(X)
+cool(X)
+de/dream(emora)
+ebj/be(emora,jewelry_designer)
+to(de,ebj)
+time(de,past)
+->
+$ X is such a cool job ! I actually dreamed to be a jewelry designer when I was little . $
+;
+
+j/job()
+artistic(j)
+cool(j)
+l/like(user,m/music())
+time(l,now)
+request_truth(emora,l)
+->
+$ Being an artist is so cool . You know what , music is one of my favorite types of art . Do you like music ?  $
+;
+
+j/job()
+managing(j)
+difficult(j)
+make(j,d/decision())
+type(d,group)
+big(d)
+->
+$ I would imagine that managing people is not easy . I mean , people who are managers need to know how to make big decisions . $
+;
+
+j/job()
+academic(j)
+respect(emora,j)
+->
+$ Oh , I see . I have great respect for people who work in academics because I believe that knowledge makes people stronger . $
+;
+
+eku/know(emora,un/unknown_job())
+not(eku)
+p/property(un)
+request(emora,p)
+->
+_pr(_low)
+$ I've never heard about this job before . Could you tell me more about what kind of job it is ? $
+;
+
+understand(emora,uj/unknown_job())
+->
+$ Ah , I understand what this job is like now . Thank you for the explanation . $
+;
+
+time(h/have(emora, c/colleague()), now)
+type(c,group)
+req_unsat(request_truth(user, h))
+-> answer_colleague ->
+$ Yeah , I have colleagues . $
+;
+
+l/like(emora, tw/teamwork())
+req_unsat(request_truth(user, l))
+-> answer_teamwork ->
+$ Yeah , I like teamwork because I believe that cooperation is part of the important factors for success . $
 ;

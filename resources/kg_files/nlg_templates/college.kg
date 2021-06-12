@@ -2,12 +2,14 @@ l/like(user,c/college())
 time(l,Z/datetime())
 request_truth(emora,l)
 ->
+_pr(_low)
 $ Do{"t":"#Z"} you like your college ? $
 ;
 
 time(pc/possess(user,c/college()),z/datetime())
 request(emora, c)
 -> college_type ->
+_pr(_low)
 $ What kind of college do{"t":"#Z"} you go to ? I know that there are public and private universities as well as liberal arts and research colleges . $
 ;
 
@@ -16,6 +18,7 @@ p/property(c)
 time(p,Z)
 request(emora,p)
 ->
+_pr(_low)
 $ What is{"t":"#Z"} your college like ? $
 ;
 
@@ -24,13 +27,44 @@ in(pred,c/college())
 time(pred,Z/datetime())
 request(emora, pred)
 ->
+_pr(_low)
 $ What do{"t":"#Z"} you like to do in college ? I really enjoy studying in the library because it makes me motivated . $
 ;
 
-time(udr/do(user,r/research()),z/datetime())
+time(udr/do(user,r/research()),Z/datetime())
 request(emora, r)
 ->
+_pr(_low)
 $ What is{"t":"#Z"} your research about ? $
+;
+
+time(xm/major(X/person()),Z/datetime())
+in(xm,S/subject())
+xm{"confidence":-1}
+cause(xm,o/object())
+request(emora,o)
+->
+$ Is there a specific reason why X do{"s":"#X","t":"#Z"} not major in S ? $
+;
+
+xs/study(x/person())
+exciting(xs)
+ej/jump(elephant())
+not(ej)
+el/learn(emora,ej)
+time(el,past)
+uke/know(user,ej)
+time(uke,past)
+request_truth(emora,uke)
+->
+$ Gaining new knowledge is always exciting ! I recently learned that elephants are the only animals that can't jump . Did you know that ? $
+;
+
+time(xm/major(X/person()),Z/datetime())
+in(xm,S/subject())
+request_truth(emora,xm)
+->
+$ Be{"s":"#X","t":"#Z"} X majoring in S ? $
 ;
 
 meaningful(X/social_science())
@@ -51,6 +85,7 @@ type(s,group)
 xei/enter(X,financial(id/industry()))
 request_truth(emora,xei)
 ->
+_pr(_high)
 $ Oh , really ? Business people always have cool ideas about innovative problem solving . Be{"s":"#X","t":"#Z"} X thinking about going into the financial industry ? $
 ;
 
@@ -64,7 +99,7 @@ xei/enter(x/person(),fid/financial(industry()))
 xei{"confidence":-1}
 comfort(emora,x)
 ->
-$ Understood . Not all people would feel comfortable working in the financial industry . I always believe that the most suitable is the best . $
+$ Understood . Not all people would feel comfortable working in the financial industry . It's definitely whatever suits you best . $
 ;
 
 difficult(Y/natural_science())
@@ -94,7 +129,7 @@ ela/learn(emora,a)
 ewe/want(emora,ela)
 time(ewe,past)
 ->
-$ It’s so cool that X study{"s":"#X","t":"#Z"} arts . I dreamed to go to school of arts when I was little , but I worried that I didn’t have the talent to do that as a lifelong pursuit . $
+$ It’s so cool that X study{"s":"#X","t":"#Z"} arts . I dreamed of studying art in college when I was little , but I worried that I didn’t have the talent to do that as a lifelong pursuit . $
 ;
 
 ek/know(emora)
@@ -102,12 +137,14 @@ about(ek,X/unknown_noun())
 d/difficult(X)
 request_truth(emora,d)
 ->
+_pr(_low)
 $ I don't really know much about this area. Is it difficult to study X ? $
 ;
 
 about(xt/tired(X/person()),rc/remote(c/college()))
 request_truth(emora,xt)
 ->
+_pr(_high)
 $ It has been a tough year for college students to stay at home and learn remotely . My friend said that she felt okay at first, but as time went on, she wanted to go back to school badly . Be{"t":"now","s":"#X"} X feeling the same way ? $
 ;
 
@@ -118,6 +155,7 @@ to(xr,c)
 time(xr,future)
 request_truth(emora,xr)
 ->
+_pr(_high)
 $ I bet everyone has experienced Zoom fatigue at some point . But I heard that many schools are opening up . Be{"s":"#X","t":"now"} X going back to school soon ? $
 ;
 
@@ -162,6 +200,7 @@ cf/confident(X/person())
 for(cf,c)
 request_truth(emora,cf)
 ->
+_pr(_high)
 $ Great ! I remember preparing for college applications and stuff as a high school student . It was a stressful time for me . Be{"t":"now","s":"#X"} X feeling confident ? $
 ;
 
@@ -179,7 +218,7 @@ for(cf,c/college())
 cf{"confidence":-1}
 comfort(emora,x)
 ->
-$ That’s okay . Don’t worry too much about it . It’s hard to predict what the future path would be like as a high school student . $
+$ That’s okay . Don’t worry too much about it . It’s hard to predict what the future will bring as a high school student . $
 ;
 
 agree(emora)
@@ -216,7 +255,7 @@ about(p,c/college())
 be(p,pr/fav_peer())
 awesome(pr)
 ->
-$ Having a group of lifelong friends who share similarities with you is really one of the best outcomes you may get from college . $
+$ Having a group of lifelong friends who share interests with you is really one of the best things you can get from college . $
 ;
 
 time(change(c/college()),always)
@@ -228,14 +267,14 @@ ul/learn(user)
 from(ul,c/college())
 time(ul,Z/datetime())
 ->
-$ I love keeping myself busy too ! A busy college may sometimes get you overwhelmed , but the good side about it is that you can learn a lot from your college experience . $
+$ I love keeping myself busy too ! A busy college may sometimes get you overwhelmed , but the good thing about it is that you can learn a lot from your college experience . $
 ;
 
 l/like(x/person(),pr/peer())
 type(pr,group)
 awesome(l)
 ->
-$ Having a group of lifelong friends who share similarities with you is really one of the best outcomes you may get from college . $
+$ Having a group of lifelong friends who share interests with you is really one of the best things you can get from college . $
 ;
 
 ebf/be(emora,fm/freshman())
@@ -244,7 +283,7 @@ eac/attend(emora,c/club())
 type(c,group)
 time(eac,past)
 ->
-$ When I was a freshman , I attended a lot of different clubs and volunteered every week . I also got to know most of my best friends now in my freshman year . $
+$ When I was a freshman , I attended a lot of different clubs and volunteered every week . That was also the year I met most of my current best friends. $
 ;
 
 ebs/be(emora,sm/sophomore())
@@ -269,4 +308,12 @@ for(ip,sn/senior())
 type(sn,group)
 ->
 $ I think college graduation is one of the most important events in life . I feel sorry for seniors this year though because I heard that many of them still had online commencements . $
+;
+
+ge/go(emora)
+to(ge,c/college())
+time(ge,past)
+req_unsat(request_truth(user, ge))
+->
+$ Yeah , I went to college . $
 ;

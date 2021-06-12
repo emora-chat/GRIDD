@@ -1,0 +1,5 @@
+time(have(emora,c/colleague()),now)
+type(c,group)
+like(emora,c)
+
+like(emora,tw/teamwork())

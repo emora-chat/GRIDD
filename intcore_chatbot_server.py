@@ -43,14 +43,15 @@ def serialized(*returns):
 
 class ChatbotServer:
 
-    def __init__(self, knowledge_base, inference_rules, nlg_templates, starting_wm=None, device=None):
+    def __init__(self, knowledge_base, inference_rules, nlg_templates, fallbacks, starting_wm=None, device=None):
         s = time.time()
         knowledge = collect(*knowledge_base)
         inference_rules = collect(*inference_rules)
         self.starting_wm = None if starting_wm is None else collect(*starting_wm)
         nlg_templates = collect(*nlg_templates)
+        fallbacks = collect(*fallbacks)
         self.dialogue_intcore = IntelligenceCore(knowledge_base=knowledge, inference_rules=inference_rules,
-                                                 nlg_templates=nlg_templates, device=device)
+                                                 nlg_templates=nlg_templates, fallbacks=fallbacks, device=device)
         if self.starting_wm is not None:
             self.dialogue_intcore.consider(list(self.starting_wm.values()))
         print('IntelligenceCore load: %.2f' % (time.time() - s))
@@ -271,8 +272,8 @@ class ChatbotServer:
         self.dialogue_intcore.consider(mega_mention_graph)
         return subspans, self.dialogue_intcore.working_memory
 
-    @serialized('working_memory')
-    def run_merge_bridge(self, merges, subspans, working_memory):
+    @serialized('working_memory', 'aux_state')
+    def run_merge_bridge(self, merges, subspans, working_memory, aux_state):
         self.load_working_memory(working_memory)
         if merges is None:
             merges = []
@@ -295,7 +296,7 @@ class ChatbotServer:
                           'multiword span: %s -> %s, %s -> %s'
                           %(span1, subspans[span1], span2, subspans[span2]))
         self.dialogue_intcore.merge(node_merges)
-        self.dialogue_intcore.operate()
+        self.dialogue_intcore.operate(aux_state=aux_state)
         self.dialogue_intcore.convert_metagraph_span_links(DP_SUB, [ASS_LINK])
         for so, t, l in self.dialogue_intcore.working_memory.metagraph.edges(label=ASS_LINK):
             if BASE_UCONFIDENCE not in self.dialogue_intcore.working_memory.features[t]:
@@ -309,10 +310,10 @@ class ChatbotServer:
                     self.dialogue_intcore.working_memory.features[t][BASE_UCONFIDENCE] = 1.0
         self.dialogue_intcore.update_confidence('user', iterations=CONF_ITER)
         self.dialogue_intcore.update_confidence('emora', iterations=CONF_ITER)
-        return self.dialogue_intcore.working_memory
+        return self.dialogue_intcore.working_memory, aux_state
 
-    @serialized('working_memory')
-    def run_knowledge_pull(self, working_memory):
+    @serialized('working_memory', 'aux_state')
+    def run_knowledge_pull(self, working_memory, aux_state):
         self.load_working_memory(working_memory)
         working_memory = self.dialogue_intcore.working_memory
         knowledge_by_source = self.dialogue_intcore.pull_knowledge(limit=100, num_pullers=50, association_limit=10, subtype_limit=10)
@@ -327,8 +328,8 @@ class ChatbotServer:
                     i = working_memory.add(pred[3], REQ_UNSAT)
                     working_memory.features[i][BASE_CONFIDENCE] = 1.0
         self._update_types(working_memory)
-        self.dialogue_intcore.operate()
-        return self.dialogue_intcore.working_memory
+        self.dialogue_intcore.operate(aux_state=aux_state)
+        return self.dialogue_intcore.working_memory, aux_state
 
     @serialized('inference_results')
     def run_dialogue_inference(self, working_memory, aux_state):
@@ -336,16 +337,16 @@ class ChatbotServer:
         inference_results = self.dialogue_intcore.infer(aux_state)
         return inference_results
 
-    @serialized('working_memory')
-    def run_apply_dialogue_inferences(self, inference_results, working_memory):
+    @serialized('working_memory', 'aux_state')
+    def run_apply_dialogue_inferences(self, inference_results, working_memory, aux_state):
         self.load_working_memory(working_memory)
         self.dialogue_intcore.apply_inferences(inference_results)
         self._update_types(self.dialogue_intcore.working_memory)
-        self.dialogue_intcore.operate()
+        self.dialogue_intcore.operate(aux_state=aux_state)
         self.dialogue_intcore.update_confidence('user', iterations=CONF_ITER)
         self.dialogue_intcore.update_confidence('emora', iterations=CONF_ITER)
         self.dialogue_intcore.update_salience(iterations=SAL_ITER)
-        return working_memory
+        return working_memory, aux_state
 
     @serialized('rules', 'use_cached')
     def run_reference_identification(self, working_memory):
@@ -415,7 +416,7 @@ class ChatbotServer:
                 self.merge_references(pairs_to_merge, aux_state)
         return self.dialogue_intcore.working_memory
 
-    @serialized('working_memory')
+    @serialized('working_memory', 'aux_state')
     def run_fragment_resolution(self, working_memory, aux_state):
         self.load_working_memory(working_memory)
         wm = self.dialogue_intcore.working_memory
@@ -474,11 +475,11 @@ class ChatbotServer:
                     wm.features.setdefault(t, {})[SALIENCE] = wm.features.setdefault(fragment, {}).get(SALIENCE, 0)
                     # wm.features[t][BASE] = True todo - check if the BASE indication matters here
             self.merge_references(fragment_request_merges, aux_state)
-            self.dialogue_intcore.operate()
+            self.dialogue_intcore.operate(aux_state=aux_state)
         self.dialogue_intcore.update_confidence('user', iterations=CONF_ITER)
         self.dialogue_intcore.update_confidence('emora', iterations=CONF_ITER)
         self.dialogue_intcore.update_salience(iterations=SAL_ITER)
-        return self.dialogue_intcore.working_memory
+        return self.dialogue_intcore.working_memory, aux_state
 
     def init_template_nlg(self):
         from GRIDD.modules.responsegen_by_templates import ResponseTemplateFiller
@@ -504,7 +505,7 @@ class ChatbotServer:
     def run_template_fillers(self, inference_results, expr_dict, working_memory, aux_state):
         if inference_results is None:
             inference_results = {}
-        template_response_sel = self.template_filler(inference_results, expr_dict, working_memory, aux_state)
+        template_response_sel = self.template_filler(inference_results, expr_dict, working_memory, aux_state, self.dialogue_intcore.fallbacks)
         return template_response_sel, aux_state
 
     def init_response_selection(self):
@@ -571,15 +572,10 @@ class ChatbotServer:
         self.response_assembler = ResponseAssembler()
 
     @serialized('response', 'working_memory')
-    def run_response_assembler(self, working_memory, aux_state, rule_responses, nlg_responses):
-        if rule_responses is None and nlg_responses is None:
-            rule_responses = []
-            nlg_responses = []
-        elif nlg_responses is None:
-            nlg_responses = [None] * len(rule_responses)
-        elif rule_responses is None:
-            rule_responses = [None] * len(nlg_responses)
-        response = self.response_assembler(aux_state, rule_responses, nlg_responses)
+    def run_response_assembler(self, working_memory, aux_state, rule_responses):
+        if rule_responses is None:
+            rule_responses = [None]
+        response = self.response_assembler(aux_state, rule_responses)
         self.load_working_memory(working_memory)
         self.dialogue_intcore.update_salience(iterations=SAL_ITER)
         self.dialogue_intcore.decay_salience()
@@ -739,22 +735,22 @@ class ChatbotServer:
         multiword_mentions = self.run_multiword_matcher(elit_results)
         ner_mentions = self.run_ner_mentions(elit_results)
         subspans, working_memory = self.run_mention_bridge(mentions, multiword_mentions, ner_mentions, working_memory, aux_state)
-        working_memory = self.run_merge_bridge(merges, subspans, working_memory)
-        working_memory = self.run_knowledge_pull(working_memory)
+        working_memory, aux_state = self.run_merge_bridge(merges, subspans, working_memory, aux_state)
+        working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state)
 
         rules, use_cached = self.run_reference_identification(working_memory)
         inference_results, rules = self.run_multi_inference(rules, use_cached, working_memory, aux_state)
         working_memory = self.run_reference_resolution(inference_results, working_memory, aux_state)
-        working_memory = self.run_fragment_resolution(working_memory, aux_state)
+        working_memory, aux_state = self.run_fragment_resolution(working_memory, aux_state)
         inference_results = self.run_dialogue_inference(working_memory, aux_state)
-        working_memory = self.run_apply_dialogue_inferences(inference_results, working_memory)
+        working_memory, aux_state = self.run_apply_dialogue_inferences(inference_results, working_memory, aux_state)
 
         rules, use_cached = self.run_reference_identification(working_memory)
         inference_results, rules = self.run_multi_inference(rules, use_cached, working_memory, aux_state)
         working_memory = self.run_reference_resolution(inference_results, working_memory, aux_state)
-        working_memory = self.run_fragment_resolution(working_memory, aux_state)
+        working_memory, aux_state = self.run_fragment_resolution(working_memory, aux_state)
         inference_results = self.run_dialogue_inference(working_memory, aux_state)
-        working_memory = self.run_apply_dialogue_inferences(inference_results, working_memory)
+        working_memory, aux_state = self.run_apply_dialogue_inferences(inference_results, working_memory, aux_state)
 
         if PRINT_WM:
             print('\n<< Working Memory After Inferences Applied >>')
@@ -770,9 +766,7 @@ class ChatbotServer:
         expanded_response_predicates, working_memory = self.run_response_expansion(response_predicates,
                                                                                    working_memory, aux_state)
         rule_responses = self.run_response_by_rules(aux_state, expanded_response_predicates)
-        # nlg_responses = self.run_response_nlg_model(expanded_response_predicates)
-        nlg_responses = None
-        response, working_memory = self.run_response_assembler(working_memory, aux_state, rule_responses, nlg_responses)
+        response, working_memory = self.run_response_assembler(working_memory, aux_state, rule_responses)
         return response, working_memory, aux_state
 
     def respond_serialize(self, user_utterance, working_memory, aux_state):
@@ -839,7 +833,6 @@ class ChatbotServer:
         state.update(state_update)
         state_update = self.run_response_by_rules(state)
         state.update(state_update)
-        state.update({'nlg_responses': None})
         state_update = self.run_response_assembler(state)
         state.update(state_update)
 
@@ -860,6 +853,7 @@ class ChatbotServer:
                     response, wm, aux_state = self.respond(utter, wm, aux_state)
                 elapsed = time.time() - s
                 print('[%.2f s] %s\n' % (elapsed, response))
+                # print('\tAux State: %s\n' % aux_state)
             utter = input('User: ')
 
     def run_static(self):
@@ -878,16 +872,6 @@ class ChatbotServer:
             'he chewed my shoes',
             'yeah'
         ]
-        # utters = [
-        #     'hi',
-        #     'sarah',
-        #     'i just bought a house',
-        #     'yeah it was a long time coming',
-        #     'it has a big backyard',
-        #     'yeah but i have a cat',
-        #     'he is very energetic',
-        #     'yeah'
-        # ]
         for utter in utters:
             print(utter)
             if utter.strip() != '':
@@ -898,19 +882,21 @@ class ChatbotServer:
                     response, wm, aux_state = self.respond(utter, wm, aux_state)
                 elapsed = time.time() - s
                 print('[%.2f s] %s\n' % (elapsed, response))
+                # print('\tAux State: %s\n'%aux_state)
 
 def get_filepaths():
     kb = [join('GRIDD', 'resources', 'kg_files', 'kb')]
     rules = [join('GRIDD', 'resources', 'kg_files', 'rules')]
     wm = [join('GRIDD', 'resources', 'kg_files', 'wm')]
     nlg_templates = [join('GRIDD', 'resources', 'kg_files', 'nlg_templates')]
-    return kb, rules, nlg_templates, wm
+    fallbacks = [join('GRIDD', 'resources', 'kg_files', 'fallbacks.kg')]
+    return kb, rules, nlg_templates, fallbacks, wm
 
 PRINT_WM = False
 
 if __name__ == '__main__':
     import torch
-    kb, rules, nlg_templates, wm = get_filepaths()
+    kb, rules, nlg_templates, fallbacks, wm = get_filepaths()
 
     device = input('device (cpu/cuda:0/cuda:1/...) >>> ').strip()
     print_wm = input('debug (n/y) >>> ').strip()
@@ -921,6 +907,6 @@ if __name__ == '__main__':
             device = 'cuda:0'
         else:
             device = 'cpu'
-    chatbot = ChatbotServer(kb, rules, nlg_templates, wm, device=device)
+    chatbot = ChatbotServer(kb, rules, nlg_templates, fallbacks, wm, device=device)
     chatbot.full_init(device=device)
     chatbot.run()
