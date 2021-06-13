@@ -64,8 +64,6 @@ class GraphMatchingEngine:
         return combined_cl, combined_ql, query_lengths
 
     def match(self, data_graph, *query_graphs):
-        p.start('match')
-
         display = None
         complete = {}                                                       # list<Tensor<steps: ((qn1, dn1), (qn2, dn2), ...)>> completed solutions
         if len(query_graphs) > 0:
@@ -77,7 +75,6 @@ class GraphMatchingEngine:
             query_id_index = self.q.index
             checklist, querylist, qlengths = self.checklist, self.querylist, self.qlengths
         if len(checklist) <= 0:
-            p.stop()
             return complete
 
         edges = GraphTensor(data_graph, self.n, self.l, device=self.device) # GraphTensor<Tensor<X x 2: (s, l)>) -> (Tensor<Y: t>, Tensor<Y: inverse_index>>
@@ -167,8 +164,6 @@ class GraphMatchingEngine:
         for query_graph in query_graphs:
             del self.q[query_graph]
         self.q.index = query_id_index
-
-        p.stop()
 
         return complete
 

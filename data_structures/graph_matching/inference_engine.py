@@ -7,6 +7,8 @@ from GRIDD.data_structures.assertions import assertions
 from GRIDD.globals import *
 from GRIDD.utilities.utilities import Counter
 
+from GRIDD.utilities.profiler import profiler as p
+
 
 class InferenceEngine:
 
@@ -73,14 +75,14 @@ class InferenceEngine:
         return converted_rules
 
     def _convert_facts(self, facts):
-        quantities = set()
-        for c in facts.concepts():
-            if isinstance(c, int) or isinstance(c, float):
-                quantities.add(c)
+        p.start('to digraph')
         facts_graph = facts.to_infcompat_graph()
+        p.next('flatten types')
         facts_graph = self._flatten_types(facts, facts_graph)
-        for node in quantities:
-            facts_graph.data(node)['num'] = node
+        p.next('quantities')
+        quantities = {c for c in facts.concepts() if isinstance(c, (float, int))}
+        for node in quantities: facts_graph.data(node)['num'] = node
+        p.stop()
         return facts_graph
 
     def _flatten_types(self, orig_cg, cg, for_query=False):
@@ -125,9 +127,13 @@ class InferenceEngine:
         """
         facts should have already had all types pulled (aka don't do type pull within inference engine)
         """
+        p.start('facts graph copy')
         facts_concept_graph = ConceptGraph(facts, namespace=(facts._ids if isinstance(facts, ConceptGraph) else "facts_"))
+        p.next('facts graph types')
         facts_types = facts_concept_graph.types()
+        p.next('convert facts graph')
         facts_graph = self._convert_facts(facts_concept_graph)
+        p.next('process dynamic rules')
         if dynamic_rules is not None and not isinstance(dynamic_rules, dict):
             dynamic_rules = ConceptGraph(dynamic_rules).rules()
         elif dynamic_rules is None:
@@ -141,7 +147,9 @@ class InferenceEngine:
             converted_rules = Bimap(dynamic_converted_rules)
         # if len(converted_rules) == 0:
         #     return {}
+        p.next('match')
         all_sols = self.matcher.match(facts_graph, *list(converted_rules.values()))
+        p.next('postprocess solutions')
         solutions = {}
         for precondition, sols in all_sols.items():
             categories = set()
@@ -222,6 +230,7 @@ class InferenceEngine:
                 final_sols[rule_id] = (all_rules[rule_id][0], all_rules[rule_id][1], sol_ls)
             else:
                 final_sols[rule_id] = (all_rules[rule_id][0], sol_ls)
+        p.stop()
         return final_sols
 
 if __name__ == '__main__':
