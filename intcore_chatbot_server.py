@@ -945,11 +945,11 @@ if __name__ == '__main__':
             device = 'cpu'
     chatbot = ChatbotServer(kb, rules, nlg_templates, wm, device=device)
     chatbot.full_init(device=device)
-    # chatbot.run()
-
-    import cProfile
-    pr = cProfile.Profile()
-    pr.enable()
     chatbot.run()
-    pr.disable()
-    pr.print_stats(sort='cumtime')
+
+    # import cProfile
+    # pr = cProfile.Profile()
+    # pr.enable()
+    # chatbot.run()
+    # pr.disable()
+    # pr.print_stats(sort='cumtime')

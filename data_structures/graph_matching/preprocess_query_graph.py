@@ -49,24 +49,25 @@ def preprocess_query_graph(graph, nodemap, varmap, edgemap, constant_counts):
         stack = [(root, trunk, rooted_edge)]
         while stack:
             s, t, l = stack.pop()
-            if (s, t, l) not in left_edges or (t, s, Rlabel(l)) not in left_edges:
+            if (s, t, l) in left_edges or (t, s, Rlabel(l)) in left_edges:
                 left_edges.discard((s, t, l))
                 left_edges.discard((t, s, Rlabel(l)))
-            if isinstance(l, Rlabel):
-                left_edges.discard((t, s, Rlabel(l)))
-                left_edges.discard((s, t, l))
-            else:
-                left_edges.discard((s, t, l))
-                left_edges.discard((t, s, Rlabel(l)))
-            checklist.append((s, t, l))
-            if t in left_nodes:
-                left_nodes.remove(t)
-                for s_, t_, l_ in sorted(graph.out_edges(t),
-                                         key=lambda e: 0 if e[1] in variables else 1/constant_counts.get(e, 1)):
-                    stack.append((s_, t_, l_))
-                for s_, t_, l_ in sorted(graph.in_edges(t),
-                                         key=lambda e: 0 if e[0] in variables else 1/constant_counts.get(e, 1)):
-                    stack.append((t_, s_, Rlabel(l_)))
+                checklist.append((s, t, l))
+                if t in left_nodes:
+                    left_nodes.remove(t)
+                    for s_, t_, l_ in sorted(graph.out_edges(t),
+                                             key=lambda e: 0 if e[1] in variables else 1 / constant_counts.get(e, 1)):
+                        stack.append((s_, t_, l_))
+                    for s_, t_, l_ in sorted(graph.in_edges(t),
+                                             key=lambda e: 0 if e[0] in variables else 1 / constant_counts.get(e, 1)):
+                        stack.append((t_, s_, Rlabel(l_)))
+            # if isinstance(l, Rlabel):
+            #     left_edges.discard((t, s, Rlabel(l)))
+            #     left_edges.discard((s, t, l))
+            # else:
+            #     left_edges.discard((s, t, l))
+            #     left_edges.discard((t, s, Rlabel(l)))
+
     mapped_checklist = []
     for s, t, l in checklist:
         s = varmap.get(s) if s in variables else nodemap.get(s)
