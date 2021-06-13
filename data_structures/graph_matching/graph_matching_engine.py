@@ -5,7 +5,7 @@ from GRIDD.data_structures.id_map import IdMap
 from GRIDD.data_structures.graph_matching.graph_tensor import GraphTensor
 from GRIDD.data_structures.graph_matching.preprocess_query_graph import preprocess_query_graphs, preprocess_query_tuples
 from GRIDD.utilities.utilities import TensorDisplay as Display
-from GRIDD.utilities.profiler import Profiler
+from GRIDD.utilities.profiler import profiler as p
 from GRIDD.data_structures.graph_matching.root import root
 
 DISPLAY = False
@@ -64,7 +64,6 @@ class GraphMatchingEngine:
         return combined_cl, combined_ql, query_lengths
 
     def match(self, data_graph, *query_graphs):
-        p = Profiler()
         p.start('match')
         p.start('querygen')
 
