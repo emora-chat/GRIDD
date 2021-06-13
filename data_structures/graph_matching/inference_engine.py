@@ -77,7 +77,7 @@ class InferenceEngine:
     def _convert_facts(self, facts, facts_types):
         p.start('to digraph')
         facts_graph = facts.to_infcompat_graph()
-        p.next('flatten types')
+        p.next(f'flatten types ({len(facts_types)} concepts)')
         facts_graph = self._flatten_types(facts, facts_graph, facts_types)
         p.next('quantities')
         quantities = {c for c in facts.concepts() if isinstance(c, (float, int))}
@@ -123,13 +123,13 @@ class InferenceEngine:
                         cg.add(c, t, 't')
         return cg
 
-    def infer(self, facts, dynamic_rules=None, cached=True):
+    def infer(self, facts_concept_graph, dynamic_rules=None, cached=True):
         """
         facts should have already had all types pulled (aka don't do type pull within inference engine)
         """
-        p.start('facts graph copy')
-        facts_concept_graph = ConceptGraph(facts, namespace=(facts._ids if isinstance(facts, ConceptGraph) else "facts_"))
-        p.next('facts graph types')
+        # p.start('facts graph copy')
+        # facts_concept_graph = ConceptGraph(facts, namespace=(facts._ids if isinstance(facts, ConceptGraph) else "facts_"))
+        p.start('facts graph types')
         facts_types = facts_concept_graph.types()
         p.next('convert facts graph')
         facts_graph = self._convert_facts(facts_concept_graph, facts_types)
@@ -184,7 +184,7 @@ class InferenceEngine:
                     if variable in categories:
                         not_category = True
                         value_types = facts_types.get(value, set())
-                        if value.startswith(facts.id_map().namespace) or value.startswith(KB):
+                        if value.startswith(facts_concept_graph.id_map().namespace) or value.startswith(KB):
                             # remove non-specific concepts from their type sets
                             # e.g. an instance of name is removed but the specified name 'sarah' is not
                             value_types -= {value}
@@ -196,7 +196,7 @@ class InferenceEngine:
                     if variable in specifics:
                         not_specific = False
                         value_types = facts_types.get(value, set())
-                        if value.startswith(facts.id_map().namespace) or value.startswith(KB):
+                        if value.startswith(facts_concept_graph.id_map().namespace) or value.startswith(KB):
                             value_types -= {value}
                         for t in precondition_types.get(variable, set()) - {variable}:
                             if value_types <= facts_types.get(t, set()):
