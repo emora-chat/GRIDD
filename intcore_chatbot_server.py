@@ -927,7 +927,7 @@ if __name__ == '__main__':
     try:
         f = open('GRIDD/scratch/input')
         if 'off' in f.readline():
-            raise RuntimeError
+            raise FileNotFoundError
         sys.stdin = f
     except FileNotFoundError:
         pass
