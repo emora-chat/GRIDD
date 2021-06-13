@@ -65,43 +65,37 @@ class GraphMatchingEngine:
 
     def match(self, data_graph, *query_graphs):
         p.start('match')
-        p.start('querygen')
 
         display = None
         complete = {}                                                       # list<Tensor<steps: ((qn1, dn1), (qn2, dn2), ...)>> completed solutions
-        query_graphs = preprocess_query_tuples(query_graphs)
-        if DISPLAY: display = Display()
-        query_id_index = self.q.index                                       # Query index to reset after match is complete
-        checklist, querylist, qlengths = self._add_queries(query_graphs)    # list<Tensor<query x 3: (s, l, t)>> list of required next edge lists
-        if len(checklist) <= 0: return complete
+        if len(query_graphs) > 0:
+            query_graphs = preprocess_query_tuples(query_graphs)
+            if DISPLAY: display = Display()
+            query_id_index = self.q.index                                       # Query index to reset after match is complete
+            checklist, querylist, qlengths = self._add_queries(query_graphs)    # list<Tensor<query x 3: (s, l, t)>> list of required next edge lists
+        else:
+            query_id_index = self.q.index
+            checklist, querylist, qlengths = self.checklist, self.querylist, self.qlengths
+        if len(checklist) <= 0:
+            p.stop()
+            return complete
 
-        p.next(f'creating graph tensor ({len(data_graph.nodes())} nodes, {len(data_graph.edges())} edges)')
         edges = GraphTensor(data_graph, self.n, self.l, device=self.device) # GraphTensor<Tensor<X x 2: (s, l)>) -> (Tensor<Y: t>, Tensor<Y: inverse_index>>
 
-        p.next('initializing solutions matrix')
         solutions = torch.full((len(checklist[0]), 2), self.n.get(root),    # Tensor<solution x step: ((qn1, dn1), (qn2, dn2), ...)> in-progress solutions
                                dtype=torch.long, device=self.device)
         queries = torch.arange(0, len(self.q),                              # Tensor<solution: query> inverse indices for solutions
                                dtype=torch.long, device=self.device)
 
-        p.stop()
-
-        p.start('loop')
         for rlen, req in enumerate(checklist):                              # Tensor<query x 3: (s, l, t)>: required next edges
             if len(solutions) == 0:
                 break
-
-            p.start(f'loop {rlen} ({len(req)} reqs, {len(solutions)} sols)')
-
-            p.start('assign reqs to sols')
 
             ql = querylist[rlen]
             req_ = torch.full((len(self.q), 3), 0, dtype=torch.long, device=self.device)
             req_[ql] = req
 
             if DISPLAY: display(req, self.n, self.l, self.n, label='Requirements')
-
-            p.next(f'get assignments')
 
             # get assignments
             var_i = torch.nonzero(torch.eq(req_[queries][:,0:1], solutions[:,::2]))
@@ -116,8 +110,6 @@ class GraphMatchingEngine:
 
             if DISPLAY: display(expander, self.n, self.l, label='Expanders')
 
-            p.next('expand')
-
             # expand assigned to targets
             t, inv = edges.targets(expander)
 
@@ -125,8 +117,6 @@ class GraphMatchingEngine:
             # e = torch.cat([expander[inv], t.unsqueeze(1)], 1)
             # display(e, self.n, self.l, self.n, label='Expanded edges:')
             # -------------
-
-            p.next(f'check targets against reqs (expanded to {len(t)})')
 
             # check targets against requirements
             var_i = torch.nonzero(torch.eq(req_[queries][:,2:3], solutions[:,::2]))
@@ -141,8 +131,6 @@ class GraphMatchingEngine:
             match = torch.logical_or(req_targets < 0, torch.eq(req_targets, t))
             m = torch.nonzero(match).squeeze(1)
 
-            p.next(f'update solutions for matching targets ({len(m)} matched expanded)')
-
             # expand solutions for matching targets
             solutions = torch.cat([
                 solutions[inv][m],
@@ -150,8 +138,6 @@ class GraphMatchingEngine:
                 t[m].unsqueeze(1)
             ], 1 )
             queries = queries[inv][m]
-
-            p.next(f'filter full solutions ({len(solutions)} sols)')
 
             if DISPLAY: display(solutions, *[self.n for _ in range(solutions.size()[1])], label='Intermediate')
 
@@ -164,7 +150,6 @@ class GraphMatchingEngine:
             solutions = solutions[unsolvedi]
             queries = queries[unsolvedi]
 
-            p.next(f'publish full solutions ({len(full_solutions)} full sols)')
             for i, sol in enumerate(full_solutions):
                 q = self.q.identify(solution_queries[i].item())
                 assignments = {}
@@ -174,23 +159,16 @@ class GraphMatchingEngine:
                         assignments[self.v.identify(v)] = self.n.identify(sol[i*2+3].item())
                 complete.setdefault(q, []).append(assignments)
 
-            p.stop()
-            p.stop()
-
             if DISPLAY:
                 print('Complete solutions:')
                 for s in complete.values():
                     print(s)
 
-        p.end()
-        p.start('postprocessing')
-
         for query_graph in query_graphs:
             del self.q[query_graph]
         self.q.index = query_id_index
 
-        p.end()
-        p.report()
+        p.stop()
 
         return complete
 

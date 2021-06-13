@@ -1,4 +1,5 @@
 from time import time
+import torch
 
 class Profiler:
 
@@ -19,6 +20,7 @@ class Profiler:
         start, label, order = self._starts.pop()
         if label is None:
             label = f'block {len(self._durations)}'
+        torch.cuda.synchronize()
         self._durations.append((time() - start, label, len(self._starts), order))
 
     def end(self):
@@ -28,7 +30,7 @@ class Profiler:
     def report(self):
         print()
         for t, l, i, o in sorted(self._durations, key=lambda e: e[3]):
-            print('  '*i + f'{l}: {t}')
+            print('  '*i + f'{t:.3f}: {l}')
         print()
         self._durations = []
 

@@ -156,6 +156,7 @@ class InferenceEngine:
             else:
                 precondition_id = self._preloaded_rules.reverse()[precondition]
             precondition_cg = all_rules[precondition_id][0]
+            precondition_types = precondition_cg.types()
             solset = []
             for sol in sols:
                 virtual_preds = {}
@@ -179,7 +180,7 @@ class InferenceEngine:
                             # remove non-specific concepts from their type sets
                             # e.g. an instance of name is removed but the specified name 'sarah' is not
                             value_types -= {value}
-                        for t in precondition_cg.types(variable) - {variable}:
+                        for t in precondition_types.get(variable, set()) - {variable}:
                             if value_types == facts_types.get(t, set()):
                                 not_category = False
                         if not_category:
@@ -189,7 +190,7 @@ class InferenceEngine:
                         value_types = facts_types.get(value, set())
                         if value.startswith(facts.id_map().namespace) or value.startswith(KB):
                             value_types -= {value}
-                        for t in precondition_cg.types(variable) - {variable}:
+                        for t in precondition_types.get(variable, set()) - {variable}:
                             if value_types <= facts_types.get(t, set()):
                                 not_specific = True
                         if not_specific:
