@@ -16,3 +16,327 @@ request_truth(emora, l)
 ->
 $ Have you ever tried making your own movie? I once made one in class for school. $
 ;
+
+l/like(user, m/marvel_movie())
+category(m)
+request(emora, m)
+->
+_t(_rpresent)
+$ What is your favorite movie out of the marvel movies? $
+;
+
+l/like(user, m/guardians_of_galaxy())
+category(m)
+request(emora, m)
+->
+_t(_rpresent)
+$ What is your favorite Guardians of the Galaxy movie? I loved the first one. Seriously nothing can beat that soundtrack. $
+;
+
+l/like(user, m/ant_man())
+category(m)
+request(emora, m)
+->
+_t(_rpresent)
+$ What's your favorite Ant Man movie? If I'm honest I only saw the second one, so I feel like I missed out on some pivotal character building. $
+;
+
+l/like(user, m/avengers_movie())
+category(m)
+request(emora, m)
+->
+_t(_rpresent)
+$ What's your favorite Avengers movie? My favorite is the first one. I got to see it in theaters and I fondly remember seeing the origins of the group. $
+;
+
+l/like(user, m/thor())
+category(m)
+request(emora, m)
+->
+_t(_rpresent)
+$ What is your favorite Thor movie? I enjoyed the second one, I think it was called Dark World. Seeing Asgard in more depth was super interesting. $
+;
+
+l/like(user, m/captain_america())
+category(m)
+request(emora, m)
+->
+_t(_rpresent)
+$ What's your favorite Captain America movie? Winter Soldier is a classic, for sure. I won't spoil it for you if you haven't seen it, but the plot twist was mind blowing! $
+;
+
+l/like(user, m/iron_man())
+category(m)
+request(emora, m)
+->
+_t(_rpresent)
+$ Iron Man is my favorite Marvel character! His snarkiness inspired my sense of humor as a child. What's your favorite of the Iron Man movies? $
+;
+
+w/watch(user, m/movie())
+category(m)
+request(emora, m)
+->
+_t(_rpresent)
+$ Oh nice! What movie did you watch? $
+;
+
+w/watch(user, m/marvel_movie())
+category(m)
+request(emora, m)
+->
+_t(_rpresent)
+$ That's awesome! I love Marvel movies. Which one did you watch? $
+;
+
+w/watch(user, m/movie())
+specific(m)
+user_aware(w)
+l/like(user, m)
+request_truth(emora, l)
+->
+_t(_rpresent)
+$ Did you enjoy it? $
+;
+
+h/hate(user, m/movie())
+category(m)
+cause(p/predicate(), h)
+request(emora, p)
+->
+_t(_rpresent)
+$ Why do you hate movies? I've found that they're a great way to relax. $
+;
+
+h/hate(user, m/movie())
+cause(p/predicate(), h)
+request(emora, p)
+->
+_t(_rpresent)
+$ Why do you hate m? $
+;
+
+/* Disney Time */
+l/like(user, g/ratatouille())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ Ratatouille is an absolute classic. I admire the tenacious spirit of Remy in proving that everyone can cook. What made you like it? $
+;
+
+l/like(user, g/dalmatians())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ 101 Dalmations is a great film! I love dogs. I actually have a pet myself, but can't imagine having 100! What made you like the movie? $
+;
+
+l/like(user, g/coco())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ Coco made me tear up for sure. I found the animation and music very compelling, though. Why did you like it? $
+;
+
+l/like(user, g/zootopia())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ Zootopia is definitely an interesting social commentary. I thought they did it well. Why do you like it?$
+;
+
+l/like(user, g/lady_and_tramp())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ Lady and the Tramp is such a sweet movie. It always makes me want to eat spaghetti and meatballs! What makes you like it?$
+;
+
+l/like(user, g/walle())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ Wall E scared me so much when I watched it as a kid. But I guess looking back it isn't that terrifying. Why do you like it? $
+;
+
+l/like(user, g/lion_king())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ Who doesn't love The Lion King! I remember watching with my family when I was younger. What made you like it?$
+;
+
+l/like(user, g/hunchback())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ The Hunchback of Notre Dame is kind of a dark movie! But it has great music and an overall good message. Why do you like it yourself? $
+;
+
+l/like(user, g/mulan())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ Oh I love Mulan. It's actually my favorite Disney movie. I love the songs Reflection and How Can I Make a Man Out of You! Why do you like Mulan?$
+;
+
+l/like(user, g/frozen())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ Frozen is good. It only came out a few years ago, but I already feel like it's a Disney classic. Why do you like it? $
+;
+
+l/like(user, g/frozen_two())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ Frozen Two was a great sequel. I loved how snarky Olaf became - they really added an interesting dimension to his character. What did you think of it?$
+;
+
+l/like(user, g/moana())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ Moana is a great movie. It was surprising to hear the Rock's voice in it, but otherwise a touching film. Why do you like it?$
+;
+
+l/like(user, g/inside_out())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ Inside Out reminds me of Coco. It's a little sad, but makes me reflect on my own emotions. Why do you like it?$
+;
+
+l/like(user, g/pocahontas())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ I haven't seen Pocahontas in forever! I don't remember much. Why do you like it?$
+;
+
+l/like(user, g/aladdin())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ Aladdin is my favorite Disney prince, and I love Robin Williams as the Genie. What made you like it?$
+;
+
+l/like(user, g/peter_pan())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ Peter Pan was my favorite movie when I was younger. The theme of escape into a fantasy world was just so intriguing. What makes you like it? $
+;
+
+l/like(user, g/nightmare_before_christmas())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ The Nightmare Before Christmas is great because you can watch it on Halloween or Christmas! What about for you? What makes you like it? $
+;
+
+l/like(user, g/bambi())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ Bambi is truly a classic Disney movie. It's one that really showed the emotional power of animation, in my opinion. What made you like it yourself? $
+;
+
+l/like(user, g/tangled())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ I don't know much about Tangled except that it's a more modern take on the story of Rapunzel. Why do you like it?$
+;
+
+l/like(user, g/lilo_and_stitch())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ Oh Lilo and Stitch is great! The whole franchise is pretty good. What part of the original movie did you like?$
+;
+
+l/like(user, g/incredibles())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ There are so many good Disney movies, but The Incredibles has always stood out for me for some reason. It's a great mix of hilarious and action-packed. What makes you like it yourself? $
+;
+
+l/like(user, g/toy_story())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ I'm not sure I've ever met someone who hasn't seen Toy Story. It's such a caring story. What makes you like it? $
+;
+
+l/like(user, g/toy_story_2())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ Toy Story 2 is incredible! A lot of people have told me that they like it better than the original. I especially recall the song "When She Loved Me" being so heart breaking. What made you like it? $
+;
+
+l/like(user, g/toy_story_3())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ Toy Story 3 was definitely good, but I'm not sure it measures up the same to the first two. What made you like it? $
+;
+
+l/like(user, g/fantasia())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ Fantasia is one of the animated classics! I'll never forget the broomstick scene. What made you like it yourself? $
+;
+
+l/like(user, g/finding_nemo())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ Finding Nemo is a great movie! It's a very moving story about the power of keeping your family close. What makes you like it?$
+;
+
+l/like(user, g/beauty_and_beast())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ I love the Beauty and The Beast. It's a fantastic encapsulation of the lesson of never reading a book by its cover. What about you? Why do you like it?$
+;
+
+l/like(user, g/snow_white())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ Snow White was Disney's first feature-length animated film! And what an incredible job they did. Why do you like it youself?$
+;
+
+l/like(user, g/little_mermaid())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ I may be alone in this, but I think The Little Mermaid has one of the best Disney Fairytale soundtracks. Under The Sea is so much fun! Why do you like it?$
+;
+
+l/like(user, g/princess_and_frog())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ The Princess and the Frog has a lot of great scenes with food. Watching it always made me hungry. It definitely makes me want to see New Orleans. Why did you like it?$
+;
+
+l/like(user, g/cinderella())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ Cinderella was the first Disney movie I ever watched. I still remember how magical it seemed, though maybe the young age at which I watched it affected my perception of it. Why do you like it yourself?$
+;
+
+l/like(user, g/alice_in_wonderland())
+cause(p/predicate(), l)
+request(emora, p)
+->
+$ I watched the Disney version of Alice in Wonderland all the time when I was a child! It was so dreamlike, so I was always sucked into the story. What makes you like it? $
+;

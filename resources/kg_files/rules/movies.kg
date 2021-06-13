@@ -15,3 +15,324 @@ request(emora, g)
 pl/like(user, make(user, m2/movie()))
 request_truth(emora, pl)
 ;
+
+l/like(user, m/marvel_movie())
+category(m)
+user_aware(l)
+-> movie_series_is_mentioned ->
+op_more_info(m, l)
+request(emora, m)
+;
+
+l/like(user, g/guardians_of_galaxy())
+category(g)
+user_aware(l)
+-> user_likes_guardians_of_galaxy ->
+op_more_info(g, l)
+request(emora, g)
+;
+
+l/like(user, g/ant_man())
+category(g)
+user_aware(l)
+-> user_likes_ant_man ->
+op_more_info(g, l)
+request(emora, g)
+;
+
+l/like(user, g/avengers_movie())
+category(g)
+user_aware(l)
+-> user_likes_avengers ->
+op_more_info(g, l)
+request(emora, g)
+;
+
+l/like(user, g/thor())
+category(g)
+user_aware(l)
+-> user_likes_thor ->
+op_more_info(g, l)
+request(emora, g)
+;
+
+l/like(user, g/captain_america())
+category(g)
+user_aware(l)
+-> user_likes_captain_america ->
+op_more_info(g, l)
+request(emora, g)
+;
+
+l/like(user, g/iron_man())
+category(g)
+user_aware(l)
+-> user_likes_iron_man ->
+op_more_info(g, l)
+request(emora, g)
+;
+
+w/watch(user, m/movie())
+category(m)
+user_aware(w)
+-> user_watched_unspecified_movie ->
+op_more_info(m, w)
+request(emora, m)
+;
+
+w/watch(user, m/marvel_movie())
+category(m)
+user_aware(w)
+-> user_watched_some_marvel_movie ->
+op_more_info(m, w)
+request(emora, m)
+;
+
+w/watch(user, m/movie())
+specific(m)
+user_aware(w)
+-> user_watched_specified_movie ->
+l/like(user, m)
+request_truth(emora, l)
+;
+
+/* Next two still a little funky */
+h/dislike(user, m/movie())
+category(m)
+user_aware(h)
+-> user_hates_movies ->
+p:<c/hate(user, l/movie()) cause(p/predicate(), c) category(l)>
+request(emora, p)
+;
+
+h/dislike(user, m/movie())
+user_aware(h)
+-> user_hates_specific_movie ->
+p:<c/hate(user, l/movie()) cause(p/predicate(), c) specific(l)>
+request(emora, p)
+;
+
+/* Disney Stuff */
+l/like(user, g/ratatouille())
+user_aware(l)
+->
+p:<c/like(user, t/ratatouille()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/dalmatians())
+user_aware(l)
+->
+p:<c/like(user, t/dalmatians()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/coco())
+user_aware(l)
+->
+p:<c/like(user, t/coco()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/zootopia())
+user_aware(l)
+->
+p:<c/like(user, t/zootopia()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/lady_and_tramp())
+user_aware(l)
+->
+p:<c/like(user, t/lady_and_tramp()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/walle())
+user_aware(l)
+->
+p:<c/like(user, t/walle()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/lion_king())
+user_aware(l)
+->
+p:<c/like(user, t/lion_king()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/hunchback())
+user_aware(l)
+->
+p:<c/like(user, t/hunchback()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/mulan())
+user_aware(l)
+->
+p:<c/like(user, t/mulan()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/frozen())
+user_aware(l)
+->
+p:<c/like(user, t/frozen()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/frozen_two())
+user_aware(l)
+->
+p:<c/like(user, t/frozen_two()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/moana())
+user_aware(l)
+->
+p:<c/like(user, t/moana()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/inside_out())
+user_aware(l)
+->
+p:<c/like(user, t/inside_out()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/pocahontas())
+user_aware(l)
+->
+p:<c/like(user, t/pocahontas()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/aladdin())
+user_aware(l)
+->
+p:<c/like(user, t/aladdin()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/peter_pan())
+user_aware(l)
+->
+p:<c/like(user, t/peter_pan()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/nightmare_before_christmas())
+user_aware(l)
+->
+p:<c/like(user, t/nightmare_before_christmas()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/bambi())
+user_aware(l)
+->
+p:<c/like(user, t/bambi()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/tangled())
+user_aware(l)
+->
+p:<c/like(user, t/tangled()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/lilo_and_stitch())
+user_aware(l)
+->
+p:<c/like(user, t/lilo_and_stitch()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/incredibles())
+user_aware(l)
+->
+p:<c/like(user, t/incredibles()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/toy_story())
+user_aware(l)
+->
+p:<c/like(user, t/toy_story()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/toy_story_2())
+user_aware(l)
+->
+p:<c/like(user, t/toy_story_2()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/toy_story_3())
+user_aware(l)
+->
+p:<c/like(user, t/toy_story_3()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/fantasia())
+user_aware(l)
+->
+p:<c/like(user, t/fantasia()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/finding_nemo())
+user_aware(l)
+->
+p:<c/like(user, t/finding_nemo()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/beauty_and_beast())
+user_aware(l)
+->
+p:<c/like(user, t/beauty_and_beast()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/snow_white())
+user_aware(l)
+->
+p:<c/like(user, t/snow_white()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/little_mermaid())
+user_aware(l)
+->
+p:<c/like(user, t/little_mermaid()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/princess_and_frog())
+user_aware(l)
+->
+p:<c/like(user, t/princess_and_frog()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/cinderella())
+user_aware(l)
+->
+p:<c/like(user, t/cinderella()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/alice_in_wonderland())
+user_aware(l)
+->
+p:<c/like(user, t/alice_in_wonderland()) cause(p/predicate(), c)>
+request(emora, p)
+;
