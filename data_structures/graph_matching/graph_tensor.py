@@ -39,8 +39,8 @@ class GraphTensor:
         self._targettensor = JaggedTensor([vedges[i] for i in range(len(vedges))], device=self.device)
         p.next('create edge hash tensor')
         self._edgestensor = HashTensor(edgehashes, device=self.device)
-        p.end()
-        p.report()
+        p.stop()
+        p.stop()
         return
 
     def __getitem__(self, source_label):

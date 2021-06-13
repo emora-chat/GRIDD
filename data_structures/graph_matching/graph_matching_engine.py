@@ -87,6 +87,7 @@ class GraphMatchingEngine:
 
         p.stop()
 
+        p.start('loop')
         for rlen, req in enumerate(checklist):                              # Tensor<query x 3: (s, l, t)>: required next edges
             if len(solutions) == 0:
                 break
@@ -190,7 +191,7 @@ class GraphMatchingEngine:
         self.q.index = query_id_index
 
         p.end()
-        # p.report()
+        p.report()
 
         return complete
 

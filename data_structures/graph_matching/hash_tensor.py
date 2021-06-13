@@ -17,17 +17,13 @@ class HashTensor:
         self.update(mapping)
 
     def update(self, mapping):
-        p.start('hash creation')
-        p.start('setup')
         if self.keys is not None:
             mapping.update(self.keys)
-        tablesize = prime(len(mapping) * 2) or len(mapping) * 2
+        tablesize = prime(len(mapping) * 5) or len(mapping) * 5
         self.keys = torch.full((tablesize,), -1, dtype=torch.long, device=self.device)
         self.values = torch.full((tablesize,), -1, dtype=torch.long, device=self.device)
-        p.next('tensor create')
         items = torch.tensor(list(mapping.items()), dtype=torch.long, device=self.device)
         keys, values = items[:,0], items[:,1]
-        p.next('insertion')
         while len(keys) > 0:
             insert_index = self.insertion_index(keys)
             collisions = torch.eq(insert_index.unsqueeze(1), insert_index.unsqueeze(1).T)
@@ -36,8 +32,6 @@ class HashTensor:
             self.keys[insert_index] = keys
             self.values[insert_index] = values
             keys, values = keys[collided], values[collided]
-        p.stop()
-        p.stop()
 
     def index(self, key):
         """
