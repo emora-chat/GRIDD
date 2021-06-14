@@ -1,5 +1,5 @@
 
-LOCAL = True
+LOCAL = False
 IS_SERIALIZING = False
 INFERENCE = True
 USECACHE = True

@@ -106,8 +106,6 @@ class ChatbotServer:
             if len(user_utterance.strip()) == 0:
                 elit_results = {}
             else:
-                print('USER UTTER: %s'%user_utterance)
-                print('AUX STATE: %s'%aux_state)
                 elit_results = self.elit_models(user_utterance, aux_state)
         # span updates for errors in elit models (lemmatization, pos)
         PARSE_ERRORS = {
