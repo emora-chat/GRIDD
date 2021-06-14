@@ -117,6 +117,14 @@ $ Why do you hate m? $
 ;
 
 /* Disney Time */
+l/like(user, m/disney_movie())
+category(m)
+request(emora, m)
+->
+_t(_rpresent)
+$ What is your favorite movie out of the Disney collection? $
+;
+
 l/like(user, g/ratatouille())
 cause(p/predicate(), l)
 request(emora, p)
@@ -339,4 +347,64 @@ cause(p/predicate(), l)
 request(emora, p)
 ->
 $ I watched the Disney version of Alice in Wonderland all the time when I was a child! It was so dreamlike, so I was always sucked into the story. What makes you like it? $
+;
+
+w/watch(user, u/object())
+user_aware(w)
+b/be(u, y/unknown_movie())
+request_truth(emora, b)
+->
+_t(_rpresent)
+_pr(_high)
+$ Oh, is that a movie? $
+;
+
+w/watch(user, u/object())
+l/like(user, u)
+req_sat(request_truth(emora, be_0/be(u, unknown_movie())))
+request_truth(emora, l)
+->
+_t(_rpresent)
+_pr(_high)
+$ Nice! Did you enjoy it? $
+;
+
+w/watch(user, u/object())
+req_sat(request_truth(emora, be_0/be(u, unknown_movie())))
+possess(u, g/movie_genre())
+request(emora, g)
+->
+_t(_rpresent)
+_pr(_high)
+$ What was the genre of the movie? $
+;
+
+w/watch(user, u/object())
+req_sat(request_truth(emora, be_0/be(u, unknown_movie())))
+req_sat(request_truth(emora, like_0/like(user, u)))
+l/like(user, u)
+cause(p/predicate(), l)
+request(emora, p)
+->
+_t(_rpresent)
+_pr(_high)
+$ What made you like it? I always enjoy movies that have exciting characters, like in Marvel and Disney movies. $
+;
+
+w/watch(user, u/object())
+req_sat(request_truth(emora, be_0/be(u, unknown_movie())))
+req_sat(request_truth(emora, like_0/like(user, u)))
+l/like(user, d/disney_movie())
+request_truth(emora, l)
+->
+$ Do you like any Disney movies? $
+;
+
+w/watch(user, u/object())
+req_sat(request_truth(emora, be_0/be(u, unknown_movie())))
+req_sat(request_truth(emora, like_0/like(user, u)))
+l/like(user, d/marvel_movie())
+request_truth(emora, l)
+->
+$ Do you like any Marvel movies? $
 ;

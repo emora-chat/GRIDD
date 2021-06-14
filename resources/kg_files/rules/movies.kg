@@ -113,6 +113,14 @@ request(emora, p)
 ;
 
 /* Disney Stuff */
+l/like(user, m/disney_movie())
+category(m)
+user_aware(l)
+-> disney_movie_series_is_mentioned ->
+op_more_info(m, l)
+request(emora, m)
+;
+
 l/like(user, g/ratatouille())
 user_aware(l)
 ->
@@ -334,5 +342,40 @@ l/like(user, g/alice_in_wonderland())
 user_aware(l)
 ->
 p:<c/like(user, t/alice_in_wonderland()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+w/watch(user, u/unknown_noun())
+user_aware(w)
+->
+b/be(u, y/unknown_movie())
+request_truth(emora, b)
+;
+
+w/watch(user, u/work_of_art_ner())
+user_aware(w)
+->
+b/be(u, y/unknown_movie())
+request_truth(emora, b)
+;
+
+w/watch(user, u/object())
+req_sat(request_truth(emora, be_0/be(u, unknown_movie())))
+->
+l/like(user, u)
+request_truth(emora, l)
+possess(u, m/movie_genre())
+request(emora, m)
+pl/like(user, d/disney_movie())
+request_truth(emora, pl)
+pl2/like(user, m2/marvel_movie())
+request_truth(emora, pl2)
+;
+
+w/watch(user, u/object())
+req_sat(request_truth(emora, be_0/be(u, unknown_movie())))
+req_sat(request_truth(emora, like_0/like(user, u)))
+->
+p:<c/like(user, t/object()) cause(p/predicate(), c)>
 request(emora, p)
 ;
