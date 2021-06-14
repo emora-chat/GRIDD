@@ -400,9 +400,12 @@ class ConceptGraph:
                 todo.difference_update(set(memo.keys()))
             return memo
 
-    def type_predicates(self, concepts=None, memo=None):
+    def type_predicates(self, concepts=None, memo=None, memo_pred=None):
+        # return dict of concept to type predicates
         if memo is None:
             memo = {}
+        if memo_pred is None:
+            memo_pred = {}
         if concepts is not None and not isinstance(concepts, (list, set, tuple)):
             if concepts not in memo:
                 if self.has(predicate_id=concepts):
@@ -411,17 +414,23 @@ class ConceptGraph:
                 else:
                     inst = None
                 types = {concepts}
+                type_preds = set()
                 for predicate in self.predicates(subject=concepts, predicate_type='type'):
                     supertype = predicate[2]
-                    supertypes = list(self.type_predicates(supertype, memo))
-                    types.update([o for s,t,o,i in supertypes])
-                    yield from supertypes
-                    yield predicate
+                    if concepts == supertype: # todo - this should not be possible, right?
+                        raise ValueError('Concept has self-loop type predicate which causes type_predicates() to crash on recursion error!') # todo - remove before deploy and pass instead
+                    else:
+                        supertypes = self.type_predicates(supertype, memo, memo_pred)
+                        type_preds.add(predicate)
+                        types.add(predicate[2])
+                        type_preds.update(supertypes)
+                        types.update([o for s,t,o,i in supertypes])
                 memo[concepts] = types
+                memo_pred[concepts] = type_preds
                 if inst is not None:
                     memo[inst] = types | {inst}
-                    return
-            return
+                    memo_pred[inst] = type_preds
+            return memo_pred[concepts]
         else:
             if isinstance(concepts, (list, set, tuple)):
                 todo = set(concepts)
@@ -429,9 +438,9 @@ class ConceptGraph:
                 todo = set(self.concepts())
             while todo:
                 concepts = todo.pop()
-                yield from self.type_predicates(concepts, memo)
+                self.type_predicates(concepts, memo, memo_pred)
                 todo.difference_update(set(memo.keys()))
-            return
+            return memo_pred
 
     def rules(self, rule_instances=None):
         rules = {}
@@ -588,6 +597,18 @@ class ConceptGraph:
         for s, t, o, i in self.predicates():
             graph.add(i, s, 's')
             graph.add(i, t, 't')
+            if o is not None:
+                graph.add(i, o, 'o')
+        for c in self.concepts():
+            graph.add(c)
+        return graph
+
+    def to_infcompat_graph(self):
+        graph = Graph()
+        for s, t, o, i in self.predicates():
+            graph.add(i, s, 's')
+            if t == TYPE:
+                graph.add(i, t, 't')
             if o is not None:
                 graph.add(i, o, 'o')
         for c in self.concepts():

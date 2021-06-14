@@ -304,6 +304,8 @@ class ConceptVisitor(Visitor_Recursive):
 
     def type_init(self, tree):
         newtype = [str(c) for c in tree.children[0].children]
+        self.check_double_init(newtype, self.instances)
+        self.check_double_init(newtype, self.types)
         supertypes = [str(c.children[0]) for c in tree.children[1:]]
         for t, st in combinations(newtype, supertypes):
             self.lentries.append((t, 'type', st, self.globals.get()))

@@ -1,4 +1,4 @@
-[entity, predicate, unknown] = (object)
+type([entity, predicate, unknown], object)
 property=(predicate)
 
 subj_essential=(predicate)

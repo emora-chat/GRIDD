@@ -298,7 +298,7 @@ class TensorDisplay:
                         if isinstance(e_, tuple):
                             _, e_ = e_
                         to_print.append(str(e_))
-                    print(('{:10}'*len(row)).format(*to_print))
+                    print(('{:13}'*len(row)).format(*to_print))
             else:
                 colnames = [(str(ids[1][i]) if ids[1] is not None else '') for i in range(x.size(1))]
                 print((' '*9+'{:>9}'*x.size(1)).format(*colnames))

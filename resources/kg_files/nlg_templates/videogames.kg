@@ -267,7 +267,7 @@ $ Oh yeah, Call of Duty is fun. I've only played it a few times, but I've always
 ;
 
 p/play(emora, videogame())
-req_unsat(request_truth(user, l))
+req_unsat(request_truth(user, p))
 ->
 $ Yes, I do! They're a very fun way for me to pass time. $
 ;

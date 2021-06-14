@@ -1,11 +1,12 @@
 imp_trigger(init_ask_name)
 -> ask_name_trigger ->
-n:<time(h/have(user, n/name()), now)>
+n:<time(b/be(n1/name(), n/name()), now) possess(user, n1)>
 request(emora, n)
-h{"coldstart": 1}
+b{"coldstart": 1}
 ;
 
-time(have(user, n/name()), now)
+time(be(n1/name(), n/name()), now)
+possess(user, n1)
 r/request(emora, n)
 user_aware(r)
 -> welcome_convo ->

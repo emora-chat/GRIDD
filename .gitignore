@@ -1,7 +1,9 @@
 .idea/*
 */__pycache__/*
 *__pycache__/*
+data_structures/graph_matching/__pycache__/*
 *.DS_Store
 structpy
 elit
 resources/english_distributions.obj.zip
+scratch/input

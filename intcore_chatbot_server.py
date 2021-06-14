@@ -13,10 +13,13 @@ from GRIDD.intcore_server_globals import *
 
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.intelligence_core import IntelligenceCore
+from GRIDD.data_structures.graph_matching.inference_engine import InferenceEngine
 from GRIDD.modules.ner_mentions import get_ner_mentions
 
 from GRIDD.utilities.server import save, load
 from inspect import signature
+
+from GRIDD.utilities.profiler import profiler as p
 
 def serialized(*returns):
     def dectorator(f):
@@ -55,6 +58,8 @@ class ChatbotServer:
         fallbacks = collect(*fallbacks)
         self.dialogue_intcore = IntelligenceCore(knowledge_base=knowledge, inference_rules=inference_rules,
                                                  nlg_templates=nlg_templates, fallbacks=fallbacks, device=device)
+        if INFERENCE:
+            self.reference_engine = InferenceEngine(device=device)
         if self.starting_wm is not None:
             self.dialogue_intcore.consider(list(self.starting_wm.values()))
         print('IntelligenceCore load: %.2f' % (time.time() - s))
@@ -148,6 +153,7 @@ class ChatbotServer:
                 with open(savefile, 'w') as f:
                     json.dump(d, f, indent=2)
                 self.elit_dp.intcore.inference_engine.add(rules, NLU_NAMESPACE)
+                self.elit_dp.intcore.inference_engine.matcher.process_queries()
         else:
             self.elit_dp = ElitDPToLogic(self.dialogue_intcore.knowledge_base,
                                          file, device=device)
@@ -243,6 +249,9 @@ class ChatbotServer:
             mega_mention_graph.add(span, 'type', 'span')
             if not span.startswith('__linking__'):
                 mega_mention_graph.add(span, 'def', center)
+                span_obj = Span.from_string(span)
+                if span_obj.pos_tag in {'prp', 'prop$'}:
+                    mega_mention_graph.add(focus, TYPE, span_obj.pos_tag)
         self.assign_cover(mega_mention_graph)
         for s,t,l in mega_mention_graph.metagraph.edges():
             update = False
@@ -261,14 +270,14 @@ class ChatbotServer:
                 if t == SPAN_REF: # will get floating concepts (e.g. not involved in any other predicate)
                     elements = [o]
                 elif t == TYPE:
-                    if o is not 'span':
+                    if o != 'span':
                         elements = [s, o, i]
                     else: # do not include type predicates on spans
                         elements = []
                 else:
                     elements = [s, o, i]
                 for c in elements:
-                    if c is not None and not mega_mention_graph.has(c, UTURN, str(aux_state.get('turn_index', '_err_'))):
+                    if c is not None and c not in TURN_IGNORE and not mega_mention_graph.has(c, UTURN, str(aux_state.get('turn_index', '_err_'))):
                         i2 = mega_mention_graph.add(c, UTURN, str(aux_state.get('turn_index', '_err_')))
                         mega_mention_graph.features[i2][BASE_UCONFIDENCE] = 1.0
 
@@ -343,12 +352,19 @@ class ChatbotServer:
     @serialized('working_memory', 'aux_state')
     def run_apply_dialogue_inferences(self, inference_results, working_memory, aux_state):
         self.load_working_memory(working_memory)
+        p.start('apply')
         self.dialogue_intcore.apply_inferences(inference_results)
+        p.next('update types')
         self._update_types(self.dialogue_intcore.working_memory)
+        p.next('operate')
         self.dialogue_intcore.operate(aux_state=aux_state)
+        p.next('user conf')
         self.dialogue_intcore.update_confidence('user', iterations=CONF_ITER)
+        p.next('emora conf')
         self.dialogue_intcore.update_confidence('emora', iterations=CONF_ITER)
+        p.next('sal')
         self.dialogue_intcore.update_salience(iterations=SAL_ITER)
+        p.stop()
         return working_memory, aux_state
 
     @serialized('rules', 'use_cached')
@@ -356,53 +372,44 @@ class ChatbotServer:
         self.load_working_memory(working_memory)
         self.dialogue_intcore.convert_metagraph_span_links(REF_SP, [REF, VAR])
         rules = self.dialogue_intcore.working_memory.references()
-        use_cached = False
-        return rules, use_cached
+        return rules
 
     @serialized('inference_results', 'rules')
-    def run_multi_inference(self, rules, use_cached, working_memory, aux_state):
+    def run_dynamic_inference(self, rules, working_memory, aux_state):
         self.load_working_memory(working_memory)
-        inference_results = self.dialogue_intcore.nlg_inference_engine.infer(self.dialogue_intcore.working_memory,
-                                                                             aux_state,
-                                                                              rules,
-                                                                             cached=use_cached)
-        rules = {}
-        return inference_results, rules
+        inference_results = self.reference_engine.infer(self.dialogue_intcore.working_memory, aux_state, rules, cached=False)
+        return inference_results, {}
+
+    @serialized('inference_results')
+    def run_template_inference(self, working_memory, aux_state):
+        self.load_working_memory(working_memory)
+        inference_results = self.dialogue_intcore.nlg_inference_engine.infer(self.dialogue_intcore.working_memory, aux_state)
+        return inference_results
 
     @serialized('working_memory')
     def run_reference_resolution(self, inference_results, working_memory, aux_state):
         self.load_working_memory(working_memory)
         wm = self.dialogue_intcore.working_memory
-        wm_types = wm.types()
         if inference_results is None:
             inference_results = {}
         compatible_pairs = {}
         if len(inference_results) > 0:
             for reference_node, (pre, matches) in inference_results.items():
                 compatible_pairs[reference_node] = {}
-                for match in matches:
+                for match, virtual_preds in matches:
                     if reference_node in match and reference_node != match[reference_node]:
                         compatible_pairs[reference_node][match[reference_node]] = []
                         for node in match:
                             if node != reference_node:
-                                compatible_pairs[reference_node][match[reference_node]].append((match[node], node))
+                                if not node.startswith('__virt_') and not match[node].startswith('__virt_'): # nothing to merge if matched node is virtual type
+                                    compatible_pairs[reference_node][match[reference_node]].append((match[node], node))
+            wm_types = wm.types(set(compatible_pairs.keys()))
             pairs_to_merge = [] # todo - make into a set???
             for ref_node, compatibilities in compatible_pairs.items():
                 resolution_options = []
-                span_def = None
-                pos_tag = None
-                span_nodes = wm.subjects(ref_node, SPAN_REF)
-                if span_nodes:
-                    (span_node,) = span_nodes
-                    span_defs = wm.objects(span_node, SPAN_DEF)
-                    if span_defs:
-                        (span_def,) = span_defs
-                    pos_tag = Span.from_string(span_node).pos_tag
+                ref_types = wm_types[ref_node]
                 for ref_match, constraint_matches in compatibilities.items():
-                    if (span_def is None or ref_match != span_def) and \
-                            (pos_tag is None or pos_tag not in {'prp', 'prop$'} or ref_match not in {'user', 'emora'}) and \
-                            ref_match not in wm_types[ref_node]:
-                        # the `def` obj of reference's span is not candidate, if there is one
+                    if ref_match not in ref_types and (('prp' not in ref_types and 'prop$' not in ref_types) or ref_match not in {'user', 'emora'}):
                         # any type of the reference is not a candidate
                         # user and emora are not candidates for pronoun references
                         if wm.metagraph.out_edges(ref_match, REF):
@@ -428,6 +435,7 @@ class ChatbotServer:
         salient_emora_arg_request = None
         salient_emora_request = None
         req_type = None
+        p.start('identify previous emora questions')
         # valid requests to be resolved through fragment resolution must have been requested on previous turn (currently approximated by salience threshold)
         emora_truth_requests = [pred for pred in wm.predicates('emora', REQ_TRUTH) if
                                 wm.has(pred[3], USER_AWARE) and not wm.has(pred[3], REQ_SAT)
@@ -460,6 +468,7 @@ class ChatbotServer:
             req_type = REQ_TRUTH
 
         if salient_emora_request is not None:
+            p.next('find answer')
             request_focus = salient_emora_request[2]
             current_user_spans = [s for s in wm.subtypes_of("span") if
                                   s != "span" and int(wm.features[s]["span_data"].turn) == aux_state["turn_index"]]
@@ -471,24 +480,27 @@ class ChatbotServer:
                 fragment_request_merges = self.arg_fragment_resolution(request_focus, current_user_concepts, wm)
             if len(fragment_request_merges) > 0:
                 # set salience of all request predicates to salience of fragment
-                fragment = fragment_request_merges[0][
-                    0]  # first fragment merge must be the origin request even for truth fragments which may include additional arg merges too!
+                fragment = fragment_request_merges[0][0]  # first fragment merge must be the origin request even for truth fragments which may include additional arg merges too!
                 ref_links = [e for e in wm.metagraph.out_edges(request_focus) if e[2] == REF and wm.has(predicate_id=e[1])]
                 for so, t, l in ref_links:
                     wm.features.setdefault(t, {})[SALIENCE] = wm.features.setdefault(fragment, {}).get(SALIENCE, 0)
                     # wm.features[t][BASE] = True todo - check if the BASE indication matters here
             self.merge_references(fragment_request_merges, aux_state)
             self.dialogue_intcore.operate(aux_state=aux_state)
+        p.next('user conf')
         self.dialogue_intcore.update_confidence('user', iterations=CONF_ITER)
+        p.next('emora conf')
         self.dialogue_intcore.update_confidence('emora', iterations=CONF_ITER)
+        p.next('sal')
         self.dialogue_intcore.update_salience(iterations=SAL_ITER)
+        p.stop()
         return self.dialogue_intcore.working_memory, aux_state
 
     def init_template_nlg(self):
         from GRIDD.modules.responsegen_by_templates import ResponseTemplateFiller
         self.template_filler = ResponseTemplateFiller()
 
-    @serialized('working_memory', 'expr_dict', 'use_cached')
+    @serialized('working_memory', 'expr_dict')
     def run_prepare_template_nlg(self, working_memory):
         self.load_working_memory(working_memory)
         self.dialogue_intcore.decay_salience()
@@ -501,8 +513,7 @@ class ChatbotServer:
                     expr_dict[o] = 'I'
                 else:
                     expr_dict[o] = s.replace('"', '')
-        use_cached = True
-        return self.dialogue_intcore.working_memory, expr_dict, use_cached
+        return self.dialogue_intcore.working_memory, expr_dict
 
     @serialized('template_response_sel', 'aux_state')
     def run_template_fillers(self, inference_results, expr_dict, working_memory, aux_state):
@@ -578,12 +589,17 @@ class ChatbotServer:
     def run_response_assembler(self, working_memory, aux_state, rule_responses):
         if rule_responses is None:
             rule_responses = [None]
+        p.start('response assembly')
         response = self.response_assembler(aux_state, rule_responses)
         self.load_working_memory(working_memory)
+        p.next('update sal')
         self.dialogue_intcore.update_salience(iterations=SAL_ITER)
+        p.next('decay sal')
         self.dialogue_intcore.decay_salience()
+        p.next('prune')
         self.dialogue_intcore.prune_predicates_of_type({AFFIRM, REJECT, EXPR}, {EXPR})
-        self.dialogue_intcore.prune_attended(keep=PRUNE_THRESHOLD)
+        self.dialogue_intcore.prune_attended(aux_state, keep=PRUNE_THRESHOLD)
+        p.stop()
         return response, self.dialogue_intcore.working_memory
 
     ###################################################
@@ -607,9 +623,10 @@ class ChatbotServer:
 
     def _update_types(self, working_memory):
         types = self.dialogue_intcore.pull_types()
-        for type in types:
-            if not working_memory.has(*type):
-                self.dialogue_intcore.consider([type], associations=type[0])
+        for c, type_preds in types.items():
+            for type in type_preds:
+                if not working_memory.has(*type):
+                    self.dialogue_intcore.consider([type], associations=c)
 
     def _convert_span_to_node_merges(self, span1, pos1, span2, pos2):
         (concept1,) = self.dialogue_intcore.working_memory.objects(span1, 'ref')
@@ -731,28 +748,49 @@ class ChatbotServer:
         return working_memory
 
     def respond(self, user_utterance, working_memory, aux_state):
+        p.start('next turn')
         aux_state = self.run_next_turn(aux_state)
+        p.next('sentence caser')
         user_utterance = self.run_sentence_caser(user_utterance)
+        p.next('elit')
         elit_results = self.run_elit_models(user_utterance, aux_state)
+        p.next('parse2logic')
         mentions, merges = self.run_parse2logic(elit_results)
+        p.next('multiword mentions')
         multiword_mentions = self.run_multiword_matcher(elit_results)
+        p.next('ner mentions')
         ner_mentions = self.run_ner_mentions(elit_results)
+        p.next('mention bridge')
         subspans, working_memory = self.run_mention_bridge(mentions, multiword_mentions, ner_mentions, working_memory, aux_state)
+        p.next('merge bridge')
         working_memory, aux_state = self.run_merge_bridge(merges, subspans, working_memory, aux_state)
+        p.next('knowledge pull')
         working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state)
 
-        rules, use_cached = self.run_reference_identification(working_memory)
-        inference_results, rules = self.run_multi_inference(rules, use_cached, working_memory, aux_state)
+        p.next('reference id')
+        rules = self.run_reference_identification(working_memory)
+        p.next('reference infer')
+        inference_results, rules = self.run_dynamic_inference(rules, working_memory, aux_state)
+        p.next('reference resolution')
         working_memory = self.run_reference_resolution(inference_results, working_memory, aux_state)
+        p.next('fragment resolution')
         working_memory, aux_state = self.run_fragment_resolution(working_memory, aux_state)
+        p.next('dialogue infer')
         inference_results = self.run_dialogue_inference(working_memory, aux_state)
+        p.next('apply inferences')
         working_memory, aux_state = self.run_apply_dialogue_inferences(inference_results, working_memory, aux_state)
 
-        rules, use_cached = self.run_reference_identification(working_memory)
-        inference_results, rules = self.run_multi_inference(rules, use_cached, working_memory, aux_state)
+        p.next('reference id 2')
+        rules = self.run_reference_identification(working_memory)
+        p.next('reference infer 2')
+        inference_results, rules = self.run_dynamic_inference(rules, working_memory, aux_state)
+        p.next('reference resolution 2')
         working_memory = self.run_reference_resolution(inference_results, working_memory, aux_state)
+        p.next('fragment resolution 2')
         working_memory, aux_state = self.run_fragment_resolution(working_memory, aux_state)
+        p.next('dialogue infer 2')
         inference_results = self.run_dialogue_inference(working_memory, aux_state)
+        p.next('apply inferences 2')
         working_memory, aux_state = self.run_apply_dialogue_inferences(inference_results, working_memory, aux_state)
 
         if PRINT_WM:
@@ -760,16 +798,25 @@ class ChatbotServer:
             print(working_memory.pretty_print(exclusions={SPAN_DEF, SPAN_REF, USER_AWARE, ASSERT, 'imp_trigger',
                                                           ETURN, UTURN}))
 
-        working_memory, expr_dict, use_cached = self.run_prepare_template_nlg(working_memory)
-        inference_results, rules = self.run_multi_inference(rules, use_cached, working_memory, aux_state)
+        p.next('prepare template nlg')
+        working_memory, expr_dict = self.run_prepare_template_nlg(working_memory)
+        p.next('template infer')
+        inference_results = self.run_template_inference(working_memory, aux_state)
+        p.next('template fillers')
         template_response_sel, aux_state = self.run_template_fillers(inference_results, expr_dict,
                                                                      working_memory, aux_state)
+        p.next('response sel')
         aux_state, response_predicates = self.run_response_selection(working_memory, aux_state,
                                                                      template_response_sel)
+        p.next('response exp')
         expanded_response_predicates, working_memory = self.run_response_expansion(response_predicates,
                                                                                    working_memory, aux_state)
+        p.next('response rules')
         rule_responses = self.run_response_by_rules(aux_state, expanded_response_predicates)
+        p.next('response assembler')
         response, working_memory = self.run_response_assembler(working_memory, aux_state, rule_responses)
+        p.stop()
+        p.report()
         return response, working_memory, aux_state
 
     def respond_serialize(self, user_utterance, working_memory, aux_state):
@@ -899,13 +946,23 @@ PRINT_WM = False
 
 if __name__ == '__main__':
     import torch
+
+    import sys
+    try:
+        f = open('GRIDD/scratch/input')
+        if 'off' in f.readline():
+            raise FileNotFoundError
+        sys.stdin = f
+    except FileNotFoundError:
+        pass
+
     kb, rules, nlg_templates, fallbacks, wm = get_filepaths()
 
     device = input('device (cpu/cuda:0/cuda:1/...) >>> ').strip()
     print_wm = input('debug (n/y) >>> ').strip()
     # global PRINT_WM
     PRINT_WM = True if print_wm == 'y' else False
-    if len(device) == 0:
+    if not device == 0:
         if torch.cuda.is_available():
             device = 'cuda:0'
         else:
