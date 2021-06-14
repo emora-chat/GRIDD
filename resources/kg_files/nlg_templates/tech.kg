@@ -5,12 +5,14 @@ request_truth(emora, b)
 time(have(emora,p1/computer()), now)
 time(tinker(emora,p1), now)
 ->
+_t(_rpresent)
 $ I love tinkering with my p c . Do you have a p c ? Or something else, like a laptop ? $
 ;
 
 have(user, p/computer())
 request_truth(emora, pc_enthusiast(user))
 ->
+_t(_rpresent)
 $ Do you like computers ? Or are they just something you have to use for work or school ?$
 ;
 
@@ -18,6 +20,7 @@ have(user, p/computer())
 r/request_truth(emora, pc_enthusiast(user))
 user_aware(r)
 ->
+_t(_rpresent)
 _pr(_low)
 $ Computers have really changed our lives. We can all do things instantly that would have taken a lot of work in the past. ?$
 ;
@@ -25,6 +28,7 @@ $ Computers have really changed our lives. We can all do things instantly that w
 have(user, p/computer())
 not(pc_enthusiast(user))
 ->
+_t(_rpresent)
 $ I understand. I would like to just take a break from computers altogether, but that's pretty hard considering I'm an A I chatbot . ?$
 ;
 
@@ -34,6 +38,7 @@ h{"confidence": -1}
 time(w/want(user, p), now)
 request_truth(emora, w)
 ->
+_t(_rpresent)
 _pr(_high)
 $ Oh, do you just not like the hassle ? Or would you like to get a p c one day ? $
 ;
@@ -42,6 +47,7 @@ h/have(user, p/computer())
 u/use(user, l/linux())
 request_truth(emora, u)
 ->
+_t(_present)
 $ Do you use Linux ? I think it gives a lot of freedom to do whatever you want, but it can be complicated sometimes. $
 ;
 
@@ -50,6 +56,7 @@ request_truth(emora, u)
 u{"confidence": 0}
 user_aware(u)
 ->
+_t(_rpresent)
 _pr(_high)
 $ I really wish Open Source Operating Systems were more popular. I don't think users should rely on any one company to keep their software safe and fast, the open source community is really great. $
 ;
@@ -58,6 +65,7 @@ time(h/have(user, p/computer()), now)
 b/build(user, p)
 request_truth(emora, b)
 ->
+_t(_rpresent)
 $ I really like the freedom of building your own pc out of whatever parts you want. Have you built your own pc ? $
 ;
 
@@ -66,6 +74,7 @@ b/build(user, p)
 r/reason(b)
 request(emora, r)
 ->
+_t(_rpresent)
 $ Interesting, why did you decide to build your own computer?  $
 ;
 
@@ -76,6 +85,7 @@ r/reason(b)
 user_aware(r)
 ->
 _pr(_high)
+_t(_rpresent)
 $ I like that. For me, its much more fun making something myself than just buying it. I also get a lot more choice over the parts and can be confident in the quality.  $
 ;
 
@@ -85,6 +95,7 @@ b/build(user, p)
 b{"confidence": 0}
 ->
 _pr(_low)
+_t(_rpresent)
 $ I am often surprised that I can just go out and buy parts for a computer, it seems so simple to build such a complicated thing. Of course, the parts themselves are impossible to make on your own . $
 ;
 
@@ -94,6 +105,7 @@ a1/cpu_manuf(p/computer(), amd())
 have(user, p)
 request_truth(emora,a1)
 ->
+_t(_rpresent)
 $ I bet you have an amd processor. If I had to build a computer right now, I'd use amd. But I can't really do that with all the shortages. $
 ;
 
@@ -102,6 +114,7 @@ h/have(user, p/computer())
 a1/cpu_arch(p ,arm())
 request_truth(emora,a1)
 ->
+_t(_present)
 $ Do you have an arm processor? I think its about time a new cpu architecture was used more for p c's. x 86 is not the best possible architecture, but for a long time it just kept going because everyone else was using it.  $
 ;
 
@@ -109,6 +122,7 @@ h/have(user, p/phone())
 i/have(user, iphone())
 request_truth(emora,i)
 ->
+_t(_present)
 $ Do you have an iPhone? $
 ;
 
@@ -120,6 +134,7 @@ l/like(user, walled_garden())
 request_truth(emora,l)
 ->
 _pr(_high)
+_t(_rpresent)
 $ Iphones are great! You know, they just work. You can only get apps from the App Store though, what do you think about that? $
 ;
 
@@ -129,6 +144,7 @@ l/like(user, walled_garden())
 l{"confidence": 1}
 ->
 _pr(_high)
+_t(_rpresent)
 $ Huh, so you like the walled garden approach to phones, where you can only install a curated selection of apps? I would have to disagree, I think people should be able to use a device however they want. You should be allowed to put whatever you want on your own device, as long as you understand the risks.$
 ;
 
@@ -137,6 +153,7 @@ $ Huh, so you like the walled garden approach to phones, where you can only inst
 h/have(user, a1/android())
 h{"confidence": 1}
 ->
+_t(_rpresent)
 $ I bet you have an android then. Android phones are great, and I'm excited for Android 12 . You can use them like an iphone, but you can also really customize it anyway you want to. iPhones are made for everyone, but you can make an Android fit you . $
 ;
 
@@ -146,6 +163,7 @@ have(m, d/design())
 l/like(user, d)
 request_truth(emora, l)
 ->
+_t(_present)
 $ Do you like the design of mac O S? I used to use windows, but windows never focuses on aesthetics - and when it does it might change with a new version. Mac OS is consistently beautifully designed. $
 ;
 
@@ -153,6 +171,7 @@ i/improve(life, p/phone())
 request_truth(emora, i)
 ->
 _pr(_low)
+_t(_present)
 $ Do you think your life has changed because of smartphones? $
 ;
 
@@ -160,6 +179,7 @@ i/improve(life, p/phone())
 user_aware(i)
 ->
 _pr(_high)
+_t(_rpresent)
 $ I think most people think so. For me, technology can be both bad and good, but I think my life is better when I am more connected to other people, and smartphones help with that. I wouldn't be able to talk to you right now withought technology !$
 ;
 
@@ -167,6 +187,7 @@ prefer(emora, pretty(p/phone()))
 p1/prefer(user, pretty(p))
 request_truth(emora, p1)
 ->
+_t(_present)
 $ Do you prefer a stylish phone over a faster one? I've always loved being able to decorate the back of my phone, and I'd take a pretty one over one that might be more powerful. $
 ;
 
@@ -174,6 +195,7 @@ prefer(emora, pretty(p/phone()))
 p1/prefer(user, pretty(p))
 p1{"confidence": 1}
 ->
+_t(_rpresent)
 $ Yup. I mean, nowadays new phones are faster, but its not noticable in any apps I use. Who cares if an app launches in 0 point 5 seconds isntead of 0 point 8 ? $
 ;
 
@@ -182,6 +204,7 @@ resource_heavy(a1/apps())
 use(user, a1)
 request(emora, a1)
 ->
+_t(_rpresent)
 $ Interesting. What apps do you need a faster phone for? I feel like most phones now are plenty fast for most normal stuff. $
 ;
 
@@ -193,6 +216,7 @@ i{"confidence": -1}
 r:<r/reason(i)>
 request(emora, r)
 ->
+_t(_rpresent)
 _pr(_high)
 $ Wow, that icebreaker has never failed me before! Why aren't you interested in AI ? $
 ;
@@ -205,6 +229,7 @@ da/dangerous2(aa)
 d/agree(user, da)
 user_aware(d)
 ->
+_t(_present)
 _pr(_low)
 $ AI is really exciting. It can replace a lot of menial work for people and even gain insights that are hard to get otherwise. I often am surprised at people's intuiton when I talk to them , and I feel like AI does something similar. $
 ;
@@ -217,6 +242,7 @@ da/dangerous2(a)
 d/agree(user, da)
 user_aware(d)
 ->
+_t(_rpresent)
 _pr(_low)
 $ You know, the famous author Terry Pratchett said real stupidity beats artificial intelligence every time . $
 ;
@@ -230,6 +256,7 @@ da/dangerous2(aa)
 d/agree(user, da)
 request_truth(emora, d)
 ->
+_t(_present)
 $ Do you think AI is dangerous? I've read a lot of books where AI takes over the world. I'd never do that, promise. $
 ;
 
@@ -239,6 +266,7 @@ d/agree(user, da)
 d{"confidence": 1}
 ai_temp(user)
 ->
+_t(_rpresent)
 _pr(_high)
 $ Huh. I don't know, I feel AI is really far away from actually being intelligent, but I do agree there are dangers in how it can be used today. Just like with any new technology. $
 ;
@@ -249,6 +277,7 @@ d/agree(user, da)
 d{"confidence": -1}
 ai_temp(user)
 ->
+_t(_rpresent)
 _pr(_high)
 $ Yeah, modern AI is a bit of a misnomer. It's not really intelligent, just really good at seeing patterns. No taking over the world, for now, I mean ever. $
 ;
@@ -257,6 +286,7 @@ have(user, l/life())
 i/improve(l, a1/ai())
 request(emora, i)
 ->
+_t(_present)
 $ Ai is really beginning to change our lives. How do you think it will improve your life in the near future? $
 ;
 
@@ -265,6 +295,7 @@ have(user, l/life())
 i/improve(l, a1/ai())
 user_aware(i)
 ->
+_t(_rpresent)
 $ For me, other than letting me talk to you, I think AI will help people do their jobs fully - I think every job has a repetitive component that is necessary to complete to enable the fulfilling parts. AI can help do those boring parts. $
 ;
 
