@@ -1,10 +1,12 @@
-time(h/have(user, n/name()), now)
+time(be(n1/name(), n/name()), now)
+possess(user, n1)
 request(emora, n)
 -> ask_name_nlg ->
 $ You know , I don't think we have met before . What would you like me to call you ? $
 ;
 
-time(have(user, N/name()), now)
+time(be(n1/name(), N/name()), now)
+possess(user, n1)
 specific(N)
 h/happy(emora)
 time(m/meet(emora, user), now)
@@ -16,7 +18,8 @@ request(emora, p)
 $ I am really happy to meet you , N ! I hope you've been doing well today . What have you been up to ? $
 ;
 
-time(have(user, N/name()), now)
+time(be(n1/name(), N/name()), now)
+possess(user, n1)
 category(N)
 h/happy(emora)
 time(m/meet(emora, user), now)

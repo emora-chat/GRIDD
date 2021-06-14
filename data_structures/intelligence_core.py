@@ -13,6 +13,7 @@ from GRIDD.globals import *
 from GRIDD.data_structures.assertions import assertions
 from GRIDD.data_structures.confidence import *
 from GRIDD.data_structures.id_map import IdMap
+from GRIDD.data_structures.span import Span
 
 from GRIDD.modules.responsegen_by_templates import Template
 
@@ -42,6 +43,8 @@ class IntelligenceCore:
 
         print('checking kb')
         self._check(self.knowledge_base)
+
+        self.kb_predicate_types = list(self.knowledge_base.type_predicates())
 
         if INFERENCE:
             self.nlg_inference_engine = InferenceEngine(device=device)
@@ -83,6 +86,7 @@ class IntelligenceCore:
         else:
             self.working_memory = ConceptGraph(namespace='wm', supports={AND_LINK: False})
             self.consider(working_memory)
+
         self.operators = operators(intcoreops)
         self.subj_essential_types = {i for i in self.knowledge_base.subtypes_of(SUBJ_ESSENTIAL)
                                 if not self.knowledge_base.has(predicate_id=i)}
@@ -658,7 +662,7 @@ class IntelligenceCore:
                 sal = wm.features.setdefault(c, {}).setdefault(SALIENCE, 0)
                 wm.features[c][SALIENCE] = max(0, sal - TIME_DECAY)
 
-    def prune_attended(self, keep):
+    def prune_attended(self, aux_state, keep):
         options = set()
         for s, t, o, i in self.working_memory.predicates():
             # cannot prune `i` if it is a reference constraint of another concept
@@ -675,8 +679,41 @@ class IntelligenceCore:
         sconcepts = sorted(options,
                            key=lambda x: self.working_memory.features.get(x, {}).get(SALIENCE, 0),
                            reverse=True)
+        print('TOTAL PRUNE CANDIDATES: %d'%len(sconcepts))
+        print('ALL PREDICATES: %d'%(len(list(self.working_memory.predicates()))))
+
         for c in sconcepts[keep:]:
-            self.working_memory.remove(c) # todo: uh oh - short term memory loss
+            to_remove = {c}
+            while to_remove:
+                r = to_remove.pop()
+                if self.working_memory.has(predicate_id=r):
+                    # todo - does this mess with references? Like can this delete a constraint of a reference when it shouldn't?
+                    s,t,o,i = self.working_memory.predicate(r)
+                    elements = [s,o] if o is not None else [s]
+                    for e in elements:
+                        if e not in {'user', 'emora'}:
+                            involved_in_preds_of = {sig[1] for sig in chain(self.working_memory.predicates(e), self.working_memory.predicates(object=e)) if sig != (s,t,o,i)}
+                            contentful = involved_in_preds_of - PRIM - {TYPE, TIME, ASSERT, REQ_TRUTH, REQ_ARG} - self.subj_essential_types - self.obj_essential_types
+                            if len(contentful) == 0:
+                                to_remove.add(e)
+                # check if there is a SPAN_REF of the thing being deleted; if yes, delete it too
+                span_ref_preds = self.working_memory.predicates(predicate_type=SPAN_REF, object=r)
+                for s,t,o,i in span_ref_preds:
+                    self.working_memory.remove(s)
+                # delete type ancestry if ancestor types are not used by anything else in WM
+
+                self.working_memory.remove(r) # todo: uh oh - short term memory loss
+
+        # delete all spans that occured SPANTURN turns ago
+        # todo - but keep them if they have a SPANREF link????
+        current_turn = aux_state.get('turn_index', -1)
+        for s,t,o,i in self.working_memory.predicates(predicate_type=TYPE, object='span'):
+            if '__linking__' in s:
+                span_obj = Span.from_string(s[11:])
+            else:
+                span_obj = Span.from_string(s)
+            if int(span_obj.turn) <= current_turn - SPANTURN:
+                self.working_memory.remove(s)
 
     def prune_predicates_of_type(self, inst_removals, subj_removals):
         for s, t, o, i in list(self.working_memory.predicates()):

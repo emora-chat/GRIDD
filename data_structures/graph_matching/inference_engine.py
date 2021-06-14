@@ -8,7 +8,7 @@ from GRIDD.globals import *
 from GRIDD.utilities.utilities import Counter
 
 from GRIDD.utilities.profiler import profiler as p
-
+import time
 
 class InferenceEngine:
 
@@ -75,14 +75,14 @@ class InferenceEngine:
         return converted_rules
 
     def _convert_facts(self, facts, facts_types):
-        p.start('to digraph')
+        # p.start('to digraph')
         facts_graph = facts.to_infcompat_graph()
-        p.next(f'flatten types ({len(facts_types)} concepts)')
+        # p.next(f'flatten types ({len(facts_types)} concepts)')
         facts_graph = self._flatten_types(facts, facts_graph, facts_types)
-        p.next('quantities')
+        # p.next('quantities')
         quantities = {c for c in facts.concepts() if isinstance(c, (float, int))}
         for node in quantities: facts_graph.data(node)['num'] = node
-        p.stop()
+        # p.stop()
         return facts_graph
 
     def _flatten_types(self, orig_cg, cg, types=None, for_query=False):

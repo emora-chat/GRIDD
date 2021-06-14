@@ -401,6 +401,7 @@ class ConceptGraph:
             return memo
 
     def type_predicates(self, concepts=None, memo=None):
+        # return dict of concept to type predicates
         if memo is None:
             memo = {}
         if concepts is not None and not isinstance(concepts, (list, set, tuple)):

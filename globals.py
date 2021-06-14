@@ -3,7 +3,7 @@ DEBUG = False
 KB = 'kb'                       # Namespace of Knowledge Base Concept Graph
 WM = 'wm'                       # Namespace of Working Memory Concept Graph
 
-PRUNE_THRESHOLD = 50            # Number of main predicate nodes to keep in WM after pruning
+PRUNE_THRESHOLD = 10            # Number of main predicate nodes to keep in WM after pruning
 CONF_ITER = 5
 SAL_ITER = 5
 
@@ -26,6 +26,7 @@ REJECT = 'reject'               # bipredicate indicating speaker and rejective/n
 TIME = 'time'                   # bipredicate indicating time specification
 SPAN_REF = 'ref'                # bipredicate linking span nodes to the concepts they refer to
 SPAN_DEF = 'def'                # bipredicate linking span nodes to the concept their language defines
+SPANTURN = 5                    # relative historical turn index of spans to delete from WM
 
 REQ_ARG = 'request'             # bipredicate of subject requesting disambiguation of the object (argument question)
 REQ_TRUTH = 'request_truth'     # bipredicate of subject requesting truth value of the object (y/n question)
@@ -40,6 +41,7 @@ UTURN = '_uturn'                # predicate used for user turn tracking in WM
 ETURN = '_eturn'                # predicate used for emora turn tracking in WM
 OP_UTURN = 'uturn'              # operator predicate used in rule creation to specify user turn information
 OP_ETURN = 'eturn'              # operator predicate used in rule creation to specify emora turn information
+TURN_IGNORE = {'emora', 'user', 'now', 'past', 'future'}
 
 SALIENCE_IN_LINK = 'salin'      # UpdateGraph label for salience propagation
 SALIENCE_OUT_LINK = 'salout'    # UpdateGraph label for salience propagation

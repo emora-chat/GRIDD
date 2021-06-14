@@ -245,6 +245,9 @@ class ChatbotServer:
             mega_mention_graph.add(span, 'type', 'span')
             if not span.startswith('__linking__'):
                 mega_mention_graph.add(span, 'def', center)
+                span_obj = Span.from_string(span)
+                if span_obj.pos_tag in {'prp', 'prop$'}:
+                    mega_mention_graph.add(focus, TYPE, span_obj.pos_tag)
         self.assign_cover(mega_mention_graph)
         for s,t,l in mega_mention_graph.metagraph.edges():
             update = False
@@ -270,7 +273,7 @@ class ChatbotServer:
                 else:
                     elements = [s, o, i]
                 for c in elements:
-                    if c is not None and not mega_mention_graph.has(c, UTURN, str(aux_state.get('turn_index', '_err_'))):
+                    if c is not None and c not in TURN_IGNORE and not mega_mention_graph.has(c, UTURN, str(aux_state.get('turn_index', '_err_'))):
                         i2 = mega_mention_graph.add(c, UTURN, str(aux_state.get('turn_index', '_err_')))
                         mega_mention_graph.features[i2][BASE_UCONFIDENCE] = 1.0
 
@@ -345,12 +348,19 @@ class ChatbotServer:
     @serialized('working_memory')
     def run_apply_dialogue_inferences(self, inference_results, working_memory):
         self.load_working_memory(working_memory)
+        p.start('apply')
         self.dialogue_intcore.apply_inferences(inference_results)
+        p.next('update types')
         self._update_types(self.dialogue_intcore.working_memory)
+        p.next('operate')
         self.dialogue_intcore.operate()
+        p.next('user conf')
         self.dialogue_intcore.update_confidence('user', iterations=CONF_ITER)
+        p.next('emora conf')
         self.dialogue_intcore.update_confidence('emora', iterations=CONF_ITER)
+        p.next('sal')
         self.dialogue_intcore.update_salience(iterations=SAL_ITER)
+        p.stop()
         return working_memory
 
     @serialized('rules', 'use_cached')
@@ -394,20 +404,9 @@ class ChatbotServer:
             pairs_to_merge = [] # todo - make into a set???
             for ref_node, compatibilities in compatible_pairs.items():
                 resolution_options = []
-                span_def = None
-                pos_tag = None
-                span_nodes = wm.subjects(ref_node, SPAN_REF)
-                if span_nodes:
-                    (span_node,) = span_nodes
-                    span_defs = wm.objects(span_node, SPAN_DEF)
-                    if span_defs:
-                        (span_def,) = span_defs
-                    pos_tag = Span.from_string(span_node).pos_tag
+                ref_types = wm_types[ref_node]
                 for ref_match, constraint_matches in compatibilities.items():
-                    if (span_def is None or ref_match != span_def) and \
-                            (pos_tag is None or pos_tag not in {'prp', 'prop$'} or ref_match not in {'user', 'emora'}) and \
-                            ref_match not in wm_types[ref_node]:
-                        # the `def` obj of reference's span is not candidate, if there is one
+                    if ref_match not in ref_types and (('prp' not in ref_types and 'prop$' not in ref_types) or ref_match not in {'user', 'emora'}):
                         # any type of the reference is not a candidate
                         # user and emora are not candidates for pronoun references
                         if wm.metagraph.out_edges(ref_match, REF):
@@ -582,20 +581,20 @@ class ChatbotServer:
         self.response_assembler = ResponseAssembler()
 
     @serialized('response', 'working_memory')
-    def run_response_assembler(self, working_memory, aux_state, rule_responses, nlg_responses):
-        if rule_responses is None and nlg_responses is None:
-            rule_responses = []
-            nlg_responses = []
-        elif nlg_responses is None:
-            nlg_responses = [None] * len(rule_responses)
-        elif rule_responses is None:
-            rule_responses = [None] * len(nlg_responses)
-        response = self.response_assembler(aux_state, rule_responses, nlg_responses)
+    def run_response_assembler(self, working_memory, aux_state, rule_responses):
+        if rule_responses is None:
+            rule_responses = [None]
+        p.start('response assembly')
+        response = self.response_assembler(aux_state, rule_responses)
         self.load_working_memory(working_memory)
+        p.next('update sal')
         self.dialogue_intcore.update_salience(iterations=SAL_ITER)
+        p.next('decay sal')
         self.dialogue_intcore.decay_salience()
+        p.next('prune')
         self.dialogue_intcore.prune_predicates_of_type({AFFIRM, REJECT, EXPR}, {EXPR})
-        self.dialogue_intcore.prune_attended(keep=PRUNE_THRESHOLD)
+        self.dialogue_intcore.prune_attended(aux_state, keep=PRUNE_THRESHOLD)
+        p.stop()
         return response, self.dialogue_intcore.working_memory
 
     ###################################################
@@ -618,10 +617,13 @@ class ChatbotServer:
                 graph.features[i2][BASE_UCONFIDENCE] = 1.0
 
     def _update_types(self, working_memory):
+        p.start('pull types')
         types = self.dialogue_intcore.pull_types()
+        p.next('add types')
         for type in types:
             if not working_memory.has(*type):
                 self.dialogue_intcore.consider([type], associations=type[0])
+        p.stop()
 
     def _convert_span_to_node_merges(self, span1, pos1, span2, pos2):
         (concept1,) = self.dialogue_intcore.working_memory.objects(span1, 'ref')
@@ -805,10 +807,8 @@ class ChatbotServer:
                                                                                    working_memory, aux_state)
         p.next('response rules')
         rule_responses = self.run_response_by_rules(aux_state, expanded_response_predicates)
-        # nlg_responses = self.run_response_nlg_model(expanded_response_predicates)
-        nlg_responses = None
         p.next('response assembler')
-        response, working_memory = self.run_response_assembler(working_memory, aux_state, rule_responses, nlg_responses)
+        response, working_memory = self.run_response_assembler(working_memory, aux_state, rule_responses)
         p.stop()
         p.report()
         return response, working_memory, aux_state

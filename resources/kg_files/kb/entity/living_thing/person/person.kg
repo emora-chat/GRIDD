@@ -5,11 +5,6 @@ user_group=person()
 type(user_group, group)
 expr("we, us, our", user_group)
 
-he=(living_thing)
-expr("he, his, him", he)
-she=(living_thing)
-expr("she, hers, her", she)
-
 veterinarian=(person)
 expr("vet", veterinarian)
 

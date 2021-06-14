@@ -2,7 +2,3 @@
 i/imp_trigger(init_ask_name)
 i{"b_confidence": 1.0, "convincable": 0.0, "salience": 0.9}
 ;
-
-i/imp_trigger(init_ask_pet)
-i{"b_confidence": 1.0, "convincable": 0.0, "salience": 0.5}
-;
