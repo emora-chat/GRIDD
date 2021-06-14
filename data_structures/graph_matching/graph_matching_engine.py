@@ -9,14 +9,14 @@ from GRIDD.utilities.utilities import TensorDisplay as Display
 from GRIDD.utilities.profiler import profiler as p
 from GRIDD.data_structures.graph_matching.root import root
 
-DISPLAY = True
+DISPLAY = False
 
 torch.no_grad()
 
 class GraphMatchingEngine:
 
     def __init__(self, *query_graphs, device='cpu'):
-        self.device = 'cpu'
+        self.device = device
         self.query_graphs = []              # List<ConceptGraph> of unprocessed precondition concept graphs
         self.checklist = torch.tensor([])   # list<Tensor<q x 3: (n, l, n)>> list of required next edge lists
         self.querylist = []                 # list<Tensor<q: query>> list of queries corresponding to checklist requirements
@@ -86,11 +86,12 @@ class GraphMatchingEngine:
         p.stop()
         p.start('loop')
         for num_checked, reqs in enumerate(checklist.transpose(0, 1)):      # Tensor<query x 3: (s, l, t)>: required next edges
-            p.start(f'loop {num_checked}, {len(sols)} sols)')
+            p.start(f'iter {num_checked} ({sols.size()[0]} sols)')
             solreqs = reqs[solqs]
             if DISPLAY: print('{:#^50s}'.format(f' ITER {num_checked} '))
             if DISPLAY: display(solreqs, self.n, self.l, self.n, label='Requirements')
             if DISPLAY: display(sols, *[self.n for _ in range(sols.size()[1])], label='sols')
+            p.start(f'filter')
             tarfilters = self.assigned(sols, solreqs[:,2])
             istarconst = solreqs[:,2] >= 0
             target_const_indx = torch.nonzero(istarconst).squeeze(1)
@@ -111,9 +112,10 @@ class GraphMatchingEngine:
             sols_to_keep = torch.cat([
                 sols[filterindx][satindx],
                 solreqs[filterindx][satindx][:,2:3],
-                tarfilters[satindx].unsqueeze(1)
+                tarfilters[filterindx][satindx].unsqueeze(1)
             ], 1 )
             qs_to_keep = solqs[filterindx][satindx]
+            p.next('expand')
             expanderindx = torch.nonzero(~isfilter).squeeze(1)
             sourcelabels = torch.cat([
                 sources[expanderindx].unsqueeze(1),
@@ -127,6 +129,7 @@ class GraphMatchingEngine:
             ], 1 )
             if DISPLAY: display(sols_expanded, *[self.n for _ in range(sols_expanded.size()[1])], label='expansion')
             qs_expanded = solqs[expanderindx][ii]
+            p.next(f'solution ({sols_to_keep.size()[0]} kept, {sols_expanded.size()[0]} expanded)')
             sols = torch.cat([sols_to_keep, sols_expanded], 0)
             solqs = torch.cat([qs_to_keep, qs_expanded], 0)
             solved = (num_checked + 1 >= query_lengths)[solqs]
@@ -136,14 +139,16 @@ class GraphMatchingEngine:
             full_solqs = solqs[solvedindx]
             sols = sols[unsolvedindx]
             solqs = solqs[unsolvedindx]
-            p.next(f'publish full solutions ({len(full_solutions)} full s)')
+            p.next('collection')
             for i, sol in enumerate(full_solutions):
                 q = self.q.identify(full_solqs[i].item())
                 assignments = {}
                 for i, vi in enumerate(sol[2::2]):
                     v = vi.item()
                     if v < 0:
-                        assignments[self.v.identify(v)] = self.n.identify(sol[i * 2 + 3].item())
+                        nid = sol[i * 2 + 3].item()
+                        nident = self.n.identify(nid)
+                        assignments[self.v.identify(v)] = nident
                 complete.setdefault(q, []).append(assignments)
             if DISPLAY:
                 print('Complete solutions:')
@@ -151,6 +156,8 @@ class GraphMatchingEngine:
                     print(s)
             if len(sols) == 0:
                 break
+            p.stop()
+            p.stop()
         p.end()
         p.start('postprocessing')
         for query_graph in query_graphs:
