@@ -412,9 +412,11 @@ class ChatbotServer:
                     if ref_match not in ref_types and (('prp' not in ref_types and 'prop$' not in ref_types) or ref_match not in {'user', 'emora'}):
                         # any type of the reference is not a candidate
                         # user and emora are not candidates for pronoun references
-                        if wm.metagraph.out_edges(ref_match, REF):
-                            # found other references that match; merge all
-                            pairs_to_merge.extend([(ref_match, ref_node)] + constraint_matches)
+                        if wm.metagraph.targets(ref_match, REF):
+                            # found other references that perfectly match (exact same reference constraints); merge all
+                            # pairs_to_merge.extend([(ref_match, ref_node)] + constraint_matches)
+                            # todo - error-prone right now, it overmatches (ex: X -type-> living_thing and Y -type-> animal would merge)
+                            pass
                         else:
                             # found resolution to reference; merge only one
                             resolution_options.append(ref_match)
