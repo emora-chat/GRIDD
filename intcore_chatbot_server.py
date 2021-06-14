@@ -16,6 +16,8 @@ from GRIDD.modules.ner_mentions import get_ner_mentions
 from GRIDD.utilities.server import save, load
 from inspect import signature
 
+from GRIDD.utilities.profiler import profiler as p
+
 def serialized(*returns):
     def dectorator(f):
         if not IS_SERIALIZING:
@@ -375,7 +377,6 @@ class ChatbotServer:
     def run_reference_resolution(self, inference_results, working_memory):
         self.load_working_memory(working_memory)
         wm = self.dialogue_intcore.working_memory
-        wm_types = wm.types()
         if inference_results is None:
             inference_results = {}
         compatible_pairs = {}
@@ -389,6 +390,7 @@ class ChatbotServer:
                             if node != reference_node:
                                 if not node.startswith('__virt_') and not match[node].startswith('__virt_'): # nothing to merge if matched node is virtual type
                                     compatible_pairs[reference_node][match[reference_node]].append((match[node], node))
+            wm_types = wm.types(set(compatible_pairs.keys()))
             pairs_to_merge = [] # todo - make into a set???
             for ref_node, compatibilities in compatible_pairs.items():
                 resolution_options = []
@@ -739,52 +741,76 @@ class ChatbotServer:
         return working_memory
 
     def respond(self, user_utterance, working_memory, aux_state):
+        p.start('next turn')
         aux_state = self.run_next_turn(aux_state)
+        p.next('sentence caser')
         user_utterance = self.run_sentence_caser(user_utterance)
+        p.next('elit')
         elit_results = self.run_elit_models(user_utterance, aux_state)
-        print('\n<< PARSE2LOGIC >>\n')
+        p.next('parse2logic')
         mentions, merges = self.run_parse2logic(elit_results)
+        p.next('multiword mentions')
         multiword_mentions = self.run_multiword_matcher(elit_results)
+        p.next('ner mentions')
         ner_mentions = self.run_ner_mentions(elit_results)
+        p.next('mention bridge')
         subspans, working_memory = self.run_mention_bridge(mentions, multiword_mentions, ner_mentions, working_memory, aux_state)
+        p.next('merge bridge')
         working_memory = self.run_merge_bridge(merges, subspans, working_memory)
+        p.next('knowledge pull')
         working_memory = self.run_knowledge_pull(working_memory)
 
+        p.next('reference id')
         rules, use_cached = self.run_reference_identification(working_memory)
-        print('\n<< REFERENCE INFERENCE >>\n')
+        p.next('reference infer')
         inference_results, rules = self.run_dynamic_inference(rules, working_memory)
+        p.next('reference resolution')
         working_memory = self.run_reference_resolution(inference_results, working_memory)
+        p.next('fragment resolution')
         working_memory = self.run_fragment_resolution(working_memory, aux_state)
-        print('\n<< DIALOGUE INFERENCE >>\n')
+        p.next('dialogue infer')
         inference_results = self.run_dialogue_inference(working_memory)
+        p.next('apply inferences')
         working_memory = self.run_apply_dialogue_inferences(inference_results, working_memory)
 
+        p.next('reference id 2')
         rules, use_cached = self.run_reference_identification(working_memory)
-        print('\n<< REFERENCE INFERENCE 2 >>\n')
+        p.next('reference infer 2')
         inference_results, rules = self.run_dynamic_inference(rules, working_memory)
+        p.next('reference resolution 2')
         working_memory = self.run_reference_resolution(inference_results, working_memory)
+        p.next('fragment resolution 2')
         working_memory = self.run_fragment_resolution(working_memory, aux_state)
-        print('\n<< DIALOGUE INFERENCE 2 >>\n')
+        p.next('dialogue infer 2')
         inference_results = self.run_dialogue_inference(working_memory)
+        p.next('apply inferences 2')
         working_memory = self.run_apply_dialogue_inferences(inference_results, working_memory)
 
         if PRINT_WM:
             print('\n<< Working Memory After Inferences Applied >>')
             print(working_memory.pretty_print(exclusions={SPAN_DEF, SPAN_REF, USER_AWARE, ASSERT, 'imp_trigger', ETURN, UTURN}))
 
+        p.next('prepare template nlg')
         working_memory, expr_dict, use_cached = self.run_prepare_template_nlg(working_memory)
-        print('\n<< TEMPLATE INFERENCE >>\n')
+        p.next('template infer')
         inference_results = self.run_template_inference(working_memory)
+        p.next('template fillers')
         template_response_sel, aux_state = self.run_template_fillers(inference_results, expr_dict,
                                                                      working_memory, aux_state)
+        p.next('response sel')
         aux_state, response_predicates = self.run_response_selection(working_memory, aux_state,
                                                                      template_response_sel)
+        p.next('response exp')
         expanded_response_predicates, working_memory = self.run_response_expansion(response_predicates,
                                                                                    working_memory, aux_state)
+        p.next('response rules')
         rule_responses = self.run_response_by_rules(aux_state, expanded_response_predicates)
         # nlg_responses = self.run_response_nlg_model(expanded_response_predicates)
         nlg_responses = None
+        p.next('response assembler')
         response, working_memory = self.run_response_assembler(working_memory, aux_state, rule_responses, nlg_responses)
+        p.stop()
+        p.report()
         return response, working_memory, aux_state
 
     def respond_serialize(self, user_utterance, working_memory, aux_state):
@@ -927,7 +953,7 @@ if __name__ == '__main__':
     try:
         f = open('GRIDD/scratch/input')
         if 'off' in f.readline():
-            raise RuntimeError
+            raise FileNotFoundError
         sys.stdin = f
     except FileNotFoundError:
         pass
@@ -946,10 +972,3 @@ if __name__ == '__main__':
     chatbot = ChatbotServer(kb, rules, nlg_templates, wm, device=device)
     chatbot.full_init(device=device)
     chatbot.run()
-
-    # import cProfile
-    # pr = cProfile.Profile()
-    # pr.enable()
-    # chatbot.run()
-    # pr.disable()
-    # pr.print_stats(sort='cumtime')

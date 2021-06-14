@@ -15,18 +15,13 @@ class JaggedTensor:
             self.extend(data)
 
     def extend(self, data):
-        p.start('length calc')
         lengths = torch.tensor([len(row) for row in data], dtype=torch.long, device=self.device)
         maxlen = torch.max(lengths).item()
-        p.next('create rows')
         row_data = list(chain(*[[(value, i, j) for j, value in enumerate(row)] for i, row in enumerate(data)]))
         row_data = torch.tensor(row_data, dtype=torch.long, device=self.device)
         vals, i, j = row_data[:,0], row_data[:,1], row_data[:,2]
-        p.next('setup')
         values = torch.full((len(data), maxlen), -1, dtype=torch.long, device=self.device)
-        p.next('insertion')
         values[i, j] = vals
-        p.next('concat and finish')
         if self.values is None:
             self.values = values
             self.max_len = maxlen
@@ -44,7 +39,6 @@ class JaggedTensor:
             pad = torch.full((small.size()[0], diff), -1, dtype=torch.long, device=self.device)
             small = torch.cat([small, pad], 1)
             self.values = torch.cat([small, large] if new_is_larger else [large, small], 0)
-        p.stop()
 
     def __getitem__(self, indices):
         padded = self.values[indices]

@@ -61,7 +61,7 @@ class InferenceEngine:
                 if pre.has('specific'):
                     pre.remove('specific')
             precondition = pre.to_infcompat_graph()
-            precondition = self._flatten_types(pre, precondition, insert_vars=True)
+            precondition = self._flatten_types(pre, precondition, for_query=True)
             for node in categories:
                 precondition.data(node)['category'] = True
             for node in specifics:
@@ -83,32 +83,42 @@ class InferenceEngine:
             facts_graph.data(node)['num'] = node
         return facts_graph
 
-    def _flatten_types(self, orig_cg, cg, insert_vars=False):
+    def _flatten_types(self, orig_cg, cg, for_query=False):
         counter = 0
         for c in orig_cg.concepts():
             type_predicates = list(orig_cg.type_predicates(c))
             handled = set()
             if orig_cg.has(predicate_id=c):
                 pred_type = orig_cg.type(c)
-                if pred_type != TYPE:  # add predicate type as a type predicate, if not type predicate itself
+                if pred_type != TYPE:  # add predicate type as a type, if not type predicate itself
                     handled.add(pred_type)
-                    new_id = '__virt_%d' % counter
-                    counter += 1
-                    cg.add(new_id, c, 's')
-                    cg.add(new_id, TYPE, 't')
-                    cg.add(new_id, pred_type, 'o')
-                    if insert_vars: cg.data(new_id)['var'] = True
+                    cg.add(c, pred_type, 't') # there would be an explicit type predicate instance for any predicate type instances that are arguments of different predicate, so not handled here
             for s, t, o, i in type_predicates:
-                if s == c: handled.add(o) # if there is a direct type predicate to o, do not add any indirect links
+                if s == c:  # an explicit type predicate to o
+                    handled.add(o)
+                    if for_query:
+                        if not list(orig_cg.predicates(subject=i)) and not list(orig_cg.predicates(object=i)):
+                            # remove predicate instance, since it is not an argument of anything
+                            cg.data(i)['var'] = False
+                            cg.remove(i)
+                            # add direct link instead
+                            cg.add(s, o, 't')
+                    else:
+                        # add direct type if creating data graph
+                        cg.add(s, o, 't')
             for s, t, o, i in type_predicates:
-                if s != c and o not in handled:  # only indirect type links need to be manually added
+                if s != c and o not in handled:  # only indirect type links need to be manually added, since they do not exist as predicate instances in the ConceptGraph
                     handled.add(o)
                     new_id = '__virt_%d' % counter
                     counter += 1
                     cg.add(new_id, c, 's')
                     cg.add(new_id, t, 't')
                     cg.add(new_id, o, 'o')
-                    if insert_vars: cg.data(new_id)['var'] = True
+                    if for_query:
+                        cg.data(new_id)['var'] = True
+                    else:
+                        # add direct type to only if creating data graph
+                        cg.add(c, o, 't')
         return cg
 
     def infer(self, facts, dynamic_rules=None, cached=True):
@@ -146,6 +156,7 @@ class InferenceEngine:
             else:
                 precondition_id = self._preloaded_rules.reverse()[precondition]
             precondition_cg = all_rules[precondition_id][0]
+            precondition_types = precondition_cg.types()
             solset = []
             for sol in sols:
                 virtual_preds = {}
@@ -169,7 +180,7 @@ class InferenceEngine:
                             # remove non-specific concepts from their type sets
                             # e.g. an instance of name is removed but the specified name 'sarah' is not
                             value_types -= {value}
-                        for t in precondition_cg.types(variable) - {variable}:
+                        for t in precondition_types.get(variable, set()) - {variable}:
                             if value_types == facts_types.get(t, set()):
                                 not_category = False
                         if not_category:
@@ -179,12 +190,29 @@ class InferenceEngine:
                         value_types = facts_types.get(value, set())
                         if value.startswith(facts.id_map().namespace) or value.startswith(KB):
                             value_types -= {value}
-                        for t in precondition_cg.types(variable) - {variable}:
+                        for t in precondition_types.get(variable, set()) - {variable}:
                             if value_types <= facts_types.get(t, set()):
                                 not_specific = True
                         if not_specific:
                             break
                 else:
+                    # postprocess type predicates
+                    counter = 1
+                    for s,t,o,i in precondition_cg.predicates(predicate_type=TYPE):
+                        if i not in sol:
+                            # lookup matching type instance based on assignments in sol
+                            matched_types = list(precondition_cg.predicates(sol.get(s,s), TYPE, sol.get(o,o)))
+                            number_matched_types = len(matched_types)
+                            if number_matched_types == 1:
+                                # direct type match found
+                                sol[i] = matched_types[0][3]
+                            elif number_matched_types == 0 :
+                                # must be indirect type match
+                                sol[i] = '__virt_post_%d'%counter
+                                counter += 1
+                                virtual_preds[sol[i]] = (sol.get(s,s), TYPE, sol.get(o,o))
+                            elif number_matched_types > 1 :
+                                print("[WARNING] Solution identified but >1 matching type predicate found in datagraph for a type predicate in precondition!")
                     solset.append((sol, virtual_preds))
             if len(solset) > 0:
                 solutions[precondition_id] = solset
