@@ -9,7 +9,6 @@ from GRIDD.data_structures.graph_matching.root import root, rooted_edge
 def preprocess_query_graphs(query_graphs, nodemap, varmap, edgemap, querymap):
     constant_counts = defaultdict(int)
     query_graphs = preprocess_query_tuples(query_graphs)
-    querylist = []
     checklist = []
     qlengths = []
     for query_graph in query_graphs:
@@ -19,15 +18,11 @@ def preprocess_query_graphs(query_graphs, nodemap, varmap, edgemap, querymap):
         for c in constants:
             constant_counts[c] += 1
     for query_graph in query_graphs:
+        querymap.get(query_graph)
         cl = preprocess_query_graph(query_graph, nodemap, varmap, edgemap, constant_counts)
-        for i, req in enumerate(cl):
-            while len(checklist) <= i:
-                checklist.append([])
-                querylist.append([])
-            checklist[i].append(req)
-            querylist[i].append(querymap.get(query_graph))
+        checklist.append(cl)
         qlengths.append(len(cl))
-    return checklist, querylist, qlengths
+    return checklist, qlengths
 
 
 def preprocess_query_graph(graph, nodemap, varmap, edgemap, constant_counts):

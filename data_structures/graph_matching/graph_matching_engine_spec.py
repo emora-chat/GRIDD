@@ -44,11 +44,6 @@ class GraphMatchingEngineSpec:
             ('john', 'mary', 'likes')
         ])
 
-        for i in 'abcdefghijklmnopqrstuvwxyz'[:5]:
-            for j in 'abcdefghijklmnopqrstuvwxyz'[:5]:
-                for k in 'abcdefghijklmnopqrstuvwxyz'[:5]:
-                    data_graph.add(i,j,k)
-
         query1 = Graph([
             ('A', 'B', 'likes'),
         ], nodes={
