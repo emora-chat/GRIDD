@@ -66,6 +66,7 @@ class GraphMatchingEngine:
         return result
 
     def match(self, data_graph, *query_graphs):
+        torch.cuda.reset_peak_memory_stats(self.device)
         if len(query_graphs) == 0 and len(self.query_graphs) == 0: return {}
         p.start('match')
         p.start('querygen')
@@ -154,7 +155,7 @@ class GraphMatchingEngine:
             if len(sols) == 0:
                 break
         p.stop()
-        p.start('postprocessing')
+        p.start(f'postprocessing (MAX MEMORY: {torch.cuda.max_memory_allocated(self.device) / 1073741824:.3f}GB)')
         for query_graph in query_graphs:
             del self.q[query_graph]
         self.q.index = query_id_index
