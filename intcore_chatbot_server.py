@@ -13,7 +13,8 @@ from GRIDD.intcore_server_globals import *
 
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.intelligence_core import IntelligenceCore
-from GRIDD.data_structures.graph_matching.inference_engine import InferenceEngine
+if INFERENCE:
+    from GRIDD.data_structures.graph_matching.inference_engine import InferenceEngine
 from GRIDD.modules.ner_mentions import get_ner_mentions
 
 from GRIDD.utilities.server import save, load
