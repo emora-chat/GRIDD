@@ -67,19 +67,20 @@ class GraphTensor:
 if __name__ == '__main__':
     from structpy.graph.directed.labeled.multilabeled_digraph_networkx import MultiLabeledDigraphNX as Graph
 
+    dev = 'cuda'
     g = Graph({
         ('john', 'mary', 'likes'),
         ('john', 'tom', 'likes'),
         ('mary', 'john', 'likes')
     })
-    gt = GraphTensor(g)
+    gt = GraphTensor(g, device=dev)
 
     st = [
         [gt.nodemap.get('john'), gt.edgemap.get('likes')],
         [gt.nodemap.get('tom'), gt.edgemap.get('likes')]
     ]
 
-    targets, inv = gt.targets(torch.tensor(st, dtype=torch.long))
+    targets, inv = gt.targets(torch.tensor(st, dtype=torch.long, device=dev))
 
     for i, target in enumerate(targets):
         print(gt.nodemap.identify(st[inv[i].item()][0]),
@@ -89,7 +90,7 @@ if __name__ == '__main__':
         [gt.nodemap.get('john'), gt.edgemap.get('likes'), gt.nodemap.get('mary')],
         [gt.nodemap.get('john'), gt.edgemap.get('likes'), gt.nodemap.get('john')],
         [gt.nodemap.get('mary'), gt.edgemap.get('likes'), gt.nodemap.get('tom')]
-    ], dtype=torch.long)
+    ], dtype=torch.long, device=dev)
 
     contains = gt.has(edgetest)
 
