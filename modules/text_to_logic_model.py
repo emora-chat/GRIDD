@@ -103,7 +103,8 @@ class ParseToLogic:
         self.intcore.consider(parse_graph)
         self._span_to_concepts()
         types = self.intcore.pull_types()
-        self.intcore.consider(types)
+        type_preds = {p for concept in types for p in types[concept]}
+        self.intcore.consider(type_preds)
         # todo - this is just a temporary patch for missing type expression
         for s,_,_,_ in wm.predicates(predicate_type='expr'):
             if not wm.has(s, 'type', 'expression'):

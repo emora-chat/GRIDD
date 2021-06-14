@@ -432,6 +432,7 @@ class ChatbotServer:
         salient_emora_arg_request = None
         salient_emora_request = None
         req_type = None
+        p.start('identify previous emora questions')
         # valid requests to be resolved through fragment resolution must have been requested on previous turn (currently approximated by salience threshold)
         emora_truth_requests = [pred for pred in wm.predicates('emora', REQ_TRUTH) if
                                 wm.has(pred[3], USER_AWARE) and not wm.has(pred[3], REQ_SAT)
@@ -464,6 +465,7 @@ class ChatbotServer:
             req_type = REQ_TRUTH
 
         if salient_emora_request is not None:
+            p.next('find answer')
             request_focus = salient_emora_request[2]
             current_user_spans = [s for s in wm.subtypes_of("span") if
                                   s != "span" and int(wm.features[s]["span_data"].turn) == aux_state["turn_index"]]
@@ -475,17 +477,20 @@ class ChatbotServer:
                 fragment_request_merges = self.arg_fragment_resolution(request_focus, current_user_concepts, wm)
             if len(fragment_request_merges) > 0:
                 # set salience of all request predicates to salience of fragment
-                fragment = fragment_request_merges[0][
-                    0]  # first fragment merge must be the origin request even for truth fragments which may include additional arg merges too!
+                fragment = fragment_request_merges[0][0]  # first fragment merge must be the origin request even for truth fragments which may include additional arg merges too!
                 ref_links = [e for e in wm.metagraph.out_edges(request_focus) if e[2] == REF and wm.has(predicate_id=e[1])]
                 for so, t, l in ref_links:
                     wm.features.setdefault(t, {})[SALIENCE] = wm.features.setdefault(fragment, {}).get(SALIENCE, 0)
                     # wm.features[t][BASE] = True todo - check if the BASE indication matters here
             self.merge_references(fragment_request_merges)
             self.dialogue_intcore.operate()
+        p.next('user conf')
         self.dialogue_intcore.update_confidence('user', iterations=CONF_ITER)
+        p.next('emora conf')
         self.dialogue_intcore.update_confidence('emora', iterations=CONF_ITER)
+        p.next('sal')
         self.dialogue_intcore.update_salience(iterations=SAL_ITER)
+        p.stop()
         return self.dialogue_intcore.working_memory
 
     def init_template_nlg(self):
@@ -617,13 +622,11 @@ class ChatbotServer:
                 graph.features[i2][BASE_UCONFIDENCE] = 1.0
 
     def _update_types(self, working_memory):
-        p.start('pull types')
         types = self.dialogue_intcore.pull_types()
-        p.next('add types')
-        for type in types:
-            if not working_memory.has(*type):
-                self.dialogue_intcore.consider([type], associations=type[0])
-        p.stop()
+        for c, type_preds in types.items():
+            for type in type_preds:
+                if not working_memory.has(*type):
+                    self.dialogue_intcore.consider([type], associations=c)
 
     def _convert_span_to_node_merges(self, span1, pos1, span2, pos2):
         (concept1,) = self.dialogue_intcore.working_memory.objects(span1, 'ref')

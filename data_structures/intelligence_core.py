@@ -44,7 +44,7 @@ class IntelligenceCore:
         print('checking kb')
         self._check(self.knowledge_base)
 
-        self.kb_predicate_types = list(self.knowledge_base.type_predicates())
+        self.kb_predicate_types = self.knowledge_base.type_predicates()
 
         if INFERENCE:
             self.nlg_inference_engine = InferenceEngine(device=device)
@@ -542,7 +542,7 @@ class IntelligenceCore:
         return
 
     def pull_types(self):
-        return set(self.knowledge_base.type_predicates(self.working_memory.concepts()))
+        return {c: self.kb_predicate_types[c] for c in self.working_memory.concepts() if c in self.kb_predicate_types}
 
 
     def pull_knowledge(self, limit, num_pullers, association_limit=None, subtype_limit=None, degree=1):
