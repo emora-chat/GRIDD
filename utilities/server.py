@@ -70,8 +70,9 @@ def load(key, value):
         try:
             value = json.loads(value) if isinstance(value, str) else value
         except json.JSONDecodeError as e:
+            print('--SERVER LOAD UTILITY--')
             print('ERROR:', e)
-            print('SOURCE:', value)
+            print('SOURCE: (%s,%s)'%(key,value))
             value = value
         if key == 'working_memory':
             working_memory = ConceptGraph(namespace=value["namespace"])

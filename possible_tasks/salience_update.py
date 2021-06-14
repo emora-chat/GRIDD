@@ -1,22 +1,14 @@
 import sys, os
 sys.path.append(os.getcwd())
 import unittest
-from GRIDD.data_structures.concept_graph import ConceptGraph
-from GRIDD.data_structures.inference_engine import InferenceEngine
-from GRIDD.data_structures.concept_compiler import ConceptCompiler
-from GRIDD.utilities.utilities import uniquify, operators, interleave
-from itertools import chain, combinations
 from GRIDD.data_structures.update_graph import UpdateGraph
-from GRIDD.globals import *
-from GRIDD.data_structures.assertions import assertions
-from GRIDD.data_structures.confidence import *
-from GRIDD.data_structures.id_map import IdMap
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.globals import *
 import numpy as np
-import time
-import torch
-import random
+import random, time
+
+from GRIDD.utilities.profiler import profiler as p
+
 MY_DECAY = 0.1
 def update_salienceold(wm):
     """
@@ -73,18 +65,14 @@ def update_salienceold(wm):
 
 
 def update_salience(wm):
-    names = {}
+    p.start('init')
     wmc = wm.concepts()
-    npsal = np.zeros(shape=(1,len(wmc)))
     npedges = np.zeros(shape=(len(wmc), len(wmc)))
+    ewmc = list(enumerate(wmc))
+    names = {name: i for i, name in ewmc}
+    npsal = np.expand_dims(np.array([wm.features.get(name, {}).get(SALIENCE, 0.0) for i,name in ewmc]), 0)
 
-    for i, name in enumerate(wmc):
-        names[name] = i
-        try:
-            npsal[0][i]=wm.features[name][SALIENCE]
-        except:
-            pass
-
+    p.next('setup 1')
     for s, t, o, i in wm.predicates():
         if i not in SAL_FREE:
             if s not in SAL_FREE:
@@ -97,6 +85,7 @@ def update_salience(wm):
                 npedges[names[o]][names[i]] = MY_DECAY
                 npedges[names[i]][names[o]] = MY_DECAY
 
+    p.next('setup 2')
     for edge in wm.metagraph.edges():
         if isinstance(edge[2], tuple) and AND_LINK == edge[2][0]:
             for evidence, and_node, _ in edge:
@@ -105,18 +94,17 @@ def update_salience(wm):
                 for _, implication, _ in or_links:
                     npedges[names[evidence]][names[implication]] = MY_DECAY
 
-
+    p.next('calc')
     a = np.matmul(npsal, npedges)
 
-    sal = {}
-    for i in wm.concepts():
-        try:
-            sal[i] = min(wm.features[i][SALIENCE] + a[0][names[i]],1.0)
-            wm.features[i][SALIENCE] += sal[i]
-        except:
-            sal[i] = min(a[0][names[i]],1.0)
-            wm.features[i][SALIENCE] = sal[i]
-    return sal
+    p.next('assign')
+    for i, c in ewmc:
+        if c in wm.features and SALIENCE in wm.features[c]:
+            wm.features[c][SALIENCE] += min(wm.features[c][SALIENCE] + a[0][i],1.0)
+        else:
+            wm.features[c][SALIENCE] = min(a[0][i],1.0)
+    p.stop()
+    p.report()
 
 class TestSalienceUpdate(unittest.TestCase):
 
@@ -951,11 +939,15 @@ class TestSalienceUpdate(unittest.TestCase):
         ;
         
         '''
+
+        p.start()
+        p.stop()
+
         meta = {'d': {SALIENCE: 1.0},}
         for i in range(399):
             meta['a'+str(i)] = {SALIENCE: random.random()}
         wm = ConceptGraph(a, metadata=meta,)
-
+        print(f'Nodes: {len(wm.concepts())}, Edges: {len(list(wm.predicates()))}')
 
         # Here's how to access concept salience
         assert wm.features['d'][SALIENCE] == 1.0
@@ -1036,13 +1028,13 @@ class TestSalienceUpdate(unittest.TestCase):
         })
 
         # Here's how to access concept salience
-        assert wm.features['d'][SALIENCE] == 1.0
-        for i in range(5):
-            saliences = update_salience(wm)
+        # assert wm.features['d'][SALIENCE] == 1.0
+        # for i in range(5):
+        #     saliences = update_salience(wm)
 
-        for concept, salience in saliences.items():
-            print(concept, ':', salience)
-        print()
+        # for concept, salience in saliences.items():
+        #     print(concept, ':', salience)
+        # print()
         '''
         Considerations:
 
