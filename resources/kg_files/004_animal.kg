@@ -1313,7 +1313,7 @@ expr("speak", speak)
 
 walk = (predicate)
 expr("walk", walk)
-play = (predicate)
+play = (do)
 expr("play", play)
 cuddle = (predicate)
 expr("cuddle, snuggle", cuddle)
