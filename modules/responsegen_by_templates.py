@@ -98,11 +98,19 @@ class ResponseTemplateFiller:
                 string = r_string + ' '
             candidates = list(set(fallback_options.keys()) - set(aux_state.get('fallbacks', [])))
             if len(candidates) > 0:
-                predicates, template_obj, _ = fallback_options[random.choice(candidates)]
+                selected = random.choice(candidates)
+                if 'fallbacks' not in aux_state:
+                    aux_state['fallbacks'] = []
+                if selected not in aux_state['fallbacks']:
+                    aux_state['fallbacks'].append(selected)
+                predicates, template_obj, _ = fallback_options[selected]
                 string += ' '.join(template_obj.string_spec_ls)
                 type = "fallback"
             else:
                 string = None
+
+        if string is not None:
+            string = string.replace("’", "'")
 
         return (string, predicates, type)
 
