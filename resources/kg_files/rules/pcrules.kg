@@ -253,3 +253,9 @@ a:<resource_heavy(a/apps())
 use(user, a)>
 request(emora, a)
 ;
+
+like(user, do(o/object()))
+->
+like(user, o)
+;
+
