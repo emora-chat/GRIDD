@@ -711,15 +711,15 @@ class IntelligenceCore:
         wm = self.working_memory
         type_predicates = wm.type_predicates()
 
-        print(f'\nWM PREDICATES: {len(list(wm.predicates()))}')
-        print(f'WM CONCEPTS: {len(wm.concepts())}')
+        # print(f'\nWM PREDICATES: {len(list(wm.predicates()))}')
+        # print(f'WM CONCEPTS: {len(wm.concepts())}')
 
         options = {i for s,t,o,i in wm.predicates() if t not in chain(self.subj_essential_types, self.obj_essential_types, PRIM, {TYPE})}
         soptions = sorted(options,
                           key=lambda x: wm.features.get(x, {}).get(SALIENCE, 0),
                           reverse=True)
         keep = soptions[:num_keep]
-        print(f'KEEP {len(keep)}')
+        # print(f'KEEP {len(keep)}')
 
         # delete all user and emora spans that occured SPANTURN turns ago
         deletions = set()
@@ -746,14 +746,14 @@ class IntelligenceCore:
             keepers.update(structs)
             refs = wm.metagraph.targets(k, REF)
             keepers.update(refs)
-        print(f'STRUCT & REF KEEPERS {len(keepers-deletions)}')
+        # print(f'STRUCT & REF KEEPERS {len(keepers-deletions)}')
 
         for k in set(keepers):
             keepers.update({c for sig in type_predicates.get(k, []) for c in sig})
-        print(f'STRUCT & REF & TYPE KEEPERS {len(keepers-deletions)}')
+        # print(f'STRUCT & REF & TYPE KEEPERS {len(keepers-deletions)}')
 
         to_remove = (wm.concepts() - keepers) | deletions
-        print(f'REMOVING {len(to_remove)}')
+        # print(f'REMOVING {len(to_remove)}')
         for r in to_remove:
             # check if there is a SPAN_REF of the thing being deleted; if yes, delete it too
             span_ref_preds = self.working_memory.predicates(predicate_type=SPAN_REF, object=r)
@@ -761,8 +761,8 @@ class IntelligenceCore:
                 self.working_memory.remove(s)
             wm.remove(r)
 
-        print(f'\nAFTER WM PREDICATES: {len(list(wm.predicates()))}')
-        print(f'AFTER WM CONCEPTS: {len(wm.concepts())}')
+        # print(f'\nAFTER WM PREDICATES: {len(list(wm.predicates()))}')
+        # print(f'AFTER WM CONCEPTS: {len(wm.concepts())}')
 
 
     def prune_predicates_of_type(self, inst_removals, subj_removals):

@@ -193,9 +193,9 @@ class ChatbotServer:
             center_pred = list(mention_graph.predicates(predicate_type='center'))
             ((center, t, o, i,),) = center_pred
             mapped_ids = mega_mention_graph.concatenate(mention_graph, predicate_exclusions={'focus', 'center'})
-            mega_mention_graph.add(span, 'ref', mapped_ids.get(focus))
-            mega_mention_graph.add(span, 'type', 'span')
-            mega_mention_graph.add(span, 'def', mapped_ids.get(center))
+            mega_mention_graph.add(span, SPAN_REF, mapped_ids.get(focus))
+            mega_mention_graph.add(span, TYPE, 'span')
+            # mega_mention_graph.add(span, 'def', mapped_ids.get(center))
             span_obj = Span.from_string(span)
             covered_idx.update({i: span for i in range(span_obj.start, span_obj.end)}) # map inner indices to the multiword
 
@@ -223,9 +223,9 @@ class ChatbotServer:
                 center_pred = list(mention_graph.predicates(predicate_type='center'))
                 ((center, t, o, i,),) = center_pred
                 mapped_ids = mega_mention_graph.concatenate(mention_graph, predicate_exclusions={'focus', 'center'})
-                mega_mention_graph.add(span, 'ref', mapped_ids.get(focus))
-                mega_mention_graph.add(span, 'type', 'span')
-                mega_mention_graph.add(span, 'def', mapped_ids.get(center))
+                mega_mention_graph.add(span, SPAN_REF, mapped_ids.get(focus))
+                mega_mention_graph.add(span, TYPE, 'span')
+                # mega_mention_graph.add(span, 'def', mapped_ids.get(center))
                 span_obj = Span.from_string(span)
                 covered_idx.update({i: span for i in range(span_obj.start, span_obj.end)})  # map inner indices to ner mention
 
@@ -246,10 +246,10 @@ class ChatbotServer:
             else:
                 ((center, t, o, i,),) = list(mention_graph.predicates(predicate_type='link'))
             mega_mention_graph.concatenate(mention_graph, predicate_exclusions={'focus', 'center', 'cover', 'link'})
-            mega_mention_graph.add(span, 'ref', focus)
-            mega_mention_graph.add(span, 'type', 'span')
+            mega_mention_graph.add(span, SPAN_REF, focus)
+            mega_mention_graph.add(span, TYPE, 'span')
             if not span.startswith('__linking__'):
-                mega_mention_graph.add(span, 'def', center)
+                # mega_mention_graph.add(span, 'def', center)
                 span_obj = Span.from_string(span)
                 if span_obj.pos_tag in {'prp', 'prop$'}:
                     mega_mention_graph.add(focus, TYPE, span_obj.pos_tag)
@@ -473,10 +473,7 @@ class ChatbotServer:
         if salient_emora_request is not None:
             #p.next('find answer')
             request_focus = salient_emora_request[2]
-            current_user_spans = [s for s in wm.subtypes_of("span") if
-                                  s != "span" and int(wm.features[s]["span_data"].turn) == aux_state["turn_index"]]
-            current_user_concepts = {o for s in current_user_spans for o in
-                                     chain(wm.objects(s, SPAN_REF), wm.objects(s, SPAN_DEF))}
+            current_user_concepts = wm.subjects(str(aux_state["turn_index"]), UTURN)
             if req_type == REQ_TRUTH:  # special case - y/n question requires yes/no fragment as answer (or full resolution from earlier in pipeline)
                 fragment_request_merges = self.truth_fragment_resolution(request_focus, current_user_concepts, wm)
             else:
