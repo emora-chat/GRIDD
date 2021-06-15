@@ -1,7 +1,0 @@
-l/like(user, g/iron_man())
-category(g)
-user_aware(l)
--> user_likes_iron_man ->
-op_more_info(g, l)
-request(emora, g)
-;
