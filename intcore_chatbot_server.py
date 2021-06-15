@@ -353,19 +353,19 @@ class ChatbotServer:
     @serialized('working_memory', 'aux_state')
     def run_apply_dialogue_inferences(self, inference_results, working_memory, aux_state):
         self.load_working_memory(working_memory)
-        #p.start('apply')
+        p.start('apply')
         self.dialogue_intcore.apply_inferences(inference_results)
-        #p.next('update types')
+        p.next('update types')
         self._update_types(self.dialogue_intcore.working_memory)
-        #p.next('operate')
+        p.next('operate')
         self.dialogue_intcore.operate(aux_state=aux_state)
-        #p.next('user conf')
+        p.next('user conf')
         self.dialogue_intcore.update_confidence('user', iterations=CONF_ITER)
-        #p.next('emora conf')
+        p.next('emora conf')
         self.dialogue_intcore.update_confidence('emora', iterations=CONF_ITER)
-        #p.next('sal')
+        p.next('sal')
         self.dialogue_intcore.update_salience(iterations=SAL_ITER)
-        #p.stop()
+        p.stop()
         return working_memory, aux_state
 
     @serialized('rules', 'use_cached')
@@ -438,7 +438,7 @@ class ChatbotServer:
         salient_emora_arg_request = None
         salient_emora_request = None
         req_type = None
-        #p.start('identify previous emora questions')
+        p.start('identify previous emora questions')
         # valid requests to be resolved through fragment resolution must have been requested on previous turn (currently approximated by salience threshold)
         emora_truth_requests = [pred for pred in wm.predicates('emora', REQ_TRUTH) if
                                 wm.has(pred[3], USER_AWARE) and not wm.has(pred[3], REQ_SAT)
@@ -471,7 +471,7 @@ class ChatbotServer:
             req_type = REQ_TRUTH
 
         if salient_emora_request is not None:
-            #p.next('find answer')
+            p.next('find answer')
             request_focus = salient_emora_request[2]
             current_user_concepts = wm.subjects(str(aux_state["turn_index"]), UTURN)
             if req_type == REQ_TRUTH:  # special case - y/n question requires yes/no fragment as answer (or full resolution from earlier in pipeline)
@@ -487,13 +487,13 @@ class ChatbotServer:
                     # wm.features[t][BASE] = True todo - check if the BASE indication matters here
             self.merge_references(fragment_request_merges, aux_state)
             self.dialogue_intcore.operate(aux_state=aux_state)
-        #p.next('user conf')
+        p.next('user conf')
         self.dialogue_intcore.update_confidence('user', iterations=CONF_ITER)
-        #p.next('emora conf')
+        p.next('emora conf')
         self.dialogue_intcore.update_confidence('emora', iterations=CONF_ITER)
-        #p.next('sal')
+        p.next('sal')
         self.dialogue_intcore.update_salience(iterations=SAL_ITER)
-        #p.stop()
+        p.stop()
         return self.dialogue_intcore.working_memory, aux_state
 
     def init_template_nlg(self):
@@ -589,17 +589,17 @@ class ChatbotServer:
     def run_response_assembler(self, working_memory, aux_state, rule_responses):
         if rule_responses is None:
             rule_responses = [None]
-        #p.start('response assembly')
+        p.start('response assembly')
         response = self.response_assembler(aux_state, rule_responses)
         self.load_working_memory(working_memory)
-        #p.next('update sal')
+        p.next('update sal')
         self.dialogue_intcore.update_salience(iterations=SAL_ITER)
-        #p.next('decay sal')
+        p.next('decay sal')
         self.dialogue_intcore.decay_salience()
-        #p.next('prune')
+        p.next('prune')
         self.dialogue_intcore.prune_predicates_of_type({AFFIRM, REJECT, EXPR}, {EXPR})
         self.dialogue_intcore.prune_attended(aux_state, num_keep=PRUNE_THRESHOLD)
-        #p.stop()
+        p.stop()
         return response, self.dialogue_intcore.working_memory
 
     ###################################################
@@ -749,49 +749,49 @@ class ChatbotServer:
         return working_memory
 
     def respond(self, user_utterance, working_memory, aux_state):
-        #p.start('next turn')
+        p.start('next turn')
         aux_state = self.run_next_turn(aux_state)
-        #p.next('sentence caser')
+        p.next('sentence caser')
         user_utterance = self.run_sentence_caser(user_utterance)
-        #p.next('elit')
+        p.next('elit')
         elit_results = self.run_elit_models(user_utterance, aux_state)
-        #p.next('parse2logic')
+        p.next('parse2logic')
         mentions, merges = self.run_parse2logic(elit_results)
-        #p.next('multiword mentions')
+        p.next('multiword mentions')
         multiword_mentions = self.run_multiword_matcher(elit_results)
-        #p.next('ner mentions')
+        p.next('ner mentions')
         ner_mentions = self.run_ner_mentions(elit_results)
-        #p.next('mention bridge')
+        p.next('mention bridge')
         subspans, working_memory = self.run_mention_bridge(mentions, multiword_mentions, ner_mentions, working_memory, aux_state)
-        #p.next('merge bridge')
+        p.next('merge bridge')
         working_memory, aux_state = self.run_merge_bridge(merges, subspans, working_memory, aux_state)
-        #p.next('knowledge pull')
+        p.next('knowledge pull')
         working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state)
 
-        #p.next('reference id')
+        p.next('reference id')
         rules = self.run_reference_identification(working_memory)
-        #p.next('reference infer')
+        p.next('reference infer')
         inference_results, rules = self.run_dynamic_inference(rules, working_memory, aux_state)
-        #p.next('reference resolution')
+        p.next('reference resolution')
         working_memory = self.run_reference_resolution(inference_results, working_memory, aux_state)
-        #p.next('fragment resolution')
+        p.next('fragment resolution')
         working_memory, aux_state = self.run_fragment_resolution(working_memory, aux_state)
-        #p.next('dialogue infer')
+        p.next('dialogue infer')
         inference_results = self.run_dialogue_inference(working_memory, aux_state)
-        #p.next('apply inferences')
+        p.next('apply inferences')
         working_memory, aux_state = self.run_apply_dialogue_inferences(inference_results, working_memory, aux_state)
 
-        #p.next('reference id 2')
+        p.next('reference id 2')
         rules = self.run_reference_identification(working_memory)
-        #p.next('reference infer 2')
+        p.next('reference infer 2')
         inference_results, rules = self.run_dynamic_inference(rules, working_memory, aux_state)
-        #p.next('reference resolution 2')
+        p.next('reference resolution 2')
         working_memory = self.run_reference_resolution(inference_results, working_memory, aux_state)
-        #p.next('fragment resolution 2')
+        p.next('fragment resolution 2')
         working_memory, aux_state = self.run_fragment_resolution(working_memory, aux_state)
-        #p.next('dialogue infer 2')
+        p.next('dialogue infer 2')
         inference_results = self.run_dialogue_inference(working_memory, aux_state)
-        #p.next('apply inferences 2')
+        p.next('apply inferences 2')
         working_memory, aux_state = self.run_apply_dialogue_inferences(inference_results, working_memory, aux_state)
 
         if PRINT_WM:
@@ -799,25 +799,25 @@ class ChatbotServer:
             print(working_memory.pretty_print(exclusions={SPAN_DEF, SPAN_REF, USER_AWARE, ASSERT, 'imp_trigger',
                                                           ETURN, UTURN}))
 
-        #p.next('prepare template nlg')
+        p.next('prepare template nlg')
         working_memory, expr_dict = self.run_prepare_template_nlg(working_memory)
-        #p.next('template infer')
+        p.next('template infer')
         inference_results = self.run_template_inference(working_memory, aux_state)
-        #p.next('template fillers')
+        p.next('template fillers')
         template_response_sel, aux_state = self.run_template_fillers(inference_results, expr_dict,
                                                                      working_memory, aux_state)
-        #p.next('response sel')
+        p.next('response sel')
         aux_state, response_predicates = self.run_response_selection(working_memory, aux_state,
                                                                      template_response_sel)
-        #p.next('response exp')
+        p.next('response exp')
         expanded_response_predicates, working_memory = self.run_response_expansion(response_predicates,
                                                                                    working_memory, aux_state)
-        #p.next('response rules')
+        p.next('response rules')
         rule_responses = self.run_response_by_rules(aux_state, expanded_response_predicates)
-        #p.next('response assembler')
+        p.next('response assembler')
         response, working_memory = self.run_response_assembler(working_memory, aux_state, rule_responses)
-        #p.stop()
-        p.report()
+        p.stop()
+        # p.report()
         return response, working_memory, aux_state
 
     def respond_serialize(self, user_utterance, working_memory, aux_state):
