@@ -381,7 +381,8 @@ class ConceptGraph:
                 for predicate in self.predicates(subject=concept, predicate_type='type'):
                     supertype = predicate[2]
                     if concept == supertype: # todo - this should not be possible, right?
-                        raise ValueError('Concept has self-loop type predicate which causes types() to crash on recursion error!') # todo - remove before deploy and pass instead
+                        print('[WARNING] Concept %s has self-loop type predicate which causes types() to crash on recursion error!'%concept)
+                        continue
                     else:
                         types.update(self.types(supertype, memo))
                 memo[concept] = types
@@ -418,7 +419,8 @@ class ConceptGraph:
                 for predicate in self.predicates(subject=concepts, predicate_type='type'):
                     supertype = predicate[2]
                     if concepts == supertype: # todo - this should not be possible, right?
-                        raise ValueError('Concept has self-loop type predicate which causes type_predicates() to crash on recursion error!') # todo - remove before deploy and pass instead
+                        print('[WARNING] Concept %s has self-loop type predicate which causes type_predicates() to crash on recursion error!'%concepts)
+                        continue
                     else:
                         supertypes = self.type_predicates(supertype, memo, memo_pred)
                         type_preds.add(predicate)
@@ -469,7 +471,12 @@ class ConceptGraph:
 
     def nlg_templates(self):
         priority_map = {'_low': 0.1, '_high': 1.0}
-        template_types = {'_react', '_present', '_rpresent'}
+        template_types = {'_react': '_react',
+                          '_r': '_react',
+                          '_present': '_present',
+                          '_p': '_present',
+                          '_rpresent': '_rpresent',
+                          '_rp': '_rpresent'}
         templates = {}
         template_instances = set(self.subtypes_of('response')) - {'response'}
 
@@ -514,8 +521,10 @@ class ConceptGraph:
             if priority_tag is not None and priority_tag not in priority_map:
                 print('[WARNING] Priority tag %s must be one of %s'%(str(priority_tag), str(priority_map.keys())))
             if template_type is not None and template_type not in template_types:
-                print('[WARNING] Template type %s must be one of %s'%(str(template_type), str(template_types)))
-            template_obj = Template(string_spec_ls, priority=priority_map.get(priority_tag, DEFAULT_PRIORITY), template_type=template_type)
+                print('[WARNING] Template type %s must be one of %s'%(str(template_type), str(template_types.keys())))
+            template_obj = Template(string_spec_ls,
+                                    priority=priority_map.get(priority_tag, DEFAULT_PRIORITY),
+                                    template_type=template_types.get(template_type, DEFAULT_TEMPLATE_TYPE))
             instance_exclusions.update(chain(pre_inst, vars_inst))
             template_links[rule] = (pre, template_obj, vars)
 

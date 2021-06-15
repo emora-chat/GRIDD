@@ -55,7 +55,7 @@ dismiss = (predicate)
 expr(["bye", "goodbye"], dismiss)
 
 ack_conf = (predicate)
-user_aware = (predicate)
+user_aware = (predicate, subj_essential)
 
 _request = (predicate, nonassert, obj_essential)
 [request, request_truth] = (_request)
@@ -70,4 +70,7 @@ _t=(predicate)
 _react=object()
 _present=object()
 _rpresent=object()
+_p=object()
+_r=object()
+_rp=object()
 ;

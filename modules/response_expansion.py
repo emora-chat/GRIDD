@@ -31,26 +31,27 @@ class ResponseExpansion:
     def apply_dialogue_management_on_response(self, responses, wm, aux_state):
         final_responses = []
         for main, exps, generation_type in responses: # exps contains main predicate too
-            final_exps = []
-            spoken_predicates = set()
-            for s, t, o, i in exps:
-                if COLDSTART in wm.features[i]:
-                    del wm.features[i][COLDSTART]
-                if s == 'user' and t in {REQ_TRUTH, REQ_ARG}: # identify emora answers to user requests and add req_sat to request predicate
-                    _process_answers(wm, i)
-                else: # all other predicates are maintained as expansions and spoken predicates
-                    final_exps.append((s,t,o,i))
-                    if t != EXPR:
-                        spoken_predicates.add(i)
-                        # emora turn tracking
-                        for c in [s,o,i]:
-                            if c is not None and c not in TURN_IGNORE and not wm.has(c, ETURN, str(aux_state.get('turn_index', '_err_'))):
-                                i = wm.add(c, ETURN, str(aux_state.get('turn_index', '_err_')))
-                                wm.features[i][BASE_UCONFIDENCE] = 1.0
-            final_responses.append((main, final_exps, generation_type))
-            self.assign_cover(wm, concepts=spoken_predicates)
-            self.assign_salience(wm, concepts=spoken_predicates)
-            self.assign_user_confidence(wm, concepts=spoken_predicates)
+            if exps is not None:
+                final_exps = []
+                spoken_predicates = set()
+                for s, t, o, i in exps:
+                    if COLDSTART in wm.features[i]:
+                        del wm.features[i][COLDSTART]
+                    if s == 'user' and t in {REQ_TRUTH, REQ_ARG}: # identify emora answers to user requests and add req_sat to request predicate
+                        _process_answers(wm, i)
+                    else: # all other predicates are maintained as expansions and spoken predicates
+                        final_exps.append((s,t,o,i))
+                        if t != EXPR:
+                            spoken_predicates.add(i)
+                            # emora turn tracking
+                            for c in [s,o,i]:
+                                if c is not None and c not in TURN_IGNORE and not wm.has(c, ETURN, str(aux_state.get('turn_index', '_err_'))):
+                                    i = wm.add(c, ETURN, str(aux_state.get('turn_index', '_err_')))
+                                    wm.features[i][BASE_UCONFIDENCE] = 1.0
+                final_responses.append((main, final_exps, generation_type))
+                self.assign_cover(wm, concepts=spoken_predicates)
+                self.assign_salience(wm, concepts=spoken_predicates)
+                self.assign_user_confidence(wm, concepts=spoken_predicates)
         return final_responses
 
     def assign_cover(self, graph, concepts=None):

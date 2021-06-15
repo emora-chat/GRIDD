@@ -91,6 +91,9 @@ class InferenceEngine:
             types = orig_cg.types()
         for c in orig_cg.concepts():
             handled = set()
+            if not for_query:
+                # add self-loop type
+                cg.add(c, c, 't')
             if orig_cg.has(predicate_id=c):
                 pred_type = orig_cg.type(c)
                 if pred_type != TYPE:  # add predicate type as a type, if not type predicate itself
@@ -129,11 +132,11 @@ class InferenceEngine:
         """
         # p.start('facts graph copy')
         # facts_concept_graph = ConceptGraph(facts, namespace=(facts._ids if isinstance(facts, ConceptGraph) else "facts_"))
-        #p.start('facts graph types')
+        p.start('facts graph types')
         facts_types = facts_concept_graph.types()
-        #p.next('convert facts graph')
+        p.next('convert facts graph')
         facts_graph = self._convert_facts(facts_concept_graph, facts_types)
-        #p.next('process dynamic rules')
+        p.next('process dynamic rules')
         if dynamic_rules is not None and not isinstance(dynamic_rules, dict):
             dynamic_rules = ConceptGraph(dynamic_rules).rules()
         elif dynamic_rules is None:
@@ -147,9 +150,9 @@ class InferenceEngine:
             converted_rules = Bimap(dynamic_converted_rules)
         # if len(converted_rules) == 0:
         #     return {}
-        #p.next('match')
+        p.next('match')
         all_sols = self.matcher.match(facts_graph, *list(converted_rules.values()))
-        #p.next('postprocess solutions')
+        p.next('postprocess solutions')
         solutions = {}
         for precondition, sols in all_sols.items():
             categories = set()
@@ -243,7 +246,7 @@ class InferenceEngine:
                 final_sols[rule_id] = (all_rules[rule_id][0], all_rules[rule_id][1], sol_ls)
             else:
                 final_sols[rule_id] = (all_rules[rule_id][0], sol_ls)
-        #p.stop()
+        p.stop()
         return final_sols
 
 if __name__ == '__main__':

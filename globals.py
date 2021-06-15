@@ -3,7 +3,7 @@ DEBUG = False
 KB = 'kb'                       # Namespace of Knowledge Base Concept Graph
 WM = 'wm'                       # Namespace of Working Memory Concept Graph
 
-PRUNE_THRESHOLD = 25            # Number of main predicate nodes to keep in WM after pruning
+PRUNE_THRESHOLD = 50            # Number of main predicate nodes to keep in WM after pruning
 CONF_ITER = 5
 SAL_ITER = 5
 
@@ -105,7 +105,7 @@ SAL_WEIGHT = 0.5
 DEFAULT_PRIORITY = 0.5
 PRIORITY_PRED = '_pr'
 
-DEFAULT_TEMPLATE_TYPE = '_present'
+DEFAULT_TEMPLATE_TYPE = '_rp'
 TEMPLATE_TYPE = '_t'
 
 NLU_NAMESPACE = 'r_'
