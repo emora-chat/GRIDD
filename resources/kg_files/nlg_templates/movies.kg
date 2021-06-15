@@ -170,7 +170,7 @@ cause(p/predicate(), l)
 request(emora, p)
 ->
 _t(_rpresent)
-$ Wall E scared me so much when I watched it as a kid. But I guess looking back it isn't that terrifying. Why do you like it? $
+$ Wall E scared me so much when I watched it as a kid. But I guess looking back it isn't that scary. Why do you like it? $
 ;
 
 l/like(user, g/lion_king())
@@ -420,7 +420,7 @@ request(emora, p)
 ->
 _t(_rpresent)
 _pr(_high)
-$ What made you like it? I always enjoy movies that have exciting characters, like in Marvel and Disney movies. $
+$ What made you like it? I always enjoy movies that have exciting characters. $
 ;
 
 w/watch(user, u/object())
