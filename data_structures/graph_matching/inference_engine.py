@@ -91,6 +91,9 @@ class InferenceEngine:
             types = orig_cg.types()
         for c in orig_cg.concepts():
             handled = set()
+            if not for_query:
+                # add self-loop type
+                cg.add(c, c, 't')
             if orig_cg.has(predicate_id=c):
                 pred_type = orig_cg.type(c)
                 if pred_type != TYPE:  # add predicate type as a type, if not type predicate itself

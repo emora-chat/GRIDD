@@ -1,0 +1,15 @@
+video_entertainment = (entity)
+movie=(video_entertainment)
+expr("film, flick, films, flicks, movies", movie)
+
+marvel_movie=(movie)
+expr("the marvel movies, the marvel movie series, marvel movie", marvel_movie)
+
+iron_man=(marvel_movie)
+expr("Iron Man, iron man", iron_man)
+Iron_Man_1=iron_man()
+expr("Iron Man 1, the first iron man", Iron_Man_1)
+Iron_Man_2=iron_man()
+expr("Iron Man 2, the second iron man", Iron_Man_2)
+Iron_Man_3=iron_man()
+expr("Iron Man 3, the third iron man", Iron_Man_3)
