@@ -1,14 +1,18 @@
 xba/be(user,artist())
 request_truth(emora,xba)
 ->
+_t(_present)
 _pr(_low)
 $ Do you consider yourself as an artist ? $
 ;
+
+
 
 xla/like(user,a/art())
 cause(xla,o/object())
 request(emora,o)
 ->
+_t(_present)
 _pr(_low)
 $ Why do you like art ? $
 ;
@@ -16,6 +20,7 @@ $ Why do you like art ? $
 uld/like(user,draw(user))
 request_truth(emora,uld)
 ->
+_t(_present)
 _pr(_low)
 $ Do you like drawing ? $
 ;
@@ -26,6 +31,7 @@ favorite(ast)
 time(b,now)
 request_truth(emora,b)
 ->
+_t(_present)
 _pr(_low)
 $ Is X your favorite artist ? $
 ;
@@ -33,6 +39,7 @@ $ Is X your favorite artist ? $
 upo/paint(user,o/object())
 request(emora,o)
 ->
+_t(_present)
 _pr(_low)
 $ What do you usually paint ? $
 ;
@@ -43,6 +50,7 @@ xtd/try(user,digital(xd))
 time(xtd,past)
 request_truth(emora,xtd)
 ->
+_t(_present)
 $ You must be very creative . Have you ever tried digital drawing before ? $
 ;
 
@@ -51,6 +59,7 @@ xtd/try(user,digital(xd))
 time(xtd,past)
 interesting(xd)
 ->
+_t(_present)
 $ Digital drawing is fun , right ? I'm always amazed by how technology makes a lot of our lives different but more innovative than before . $
 ;
 
@@ -61,6 +70,7 @@ xtd{"confidence":-1}
 uld/learn(user,dd)
 time(uld,future)
 ->
+_t(_present)
 $ Then you should probably consider learning it some time ! I mean , since you like drawing , you will definitely have a lot of fun . $
 ;
 
@@ -70,6 +80,7 @@ l{"confidence":-1}
 have(user,h/hobby())
 request(emora,h)
 ->
+_t(_rpresent)
 $ Oh , I see . What hobby do you have ? $
 ;
 
@@ -78,6 +89,7 @@ type(e,group)
 time(gt,always)
 request_truth(emora,gt)
 ->
+_t(_present)
 $ Art always make me inspired even though I don't have plenty of knowledge to understand every piece of art . Do{"s":"#X","t":"now"} X often go to exhibitions then ? $
 ;
 
@@ -87,6 +99,7 @@ time(gt,always)
 eka/know(emora,a/art())
 not(eka)
 ->
+_t(_rpresent)
 $ Oh , that's so cool . I kind of like going to exhibitions , but the awkward part is that I cannot truly understand all the artworks . $
 ;
 
@@ -98,5 +111,7 @@ ge/go(emora)
 to(ge,e)
 time(ge,sometimes)
 ->
+_t(_rpresent)
 $ I can definitely relate . I kind of like going to exhibitions , but the awkward part is that I cannot truly understand all the artworks . $
 ;
+
