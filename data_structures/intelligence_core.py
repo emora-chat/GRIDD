@@ -131,6 +131,7 @@ class IntelligenceCore:
                                 if not self.knowledge_base.has(predicate_id=i)}
         self.obj_essential_types = {i for i in self.knowledge_base.subtypes_of(OBJ_ESSENTIAL)
                                 if not self.knowledge_base.has(predicate_id=i)}
+        self.obj_essential_types.update({SPAN_REF, SPAN_DEF})
 
     def stratify_cached_files(self, type, sources):
         if not os.path.exists(type):
@@ -704,58 +705,65 @@ class IntelligenceCore:
                 sal = wm.features.setdefault(c, {}).setdefault(SALIENCE, 0)
                 wm.features[c][SALIENCE] = max(0, sal - TIME_DECAY)
 
-    def prune_attended(self, aux_state, keep):
-        options = set()
-        for s, t, o, i in self.working_memory.predicates():
-            # cannot prune `i` if it is a reference constraint of another concept
-            is_constraint_of = self.working_memory.metagraph.sources(i, REF)
-            if len(is_constraint_of) == 0:
-                if t == 'type':
-                    if not self.working_memory.features.get(s, {}).get(IS_TYPE, False):
-                        preds = {pred for pred in self.working_memory.related(s) if self.working_memory.has(predicate_id=pred) and pred[1] != 'type'}
-                        if not preds:
-                            options.add(i)
-                elif t not in chain(self.subj_essential_types, self.obj_essential_types, PRIM):
-                    options.add(i)
+    def prune_attended(self, aux_state, num_keep):
+        # NOTE: essential predicates AND reference constraints must be maintained for selected concepts that are being kept
 
-        sconcepts = sorted(options,
-                           key=lambda x: self.working_memory.features.get(x, {}).get(SALIENCE, 0),
-                           reverse=True)
-        print('TOTAL PRUNE CANDIDATES: %d'%len(sconcepts))
-        print('ALL PREDICATES: %d'%(len(list(self.working_memory.predicates()))))
+        wm = self.working_memory
+        type_predicates = wm.type_predicates()
 
-        for c in sconcepts[keep:]:
-            to_remove = {c}
-            while to_remove:
-                r = to_remove.pop()
-                if self.working_memory.has(predicate_id=r):
-                    # todo - does this mess with references? Like can this delete a constraint of a reference when it shouldn't?
-                    s,t,o,i = self.working_memory.predicate(r)
-                    elements = [s,o] if o is not None else [s]
-                    for e in elements:
-                        if e not in {'user', 'emora'}:
-                            involved_in_preds_of = {sig[1] for sig in chain(self.working_memory.predicates(e), self.working_memory.predicates(object=e)) if sig != (s,t,o,i)}
-                            contentful = involved_in_preds_of - PRIM - {TYPE, TIME, ASSERT, REQ_TRUTH, REQ_ARG} - self.subj_essential_types - self.obj_essential_types
-                            if len(contentful) == 0:
-                                to_remove.add(e)
-                # check if there is a SPAN_REF of the thing being deleted; if yes, delete it too
-                span_ref_preds = self.working_memory.predicates(predicate_type=SPAN_REF, object=r)
-                for s,t,o,i in span_ref_preds:
-                    self.working_memory.remove(s)
-                # delete type ancestry if ancestor types are not used by anything else in WM
+        print(f'\nWM PREDICATES: {len(list(wm.predicates()))}')
+        print(f'WM CONCEPTS: {len(wm.concepts())}')
 
-                self.working_memory.remove(r) # todo: uh oh - short term memory loss
+        options = {i for s,t,o,i in wm.predicates() if t not in chain(self.subj_essential_types, self.obj_essential_types, PRIM, {TYPE})}
+        soptions = sorted(options,
+                          key=lambda x: wm.features.get(x, {}).get(SALIENCE, 0),
+                          reverse=True)
+        keep = soptions[:num_keep]
+        print(f'KEEP {len(keep)}')
 
-        # delete all spans that occured SPANTURN turns ago
-        # todo - but keep them if they have a SPANREF link????
+        # delete all user and emora spans that occured SPANTURN turns ago
+        deletions = set()
         current_turn = aux_state.get('turn_index', -1)
-        for s,t,o,i in self.working_memory.predicates(predicate_type=TYPE, object='span'):
+        for s,t,o,i in chain(wm.predicates(predicate_type=SPAN_REF, object='user'),
+                             wm.predicates(predicate_type=SPAN_REF, object='emora')):
             if '__linking__' in s:
                 span_obj = Span.from_string(s[11:])
             else:
                 span_obj = Span.from_string(s)
             if int(span_obj.turn) <= current_turn - SPANTURN:
+                deletions.add(s)
+
+        # delete all user and emora turn tracking predicates from SPANTURN turns ago
+        for s,t,o,i in chain(wm.predicates('user', UTURN), wm.predicates('user', ETURN),
+                             wm.predicates('emora', UTURN), wm.predicates('emora', ETURN)):
+            if int(o) <= current_turn - SPANTURN:
+                deletions.add(i)
+
+        keepers = set()
+        for k in keep:
+            ess = wm.structure(k, self.subj_essential_types, self.obj_essential_types)
+            structs = {c for sig in ess for c in sig if c is not None}
+            keepers.update(structs)
+            refs = wm.metagraph.targets(k, REF)
+            keepers.update(refs)
+        print(f'STRUCT & REF KEEPERS {len(keepers-deletions)}')
+
+        for k in set(keepers):
+            keepers.update({c for sig in type_predicates.get(k, []) for c in sig})
+        print(f'STRUCT & REF & TYPE KEEPERS {len(keepers-deletions)}')
+
+        to_remove = (wm.concepts() - keepers) | deletions
+        print(f'REMOVING {len(to_remove)}')
+        for r in to_remove:
+            # check if there is a SPAN_REF of the thing being deleted; if yes, delete it too
+            span_ref_preds = self.working_memory.predicates(predicate_type=SPAN_REF, object=r)
+            for s, t, o, i in span_ref_preds:
                 self.working_memory.remove(s)
+            wm.remove(r)
+
+        print(f'\nAFTER WM PREDICATES: {len(list(wm.predicates()))}')
+        print(f'AFTER WM CONCEPTS: {len(wm.concepts())}')
+
 
     def prune_predicates_of_type(self, inst_removals, subj_removals):
         for s, t, o, i in list(self.working_memory.predicates()):

@@ -25,7 +25,10 @@ user_aware(l/look_forward(user, h/house()))
 epositive(emora, l)
 ;
 
+l/look_forward(user, house())
+eturn(l, 1)
 la/large(yard())
+uturn(la, 0)
 -> large_yard ->
 epositive(emora, la)
 time(w/want(emora, y/yard()), now)
@@ -33,6 +36,8 @@ large(y)
 lo/love(emora_dog, y)
 would(lo)
 cause(lo, w)
+h:<time(h/have(user, pet()), now)>
+request_truth(emora, h)
 ;
 
 

@@ -55,10 +55,25 @@ class ResponseTemplateFiller:
                             present_cands.append((rule, match_dict, response_str, post.priority))
                         elif post.template_type == '_rpresent':
                             rpresent_cands.append((rule, match_dict, response_str, post.priority))
-        print('\nReact + Present Options: ')
-        rp_predicates, rp_string, rp_score = self.select_best_candidate(rpresent_cands, cg)
-        print('\nPresent Options: ')
-        p_predicates, p_string, p_score = self.select_best_candidate(present_cands, cg)
+
+        rp_predicates, rp_string, rp_score = None, None, None
+        if len(rpresent_cands) > 0:
+            print('React + Present Options: ')
+            rp_predicates, rp_string, rp_score = self.select_best_candidate(rpresent_cands, cg)
+
+        p_predicates, p_string, p_score = None, None, None
+        if len(present_cands) > 0:
+            print('Present Options: ')
+            p_predicates, p_string, p_score = self.select_best_candidate(present_cands, cg)
+
+        r_predicates, r_string, r_score = None, None, None
+        curr_turn = aux_state.get('turn_index', 0)
+        if len(react_cands) > 0 and curr_turn > 0:
+            print('React Options: ')
+            r_predicates, r_string, r_score = self.select_best_candidate(react_cands, cg, check_aware=False)
+        else:
+            r_string = ""
+
         if rp_score is not None and (p_score is None or rp_score >= p_score):
             string = rp_string
             predicates = rp_predicates
@@ -71,25 +86,23 @@ class ResponseTemplateFiller:
                 aux_state.setdefault('spoken_responses', []).append(string)
                 predicates = p_predicates
                 s = random.choice(['Yeah .', 'Gotcha .', 'I see .'])
-                curr_turn = aux_state.get('turn_index', 0)
-                if len(react_cands) > 0 and curr_turn > 0:
-                    print('\nReact Options: ')
-                    p, s, a = self.select_best_candidate(react_cands, cg, check_aware=False)
-                elif curr_turn == 0:
-                    s = ""
+                if r_string is not None:
+                    s = r_string
                 # Do not add reaction predicates to predicates list in order to avoid them being treated as spoken and getting the eturn predicate
                 string = s + ' ' + string
 
         type = "template"
         if string is None: # PICK UNUSED FALLBACK
-            print('Picking Fallback!!')
+            # can still use reaction even with fallback
+            if r_string is not None:
+                string = r_string + ' '
             candidates = list(set(fallback_options.keys()) - set(aux_state.get('fallbacks', [])))
-            print('Candidates: %s'%candidates)
-            print()
             if len(candidates) > 0:
                 predicates, template_obj, _ = fallback_options[random.choice(candidates)]
-                string = ' '.join(template_obj.string_spec_ls)
+                string += ' '.join(template_obj.string_spec_ls)
                 type = "fallback"
+            else:
+                string = None
 
         return (string, predicates, type)
 

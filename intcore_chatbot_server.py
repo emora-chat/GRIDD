@@ -601,7 +601,7 @@ class ChatbotServer:
         self.dialogue_intcore.decay_salience()
         #p.next('prune')
         self.dialogue_intcore.prune_predicates_of_type({AFFIRM, REJECT, EXPR}, {EXPR})
-        self.dialogue_intcore.prune_attended(aux_state, keep=PRUNE_THRESHOLD)
+        self.dialogue_intcore.prune_attended(aux_state, num_keep=PRUNE_THRESHOLD)
         #p.stop()
         return response, self.dialogue_intcore.working_memory
 
@@ -620,7 +620,8 @@ class ChatbotServer:
         if concepts is None:
             concepts = graph.concepts()
         for concept in concepts:
-            if (not graph.has(predicate_id=concept) or graph.type(concept) not in PRIM) and not graph.has(concept, USER_AWARE):
+            if (not graph.has(predicate_id=concept) or graph.type(concept) not in PRIM) \
+                    and not graph.has(concept, USER_AWARE) and not graph.has(concept, TYPE, 'span'):
                 i2 = graph.add(concept, USER_AWARE)
                 graph.features[i2][BASE_UCONFIDENCE] = 1.0
 

@@ -4,6 +4,7 @@ request_truth(emora, h)
 time(walk(emora, emora_dog), today)
 -> q_user_has_pet ->
 _pr(_low)
+_t(_p)
 $ I was just thinking , the most fun I had today was taking a walk with my dog . Do you have a pet ? $
 ;
 
@@ -20,6 +21,7 @@ $ Oh , if you don't have any pets , do you want one ? I've always wanted a cat m
 time(have(user, p2/pet()), now)
 request(emora, p2)
 -> q_pet_type ->
+_t(_p)
 $ What kind of pet do you have ? $
 ;
 
@@ -27,6 +29,7 @@ X/property(Z/pet())
 have(user, Z)
 request(emora, X)
 -> q_pet_property ->
+_t(_p)
 $ What is your Z like ? $
 ;
 
@@ -35,6 +38,7 @@ like(user, pred/event(object()))
 with(pred, X)
 request(emora, pred)
 ->
+_t(_p)
 $ What do you like to do with your X ? $
 ;
 
@@ -63,6 +67,7 @@ em/motivate(emora, healthy(emora))
 cause(em, el)
 ->
 _pr(_low)
+_t(_p)
 $ I like to take my dog on walks because it motivates me to be healthy . $
 ;
 
@@ -70,6 +75,7 @@ t/think(user, handful(X/pet()))
 have(user, X)
 request_truth(emora, t)
 ->
+_t(_p)
 $ Well , your X must be a handful with so much energy , aren't they ? $
 ;
 
@@ -87,7 +93,7 @@ $ I bet they keep your life interesting though. Like , what is the craziest thin
 esympathy(emora, e/event())
 uturn(e, 0)
 -> esympathy_pet_reaction ->
-_t(_react)
+_t(_rp)
 $ Oh no , that is unfortunate ! I hope it wasn't too bad . $
 ;
 
