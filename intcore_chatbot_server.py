@@ -29,21 +29,21 @@ def serialized(*returns):
         params = signature(f).parameters
         def f_with_serialization(cls, json):
             kwargs = {}
-            # s = time.time()
+            s = time.time()
             for k, serialized in json.items():
                 if k in params:
                     obj = load(k, serialized)
                     kwargs[k] = obj
-            # print('load - %.2f' % (time.time() - s))
+            print(f'{f.__name__[:20]:20} serial load - {time.time() - s:.2f}', end= ' ')
             result = f(cls, **kwargs)
             results = {}
-            # s = time.time()
+            s = time.time()
             if isinstance(result, tuple):
                 for i, r in enumerate(result):
                     results[returns[i]] = save(returns[i], r)
             elif result is not None:
                 results[returns[0]] = save(returns[0], result)
-            # print('save - %.2f' % (time.time() - s))
+            print('save - %.2f' % (time.time() - s))
             return results
         return f_with_serialization
     return dectorator
@@ -848,7 +848,7 @@ class ChatbotServer:
 
         state_update = self.run_reference_identification(state)
         state.update(state_update)
-        state_update = self.run_multi_inference(state)
+        state_update = self.run_dynamic_inference(state)
         state.update(state_update)
         state_update = self.run_reference_resolution(state)
         state.update(state_update)
@@ -861,7 +861,7 @@ class ChatbotServer:
 
         state_update = self.run_reference_identification(state)
         state.update(state_update)
-        state_update = self.run_multi_inference(state)
+        state_update = self.run_dynamic_inference(state)
         state.update(state_update)
         state_update = self.run_reference_resolution(state)
         state.update(state_update)
@@ -874,7 +874,7 @@ class ChatbotServer:
 
         state_update = self.run_prepare_template_nlg(state)
         state.update(state_update)
-        state_update = self.run_multi_inference(state)
+        state_update = self.run_template_inference(state)
         state.update(state_update)
         state_update = self.run_template_fillers(state)
         state.update(state_update)

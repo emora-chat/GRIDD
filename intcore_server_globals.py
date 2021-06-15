@@ -1,6 +1,6 @@
 
 LOCAL = True
-IS_SERIALIZING = False
+IS_SERIALIZING = True
 INFERENCE = True
 USECACHE = True
 KBCACHE = 'kbcache'

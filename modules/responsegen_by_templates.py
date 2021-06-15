@@ -58,12 +58,12 @@ class ResponseTemplateFiller:
 
         rp_predicates, rp_string, rp_score = None, None, None
         if len(rpresent_cands) > 0:
-            print('React + Present Options: ')
+            print('\nReact + Present Options: ')
             rp_predicates, rp_string, rp_score = self.select_best_candidate(rpresent_cands, cg)
 
         p_predicates, p_string, p_score = None, None, None
         if len(present_cands) > 0:
-            print('Present Options: ')
+            print('\nPresent Options: ')
             p_predicates, p_string, p_score = self.select_best_candidate(present_cands, cg)
 
         r_predicates, r_string, r_score = None, None, None
