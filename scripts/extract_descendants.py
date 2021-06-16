@@ -24,7 +24,6 @@ output_dir="GRIDD/resources/kg_files/kb"
 
 	
 
-
 def get_correct_form(word_key):
 	word_key_parts = word_key.split(".")
 	word_key = word_key_parts[0] + ".a." + word_key_parts[2]
@@ -33,7 +32,10 @@ def get_correct_form(word_key):
 def save_to_ont(result):
 	f = open(f"{output_dir}/{result[0].split('.')[0]}inheritants.kg","w")
 	for i in result[2]:
-		f.write(f"{i.translate(str.maketrans('', '', string.punctuation))}=({result[0].split('.')[0]})\n")
+		str1 = i.translate(str.maketrans('', '', string.punctuation.replace('_', '')))
+		f.write(f"{str1}=({result[0].split('.')[0]})\n")
+		if '_' in str1:
+			f.write(f"expr(\"{ str1.replace('_', ' ') }\", {str1})\n")
 	f.write(";\n")
 	f.close()
 
