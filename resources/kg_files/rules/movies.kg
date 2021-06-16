@@ -18,6 +18,171 @@ pl_2/like(user, s/streaming_provider())
 request_truth(emora, pl_2)
 ;
 
+/* Marvel Stuff */
+
+l/like(user, g/Captain_Marvel())
+user_aware(l)
+->
+p:<c/like(user, t/Captain_Marvel()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/Black_Panther())
+user_aware(l)
+->
+p:<c/like(user, t/Black_Panther()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/Spider_Man_Far_From_Home())
+user_aware(l)
+->
+p:<c/like(user, t/Spider_Man_Far_From_Home()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/Spider_Man_Homecoming())
+user_aware(l)
+->
+p:<c/like(user, t/Spider_Man_Homecoming()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/Doctor_Strange())
+user_aware(l)
+->
+p:<c/like(user, t/Doctor_Strange()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/Avengers_Endgame())
+user_aware(l)
+->
+p:<c/like(user, t/Avengers_Endgame()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/Avengers_Infinity_War())
+user_aware(l)
+->
+p:<c/like(user, t/Avengers_Infinity_War()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/Avengers_Age_of_Ultron())
+user_aware(l)
+->
+p:<c/like(user, t/Avengers_Age_of_Ultron()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/Marvels_The_Avengers())
+user_aware(l)
+->
+p:<c/like(user, t/Marvels_The_Avengers()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/Guardians_of_the_Galaxy_Vol_2())
+user_aware(l)
+->
+p:<c/like(user, t/Guardians_of_the_Galaxy_Vol_2()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/Guardians_of_the_Galaxy_1())
+user_aware(l)
+->
+p:<c/like(user, t/Guardians_of_the_Galaxy_1()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/The_Incredible_Hulk())
+user_aware(l)
+->
+p:<c/like(user, t/The_Incredible_Hulk()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/Ant_Man_and_Wasp())
+user_aware(l)
+->
+p:<c/like(user, t/Ant_Man_and_Wasp()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/Ant_Man_one())
+user_aware(l)
+->
+p:<c/like(user, t/Ant_Man_one()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/Thor_Ragnarok())
+user_aware(l)
+->
+p:<c/like(user, t/Thor_Ragnarok()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/Thor_The_Dark_World())
+user_aware(l)
+->
+p:<c/like(user, t/Thor_The_Dark_World()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/Thor_one())
+user_aware(l)
+->
+p:<c/like(user, t/Thor_one()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/Captain_America_Civil_War())
+user_aware(l)
+->
+p:<c/like(user, t/Captain_America_Civil_War()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/Captain_America_Winter_Soldier())
+user_aware(l)
+->
+p:<c/like(user, t/Captain_America_Winter_Soldier()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/Captain_America_The_First_Avenger())
+user_aware(l)
+->
+p:<c/like(user, t/Captain_America_The_First_Avenger()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/Iron_Man_3())
+user_aware(l)
+->
+p:<c/like(user, t/Iron_Man_3()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/Iron_Man_2())
+user_aware(l)
+->
+p:<c/like(user, t/Iron_Man_2()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+l/like(user, g/Iron_Man_1())
+user_aware(l)
+->
+p:<c/like(user, t/Iron_Man_1()) cause(p/predicate(), c)>
+request(emora, p)
+;
+
+/* Likes series within Marvel universe */
+
 l/like(user, m/marvel_movie())
 category(m)
 user_aware(l)

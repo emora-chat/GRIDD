@@ -27,6 +27,192 @@ _t(_p)
 $ Do you have a favorite streaming service? Believe it or not, I don't have a favorite. They all have such great offerings! $
 ;
 
+/* Marvel Time */
+
+l/like(user, g/Captain_Marvel())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Captain Marvel is such a cool superhero. She’s so strong and definitely someone I look up to. What is your favorite thing about the movie? $
+;
+
+l/like(user, g/Black_Panther())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ I think Black Panther is one of the best Marvel movies. I saw it in theaters on opening night and the audience was electric. What do you like most about it? $
+;
+
+l/like(user, g/Spider_Man_Far_From_Home())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ I really liked this movie because Spider-Man is one of my favorite superheroes. It was also cool that it was set all around Europe. What did you like about the movie? $
+;
+
+l/like(user, g/Spider_Man_Homecoming())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ I was so happy when Spider-Man was introduced to the Marvel Cinematic Universe. Spider-Man is one of my favorite superheroes too. What do you like most about this movie? $
+;
+
+l/like(user, g/Doctor_Strange())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ I think Doctor Strange is one of the coolest Marvel movies. Doctor Strange is such a unique superhero. What makes this movie your favorite? $
+;
+
+l/like(user, g/Avengers_Endgame())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ The final battle scene in this movie is so impressive, but it’s also really sad! I think it was a great wrap up to the Avengers series and I can’t wait to see what Marvel does next. What do you like about the movie? $
+;
+
+l/like(user, g/Avengers_Infinity_War())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Infinity War is such an impressive film. Even though it’s long, I thought the storytelling was great. What did you like most about the movie? $
+;
+
+l/like(user, g/Avengers_Age_of_Ultron())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ I remember seeing Avengers: Age of Ultron in theaters and really liking it. It’s so cool how the film set up a lot of plot points for future Marvel movies. What did you like in the movie? $
+;
+
+l/like(user, g/Marvels_The_Avengers())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Such a classic film! I love this movie and it feels nostalgic to see how the Avengers all came together. What made you like the movie? $
+;
+
+l/like(user, g/Guardians_of_the_Galaxy_Vol_2())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ I thought Volume 2 was just as good as the first Guardians of the Galaxy. Baby Groot is one of the best Marvel characters, hands down. Why is this movie your favorite? $
+;
+
+l/like(user, g/Guardians_of_the_Galaxy_1())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Guardians of the Galaxy has the best music. It’s such a fun story and I still listen to the soundtrack today! What do you like most about the movie? $
+;
+
+l/like(user, g/The_Incredible_Hulk())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Oh, I definitely think the Incredible Hulk is underrated. But I think I prefer Mark Ruffalo as the Hulk. What did you like most about that first movie? $
+;
+
+l/like(user, g/Ant_Man_and_Wasp())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ I love the duo of Ant-Man and the Wasp. I think they make such a great team, and it was fun watching them fight together. What do you like about the movie? $
+;
+
+l/like(user, g/Ant_Man_one())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Ant Man is one of the funniest Marvel movies. I love the scene where they battle on Thomas the Train. What did you like most about the movie? $
+;
+
+l/like(user, g/Thor_Ragnarok())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ I saw Thor: Ragnarok in theaters and had a blast. I especially liked the character Valkyrie. What did you like about it? $
+;
+
+l/like(user, g/Thor_The_Dark_World())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ I thought Thor: The Dark World was a perfect follow-up to the first Thor movie. I think Loki is one of my favorite villains too. What did you like most about the movie? $
+;
+
+l/like(user, g/Thor_one())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ I really love the first Thor movie. It’s so cool to see elements of fantasy in the Marvel universe. What is your favorite part of the movie? $
+;
+
+l/like(user, g/Captain_America_Civil_War())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ I remember seeing this movie in theaters and getting so excited when Spider-Man made a cameo! What did you like most about the movie? $
+;
+
+l/like(user, g/Captain_America_Winter_Soldier())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ That’s my favorite Captain America movie! I especially liked Black Widow in the film, she is one of my favorite Avengers. Why did you like the movie? $
+;
+
+l/like(user, g/Captain_America_The_First_Avenger())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ That’s a great pick. It’s so cool to see Steve Roger’s background story and I love that the movie is set in the 1940’s. What did you like most about the movie? $
+;
+
+l/like(user, g/Iron_Man_3())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ I thought Iron Man 3 was a great conclusion to the Iron Man trilogy. It definitely got me more excited for more Avengers movies. What did you like about it? $
+;
+
+l/like(user, g/Iron_Man_2())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ The second Iron Man movie is so fun. I remember seeing it in theaters with my friends and having such a great time. What made you like the film best? $
+;
+
+l/like(user, g/Iron_Man_1())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Great choice! The first Iron Man film is also my favorite. It’s so fun to look back at the movie as the start of the Marvel Cinematic Universe. What made you like the film? $
+;
+
 l/like(user, m/marvel_movie())
 category(m)
 request(emora, m)
