@@ -4,7 +4,7 @@ from GRIDD.intcore_server_globals import *
 
 from GRIDD.data_structures.concept_graph import ConceptGraph
 if INFERENCE:
-    from GRIDD.data_structures.inference_engine import InferenceEngine
+    from GRIDD.data_structures.graph_matching.inference_engine import InferenceEngine
 from GRIDD.data_structures.concept_compiler import ConceptCompiler
 from GRIDD.utilities.utilities import uniquify, operators, interleave, _process_requests
 from itertools import chain, combinations
@@ -13,6 +13,7 @@ from GRIDD.globals import *
 from GRIDD.data_structures.assertions import assertions
 from GRIDD.data_structures.confidence import *
 from GRIDD.data_structures.id_map import IdMap
+from GRIDD.data_structures.span import Span
 
 from GRIDD.modules.responsegen_by_templates import Template
 
@@ -44,6 +45,8 @@ class IntelligenceCore:
         print('checking kb')
         self._check(self.knowledge_base)
 
+        self.kb_predicate_types = self.knowledge_base.type_predicates()
+
         if INFERENCE:
             self.nlg_inference_engine = InferenceEngine(device=device)
             if nlg_templates is not None and not isinstance(nlg_templates, ConceptGraph):
@@ -59,9 +62,13 @@ class IntelligenceCore:
                         templates = nlg_templates.nlg_templates()
                         self.nlg_inference_engine.add(templates, nlg_templates.id_map().namespace)
                         self._check(nlg_templates, use_kb=True, file=k)
+                self.nlg_inference_engine.matcher.process_queries()
 
+            preprocess_queries = True
             if inference_engine is None:
                 inference_engine = InferenceEngine(device=device)
+            else:
+                preprocess_queries = False
             self.inference_engine = inference_engine
             if inference_rules is not None and not isinstance(inference_rules, ConceptGraph):
                 print('checking rules')
@@ -77,6 +84,7 @@ class IntelligenceCore:
                         self.inference_engine.add(inferences, inference_rules.id_map().namespace)
                         self._check(inference_rules, use_kb=True, file=k)
 
+        self.fallbacks = {}
         if fallbacks is not None:
             if isinstance(fallbacks, ConceptGraph):
                 self.fallbacks = fallbacks.nlg_templates()
@@ -102,11 +110,14 @@ class IntelligenceCore:
                     if len(set(rpre.related('emora'))) == 0:
                         rpre.remove('emora')
                     for s,t,o,i in list(rpre.predicates()):
-                        p = rpre.add(i, USER_AWARE)
-                        rvars.add(p)
+                        if t != TYPE:
+                            p = rpre.add(i, USER_AWARE)
+                            rvars.add(p)
                     fallback_recording_rules[rule_id] = (rpre, rpost, rvars)
                 self.inference_engine.add(fallback_recording_rules, namespace='t_') #namespace should match inference_rules namespace above
-                # self.inference_engine.matcher.preprocess() todo- add once new graph matching engine is in place
+
+        if INFERENCE and preprocess_queries:
+            self.inference_engine.matcher.process_queries()
 
         if isinstance(working_memory, ConceptGraph):
             self.working_memory = working_memory
@@ -114,10 +125,13 @@ class IntelligenceCore:
             self.working_memory = ConceptGraph(namespace='wm', supports={AND_LINK: False})
             self.consider(working_memory)
 
+        self.operators = operators(intcoreops)
+
         self.subj_essential_types = {i for i in self.knowledge_base.subtypes_of(SUBJ_ESSENTIAL)
                                 if not self.knowledge_base.has(predicate_id=i)}
         self.obj_essential_types = {i for i in self.knowledge_base.subtypes_of(OBJ_ESSENTIAL)
                                 if not self.knowledge_base.has(predicate_id=i)}
+        self.obj_essential_types.update({SPAN_REF, SPAN_DEF})
 
     def stratify_cached_files(self, type, sources):
         if not os.path.exists(type):
@@ -278,13 +292,19 @@ class IntelligenceCore:
     def apply(self, inferences):
         implications = {}
         for rid, (pre, post, sols) in inferences.items():
-            for sol in sols:
+            for sol, virtual_preds in sols:
                 implied = ConceptGraph(namespace=post._ids)
                 for pred in post.predicates():
                     if pred[3] not in sol:
                         # if predicate instance is not in solutions, add to implication; otherwise, it already exists in WM
-                        pred = [sol.get(x, x) for x in pred]
-                        implied.add(*pred)
+                        new_pred = []
+                        for x in pred:
+                            m = sol.get(x, x)
+                            if m is not None and m.startswith('__virt_'):
+                                m = implied.add(*virtual_preds[m]) # add the virtual type as a new predicate instance, m is the new id in the implied concept_graph
+                                sol[x] = m
+                            new_pred.append(m)
+                        implied.add(*new_pred)
                 for concept in post.concepts():
                     concept = sol.get(concept, concept)
                     implied.add(concept)
@@ -563,7 +583,7 @@ class IntelligenceCore:
         return
 
     def pull_types(self):
-        return set(self.knowledge_base.type_predicates(self.working_memory.concepts()))
+        return {c: self.kb_predicate_types[c] for c in self.working_memory.concepts() if c in self.kb_predicate_types}
 
 
     def pull_knowledge(self, limit, num_pullers, association_limit=None, subtype_limit=None, degree=1):
@@ -685,25 +705,65 @@ class IntelligenceCore:
                 sal = wm.features.setdefault(c, {}).setdefault(SALIENCE, 0)
                 wm.features[c][SALIENCE] = max(0, sal - TIME_DECAY)
 
-    def prune_attended(self, keep):
-        options = set()
-        for s, t, o, i in self.working_memory.predicates():
-            # cannot prune `i` if it is a reference constraint of another concept
-            is_constraint_of = self.working_memory.metagraph.sources(i, REF)
-            if len(is_constraint_of) == 0:
-                if t == 'type':
-                    if not self.working_memory.features.get(s, {}).get(IS_TYPE, False):
-                        preds = {pred for pred in self.working_memory.related(s) if self.working_memory.has(predicate_id=pred) and pred[1] != 'type'}
-                        if not preds:
-                            options.add(i)
-                elif t not in chain(self.subj_essential_types, self.obj_essential_types, PRIM):
-                    options.add(i)
+    def prune_attended(self, aux_state, num_keep):
+        # NOTE: essential predicates AND reference constraints must be maintained for selected concepts that are being kept
 
-        sconcepts = sorted(options,
-                           key=lambda x: self.working_memory.features.get(x, {}).get(SALIENCE, 0),
-                           reverse=True)
-        for c in sconcepts[keep:]:
-            self.working_memory.remove(c) # todo: uh oh - short term memory loss
+        wm = self.working_memory
+        type_predicates = wm.type_predicates()
+
+        # print(f'\nWM PREDICATES: {len(list(wm.predicates()))}')
+        # print(f'WM CONCEPTS: {len(wm.concepts())}')
+
+        options = {i for s,t,o,i in wm.predicates() if t not in chain(self.subj_essential_types, self.obj_essential_types, PRIM, {TYPE})}
+        soptions = sorted(options,
+                          key=lambda x: wm.features.get(x, {}).get(SALIENCE, 0),
+                          reverse=True)
+        keep = soptions[:num_keep]
+        # print(f'KEEP {len(keep)}')
+
+        # delete all user and emora spans that occured SPANTURN turns ago
+        deletions = set()
+        current_turn = aux_state.get('turn_index', -1)
+        for s,t,o,i in chain(wm.predicates(predicate_type=SPAN_REF, object='user'),
+                             wm.predicates(predicate_type=SPAN_REF, object='emora')):
+            if '__linking__' in s:
+                span_obj = Span.from_string(s[11:])
+            else:
+                span_obj = Span.from_string(s)
+            if int(span_obj.turn) <= current_turn - SPANTURN:
+                deletions.add(s)
+
+        # delete all user and emora turn tracking predicates from SPANTURN turns ago
+        for s,t,o,i in chain(wm.predicates('user', UTURN), wm.predicates('user', ETURN),
+                             wm.predicates('emora', UTURN), wm.predicates('emora', ETURN)):
+            if int(o) <= current_turn - SPANTURN:
+                deletions.add(i)
+
+        keepers = set()
+        for k in keep:
+            ess = wm.structure(k, self.subj_essential_types, self.obj_essential_types)
+            structs = {c for sig in ess for c in sig if c is not None}
+            keepers.update(structs)
+            refs = wm.metagraph.targets(k, REF)
+            keepers.update(refs)
+        # print(f'STRUCT & REF KEEPERS {len(keepers-deletions)}')
+
+        for k in set(keepers):
+            keepers.update({c for sig in type_predicates.get(k, []) for c in sig})
+        # print(f'STRUCT & REF & TYPE KEEPERS {len(keepers-deletions)}')
+
+        to_remove = (wm.concepts() - keepers) | deletions
+        # print(f'REMOVING {len(to_remove)}')
+        for r in to_remove:
+            # check if there is a SPAN_REF of the thing being deleted; if yes, delete it too
+            span_ref_preds = self.working_memory.predicates(predicate_type=SPAN_REF, object=r)
+            for s, t, o, i in span_ref_preds:
+                self.working_memory.remove(s)
+            wm.remove(r)
+
+        # print(f'\nAFTER WM PREDICATES: {len(list(wm.predicates()))}')
+        # print(f'AFTER WM CONCEPTS: {len(wm.concepts())}')
+
 
     def prune_predicates_of_type(self, inst_removals, subj_removals):
         for s, t, o, i in list(self.working_memory.predicates()):

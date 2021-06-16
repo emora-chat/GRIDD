@@ -52,16 +52,14 @@ request(emora, e)
 prop/property(pt/pet())
 r/request(emora, prop)
 user_aware(r)
-->
-a:<time(possess(user, a/animal()), now)>
-time(favorite(a), now)
+-> ask_fave_animal ->
+a:<time(possess(user, a/animal()), now) time(favorite(a), now)>
 request(emora, a)
 ;
 
 like(x/person(), animal())
 ->
-a:<time(possess(user, a/animal()), now)>
-time(favorite(a), now)
+a:<time(possess(user, a/animal()), now) time(favorite(a), now)>
 request(emora, a)
 ;
 
@@ -76,8 +74,7 @@ time(cause(fast(cheetah), like(emora, cheetah)), now)
 
 time(like(user, z/zoo()), now)
 ->
-v/visit(user, z)
-oft:<time(oft/often(v), now)>
+oft:<v/visit(user, z) time(oft/often(v), now)>
 request_truth(emora, oft)
 ;
 
@@ -162,11 +159,6 @@ like(X/pet(), nap(X))
 lazy(X)
 ;
 
-time(nap(X/pet()), habitual_present)
-->
-lazy(X)
-;
-
 time(like(X/pet(), fetch(X)), now)
 ->
 playful(X)
@@ -185,7 +177,7 @@ time(like(X/pet(), walk(X)), now)
 healthy(X)
 ;
 
-time(hide(X/pet()), habitual_present)
+like(X/pet(), hide(X))
 ->
 shy(X)
 ;

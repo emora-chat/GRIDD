@@ -280,18 +280,12 @@ san_jose=city()
 expr("san jose",san_jose)
 in(san_jose,california)
 
-austin=city()
-in(austin,texas)
-
 jacksonville=city()
 in(jacksonville,florida)
 
 fort_worth=city()
 expr("fort worth",fort_worth)
 in(fort_worth,texas)
-
-charlotte=city()
-in(charlotte,north_carolina)
 
 indianapolis=city()
 in(indianapolis,indiana)

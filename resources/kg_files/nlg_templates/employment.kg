@@ -90,7 +90,7 @@ awesome(l)
 possess(emora,jb/job())
 like(emora,jb)
 motivated(emora)
-->
+-> user_like_job ->
 $ That’s awesome to hear . When I like something , I feel like there’s a lot of energy inside me , and I can keep motivated all the time . That always makes my work smoother . $
 ;
 

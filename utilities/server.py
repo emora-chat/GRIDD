@@ -23,7 +23,7 @@ def save(key, object):
             global_tokens = [span.to_string() for span in global_tokens]
             coref_context['global_tokens'] = global_tokens
             object['coref_context'] = coref_context if len(coref_context) > 0 else None
-    elif key == 'mentions':
+    elif key in {'mentions', 'ner_mentions', 'multiword_mentions'}:
         new_d = {}
         for span,cg in object.items():
             new_d[span] = cg.save()
@@ -70,8 +70,9 @@ def load(key, value):
         try:
             value = json.loads(value) if isinstance(value, str) else value
         except json.JSONDecodeError as e:
+            print('--SERVER LOAD UTILITY--')
             print('ERROR:', e)
-            print('SOURCE:', value)
+            print('SOURCE: (%s,%s)'%(key,value))
             value = value
         if key == 'working_memory':
             working_memory = ConceptGraph(namespace=value["namespace"])
@@ -87,7 +88,7 @@ def load(key, value):
         elif key == 'elit_results':
             if 'tok' in value:
                 value['tok'] = [Span.from_string(t) for t in value['tok']]
-        elif key == 'mentions':
+        elif key in {'mentions', 'ner_mentions', 'multiword_mentions'}:
             new_d = {}
             for span_str, cg_dict in value.items():
                 cg = ConceptGraph(namespace=cg_dict["namespace"])

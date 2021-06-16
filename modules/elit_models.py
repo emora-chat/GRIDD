@@ -39,12 +39,7 @@ class ElitModels:
                 del utterances[i]
                 del speaker_ids[i]
 
-        parse_dict = self.model.parse(
-            utterances,
-            models=models,
-            speaker_ids=speaker_ids,
-            coref_context=coref_context
-        )
+        parse_dict = self.model.parse(utterances, models=models, speaker_ids=speaker_ids, coref_context=coref_context)
 
         turn_index = aux_state.get('turn_index', None)
         all_tokens = []

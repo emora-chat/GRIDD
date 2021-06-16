@@ -2,7 +2,8 @@
 from abc import abstractmethod
 from itertools import chain
 from GRIDD.data_structures.concept_graph import ConceptGraph
-from GRIDD.data_structures.inference_engine import InferenceEngine
+# from GRIDD.data_structures.inference_engine import InferenceEngine
+from GRIDD.data_structures.graph_matching.inference_engine import InferenceEngine
 from GRIDD.data_structures.intelligence_core import IntelligenceCore
 from GRIDD.data_structures.id_map import IdMap
 from GRIDD.utilities import collect
@@ -102,14 +103,20 @@ class ParseToLogic:
         self.intcore.consider(parse_graph)
         self._span_to_concepts()
         types = self.intcore.pull_types()
-        self.intcore.consider(types)
+        type_preds = {p for concept in types for p in types[concept]}
+        self.intcore.consider(type_preds)
         # todo - this is just a temporary patch for missing type expression
         for s,_,_,_ in wm.predicates(predicate_type='expr'):
             if not wm.has(s, 'type', 'expression'):
                 wm.add(s, 'type', 'expression')
-        rule_assignments = {(pre, post, rule): sols for rule, (pre, post, sols) in self.intcore.infer().items()}
-        mentions = self._get_mentions(rule_assignments, wm)
-        merges = self._get_merges(rule_assignments, wm)
+        rule_assignments = self.intcore.infer()
+        sorted_assignments = {}
+        for k2 in self.intcore.inference_engine.rules:
+            for rule, (pre, post, sols) in rule_assignments.items():
+                if rule == k2:
+                    sorted_assignments[(pre, post, rule)] = [s[0] for s in sols]
+        mentions = self._get_mentions(sorted_assignments, wm)
+        merges = self._get_merges(sorted_assignments, wm)
         return mentions, merges
 
     def _span_to_concepts(self):
