@@ -4,8 +4,33 @@ request_truth(emora,l)
 ->
 _pr(_low)
 _t(_present)
-$ Do{"t":"#Z","s":"user"} you like your college ? $
+$ Do{"t":"#Z","s":"you"} you like your college ? $
 ;
+
+l/like(user,s/subject())
+time(l,Z/datetime())
+request_truth(emora,l)
+->
+_pr(_low)
+_t(_present)
+$ Do{"t":"#Z","s":"you"} you like your major ? $
+;
+
+time(l/like(user,X/subject()),Z/datetime())
+cause(l,o/object())
+request(emora,o)
+->
+_t(_present)
+$ Why do{"t":"#Z","s":"you"} you like X ? $
+;
+
+ulx/learn(user,X)
+time(enjoy(user,ulx),Z/datetime())
+->
+_t(_present)
+$ It's good to hear that you are{"t":"#Z","s":"you"} enjoying what you learn{"t":"#Z","s":"you"} . I think having passions for what one learns is very important . $
+;
+
 
 time(l/like(user,c/college()),Z/datetime())
 glad(emora,l)
@@ -116,7 +141,7 @@ in(em,biology())
 not(em)
 ->
 _t(_rpresent)
-$ Oh , I see . It makes sense to me . I didn't major in biology because I didn't feel like the subject was a fit for me . $
+$ Oh , I see . I didn't major in biology because I didn't feel like the subject was a fit for me . $
 ;
 
 xs/study(x/person())

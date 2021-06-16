@@ -89,3 +89,5 @@ expr("visual arts",visual_arts)
 
 art=(arts_major)
 music=(arts_major)
+
+unknown_subject=(unknown_noun)

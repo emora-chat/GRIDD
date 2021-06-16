@@ -78,6 +78,29 @@ type(m,group)
 about(m,c)
 ;
 
+um/major(user)
+in(um,s/subject())
+time(um,z/datetime())
+user_aware(um)
+->
+l:<l/like(user,s) time(l,z)>
+request_truth(emora,l)
+;
+
+time(l/like(user,s/subject()),z/datetime())
+user_aware(l)
+->
+o:<cause(l,o/object())>
+request(emora,o)
+;
+
+time(l/like(user,s/subject()),z/datetime())
+user_aware(l)
+->
+ulx/learn(user,s)
+time(enjoy(user,ulx),z)
+;
+
 /* More Specific Content */
 l/like(user,c/college())
 ->
@@ -159,8 +182,6 @@ time(el,past)
 uke:<uke/know(user,ej) time(uke,past)>
 request_truth(emora,uke)
 ;
-
-
 
 xm/major(x/person())
 in(xm,ss/social_science())
