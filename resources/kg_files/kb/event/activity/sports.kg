@@ -35,7 +35,6 @@ dodgeball= (unknown_sport)
 expr("dodgeball", dodgeball)
 
 
-play=(do)
 win=(predicate)
 lose=(predicate)
 compete=(predicate)
