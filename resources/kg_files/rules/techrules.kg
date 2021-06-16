@@ -255,7 +255,7 @@ use(user, a)>
 request(emora, a)
 ;
 
-like(user, do(user, o/entity()))
+like(user, do(user, o/object()))
 ->
 like(user, o)
 ;
