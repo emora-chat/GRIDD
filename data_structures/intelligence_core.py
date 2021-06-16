@@ -733,12 +733,6 @@ class IntelligenceCore:
             if int(span_obj.turn) <= current_turn - SPANTURN:
                 deletions.add(s)
 
-        # delete all user and emora turn tracking predicates from SPANTURN turns ago
-        for s,t,o,i in chain(wm.predicates('user', UTURN), wm.predicates('user', ETURN),
-                             wm.predicates('emora', UTURN), wm.predicates('emora', ETURN)):
-            if int(o) <= current_turn - SPANTURN:
-                deletions.add(i)
-
         keepers = set()
         for k in keep:
             ess = wm.structure(k, self.subj_essential_types, self.obj_essential_types)

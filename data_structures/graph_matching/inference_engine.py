@@ -186,6 +186,7 @@ class InferenceEngine:
                         t = next(iter(facts_graph.out_edges(value, 't')))[1]
                         o = next(iter(facts_graph.out_edges(value, 'o')))[1]
                         virtual_preds[value] = (s, t, o)
+                    # confidence checking
                     if precondition_cg.has(predicate_id=variable):
                         var_conf = precondition_cg.features.get_confidence(variable, None)
                         val_conf = facts_concept_graph.features.get_confidence(value, 1.0)
@@ -193,19 +194,27 @@ class InferenceEngine:
                            (var_conf is not None and var_conf > 0 and val_conf - var_conf < 0) or \
                            (var_conf is not None and var_conf < 0 and val_conf - var_conf > 0)):
                             break
-                    else:
-                        turn_pos = precondition_cg.features[variable].get(TURN_POS, None)
-                        if turn_pos is not None:
+                    # turn checking
+                    turn_check_failed = False
+                    for turn_type in {ETURN_POS, UTURN_POS}:
+                        turn_pos = precondition_cg.features.get(variable, {}).get(turn_type, [])
+                        if len(turn_pos) > 0:
                             if aux_state is None:
                                 print('[WARNING] Found turn checking rule but no aux state was passed to infer()')
+                                turn_check_failed = True
                                 break
-                            current_turn = aux_state.get('turn_index', None)
+                            current_turn = int(aux_state.get('turn_index', None))
                             if current_turn is not None:
-                                relative_turn_check = int(current_turn) - int(turn_pos)
-                                if str(relative_turn_check) != value:  # post process filter of turn checking rules
+                                relative_turn_checks = [current_turn - t for t in turn_pos]
+                                match_turn = facts_concept_graph.features.get(value, {}).get(turn_type, [])
+                                if not set(relative_turn_checks).issubset(set(match_turn)):  # post process filter of turn checking rules
+                                    turn_check_failed = True
                                     break
-                            else:  # no turn information can be found in aux state so cannot do any turn checking
+                            else:  # no turn information can be found in aux state so cannot do any turn checking thus invalidating this rule
+                                turn_check_failed = True
                                 break
+                    if turn_check_failed:
+                        break
                     if variable in categories:
                         not_category = True
                         value_types = facts_types.get(value, set())
