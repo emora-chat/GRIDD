@@ -30,9 +30,13 @@ def get_correct_form(word_key):
 	return word_key
 
 def save_to_ont(result):
+	defined = set()
 	f = open(f"{output_dir}/{result[0].split('.')[0]}inheritants.kg","w")
 	for i in result[2]:
 		str1 = i.translate(str.maketrans('', '', string.punctuation.replace('_', '')))
+		if str1 in defined:
+			continue
+		defined.add(str1)
 		f.write(f"{str1}=({result[0].split('.')[0]})\n")
 		if '_' in str1:
 			f.write(f"expr(\"{ str1.replace('_', ' ') }\", {str1})\n")
