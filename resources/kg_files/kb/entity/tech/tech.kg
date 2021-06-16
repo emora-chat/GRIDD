@@ -28,4 +28,5 @@ expr("artificial intelligence", ai)
 ai_temp=(predicate)
 apps=(entity)
 resource_heavy=(predicate)
+machine=(device)
 ;
