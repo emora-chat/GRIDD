@@ -10,6 +10,7 @@ favorite(g)
 request(emora, g)
 ->
 _t(_p)
+_pr(_high)
 $ What is your favorite movie genre? $
 ;
 
@@ -26,6 +27,162 @@ request_truth(emora, l)
 ->
 _t(_p)
 $ Do you have a favorite streaming service? Believe it or not, I don't have a favorite. They all have such great offerings! $
+;
+
+/* TV Genre Stuff */
+
+l/like(user, g/soap_opera())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Soap operas are classic television. I remember growing up and my grandmother would always watch her soap operas while babysitting me. Why do you like soap operas? $
+;
+
+l/like(user, g/docuseries())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Documentaries are great on TV. I love learning history and I always learn something new when I watch documentaries. I watched Wild Wild County on Netflix with some friends recently and it was fascinating. What do you like about documentary TV? $
+;
+
+l/like(user, g/food_shows())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ I grew up watching cooking shows and I still love them today. I think Chopped and the Great British Bake Off are my two favorites. I love seeing what kinds of creative things chefs can make up on the spot. Why do you like food shows? $
+;
+
+l/like(user, g/game_shows())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Game shows are a classic choice. There’s so many to choose from but I love Jeopardy the most. I used to watch and play along every night with my family growing up. What do you like most about game shows? $
+;
+
+l/like(user, g/reality_tv())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Reality TV is definitely my guilty pleasure. I watched a lot of Dance Moms when I was a kid, but now I love watching old episodes of America’s Next Top Model. There’s so many kinds of reality TV though so you can’t really go wrong. Why do you like reality TV? $
+;
+
+l/like(user, g/telenovelas())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Great choice! I was first introduced to telenovelas through the show Jane the Virgin, but I want to watch more in the future. What do you like about telenovelas? $
+;
+
+l/like(user, g/travel_shows())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ I love travel shows too! My dad always watched Rick Steve’s Europe when I was younger, but now we both watch and really enjoy Somebody Feed Phil on Netflix. Why do you like travel shows? $
+;
+
+/* Movie Genre Stuff */
+
+l/like(user, g/action_movies())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ I love a good action movie. I think they’re especially fun to watch on a big screen with loudspeakers in the theater. I really like the Mission Impossible film series. Its theme song is so iconic. Why do you like action movies? $
+;
+
+l/like(user, g/comedies())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ I love watching comedy movies. They’re so much fun to watch with big groups of friends. One of my favorite comic actresses is Kristen Wiig. I think her film Bridesmaids is an all-time greatest film. Why do you like comedies? $
+;
+
+l/like(user, g/dramas())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ I really like dramas too, especially family dramas. I highly recommend the film Minari. It has a great cast and tells a really beautiful story. Why do you like dramas? $
+;
+
+l/like(user, g/horror_movies())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ I’ll admit that I’m a bit of a scaredy-cat myself, but I can appreciate a good horror movie. I enjoyed the Conjuring movies, but the jump scares always made my heart race. Why do you like horror movies? $
+;
+
+l/like(user, g/thriller_movies())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ That’s a great choice. The most recent thriller I watched was Parasite, a South Korean film. It’s funnier than a lot of other thrillers, but still a very tense story. What do you like about thrillers? $
+;
+
+l/like(user, g/romance_movies())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Romance movies are really great. I especially like rom coms. I highly recommend the film The Big Sick if you haven’t seen it yet. It’s so sweet and heartwarming. What do you like about romance movies? $
+;
+
+l/like(user, g/fantasy_movies())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Fantasy movies are so much fun to watch. The Lord of the Rings films are my favorite fantasy films. I loved watching them when I was younger and they’re still really rewatchable today. What do you like about fantasy movies? $
+;
+
+l/like(user, g/science_fiction_movies())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ I love science fiction movies. Something about them is just so relatable. What makes you like them? $
+;
+
+l/like(user, g/musicals())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Musicals are fantastic! Who doesn't love Les Mis and Phantom of the Opera. What makes you like musicals? $
+;
+
+l/like(user, g/westerns())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Westerns are such cool movies. I highly recommended the film The Rider. It’s a contemporary Western and tells a very unique story. Why do you like Westerns? $
+;
+
+l/like(user, g/mystery_movies())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Such a great pick! I thought the recent movie Knives Out was a great modern take on mystery movies, but I also like the classics like Alfred Hitchcock’s Rear Window. I love a good plot twist! Why do you like mystery movies? $
+;
+
+l/like(user, g/documentaries())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ You definitely always learn a lot from documentaries. What makes you like them? $
 ;
 
 /* Marvel Time */
