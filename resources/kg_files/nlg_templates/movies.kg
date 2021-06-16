@@ -17,6 +17,7 @@ l/like(user, make(user, m2/movie()))
 request_truth(emora, l)
 ->
 _t(_p)
+_pr(_low)
 $ Have you ever tried making your own movie? I once made one in class for school. $
 ;
 
@@ -186,7 +187,7 @@ cause(p/predicate(), l)
 request(emora, p)
 ->
 _pr(_high)
-$ That’s a great pick. It’s so cool to see Steve Roger’s background story and I love that the movie is set in the 1940’s. What did you like most about the movie? $
+$ That’s great to hear. It’s so cool to see Steve Roger’s background story and I love that the movie is set in the 1940’s. What did you like most about the movie? $
 ;
 
 l/like(user, g/Iron_Man_3())
@@ -210,7 +211,7 @@ cause(p/predicate(), l)
 request(emora, p)
 ->
 _pr(_high)
-$ Great choice! The first Iron Man film is also my favorite. It’s so fun to look back at the movie as the start of the Marvel Cinematic Universe. What made you like the film? $
+$ Awesome! The first Iron Man film is also my favorite. It’s so fun to look back at the movie as the start of the Marvel Cinematic Universe. What made you like the film? $
 ;
 
 l/like(user, m/marvel_movie())
