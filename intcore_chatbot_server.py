@@ -321,8 +321,11 @@ class ChatbotServer:
                 else:
                     # fragment language often does not have predicate as root (e.g. the big backyard<root>)
                     self.dialogue_intcore.working_memory.features[t][BASE_UCONFIDENCE] = 1.0
+        p.start('user conf')
         self.dialogue_intcore.update_confidence('user', iterations=CONF_ITER)
+        p.next('emora conf')
         self.dialogue_intcore.update_confidence('emora', iterations=CONF_ITER)
+        p.stop()
         return self.dialogue_intcore.working_memory, aux_state
 
     @serialized('working_memory', 'aux_state')
@@ -378,7 +381,8 @@ class ChatbotServer:
     @serialized('inference_results', 'rules')
     def run_dynamic_inference(self, rules, working_memory, aux_state):
         self.load_working_memory(working_memory)
-        inference_results = self.reference_engine.infer(self.dialogue_intcore.working_memory, aux_state, rules, cached=False)
+        inference_results = self.reference_engine.infer(self.dialogue_intcore.working_memory, aux_state, rules,
+                                                        cached=False, remove_rules=True)
         return inference_results, {}
 
     @serialized('inference_results')
@@ -817,7 +821,7 @@ class ChatbotServer:
         p.next('response assembler')
         response, working_memory = self.run_response_assembler(working_memory, aux_state, rule_responses)
         p.stop()
-        # p.report()
+        p.report()
         return response, working_memory, aux_state
 
     def respond_serialize(self, user_utterance, working_memory, aux_state):
@@ -963,7 +967,7 @@ if __name__ == '__main__':
     print_wm = input('debug (n/y) >>> ').strip()
     # global PRINT_WM
     PRINT_WM = True if print_wm == 'y' else False
-    if not device == 0:
+    if not device:
         if torch.cuda.is_available():
             device = 'cuda:0'
         else:

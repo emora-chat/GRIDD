@@ -612,16 +612,18 @@ class ConceptGraph:
             graph.add(c)
         return graph
 
-    def to_infcompat_graph(self):
+    def to_infcompat_graph(self, ignore=None):
         graph = Graph()
         for s, t, o, i in self.predicates():
-            graph.add(i, s, 's')
-            if t == TYPE:
-                graph.add(i, t, 't')
-            if o is not None:
-                graph.add(i, o, 'o')
+            if ignore is None or i not in ignore:
+                graph.add(i, s, 's')
+                if t == TYPE:
+                    graph.add(i, t, 't')
+                if o is not None:
+                    graph.add(i, o, 'o')
         for c in self.concepts():
-            graph.add(c)
+            if ignore is None or c not in ignore:
+                graph.add(c)
         return graph
 
     def merge(self, concept_a, concept_b, strict_order=False):

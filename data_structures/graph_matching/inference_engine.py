@@ -74,59 +74,63 @@ class InferenceEngine:
             converted_rules[rid] = precondition
         return converted_rules
 
-    def _convert_facts(self, facts, facts_types):
+    def _convert_facts(self, facts, facts_types, ignore=None):
+        """
+        If dynamic_rules are passed, they are to be removed from facts graph
+        """
         # p.start('to digraph')
-        facts_graph = facts.to_infcompat_graph()
+        facts_graph = facts.to_infcompat_graph(ignore=ignore)
         # p.next(f'flatten types ({len(facts_types)} concepts)')
-        facts_graph = self._flatten_types(facts, facts_graph, facts_types)
+        facts_graph = self._flatten_types(facts, facts_graph, facts_types, ignore=ignore)
         # p.next('quantities')
         quantities = {c for c in facts.concepts() if isinstance(c, (float, int))}
         for node in quantities: facts_graph.data(node)['num'] = node
         # p.stop()
         return facts_graph
 
-    def _flatten_types(self, orig_cg, cg, types=None, for_query=False):
+    def _flatten_types(self, orig_cg, cg, types=None, for_query=False, ignore=None):
         counter = 0
         if types is None:
             types = orig_cg.types()
         for c in orig_cg.concepts():
-            handled = set()
-            if not for_query:
-                # add self-loop type
-                cg.add(c, c, 't')
-            if orig_cg.has(predicate_id=c):
-                pred_type = orig_cg.type(c)
-                if pred_type != TYPE:  # add predicate type as a type, if not type predicate itself
-                    handled.add(pred_type)
-                    cg.add(c, pred_type, 't') # there would be an explicit type predicate instance for any predicate type instances that are arguments of different predicate, so not handled here
-            for s, t, o, i in orig_cg.predicates(c, predicate_type=TYPE):  # an explicit type predicate to o
-                if o not in handled:
-                    handled.add(o)
-                    if for_query:
-                        if not list(orig_cg.predicates(subject=i)) and not list(orig_cg.predicates(object=i)):
-                            # remove predicate instance, since it is not an argument of anything
-                            cg.data(i)['var'] = False
-                            cg.remove(i)
-                            # add direct link instead
+            if ignore is None or c not in ignore:
+                handled = set()
+                if not for_query:
+                    # add self-loop type
+                    cg.add(c, c, 't')
+                if orig_cg.has(predicate_id=c):
+                    pred_type = orig_cg.type(c)
+                    if pred_type != TYPE:  # add predicate type as a type, if not type predicate itself
+                        handled.add(pred_type)
+                        cg.add(c, pred_type, 't') # there would be an explicit type predicate instance for any predicate type instances that are arguments of different predicate, so not handled here
+                for s, t, o, i in orig_cg.predicates(c, predicate_type=TYPE):  # an explicit type predicate to o
+                    if o not in handled:
+                        handled.add(o)
+                        if for_query:
+                            if not list(orig_cg.predicates(subject=i)) and not list(orig_cg.predicates(object=i)):
+                                # remove predicate instance, since it is not an argument of anything
+                                cg.data(i)['var'] = False
+                                cg.remove(i)
+                                # add direct link instead
+                                cg.add(s, o, 't')
+                        else:
+                            # add direct type if creating data graph
                             cg.add(s, o, 't')
-                    else:
-                        # add direct type if creating data graph
-                        cg.add(s, o, 't')
-            for t in types.get(c, []) - {c}:
-                if t != TYPE and t not in handled: # only indirect type links need to be manually added, since they do not exist as predicate instances in the ConceptGraph
-                    handled.add(t)
-                    new_id = '__virt_%d' % counter
-                    counter += 1
-                    cg.add(new_id, c, 's')
-                    cg.add(new_id, TYPE, 't')
-                    cg.add(new_id, t, 'o')
-                    if for_query:
-                        cg.data(new_id)['var'] = True
-                    else: # add direct type to only if creating data graph
-                        cg.add(c, t, 't')
+                for t in types.get(c, []) - {c}:
+                    if t != TYPE and t not in handled: # only indirect type links need to be manually added, since they do not exist as predicate instances in the ConceptGraph
+                        handled.add(t)
+                        new_id = '__virt_%d' % counter
+                        counter += 1
+                        cg.add(new_id, c, 's')
+                        cg.add(new_id, TYPE, 't')
+                        cg.add(new_id, t, 'o')
+                        if for_query:
+                            cg.data(new_id)['var'] = True
+                        else: # add direct type to only if creating data graph
+                            cg.add(c, t, 't')
         return cg
 
-    def infer(self, facts_concept_graph, aux_state=None, dynamic_rules=None, cached=True):
+    def infer(self, facts_concept_graph, aux_state=None, dynamic_rules=None, cached=True, remove_rules=False):
         """
         facts should have already had all types pulled (aka don't do type pull within inference engine)
         """
@@ -135,7 +139,12 @@ class InferenceEngine:
         p.start('facts graph types')
         facts_types = facts_concept_graph.types()
         p.next('convert facts graph')
-        facts_graph = self._convert_facts(facts_concept_graph, facts_types)
+        if remove_rules:
+            # get predicate ids to ignore
+            ignore = {v for rule, info in dynamic_rules.items() for v in info[-1]}
+            facts_graph = self._convert_facts(facts_concept_graph, facts_types, ignore)
+        else:
+            facts_graph = self._convert_facts(facts_concept_graph, facts_types)
         p.next('process dynamic rules')
         if dynamic_rules is not None and not isinstance(dynamic_rules, dict):
             dynamic_rules = ConceptGraph(dynamic_rules).rules()
