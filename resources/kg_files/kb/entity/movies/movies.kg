@@ -33,6 +33,7 @@ movie_theater=(location, indoor)
 expr("movie theater, cinema", movie_theater)
 
 streaming_provider=(entity)
+expr("streaming service, streaming provider", streaming_provider)
 netflix=(streaming_provider)
 hulu=(streaming_provider)
 amazon_prime=(streaming_provider)

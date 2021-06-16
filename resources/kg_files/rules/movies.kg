@@ -14,6 +14,8 @@ g:<possess(user, g/movie_genre()) favorite(g)>
 request(emora, g)
 pl/like(user, make(user, m2/movie()))
 request_truth(emora, pl)
+pl_2/like(user, s/streaming_provider())
+request_truth(emora, pl_2)
 ;
 
 l/like(user, m/marvel_movie())

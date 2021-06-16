@@ -65,6 +65,7 @@ $ What sport do you play? I've enjoyed soccer in the past. Something about worki
 play(user, s/sport())
 request_truth(be(user, athlete()))
 ->
+_t(_p)
 _pr(_low)
 $ Would you consider yourself an athlete ? $
 ;
@@ -226,6 +227,7 @@ $ Hmm. It seems like sports might not be your thing. Would you say that you are 
 
 energetic(user)
 -> user_is_energetic ->
+_t(_p)
 _pr(_low)
 $ Sounds like you are an energetic person! $
 ;
