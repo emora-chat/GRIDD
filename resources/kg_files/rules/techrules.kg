@@ -238,6 +238,7 @@ request(emora, i)
 ;
 
 i/improve(life, p/phone())
+i{"confidence": 0}
 user_aware(i)
 ->
 p1:<prefer(emora, pretty(p))
@@ -254,7 +255,7 @@ use(user, a)>
 request(emora, a)
 ;
 
-like(user, do(o/object()))
+like(user, do(user, o/object()))
 ->
 like(user, o)
 ;
