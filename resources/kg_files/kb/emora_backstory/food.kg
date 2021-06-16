@@ -1,3 +1,5 @@
+be(emora,foodie())
+
 like(emora,ramen())
 
 possess(emora,f/food())

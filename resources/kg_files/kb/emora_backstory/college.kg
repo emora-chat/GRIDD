@@ -4,4 +4,14 @@ time(eg,past)
 
 like(emora,computer_science())
 
+possess(emora,s/subject())
+favorite(s)
+be(s,computer_science())
+
+em/major(emora)
+in(em,computer_science())
+
 dislike(emora,biology())
+
+have(emora,f/friend())
+type(f,group)

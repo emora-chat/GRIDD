@@ -69,3 +69,6 @@ graduation=(entity)
 opinion=(entity)
 decision=(entity)
 hobby=(entity)
+
+research=(entity)
+contribution=(entity)

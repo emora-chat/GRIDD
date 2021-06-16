@@ -1,3 +1,29 @@
+/* Common Sense */
+xg/go(x/person())
+to(xg,c/college())
+->
+possess(x,c)
+;
+
+xw/work(x/person())
+on(xw,r/research())
+->
+do(x,r)
+;
+
+possess(x/person(),r/research())
+->
+do(x,r)
+;
+
+/* Default Content */
+time(xg/go(x/person()),z/datetime())
+to(xg,c/college())
+->
+l:<l/like(user,c) time(l,z)>
+request_truth(emora,l)
+;
+
 time(pc/possess(user,c/college()),z/datetime())
 pc{"confidence": 0}
 user_aware(pc)
@@ -32,12 +58,68 @@ pred:<like(user, pred/event(object())) in(pred,c) time(pred,z)>
 request(emora, pred)
 ;
 
-time(udr/do(user,r/research()),z/datetime())
-udr{"confidence": 0}
-user_aware(udr)
+time(prop_i/property(c/college()),z/datetime())
+prop_i{"confidence": 0}
+user_aware(prop_i)
 ->
-op_more_info(r, udr)
-request(emora, r)
+pred:<like(user, pred/event(object())) in(pred,c) time(pred,z)>
+request(emora, pred)
+;
+
+like(user, pred/event(object()))
+in(pred,c/college())
+time(pred,z/datetime())
+req/request(emora, pred)
+user_aware(req)
+->
+ur/remind(user)
+of(ur,m/memory())
+type(m,group)
+about(m,c)
+;
+
+/* More Specific Content */
+l/like(user,c/college())
+->
+glad(emora,l)
+fpc:<possess(user,p/part()) favorite(p) about(p,c) be(p,fpc/fav_part_college())>
+request(emora,fpc)
+;
+
+l/like(user,c/college())
+glad(emora,l)
+possess(user,p/part())
+favorite(p)
+about(p,c)
+be(p,fpc/fav_part_college())
+req/request(emora,fpc)
+req{"confidence": 0}
+user_aware(req)
+-> share_experience ->
+have(emora,pr/peer())
+type(pr,group)
+be(pr,f/friend())
+type(f,group)
+;
+
+time(do(user,research()),z/datetime())
+->
+busy(user)
+ubr:<ubr/be(user,researcher())>
+request_truth(emora,ubr)
+;
+
+ubr/be(user,r/researcher())
+->
+respect(emora,r)
+;
+
+ubr/be(user,r/researcher())
+ubr{"confidence":-1}
+->
+emc/make(emora,c/contribution())
+type(c,group)
+to(emc,research())
 ;
 
 time(study(x/person(),s/subject()),z/datetime())
@@ -52,6 +134,19 @@ xm{"confidence":-1}
 ->
 o:<cause(xm,o/object())>
 request(emora,o)
+;
+
+time(xm/major(x/person()),z/datetime())
+in(xm,s/subject())
+xm{"confidence":-1}
+cause(xm,o/object())
+req/request(emora,o)
+user_aware(req)
+->
+understand(emora,xm)
+em/major(emora)
+in(em,biology())
+not(em)
 ;
 
 xs/study(x/person())
