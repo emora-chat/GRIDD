@@ -488,6 +488,9 @@ class ChatbotServer:
                 for so, t, l in ref_links:
                     wm.features.setdefault(t, {})[SALIENCE] = wm.features.setdefault(fragment, {}).get(SALIENCE, 0)
                     # wm.features[t][BASE] = True todo - check if the BASE indication matters here
+            if not LOCAL:
+                print('CURRENT USER CONCEPTS: '%current_user_concepts)
+                print('FRAGMENT REQUEST MERGES: '%fragment_request_merges)
             self.merge_references(fragment_request_merges, aux_state)
             self.dialogue_intcore.operate(aux_state=aux_state)
         #p.next('user conf')
