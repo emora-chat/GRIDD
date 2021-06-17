@@ -279,21 +279,29 @@ class ConceptGraph:
         return set([predicate[2] for predicate in self.predicates(subject=concept,predicate_type=type)
                     if predicate[2] is not None])
 
-    def structure(self, concept, subj_emodifiers=None, obj_emodifiers=None, predicate_types=None):
-        if predicate_types is None:
-            predicate_types = self.type_predicates()
+    def structure(self, concept, subj_essentials=None, obj_essentials=None, type_predicates=None):
+        if type_predicates is None:
+            type_predicates = self.type_predicates()
+        if subj_essentials is None:
+            subj_essentials = {}
+            for c in self.subtypes_of('subj_essential'):
+                if self.has(predicate_id=c):
+                    subj_essentials.setdefault(self.subject(c), set()).add(c)
+        if obj_essentials is None:
+            obj_essentials = {}
+            for c in self.subtypes_of('obj_essential'):
+                if self.has(predicate_id=c):
+                    obj_essentials.setdefault(self.object(c), set()).add(c)
         visited = {None}
-        s = []
+        s = set()
         stack = [concept]
         while stack:
-            p.start('fullstack')
             concept = stack.pop()
             if concept not in visited:
-                p.start('one stack iter')
                 visited.add(concept)
                 if self.has(predicate_id=concept):
                     pred = self.predicate(concept)
-                    s.append(pred)
+                    s.add(pred)
                     stack.extend({pred[0], pred[2]} - visited)
                     if pred[1] in {REQ_TRUTH, REQ_ARG}:
                         # if concept is a request predicate, retrieve all ref metalinks to object for full definition
@@ -303,22 +311,10 @@ class ConceptGraph:
                                 mp = self.predicate(constraint)
                                 if mp[1] not in {'ref', 'def', 'expr'} and mp[3] not in visited:
                                     stack.append(mp[3])
-                for pred in predicate_types[concept]:
-                    if pred[3] not in visited:
-                        s.append(pred)
-                        visited.add(pred[3])
-                if subj_emodifiers:
-                    for em in subj_emodifiers:
-                        for mp in self.predicates(concept, predicate_type=em):
-                            if mp[3] not in visited:
-                                stack.append(mp[3])
-                if obj_emodifiers:
-                    for em in obj_emodifiers:
-                        for mp in self.predicates(object=concept, predicate_type=em):
-                            if mp[3] not in visited:
-                                stack.append(mp[3])
-                p.stop()
-            p.stop()
+                s.update(type_predicates[concept])
+                visited.update({pred[3] for pred in type_predicates[concept]})
+                stack.extend(subj_essentials.get(concept, set()))
+                stack.extend(obj_essentials.get(concept, set()))
         return s
 
     def related(self, concept, types=None, exclusions=None, limit=None):
