@@ -2,12 +2,13 @@ video_entertainment = (entity)
 movie=(video_entertainment)
 expr("film, flick, films, flicks, movies", movie)
 tv=(video_entertainment)
-expr("tv, television", tv)
+expr("tv, television, tv shows, tv show, television shows, televion show", tv)
 hate=(dislike)
 unknown_movie=(movie)
 
 video_entertainment_genre=(genre)
 movie_genre = (video_entertainment_genre)
+expr("movie genre, movie type, type of movie", movie_genre)
 action_movies=(movie_genre)
 expr("action movie", action_movies)
 comedies=(movie_genre)
@@ -33,6 +34,7 @@ documentaries=(movie_genre)
 expr("documentary", documentaries)
 
 tv_genre = (video_entertainment_genre)
+expr("tv genre, televsion genre, type of televsion", tv_genre)
 soap_opera=(tv_genre)
 expr("soap opera, soap operas", soap_opera)
 docuseries=(tv_genre)
@@ -135,8 +137,8 @@ expr("Iron Man 3, the third iron man", Iron_Man_3)
 
 
 disney_movie=(movie)
-
 expr("Disney movie, Disney movies, Disney films, Disney animations", disney_movie)
+
 ratatouille=(disney_movie)
 dalmatians=(disney_movie)
 expr("101 Dalmations, one hundred and one Dalmations", dalmatians)

@@ -5,13 +5,13 @@ _t(_p)
 $ What is your favorite movie? My favorite movie is the first Iron Man. $
 ;
 
-possess(user, g/movie_genre())
+possess(user, g/video_entertainment_genre())
 favorite(g)
 request(emora, g)
 ->
 _t(_p)
 _pr(_high)
-$ What is your favorite movie genre? $
+$ Do you have a favorite genre? $
 ;
 
 l/like(user, make(user, m2/movie()))
@@ -26,7 +26,7 @@ l/like(user, s/streaming_provider())
 request_truth(emora, l)
 ->
 _t(_p)
-$ Do you have a favorite streaming service? Believe it or not, I don't have a favorite. They all have such great offerings! $
+$ Do you have a favorite streaming service? Believe it or not, I don't have a favorite. I think they all have such great offerings! $
 ;
 
 /* TV Genre Stuff */

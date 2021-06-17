@@ -10,13 +10,19 @@ request(emora, m)
 m/movie()
 user_aware(m)
 -> movie_is_mentioned ->
-g:<possess(user, g/movie_genre()) favorite(g)>
-request(emora, g)
 pl/like(user, make(user, m2/movie()))
 request_truth(emora, pl)
+;
+
+v/video_entertainment()
+user_aware(v)
+-> vid_ent_is_mentioned ->
+g:<possess(user, g/video_entertainment_genre()) favorite(g)>
+request(emora, g)
 pl_2/like(user, s/streaming_provider())
 request_truth(emora, pl_2)
 ;
+
 
 /* Tv Genre Stuff */
 l/like(user, m/soap_opera())
@@ -76,10 +82,10 @@ p:<c/like(user, g/action_movies()) cause(p/predicate(), c)>
 request(emora, p)
 ;
 
-l/like(user, m/comedies())
+l/like(user, g/comedies())
 user_aware(l)
 ->
-p:<c/like(user, g/comedies()) cause(p/predicate(), c)>
+p:<c/like(user, comedies()) cause(p/predicate(), c)>
 request(emora, p)
 ;
 
@@ -673,4 +679,13 @@ req_sat(request_truth(emora, like_0/like(user, u)))
 ->
 p:<c/like(user, t/object()) cause(p/predicate(), c)>
 request(emora, p)
+;
+
+/* Common Sense */
+possess(user, o/object())
+favorite(o)
+be(o, g/object())
+->
+l/like(user, g)
+user_aware(l)
 ;
