@@ -1,0 +1,4 @@
+like(user, predicate(user, o/object()))
+->
+like(user, o)
+;

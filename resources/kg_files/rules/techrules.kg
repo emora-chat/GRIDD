@@ -255,8 +255,3 @@ use(user, a)>
 request(emora, a)
 ;
 
-like(user, predicate(user, o/object()))
-->
-like(user, o)
-;
-
