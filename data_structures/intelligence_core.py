@@ -751,6 +751,8 @@ class IntelligenceCore:
         for c in wm.subtypes_of('subj_essential'):
             if wm.has(predicate_id=c):
                 subj_essentials.setdefault(wm.subject(c), set()).add(c)
+        print('KEEP: %s'%keep)
+        print('SUBJ_ESS: %s'%subj_essentials)
         obj_essentials = {}
         for c in wm.subtypes_of('obj_essential'):
             if wm.has(predicate_id=c):
@@ -765,9 +767,10 @@ class IntelligenceCore:
 
         for k in set(keepers):
             keepers.update({c for sig in type_predicates.get(k, []) for c in sig})
-
+        print('KEEPERS: %s' % keepers)
         #p.next('remove not keep')
         to_remove = (wm.concepts() - keepers) | deletions
+        print('REMOVE: %s' % to_remove)
         for r in to_remove:
             # check if there is a SPAN_REF of the thing being deleted; if yes, delete it too
             span_ref_preds = self.working_memory.predicates(predicate_type=SPAN_REF, object=r)
