@@ -18,6 +18,8 @@ from GRIDD.utilities import Counter
 from GRIDD.globals import *
 from itertools import chain
 
+from GRIDD.utilities.profiler import profiler as p
+
 CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 
@@ -277,13 +279,17 @@ class ConceptGraph:
         return set([predicate[2] for predicate in self.predicates(subject=concept,predicate_type=type)
                     if predicate[2] is not None])
 
-    def structure(self, concept, subj_emodifiers=None, obj_emodifiers=None):
+    def structure(self, concept, subj_emodifiers=None, obj_emodifiers=None, predicate_types=None):
+        if predicate_types is None:
+            predicate_types = self.type_predicates()
         visited = {None}
         s = []
         stack = [concept]
         while stack:
+            p.start('fullstack')
             concept = stack.pop()
             if concept not in visited:
+                p.start('one stack iter')
                 visited.add(concept)
                 if self.has(predicate_id=concept):
                     pred = self.predicate(concept)
@@ -292,15 +298,15 @@ class ConceptGraph:
                     if pred[1] in {REQ_TRUTH, REQ_ARG}:
                         # if concept is a request predicate, retrieve all ref metalinks to object for full definition
                         obj = pred[2]
-                        for _, constraint, _ in self.metagraph.out_edges(obj, REF):
+                        for constraint in self.metagraph.targets(obj, REF):
                             if self.has(predicate_id=constraint):
                                 mp = self.predicate(constraint)
                                 if mp[1] not in {'ref', 'def', 'expr'} and mp[3] not in visited:
                                     stack.append(mp[3])
-                for p in self.predicates(concept, predicate_type='type'):
-                    if p[3] not in visited:
-                        s.append(p)
-                        visited.add(p[3])
+                for pred in predicate_types[concept]:
+                    if pred[3] not in visited:
+                        s.append(pred)
+                        visited.add(pred[3])
                 if subj_emodifiers:
                     for em in subj_emodifiers:
                         for mp in self.predicates(concept, predicate_type=em):
@@ -311,6 +317,8 @@ class ConceptGraph:
                         for mp in self.predicates(object=concept, predicate_type=em):
                             if mp[3] not in visited:
                                 stack.append(mp[3])
+                p.stop()
+            p.stop()
         return s
 
     def related(self, concept, types=None, exclusions=None, limit=None):

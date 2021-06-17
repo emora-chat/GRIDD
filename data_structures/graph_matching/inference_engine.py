@@ -78,14 +78,14 @@ class InferenceEngine:
         """
         If dynamic_rules are passed, they are to be removed from facts graph
         """
-        # p.start('to digraph')
+        p.start('to digraph')
         facts_graph = facts.to_infcompat_graph(ignore=ignore)
-        # p.next(f'flatten types ({len(facts_types)} concepts)')
+        p.next(f'flatten types ({len(facts_types)} concepts)')
         facts_graph = self._flatten_types(facts, facts_graph, facts_types, ignore=ignore)
-        # p.next('quantities')
+        p.next('quantities')
         quantities = {c for c in facts.concepts() if isinstance(c, (float, int))}
         for node in quantities: facts_graph.data(node)['num'] = node
-        # p.stop()
+        p.stop()
         return facts_graph
 
     def _flatten_types(self, orig_cg, cg, types=None, for_query=False, ignore=None):
@@ -196,8 +196,8 @@ class InferenceEngine:
                             break
                     # turn checking
                     turn_check_failed = False
-                    for turn_type in {ETURN_POS, UTURN_POS}:
-                        turn_pos = precondition_cg.features.get(variable, {}).get(turn_type, [])
+                    for check_turn_type, turn_type in {(ETURN_POS, ETURN), (UTURN_POS, UTURN)}:
+                        turn_pos = precondition_cg.features.get(variable, {}).get(check_turn_type, [])
                         if len(turn_pos) > 0:
                             if aux_state is None:
                                 print('[WARNING] Found turn checking rule but no aux state was passed to infer()')

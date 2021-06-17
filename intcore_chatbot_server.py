@@ -279,7 +279,7 @@ class ChatbotServer:
                     elements = [s, o, i]
                 for c in elements:
                     if c is not None:
-                        mega_mention_graph.features.setdefault(c, {}).setdefault(UTURN_POS, []).append(int(aux_state.get('turn_index', -1)))
+                        mega_mention_graph.features.setdefault(c, {}).setdefault(UTURN, []).append(int(aux_state.get('turn_index', -1)))
 
         self.dialogue_intcore.consider(mega_mention_graph)
         return subspans, self.dialogue_intcore.working_memory
@@ -446,7 +446,7 @@ class ChatbotServer:
         emora_truth_requests = [pred for pred in wm.predicates('emora', REQ_TRUTH) if
                                 wm.has(pred[3], USER_AWARE) and not wm.has(pred[3], REQ_SAT)
                                 and (pred[2].startswith(KB) or pred[2].startswith(WM))
-                                and aux_state.get('turn_index', -1)-1 in wm.features.get(pred[3], {}).get(ETURN_POS, [])]
+                                and aux_state.get('turn_index', -1)-1 in wm.features.get(pred[3], {}).get(ETURN, [])]
         if len(emora_truth_requests) > 0:
             salient_emora_truth_request = max(emora_truth_requests,
                                               key=lambda pred: wm.features.get(pred[3], {}).get(SALIENCE, 0))
@@ -454,7 +454,7 @@ class ChatbotServer:
         emora_arg_requests = [pred for pred in wm.predicates('emora', REQ_ARG) if
                               wm.has(pred[3], USER_AWARE) and not wm.has(pred[3], REQ_SAT)
                               and (pred[2].startswith(KB) or pred[2].startswith(WM)) # hotfix to avoid incorrect request predicate setups where thing being requested is not a variable
-                              and aux_state.get('turn_index', -1)-1 in wm.features.get(pred[3], {}).get(ETURN_POS, [])]
+                              and aux_state.get('turn_index', -1)-1 in wm.features.get(pred[3], {}).get(ETURN, [])]
         if len(emora_arg_requests) > 0:
             salient_emora_arg_request = max(emora_arg_requests,
                                             key=lambda pred: wm.features.get(pred[3], {}).get(SALIENCE, 0))
@@ -476,7 +476,7 @@ class ChatbotServer:
         if salient_emora_request is not None:
             p.next('find answer')
             request_focus = salient_emora_request[2]
-            current_user_concepts = {c for c in wm.concepts() if aux_state["turn_index"] in wm.features.get(c, {}).get(UTURN_POS, [])}
+            current_user_concepts = {c for c in wm.concepts() if aux_state["turn_index"] in wm.features.get(c, {}).get(UTURN, [])}
             if req_type == REQ_TRUTH:  # special case - y/n question requires yes/no fragment as answer (or full resolution from earlier in pipeline)
                 fragment_request_merges = self.truth_fragment_resolution(request_focus, current_user_concepts, wm)
             else:
@@ -656,7 +656,7 @@ class ChatbotServer:
                 truths = list(wm.predicates('emora', REQ_TRUTH, ref_node))
                 if truths:
                     _process_answers(wm, truths[0][3])
-                    wm.features.get(truths[0][3], {}).get(UTURN_POS, []).append(aux_state["turn_index"])
+                    wm.features.get(truths[0][3], {}).get(UTURN, []).append(aux_state["turn_index"])
                     if not wm.has(truths[0][3], USER_AWARE):
                         i2 = wm.add(truths[0][3], USER_AWARE)
                         wm.features[i2][BASE_UCONFIDENCE] = 1.0
@@ -664,7 +664,7 @@ class ChatbotServer:
                     args = list(wm.predicates('emora', REQ_ARG, ref_node))
                     if args:
                         _process_answers(wm, args[0][3])
-                        wm.features.get(args[0][3], {}).get(UTURN_POS, []).append(aux_state["turn_index"])
+                        wm.features.get(args[0][3], {}).get(UTURN, []).append(aux_state["turn_index"])
                         if not wm.has(args[0][3], USER_AWARE):
                             i2 = wm.add(args[0][3], USER_AWARE)
                             wm.features[i2][BASE_UCONFIDENCE] = 1.0

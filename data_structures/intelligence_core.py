@@ -18,6 +18,9 @@ from GRIDD.data_structures.span import Span
 from GRIDD.modules.responsegen_by_templates import Template
 
 import GRIDD.data_structures.intelligence_core_operators as intcoreops
+
+from GRIDD.utilities.profiler import profiler as p
+
 from time import time
 import os, json
 
@@ -708,12 +711,14 @@ class IntelligenceCore:
     def prune_attended(self, aux_state, num_keep):
         # NOTE: essential predicates AND reference constraints must be maintained for selected concepts that are being kept
 
+        p.start('setup')
         wm = self.working_memory
         type_predicates = wm.type_predicates()
 
         # print(f'\nWM PREDICATES: {len(list(wm.predicates()))}')
         # print(f'WM CONCEPTS: {len(wm.concepts())}')
 
+        p.next('select keep')
         options = {i for s,t,o,i in wm.predicates() if t not in chain(self.subj_essential_types, self.obj_essential_types, PRIM, {TYPE})}
         soptions = sorted(options,
                           key=lambda x: wm.features.get(x, {}).get(SALIENCE, 0),
@@ -722,6 +727,7 @@ class IntelligenceCore:
         # print(f'KEEP {len(keep)}')
 
         # delete all user and emora spans that occured SPANTURN turns ago
+        p.next('delete old spans')
         deletions = set()
         current_turn = aux_state.get('turn_index', -1)
         for s,t,o,i in chain(wm.predicates(predicate_type=SPAN_REF, object='user'),
@@ -733,19 +739,24 @@ class IntelligenceCore:
             if int(span_obj.turn) <= current_turn - SPANTURN:
                 deletions.add(s)
 
+        p.next('find essentials of keep')
         keepers = set()
         for k in keep:
+            p.start('structure func')
             ess = wm.structure(k, self.subj_essential_types, self.obj_essential_types)
+            p.stop()
             structs = {c for sig in ess for c in sig if c is not None}
             keepers.update(structs)
             refs = wm.metagraph.targets(k, REF)
             keepers.update(refs)
+
         # print(f'STRUCT & REF KEEPERS {len(keepers-deletions)}')
 
         for k in set(keepers):
             keepers.update({c for sig in type_predicates.get(k, []) for c in sig})
         # print(f'STRUCT & REF & TYPE KEEPERS {len(keepers-deletions)}')
 
+        p.next('remove not keep')
         to_remove = (wm.concepts() - keepers) | deletions
         # print(f'REMOVING {len(to_remove)}')
         for r in to_remove:
@@ -754,6 +765,7 @@ class IntelligenceCore:
             for s, t, o, i in span_ref_preds:
                 self.working_memory.remove(s)
             wm.remove(r)
+        p.stop()
 
         # print(f'\nAFTER WM PREDICATES: {len(list(wm.predicates()))}')
         # print(f'AFTER WM CONCEPTS: {len(wm.concepts())}')

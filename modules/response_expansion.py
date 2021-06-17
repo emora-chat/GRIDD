@@ -46,7 +46,7 @@ class ResponseExpansion:
                             # emora turn tracking
                             for c in [s,o,i]:
                                 if c is not None:
-                                    wm.features.setdefault(c, {}).setdefault(ETURN_POS, []).append(int(aux_state.get('turn_index', -1)))
+                                    wm.features.setdefault(c, {}).setdefault(ETURN, []).append(int(aux_state.get('turn_index', -1)))
                 final_responses.append((main, final_exps, generation_type))
                 self.assign_cover(wm, concepts=spoken_predicates)
                 self.assign_salience(wm, concepts=spoken_predicates)

@@ -31,7 +31,7 @@ class NodeFeatures(defaultdict):
                             print('\tSpan Update: ', other_value)
                         else:
                             self[node]['span_data'] = other_value
-                    elif feature in {UTURN_POS, ETURN_POS}:
+                    elif feature in {UTURN_POS, ETURN_POS, UTURN, ETURN}:
                         self[node].setdefault(feature, []).extend(other_value)
                     else:
                         self[node][feature] = other_value
@@ -55,7 +55,7 @@ class NodeFeatures(defaultdict):
                         print('\tSpan Update: ', other_value)
                     else:
                         self[kept]['span_data'] = other_value
-                elif feature in {UTURN_POS, ETURN_POS}:
+                elif feature in {UTURN_POS, ETURN_POS, UTURN, ETURN}:
                     self[kept].setdefault(feature, []).extend(other_value)
                 else:
                     self[kept][feature] = other_value
