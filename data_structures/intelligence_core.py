@@ -748,15 +748,17 @@ class IntelligenceCore:
         keepers = set()
         type_predicates = self.working_memory.type_predicates()
         subj_essentials = {}
-        for c in wm.subtypes_of('subj_essential'):
-            if wm.has(predicate_id=c):
-                subj_essentials.setdefault(wm.subject(c), set()).add(c)
+        for pe in self.subj_essential_types:
+            for c in wm.subtypes_of(pe):
+                if wm.has(predicate_id=c):
+                    subj_essentials.setdefault(wm.subject(c), set()).add(c)
         print('KEEP: %s'%keep)
         print('SUBJ_ESS: %s'%subj_essentials)
         obj_essentials = {}
-        for c in wm.subtypes_of('obj_essential'):
-            if wm.has(predicate_id=c):
-                obj_essentials.setdefault(wm.object(c), set()).add(c)
+        for pe in self.obj_essential_types:
+            for c in wm.subtypes_of(pe):
+                if wm.has(predicate_id=c):
+                    obj_essentials.setdefault(wm.object(c), set()).add(c)
         #p.next('identify essentials')
         for k in keep:
             ess = wm.structure(k, subj_essentials, obj_essentials, type_predicates=type_predicates)
