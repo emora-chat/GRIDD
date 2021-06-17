@@ -473,8 +473,9 @@ class ChatbotServer:
             salient_emora_request = salient_emora_truth_request
             req_type = REQ_TRUTH
 
-        print('ARG REQUESTS: %s' % emora_arg_requests)
-        print('TRUTH REQUESTS: %s' % emora_truth_requests)
+        if DEBUG:
+            print('ARG REQUESTS: %s' % emora_arg_requests)
+            print('TRUTH REQUESTS: %s' % emora_truth_requests)
 
         if salient_emora_request is not None:
             #p.next('find answer')
@@ -491,8 +492,9 @@ class ChatbotServer:
                 for so, t, l in ref_links:
                     wm.features.setdefault(t, {})[SALIENCE] = wm.features.setdefault(fragment, {}).get(SALIENCE, 0)
                     # wm.features[t][BASE] = True todo - check if the BASE indication matters here
-            print('CURRENT USER CONCEPTS: %s'%current_user_concepts)
-            print('FRAGMENT REQUEST MERGES: %s'%fragment_request_merges)
+            if DEBUG:
+                print('CURRENT USER CONCEPTS: %s'%current_user_concepts)
+                print('FRAGMENT REQUEST MERGES: %s'%fragment_request_merges)
             self.merge_references(fragment_request_merges, aux_state)
             self.dialogue_intcore.operate(aux_state=aux_state)
         #p.next('user conf')

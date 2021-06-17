@@ -1,4 +1,3 @@
-DEBUG = False
 
 KB = 'kb'                       # Namespace of Knowledge Base Concept Graph
 WM = 'wm'                       # Namespace of Working Memory Concept Graph
