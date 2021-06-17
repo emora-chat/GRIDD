@@ -1,84 +1,80 @@
-analyst=job()
-technical(analyst)
+tech_job=(job)
 
-data_analyst=job()
-technical(data_analyst)
+analyst=(tech_job)
+data_analyst=(tech_job)
 expr("data analyst",data_analyst)
-
-data_scientist=job()
-technical(data_scientist)
+data_scientist=(tech_job)
 expr("data scientist",data_scientist)
-
-data_engineer=job()
-technical(data_engineer)
+data_engineer=(tech_job)
 expr("data engineer",data_engineer)
-
-software_engineer=job()
-technical(software_engineer)
+software_engineer=(tech_job)
 expr("software engineer",software_engineer)
-
-technician=job()
-technical(technician)
+technician=(tech_job)
 expr("I T support, I T specialist, technician",technician)
-
-developer=job()
+developer=(tech_job)
 technical(developer)
 
 ;
 
-designer=job()
-creative(designer)
+creative_job=(job)
+
+designer=(creative_job)
 expr("graphic designer, U X designer, U I designer",designer)
-
-film_director=job()
-creative(film_director)
-expr("film director, producer",film_director)
-
-creative_director=job()
-creative(creative_director)
+creative_director=(creative_job)
 expr("creative director",creative_director)
-
-jewelry_designer=job()
-creative(jewelry_designer)
+jewelry_designer=(creative_job)
 expr("jewelry designer",jewelry_designer)
 
 ;
 
-artist=job()
-artistic(artist)
+film_job=(job)
 
-musician=job()
-artistic(artist)
-
-singer=job()
-artistic(singer)
-
-songwriter=job()
-artistic(songwriter)
+film_director=(film_job)
+expr("film director, producer",film_director)
+actress=(film_job)
+actor=(film_job)
 
 ;
 
-ceo=job()
-managing(ceo)
+art_job=(job)
+
+artist=(art_job)
+musician=(art_job)
+singer=(art_job)
+rapper=(singer)
+songwriter=(art_job)
+dancer=(art_job)
+
+;
+
+manager_job=(job)
+
+ceo=(manager_job)
 expr("C E O, chief executive officer",ceo)
-
-manager=job()
-managing(manager)
+manager=(manager_job)
 
 ;
 
-researcher=job()
-academic(researcher)
+academic_job=(job)
 
-teacher=job()
-academic(teacher)
-
-professor=job()
-academic(professor)
-
-school_counselor=job()
-academic(school_counselor)
+researcher=(academic_job)
+teacher=(academic_job)
+professor=(academic_job)
+school_counselor=(academic_job)
 expr("school counselor",school_counselor)
+
+;
+
+med_job=(job)
+
+physician=(med_job)
+dentist=(med_job)
+
+;
+
+strategy_job=(job)
+
+consultant=(strategy_job)
 
 ;
 
@@ -90,5 +86,6 @@ expr("customer service representative", customer_service_representative)
 nurse=(job)
 
 remote_work=(object)
+
 ;
 

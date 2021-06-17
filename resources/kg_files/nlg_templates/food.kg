@@ -687,3 +687,14 @@ _t(_present)
 _pr(_high)
 $ What do{"t":"#Z","s":"#X"} X have for Y ? I'm making plans for my Y tomorrow , so I would like to see if I could get some ideas from X . $
 ;
+
+xc/cook(x/person())
+xc{"confidence":-1}
+eg/go(emora)
+to(eg,r/restaurant())
+type(r,group)
+like(emora,eg)
+->
+_t(_rpresent)
+$ Oh , I see . Yeah , I love cooking at home most of the time , but sometimes I prefer going to restaurants when I feel lazy . $
+;

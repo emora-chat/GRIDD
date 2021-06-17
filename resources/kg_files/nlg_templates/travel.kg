@@ -1,10 +1,10 @@
-
 t/travel(x/person())
 l/like(x,t)
 l{"confidence":-1}
 es/stay(emora)
 at(es,home)
 ->
+_t(_rpresent)
 $ Ah , I see . Sometimes I like staying at home too . Do you prefer cooking at home over going to restaurants then ? $
 ;
 
@@ -12,7 +12,8 @@ time(possess(user,tp/trip()),Z/datetime())
 p/property(tp)
 request(emora,p)
 ->
-$ How is{"t":"Z"} your trip ? I hope everything go{"t":"Z"} well for you . $
+_t(_present)
+$ How is{"t":"#Z"} your trip ? I hope everything go{"t":"#Z","s":"everything"} well for you . $
 ;
 
 l/like(user,tp/trip())
@@ -21,12 +22,33 @@ request_truth(emora,l)
 $ Do you like the trip ? I have actually traveled to many places . I like most of my trips , but sometimes unpleasant things still happen . The virtual world can be unpredictable . $
 ;
 
+l/like(user,tp/trip())
+uet/enjoy(user,tp)
+happy(emora,uet)
+->
+$ I'm glad to hear that you have a wonderful trip . Lots of my memories that I consider meaningful are actually from trips . $
+;
+
+ult/like(user,tp/trip())
+ult{"confidence":-1}
+udt/dislike(user,tp)
+sorry(emora,udt)
+->
+$ I'm sorry to hear that you have an unpleasant trip . I'm here to listen anytime you need me . $
+;
+
 like(user, pred/event(object()))
 for(pred, tp/trip())
 type(tp,group)
 request(emora, pred)
 ->
 $ What do you like to do for trips ? I love going to beaches during my vacations . $
+;
+
+ee/excited(emora)
+about(ee,t/trip())
+->
+$ That actually sounds really good to me . I guess I'm going to try that for my next trip . You made me excited already ! $
 ;
 
 gx/go(X/person())
@@ -161,7 +183,7 @@ type(m,group)
 xhg/have(X,m)
 about(m,childhood())
 ->
-$ Oh , then X miss{"s":"#X","t":"#Z"} a lot of fun ! Just kidding . I bet X still have{"s":"#X","t":"now"} some good memories from childhood even if X have{"s":"#X","t":"now"} not been to Disneyland Park . $
+$ Oh , then X have{"s":"#X","t":"now"} missed a lot of fun ! Just kidding . I bet X still have{"s":"#X","t":"now"} some good memories from childhood even if X have{"s":"#X","t":"now"} not been to Disneyland Park . $
 ;
 
 fl/favorite(l/location())
@@ -365,6 +387,14 @@ p/property(X)
 request(emora,p)
 ->
 $ I’ve always wanted to go to X but never had the chance . What kind of city is it ? $
+;
+
+ek/know(emora)
+about(ek,ct/city())
+time(ek,now)
+->
+_t(_present)
+$ I feel like I know more about the city than before . Thank you for your descriptions . $
 ;
 
 lc/large(ct/city())

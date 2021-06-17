@@ -24,7 +24,7 @@ _t(_present)
 $ Why do{"t":"#Z","s":"you"} you like X ? $
 ;
 
-ulx/learn(user,X)
+ulx/learn(user,X/subject())
 time(enjoy(user,ulx),Z/datetime())
 ->
 _t(_present)

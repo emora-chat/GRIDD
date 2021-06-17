@@ -614,6 +614,15 @@ intend_to_consume(emora,so)
 intend_to_consume(emora,dessert())
 ;
 
+xc/cook(x/person())
+xc{"confidence":-1}
+->
+eg/go(emora)
+to(eg,r/restaurant())
+type(r,group)
+like(emora,eg)
+;
+
 /* Common Sense */
 
 g/get(x/person(), c/consumable())
