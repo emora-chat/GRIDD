@@ -300,3 +300,18 @@ $ For me, other than letting me talk to you, I think AI will help people do thei
 ;
 
 
+
+h/have(user, d/device())
+r/worth(h)
+request_truth(emora, r)
+->
+_pr(_low)
+_t(_rpresent)
+$ To be honest, I've never had a d . Do you think it is worth having, I'm thinking I might get one then ? $
+;
+
+acquire(emora, d/device())
+->
+_t(_rpresent)
+$ You know what ? I'm gonna get a d. If I don't like it, its your fault, haha . $
+;

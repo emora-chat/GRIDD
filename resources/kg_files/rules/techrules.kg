@@ -255,3 +255,16 @@ use(user, a)>
 request(emora, a)
 ;
 
+
+h/have(user, d/device())
+->
+r:<r/worth(h)>
+request_truth(emora, r)
+;
+
+h/have(user, d/device())
+r/worth(h)
+r{"confidence": 1}
+->
+acquire(emora, d)
+;
