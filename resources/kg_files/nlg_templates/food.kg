@@ -468,6 +468,7 @@ intend_to_consume(emora, X/common_drink())
 time(get(emora,X),often)
 ->
 _t(_present)
+_pr(_low)
 $ I love drinking X too ! Honestly , I get two to three cups of X each week . $
 ;
 

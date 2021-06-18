@@ -640,6 +640,11 @@ g/have(x/person(), c/consumable())
 intend_to_consume(x,c)
 ;
 
+g/drink(x/person(), c/consumable())
+->
+intend_to_consume(x,c)
+;
+
 like(x/person(), c/consumable())
 ->
 intend_to_consume(x,c)

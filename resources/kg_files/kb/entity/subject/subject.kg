@@ -84,10 +84,8 @@ theatre_arts=(arts_major)
 expr("theatre arts",theatre_arts)
 visual_arts=(arts_major)
 expr("visual arts",visual_arts)
-
-;
-
-art=(arts_major)
-music=(arts_major)
+photography=(arts_major)
+studio_art=(arts_major)
+drafting=(arts_major)
 
 unknown_subject=(unknown_noun)

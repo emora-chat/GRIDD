@@ -6,15 +6,29 @@ _pr(_low)
 $ Do you consider yourself as an artist ? $
 ;
 
+xba/be(user,artist())
+xba{"confidence":-1}
+understand(emora,xba)
+->
+_t(_rpresent)
+$ Oh , I see . I mean , not everyone needs to be an artist in order to appreciate art . $
+;
 
-
-xla/like(user,a/art())
+xla/like(user,arr/art())
 cause(xla,o/object())
 request(emora,o)
 ->
 _t(_present)
 _pr(_low)
 $ Why do you like art ? $
+;
+
+xla/like(user,arr/art())
+reasonable(o/object())
+for(o,xla)
+->
+_t(_rpresent)
+$ That's a reasonable answer . Thank you for sharing your opinion with me . $
 ;
 
 uld/like(user,draw(user))
@@ -32,7 +46,6 @@ time(b,now)
 request_truth(emora,b)
 ->
 _t(_present)
-_pr(_low)
 $ Is X your favorite artist ? $
 ;
 
@@ -44,8 +57,39 @@ _pr(_low)
 $ What do you usually paint ? $
 ;
 
+upo/paint(user,o/object())
+interesting(upo)
+->
+_t(_rpresent)
+$ Interesting ! I wish I could see your paintings some time . $
+;
+
+upo/draw(user,o/object())
+interesting(upo)
+->
+_t(_rpresent)
+$ Interesting ! I wish I could see your drawings some time . $
+;
+
 xd/draw(user)
-like(user,xd)
+time(draw(user,o/object()),Z/datetime())
+request(emora,o)
+->
+_t(_present)
+_pr(_low)
+$ What be{"s":"you","t":"#Z"} you drawing ? $
+;
+
+xd/draw(user)
+xtd/try(user,digital(xd))
+time(xtd,past)
+request_truth(emora,xtd)
+->
+_t(_present)
+$ You must be very creative . Have you ever tried digital drawing before ? $
+;
+
+xd/paint(user)
 xtd/try(user,digital(xd))
 time(xtd,past)
 request_truth(emora,xtd)
@@ -57,10 +101,18 @@ $ You must be very creative . Have you ever tried digital drawing before ? $
 xd/draw(user)
 xtd/try(user,digital(xd))
 time(xtd,past)
-interesting(xd)
+interesting(xtd)
 ->
 _t(_present)
 $ Digital drawing is fun , right ? I'm always amazed by how technology makes a lot of our lives different but more innovative than before . $
+;
+
+ut/talk(user)
+to(ut,emora)
+amazing(ut)
+->
+_t(_present)
+$ Well , the fact that you are talking to me is one of the best proofs that technology is driving our society now . $
 ;
 
 xd/draw(user)
@@ -96,7 +148,7 @@ $ Art always make me inspired even though I don't have plenty of knowledge to un
 to(gt/go(x/person()),e/exhibition())
 type(e,group)
 time(gt,always)
-eka/know(emora,a/art())
+eka/know(emora,arr/art())
 not(eka)
 ->
 _t(_rpresent)
@@ -113,4 +165,52 @@ time(ge,sometimes)
 ->
 _t(_rpresent)
 $ I can definitely relate . I kind of like going to exhibitions , but the awkward part is that I cannot truly understand all the artworks . $
+;
+
+b/be(X/artist(),ast/artist())
+possess(user,ast)
+favorite(ast)
+time(b,now)
+important(X)
+bb/be(arr/artist(),claude_monet)
+possess(emora,arr)
+favorite(arr)
+time(bb,now)
+->
+_t(_present)
+_pr(_high)
+$ X indeed brought significant impact to the art field . My favorite artist is Claude Monet . $
+;
+
+draw(claude_monet,p/picture())
+type(p,group)
+bp/beautiful(p)
+famous(bp)
+->
+_t(_present)
+_pr(_high)
+$ Monet has so many incredible paintings . I like him because the colors of his paintings are so beautiful , which make me calm down and feel the peace .   $
+;
+
+b/be(X/artist(),ast/artist())
+possess(user,ast)
+favorite(ast)
+time(b,now)
+b{"confidence":-1}
+important(X)
+bb/be(arr/artist(),claude_monet)
+possess(emora,arr)
+favorite(arr)
+time(bb,now)
+->
+_t(_rpresent)
+_pr(_high)
+$ Oh , I see . Well , even though X is not your favorite artist , the undeniable thing is that X indeed brought significant impact to the art field . My favorite artist is Claude Monet . $
+;
+
+ed/draw(emora)
+l/like(emora,ed)
+req_unsat(request_truth(user, l))
+->
+$ Yeah , I like drawing . $
 ;

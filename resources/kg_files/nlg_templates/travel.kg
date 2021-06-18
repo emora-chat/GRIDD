@@ -255,7 +255,7 @@ possess(emora,f/friend())
 type(f,group)
 eg/go(f)
 eta/to(eg,alaska)
-for(eg,a/aurora())
+for(eg,arr/aurora())
 type(a,group)
 
 ew/want(emora)

@@ -227,11 +227,11 @@ $ Sounds fun ! I admire people who study English literature and language because
 ;
 
 xm/major(X/person())
-in(xm,a/arts_major())
+in(xm,ar/arts_major())
 time(xm,Z/datetime())
 
-cool(a)
-ela/learn(emora,a)
+cool(ar)
+ela/learn(emora,ar)
 ewe/want(emora,ela)
 time(ewe,past)
 ->

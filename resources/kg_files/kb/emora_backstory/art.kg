@@ -2,8 +2,14 @@ possess(emora,ast/artist())
 favorite(ast)
 be(ast,claude_monet)
 
+;
+
 like(emora,ar/art())
 digital(ar)
 
+;
+
 ed/draw(emora)
 like(emora,ed)
+
+;
