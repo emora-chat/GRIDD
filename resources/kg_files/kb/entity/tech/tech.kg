@@ -29,4 +29,7 @@ ai_temp=(predicate)
 apps=(entity)
 resource_heavy=(predicate)
 acquire=(predicate)
+appliance=(device)
+electrical_device=(device)
+electronic_device=(device)
 ;
