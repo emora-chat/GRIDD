@@ -384,7 +384,7 @@ class ConceptGraph:
                 types = {concept}
                 for predicate in self.predicates(subject=concept, predicate_type='type'):
                     supertype = predicate[2]
-                    if concept == supertype: # todo - this should not be possible, right?
+                    if concept == supertype:
                         print('[WARNING] Concept %s has self-loop type predicate which causes types() to crash on recursion error!'%concept)
                         continue
                     else:
@@ -422,7 +422,7 @@ class ConceptGraph:
                 type_preds = set()
                 for predicate in self.predicates(subject=concepts, predicate_type='type'):
                     supertype = predicate[2]
-                    if concepts == supertype: # todo - this should not be possible, right?
+                    if concepts == supertype:
                         print('[WARNING] Concept %s has self-loop type predicate which causes type_predicates() to crash on recursion error!'%concepts)
                         continue
                     else:
