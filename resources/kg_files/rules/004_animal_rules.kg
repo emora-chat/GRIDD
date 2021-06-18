@@ -4,11 +4,10 @@
 time(do(user, e/event(object())), today)
 r/request(emora, e)
 user_aware(r)
--> ask_pet_trigger ->
+-> today_activity_emora_share ->
 time(walk(emora, emora_dog), today)
 h:<time(h/have(user, p/pet()), now)>
 request_truth(emora, h)
-h{"coldstart": 1}
 ;
 
 t/time(h/have(user, p/pet()), now)

@@ -5,7 +5,6 @@ import GRIDD.globals as globals
 from GRIDD.scripts import extract_elit_rules_from_doc
 
 if __name__ == '__main__':
-    globals.DEBUG = True
 
     extract_elit_rules_from_doc.extract()
 

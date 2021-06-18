@@ -18,6 +18,8 @@ from GRIDD.utilities import Counter
 from GRIDD.globals import *
 from itertools import chain
 
+from GRIDD.utilities.profiler import profiler as p
+
 CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 
@@ -277,9 +279,21 @@ class ConceptGraph:
         return set([predicate[2] for predicate in self.predicates(subject=concept,predicate_type=type)
                     if predicate[2] is not None])
 
-    def structure(self, concept, subj_emodifiers=None, obj_emodifiers=None):
+    def structure(self, concept, subj_essentials=None, obj_essentials=None, type_predicates=None):
+        if type_predicates is None:
+            type_predicates = self.type_predicates()
+        if subj_essentials is None:
+            subj_essentials = {}
+            for c in self.subtypes_of('subj_essential'):
+                if self.has(predicate_id=c):
+                    subj_essentials.setdefault(self.subject(c), set()).add(c)
+        if obj_essentials is None:
+            obj_essentials = {}
+            for c in self.subtypes_of('obj_essential'):
+                if self.has(predicate_id=c):
+                    obj_essentials.setdefault(self.object(c), set()).add(c)
         visited = {None}
-        s = []
+        s = set()
         stack = [concept]
         while stack:
             concept = stack.pop()
@@ -287,30 +301,20 @@ class ConceptGraph:
                 visited.add(concept)
                 if self.has(predicate_id=concept):
                     pred = self.predicate(concept)
-                    s.append(pred)
+                    s.add(pred)
                     stack.extend({pred[0], pred[2]} - visited)
                     if pred[1] in {REQ_TRUTH, REQ_ARG}:
                         # if concept is a request predicate, retrieve all ref metalinks to object for full definition
                         obj = pred[2]
-                        for _, constraint, _ in self.metagraph.out_edges(obj, REF):
+                        for constraint in self.metagraph.targets(obj, REF):
                             if self.has(predicate_id=constraint):
                                 mp = self.predicate(constraint)
                                 if mp[1] not in {'ref', 'def', 'expr'} and mp[3] not in visited:
                                     stack.append(mp[3])
-                for p in self.predicates(concept, predicate_type='type'):
-                    if p[3] not in visited:
-                        s.append(p)
-                        visited.add(p[3])
-                if subj_emodifiers:
-                    for em in subj_emodifiers:
-                        for mp in self.predicates(concept, predicate_type=em):
-                            if mp[3] not in visited:
-                                stack.append(mp[3])
-                if obj_emodifiers:
-                    for em in obj_emodifiers:
-                        for mp in self.predicates(object=concept, predicate_type=em):
-                            if mp[3] not in visited:
-                                stack.append(mp[3])
+                s.update(type_predicates[concept])
+                visited.update({pred[3] for pred in type_predicates[concept]})
+                stack.extend(subj_essentials.get(concept, set()))
+                stack.extend(obj_essentials.get(concept, set()))
         return s
 
     def related(self, concept, types=None, exclusions=None, limit=None):
@@ -380,7 +384,7 @@ class ConceptGraph:
                 types = {concept}
                 for predicate in self.predicates(subject=concept, predicate_type='type'):
                     supertype = predicate[2]
-                    if concept == supertype: # todo - this should not be possible, right?
+                    if concept == supertype:
                         print('[WARNING] Concept %s has self-loop type predicate which causes types() to crash on recursion error!'%concept)
                         continue
                     else:
@@ -418,7 +422,7 @@ class ConceptGraph:
                 type_preds = set()
                 for predicate in self.predicates(subject=concepts, predicate_type='type'):
                     supertype = predicate[2]
-                    if concepts == supertype: # todo - this should not be possible, right?
+                    if concepts == supertype:
                         print('[WARNING] Concept %s has self-loop type predicate which causes type_predicates() to crash on recursion error!'%concepts)
                         continue
                     else:
@@ -612,20 +616,22 @@ class ConceptGraph:
             graph.add(c)
         return graph
 
-    def to_infcompat_graph(self):
+    def to_infcompat_graph(self, ignore=None):
         graph = Graph()
         for s, t, o, i in self.predicates():
-            graph.add(i, s, 's')
-            if t == TYPE:
-                graph.add(i, t, 't')
-            if o is not None:
-                graph.add(i, o, 'o')
+            if ignore is None or i not in ignore:
+                graph.add(i, s, 's')
+                if t == TYPE:
+                    graph.add(i, t, 't')
+                if o is not None:
+                    graph.add(i, o, 'o')
         for c in self.concepts():
-            graph.add(c)
+            if ignore is None or c not in ignore:
+                graph.add(c)
         return graph
 
     def merge(self, concept_a, concept_b, strict_order=False):
-        unique_preds = {USER_AWARE, TIME, ETURN, UTURN, TYPE}
+        unique_preds = {USER_AWARE, TIME, TYPE}
         unique_pred_merges = set()
         if concept_a != concept_b:
             if not strict_order and concept_a.startswith(self._ids.namespace) and not concept_b.startswith(self._ids.namespace):

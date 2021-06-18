@@ -30,7 +30,7 @@ class Profiler:
     def report(self):
         print()
         for t, l, i, o in sorted(self._durations, key=lambda e: e[3]):
-            print('  '*i + f'{t:.3f}: {l}')
+            print('  '*i + f'{t:.6f}: {l}')
         print()
         self._durations = []
 

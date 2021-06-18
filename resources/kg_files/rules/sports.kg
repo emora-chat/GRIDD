@@ -281,11 +281,6 @@ energetic(user)
 healthy(user)
 ;
 
-time(do(user, p/predicate()), today)
-->
-time(p, today)
-;
-
 s/sports_event()
 user_aware(s)
 ->

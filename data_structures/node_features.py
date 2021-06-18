@@ -23,16 +23,16 @@ class NodeFeatures(defaultdict):
                         else:
                             self[node][feature] = other_value
                     elif feature in {BASE_CONFIDENCE, BASE_UCONFIDENCE}:
-                    # elif feature == CONFIDENCE:
                         self[node][feature] = other_value
                     elif feature == 'span_data':
                         if 'span_data' in self[node]:
-                            print('Node: ', str(node))
-                            print('Span Exists: ', self[node]['span_data'])
-                            print('Span Update: ', other_value)
-                            raise RuntimeError('Node already has span info!') #todo - get rid of before deployment
+                            print('[WARNING] Node %s already has span info!'%str(node))
+                            print('\tSpan Exists: ', self[node]['span_data'])
+                            print('\tSpan Update: ', other_value)
                         else:
                             self[node]['span_data'] = other_value
+                    elif feature in {UTURN_POS, ETURN_POS, UTURN, ETURN}:
+                        self[node].setdefault(feature, []).extend(other_value)
                     else:
                         self[node][feature] = other_value
 
@@ -47,16 +47,16 @@ class NodeFeatures(defaultdict):
                     else:
                         self[kept][feature] = other_value
                 elif feature in {BASE_CONFIDENCE, BASE_UCONFIDENCE}:
-                # elif feature == CONFIDENCE:
                     self[kept][feature] = other_value
                 elif feature == 'span_data':
                     if 'span_data' in self[kept]:
-                        print('Node: ', str(kept))
-                        print('Span Exists: ', self[kept]['span_data'])
-                        print('Span Update: ', other_value)
-                        raise RuntimeError('Node already has span info!')  # todo - get rid of before deployment
+                        print('[WARNING] Node %s already has span info!' % str(kept))
+                        print('\tSpan Exists: ', self[kept]['span_data'])
+                        print('\tSpan Update: ', other_value)
                     else:
                         self[kept]['span_data'] = other_value
+                elif feature in {UTURN_POS, ETURN_POS, UTURN, ETURN}:
+                    self[kept].setdefault(feature, []).extend(other_value)
                 else:
                     self[kept][feature] = other_value
             del self[replaced]
