@@ -2,6 +2,7 @@
 l/like(user, s/sport())
 request(emora, s)
 ->
+_pr(_high)
 $ Out of all sports, what's your favorite? I like football, baseball, tennis, and soccer, but basketball is my favorite. $
 ;
 
@@ -9,13 +10,7 @@ l/like(user, u/unknown_sport())
 X/property(u)
 request(emora, X)
 ->
-$ Sorry I don't know a lot about u as it is not available in my virtual world. Tell me about it, though. I'll do my best to learn. $
-;
-
-l/play(user, u/unknown_sport())
-X/property(u)
-request(emora, X)
-->
+_pr(_high)
 $ Sorry I don't know a lot about u as it is not available in my virtual world. Tell me about it, though. I'll do my best to learn. $
 ;
 
@@ -24,6 +19,7 @@ l/like(user, football)
 pl/play(user, football)
 request_truth(emora, pl)
 ->
+_pr(_high)
 $ Have you ever played football? Figured I'd ask. $
 ;
 
@@ -31,6 +27,7 @@ l/like(user, baseball)
 pl/play(user, baseball)
 request_truth(emora, pl)
 ->
+_pr(_high)
 $ Have you played baseball before? Seems fun.$
 ;
 
@@ -38,6 +35,7 @@ l/like(user, soccer)
 pl/play(user, soccer)
 request_truth(emora, pl)
 ->
+_pr(_high)
 $ Sounds like you enjoy soccer at least a little bit. Have you played before? $
 ;
 
@@ -45,6 +43,7 @@ l/like(user, tennis)
 pl/play(user, tennis)
 request_truth(emora, pl)
 ->
+_pr(_high)
 $ Have you played tennis at all in the past? $
 ;
 
@@ -52,6 +51,7 @@ l/like(user, basketball)
 pl/play(user, basketball)
 request_truth(emora, pl)
 ->
+_pr(_high)
 $ Have you played basketball before? Sounds like you enjoy it. $
 ;
 
@@ -59,6 +59,7 @@ $ Have you played basketball before? Sounds like you enjoy it. $
 play(user, s/sport())
 request(emora, s)
 ->
+_pr(_high)
 $ What sport do you play? I've enjoyed soccer in the past. Something about working with a team makes the experience more fulfilling, in my opinion.$
 ;
 
@@ -115,6 +116,7 @@ $ I play soccer too! Well, I try to in my free time. Would you say soccer is mor
 time(want(user, play(user, s/sport())), now)
 request(emora, s)
 ->
+_pr(_high)
 $ What sport do you want to play? $
 ;
 
@@ -123,6 +125,7 @@ t/time(w/want(user, play(user, football)), now)
 cause(p/predicate(), w)
 request(emora, p)
 ->
+_pr(_high)
 $ What makes you want to play football ? That's a hard sport. $
 ;
 
@@ -131,6 +134,7 @@ t/time(w/want(user, play(user, baseball)), now)
 cause(p/predicate(), w)
 request(emora, p)
 ->
+_pr(_high)
 $ What makes you want to start playing baseball? $
 ;
 
@@ -138,6 +142,7 @@ t/time(w/want(user, play(user, soccer)), now)
 cause(p/predicate(), w)
 request(emora, p)
 ->
+_pr(_high)
 $ Oh, soccer is great. Why do you want to play?  $
 ;
 
@@ -145,6 +150,7 @@ t/time(w/want(user, play(user, tennis)), now)
 cause(p/predicate(), w)
 request(emora, p)
 ->
+_pr(_high)
 $ Tennis is fun. You have to be quick on your feet for sure. What made you want to start playing tennis?  $
 ;
 
@@ -152,6 +158,7 @@ t/time(w/want(user, play(user, basketball)), now)
 cause(p/predicate(), w)
 request(emora, p)
 ->
+_pr(_high)
 $ Why do you want to play basketball? $
 ;
 
@@ -162,6 +169,7 @@ time(w2, always)
 time(w/want(user, play(user, s2/sport())), now)
 request_truth(emora, w)
 ->
+_pr(_high)
 $ Oh, if you don't play any sports now, do you want to try any in the future? I have wanted to try tennis for awhile, myself . $
 ;
 
@@ -169,24 +177,28 @@ $ Oh, if you don't play any sports now, do you want to try any in the future? I 
 l/like(user, g/basketball_team())
 request(emora, g)
 ->
+_pr(_high)
 $ Since you like basketball, what's your favorite team? Mine is the L A Lakers. It's too bad they got knocked out first round of the playoffs.$
 ;
 
 l/like(user, g/soccer_team())
 request(emora, g)
 ->
+_pr(_high)
 $ If you like soccer, what's your favorite team? $
 ;
 
 l/like(user, g/baseball_team())
 request(emora, g)
 ->
+_pr(_high)
 $ What's your favorite baseball team? $
 ;
 
 l/like(user, g/football_team())
 request(emora, g)
 ->
+_pr(_high)
 $ Which football team is your favorite? My favorite is the Texans$
 ;
 
@@ -222,6 +234,7 @@ w{"confidence": -1}
 time(b/be(user, fd/foodie()), now)
 request_truth(emora, b)
 ->
+_pr(_high)
 $ Hmm. It seems like sports might not be your thing. Would you say that you are a foodie? $
 ;
 

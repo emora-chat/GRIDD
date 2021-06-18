@@ -23,7 +23,6 @@ pl_2/like(user, s/streaming_provider())
 request_truth(emora, pl_2)
 ;
 
-
 /* Tv Genre Stuff */
 l/like(user, m/soap_opera())
 user_aware(l)
@@ -679,13 +678,4 @@ req_sat(request_truth(emora, like_0/like(user, u)))
 ->
 p:<c/like(user, t/object()) cause(p/predicate(), c)>
 request(emora, p)
-;
-
-/* Common Sense */
-possess(user, o/object())
-favorite(o)
-be(o, g/object())
-->
-l/like(user, g)
-user_aware(l)
 ;
