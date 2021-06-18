@@ -74,69 +74,76 @@ class InferenceEngine:
             converted_rules[rid] = precondition
         return converted_rules
 
-    def _convert_facts(self, facts, facts_types):
-        # p.start('to digraph')
-        facts_graph = facts.to_infcompat_graph()
-        # p.next(f'flatten types ({len(facts_types)} concepts)')
-        facts_graph = self._flatten_types(facts, facts_graph, facts_types)
-        # p.next('quantities')
+    def _convert_facts(self, facts, facts_types, ignore=None):
+        """
+        If dynamic_rules are passed, they are to be removed from facts graph
+        """
+        #p.start('to digraph')
+        facts_graph = facts.to_infcompat_graph(ignore=ignore)
+        #p.next(f'flatten types ({len(facts_types)} concepts)')
+        facts_graph = self._flatten_types(facts, facts_graph, facts_types, ignore=ignore)
+        #p.next('quantities')
         quantities = {c for c in facts.concepts() if isinstance(c, (float, int))}
         for node in quantities: facts_graph.data(node)['num'] = node
-        # p.stop()
+        #p.stop()
         return facts_graph
 
-    def _flatten_types(self, orig_cg, cg, types=None, for_query=False):
+    def _flatten_types(self, orig_cg, cg, types=None, for_query=False, ignore=None):
         counter = 0
         if types is None:
             types = orig_cg.types()
         for c in orig_cg.concepts():
-            handled = set()
-            if not for_query:
-                # add self-loop type
-                cg.add(c, c, 't')
-            if orig_cg.has(predicate_id=c):
-                pred_type = orig_cg.type(c)
-                if pred_type != TYPE:  # add predicate type as a type, if not type predicate itself
-                    handled.add(pred_type)
-                    cg.add(c, pred_type, 't') # there would be an explicit type predicate instance for any predicate type instances that are arguments of different predicate, so not handled here
-            for s, t, o, i in orig_cg.predicates(c, predicate_type=TYPE):  # an explicit type predicate to o
-                if o not in handled:
-                    handled.add(o)
-                    if for_query:
-                        if not list(orig_cg.predicates(subject=i)) and not list(orig_cg.predicates(object=i)):
-                            # remove predicate instance, since it is not an argument of anything
-                            cg.data(i)['var'] = False
-                            cg.remove(i)
-                            # add direct link instead
+            if ignore is None or c not in ignore:
+                handled = set()
+                if not for_query:
+                    # add self-loop type
+                    cg.add(c, c, 't')
+                if orig_cg.has(predicate_id=c):
+                    pred_type = orig_cg.type(c)
+                    if pred_type != TYPE:  # add predicate type as a type, if not type predicate itself
+                        handled.add(pred_type)
+                        cg.add(c, pred_type, 't') # there would be an explicit type predicate instance for any predicate type instances that are arguments of different predicate, so not handled here
+                for s, t, o, i in orig_cg.predicates(c, predicate_type=TYPE):  # an explicit type predicate to o
+                    if o not in handled:
+                        handled.add(o)
+                        if for_query:
+                            if not list(orig_cg.predicates(subject=i)) and not list(orig_cg.predicates(object=i)):
+                                # remove predicate instance, since it is not an argument of anything
+                                cg.data(i)['var'] = False
+                                cg.remove(i)
+                                # add direct link instead
+                                cg.add(s, o, 't')
+                        else:
+                            # add direct type if creating data graph
                             cg.add(s, o, 't')
-                    else:
-                        # add direct type if creating data graph
-                        cg.add(s, o, 't')
-            for t in types.get(c, []) - {c}:
-                if t != TYPE and t not in handled: # only indirect type links need to be manually added, since they do not exist as predicate instances in the ConceptGraph
-                    handled.add(t)
-                    new_id = '__virt_%d' % counter
-                    counter += 1
-                    cg.add(new_id, c, 's')
-                    cg.add(new_id, TYPE, 't')
-                    cg.add(new_id, t, 'o')
-                    if for_query:
-                        cg.data(new_id)['var'] = True
-                    else: # add direct type to only if creating data graph
-                        cg.add(c, t, 't')
+                for t in types.get(c, []) - {c}:
+                    if t != TYPE and t not in handled: # only indirect type links need to be manually added, since they do not exist as predicate instances in the ConceptGraph
+                        handled.add(t)
+                        new_id = '__virt_%d' % counter
+                        counter += 1
+                        cg.add(new_id, c, 's')
+                        cg.add(new_id, TYPE, 't')
+                        cg.add(new_id, t, 'o')
+                        if for_query:
+                            cg.data(new_id)['var'] = True
+                        else: # add direct type to only if creating data graph
+                            cg.add(c, t, 't')
         return cg
 
-    def infer(self, facts_concept_graph, aux_state=None, dynamic_rules=None, cached=True):
+    def infer(self, facts_concept_graph, aux_state=None, dynamic_rules=None, cached=True, remove_rules=False):
         """
         facts should have already had all types pulled (aka don't do type pull within inference engine)
         """
-        # p.start('facts graph copy')
-        # facts_concept_graph = ConceptGraph(facts, namespace=(facts._ids if isinstance(facts, ConceptGraph) else "facts_"))
-        p.start('facts graph types')
+        #p.start('facts graph types')
         facts_types = facts_concept_graph.types()
-        p.next('convert facts graph')
-        facts_graph = self._convert_facts(facts_concept_graph, facts_types)
-        p.next('process dynamic rules')
+        #p.next('convert facts graph')
+        if remove_rules:
+            # get predicate ids to ignore
+            ignore = {v for rule, info in dynamic_rules.items() for v in info[-1]}
+            facts_graph = self._convert_facts(facts_concept_graph, facts_types, ignore)
+        else:
+            facts_graph = self._convert_facts(facts_concept_graph, facts_types)
+        #p.next('process dynamic rules')
         if dynamic_rules is not None and not isinstance(dynamic_rules, dict):
             dynamic_rules = ConceptGraph(dynamic_rules).rules()
         elif dynamic_rules is None:
@@ -150,9 +157,9 @@ class InferenceEngine:
             converted_rules = Bimap(dynamic_converted_rules)
         # if len(converted_rules) == 0:
         #     return {}
-        p.next('match')
+        #p.next('match')
         all_sols = self.matcher.match(facts_graph, *list(converted_rules.values()))
-        p.next('postprocess solutions')
+        #p.next('postprocess solutions')
         solutions = {}
         for precondition, sols in all_sols.items():
             categories = set()
@@ -177,6 +184,7 @@ class InferenceEngine:
                         t = next(iter(facts_graph.out_edges(value, 't')))[1]
                         o = next(iter(facts_graph.out_edges(value, 'o')))[1]
                         virtual_preds[value] = (s, t, o)
+                    # confidence checking
                     if precondition_cg.has(predicate_id=variable):
                         var_conf = precondition_cg.features.get_confidence(variable, None)
                         val_conf = facts_concept_graph.features.get_confidence(value, 1.0)
@@ -184,19 +192,27 @@ class InferenceEngine:
                            (var_conf is not None and var_conf > 0 and val_conf - var_conf < 0) or \
                            (var_conf is not None and var_conf < 0 and val_conf - var_conf > 0)):
                             break
-                    else:
-                        turn_pos = precondition_cg.features[variable].get(TURN_POS, None)
-                        if turn_pos is not None:
+                    # turn checking
+                    turn_check_failed = False
+                    for check_turn_type, turn_type in {(ETURN_POS, ETURN), (UTURN_POS, UTURN)}:
+                        turn_pos = precondition_cg.features.get(variable, {}).get(check_turn_type, [])
+                        if len(turn_pos) > 0:
                             if aux_state is None:
                                 print('[WARNING] Found turn checking rule but no aux state was passed to infer()')
+                                turn_check_failed = True
                                 break
-                            current_turn = aux_state.get('turn_index', None)
+                            current_turn = int(aux_state.get('turn_index', None))
                             if current_turn is not None:
-                                relative_turn_check = int(current_turn) - int(turn_pos)
-                                if str(relative_turn_check) != value:  # post process filter of turn checking rules
+                                relative_turn_checks = [current_turn - t for t in turn_pos]
+                                match_turn = facts_concept_graph.features.get(value, {}).get(turn_type, [])
+                                if not set(relative_turn_checks).issubset(set(match_turn)):  # post process filter of turn checking rules
+                                    turn_check_failed = True
                                     break
-                            else:  # no turn information can be found in aux state so cannot do any turn checking
+                            else:  # no turn information can be found in aux state so cannot do any turn checking thus invalidating this rule
+                                turn_check_failed = True
                                 break
+                    if turn_check_failed:
+                        break
                     if variable in categories:
                         not_category = True
                         value_types = facts_types.get(value, set())
@@ -246,7 +262,7 @@ class InferenceEngine:
                 final_sols[rule_id] = (all_rules[rule_id][0], all_rules[rule_id][1], sol_ls)
             else:
                 final_sols[rule_id] = (all_rules[rule_id][0], sol_ls)
-        p.stop()
+        #p.stop()
         return final_sols
 
 if __name__ == '__main__':

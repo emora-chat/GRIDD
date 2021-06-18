@@ -59,7 +59,7 @@ user_aware = (predicate, subj_essential)
 
 _request = (predicate, nonassert, obj_essential)
 [request, request_truth] = (_request)
-[req_unsat, req_sat] = (predicate, obj_essential)
+[req_unsat, req_sat] = (predicate, subj_essential)
 
 _pr=(predicate)
 [_low,_high]=(object)

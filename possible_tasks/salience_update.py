@@ -65,14 +65,14 @@ def update_salienceold(wm):
 
 
 def update_salience(wm):
-    p.start('init')
+    #p.start('init')
     wmc = wm.concepts()
     npedges = np.zeros(shape=(len(wmc), len(wmc)))
     ewmc = list(enumerate(wmc))
     names = {name: i for i, name in ewmc}
     npsal = np.expand_dims(np.array([wm.features.get(name, {}).get(SALIENCE, 0.0) for i,name in ewmc]), 0)
 
-    p.next('setup 1')
+    #p.next('setup 1')
     for s, t, o, i in wm.predicates():
         if i not in SAL_FREE:
             if s not in SAL_FREE:
@@ -85,7 +85,7 @@ def update_salience(wm):
                 npedges[names[o]][names[i]] = MY_DECAY
                 npedges[names[i]][names[o]] = MY_DECAY
 
-    p.next('setup 2')
+    #p.next('setup 2')
     for edge in wm.metagraph.edges():
         if isinstance(edge[2], tuple) and AND_LINK == edge[2][0]:
             for evidence, and_node, _ in edge:
@@ -94,17 +94,17 @@ def update_salience(wm):
                 for _, implication, _ in or_links:
                     npedges[names[evidence]][names[implication]] = MY_DECAY
 
-    p.next('calc')
+    #p.next('calc')
     a = np.matmul(npsal, npedges)
 
-    p.next('assign')
+    #p.next('assign')
     for i, c in ewmc:
         if c in wm.features and SALIENCE in wm.features[c]:
             wm.features[c][SALIENCE] += min(wm.features[c][SALIENCE] + a[0][i],1.0)
         else:
             wm.features[c][SALIENCE] = min(a[0][i],1.0)
-    p.stop()
-    p.report()
+    #p.stop()
+    #p.report()
 
 class TestSalienceUpdate(unittest.TestCase):
 
@@ -940,8 +940,8 @@ class TestSalienceUpdate(unittest.TestCase):
         
         '''
 
-        p.start()
-        p.stop()
+        #p.start()
+        #p.stop()
 
         meta = {'d': {SALIENCE: 1.0},}
         for i in range(399):

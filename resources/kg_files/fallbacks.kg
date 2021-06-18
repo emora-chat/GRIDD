@@ -1,5 +1,5 @@
 
-l:<l/have(user, pet())>
+l:<time(l/have(user, pet()), now)>
 r/request_truth(emora, l)
 -> pet_fallback ->
 $ By the way , do you have a pet ? $

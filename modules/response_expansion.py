@@ -45,9 +45,8 @@ class ResponseExpansion:
                             spoken_predicates.add(i)
                             # emora turn tracking
                             for c in [s,o,i]:
-                                if c is not None and c not in TURN_IGNORE and not wm.has(c, ETURN, str(aux_state.get('turn_index', '_err_'))):
-                                    i = wm.add(c, ETURN, str(aux_state.get('turn_index', '_err_')))
-                                    wm.features[i][BASE_UCONFIDENCE] = 1.0
+                                if c is not None:
+                                    wm.features.setdefault(c, {}).setdefault(ETURN, []).append(int(aux_state.get('turn_index', -1)))
                 final_responses.append((main, final_exps, generation_type))
                 self.assign_cover(wm, concepts=spoken_predicates)
                 self.assign_salience(wm, concepts=spoken_predicates)

@@ -1446,13 +1446,6 @@ is a noun or pronoun; otherwise, instantiate it as a lone concept.
 
 <details>
   <summary>Conversions</summary>
-
-    comp(X/pstg(), Y/pstg())
-    -> lone_comp ->
-    p/property(X, Y)
-    focus(p)
-    center(Y)
-    ;
     
     X/singular()
     ltype(X, object)

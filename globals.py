@@ -1,4 +1,3 @@
-DEBUG = False
 
 KB = 'kb'                       # Namespace of Knowledge Base Concept Graph
 WM = 'wm'                       # Namespace of Working Memory Concept Graph
@@ -41,8 +40,8 @@ UTURN = '_uturn'                # predicate used for user turn tracking in WM
 ETURN = '_eturn'                # predicate used for emora turn tracking in WM
 OP_UTURN = 'uturn'              # operator predicate used in rule creation to specify user turn information
 OP_ETURN = 'eturn'              # operator predicate used in rule creation to specify emora turn information
-TURN_POS = 'turnpos'            # metadata feature used to indicate relative turn index used by OP_UTURN and OP_ETURN in rules
-TURN_IGNORE = {'emora', 'user', 'now', 'past', 'future'}
+UTURN_POS = 'uturnpos'          # metadata feature used to indicate relative turn index used by OP_UTURN in rules
+ETURN_POS = 'eturnpos'          # metadata feature used to indicate relative turn index used by OP_ETURN in rules
 
 SALIENCE_IN_LINK = 'salin'      # UpdateGraph label for salience propagation
 SALIENCE_OUT_LINK = 'salout'    # UpdateGraph label for salience propagation
@@ -90,11 +89,11 @@ META = {COMPS, VAR,
 
 SAL_FREE = {ASSERT, NONASSERT, AFFIRM,
             REJECT, TIME, SPAN_DEF,
-            SPAN_REF, USER_AWARE, REQ_SAT, REQ_UNSAT, UTURN, ETURN}    # Predicate types that do not propogate salience to subtypes and whose salience does not decrease
+            SPAN_REF, USER_AWARE, REQ_SAT, REQ_UNSAT}    # Predicate types that do not propogate salience to subtypes and whose salience does not decrease
 
 PRIM = {SPAN_DEF, SPAN_REF,
         ASSERT, NONASSERT,
-        USER_AWARE, EXPR, REQ_SAT, REQ_UNSAT, UTURN, ETURN}             # Predicate types that are primitive
+        USER_AWARE, EXPR, REQ_SAT, REQ_UNSAT}             # Predicate types that are primitive
 
 
 UNKNOWN_TYPES = {'unknown_verb', 'unknown_noun', 'unknown_pron', 'unknown_adj', 'unknown_adv', 'unknown_other'}

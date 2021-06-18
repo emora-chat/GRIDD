@@ -44,12 +44,12 @@ class ResponseTemplateFiller:
                 try:
                     response_str = self.fill_string(match_dict, expr_dict, string_spec_ls, cg)
                 except Exception as e:
-                    print('Error in NLG template filler for rule %s => %s'%(rule, e))
+                    print('Error in NLG template filling of %s for rule %s => %s'%(string_spec_ls, rule, e))
                     continue
                 if post.template_type == '_react':
                     react_cands.append((rule, match_dict, response_str, post.priority))
                 else:
-                    if response_str not in aux_state.get('spoken_responses', []):
+                    if response_str.lower() not in aux_state.get('spoken_responses', []):
                         # don't allow for repeated followups or rfollowups
                         if post.template_type == '_present':
                             present_cands.append((rule, match_dict, response_str, post.priority))
@@ -77,13 +77,13 @@ class ResponseTemplateFiller:
         if rp_score is not None and (p_score is None or rp_score >= p_score):
             string = rp_string
             predicates = rp_predicates
-            aux_state.setdefault('spoken_responses', []).append(string)
+            aux_state.setdefault('spoken_responses', []).append(string.lower())
         else:
             if p_string is None:
                 string, predicates = (p_string, p_predicates)
             else:
                 string = p_string
-                aux_state.setdefault('spoken_responses', []).append(string)
+                aux_state.setdefault('spoken_responses', []).append(string.lower())
                 predicates = p_predicates
                 s = random.choice(['Yeah .', 'Gotcha .', 'I see .'])
                 if r_string is not None:
@@ -283,7 +283,7 @@ class ResponseTemplateFiller:
         for t in immediate_types:
             expressable_subs = {x for x in cg.subtypes_of(t) if x != t and not x.startswith(namespace)}
             intersection = immediate_types.intersection(expressable_subs)
-            if len(intersection) == 0 and t not in {GROUP} and not t.startswith(namespace):
+            if len(intersection) == 0 and t not in {GROUP, 'prp', 'prop$'} and not t.startswith(namespace):
                 # there are no subtypes in the immediate types and it is not an unexpressable type
                 candidates.add(t)
         return next(iter(candidates))

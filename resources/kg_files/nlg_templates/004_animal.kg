@@ -156,19 +156,19 @@ $ Yeah, the zoo is really awesome. Years ago, I would visit as much as I could a
 v/visit(user, z/zoo())
 often(v)
 cause(funny(flamingo, appearance), like(emora, flamingo))
-possess(user, a/activity()) in(a, z)
-favorite(a)
-request(emora, a)
+possess(user, act/activity()) in(a, z)
+favorite(act)
+request(emora, act)
 ->
-$ Oh, that's great! What's your favorite thing to do in the zoo? I love to watch the flamingos. They have such a funky appearance, and I watching them is so much fun. $
+$ Oh, that's great! What's your favorite thing to do in the zoo? I love to watch the flamingos. They have such a funky appearance, and watching them is so much fun. $
 ;
 
 v/visit(user, z/zoo())
 not(often(v))
 cause(funny(flamingo, appearance), like(emora, flamingo))
-possess(user, a/activity()) in(a, z)
-favorite(a)
-request(emora, a)
+possess(user, act/activity()) in(act, z)
+favorite(act)
+request(emora, act)
 ->
 $ Oh, I see. It can be a hassle to travel and get tickets, so that makes sense. When you do go, what's your favorite thing to do in the zoo? I love to watch the flamingos. They have such a funky appearance, and I watching them is so much fun. $
 ;

@@ -44,7 +44,7 @@ request_truth(emora, h)
 /* work */
 
 time(w/work(user), past)
-->
+-> user_worked ->
 t:<on(w, t/task())>
 request(emora, t)
 

@@ -69,16 +69,6 @@ class ElitModels:
         return {key: values[user_result_idx] if isinstance(values, list) else values
                 for key, values in parse_dict.items()}
 
-
-    def print(self, tok, pos, dep):
-        if globals.DEBUG:
-            print()
-            print('<< ELIT Models >> ')
-            print(tok)
-            print(pos)
-            print(dep)
-            print()
-
 # (1) Do not auto convert `its` to `it is` because could be possessive
 # (2) no punctuation because elit auto-converts contractions if there is punctuation
 # (3) todo - How to handle contractions that without punctuation are other words:

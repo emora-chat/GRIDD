@@ -18,6 +18,9 @@ from GRIDD.data_structures.span import Span
 from GRIDD.modules.responsegen_by_templates import Template
 
 import GRIDD.data_structures.intelligence_core_operators as intcoreops
+
+from GRIDD.utilities.profiler import profiler as p
+
 from time import time
 import os, json
 
@@ -46,6 +49,14 @@ class IntelligenceCore:
         self._check(self.knowledge_base)
 
         self.kb_predicate_types = self.knowledge_base.type_predicates()
+        self.kb_subj_essentials = {}
+        for c in self.knowledge_base.subtypes_of('subj_essential'):
+            if self.knowledge_base.has(predicate_id=c):
+                self.kb_subj_essentials.setdefault(self.knowledge_base.subject(c), set()).add(c)
+        self.kb_obj_essentials = {}
+        for c in self.knowledge_base.subtypes_of('obj_essential'):
+            if self.knowledge_base.has(predicate_id=c):
+                self.kb_obj_essentials.setdefault(self.knowledge_base.object(c), set()).add(c)
 
         if INFERENCE:
             self.nlg_inference_engine = InferenceEngine(device=device)
@@ -638,12 +649,14 @@ class IntelligenceCore:
                         break
                 for r in related:
                     to_add = set(kb.structure(r,
-                                              subj_emodifiers=self.subj_essential_types,
-                                              obj_emodifiers=self.obj_essential_types))
-                    for inst in backptrs.get(r, r):
+                                              subj_essentials=self.kb_subj_essentials,
+                                              obj_essentials=self.kb_obj_essentials,
+                                              type_predicates=self.kb_predicate_types))
+                    for inst in backptrs.get(r, {r}):
                         to_add.update(kb.structure(inst,
-                                                   subj_emodifiers=self.subj_essential_types,
-                                                   obj_emodifiers=self.obj_essential_types))
+                                                   subj_essentials=self.kb_subj_essentials,
+                                                   obj_essentials=self.kb_obj_essentials,
+                                                   type_predicates=self.kb_predicate_types))
                     to_add.difference_update(wmp)
                     if len(to_add) <= limit:
                         limit -= len(to_add)
@@ -708,20 +721,18 @@ class IntelligenceCore:
     def prune_attended(self, aux_state, num_keep):
         # NOTE: essential predicates AND reference constraints must be maintained for selected concepts that are being kept
 
+        #p.start('setup')
         wm = self.working_memory
-        type_predicates = wm.type_predicates()
 
-        # print(f'\nWM PREDICATES: {len(list(wm.predicates()))}')
-        # print(f'WM CONCEPTS: {len(wm.concepts())}')
-
+        #p.next('select keep')
         options = {i for s,t,o,i in wm.predicates() if t not in chain(self.subj_essential_types, self.obj_essential_types, PRIM, {TYPE})}
         soptions = sorted(options,
                           key=lambda x: wm.features.get(x, {}).get(SALIENCE, 0),
                           reverse=True)
         keep = soptions[:num_keep]
-        # print(f'KEEP {len(keep)}')
 
         # delete all user and emora spans that occured SPANTURN turns ago
+        #p.next('delete old spans')
         deletions = set()
         current_turn = aux_state.get('turn_index', -1)
         for s,t,o,i in chain(wm.predicates(predicate_type=SPAN_REF, object='user'),
@@ -733,36 +744,41 @@ class IntelligenceCore:
             if int(span_obj.turn) <= current_turn - SPANTURN:
                 deletions.add(s)
 
-        # delete all user and emora turn tracking predicates from SPANTURN turns ago
-        for s,t,o,i in chain(wm.predicates('user', UTURN), wm.predicates('user', ETURN),
-                             wm.predicates('emora', UTURN), wm.predicates('emora', ETURN)):
-            if int(o) <= current_turn - SPANTURN:
-                deletions.add(i)
-
+        #p.next('setup essentials')
         keepers = set()
+        type_predicates = self.working_memory.type_predicates()
+        subj_essentials = {}
+        for pe in self.subj_essential_types:
+            for c in wm.subtypes_of(pe):
+                if wm.has(predicate_id=c):
+                    subj_essentials.setdefault(wm.subject(c), set()).add(c)
+
+        obj_essentials = {}
+        for pe in self.obj_essential_types:
+            for c in wm.subtypes_of(pe):
+                if wm.has(predicate_id=c):
+                    obj_essentials.setdefault(wm.object(c), set()).add(c)
+        #p.next('identify essentials')
         for k in keep:
-            ess = wm.structure(k, self.subj_essential_types, self.obj_essential_types)
+            ess = wm.structure(k, subj_essentials, obj_essentials, type_predicates=type_predicates)
             structs = {c for sig in ess for c in sig if c is not None}
             keepers.update(structs)
             refs = wm.metagraph.targets(k, REF)
             keepers.update(refs)
-        # print(f'STRUCT & REF KEEPERS {len(keepers-deletions)}')
 
         for k in set(keepers):
             keepers.update({c for sig in type_predicates.get(k, []) for c in sig})
-        # print(f'STRUCT & REF & TYPE KEEPERS {len(keepers-deletions)}')
 
+        #p.next('remove not keep')
         to_remove = (wm.concepts() - keepers) | deletions
-        # print(f'REMOVING {len(to_remove)}')
+
         for r in to_remove:
             # check if there is a SPAN_REF of the thing being deleted; if yes, delete it too
             span_ref_preds = self.working_memory.predicates(predicate_type=SPAN_REF, object=r)
             for s, t, o, i in span_ref_preds:
                 self.working_memory.remove(s)
             wm.remove(r)
-
-        # print(f'\nAFTER WM PREDICATES: {len(list(wm.predicates()))}')
-        # print(f'AFTER WM CONCEPTS: {len(wm.concepts())}')
+        #p.stop()
 
 
     def prune_predicates_of_type(self, inst_removals, subj_removals):
