@@ -314,7 +314,7 @@ acquire(emora, d1/device())
 ->
 _pr(_low)
 _t(_rpresent)
-$ You know what ? I'm gonna get a d1. If I don't like it, its your fault, haha . $
+$ You know what ? I'm gonna get a d1 . If I don't like it, its your fault, haha . $
 ;
 
 h/want(user, d/device())
