@@ -17,7 +17,7 @@ class Node:
 		self.should_write_expr = True
 		self.node_write_count = 0
 
-ontology = p.load(open("GRIDD/pickles/reduced_nodes_to_words.p","rb"))
+ontology = p.load(open("GRIDD/pickles/full_nodes_to_words.p","rb"))
 output_dir="GRIDD/resources/kg_files/kb"
 
 
