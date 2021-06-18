@@ -268,3 +268,35 @@ r{"confidence": 1}
 ->
 acquire(emora, d)
 ;
+
+w/want(user, d/device())
+->
+r:<r/reason(w)>
+request(emora, r)
+;
+
+h/want(user, d/device())
+r/reason(h)
+req_sat(request(emora, r))
+->
+agree(emora, r)
+;
+
+h/want(user, d/device())
+r/reason(h)
+user_aware(agree(emora, r))
+->
+kinship(emora, d)
+;
+
+user_aware(acquire(emora, d1/device()))
+->
+kinship(emora, d1)
+;
+
+h/have(user, d/device())
+r/worth(h)
+r{"confidence": -1}
+->
+kinship(emora, d)
+;
