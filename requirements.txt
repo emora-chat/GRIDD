@@ -7,3 +7,4 @@ simplenlg
 requests
 nltk
 pyahocorasick==1.4.2
+rich

@@ -1,4 +1,11 @@
+
 /* Common Sense */
+
+like(user, predicate(user, o/object()))
+->
+like(user, o)
+;
+
 possess(user, o/object())
 favorite(o)
 be(o, g/object())
