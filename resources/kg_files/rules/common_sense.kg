@@ -1,0 +1,13 @@
+/* Common Sense */
+possess(user, o/object())
+favorite(o)
+be(o, g/object())
+->
+l/like(user, g)
+user_aware(l)
+;
+
+time(p1/predicate(user, p2/predicate()), t/datetime())
+->
+time(p2, t)
+;
