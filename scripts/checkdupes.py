@@ -7,27 +7,20 @@ def process_file(filename):
     f = open(filename, "r")
     global dupe_count
     lines = [line.rstrip() for line in f]
-   # print(filename)
     for l in lines:
-       # print(l)
         if "=" in l:
             if "[" in l:
-               # print(l)
                 a = l.replace('[', '').replace(']', '').replace(' ', '').split(sep='=')[0].split(sep=',')
-               # print(a)
                 for i in a:
                     if i not in processed:
                         processed.add(i)
-                      #  print(i)
                     else:
                         dupe_count+=1
-                        print(f"Duplicate {i} in {filename}")
+                        print(f"Duplicate \"{i}\" in {filename}")
             else:
                 a = l.replace(' ', '').split(sep='=')[0]
-             #   print(f"{a}, {filename}")
                 if a not in processed:
                     processed.add(a)
-                    #print(a)
                 else:
                     dupe_count+=1
                     print(f"Duplicate \"{a}\" in {filename}")
@@ -39,9 +32,11 @@ class TestDupes(unittest.TestCase):
      def test_dupes(self):
         for subdir, dirs, files in os.walk("resources/kg_files/kb"):
             for file in files:
-                #print os.path.join(subdir, file)
+
                 filepath = subdir + os.sep + file
-                #print(filepath)
                 if filepath.endswith(".kg"):
                     process_file(filepath)
         assert dupe_count == 0, f"{dupe_count} duplicates detected, see log for more info"
+
+if __name__ == '__main__':
+    unittest.main()
