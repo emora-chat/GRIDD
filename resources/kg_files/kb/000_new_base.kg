@@ -36,9 +36,9 @@ expr(["it"], it)
 
 affirm = (predicate)
 expr(["yes", "yeah", "yea", "sure", "yep", "yup",
-      "exactly", "course", "definitely", "right", "absolutely"], affirm)
+      "exactly", "definitely", "right", "absolutely", "of course"], affirm)
 reject = (predicate)
-expr(["no", "nope", "nah"], reject)
+expr(["no", "nope", "nah", "of course not"], reject)
 acknowledge = (predicate)
 expr(["ok", "okay"], acknowledge)
 

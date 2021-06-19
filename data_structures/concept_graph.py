@@ -617,7 +617,7 @@ class ConceptGraph:
         return graph
 
     def merge(self, concept_a, concept_b, strict_order=False, merged=None, no_warning=False):
-        unique_preds = {USER_AWARE, TIME, TYPE}
+        unique_preds = {USER_AWARE, TIME, TYPE, 'not', 'maybe'}
         unique_pred_merges = set()
         if concept_a != concept_b:
             if not strict_order and concept_a.startswith(self._ids.namespace) and not concept_b.startswith(self._ids.namespace):
@@ -633,12 +633,17 @@ class ConceptGraph:
             if maybes: # take the confidence predicate of concept_b so delete maybe of concept_a
                 pred = maybes[0]
                 self.remove(*pred)
-            else: # delete the confidence predicate of concept_b but print warning if mismatch of true or false confidence
-                if not no_warning and (self.has(concept_a, 'not') and not self.has(concept_b, 'not')) or \
-                    (not self.has(concept_a, 'not') and self.has(concept_b, 'not')):
+            else: # keep only one type of confidence predicate between a and b, prioritizing 'not' over 'maybe'
+                if not no_warning and ((self.has(concept_a, 'not') and not self.has(concept_b, 'not')) or \
+                    (not self.has(concept_a, 'not') and self.has(concept_b, 'not'))):
                         print('[WARNING] Mismatched confidence between %s and %s on merge!'%(concept_a, concept_b))
-                for pred in chain(list(self.predicates(concept_b, 'not')), list(self.predicates(concept_b, 'maybe'))):
-                    self.remove(*pred)
+                if self.has(concept_a, 'not'):
+                    for pred in list(self.predicates(concept_b, 'maybe')):
+                        self.remove(*pred)
+                else:
+                    if self.has(concept_b, 'not'):
+                        for pred in list(self.predicates(concept_b, 'maybe')):
+                            self.remove(*pred)
             # Merge attached predicates of concept_b to concept_a
             for s, t, o, i in list(self.predicates(subject=concept_b)):
                 if t not in unique_preds:

@@ -379,7 +379,7 @@ class IntelligenceCore:
                 constraints.add(tar)    # tar is a question constraint
         return constraints
 
-    def merge(self, concept_sets):
+    def merge(self, concept_sets, no_warning=False):
         sets = {}
         for cs in concept_sets:
             s = set(cs)
@@ -395,7 +395,7 @@ class IntelligenceCore:
                 a = s[0]
                 for i in range(1, len(s)):
                     b = s[i]
-                    a = self.working_memory.merge(a, b)
+                    a = self.working_memory.merge(a, b, no_warning=no_warning)
 
     def convert_metagraph_span_links(self, gather_link, promote_links):
         """

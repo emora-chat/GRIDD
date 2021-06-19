@@ -40,3 +40,9 @@ request(emora, m)
 -> movie_fallback ->
 $ So , you know, I really enjoy learning about new movies . What is a movie that you like ? $
 ;
+
+l:<l/like(user,a/art())>
+request_truth(emora, l)
+-> art_fallback ->
+$ So , I'm curious , do you like art ? $
+;

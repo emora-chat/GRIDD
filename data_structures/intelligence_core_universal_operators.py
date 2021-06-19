@@ -4,12 +4,12 @@ from itertools import chain
 
 def affirm(cg, i, aux_state=None):
     _, _, sub, _ = cg.predicate(i)
-    for pred in chain(cg.predicates(sub, 'not'), cg.predicates(sub, 'maybe')):
+    for pred in chain(list(cg.predicates(sub, 'not')), list(cg.predicates(sub, 'maybe'))):
         cg.remove(*pred)
 
 def reject(cg, i, aux_state=None):
     _, _, sub, _ = cg.predicate(i)
-    for pred in cg.predicates(sub, 'maybe'):
+    for pred in list(cg.predicates(sub, 'maybe')):
         cg.remove(*pred)
     if not cg.has(sub, 'not'):
         cg.add(sub, 'not')

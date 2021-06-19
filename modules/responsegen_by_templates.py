@@ -68,9 +68,10 @@ class ResponseTemplateFiller:
 
         r_predicates, r_string, r_score = None, None, None
         curr_turn = aux_state.get('turn_index', 0)
-        if len(react_cands) > 0 and curr_turn > 0:
-            print('React Options: ')
-            r_predicates, r_string, r_score = self.select_best_candidate(react_cands, cg, check_aware=False)
+        if curr_turn > 0:
+            if len(react_cands) > 0:
+                print('React Options: ')
+                r_predicates, r_string, r_score = self.select_best_candidate(react_cands, cg, check_aware=False)
         else:
             r_string = ""
 
@@ -86,7 +87,7 @@ class ResponseTemplateFiller:
                 aux_state.setdefault('spoken_responses', []).append(string.lower())
                 predicates = p_predicates
                 s = random.choice(['Yeah .', 'Gotcha .', 'I see .', 'Okay .'])
-                if r_string is not None and r_string != "":
+                if r_string is not None:
                     s = r_string
                 # Do not add reaction predicates to predicates list in order to avoid them being treated as spoken and getting the eturn predicate
                 string = s + ' ' + string
@@ -94,6 +95,7 @@ class ResponseTemplateFiller:
         type = "template"
         if string is None: # PICK UNUSED FALLBACK
             # can still use reaction even with fallback
+            string = ''
             if r_string is not None:
                 string = r_string + ' '
             candidates = list(set(fallback_options.keys()) - set(aux_state.get('fallbacks', [])))

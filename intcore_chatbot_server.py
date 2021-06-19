@@ -311,7 +311,7 @@ class ChatbotServer:
                     print('[WARNING!] Found merge between 2 subspans that are not from the same '
                           'multiword span: %s -> %s, %s -> %s'
                           %(span1, subspans[span1], span2, subspans[span2]))
-        self.dialogue_intcore.merge(node_merges)
+        self.dialogue_intcore.merge(node_merges, no_warning=True)
         self.dialogue_intcore.operate(self.dialogue_intcore.universal_operators, aux_state=aux_state)
         self.dialogue_intcore.operate(self.dialogue_intcore.wm_operators, aux_state=aux_state)
         self.dialogue_intcore.convert_metagraph_span_links(DP_SUB, [ASS_LINK])
@@ -476,7 +476,7 @@ class ChatbotServer:
             request_focus = salient_emora_request[2]
             current_user_concepts = {c for c in wm.concepts() if aux_state["turn_index"] in wm.features.get(c, {}).get(UTURN, [])}
             if req_type == REQ_TRUTH:  # special case - y/n question requires yes/no fragment as answer (or full resolution from earlier in pipeline)
-                fragment_request_merges = self.truth_fragment_resolution(request_focus, current_user_concepts, wm)
+                fragment_request_merges = self.truth_fragment_resolution(request_focus, current_user_concepts, wm, aux_state)
             else:
                 fragment_request_merges = self.arg_fragment_resolution(request_focus, current_user_concepts, wm)
             if len(fragment_request_merges) > 0:
@@ -686,16 +686,36 @@ class ChatbotServer:
                     break
         return fragment_request_merges
 
-    def truth_fragment_resolution(self, request_focus, current_user_concepts, wm):
+    def truth_fragment_resolution(self, request_focus, current_user_concepts, wm, aux_state):
         fragment_request_merges = []
         indicator_preds = [p[3] for p in list(wm.predicates('user', AFFIRM)) + list(wm.predicates('user', REJECT))]
         options = set(indicator_preds).intersection(current_user_concepts)
         if len(indicator_preds) > 0: # find yes or no answer to question
             max_indicator = max(options, key=lambda p: wm.features.get(p[3], {}).get(SALIENCE, 0))
             fragment_request_merges.append((wm.object(max_indicator), request_focus))
-        else:
-            # todo - map `i do/nt` ~ do(user), `i have/nt` ~ have(user), and `i am/not` ~ am(user) to yes/no preds
-            pass
+        else: # maps `i do/nt` ~ do(user), `i have/nt` ~ have(user), and `i am/not` ~ am(user) to yes/no preds
+            for c in current_user_concepts:
+                if wm.has(predicate_id=c) and wm.type(c) in {'have', 'do', 'am'} and wm.object(c) is None:
+                    if not wm.has(c, 'not'):
+                        # yes
+                        affirm_obj = wm.id_map().get()
+                        i = wm.add('user', AFFIRM, affirm_obj)
+                        if not wm.has(i, USER_AWARE):
+                            wm.add(i, USER_AWARE)
+                        wm.features[affirm_obj][SALIENCE] = 1.0
+                        wm.features[affirm_obj][UTURN] = [aux_state.get("turn_index", -1)]
+                        wm.features[i][SALIENCE] = 1.0
+                        fragment_request_merges.append((affirm_obj, request_focus))
+                    else:
+                        # no
+                        reject_obj = wm.id_map().get()
+                        i = wm.add('user', REJECT, reject_obj)
+                        if not wm.has(i, USER_AWARE):
+                            wm.add(i, USER_AWARE)
+                        wm.features[reject_obj][SALIENCE] = 1.0
+                        wm.features[reject_obj][UTURN] = [aux_state.get("turn_index", -1)]
+                        wm.features[i][SALIENCE] = 1.0
+                        fragment_request_merges.append((reject_obj, request_focus))
         # find type-compatible argument match for non-predicates, if there is one
         # todo - expand to match predicate arguments too
         within_request_vars = {x for x in wm.metagraph.targets(request_focus, VAR) if not wm.has(predicate_id=x)}
