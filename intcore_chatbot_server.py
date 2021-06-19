@@ -83,6 +83,8 @@ class ChatbotServer:
 
     @serialized('user_utterance')
     def run_sentence_caser(self, user_utterance):
+        words = user_utterance.split()
+        user_utterance = ' '.join(words[:UTTER_TRUNC]) # safeguard out of memory exception in rest of pipeline by limiting length of user utterance
         user_utterance = self.sentence_caser(user_utterance)
         return user_utterance
 
@@ -106,6 +108,8 @@ class ChatbotServer:
             if len(user_utterance.strip()) == 0:
                 elit_results = {}
             else:
+                words = user_utterance.split()
+                user_utterance = ' '.join(words[:UTTER_TRUNC])  # safeguard for if sentence caser fails
                 elit_results = self.elit_models(user_utterance, aux_state)
         # span updates for errors in elit models (lemmatization, pos)
         PARSE_ERRORS = {

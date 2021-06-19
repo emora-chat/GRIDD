@@ -2,6 +2,7 @@
 KB = 'kb'                       # Namespace of Knowledge Base Concept Graph
 WM = 'wm'                       # Namespace of Working Memory Concept Graph
 
+UTTER_TRUNC = 20                # Truncate user utterance to this length for time and memory processing
 PRUNE_THRESHOLD = 50            # Number of main predicate nodes to keep in WM after pruning
 CONF_ITER = 5
 SAL_ITER = 5
