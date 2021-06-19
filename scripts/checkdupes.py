@@ -36,7 +36,7 @@ class TestDupes(unittest.TestCase):
                 filepath = subdir + os.sep + file
                 if filepath.endswith(".kg"):
                     process_file(filepath)
-        assert dupe_count == 0, f"{dupe_count} duplicates detected, see log for more info"
+        assert dupe_count == 0, "Duplicates detected, see log for more info"
 
 if __name__ == '__main__':
     unittest.main()
