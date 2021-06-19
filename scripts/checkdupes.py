@@ -1,4 +1,5 @@
 import os
+import unittest
 dupe_count=0
 processed=set()
 
@@ -33,14 +34,14 @@ def process_file(filename):
     f.close()
 
 
-    
-import os
 
-for subdir, dirs, files in os.walk("GRIDD/resources/kg_files/kb"):
-    for file in files:
-        #print os.path.join(subdir, file)
-        filepath = subdir + os.sep + file
-        #print(filepath)
-        if filepath.endswith(".kg"):
-            process_file(filepath)
-print(dupe_count)
+class TestDupes(unittest.TestCase):
+     def test_dupes(self):
+        for subdir, dirs, files in os.walk("resources/kg_files/kb"):
+            for file in files:
+                #print os.path.join(subdir, file)
+                filepath = subdir + os.sep + file
+                #print(filepath)
+                if filepath.endswith(".kg"):
+                    process_file(filepath)
+        assert dupe_count == 0, f"{dupe_count} duplicates detected, see log for more info"
