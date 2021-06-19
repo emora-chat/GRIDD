@@ -695,7 +695,7 @@ class ChatbotServer:
             fragment_request_merges.append((wm.object(max_indicator), request_focus))
         else: # maps `i do/nt` ~ do(user), `i have/nt` ~ have(user), and `i am/not` ~ am(user) to yes/no preds
             for c in current_user_concepts:
-                if wm.has(predicate_id=c) and wm.type(c) in {'have', 'do', 'am'} and wm.object(c) is None:
+                if wm.has(predicate_id=c) and wm.type(c) in {'have', 'do', 'be'} and wm.object(c) is None:
                     if not wm.has(c, 'not'):
                         # yes
                         affirm_obj = wm.id_map().get()
