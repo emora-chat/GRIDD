@@ -59,7 +59,7 @@ $ I am sorry to hear that . It's important to keep hydrated . Are you going to g
 ;
 
 time(g/intend_to_consume(user, f/food()), future)
-g{"confidence": -1}
+not(g)
 understand(emora,g)
 he/hungry(emora)
 ne/eat(emora,fd/food())
@@ -83,7 +83,7 @@ $ It sounds like you have made a plan . What kind of drink are you thinking of g
 ;
 
 time(g/intend_to_consume(user, d/drinkable()), future)
-g{"confidence": -1}
+not(g)
 understand(emora,g)
 he/thirsty(emora)
 ne/drink(emora,d2/drinkable())
@@ -114,7 +114,7 @@ $ You know what ? I'm an expert on hot pot . X should take me next time so that 
 ;
 
 th/intend_to_consume(X/person(),hp/hotpot())
-th{"confidence":-1}
+not(th)
 iex/invite(emora,X)
 for(iex,hp)
 ->
@@ -139,7 +139,7 @@ $ Short ribs are so good prepared in the Korean barbecue style . The downside is
 ;
 
 lk/intend_to_consume(x/person(),kb/korean_bbq())
-lk{"confidence": -1}
+not(lk)
 understand(emora,lk)
 smoky(kb)
 eta/time(eat(emora,kb),always)
@@ -190,7 +190,7 @@ $ Speaking of X , pizza is my favorite among all italian food. I know many peopl
 ;
 
 tuh/time(thp/try(user,hp/hawaiian(pizza())),past)
-tuh{"confidence":-1}
+not(tuh)
 should(user,thp)
 ->
 $ Then you should really try it some time ! You may or may not like it , but trying new things is fun , isn't it ? $
@@ -268,7 +268,7 @@ $ I went to X last week . What Mexican food do you like ? $
 ;
 
 ulm/intend_to_consume(user,mf/mexican_cuisine())
-ulm{"confidence":-1}
+not(ulm)
 understand(emora,ulm)
 mfi/impressive(mf)
 not(mfi)
@@ -415,7 +415,7 @@ $ I should learn from X then . I heard that fondant icing is very popular these 
 
 bx/bake(x/person())
 ga/good_at(x,bx)
-ga{"confidence":-1}
+not(ga)
 comfort(emora,x)
 el/learn(emora)
 with(el,x)

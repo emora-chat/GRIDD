@@ -40,7 +40,7 @@ $ What is{"t":"#Z"} your research about ? $
 
 time(xm/major(X/person()),Z/datetime())
 in(xm,S/subject())
-xm{"confidence":-1}
+not(xm)
 cause(xm,o/object())
 request(emora,o)
 ->
@@ -96,7 +96,7 @@ $ That’s awesome ! I heard that the financial industry is very competitive tho
 ;
 
 xei/enter(x/person(),fid/financial(industry()))
-xei{"confidence":-1}
+not(xei)
 comfort(emora,x)
 ->
 $ Understood . Not all people would feel comfortable working in the financial industry . It's definitely whatever suits you best . $
@@ -160,7 +160,7 @@ $ I bet everyone has experienced Zoom fatigue at some point . But I heard that m
 ;
 
 about(xt/tired(x/person()),rc/remote(c/college()))
-xt{"confidence":-1}
+not(xt)
 convenient(c)
 comfortable(x)
 ->
@@ -179,7 +179,7 @@ $ Sounds exciting ! It’s great that X can see X{"p":true} peers in person and 
 
 xr/return(X/person())
 to(xr,c/college())
-xr{"confidence":-1}
+not(xr)
 sad(X)
 ->
 $ Oh , X must be really sad about that . Well , we all have some regrets in life . $
@@ -215,7 +215,7 @@ $ That’s awesome . Do{"s":"#X","t":"now"} X know which subject X be{"s":"#X","
 
 cf/confident(x/person())
 for(cf,c/college())
-cf{"confidence":-1}
+not(cf)
 comfort(emora,x)
 ->
 $ That’s okay . Don’t worry too much about it . It’s hard to predict what the future will bring as a high school student . $

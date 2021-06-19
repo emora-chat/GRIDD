@@ -14,7 +14,7 @@ have(user, w1/job())
 c/change(pandemic(), w1)
 qualifier(c, remote_work())
 l/like(user, c)
-l{"confidence": 1}
+
 ->
 temppred(l)
 ;
@@ -32,7 +32,7 @@ request_truth(emora, m)
 
 
 m/more(like(user, outdoor_activity()))
-m{"confidence": -1}
+not(m)
 ->
 r:<r/reason(m)>
 request(emora, r)

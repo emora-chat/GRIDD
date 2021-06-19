@@ -4,13 +4,6 @@ property=(predicate)
 subj_essential=(predicate)
 obj_essential=(predicate)
 
-imp_trigger = (predicate)
-init = (object)
-op_more_info=(predicate)
-
-category=(predicate)
-specific=(predicate)
-
 group=(entity)
 
 expr(["unknown"], unknown)
@@ -74,4 +67,12 @@ _rpresent=object()
 _p=object()
 _r=object()
 _rp=object()
+;
+
+imp_trigger = (predicate)
+init = (object)
+op_more_info=(predicate)
+_category=(predicate)
+_specific=(predicate)
+_exists=(predicate)
 ;

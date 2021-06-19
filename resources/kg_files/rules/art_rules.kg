@@ -57,7 +57,7 @@ interesting(xd)
 xd/draw(user)
 xtd/try(user,dd/digital(xd))
 time(xtd,past)
-xtd{"confidence":-1}
+not(xtd)
 ->
 uld/learn(user,dd)
 time(uld,future)
@@ -65,7 +65,7 @@ time(uld,future)
 
 xd/draw(user/person())
 l/like(user,xd)
-l{"confidence":-1}
+not(l)
 ->
 h:<have(user,h/hobby())>
 request(emora,h)
@@ -88,7 +88,7 @@ not(eka)
 to(gt/go(x/person()),e/exhibition())
 type(e,group)
 time(gt,always)
-gt{"confidence":-1}
+not(gt)
 ->
 ge/go(emora)
 to(ge,e)

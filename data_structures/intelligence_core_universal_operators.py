@@ -1,6 +1,4 @@
 
-from GRIDD.utilities.utilities import aliases
-from GRIDD.data_structures.assertions import assertions
 from GRIDD.globals import *
 from itertools import chain
 
@@ -16,7 +14,7 @@ def reject(cg, i, aux_state=None):
     if not cg.has(sub, 'not'):
         cg.add(sub, 'not')
 
-def exists(cg, i, aux_state=None):
+def _exists(cg, i, aux_state=None):
     sub, _, _, _ = cg.predicate(i)
     for pred in chain(list(cg.predicates(sub, predicate_type='not')), list(cg.predicates(sub, predicate_type='maybe'))):
         cg.remove(*pred)
@@ -24,19 +22,6 @@ def exists(cg, i, aux_state=None):
         cg.remove('not')
     if len(set(cg.subtypes_of('maybe'))) == 1:
         cg.remove('maybe')
-
-def op_more_info(cg, i, aux_state=None):
-    new, _, old, _ = cg.predicate(i)
-    pre = cg.metagraph.targets(old, RREF)
-    vars = set(cg.metagraph.targets(old, RVAR))
-    # add specific()
-    i2 = cg.add(new, 'specific')
-    pre.add(i2)
-    vars.add(i2)
-    # add links
-    cg.metagraph.add_links(new, pre, REF)
-    cg.metagraph.add_links(new, vars, VAR)
-    cg.remove(i)
 
 def eturn(cg, i, aux_state=None):
     concept, _, turn_pos, _ = cg.predicate(i)
@@ -63,14 +48,3 @@ def uturn(cg, i, aux_state=None):
         cg.remove(predicate_id=i)
     else:
         print('[WARNING] eturn predicate has been found that does not have a numeric object!')
-
-def rfallback(cg, i, aux_state=None):
-    s,t,o,i = cg.predicate(i)
-    cg.remove(s,t,o,i)
-    if aux_state is None:
-        print('[WARNING] No aux_state parameter was passed to rfallback operator')
-        return
-    if 'fallbacks' not in aux_state:
-        aux_state['fallbacks'] = []
-    if s not in aux_state['fallbacks']:
-        aux_state['fallbacks'].append(s)

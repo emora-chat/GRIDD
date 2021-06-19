@@ -24,7 +24,7 @@ $ I'm glad that X enjoy{"s":"#X","t":"now"} working with X{"p":true} colleagues 
 ;
 
 l/like(X/person(),cl/colleague())
-l{"confidence":-1}
+not(l)
 comfort(emora,X)
 ->
 $ I'm sorry to hear that , but don't worry too much . Not everyone has good memories of working with colleagues . $
@@ -39,7 +39,7 @@ $ Awesome ! Teamwork is usually very helpful because X can hear different opinio
 ;
 
 l/like(x/person(),tw/teamwork())
-l{"confidence":-1}
+not(l)
 understand(emora,l)
 et/effective(tw)
 not(et)
@@ -78,7 +78,7 @@ $ I'm happy for X . I think X will have a lot of fun with X{"p":true} job . $
 
 time(xe/excited(X/person()),Z/datetime())
 for(xe,j/job())
-xe{"confidence":-1}
+not(xe)
 he/sorry(emora)
 for(he,X)
 ->
@@ -95,7 +95,7 @@ $ That’s awesome to hear . When I like something , I feel like there’s a lot
 ;
 
 l/like(X/person(),j/job())
-l{"confidence":-1}
+not(l)
 he/sorry(emora)
 for(he,X)
 ->
@@ -117,7 +117,7 @@ $ Then you can see your colleagues in person instead of working in front of comp
 
 xr/return(x/person())
 xro/to(xr,o/office())
-xr{"confidence": -1}
+not(xr)
 not(stressed(x))
 xe/excited(x)
 about(xe,xr)
@@ -144,7 +144,7 @@ xr/return(x/person())
 xro/to(xr,o/office())
 xe/excited(x)
 about(xe,xr)
-xe{"confidence": -1}
+not(xe)
 understand(emora,xe)
 ->
 _pr(_high)

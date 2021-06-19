@@ -155,7 +155,7 @@ $ Why do you want to play basketball? $
 ;
 
 pl/play(user, s/sport())
-pl{"confidence": -1}
+not(pl)
 time(w2/want(emora, play(emora, tennis)), past)
 time(w2, always)
 time(w/want(user, play(user, s2/sport())), now)
@@ -199,7 +199,7 @@ $ Nice, which two teams were playing in the game? $
 ;
 
 watch(user, s/sports_event())
-category(s)
+_category(s)
 request(emora, s)
 ->
 _pr(_high)
@@ -217,7 +217,7 @@ $ Oh cool, how did you play in the game? Hopefully it went well. $
 
 /* Transition to food */
 w/want(user, play(user, s/sport()))
-w{"confidence": -1}
+not(w)
 time(b/be(user, fd/foodie()), now)
 request_truth(emora, b)
 ->

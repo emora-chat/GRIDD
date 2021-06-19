@@ -1,5 +1,5 @@
 time(pc/possess(user,c/college()),z/datetime())
-pc{"confidence": 0}
+_exists(pc)
 user_aware(pc)
 -> ask_if_like_college ->
 l:<l/like(user,c) time(l,z)>
@@ -7,7 +7,7 @@ request_truth(emora,l)
 ;
 
 time(pc/possess(user,c/college()),z/datetime())
-pc{"confidence": 0}
+_exists(pc)
 user_aware(pc)
 -> ask_college_property ->
 p:<p/property(c) time(p,z)>
@@ -15,8 +15,8 @@ request(emora,p)
 ;
 
 time(pc/possess(user,c/college()),z/datetime())
-pc{"confidence": 0}
-category(c)
+_exists(pc)
+_category(c)
 user_aware(pc)
 -> ask_college_type ->
 op_more_info(c, pc)
@@ -24,7 +24,7 @@ request(emora, c)
 ;
 
 time(prop_i/property(c/college()),z/datetime())
-prop_i{"confidence": 0}
+_exists(prop_i)
 req/request(emora, prop_i)
 user_aware(req)
 -> ask_college_activity ->
@@ -33,7 +33,7 @@ request(emora, pred)
 ;
 
 time(udr/do(user,r/research()),z/datetime())
-udr{"confidence": 0}
+_exists(udr)
 user_aware(udr)
 ->
 op_more_info(r, udr)
@@ -48,7 +48,7 @@ request_truth(emora,xm)
 
 time(xm/major(x/person()),z/datetime())
 in(xm,s/subject())
-xm{"confidence":-1}
+not(xm)
 ->
 o:<cause(xm,o/object())>
 request(emora,o)
@@ -92,7 +92,7 @@ competitive(fid)
 ;
 
 xei/enter(x/person(),fid/financial(industry()))
-xei{"confidence":-1}
+not(xei)
 ->
 comfort(emora,x)
 ;
@@ -151,7 +151,7 @@ request_truth(emora,xr)
 ;
 
 about(xt/tired(x/person()),rc/remote(c/college()))
-xt{"confidence":-1}
+not(xt)
 ->
 convenient(c)
 comfortable(x)
@@ -168,7 +168,7 @@ in(xs,l/library())
 
 xr/return(x/person())
 to(xr,c/college())
-xr{"confidence":-1}
+not(xr)
 ->
 sad(x)
 ;
@@ -200,7 +200,7 @@ request(emora,s)
 
 cf/confident(x/person())
 for(cf,c/college())
-cf{"confidence":-1}
+not(cf)
 ->
 comfort(emora,x)
 ;

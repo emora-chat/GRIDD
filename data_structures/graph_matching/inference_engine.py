@@ -47,29 +47,29 @@ class InferenceEngine:
                 pre, vars = structure
             pre = pre.copy()
             categories = set()
-            for s, t, _, i in set(pre.predicates(predicate_type='category')):
+            for s, t, _, i in set(pre.predicates(predicate_type='_category')):
                 categories.add(s)
                 pre.remove(predicate_id=i)
-            if pre.has('category'):
-                pre.remove(predicate_type='category')
-                if pre.has('category'):
-                    pre.remove('category')
+            if pre.has('_category'):
+                pre.remove(predicate_type='_category')
+                if pre.has('_category'):
+                    pre.remove('_category')
             specifics = set()
-            for s, t, _, i in set(pre.predicates(predicate_type='specific')):
+            for s, t, _, i in set(pre.predicates(predicate_type='_specific')):
                 specifics.add(s)
                 pre.remove(predicate_id=i)
-            if pre.has('specific'):
-                pre.remove(predicate_type='specific')
-                if pre.has('specific'):
-                    pre.remove('specific')
+            if pre.has('_specific'):
+                pre.remove(predicate_type='_specific')
+                if pre.has('_specific'):
+                    pre.remove('_specific')
             exists = set()
-            for s, t, _, i in set(pre.predicates(predicate_type='exists')):
+            for s, t, _, i in set(pre.predicates(predicate_type='_exists')):
                 exists.add(s)
                 pre.remove(predicate_id=i)
-            if pre.has('exists'):
-                pre.remove(predicate_type='exists')
-                if pre.has('exists'):
-                    pre.remove('exists')
+            if pre.has('_exists'):
+                pre.remove(predicate_type='_exists')
+                if pre.has('_exists'):
+                    pre.remove('_exists')
             precondition = pre.to_infcompat_graph()
             precondition = self._flatten_types(pre, precondition, for_query=True)
             for node in categories:

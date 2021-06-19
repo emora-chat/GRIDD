@@ -1,7 +1,7 @@
 /* User Travels */
 
 time(t/travel(user),z/datetime())
-t{"confidence": 0}
+_exists(t)
 user_aware(t)
 -> user_travel ->
 p:<time(possess(user,tp/trip()),z) p/property(tp)>
@@ -9,7 +9,7 @@ request(emora,p)
 ;
 
 time(t/travel(user),z/datetime())
-t{"confidence": 0}
+_exists(t)
 user_aware(t)
 -> ask_if_user_likes_trip ->
 l:<l/like(user,tp/trip())>
@@ -17,7 +17,7 @@ request_truth(emora,l)
 ;
 
 time(t/travel(user),z/datetime())
-t{"confidence": 0}
+_exists(t)
 user_aware(t)
 -> ask_what_user_does_in_trips ->
 pred:<like(user, pred/event(object())) for(pred, tp/trip()) type(tp,group)>
@@ -25,7 +25,7 @@ request(emora, pred)
 ;
 
 prop_i/property(tp/trip())
-prop_i{"confidence": 0}
+_exists(prop_i)
 req/request(emora, prop_i)
 user_aware(req)
 -> ask_user_like_travel ->
@@ -47,7 +47,7 @@ git/from(gi,te)
 
 t/travel(x/person())
 lt/like(x,t)
-lt{"confidence":-1}
+not(lt)
 ->
 es/stay(emora)
 at(es,home)
@@ -172,7 +172,7 @@ miss(emora,ch/childhood())
 
 gx/go(x/person())
 to(gx,disneyland_park)
-gx{"confidence":-1}
+not(gx)
 ->
 gm/good(m/memory())
 type(m,group)
@@ -233,7 +233,7 @@ time(etp,past)
 
 gx/go(x/person())
 to(gx,honolulu)
-gx{"confidence":-1}
+not(gx)
 ->
 gc/good(cm/camera())
 xtg/take(x,cm)
@@ -311,7 +311,7 @@ type(pb,group)
 ;
 
 xll/like(x/person(),bc/big_city())
-xll{"confidence":-1}
+not(xll)
 ->
 understand(emora,xll)
 ib/ideal(bc)

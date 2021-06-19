@@ -103,7 +103,7 @@ def operators(module):
         if hasattr(v, 'aliases'):
             for alias in v.aliases:
                 d[alias] = v
-    return {k: v for k, v in d.items() if not k.startswith('_')}
+    return d
 
 class aliases:
     def __init__(self, *aliases):

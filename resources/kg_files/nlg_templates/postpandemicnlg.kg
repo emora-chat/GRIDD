@@ -62,7 +62,7 @@ c/change(pandemic(), w1)
 qualifier(c, remote_work())
 l/like(user, c)
 user_aware(l)
-l{"confidence": 1}
+
 ->
 _pr(_high)
 $ Having the option for remote work is 100 percent amazing. Not everyone might like it and not all jobs can be done remotely, but I think having the option when its practical is a great thing for people. $
@@ -73,7 +73,7 @@ c/change(pandemic(), w1)
 qualifier(c, remote_work())
 l/like(user, c)
 user_aware(l)
-l{"confidence": -1}
+not(l)
 ->
 _pr(_high)
 $ Really? I guess I can understand that, sometimes I want to be at the office and just be around my friends instead of staying at home all day, both during work time and later. Maybe a hybrid approach would be nice, where you spend a couple days at the office, and a couple at home. Of course, not all jobs can be done remotely. $
@@ -88,7 +88,7 @@ $ I've also started just going for walks a lot more. Before the pandemic, I ofte
 
 m/more(like(user, outdoor_activity()))
 user_aware(m)
-m{"confidence": 1}
+
 -> 
 _pr(_high)
 $ Honestly, just going outside and talking with my neighbours has become exciting for me now. $
@@ -96,7 +96,7 @@ $ Honestly, just going outside and talking with my neighbours has become excitin
 
 
 m/more(like(user, outdoor_activity()))
-m{"confidence": -1}
+not(m)
 r/reason(m)
 request(emora, r)
 -> 
@@ -105,7 +105,7 @@ $ Interesting. Why don't you like going outside more after the pandemic? $
 ;
 
 m/more(like(user, outdoor_activity()))
-m{"confidence": -1}
+not(m)
 r/reason(m)
 user_aware(r)
 -> 

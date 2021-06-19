@@ -1,5 +1,5 @@
 time(upm/possess(user,m/meal()),z/datetime())
-upm{"confidence": 0}
+_exists(upm)
 user_aware(upm)
 -> user_has_meal ->
 p:<p/property(m) time(p,z)>
@@ -7,7 +7,7 @@ request(emora,p)
 ;
 
 time(upm/possess(user,m/meal()),z/datetime())
-upm{"confidence": 0}
+_exists(upm)
 user_aware(upm)
 ->
 uc:<uc/cook(user) at(uc,home) time(uc,always)>
@@ -15,7 +15,7 @@ request_truth(emora, uc)
 ;
 
 time(prop_i/property(m/meal()),z/datetime())
-prop_i{"confidence": 0}
+_exists(prop_i)
 req/request(emora, prop_i)
 user_aware(req)
 -> ask_meal_habit ->
@@ -24,7 +24,7 @@ request_truth(emora, uc)
 ;
 
 f/food()
-f{"confidence": 0}
+_exists(f)
 user_aware(f)
 -> ask_if_favorite_food ->
 ff:<ff/favorite(f)>
@@ -32,7 +32,7 @@ request_truth(emora,ff)
 ;
 
 d/drink()
-d{"confidence": 0}
+_exists(d)
 user_aware(d)
 -> ask_if_favorite_drink ->
 fd:<fd/favorite(d)>
@@ -55,7 +55,7 @@ request_truth(emora, g)
 ;
 
 time(g/intend_to_consume(user, f/food()), future)
-g{"confidence": -1}
+not(g)
 ->
 understand(emora,g)
 he/hungry(emora)
@@ -95,7 +95,7 @@ of(ebe,hp)
 ;
 
 th/intend_to_consume(x/person(),hp/hotpot())
-th{"confidence":-1}
+not(th)
 ->
 iex/invite(emora,x)
 for(iex,hp)
@@ -130,7 +130,7 @@ by(ef,em)
 ;
 
 lk/intend_to_consume(x/person(),kb/korean_bbq())
-lk{"confidence": -1}
+not(lk)
 ->
 understand(emora,lk)
 smoky(kb)
@@ -157,7 +157,7 @@ request(emora,mf)
 ;
 
 ulm/intend_to_consume(user,mf/mexican_cuisine())
-ulm{"confidence":-1}
+not(ulm)
 ->
 understand(emora,ulm)
 mfi/impressive(mf)
@@ -202,7 +202,7 @@ request_truth(emora,tuh)
 ;
 
 tuh/time(thp/try(user,hp/hawaiian(pizza())),past)
-tuh{"confidence":-1}
+not(tuh)
 ->
 should(user,thp)
 ;
@@ -320,7 +320,7 @@ request(emora, d)
 ;
 
 time(g/intend_to_consume(user, d/drinkable()), future)
-g{"confidence": -1}
+not(g)
 ->
 understand(emora,g)
 he/thirsty(emora)
@@ -453,7 +453,7 @@ from(el,x)
 
 bx/bake(x/person())
 ga/good_at(x,bx)
-ga{"confidence":-1}
+not(ga)
 ->
 comfort(emora,x)
 el/learn(emora)

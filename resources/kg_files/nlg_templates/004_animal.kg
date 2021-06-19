@@ -83,7 +83,7 @@ have(user, X)
 request(emora, e)
 t/think(user, handful(X))
 r/request_truth(emora, t)
-exists(t)
+_exists(t)
 eturn(r, 1)
 -> ask_crazye_pet ->
 _t(_rpresent)

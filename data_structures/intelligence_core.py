@@ -17,7 +17,8 @@ from GRIDD.data_structures.span import Span
 
 from GRIDD.modules.responsegen_by_templates import Template
 
-import GRIDD.data_structures.intelligence_core_operators as intcoreops
+import GRIDD.data_structures.intelligence_core_universal_operators as intcoreops
+import GRIDD.data_structures.intelligence_core_wm_operators as wmintcoreops
 
 from GRIDD.utilities.profiler import profiler as p
 
@@ -31,7 +32,8 @@ class IntelligenceCore:
         knowledge_base is a dict of identifiers (usually filenames) to logicstrings
         """
         self.compiler = ConceptCompiler(namespace='__c__', warn=True)
-        self.operators = operators(intcoreops)
+        self.universal_operators = operators(intcoreops)
+        self.wm_operators = operators(wmintcoreops)
 
         if isinstance(knowledge_base, ConceptGraph):
             self.knowledge_base = knowledge_base
@@ -135,8 +137,6 @@ class IntelligenceCore:
         else:
             self.working_memory = ConceptGraph(namespace='wm', supports={AND_LINK: False})
             self.consider(working_memory)
-
-        self.operators = operators(intcoreops)
 
         self.subj_essential_types = {i for i in self.knowledge_base.subtypes_of(SUBJ_ESSENTIAL)
                                 if not self.knowledge_base.has(predicate_id=i)}
@@ -266,7 +266,7 @@ class IntelligenceCore:
             self._assertions(cg)
         else:
             cg = knowledge
-        self.operate(cg=cg)
+        self.operate(self.universal_operators, cg=cg)
         source_cg.concatenate(cg)
         return cg
 
@@ -671,10 +671,10 @@ class IntelligenceCore:
             if t in subj_removals and self.working_memory.has(s):
                 self.working_memory.remove(s)
 
-    def operate(self, aux_state=None, cg=None):
+    def operate(self, ops, aux_state=None, cg=None):
         if cg is None:
             cg = self.working_memory
-        for opname, opfunc in self.operators.items():
+        for opname, opfunc in ops.items():
             for _, _, _, i in list(cg.predicates(predicate_type=opname)):
                 if cg.has(predicate_id=i): # within-loop-mutation check
                     opfunc(cg, i, aux_state)
