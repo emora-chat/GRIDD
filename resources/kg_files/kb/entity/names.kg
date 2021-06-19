@@ -2,6 +2,7 @@ init_ask_name=init()
 ;
 
 name=(entity)
+person_ner=(name)
 
 sam=(name)
 

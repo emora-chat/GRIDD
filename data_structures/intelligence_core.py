@@ -664,6 +664,7 @@ class IntelligenceCore:
             for s, t, o, i in span_ref_preds:
                 self.working_memory.remove(s)
             wm.remove(r)
+            # todo - check if there is an expr of the thing being deleted and if the s of the expr is not used in any other preds, delete it too
         #p.stop()
 
 

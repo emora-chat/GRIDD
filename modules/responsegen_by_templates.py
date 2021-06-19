@@ -141,7 +141,7 @@ class ResponseTemplateFiller:
         else:
             return None, None, None
 
-
+    # todo - add in profanity check
     def fill_string(self, match_dict, expr_dict, string_spec_ls, cg):
         # initialize realizations for variables used in string_spec_ls dependencies
         specifications = {}
@@ -283,7 +283,7 @@ class ResponseTemplateFiller:
         for t in immediate_types:
             expressable_subs = {x for x in cg.subtypes_of(t) if x != t and not x.startswith(namespace)}
             intersection = immediate_types.intersection(expressable_subs)
-            if len(intersection) == 0 and t not in {GROUP, 'prp', 'prop$'} and not t.startswith(namespace):
+            if len(intersection) == 0 and t not in {GROUP, 'prp', 'prop$'} and not t.startswith(namespace) and '_ner' not in t:
                 # there are no subtypes in the immediate types and it is not an unexpressable type
                 candidates.add(t)
         return next(iter(candidates))

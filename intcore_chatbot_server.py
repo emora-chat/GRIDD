@@ -506,7 +506,7 @@ class ChatbotServer:
         self.load_working_memory(working_memory)
         self.dialogue_intcore.decay_salience()
         expr_dict = {}
-        for s,t,o,i in self.dialogue_intcore.pull_expressions():
+        for s,t,o,i in self.dialogue_intcore.pull_expressions(): # expressions from KB
             if o not in expr_dict:
                 if o == 'user':
                     expr_dict[o] = 'you'
@@ -514,6 +514,9 @@ class ChatbotServer:
                     expr_dict[o] = 'I'
                 else:
                     expr_dict[o] = s.replace('"', '')
+        for s,t,o,i in self.dialogue_intcore.working_memory.predicates(predicate_type=EXPR): # expressions from WM
+            if o not in expr_dict:
+                expr_dict[o] = s.replace('"', '')
         return self.dialogue_intcore.working_memory, expr_dict
 
     @serialized('template_response_sel', 'aux_state')
@@ -598,7 +601,7 @@ class ChatbotServer:
         #p.next('decay sal')
         self.dialogue_intcore.decay_salience()
         #p.next('prune')
-        self.dialogue_intcore.prune_predicates_of_type({AFFIRM, REJECT, EXPR}, {EXPR})
+        self.dialogue_intcore.prune_predicates_of_type({AFFIRM, REJECT}, {})
         self.dialogue_intcore.prune_attended(aux_state, num_keep=PRUNE_THRESHOLD)
         #p.stop()
         return response, self.dialogue_intcore.working_memory

@@ -1,6 +1,7 @@
 
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.span import Span
+from GRIDD.globals import *
 
 def get_ner_mentions(elit_results):
     """
@@ -24,9 +25,10 @@ def get_ner_mentions(elit_results):
             # todo - if plural, add `group` type
             span = Span(string, sidx, eidx, token.sentence, token.turn, token.speaker, string, None)
             concept = cg.id_map().get()
-            cg.add(concept, 'type', ner_type.lower()+'_ner')
+            cg.add(concept, TYPE, ner_type.lower()+'_ner')
             cg.add(concept, 'focus')
             cg.add(concept, 'center')
+            cg.add('"%s"'%string, EXPR, concept)
             cg.add(span)
             cg.features[span.to_string()]["span_data"] = span
             mentions[span.to_string()] = cg
