@@ -48,12 +48,6 @@ SALIENCE_OUT_LINK = 'salout'    # UpdateGraph label for salience propagation
 
 COLDSTART = 'coldstart'         # metadata bool feature preventing salience decay until selected
 SALIENCE = 'salience'           # metadata float feature representing attention w.r.t. emora
-CONFIDENCE = 'confidence'       # metadata float feature representing truth value w.r.t emora
-BASE_CONFIDENCE = 'b_confidence'# metadata float feature representing the base truth value w.r.t emora
-UCONFIDENCE = 'uconfidence'     # metadata float feature representing truth value w.r.t user
-BASE_UCONFIDENCE = 'b_uconfidence' # metadata float feature representing the base truth value w.r.t user
-USALIENCE = 'usalience'         # metadata float feature representing attention w.r.t. user
-CONVINCABLE = 'convincable'     # metadata float feature [0,1] representing the convincability of the user's belief on emora's belief of the predicate
 CONNECTIVITY = 'conn'           # metadata integer feature representing neighborhood cardinality
 IS_TYPE = 'is_type'             # metadata type/instance specifier
 

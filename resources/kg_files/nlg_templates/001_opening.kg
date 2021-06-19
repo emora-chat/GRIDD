@@ -8,7 +8,7 @@ $ You know , I don't think we have met before . What would you like me to call y
 
 time(be(n1/name(), N/name()), now)
 possess(user, n1)
-specific(N)
+_specific(N)
 h/happy(emora)
 time(m/meet(emora, user), now)
 cause(m, h)
@@ -20,7 +20,7 @@ $ I am really happy to meet you , N ! $
 
 time(b/be(n1/name(), N/name()), now)
 possess(user, n1)
-category(N)
+_category(N)
 h/happy(emora)
 time(m/meet(emora, user), now)
 cause(m, h)

@@ -1,9 +1,3 @@
-l/like(user, m/movie())
-request(emora, m)
-->
-_t(_p)
-$ What is your favorite movie? My favorite movie is the first Iron Man. $
-;
 
 possess(user, g/video_entertainment_genre())
 favorite(g)
@@ -372,7 +366,7 @@ $ Awesome! The first Iron Man film is also my favorite. It’s so fun to look ba
 ;
 
 l/like(user, m/marvel_movie())
-category(m)
+_category(m)
 request(emora, m)
 ->
 _pr(_high)
@@ -380,7 +374,7 @@ $ What is your favorite movie out of the marvel movies? $
 ;
 
 l/like(user, m/guardians_of_galaxy())
-category(m)
+_category(m)
 request(emora, m)
 ->
 _pr(_high)
@@ -388,7 +382,7 @@ $ What is your favorite Guardians of the Galaxy movie? I loved the first one. Se
 ;
 
 l/like(user, m/ant_man())
-category(m)
+_category(m)
 request(emora, m)
 ->
 _pr(_high)
@@ -396,7 +390,7 @@ $ What's your favorite Ant Man movie? If I'm honest I only saw the second one, s
 ;
 
 l/like(user, m/avengers_movie())
-category(m)
+_category(m)
 request(emora, m)
 ->
 _pr(_high)
@@ -404,7 +398,7 @@ $ What's your favorite Avengers movie? My favorite is the first one. I got to se
 ;
 
 l/like(user, m/thor())
-category(m)
+_category(m)
 request(emora, m)
 ->
 _pr(_high)
@@ -412,7 +406,7 @@ $ What is your favorite Thor movie? I enjoyed the second one, I think it was cal
 ;
 
 l/like(user, m/captain_america())
-category(m)
+_category(m)
 request(emora, m)
 ->
 _pr(_high)
@@ -420,7 +414,7 @@ $ What's your favorite Captain America movie? Winter Soldier is a classic, for s
 ;
 
 l/like(user, m/iron_man())
-category(m)
+_category(m)
 request(emora, m)
 ->
 _pr(_high)
@@ -428,7 +422,7 @@ $ Iron Man is my favorite Marvel character! His snarkiness inspired my sense of 
 ;
 
 w/watch(user, m/movie())
-category(m)
+_category(m)
 request(emora, m)
 ->
 _pr(_high)
@@ -436,7 +430,7 @@ $ Oh nice! What movie did you watch? $
 ;
 
 w/watch(user, m/marvel_movie())
-category(m)
+_category(m)
 request(emora, m)
 ->
 _pr(_high)
@@ -444,7 +438,7 @@ $ That's awesome! I love Marvel movies. Which one did you watch? $
 ;
 
 w/watch(user, m/movie())
-specific(m)
+_specific(m)
 user_aware(w)
 l/like(user, m)
 request_truth(emora, l)
@@ -454,17 +448,17 @@ $ Nice! Did you enjoy it? $
 ;
 
 w/watch(user, m/movie())
-specific(m)
+_specific(m)
 user_aware(w)
 l/like(user,m)
-l{"confidence": -1}
+not(l)
 ->
 _pr(_high)
 $ I'm sorry to hear that. Why do you think you didn't enjoy it? $
 ;
 
 h/hate(user, m/movie())
-category(m)
+_category(m)
 cause(p/predicate(), h)
 request(emora, p)
 ->
@@ -482,7 +476,7 @@ $ Why do you hate m? $
 
 /* Disney Time */
 l/like(user, m/disney_movie())
-category(m)
+_category(m)
 request(emora, m)
 ->
 _pr(_high)
@@ -787,7 +781,7 @@ w/watch(user, u/object())
 req_sat(request_truth(emora, be_0/be(u, unknown_movie())))
 req_sat(request_truth(emora, like_0/like(user, u)))
 l/like(user, u)
-l{"confidence": -1}
+not(l)
 cause(p/predicate(), l)
 request(emora, p)
 ->

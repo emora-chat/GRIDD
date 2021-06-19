@@ -8,8 +8,7 @@ _t(_p)
 $ I was just thinking , the most fun I had today was taking a walk with my dog . Do you have a pet ? $
 ;
 
-h/have(user, p/pet())
-h{"confidence": -1}
+not(h/have(user, p/pet()))
 uturn(h, 0)
 time(w/want(user, p2/pet()), now)
 request_truth(emora, w)
@@ -84,8 +83,9 @@ have(user, X)
 request(emora, e)
 t/think(user, handful(X))
 r/request_truth(emora, t)
+_exists(t)
 eturn(r, 1)
-->
+-> ask_crazye_pet ->
 _t(_rpresent)
 $ I bet they keep your life interesting though. Like , what is the craziest thing they've ever done ? $
 ;
@@ -111,7 +111,7 @@ $ That's pretty interesting. Most people I know that don't want a pet also don't
 ;
 
 time(l/like(user, a/animal()), now)
-l{"confidence":-1}
+not(l)
 time(c/cause(pred/predicate(), l), now)
 request(emora, pred)
 ->

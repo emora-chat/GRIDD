@@ -7,7 +7,7 @@ $ It sounds like you have made a plan . $
 ;
 
 g/intend_to_consume(user, X/consumable())
-g{"confidence":-1}
+not(g)
 uturn(g, 0)
 ->
 _t(_react)
@@ -87,7 +87,7 @@ $ I'm glad that you enjoy eating X ! My favorite food is ramen . It is a simple 
 ;
 
 ff/favorite(X/food())
-ff{"confidence":-1}
+not(ff)
 req/request_truth(emora,ff)
 like(user,fd/food())
 request(emora,fd)
@@ -136,7 +136,7 @@ $ I am sorry to hear that . It's important to keep hydrated . Are you going to g
 ;
 
 time(g/intend_to_consume(user, f/food()), future)
-g{"confidence": -1}
+not(g)
 understand(emora,g)
 he/hungry(emora)
 ne/eat(emora,fd/food())
@@ -162,7 +162,7 @@ $ What kind of drink are you thinking of getting ? $
 ;
 
 time(g/intend_to_consume(user, d/drinkable()), future)
-g{"confidence": -1}
+not(g)
 understand(emora,g)
 he/thirsty(emora)
 ne/drink(emora,d2/drinkable())
@@ -196,7 +196,7 @@ $ You know what ? I'm an expert on hot pot . X should take me next time so that 
 ;
 
 th/intend_to_consume(X/person(),hp/hotpot())
-th{"confidence":-1}
+not(th)
 iex/invite(emora,X)
 for(iex,hp)
 ->
@@ -224,7 +224,7 @@ $ Short ribs are so good prepared in the Korean barbecue style . The downside is
 ;
 
 lk/intend_to_consume(x/person(),kb/korean_bbq())
-lk{"confidence": -1}
+not(lk)
 understand(emora,lk)
 smoky(kb)
 eta/time(eat(emora,kb),always)
@@ -280,7 +280,7 @@ $ Speaking of X , pizza is my favorite among all italian food. I know many peopl
 ;
 
 tuh/time(thp/try(user,hp/hawaiian(pizza())),past)
-tuh{"confidence":-1}
+not(tuh)
 should(user,thp)
 ->
 _t(_present)
@@ -368,7 +368,7 @@ $ I went to X last week . What Mexican food do you like ? $
 ;
 
 ulm/intend_to_consume(user,mf/mexican_cuisine())
-ulm{"confidence":-1}
+not(ulm)
 understand(emora,ulm)
 mfi/impressive(mf)
 not(mfi)
@@ -537,7 +537,7 @@ $ I should learn from X then . I heard that fondant icing is very popular these 
 
 bx/bake(x/person())
 ga/good_at(x,bx)
-ga{"confidence":-1}
+not(ga)
 comfort(emora,x)
 el/learn(emora)
 with(el,x)
@@ -662,8 +662,8 @@ _t(_present)
 $ I heard that bitter melon is good for our health , but I don't like bitter stuff at all . On the contrary , sweet stuff makes me happier . $
 ;
 
-so/sweet_flavor(o/object())
-intend_to_consume(emora,so)
+sfo/sweet_flavor(o/object())
+intend_to_consume(emora,sfo)
 intend_to_consume(emora,dessert())
 ->
 _t(_rpresent)
@@ -690,7 +690,7 @@ $ What do{"t":"#Z","s":"#X"} X have for Y ? I'm making plans for my Y tomorrow ,
 ;
 
 xc/cook(x/person())
-xc{"confidence":-1}
+not(xc)
 eg/go(emora)
 to(eg,r/restaurant())
 type(r,group)

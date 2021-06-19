@@ -1,4 +1,3 @@
-artist=(person)
 
 pablo_picasso=artist()
 expr("pablo picasso, picasso",pablo_picasso)

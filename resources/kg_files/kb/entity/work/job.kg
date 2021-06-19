@@ -38,7 +38,7 @@ actor=(film_job)
 
 art_job=(job)
 
-artist=(art_job)
+artist=(art_job, person)
 musician=(art_job)
 singer=(art_job)
 rapper=(singer)

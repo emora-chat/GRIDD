@@ -54,7 +54,7 @@ $ Thank you for sharing your college experience with me . I had supportive peers
 ;
 
 time(l/like(user,c/college()),Z/datetime())
-l{"confidence":-1}
+not(l)
 ->
 _t(_rpresent)
 $ I'm so sorry to hear that you have{"t":"#Z"} an unsatisfying college experience . I'm always here if you would like to talk . $
@@ -110,7 +110,7 @@ $ I have great respects for people who work as researchers . They always contrib
 
 ubr/be(user,r/researcher())
 time(ubr,future)
-ubr{"confidence":-1}
+not(ubr)
 time(ubr,future)
 emc/make(emora,c/contribution())
 type(c,group)
@@ -122,7 +122,7 @@ $ I've never thought about being a researcher . But I guess somehow I'm making m
 
 time(xm/major(X/person()),Z/datetime())
 in(xm,S/subject())
-xm{"confidence":-1}
+not(xm)
 cause(xm,o/object())
 request(emora,o)
 ->
@@ -132,7 +132,7 @@ $ Is there a specific reason why X do{"s":"#X","t":"#Z"} not major in S ? $
 
 time(xm/major(x/person()),z/datetime())
 in(xm,s/subject())
-xm{"confidence":-1}
+not(xm)
 cause(xm,o/object())
 req/request(emora,o)
 understand(emora,xm)
@@ -198,7 +198,7 @@ $ That’s awesome ! I heard that the financial industry is very competitive tho
 ;
 
 xei/enter(x/person(),fid/financial(industry()))
-xei{"confidence":-1}
+not(xei)
 comfort(emora,x)
 ->
 _t(_rpresent)
@@ -270,7 +270,7 @@ $ I bet everyone has experienced Zoom fatigue at some point . But I heard that m
 ;
 
 about(xt/tired(x/person()),rc/remote(c/college()))
-xt{"confidence":-1}
+not(xt)
 convenient(c)
 comfortable(x)
 ->
@@ -291,7 +291,7 @@ $ Sounds exciting ! It’s great that X can see X{"p":true} peers in person and 
 
 xr/return(X/person())
 to(xr,c/college())
-xr{"confidence":-1}
+not(xr)
 sad(X)
 ->
 _t(_rpresent)
@@ -331,7 +331,7 @@ $ That’s awesome . Do{"s":"#X","t":"now"} X know which subject X be{"s":"#X","
 
 cf/confident(x/person())
 for(cf,c/college())
-cf{"confidence":-1}
+not(cf)
 comfort(emora,x)
 ->
 _t(_rpresent)

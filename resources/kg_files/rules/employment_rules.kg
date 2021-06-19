@@ -21,7 +21,7 @@ have(x,c)
 
 /* Default Content */
 uw/work(user)
-uw{"confidence": 0}
+_exists(uw)
 user_aware(uw)
 -> ask_if_like_job ->
 l:<possess(user,j/job()) l/like(user,j) time(l,now)>
@@ -29,7 +29,7 @@ request_truth(emora,l)
 ;
 
 time(uw/work(user),future)
-uw{"confidence": 0}
+_exists(uw)
 user_aware(uw)
 -> ask_if_excited ->
 upj/possess(user,j/job())
@@ -50,7 +50,7 @@ xbj/be(user,j/job())
 cool(j)
 cause(xbj,o/object())
 req/request(emora,o)
-xbj{"confidence": 0}
+_exists(xbj)
 user_aware(req)
 ->
 possess(emora,f/friend())
@@ -76,26 +76,21 @@ for(he,xhf)
 
 xe/excited(x/person())
 for(xe,j/job())
-xe{"confidence":-1}
+not(xe)
 ->
 he/sorry(emora)
 for(he,x)
 ;
 
 upc/have(user,cl/colleague())
-upc{"confidence": 0}
+_exists(upc)
 user_aware(upc)
 ->
 l:<type(cl,group) l/like(user,cl) time(l,now)>
 request_truth(emora,l)
-;
 
-upc/have(user,cl/colleague())
-upc{"confidence": 0}
-user_aware(upc)
-->
-l:<l/like(user,teamwork())>
-request_truth(emora,l)
+l2:<l2/like(user,teamwork())>
+request_truth(emora,l2)
 ;
 
 like(x/person(),cl/colleague())
@@ -105,7 +100,7 @@ request_truth(emora,l)
 ;
 
 l/like(x/person(),cl/colleague())
-l{"confidence":-1}
+not(l)
 ->
 comfort(emora,x)
 ;
@@ -118,7 +113,7 @@ type(o,group)
 ;
 
 l/like(x/person(),tw/teamwork())
-l{"confidence":-1}
+not(l)
 ->
 understand(emora,l)
 et/effective(tw)
@@ -134,7 +129,7 @@ motivated(emora)
 ;
 
 l/like(x/person(),j/job())
-l{"confidence":-1}
+not(l)
 ->
 he/sorry(emora)
 for(he,x)
@@ -157,7 +152,7 @@ request_truth(emora,xe)
 
 xr/return(x/person())
 xro/to(xr,o/office())
-xr{"confidence": -1}
+not(xr)
 ->
 not(stressed(x))
 xe:<xe/excited(x) about(xe,xr) time(xe,now)>
@@ -178,7 +173,7 @@ xr/return(x/person())
 xro/to(xr,o/office())
 xe/excited(x)
 about(xe,xr)
-xe{"confidence": -1}
+not(xe)
 ->
 understand(emora,xe)
 ;
@@ -263,7 +258,7 @@ request(emora,p)
 ;
 
 time(prop_i/property(uj/unknown_job()),z/datetime())
-prop_i{"confidence": 0}
+_exists(prop_i)
 req/request(emora, prop_i)
 user_aware(req)
 ->

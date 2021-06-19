@@ -11,7 +11,7 @@ request_truth(emora, h)
 ;
 
 t/time(h/have(user, p/pet()), now)
-category(p)
+_category(p)
 user_aware(h)
 -> q_ask_pet_type ->
 op_more_info(p, h)
@@ -26,7 +26,7 @@ request(emora, i)
 ;
 
 prop_i/property(pt/pet())
-prop_i{"confidence": 0}
+_exists(prop_i)
 req/request(emora, prop_i)
 user_aware(req)
 -> do_with_pet ->
@@ -105,14 +105,14 @@ request_truth(emora, l)
 /* Does Not Have Pet */
 
 time(h/have(user, p/pet()), now)
-h{"confidence": -1}
+not(h)
 -> not_have_pet ->
 w:<time(w/want(user, p2/pet()), now)>
 request_truth(emora, w)
 ;
 
 time(w/want(user, p/pet()), now)
-w{"confidence":-1}
+not(w)
 -> not_want_pet ->
 l:<time(l/like(user, a/animal()), now)>
 request_truth(emora, l)
@@ -120,16 +120,16 @@ request_truth(emora, l)
 
 time(like(user, a/animal()), now)
 time(w/want(user, p/pet()), now)
-w{"confidence":-1}
+not(w)
 ->
 pred:<time(cause(pred/predicate(), w), now)>
 request(emora, pred)
 ;
 
 time(l/like(user, a/animal()), now)
-l{"confidence":-1}
+not(l)
 time(w/want(user, p/pet()), now)
-w{"confidence":-1}
+not(w)
 ->
 pred:<time(cause(pred/predicate(), l), now)>
 request(emora, pred)
@@ -200,8 +200,8 @@ type(P, group)
 
 large(X/park())
 ->
-C/crowded(X)
-C{"confidence": -1}
+c/crowded(X)
+not(c)
 ;
 
 small(X/park())

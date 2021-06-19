@@ -1,19 +1,19 @@
 like(x/person(), g/game())
-category(g)
+_category(g)
 ->
 l:l/like(x, videogame())
 request_truth(emora, l)
 ;
 
 play(x/person(), g/game())
-category(g)
+_category(g)
 ->
 p:p/play(x, videogame())
 request_truth(emora, p)
 ;
 
 l/like(x/person(), v/videogame())
-category(v)
+_category(v)
 ->
 op_more_info(v, l)
 request(emora, v)
@@ -41,7 +41,7 @@ request(emora, d)
 ;
 
 p/play(x/person(), v/videogame())
-category(v)
+_category(v)
 ->
 op_more_info(v, p)
 request(emora, v)
@@ -118,13 +118,13 @@ time(agree(emora, f), now)
 ;
 
 cause(fun(object()), like(x/person(), v/videogame()))
-specific(v)
+_specific(v)
 ->
 time(agree(emora, fun(v)), now)
 ;
 
 cause(fun(object()), play(x/person(), v/videogame()))
-specific(v)
+_specific(v)
 ->
 time(agree(emora, fun(v)), now)
 ;

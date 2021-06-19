@@ -1,6 +1,6 @@
 /* User likes some movie */
 l/like(user, m/movie())
-category(m)
+_category(m)
 user_aware(l)
 -> person_likes_some_movie ->
 op_more_info(m, l)
@@ -317,7 +317,7 @@ request(emora, p)
 /* Likes series within Marvel universe */
 
 l/like(user, m/marvel_movie())
-category(m)
+_category(m)
 user_aware(l)
 -> movie_series_is_mentioned ->
 op_more_info(m, l)
@@ -325,7 +325,7 @@ request(emora, m)
 ;
 
 l/like(user, g/guardians_of_galaxy())
-category(g)
+_category(g)
 user_aware(l)
 -> user_likes_guardians_of_galaxy ->
 op_more_info(g, l)
@@ -333,7 +333,7 @@ request(emora, g)
 ;
 
 l/like(user, g/ant_man())
-category(g)
+_category(g)
 user_aware(l)
 -> user_likes_ant_man ->
 op_more_info(g, l)
@@ -341,7 +341,7 @@ request(emora, g)
 ;
 
 l/like(user, g/avengers_movie())
-category(g)
+_category(g)
 user_aware(l)
 -> user_likes_avengers ->
 op_more_info(g, l)
@@ -349,7 +349,7 @@ request(emora, g)
 ;
 
 l/like(user, g/thor())
-category(g)
+_category(g)
 user_aware(l)
 -> user_likes_thor ->
 op_more_info(g, l)
@@ -357,7 +357,7 @@ request(emora, g)
 ;
 
 l/like(user, g/captain_america())
-category(g)
+_category(g)
 user_aware(l)
 -> user_likes_captain_america ->
 op_more_info(g, l)
@@ -365,7 +365,7 @@ request(emora, g)
 ;
 
 l/like(user, g/iron_man())
-category(g)
+_category(g)
 user_aware(l)
 -> user_likes_iron_man ->
 op_more_info(g, l)
@@ -373,7 +373,7 @@ request(emora, g)
 ;
 
 w/watch(user, m/movie())
-category(m)
+_category(m)
 user_aware(w)
 -> user_watched_unspecified_movie ->
 op_more_info(m, w)
@@ -381,7 +381,7 @@ request(emora, m)
 ;
 
 w/watch(user, m/marvel_movie())
-category(m)
+_category(m)
 user_aware(w)
 -> user_watched_some_marvel_movie ->
 op_more_info(m, w)
@@ -389,7 +389,7 @@ request(emora, m)
 ;
 
 w/watch(user, m/movie())
-specific(m)
+_specific(m)
 user_aware(w)
 -> user_watched_specified_movie ->
 l/like(user, m)
@@ -398,23 +398,23 @@ request_truth(emora, l)
 
 /* Next two still a little funky */
 h/dislike(user, m/movie())
-category(m)
+_category(m)
 user_aware(h)
 -> user_hates_movies ->
-p:<c/hate(user, l/movie()) cause(p/predicate(), c) category(l)>
+p:<c/hate(user, l/movie()) cause(p/predicate(), c) _category(l)>
 request(emora, p)
 ;
 
 h/dislike(user, m/movie())
 user_aware(h)
 -> user_hates_specific_movie ->
-p:<c/hate(user, l/movie()) cause(p/predicate(), c) specific(l)>
+p:<c/hate(user, l/movie()) cause(p/predicate(), c) _specific(l)>
 request(emora, p)
 ;
 
 /* Disney Stuff */
 l/like(user, m/disney_movie())
-category(m)
+_category(m)
 user_aware(l)
 -> disney_movie_series_is_mentioned ->
 op_more_info(m, l)

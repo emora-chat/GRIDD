@@ -36,8 +36,11 @@ might = (modifier)
 must = (modifier)
 ;
 
-not = (predicate)
+conf = (predicate, subj_essential)
+not = (conf)
 expr("nt", not)
+maybe = (conf)
+
 ;
 
 he=(entity)

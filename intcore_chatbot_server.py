@@ -308,22 +308,12 @@ class ChatbotServer:
                           'multiword span: %s -> %s, %s -> %s'
                           %(span1, subspans[span1], span2, subspans[span2]))
         self.dialogue_intcore.merge(node_merges)
-        self.dialogue_intcore.operate(aux_state=aux_state)
+        self.dialogue_intcore.operate(self.dialogue_intcore.universal_operators, aux_state=aux_state)
+        self.dialogue_intcore.operate(self.dialogue_intcore.wm_operators, aux_state=aux_state)
         self.dialogue_intcore.convert_metagraph_span_links(DP_SUB, [ASS_LINK])
         for so, t, l in self.dialogue_intcore.working_memory.metagraph.edges(label=ASS_LINK):
-            if BASE_UCONFIDENCE not in self.dialogue_intcore.working_memory.features[t]:
-                if self.dialogue_intcore.working_memory.has(predicate_id=so):
-                    if NONASSERT in self.dialogue_intcore.working_memory.types(so):
-                        self.dialogue_intcore.working_memory.features[t][BASE_UCONFIDENCE] = 0.0
-                    else:
-                        self.dialogue_intcore.working_memory.features[t][BASE_UCONFIDENCE] = 1.0
-                else:
-                    # fragment language often does not have predicate as root (e.g. the big backyard<root>)
-                    self.dialogue_intcore.working_memory.features[t][BASE_UCONFIDENCE] = 1.0
-        #p.start('user conf')
-        self.dialogue_intcore.update_confidence('user', iterations=CONF_ITER)
-        #p.next('emora conf')
-        self.dialogue_intcore.update_confidence('emora', iterations=CONF_ITER)
+            if self.dialogue_intcore.working_memory.has(predicate_id=so) and NONASSERT in self.dialogue_intcore.working_memory.types(so):
+                self.dialogue_intcore.working_memory.add(t, 'maybe')
         #p.stop()
         return self.dialogue_intcore.working_memory, aux_state
 
@@ -338,12 +328,11 @@ class ChatbotServer:
                 working_memory.metagraph.update(self.dialogue_intcore.knowledge_base.metagraph,
                                                                       self.dialogue_intcore.knowledge_base.metagraph.features,
                                                                       concepts=[pred[3]])
-                if pred[1] in {REQ_ARG, REQ_TRUTH}:
-                    # if request pulled from KB, add req_unsat to it
-                    i = working_memory.add(pred[3], REQ_UNSAT)
-                    working_memory.features[i][BASE_CONFIDENCE] = 1.0
+                if pred[1] in {REQ_ARG, REQ_TRUTH}: # if request pulled from KB, add req_unsat to it
+                    working_memory.add(pred[3], REQ_UNSAT)
         self._update_types(working_memory)
-        self.dialogue_intcore.operate(aux_state=aux_state)
+        self.dialogue_intcore.operate(self.dialogue_intcore.universal_operators, aux_state=aux_state)
+        self.dialogue_intcore.operate(self.dialogue_intcore.wm_operators, aux_state=aux_state)
         return self.dialogue_intcore.working_memory, aux_state
 
     @serialized('inference_results')
@@ -360,11 +349,8 @@ class ChatbotServer:
         #p.next('update types')
         self._update_types(self.dialogue_intcore.working_memory)
         #p.next('operate')
-        self.dialogue_intcore.operate(aux_state=aux_state)
-        #p.next('user conf')
-        self.dialogue_intcore.update_confidence('user', iterations=CONF_ITER)
-        #p.next('emora conf')
-        self.dialogue_intcore.update_confidence('emora', iterations=CONF_ITER)
+        self.dialogue_intcore.operate(self.dialogue_intcore.universal_operators, aux_state=aux_state)
+        self.dialogue_intcore.operate(self.dialogue_intcore.wm_operators, aux_state=aux_state)
         #p.next('sal')
         self.dialogue_intcore.update_salience(iterations=SAL_ITER)
         #p.stop()
@@ -401,7 +387,11 @@ class ChatbotServer:
             for reference_node, (pre, matches) in inference_results.items():
                 compatible_pairs[reference_node] = {}
                 for match, virtual_preds in matches:
-                    if reference_node in match and reference_node != match[reference_node]:
+                    # do not want match between itself and itself
+                    # also, ref node and match must either both be predicates or both be entities
+                    if reference_node in match and reference_node != match[reference_node] and \
+                        ((wm.has(predicate_id=match[reference_node]) and wm.has(predicate_id=reference_node)) or
+                         (not wm.has(predicate_id=match[reference_node]) and not wm.has(predicate_id=reference_node))):
                         compatible_pairs[reference_node][match[reference_node]] = []
                         for node in match:
                             if node != reference_node:
@@ -496,11 +486,8 @@ class ChatbotServer:
                 print('CURRENT USER CONCEPTS: %s'%current_user_concepts)
                 print('FRAGMENT REQUEST MERGES: %s'%fragment_request_merges)
             self.merge_references(fragment_request_merges, aux_state)
-            self.dialogue_intcore.operate(aux_state=aux_state)
-        #p.next('user conf')
-        self.dialogue_intcore.update_confidence('user', iterations=CONF_ITER)
-        #p.next('emora conf')
-        self.dialogue_intcore.update_confidence('emora', iterations=CONF_ITER)
+            self.dialogue_intcore.operate(self.dialogue_intcore.universal_operators, aux_state=aux_state)
+            self.dialogue_intcore.operate(self.dialogue_intcore.wm_operators, aux_state=aux_state)
         #p.next('sal')
         self.dialogue_intcore.update_salience(iterations=SAL_ITER)
         #p.stop()
@@ -629,8 +616,7 @@ class ChatbotServer:
         for concept in concepts:
             if (not graph.has(predicate_id=concept) or graph.type(concept) not in PRIM) \
                     and not graph.has(concept, USER_AWARE) and not graph.has(concept, TYPE, 'span'):
-                i2 = graph.add(concept, USER_AWARE)
-                graph.features[i2][BASE_UCONFIDENCE] = 1.0
+                graph.add(concept, USER_AWARE)
 
     def _update_types(self, working_memory):
         types = self.dialogue_intcore.pull_types()
@@ -665,23 +651,14 @@ class ChatbotServer:
                     _process_answers(wm, truths[0][3])
                     wm.features.get(truths[0][3], {}).get(UTURN, []).append(aux_state["turn_index"])
                     if not wm.has(truths[0][3], USER_AWARE):
-                        i2 = wm.add(truths[0][3], USER_AWARE)
-                        wm.features[i2][BASE_UCONFIDENCE] = 1.0
+                        wm.add(truths[0][3], USER_AWARE)
                 else:
                     args = list(wm.predicates('emora', REQ_ARG, ref_node))
                     if args:
                         _process_answers(wm, args[0][3])
                         wm.features.get(args[0][3], {}).get(UTURN, []).append(aux_state["turn_index"])
                         if not wm.has(args[0][3], USER_AWARE):
-                            i2 = wm.add(args[0][3], USER_AWARE)
-                            wm.features[i2][BASE_UCONFIDENCE] = 1.0
-            # ref_node takes confidence of match_node
-            buc = wm.features.get(match_node, {}).get(BASE_UCONFIDENCE, None)
-            if buc is not None:
-                wm.features.setdefault(ref_node, {})[BASE_UCONFIDENCE] = buc
-            bc = wm.features.get(match_node, {}).get(BASE_CONFIDENCE, None)
-            if bc is not None:
-                wm.features.setdefault(ref_node, {})[BASE_CONFIDENCE] = bc
+                            wm.add(args[0][3], USER_AWARE)
         self.dialogue_intcore.merge(reference_pairs)
 
     def arg_fragment_resolution(self, request_focus, current_user_concepts, wm):
@@ -694,7 +671,10 @@ class ChatbotServer:
             if c != request_focus and request_focus_types < (types[c]): # todo - should it be types[c] - {c}?
                 subtype_set = current_user_concepts.intersection(wm.subtypes_of(c)) - {c}
                 # if concept is a reference or if other salient concepts are its subtypes, dont treat current concept as answer fragment
-                if not subtype_set and not wm.metagraph.out_edges(c, REF):
+                # also, concept and request focus must either both be predicates or both be entities
+                if not subtype_set and not wm.metagraph.out_edges(c, REF) and \
+                    ((wm.has(predicate_id=c) and wm.has(predicate_id=request_focus)) or
+                     (not wm.has(predicate_id=c) and not wm.has(predicate_id=request_focus))):
                     fragment_request_merges.append((c, request_focus))
                     break
         return fragment_request_merges
@@ -719,8 +699,7 @@ class ChatbotServer:
                     affirm_obj = wm.id_map().get()
                     i = wm.add('user', AFFIRM, affirm_obj)
                     if not wm.has(i, USER_AWARE):
-                        i2 = wm.add(i, USER_AWARE)
-                        wm.features[i2][BASE_UCONFIDENCE] = 1.0
+                        wm.add(i, USER_AWARE)
                     wm.features[affirm_obj][SALIENCE] = 1.0
                     wm.features[i][SALIENCE] = 1.0
                     fragment_request_merges.append((affirm_obj, request_focus))
