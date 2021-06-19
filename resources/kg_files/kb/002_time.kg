@@ -1,6 +1,6 @@
 time = (predicate, subj_essential)
 expr("when", time)
-
+attitude=(object)
 datetime = (entity)
 yesterday=datetime()
 tomorrow=datetime()
