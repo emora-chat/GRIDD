@@ -62,12 +62,22 @@ class InferenceEngine:
                 pre.remove(predicate_type='specific')
                 if pre.has('specific'):
                     pre.remove('specific')
+            exists = set()
+            for s, t, _, i in set(pre.predicates(predicate_type='exists')):
+                exists.add(s)
+                pre.remove(predicate_id=i)
+            if pre.has('exists'):
+                pre.remove(predicate_type='exists')
+                if pre.has('exists'):
+                    pre.remove('exists')
             precondition = pre.to_infcompat_graph()
             precondition = self._flatten_types(pre, precondition, for_query=True)
             for node in categories:
                 precondition.data(node)['category'] = True
             for node in specifics:
                 precondition.data(node)['specific'] = True
+            for node in exists:
+                precondition.data(node)['exists'] = True
             for var in vars: # vars includes both pre and post vars
                 if precondition.has(var):
                     precondition.data(var)['var'] = True
@@ -164,11 +174,14 @@ class InferenceEngine:
         for precondition, sols in all_sols.items():
             categories = set()
             specifics = set()
+            exists = set()
             for node in precondition.nodes():
                 if 'category' in precondition.data(node):
                     categories.add(node)
                 if 'specific' in precondition.data(node):
                     specifics.add(node)
+                if 'exists' in precondition.data(node):
+                    exists.add(node)
             if not cached:
                 precondition_id = converted_rules.reverse()[precondition]
             else:
@@ -186,12 +199,11 @@ class InferenceEngine:
                         virtual_preds[value] = (s, t, o)
                     # confidence checking
                     if precondition_cg.has(predicate_id=variable):
-                        var_conf = precondition_cg.features.get_confidence(variable, None)
-                        val_conf = facts_concept_graph.features.get_confidence(value, 1.0)
-                        if precondition_cg.type(variable) != TYPE and ((var_conf is None and val_conf <= 0) or \
-                           (var_conf is not None and var_conf > 0 and val_conf - var_conf < 0) or \
-                           (var_conf is not None and var_conf < 0 and val_conf - var_conf > 0)):
-                            break
+                        # if `exists` monopredicate, then does not matter what confidence predicate is or is not there so do not need to check
+                        if variable not in exists and not precondition_cg.has(variable, 'not') and not precondition_cg.has(variable, 'maybe'):
+                            # make sure solution also doesn't have `not` and `maybe` monopredicates
+                            if facts_concept_graph.has(value, 'not') or facts_concept_graph.has(value, 'maybe'):
+                                break
                     # turn checking
                     turn_check_failed = False
                     for check_turn_type, turn_type in {(ETURN_POS, ETURN), (UTURN_POS, UTURN)}:

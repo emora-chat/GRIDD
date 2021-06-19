@@ -22,8 +22,6 @@ class NodeFeatures(defaultdict):
                             self[node][feature] = max(self[node][feature], other_value)
                         else:
                             self[node][feature] = other_value
-                    elif feature in {BASE_CONFIDENCE, BASE_UCONFIDENCE}:
-                        self[node][feature] = other_value
                     elif feature == 'span_data':
                         if 'span_data' in self[node]:
                             print('[WARNING] Node %s already has span info!'%str(node))
@@ -46,8 +44,6 @@ class NodeFeatures(defaultdict):
                         self[kept][feature] = max(self[kept][feature], other_value)
                     else:
                         self[kept][feature] = other_value
-                elif feature in {BASE_CONFIDENCE, BASE_UCONFIDENCE}:
-                    self[kept][feature] = other_value
                 elif feature == 'span_data':
                     if 'span_data' in self[kept]:
                         print('[WARNING] Node %s already has span info!' % str(kept))
@@ -67,10 +63,6 @@ class NodeFeatures(defaultdict):
     def discard(self, node):
         if node in self:
             del self[node]
-
-    def get_confidence(self, node, default=0.0):
-        return self.get(node, {}).get(CONFIDENCE,
-                                      self.get(node, {}).get(BASE_CONFIDENCE, default))
 
     def copy(self):
         return NodeFeatures(self)
