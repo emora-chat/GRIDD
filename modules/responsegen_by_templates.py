@@ -119,7 +119,7 @@ class ResponseTemplateFiller:
         with_sal = []
         for rule, match_dict, string, priority in candidates:
             preds = [cg.predicate(x) for x in match_dict.values() if cg.has(predicate_id=x)
-                     and cg.type(x) not in {EXPR, TYPE, TIME}]
+                     and cg.type(x) not in {EXPR, TYPE}]
             if check_aware and rule not in SPECIAL_NOT_CHECK_AWARE:
                 req_pred = [cg.predicate(x) for x in match_dict.values() if cg.has(predicate_id=x)
                             and cg.type(x) in {REQ_ARG, REQ_TRUTH} and cg.subject(x) == 'emora'] # check if emora already asked question

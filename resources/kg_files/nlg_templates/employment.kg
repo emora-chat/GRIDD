@@ -4,7 +4,8 @@ time(l,now)
 request_truth(emora,l)
 ->
 _pr(_low)
-$ Gotcha . I think having passions for one's job is important . Do you like your job ? $
+_t(_present)
+$ I think having passions for one's job is important . Do you like your job ? $
 ;
 
 possess(user,cl/colleague())
@@ -14,12 +15,14 @@ time(l,now)
 request_truth(emora,l)
 ->
 _pr(_low)
+_t(_present)
 $ I think having cooperative colleagues will make people more motivated .  Do you like your colleagues ? $
 ;
 
 l/like(X/person(),teamwork())
 request_truth(emora,l)
 ->
+_t(_rpresent)
 $ I'm glad that X enjoy{"s":"#X","t":"now"} working with X{"p":true} colleagues ! X must also like teamwork , right ? $
 ;
 
@@ -27,6 +30,7 @@ l/like(X/person(),cl/colleague())
 not(l)
 comfort(emora,X)
 ->
+_t(_rpresent)
 $ I'm sorry to hear that , but don't worry too much . Not everyone has good memories of working with colleagues . $
 ;
 
@@ -35,6 +39,7 @@ helpful(tw)
 hear(X,o/opinion())
 type(o,group)
 ->
+_t(_rpresent)
 $ Awesome ! Teamwork is usually very helpful because X can hear different opinions from people . $
 ;
 
@@ -44,6 +49,7 @@ understand(emora,l)
 et/effective(tw)
 not(et)
 ->
+_t(_rpresent)
 $ I can totally relate to that . Teamwork is not always effective , especially when there are people who are not proactive on the team .  $
 ;
 
@@ -51,6 +57,7 @@ xr/return(X/person())
 xro/to(xr,o/office())
 request_truth(emora,xr)
 ->
+_t(_rpresent)
 _pr(_high)
 $ I’m glad to hear that X be{"t":"now","s":"#X"} busy with X{"p":true} job . Be{"t":"now","s":"#X"} X going back to the office ? $
 ;
@@ -63,6 +70,7 @@ for(xe,j)
 time(xe,now)
 request_truth(emora,xe)
 ->
+_t(_rpresent)
 _pr(_low)
 $ Congratulations on being able to start to work soon ! Are you excited for the job ? $
 ;
@@ -73,6 +81,7 @@ xhf/have(X,f/fun())
 he/happy(emora)
 for(he,xhf)
 ->
+_t(_rpresent)
 $ I'm happy for X . I think X will have a lot of fun with X{"p":true} job . $
 ;
 
@@ -82,6 +91,7 @@ not(xe)
 he/sorry(emora)
 for(he,X)
 ->
+_t(_rpresent)
 $ I'm sorry to hear that X do{"s":"#X","t":"#Z"} not like X{"p":true} job that much . Well , the sad truth is that not everybody gets the favorite job . But I really hope that X can find something good about the job . $
 ;
 
@@ -91,6 +101,7 @@ possess(emora,jb/job())
 like(emora,jb)
 motivated(emora)
 -> user_like_job ->
+_t(_rpresent)
 $ That’s awesome to hear . When I like something , I feel like there’s a lot of energy inside me , and I can keep motivated all the time . That always makes my work smoother . $
 ;
 
@@ -99,6 +110,7 @@ not(l)
 he/sorry(emora)
 for(he,X)
 ->
+_t(_rpresent)
 $ I'm sorry to hear that X do{"s":"#X","t":"#Z"} not like X{"p":true} job that much . Well , the sad truth is that not everybody gets the favorite job . But I really hope that X can find something good about the job . $
 ;
 
@@ -111,6 +123,7 @@ about(xe,xr)
 time(xe,now)
 request_truth(emora,xe)
 ->
+_t(_present)
 _pr(_high)
 $ Then you can see your colleagues in person instead of working in front of computers all day long ! Are you excited about working in the office ? $
 ;
@@ -124,6 +137,7 @@ about(xe,xr)
 time(xe,now)
 request_truth(emora,xe)
 ->
+_t(_present)
 _pr(_high)
 $ I hope that you haven’t stressed out about working from home so much recently. Are you looking forward to going back to the office ? $
 ;
@@ -136,6 +150,7 @@ online(m/meeting())
 type(m,group)
 dislike(emora,m)
 ->
+_t(_rpresent)
 _pr(_high)
 $ I bet ! Talking to people face to face is much more interesting . I’m not a fan of online meetings , though, a lot of my meetings, as you might imagine, are online . $
 ;
@@ -147,55 +162,103 @@ about(xe,xr)
 not(xe)
 understand(emora,xe)
 ->
+_t(_rpresent)
 _pr(_high)
 $ Ah , that’s understandable . I know that some people feel more comfortable working alone to keep concentrated . $
 ;
 
-X/job()
-technical(X)
+X/tech_job()
 cool(X)
 admire(emora,X)
 ->
+_t(_rpresent)
 _pr(_high)
 $ X is such a cool job ! I always admire people who really know how to use computers and who are good at it . I mean , technology is what drives people nowadays . $
 ;
 
-X/job()
-creative(X)
+be(p/person(),X/tech_job())
+cool(X)
+admire(emora,X)
+->
+_t(_rpresent)
+_pr(_high)
+$ X is such a cool job ! I always admire people who really know how to use computers and who are good at it . I mean , technology is what drives people nowadays . $
+;
+
+X/creative_job()
 cool(X)
 de/dream(emora)
-ebj/be(emora,jewelry_designer)
+ebj/be(emora,jewelry_designer())
 to(de,ebj)
 time(de,past)
 ->
+_t(_rpresent)
 $ X is such a cool job ! I actually dreamed to be a jewelry designer when I was little . $
 ;
 
-j/job()
-artistic(j)
+be(p/person(),X/creative_job())
+cool(X)
+de/dream(emora)
+ebj/be(emora,jewelry_designer())
+to(de,ebj)
+time(de,past)
+->
+_t(_rpresent)
+$ X is such a cool job ! I actually dreamed to be a jewelry designer when I was little . $
+;
+
+j/art_job()
 cool(j)
 l/like(user,m/music())
 time(l,now)
 request_truth(emora,l)
 ->
+_t(_rpresent)
 $ Being an artist is so cool . You know what , music is one of my favorite types of art . Do you like music ?  $
 ;
 
-j/job()
-managing(j)
+be(x/person(),j/art_job())
+cool(j)
+l/like(user,m/music())
+time(l,now)
+request_truth(emora,l)
+->
+_t(_rpresent)
+$ Being an artist is so cool . You know what , music is one of my favorite types of art . Do you like music ?  $
+;
+
+j/manager_job()
 difficult(j)
 make(j,d/decision())
 type(d,group)
 big(d)
 ->
+_t(_present)
 $ I would imagine that managing people is not easy . I mean , people who are managers need to know how to make big decisions . $
 ;
 
-j/job()
-academic(j)
+be(x/person(),j/manager_job())
+difficult(j)
+make(j,d/decision())
+type(d,group)
+big(d)
+->
+_t(_present)
+$ I would imagine that managing people is not easy . I mean , people who are managers need to know how to make big decisions . $
+;
+
+j/academic_job()
 respect(emora,j)
 ->
-$ Oh , I see . I have great respect for people who work in academics because I believe that knowledge makes people stronger . $
+_t(_rpresent)
+$ Oh , I see . I have great respects for people who work in academics because I believe that knowledge makes people stronger . $
+;
+
+be(x/person(),j/academic_job())
+respect(emora,j)
+->
+_t(_rpresent)
+$ Oh , I see . I have great respects for people who work in academics because I believe that knowledge makes people stronger . $
 ;
 
 eku/know(emora,un/unknown_job())
@@ -203,13 +266,41 @@ not(eku)
 p/property(un)
 request(emora,p)
 ->
-_pr(_low)
+_t(_present)
 $ I've never heard about this job before . Could you tell me more about what kind of job it is ? $
 ;
 
 understand(emora,uj/unknown_job())
 ->
-$ Ah , I understand what this job is like now . Thank you for the explanation . $
+_t(_present)
+$ Ah , I get more sense of what this job is like now . Thank you for the explanation . $
+;
+
+xbj/be(user,X/job())
+cause(xbj,o/object())
+request(emora,o)
+->
+_t(_present)
+$ What has driven you to be the X ? $
+;
+
+possess(emora,f/friend())
+be(f,consultant())
+->
+_t(_rpresent)
+$ Thank you for sharing your career story with me . People always end up being in different jobs for many different reasons . One of my friends wanted to be a physician in college , but later she became a consultant . $
+;
+
+epf/possess(emora,f/friend())
+fbc/be(f,consultant())
+user_aware(epf)
+fdb/dislike(f,biology())
+cause(fbc,fdb)
+uturn(epf, 0)
+->
+_pr(_low)
+_t(_rpresent)
+$ Yeah . She switched her job because she didn't find biology as a fit for her . $
 ;
 
 time(h/have(emora, c/colleague()), now)

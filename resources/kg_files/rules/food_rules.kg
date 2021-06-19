@@ -31,12 +31,40 @@ ff:<ff/favorite(f)>
 request_truth(emora,ff)
 ;
 
+ff/favorite(f/food())
+req/request_truth(emora,ff)
+user_aware(req)
+->
+possess(emora,fd/food())
+favorite(fd)
+be(fd,ramen())
+;
+
+ff/favorite(f/food())
+not(ff)
+req/request_truth(emora,ff)
+user_aware(req)
+->
+fd:<like(user,fd/food())>
+request(emora,fd)
+;
+
 d/drink()
 _exists(d)
 user_aware(d)
 -> ask_if_favorite_drink ->
 fd:<fd/favorite(d)>
 request_truth(emora,fd)
+;
+
+time(have(X/person(),Y/meal()),Z/datetime())
+time(xef/eat(X,f/food()), Z)
+for(xef, Y)
+req/request(emora,f)
+user_aware(req)
+->
+b:<b/be(user,fd/foodie())>
+request_truth(emora,b)
 ;
 
 xbf/be(x/person(),fd/foodie())
@@ -485,6 +513,13 @@ emt/make(emora,turkey())
 for(emt,thanksgiving)
 ;
 
+emt/make(emora,t/turkey())
+for(emt,thanksgiving)
+user_aware(emt)
+->
+fried(t)
+;
+
 make(x/person(),t/turkey())
 for(d/dinner(),thanksgiving)
 type(d,group)
@@ -579,6 +614,15 @@ intend_to_consume(emora,so)
 intend_to_consume(emora,dessert())
 ;
 
+xc/cook(x/person())
+not(xc)
+->
+eg/go(emora)
+to(eg,r/restaurant())
+type(r,group)
+like(emora,eg)
+;
+
 /* Common Sense */
 
 g/get(x/person(), c/consumable())
@@ -592,6 +636,11 @@ intend_to_consume(x,c)
 ;
 
 g/have(x/person(), c/consumable())
+->
+intend_to_consume(x,c)
+;
+
+g/drink(x/person(), c/consumable())
 ->
 intend_to_consume(x,c)
 ;

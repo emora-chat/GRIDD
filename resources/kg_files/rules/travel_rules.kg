@@ -1,4 +1,4 @@
-/* User Travels */
+/* Default Content if User Travels */
 
 time(t/travel(user),z/datetime())
 _exists(t)
@@ -16,12 +16,35 @@ l:<l/like(user,tp/trip())>
 request_truth(emora,l)
 ;
 
+ult/like(user,tp/trip())
+->
+uet/enjoy(user,tp)
+happy(emora,uet)
+;
+
+ult/like(user,tp/trip())
+not(ult)
+->
+udt/dislike(user,tp)
+sorry(emora,udt)
+;
+
 time(t/travel(user),z/datetime())
 _exists(t)
 user_aware(t)
 -> ask_what_user_does_in_trips ->
 pred:<like(user, pred/event(object())) for(pred, tp/trip()) type(tp,group)>
 request(emora, pred)
+;
+
+like(user, pred/event(object()))
+for(pred, tp/trip())
+type(tp,group)
+req/request(emora, pred)
+user_aware(req)
+->
+ee/excited(emora)
+about(ee,t/trip())
 ;
 
 prop_i/property(tp/trip())
@@ -33,6 +56,7 @@ l:<l/like(user,travel(user))>
 request_truth(emora,l)
 ;
 
+/* More Specific Content */
 t/travel(x/person()) like(x,t)
 ->
 c:<gx/go(x) to(gx,c/country()) time(gx,past)>
@@ -45,6 +69,7 @@ gi/get(emora,inspired())
 git/from(gi,te)
 ;
 
+/* More Specific Content */
 t/travel(x/person())
 lt/like(x,t)
 not(lt)
@@ -383,6 +408,15 @@ p:<p/property(ct)>
 request(emora,p)
 ;
 
+p/property(ct/city())
+req/request(emora,p)
+user_aware(req)
+->
+ek/know(emora)
+about(ek,ct)
+time(ek,now)
+;
+
 lc/large(ct/city())
 ->
 convenient(ct)
@@ -425,6 +459,13 @@ miss(emora,ic/ice_cream())
 /* Common Sense */
 
 visit(x/person(),lc/location())
+->
+ge/go(x)
+to(ge,lc)
+;
+
+xt/travel(x/person())
+to(xt,lc/location())
 ->
 ge/go(x)
 to(ge,lc)

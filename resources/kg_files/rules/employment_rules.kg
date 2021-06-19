@@ -1,3 +1,25 @@
+/* Common Sense */
+have(x/person(),j/job())
+->
+work(x)
+;
+
+possess(x/person(),job())
+->
+work(x)
+;
+
+work(x/person())
+->
+have(x,c/colleague())
+;
+
+possess(x/person(),c/colleague())
+->
+have(x,c)
+;
+
+/* Default Content */
 uw/work(user)
 _exists(uw)
 user_aware(uw)
@@ -16,6 +38,34 @@ xe:<xe/excited(user) for(xe,j) time(xe,now)>
 request_truth(emora,xe)
 ;
 
+xbj/be(user,j/job())
+user_aware(xbj)
+->
+cool(j)
+o:<cause(xbj,o/object())>
+request(emora,o)
+;
+
+xbj/be(user,j/job())
+cool(j)
+cause(xbj,o/object())
+req/request(emora,o)
+_exists(xbj)
+user_aware(req)
+->
+possess(emora,f/friend())
+be(f,consultant())
+;
+
+epf/possess(emora,f/friend())
+fbc/be(f,consultant())
+user_aware(epf)
+->
+fdb/dislike(f,biology())
+cause(fbc,fdb)
+;
+
+/* More Specific Content */
 xe/excited(x/person())
 for(xe,j/job())
 ->
@@ -32,28 +82,15 @@ he/sorry(emora)
 for(he,x)
 ;
 
-upc/possess(user,j/job())
-_exists(upc)
-user_aware(upc)
-->
-l:<l/like(user,j) time(l,now)>
-request_truth(emora,l)
-;
-
-time(uw/work(user),now)
-_exists(uw)
-user_aware(uw)
--> ask_if_like_colleagues ->
-l:<possess(user,cl/colleague()) type(cl,group) l/like(user,cl) time(l,now)>
-request_truth(emora,l)
-;
-
-upc/possess(user,cl/colleague())
+upc/have(user,cl/colleague())
 _exists(upc)
 user_aware(upc)
 ->
 l:<type(cl,group) l/like(user,cl) time(l,now)>
 request_truth(emora,l)
+
+l2:<l2/like(user,teamwork())>
+request_truth(emora,l2)
 ;
 
 like(x/person(),cl/colleague())
@@ -141,33 +178,51 @@ not(xe)
 understand(emora,xe)
 ;
 
-j/job()
-technical(j)
+be(x/person(),j/tech_job())
 ->
 cool(j)
 admire(emora,j)
 ;
 
-j/job()
-creative(j)
+j/tech_job()
+->
+cool(j)
+admire(emora,j)
+;
+
+j/creative_job()
 ->
 cool(j)
 de/dream(emora)
-ebj/be(emora,jewelry_designer)
+ebj/be(emora,jewelry_designer())
 to(de,ebj)
 time(de,past)
 ;
 
-j/job()
-artistic(j)
+be(x/person(),j/creative_job())
+->
+cool(j)
+de/dream(emora)
+ebj/be(emora,jewelry_designer())
+to(de,ebj)
+time(de,past)
+;
+
+be(x/person(),j/art_job())
 ->
 cool(j)
 l:<l/like(user,m/music()) time(l,now)>
 request_truth(emora,l)
 ;
 
-j/job()
-managing(j)
+j/art_job()
+->
+cool(j)
+l:<l/like(user,m/music()) time(l,now)>
+request_truth(emora,l)
+;
+
+j/manager_job()
 ->
 difficult(j)
 make(j,d/decision())
@@ -175,8 +230,20 @@ type(d,group)
 big(d)
 ;
 
-j/job()
-academic(j)
+be(x/person(),j/manager_job())
+->
+difficult(j)
+make(j,d/decision())
+type(d,group)
+big(d)
+;
+
+j/academic_job()
+->
+respect(emora,j)
+;
+
+be(x/person(),j/academic_job())
 ->
 respect(emora,j)
 ;

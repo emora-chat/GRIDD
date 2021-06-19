@@ -376,7 +376,7 @@ rules
 possess(user, j/job())
 best(j)
 be(j, j2/job())
-specific(j2)
+_specific(j2)
 ->
 X:<
     like(user, X/predicate(object()))
@@ -392,7 +392,7 @@ templates
 possess(user, j/job())
 best(j)
 be(j, j2/job())
-specific(j2)
+_specific(j2)
 uturn(j2, 0)
 ->
 _t(_react)
@@ -402,7 +402,7 @@ $ That sounds neat ! $
 like(user, X/predicate(object()))
 as(X, j2/job())
 request(emora, X)
-specific(j2)
+_specific(j2)
 ->
 _pr(_low)
 $ What do you find interesting about becoming a j2 ? $

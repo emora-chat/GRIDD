@@ -119,7 +119,8 @@ class InferenceEngine:
                         if for_query:
                             if not list(orig_cg.predicates(subject=i)) and not list(orig_cg.predicates(object=i)):
                                 # remove predicate instance, since it is not an argument of anything
-                                cg.data(i)['var'] = False
+                                if i in cg.node_data:
+                                    del cg.node_data[i]
                                 cg.remove(i)
                                 # add direct link instead
                                 cg.add(s, o, 't')

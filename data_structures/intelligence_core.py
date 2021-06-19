@@ -126,6 +126,9 @@ class IntelligenceCore:
                         if t != TYPE:
                             p = rpre.add(i, USER_AWARE)
                             rvars.add(p)
+                            p2 = rpre.add(i, '_exists')
+                            rvars.add(p2)
+                    self.operate(self.universal_operators, cg=rpre)
                     fallback_recording_rules[rule_id] = (rpre, rpost, rvars)
                 self.inference_engine.add(fallback_recording_rules, namespace='t_') #namespace should match inference_rules namespace above
 

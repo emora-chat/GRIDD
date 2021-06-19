@@ -1,3 +1,4 @@
+/* Default Content */
 xla/like(user,a/art())
 user_aware(xla)
 ->
@@ -5,11 +6,26 @@ xba:<xba/be(user,artist())>
 request_truth(emora,xba)
 ;
 
-xla/like(user,a/art())
+xba/be(user,artist())
+not(xba)
+->
+understand(emora,xba)
+;
+
+xla/like(user,arr/art())
 user_aware(xla)
 ->
 o:<cause(xla,o/object())>
 request(emora,o)
+;
+
+xla/like(user,a/art())
+cause(xla,o/object())
+req/request(emora,o)
+user_aware(req)
+->
+reasonable(o)
+for(o,xla)
 ;
 
 xla/like(user,a/art())
@@ -33,6 +49,20 @@ xtd:<xtd/try(user,digital(ud)) time(xtd,past)>
 request_truth(emora,xtd)
 ;
 
+ud/paint(user)
+user_aware(ud)
+->
+xtd:<xtd/try(user,digital(ud)) time(xtd,past)>
+request_truth(emora,xtd)
+;
+
+xd/draw(user)
+user_aware(xd)
+->
+o:<draw(user,o/object())>
+request(emora,o)
+;
+
 upp/paint(user)
 user_aware(upp)
 ->
@@ -40,7 +70,29 @@ o:<upo/paint(user,o/object())>
 request(emora,o)
 ;
 
+upo/paint(user,o/object())
+req/request(emora,o)
+user_aware(req)
+->
+interesting(upo)
+;
+
+upo/draw(user,o/object())
+req/request(emora,o)
+user_aware(req)
+->
+interesting(upo)
+;
+
+/* More Specific Content */
 xd/draw(user)
+like(user,xd)
+->
+xtd:<xtd/try(user,digital(xd)) time(xtd,past)>
+request_truth(emora,xtd)
+;
+
+xd/paint(user)
 like(user,xd)
 ->
 xtd:<xtd/try(user,digital(xd)) time(xtd,past)>
@@ -51,7 +103,18 @@ xd/draw(user)
 xtd/try(user,digital(xd))
 time(xtd,past)
 ->
-interesting(xd)
+interesting(xtd)
+;
+
+xd/draw(user)
+xtd/try(user,digital(xd))
+time(xtd,past)
+xi/interesting(xtd)
+user_aware(xi)
+->
+ut/talk(user)
+to(ut,emora)
+amazing(ut)
 ;
 
 xd/draw(user)
@@ -93,4 +156,53 @@ not(gt)
 ge/go(emora)
 to(ge,e)
 time(ge,sometimes)
+;
+
+b/be(x/artist(),ast/artist())
+possess(user,ast)
+favorite(ast)
+time(b,now)
+->
+important(x)
+bb/be(arr/artist(),claude_monet)
+possess(emora,arr)
+favorite(arr)
+time(bb,now)
+;
+
+b/be(x/artist(),ast/artist())
+possess(user,ast)
+favorite(ast)
+time(b,now)
+not(b)
+->
+important(x)
+bb/be(arr/artist(),claude_monet)
+possess(emora,arr)
+favorite(arr)
+time(bb,now)
+;
+
+bb/be(arr/artist(),claude_monet)
+possess(emora,arr)
+favorite(arr)
+time(bb,now)
+user_aware(bb)
+->
+draw(claude_monet,p/picture())
+type(p,group)
+bp/beautiful(p)
+famous(bp)
+;
+
+b/be(x/artist(),ast/artist())
+possess(user,ast)
+favorite(ast)
+time(b,now)
+->
+important(x)
+bb/be(arr/artist(),claude_monet)
+possess(emora,arr)
+favorite(arr)
+time(bb,now)
 ;
