@@ -32,7 +32,7 @@ $ Sounds cool , I am really happy for you . $
 epositive(emora, large(yard()))
 time(w/want(emora, y/yard()), now)
 large(y)
-lo/love(emora_dog, y)
+lo/love(nyla, y)
 would(lo)
 cause(lo, w)
 time(h/have(user, p/pet()), now)
