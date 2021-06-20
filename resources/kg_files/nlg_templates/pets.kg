@@ -68,9 +68,7 @@ $ Actually , I got a puppy four months ago . Her name is Nyla and she's adorable
 train(emora, nyla)
 ->
 _t(_p)
-$ I love Nyla , but she can be difficult sometimes .
-I am trying to train her right now to stop chewing on the furniture .
-What tips do you have for teaching her ? $
+$ I love Nyla , but she can be difficult sometimes . I am trying to train her right now to stop chewing on the furniture . What tips do you have for teaching her ? $
 ;
 
 t/train(emora, nyla)
