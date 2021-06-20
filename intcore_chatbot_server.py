@@ -360,12 +360,12 @@ class ChatbotServer:
         #p.stop()
         return working_memory, aux_state
 
-    @serialized('rules', 'use_cached')
+    @serialized('rules', 'working_memory')
     def run_reference_identification(self, working_memory):
         self.load_working_memory(working_memory)
         self.dialogue_intcore.convert_metagraph_span_links(REF_SP, [REF, VAR])
         rules = self.dialogue_intcore.working_memory.references()
-        return rules
+        return rules, self.dialogue_intcore.working_memory
 
     @serialized('inference_results', 'rules')
     def run_dynamic_inference(self, rules, working_memory, aux_state):
@@ -785,7 +785,7 @@ class ChatbotServer:
         working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state)
 
         #p.next('reference id')
-        rules = self.run_reference_identification(working_memory)
+        rules, working_memory = self.run_reference_identification(working_memory)
         #p.next('reference infer')
         inference_results, rules = self.run_dynamic_inference(rules, working_memory, aux_state)
         #p.next('reference resolution')
@@ -798,7 +798,7 @@ class ChatbotServer:
         working_memory, aux_state = self.run_apply_dialogue_inferences(inference_results, working_memory, aux_state)
 
         #p.next('reference id 2')
-        rules = self.run_reference_identification(working_memory)
+        rules, working_memory = self.run_reference_identification(working_memory)
         #p.next('reference infer 2')
         inference_results, rules = self.run_dynamic_inference(rules, working_memory, aux_state)
         #p.next('reference resolution 2')
