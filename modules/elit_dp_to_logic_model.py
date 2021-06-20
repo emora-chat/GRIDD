@@ -37,6 +37,8 @@ class ElitDPToLogic(ParseToLogic):
         :param elit_results: dictionary of elit model results
         :param cg: the concept graph being created
         """
+        if elit_results is None:
+            elit_results = {}
         tokens = elit_results.get("tok", [])
         pos_tags = elit_results.get("pos", [])
         dependencies = elit_results.get("dep", [])
