@@ -3,7 +3,7 @@ have(user, l/life())
 c/change(pandemic(), l)
 req_unsat(request_truth(emora, c))
 ->
-_t(_present)
+_t(_rpresent)
 _pr(_high)
 $ I've been thinking, the pandemic has really changed our lives hasn't it? Not just this year, I think a lot of things will never be the same for me now. Its kinda crazy how much my life has changed. $
 ;
@@ -58,7 +58,7 @@ qualifier(c, remote_work())
 l/like(user, c)
 request_truth(emora, l)
 ->
-_t(_present)
+_t(_rpresent)
 $ My job may have actually benefited from the pandemic. I had to spend a lot of time for commuting, now I can do it remotely. My office is letting me stay remote for as long as I want. Do you like the shift to remote work? $
 ;
 
