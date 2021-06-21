@@ -263,7 +263,6 @@ $ Do you think AI is dangerous? I've read a lot of books where AI takes over the
 
 da/dangerous2(aa/ai())
 d/agree(user, da)
-
 ai_temp(user)
 ->
 _t(_rpresent)
@@ -282,7 +281,7 @@ _pr(_high)
 $ Yeah, modern AI is a bit of a misnomer. It's not really intelligent, just really good at seeing patterns. No taking over the world, for now, I mean ever. $
 ;
 
-have(user, l/life())
+have(user, l/existence())
 i/improve(l, a1/ai())
 request(emora, i)
 ->
@@ -291,7 +290,7 @@ $ Ai is really beginning to change our lives. How do you think it will improve y
 ;
 
 
-have(user, l/life())
+have(user, l/existence())
 i/improve(l, a1/ai())
 user_aware(i)
 ->

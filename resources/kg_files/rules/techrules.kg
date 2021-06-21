@@ -212,7 +212,6 @@ request_truth(emora, i)
 t/talk(user)
 about(t,a/ai())
 i/like(user, t)
-
 ->
 d:<da/dangerous2(a)
 d/agree(user, da)>
@@ -232,7 +231,7 @@ request(emora, r)
 da/dangerous2(a/ai())
 user_aware(da)
 ->
-i:<have(user, l/life())
+i:<have(user, l/existence())
 i/improve(l, a)>
 request(emora, i)
 ;
