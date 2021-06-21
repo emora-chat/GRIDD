@@ -67,7 +67,7 @@ c/change(pandemic(), w1)
 qualifier(c, remote_work())
 l/like(user, c)
 user_aware(l)
-l{"confidence": 1}
+
 ->
 _t(_rpresent)
 _pr(_high)
@@ -79,7 +79,7 @@ c/change(pandemic(), w1)
 qualifier(c, remote_work())
 l/like(user, c)
 user_aware(l)
-l{"confidence": -1}
+not(l)
 ->
 _t(_rpresent)
 _pr(_high)
@@ -96,7 +96,7 @@ $ I've also started just going for walks a lot more. Before the pandemic, I ofte
 
 m/more(like(user, outdoor_activity()))
 user_aware(m)
-m{"confidence": 1}
+
 -> 
 _t(_rpresent)
 _pr(_high)
@@ -105,7 +105,7 @@ $ Honestly, just going outside and talking with my neighbours has become excitin
 
 
 m/more(like(user, outdoor_activity()))
-m{"confidence": -1}
+not(m)
 r/reason(m)
 request(emora, r)
 -> 
@@ -115,7 +115,7 @@ $ Interesting. Why don't you like going outside more after the pandemic? $
 ;
 
 m/more(like(user, outdoor_activity()))
-m{"confidence": -1}
+not(m)
 r/reason(m)
 user_aware(r)
 -> 

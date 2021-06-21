@@ -25,7 +25,7 @@ request_truth(emora,l)
 ;
 
 time(pc/possess(user,c/college()),z/datetime())
-pc{"confidence": 0}
+_exists(pc)
 user_aware(pc)
 -> ask_if_like_college ->
 l:<l/like(user,c) time(l,z)>
@@ -33,7 +33,7 @@ request_truth(emora,l)
 ;
 
 time(pc/possess(user,c/college()),z/datetime())
-pc{"confidence": 0}
+_exists(pc)
 user_aware(pc)
 -> ask_college_property ->
 p:<p/property(c) time(p,z)>
@@ -41,8 +41,8 @@ request(emora,p)
 ;
 
 time(pc/possess(user,c/college()),z/datetime())
-pc{"confidence": 0}
-category(c)
+_exists(pc)
+_category(c)
 user_aware(pc)
 -> ask_college_type ->
 op_more_info(c, pc)
@@ -50,7 +50,7 @@ request(emora, c)
 ;
 
 time(prop_i/property(c/college()),z/datetime())
-prop_i{"confidence": 0}
+_exists(prop_i)
 req/request(emora, prop_i)
 user_aware(req)
 -> ask_college_activity ->
@@ -59,7 +59,7 @@ request(emora, pred)
 ;
 
 time(prop_i/property(c/college()),z/datetime())
-prop_i{"confidence": 0}
+_exists(prop_i)
 user_aware(prop_i)
 ->
 pred:<like(user, pred/event(object())) in(pred,c) time(pred,z)>
@@ -116,7 +116,7 @@ favorite(p)
 about(p,c)
 be(p,fpc/fav_part_college())
 req/request(emora,fpc)
-req{"confidence": 0}
+_exists(req)
 user_aware(req)
 -> share_experience ->
 have(emora,pr/peer())
@@ -138,7 +138,7 @@ respect(emora,r)
 ;
 
 ubr/be(user,r/researcher())
-ubr{"confidence":-1}
+not(ubr)
 ->
 emc/make(emora,c/contribution())
 type(c,group)
@@ -153,7 +153,7 @@ request_truth(emora,xm)
 
 time(xm/major(x/person()),z/datetime())
 in(xm,s/subject())
-xm{"confidence":-1}
+not(xm)
 ->
 o:<cause(xm,o/object())>
 request(emora,o)
@@ -161,7 +161,7 @@ request(emora,o)
 
 time(xm/major(x/person()),z/datetime())
 in(xm,s/subject())
-xm{"confidence":-1}
+not(xm)
 cause(xm,o/object())
 req/request(emora,o)
 user_aware(req)
@@ -208,7 +208,7 @@ competitive(fid)
 ;
 
 xei/enter(x/person(),fid/financial(industry()))
-xei{"confidence":-1}
+not(xei)
 ->
 comfort(emora,x)
 ;
@@ -267,7 +267,7 @@ request_truth(emora,xr)
 ;
 
 about(xt/tired(x/person()),rc/remote(c/college()))
-xt{"confidence":-1}
+not(xt)
 ->
 convenient(c)
 comfortable(x)
@@ -284,7 +284,7 @@ in(xs,l/library())
 
 xr/return(x/person())
 to(xr,c/college())
-xr{"confidence":-1}
+not(xr)
 ->
 sad(x)
 ;
@@ -316,7 +316,7 @@ request(emora,s)
 
 cf/confident(x/person())
 for(cf,c/college())
-cf{"confidence":-1}
+not(cf)
 ->
 comfort(emora,x)
 ;

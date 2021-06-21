@@ -174,7 +174,7 @@ request_truth(emora,a)
 
 a:<a/cpu_manuf(p/computer(), amd())
 have(user, p)
-a{"confidence": -1}>
+not(a)>
 ->
 aa:<aa/have(p ,arm())>
 m:<m/mobile(p)>
@@ -189,7 +189,7 @@ request_truth(emora,i)
 ;
 
 h/have(user, i/iphone())
-h{"confidence": 1}
+
 ->
 l:<l/like(user, walled_garden())>
 request_truth(emora,l)
@@ -197,13 +197,13 @@ request_truth(emora,l)
 
 h/have(user, p/phone())
 h1/have(user, i/iphone())
-h1{"confidence": -1}
+not(h1)
 ->
 have(user, android())
 ;
 
 h/have(user, ip/iphone())
-h{"confidence": 0}
+_exists(h)
 ->
 i:<i/improve(life, p/phone())>
 request_truth(emora, i)
@@ -212,7 +212,7 @@ request_truth(emora, i)
 t/talk(user)
 about(t,a/ai())
 i/like(user, t)
-i{"confidence": 1}
+
 ->
 d:<da/dangerous2(a)
 d/agree(user, da)>
@@ -223,7 +223,7 @@ ai_temp(user)
 t/talk(user)
 about(t,a/ai())
 i/like(user, t)
-i{"confidence": -1}
+not(i)
 ->
 r:<r/reason(i)>
 request(emora, r)
@@ -238,7 +238,7 @@ request(emora, i)
 ;
 
 i/improve(life, p/phone())
-i{"confidence": 0}
+_exists(i)
 user_aware(i)
 ->
 p1:<prefer(emora, pretty(p))
@@ -248,7 +248,7 @@ request_truth(emora, p1)
 
 prefer(emora, pretty(p/phone()))
 p1/prefer(user, pretty(p))
-p1{"confidence": -1}
+not(p1)
 ->
 a:<resource_heavy(a/apps())
 use(user, a)>
@@ -264,7 +264,6 @@ request_truth(emora, r)
 
 h/have(user, d/device())
 r/worth(h)
-r{"confidence": 1}
 ->
 acquire(emora, d)
 ;
@@ -296,7 +295,7 @@ kinship(emora, d1)
 
 h/have(user, d/device())
 r/worth(h)
-r{"confidence": -1}
+not(r)
 ->
 kinship(emora, d)
 ;

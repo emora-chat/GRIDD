@@ -1,6 +1,6 @@
 t/travel(x/person())
 l/like(x,t)
-l{"confidence":-1}
+not(l)
 es/stay(emora)
 at(es,home)
 ->
@@ -30,7 +30,7 @@ $ I'm glad to hear that you have a wonderful trip . Lots of my memories that I c
 ;
 
 ult/like(user,tp/trip())
-ult{"confidence":-1}
+not(ult)
 udt/dislike(user,tp)
 sorry(emora,udt)
 ->
@@ -177,7 +177,7 @@ $ Right ? It carries so many memories of mine . Speaking of childhood , I always
 gx/go(X/person())
 to(gx,disneyland_park)
 time(gx,Z/datetime())
-gx{"confidence":-1}
+not(gx)
 gm/good(m/memory())
 type(m,group)
 xhg/have(X,m)
@@ -237,7 +237,7 @@ $ Sounds awesome ! I love sitting by the beach watching the sunset . I was able 
 
 gx/go(X/person())
 to(gx,honolulu)
-gx{"confidence":-1}
+not(gx)
 gc/good(cm/camera())
 xtg/take(X,cm)
 recommend(emora,xtg)
@@ -321,7 +321,7 @@ $ I know ! Living in a big city like Y is so convenient . Also , it’s a city o
 ;
 
 xll/like(x/person(),Y/big_city())
-xll{"confidence":-1}
+not(xll)
 understand(emora,xll)
 ib/ideal(Y)
 yg/young(g/generation())

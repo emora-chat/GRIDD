@@ -32,7 +32,7 @@ $ Sounds cool , I am really happy for you . $
 epositive(emora, large(yard()))
 time(w/want(emora, y/yard()), now)
 large(y)
-lo/love(emora_dog, y)
+lo/love(nyla, y)
 would(lo)
 cause(lo, w)
 time(h/have(user, p/pet()), now)
@@ -89,7 +89,7 @@ $ Speaking of working, what is your dream job ? $
 possess(user, j/job())
 best(j)
 be(j, j2/job())
-specific(j2)
+_specific(j2)
 uturn(j2, 0)
 -> react_user_dream_job ->
 _t(_react)
@@ -99,7 +99,7 @@ $ That sounds neat ! $
 like(user, X/predicate(object()))
 as(X, j2/job())
 request(emora, X)
-specific(j2)
+_specific(j2)
 -> why_interest_job ->
 _pr(_low)
 $ What do you find interesting about becoming a j2 ? $

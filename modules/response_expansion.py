@@ -50,7 +50,6 @@ class ResponseExpansion:
                 final_responses.append((main, final_exps, generation_type))
                 self.assign_cover(wm, concepts=spoken_predicates)
                 self.assign_salience(wm, concepts=spoken_predicates)
-                self.assign_user_confidence(wm, concepts=spoken_predicates)
         return final_responses
 
     def assign_cover(self, graph, concepts=None):
@@ -60,11 +59,9 @@ class ResponseExpansion:
             if graph.has(predicate_id=concept):
                 if graph.type(concept) not in PRIM and not graph.has(concept, USER_AWARE):
                     i2 = graph.add(concept, USER_AWARE)
-                    graph.features[i2][BASE_UCONFIDENCE] = 1.0
             else:
                 if not graph.has(concept, USER_AWARE):
                     i2 = graph.add(concept, USER_AWARE)
-                    graph.features[i2][BASE_UCONFIDENCE] = 1.0
 
     def assign_salience(self, graph, concepts=None):
         if concepts is None:
@@ -72,14 +69,6 @@ class ResponseExpansion:
         for concept in concepts:
             if graph.has(predicate_id=concept):
                 graph.features[concept][SALIENCE] = SENSORY_SALIENCE
-
-    def assign_user_confidence(self, graph, concepts=None):
-        if concepts is None:
-            concepts = graph.concepts()
-        for concept in concepts:
-            if graph.features[concept].get(BASE_UCONFIDENCE, 0.0) == 0.0:
-                # only update base_uconfidence based on emora speaking the predicate if the base_uconfidence is 0 (i.e. uncertainty)
-                graph.features[concept][BASE_UCONFIDENCE] = graph.features.get(concept, {}).get(BASE_CONFIDENCE, 0.0)
 
 if __name__ == '__main__':
     from GRIDD.modules.response_expansion_spec import ResponseExpansionSpec

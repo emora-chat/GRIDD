@@ -103,7 +103,7 @@ def operators(module):
         if hasattr(v, 'aliases'):
             for alias in v.aliases:
                 d[alias] = v
-    return {k: v for k, v in d.items() if not k.startswith('_')}
+    return d
 
 class aliases:
     def __init__(self, *aliases):
@@ -130,12 +130,10 @@ def _process_requests(cg):
     # add req_unsat to all unresolved requests
     for s,t,o,i in chain(cg.predicates(predicate_type=REQ_ARG), cg.predicates(predicate_type=REQ_TRUTH)):
         if not cg.has(i, REQ_SAT):
-            i2 = cg.add(i, REQ_UNSAT)
-            cg.features[i2][BASE_UCONFIDENCE] = 1.0
+            cg.add(i, REQ_UNSAT)
 
 def _process_answers(cg, request):
-    i = cg.add(request, REQ_SAT)
-    cg.features[i][BASE_UCONFIDENCE] = 1.0
+    cg.add(request, REQ_SAT)
     cg.remove(request, REQ_UNSAT)
 
 

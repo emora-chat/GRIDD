@@ -19,4 +19,4 @@ class ResponseAssembler:
         if len(final_response) > 0:
             return '. '.join(final_response)
         else:
-            return "Well, I am not sure what to say to that. What else do you want to talk about?"
+            return "Well, that is quite an idea. But what else do you want to talk about?"

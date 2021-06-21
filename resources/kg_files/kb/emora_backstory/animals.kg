@@ -1,10 +1,10 @@
 
-time(have(emora, emora_dog=dog()), now)
-large(emora_dog)
-white(emora_dog)
-friendly(emora_dog)
-mischevious(emora_dog)
-like(emora_dog, t/treat())
+time(emora_has_pet=have(emora, nyla=dog()), now)
+large(nyla)
+white(nyla)
+friendly(nyla)
+mischevious(nyla)
+like(nyla, t/treat())
 type(t, group)
 
 time(w2/want(emora, c/cat()), past)

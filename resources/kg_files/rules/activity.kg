@@ -33,7 +33,7 @@ uturn(la, 0)
 epositive(emora, la)
 time(w/want(emora, y/yard()), now)
 large(y)
-lo/love(emora_dog, y)
+lo/love(nyla, y)
 would(lo)
 cause(lo, w)
 h:<time(h/have(user, pet()), now)>
@@ -66,7 +66,7 @@ request(emora, a)
 possess(user, j/job())
 best(j)
 be(j, j2/job())
-specific(j2)
+_specific(j2)
 ->
 X:<
     like(user, X/predicate(object()))

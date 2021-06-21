@@ -7,7 +7,7 @@ $ Do you consider yourself as an artist ? $
 ;
 
 xba/be(user,artist())
-xba{"confidence":-1}
+not(xba)
 understand(emora,xba)
 ->
 _t(_rpresent)
@@ -118,7 +118,7 @@ $ Well , the fact that you are talking to me is one of the best proofs that tech
 xd/draw(user)
 xtd/try(user,dd/digital(xd))
 time(xtd,past)
-xtd{"confidence":-1}
+not(xtd)
 uld/learn(user,dd)
 time(uld,future)
 ->
@@ -128,7 +128,7 @@ $ Then you should probably consider learning it some time ! I mean , since you l
 
 xd/draw(user)
 l/like(user,xd)
-l{"confidence":-1}
+not(l)
 have(user,h/hobby())
 request(emora,h)
 ->
@@ -158,7 +158,7 @@ $ Oh , that's so cool . I kind of like going to exhibitions , but the awkward pa
 to(gt/go(x/person()),e/exhibition())
 type(e,group)
 time(gt,always)
-gt{"confidence":-1}
+not(gt)
 ge/go(emora)
 to(ge,e)
 time(ge,sometimes)
@@ -196,7 +196,7 @@ b/be(X/artist(),ast/artist())
 possess(user,ast)
 favorite(ast)
 time(b,now)
-b{"confidence":-1}
+not(b)
 important(X)
 bb/be(arr/artist(),claude_monet)
 possess(emora,arr)

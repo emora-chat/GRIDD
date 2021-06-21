@@ -36,13 +36,13 @@ $ There's so many different options to play videogames with, and they all have t
 ;
 
 agree(emora, fun(v/videogame()))
-category(v)
+_category(v)
 ->
 $ Yeah, video games are really fun. That's a big factor in why I play them. $
 ;
 
 agree(emora, fun(v/videogame()))
-specific(v)
+_specific(v)
 ->
 $ Yeah, that makes a lot of sense. It's great that you have fun in v because I think enjoying yourself is what's most important when playing videogames. $
 ;

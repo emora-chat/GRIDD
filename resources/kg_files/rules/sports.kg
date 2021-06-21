@@ -1,7 +1,7 @@
 /* Methods for entering sports component */
 
 l/like(user, s/sport())
-category(s)
+_category(s)
 user_aware(l)
 -> person_likes_sports ->
 op_more_info(s, l)
@@ -68,7 +68,7 @@ request(emora, i)
 ;
 
 pl/play(user, s/sport())
-category(s)
+_category(s)
 user_aware(pl)
 -> person_plays_sport ->
 op_more_info(s, pl)
@@ -120,7 +120,7 @@ request_truth(be(user, athlete()))
 
 /* Wants to Play Sports */
 t/time(w/want(user, pl/play(user, s/sport())), now)
-category(s)
+_category(s)
 user_aware(w)
 -> Person_wants_to_play_some_sport ->
 op_more_info(s, w)
@@ -234,7 +234,7 @@ request(emora, x)
 ;
 
 w/watch(user, g/sports_event())
-category(g)
+_category(g)
 user_aware(w)
 -> 
 op_more_info(g, w)
@@ -252,8 +252,8 @@ request(emora, o)
 
 /* Does Not Play Sports */
 time(pl/play(user, s/sport()), now)
-category(s)
-pl{"confidence": -1}
+_category(s)
+not(pl)
 -> not_play_sport ->
 w:<time(w/want(user, play(user, sp/sport())), now)>
 request_truth(emora, w)
@@ -261,8 +261,8 @@ request_truth(emora, w)
 
 /* Does not want to play Sports */
 time(w/want(user, play(user, s/sport())), now)
-category(s)
-w{"confidence": -1}
+_category(s)
+not(w)
 -> not_want_to_play_sports ->
 b:<time(b/be(user, fd/foodie()), now)>
 request_truth(emora, b)

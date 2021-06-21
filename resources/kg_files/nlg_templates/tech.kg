@@ -34,7 +34,7 @@ $ I understand. I would like to just take a break from computers altogether, but
 
 
 h/have(user, p/computer())
-h{"confidence": -1}
+not(h)
 time(w/want(user, p), now)
 request_truth(emora, w)
 ->
@@ -53,7 +53,7 @@ $ Do you use Linux ? I think it gives a lot of freedom to do whatever you want, 
 
 u/use(user, l/linux())
 request_truth(emora, u)
-u{"confidence": 0}
+_exists(u)
 user_aware(u)
 ->
 _t(_rpresent)
@@ -92,7 +92,7 @@ $ I like that. For me, its much more fun making something myself than just buyin
 
 time(h/have(user, p/computer()), now)
 b/build(user, p)
-b{"confidence": 0}
+_exists(b)
 ->
 _pr(_low)
 _t(_rpresent)
@@ -100,7 +100,7 @@ $ I am often surprised that I can just go out and buy parts for a computer, it s
 ;
 
 e/pc_enthusiast(user)
-e{"confidence": 1}
+
 a1/cpu_manuf(p/computer(), amd())
 have(user, p)
 request_truth(emora,a1)
@@ -129,7 +129,7 @@ $ Do you have an iPhone? $
 
 
 h/have(user, i/iphone())
-h{"confidence": 1}
+
 l/like(user, walled_garden())
 request_truth(emora,l)
 ->
@@ -141,7 +141,7 @@ $ Iphones are great! You know, they just work. You can only get apps from the Ap
 
 
 l/like(user, walled_garden())
-l{"confidence": 1}
+
 ->
 _pr(_high)
 _t(_rpresent)
@@ -151,7 +151,7 @@ $ Huh, so you like the walled garden approach to phones, where you can only inst
 
 
 h/have(user, a1/android())
-h{"confidence": 1}
+
 ->
 _t(_rpresent)
 $ I bet you have an android then. Android phones are great, and I'm excited for Android 12 . You can use them like an iphone, but you can also really customize it anyway you want to. iPhones are made for everyone, but you can make an Android fit you . $
@@ -193,7 +193,7 @@ $ Do you prefer a stylish phone over a faster one? I've always loved being able 
 
 prefer(emora, pretty(p/phone()))
 p1/prefer(user, pretty(p))
-p1{"confidence": 1}
+
 ->
 _t(_rpresent)
 $ Yup. I mean, nowadays new phones are faster, but its not noticable in any apps I use. Who cares if an app launches in 0 point 5 seconds instead of 0 point 8 ? $
@@ -212,7 +212,7 @@ $ Interesting. What apps do you need a faster phone for? I feel like most phones
 t/talk(user)
 about(t,ai())
 i/like(user, t)
-i{"confidence": -1}
+not(i)
 r:<r/reason(i)>
 request(emora, r)
 ->
@@ -224,7 +224,7 @@ $ Wow, that icebreaker has never failed me before! Why aren't you interested in 
 t/talk(user)
 about(t,aa/ai())
 i/like(user, t)
-i{"confidence": 1}
+
 da/dangerous2(aa)
 d/agree(user, da)
 user_aware(d)
@@ -237,7 +237,7 @@ $ AI is really exciting. It can replace a lot of menial work for people and even
 t/talk(user)
 about(t,a/ai())
 i/like(user, t)
-i{"confidence": 1}
+
 da/dangerous2(a)
 d/agree(user, da)
 user_aware(d)
@@ -251,7 +251,7 @@ $ You know, the famous author Terry Pratchett said real stupidity beats artifici
 t/talk(user)
 about(t,aa/ai())
 i/like(user, t)
-i{"confidence": 1}
+
 da/dangerous2(aa)
 d/agree(user, da)
 request_truth(emora, d)
@@ -263,7 +263,7 @@ $ Do you think AI is dangerous? I've read a lot of books where AI takes over the
 
 da/dangerous2(aa/ai())
 d/agree(user, da)
-d{"confidence": 1}
+
 ai_temp(user)
 ->
 _t(_rpresent)
@@ -274,7 +274,7 @@ $ Huh. I don't know, I feel AI is really far away from actually being intelligen
 
 da/dangerous2(aa/ai())
 d/agree(user, da)
-d{"confidence": -1}
+not(d)
 ai_temp(user)
 ->
 _t(_rpresent)

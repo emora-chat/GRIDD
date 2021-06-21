@@ -257,13 +257,14 @@ to form compound responses.
 
 There are 3 response types:
 
-* `_react` - acknowledges what the user has just said
+* `_react/_r` - acknowledges what the user has just said
 
-* `_present` - offers a new piece of information that drives the conversation forward
+* `_present/_p` - offers a new piece of information that drives the conversation forward
 
-* `_rpresent` - both acknowledges AND offers a new piece of information to continue the conversation
+* `_rpresent/_rp` - both acknowledges AND offers a new piece of information to continue the conversation
 
-The salience and priority systems are used to select the response(s) from their candidates sets.
+The salience and priority systems are used to select the best response(s) from their candidates sets, as well
+as to determine the best overall option.
 
 * If the best option is an `_rpresent` response, then no `_react` response is selected.
 
@@ -271,7 +272,7 @@ The salience and priority systems are used to select the response(s) from their 
 
 You can specify a specific type using the `_t` predicate in the postcondition of the template.
 
-You do not need to specify a type for every template. The default type is `_present` 
+You do not need to specify a type for every template. The default type is `_rpresent` 
 and is assigned to responses which do not have a manually specified one.
 
 ### Default Responses
@@ -318,8 +319,6 @@ The following interaction illustrates the usage of a default `_react` with a tar
 In this case, there is no `_react` template that is applicable to `U1`, so the default for statements `Yeah` is taken.
 
 There is an applicable `_present` template, which presents the `dream job` question.
-As mentioned earlier, the default type of a template is `_present`, so it does not need to be manually specified, which
-is shown below.
 
 ```
 U1: I worked on a project today.
@@ -350,6 +349,7 @@ best(j)
 be(j, j2/job())
 request(emora, j2)
 ->
+_t(_p)
 $ Speaking of working, what is your dream job ? $
 ;
 
@@ -376,7 +376,7 @@ rules
 possess(user, j/job())
 best(j)
 be(j, j2/job())
-specific(j2)
+_specific(j2)
 ->
 X:<
     like(user, X/predicate(object()))
@@ -392,7 +392,7 @@ templates
 possess(user, j/job())
 best(j)
 be(j, j2/job())
-specific(j2)
+_specific(j2)
 uturn(j2, 0)
 ->
 _t(_react)
@@ -402,9 +402,10 @@ $ That sounds neat ! $
 like(user, X/predicate(object()))
 as(X, j2/job())
 request(emora, X)
-specific(j2)
+_specific(j2)
 ->
 _pr(_low)
+_t(_p)
 $ What do you find interesting about becoming a j2 ? $
 ;
 

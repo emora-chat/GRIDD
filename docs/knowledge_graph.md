@@ -202,46 +202,16 @@ a solution), the implication rule asserts that the `postcondition` body holds tr
 #### Entity Type with N>=1 Supertype
 
 ```
-entity_type<supertype1, ..., supertypeN>
+entity_type = (supertype1, ..., supertypeN)
 ```
 
 Note: This is for building the entity ontology.
 
-#### Predicate Type with Expected Arguments
-
-```
-predicate_type=supertype(subject_type(), object_type())
-```
-
-Note: This is for building the predicate ontology. It 
-influences the inference procedure, such that all 
-instances of `predicate_type` will have to have the 
-expected arguments, or else an `Error` will be raised.
-
-For example, if we want to specify that the predicate `buy`
-is an `event` and has a `person` subject and a `purchasable` object:
-
-```
-buy=event(person(), purchasable())
-```
-
-
-#### Predicate Type with Expected Arguments and Properties
-
-```
-predicate_type=supertype(subject_type(), object_type())
-property(predicate_type, property_object_type())
-```
-
-Note: This is for building the predicate ontology.
-Similar to the previous, all instances will have to have 
-the expected arguments and also expected properties, or 
-else an `Error` will be raised.
 
 #### Bipredicate
 
 ```
-predicate_type(subject,object)
+predicate_type(subject, object)
 ```
 
 #### Monopredicate

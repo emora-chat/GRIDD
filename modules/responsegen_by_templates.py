@@ -68,9 +68,10 @@ class ResponseTemplateFiller:
 
         r_predicates, r_string, r_score = None, None, None
         curr_turn = aux_state.get('turn_index', 0)
-        if len(react_cands) > 0 and curr_turn > 0:
-            print('React Options: ')
-            r_predicates, r_string, r_score = self.select_best_candidate(react_cands, cg, check_aware=False)
+        if curr_turn > 0:
+            if len(react_cands) > 0:
+                print('React Options: ')
+                r_predicates, r_string, r_score = self.select_best_candidate(react_cands, cg, check_aware=False)
         else:
             r_string = ""
 
@@ -85,7 +86,7 @@ class ResponseTemplateFiller:
                 string = p_string
                 aux_state.setdefault('spoken_responses', []).append(string.lower())
                 predicates = p_predicates
-                s = random.choice(['Yeah .', 'Gotcha .', 'I see .'])
+                s = random.choice(['Yeah .', 'Gotcha .', 'I see .', 'Okay .'])
                 if r_string is not None:
                     s = r_string
                 # Do not add reaction predicates to predicates list in order to avoid them being treated as spoken and getting the eturn predicate
@@ -94,6 +95,7 @@ class ResponseTemplateFiller:
         type = "template"
         if string is None: # PICK UNUSED FALLBACK
             # can still use reaction even with fallback
+            string = ''
             if r_string is not None:
                 string = r_string + ' '
             candidates = list(set(fallback_options.keys()) - set(aux_state.get('fallbacks', [])))
@@ -119,7 +121,7 @@ class ResponseTemplateFiller:
         with_sal = []
         for rule, match_dict, string, priority in candidates:
             preds = [cg.predicate(x) for x in match_dict.values() if cg.has(predicate_id=x)
-                     and cg.type(x) not in {EXPR, TYPE, TIME}]
+                     and cg.type(x) not in {EXPR, TYPE}]
             if check_aware and rule not in SPECIAL_NOT_CHECK_AWARE:
                 req_pred = [cg.predicate(x) for x in match_dict.values() if cg.has(predicate_id=x)
                             and cg.type(x) in {REQ_ARG, REQ_TRUTH} and cg.subject(x) == 'emora'] # check if emora already asked question
@@ -141,7 +143,7 @@ class ResponseTemplateFiller:
         else:
             return None, None, None
 
-
+    # todo - add in profanity check
     def fill_string(self, match_dict, expr_dict, string_spec_ls, cg):
         # initialize realizations for variables used in string_spec_ls dependencies
         specifications = {}
@@ -283,7 +285,7 @@ class ResponseTemplateFiller:
         for t in immediate_types:
             expressable_subs = {x for x in cg.subtypes_of(t) if x != t and not x.startswith(namespace)}
             intersection = immediate_types.intersection(expressable_subs)
-            if len(intersection) == 0 and t not in {GROUP, 'prp', 'prop$'} and not t.startswith(namespace):
+            if len(intersection) == 0 and t not in {GROUP, 'prp', 'prop$'} and not t.startswith(namespace) and '_ner' not in t:
                 # there are no subtypes in the immediate types and it is not an unexpressable type
                 candidates.add(t)
         return next(iter(candidates))

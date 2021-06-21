@@ -549,20 +549,6 @@ class ConceptGraph:
                 references[ref] = (pre, vars)
         return references
 
-    def generics(self):
-        generics = {}
-        group_instances = [g for g in self.subtypes_of(GROUP) if g != GROUP]
-        # all groups that act as subjects of some predicate are generating generics
-        for group in group_instances:
-            preds = [p for p in self.predicates(group) if p[1] not in {TYPE, USER_AWARE, ASSERT, NONASSERT}]
-            if preds:
-                def_concepts = [e[1] for e in self.metagraph.out_edges(group, GROUP_DEF)
-                                if not self.has(predicate_id=e[1]) or self.predicate(e[1]) != (e[0], TYPE, GROUP, e[1])]
-                prop_concepts = [e[1] for e in self.metagraph.out_edges(group, GROUP_PROP)]
-                generics[group] = (def_concepts, prop_concepts)
-        # certain predicate types are generics if object is group (like, enjoy, hate, ) -> i like cats (generic) vs i bought cats (non-generic)
-        return generics
-
     def subgraph(self, concepts=None, types=None, exclusions=None, type_exclusions=None, meta_exclusions=None):
         concepts = set(concepts) if concepts else set()
         exclusions = set(exclusions) if exclusions else set()
@@ -630,14 +616,35 @@ class ConceptGraph:
                 graph.add(c)
         return graph
 
-    def merge(self, concept_a, concept_b, strict_order=False):
-        unique_preds = {USER_AWARE, TIME, TYPE}
+    def merge(self, concept_a, concept_b, strict_order=False, merged=None, no_warning=False):
+        unique_preds = {USER_AWARE, TIME, TYPE, 'not', 'maybe'}
         unique_pred_merges = set()
         if concept_a != concept_b:
             if not strict_order and concept_a.startswith(self._ids.namespace) and not concept_b.startswith(self._ids.namespace):
                 tmp = concept_a
                 concept_a = concept_b
                 concept_b = tmp
+            if merged is None:
+                merged = [(concept_a, concept_b)]
+            else:
+                merged.append((concept_a, concept_b))
+            # Handle merge of confidence predicates
+            maybes = list(self.predicates(concept_a, 'maybe'))
+            if maybes: # take the confidence predicate of concept_b so delete maybe of concept_a
+                pred = maybes[0]
+                self.remove(*pred)
+            else: # keep only one type of confidence predicate between a and b, prioritizing 'not' over 'maybe'
+                if not no_warning and ((self.has(concept_a, 'not') and not self.has(concept_b, 'not')) or \
+                    (not self.has(concept_a, 'not') and self.has(concept_b, 'not'))):
+                        print('[WARNING] Mismatched confidence between %s and %s on merge!'%(concept_a, concept_b))
+                if self.has(concept_a, 'not'):
+                    for pred in list(self.predicates(concept_b, 'maybe')):
+                        self.remove(*pred)
+                else:
+                    if self.has(concept_b, 'not'):
+                        for pred in list(self.predicates(concept_b, 'maybe')):
+                            self.remove(*pred)
+            # Merge attached predicates of concept_b to concept_a
             for s, t, o, i in list(self.predicates(subject=concept_b)):
                 if t not in unique_preds:
                     self._detach(s, t, o, i)
@@ -683,23 +690,24 @@ class ConceptGraph:
                     i = self.add(final_subj, final_type, final_obj, predicate_id=concept_a)
                     merged_obj = None
                     if obj_a is not None:
-                        merged_obj = self.merge(obj_a, final_obj)
+                        merged_obj = self.merge(obj_a, final_obj, no_warning=True)
                     if obj_b is not None:
-                        if merged_obj is not None:
+                        if merged_obj is not None and (obj_a, obj_b) not in merged:
                             self.merge(merged_obj, obj_b)
                         else:
-                            self.merge(obj_b, final_obj)
+                            self.merge(obj_b, final_obj, no_warning=True)
                 if additional_type is not None:
                     self.add(i, TYPE, additional_type)
-                merged_sub = self.merge(subj_a, final_subj)
-                self.merge(merged_sub, subj_b)
+                merged_sub = self.merge(subj_a, final_subj, no_warning=True)
+                if (subj_a, subj_b) not in merged:
+                    self.merge(merged_sub, subj_b)
             elif self.has(predicate_id=concept_b) and not self.has(predicate_id=concept_a):
                 s, t, o, i = self.predicate(concept_b)
                 self.add(s, t, o, concept_a)
                 self._detach(s, t, o, i)
             self.metagraph.merge(concept_a, concept_b)
             for p1, p2 in unique_pred_merges:
-                self.merge(p1, p2, strict_order)
+                self.merge(p1, p2, strict_order, merged) # need to pass already merged list to not merge again
             self.remove(concept_b)
         return concept_a
 

@@ -1,0 +1,137 @@
+
+time(h/have(user, p/pet()), now)
+request_truth(emora, h)
+time(walk(emora, nyla), today)
+-> q_user_has_pet ->
+_pr(_low)
+_t(_p)
+$ I was just thinking , the most fun I had today was taking a walk with my dog . Do you have a pet ? $
+;
+
+not(h/have(user, p/pet()))
+uturn(h, 0)
+time(w/want(user, p2/pet()), now)
+request_truth(emora, w)
+-> q_want_pet ->
+_t(_rpresent)
+$ Oh , if you don't have any pets , do you want one ? I've always wanted a cat myself . $
+;
+
+h/have(user, pet())
+uturn(h, 0)
+->
+_t(_r)
+$ Oh , I love pets ! $
+;
+
+time(have(user, p2/pet()), now)
+request(emora, p2)
+-> q_pet_type ->
+_t(_p)
+$ What kind of pet do you have ? $
+;
+
+X/property(Z/pet())
+have(user, Z)
+request(emora, X)
+-> q_pet_property ->
+_t(_p)
+$ What is your Z like ? $
+;
+
+X/property(Z/pet())
+have(user, Z)
+request(emora, X)
+_exists(X)
+eturn(X, 1)
+->
+_t(_r)
+$ Every pet has its quirks , but I think yours sounds sweet . $
+;
+
+have(user, X/pet())
+like(user, pred/event(object()))
+with(pred, X)
+request(emora, pred)
+->
+_t(_p)
+$ What do you like to do with your X ? $
+;
+
+time(have(emora, nyla), now)
+->
+_t(_p)
+_pr(_low)
+$ Actually , I got a puppy four months ago . Her name is Nyla and she's adorable . $
+;
+
+train(emora, nyla)
+->
+_t(_p)
+$ I love Nyla , but she can be difficult sometimes . I am trying to train her right now to stop chewing on the furniture . What tips do you have for teaching her ? $
+;
+
+t/train(emora, nyla)
+eturn(t, 1)
+->
+_t(_r)
+$ Thanks , I will keep that in mind .$
+;
+
+locate(X/park(), L/location())
+N/near(L, H/home())
+have(user, H)
+request_truth(emora, N)
+uturn(X, 0)
+->
+_t(_rpresent)
+$ Oh , is the park nearby where you live ? That would be so convenient ! $
+;
+
+love(emora, P/park())
+type(P, group)
+S/size(X/park())
+request(emora, S)
+uturn(X, 0)
+->
+_t(_rpresent)
+$ There is really nothing better than a beautiful park ! How big is the one you mentioned ? $
+;
+
+el/like(emora, walk(emora, nyla))
+em/motivate(emora, healthy(emora))
+cause(em, el)
+->
+_pr(_low)
+_t(_p)
+$ I like to take my dog on walks because it motivates me to be healthy . $
+;
+
+t/think(user, handful(X/pet()))
+have(user, X)
+request_truth(emora, t)
+->
+_t(_p)
+$ Well , your X must be a handful with so much energy , aren't they ? $
+;
+
+e/event(X/pet()) crazy(e)
+have(user, X)
+request(emora, e)
+t/think(user, handful(X))
+r/request_truth(emora, t)
+_exists(t)
+eturn(r, 1)
+-> ask_crazye_pet ->
+_t(_rpresent)
+$ I bet they keep your life interesting though. Like , what is the craziest thing they've ever done ? $
+;
+
+esympathy(emora, e/event())
+uturn(e, 0)
+-> esympathy_pet_reaction ->
+_t(_rp)
+$ Oh no , that is unfortunate ! I hope it wasn't too bad . $
+;
+
+
