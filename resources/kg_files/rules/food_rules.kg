@@ -25,6 +25,7 @@ request_truth(emora, uc)
 
 f/food()
 _exists(f)
+_specific(f)
 user_aware(f)
 -> ask_if_favorite_food ->
 ff:<ff/favorite(f)>
@@ -683,4 +684,9 @@ cook(x)
 xc/bake(x/person()) like(x,xc)
 ->
 bake(x)
+;
+
+make(x/person(),f/food())
+->
+cook(x)
 ;
