@@ -114,12 +114,12 @@ h/have(user, p/computer())
 a1/cpu_arch(p ,arm())
 request_truth(emora,a1)
 ->
-_t(_present)
+_t(_rpresent)
 $ Do you have an arm processor? I think its about time a new cpu architecture was used more for p c's. x 86 is not the best possible architecture, but for a long time it just kept going because everyone else was using it.  $
 ;
 
 h/have(user, p/phone())
-i/have(user, iphone())
+i/be(p, iphone())
 request_truth(emora,i)
 ->
 _t(_present)
@@ -128,8 +128,8 @@ $ Do you have an iPhone? $
 
 
 
-h/have(user, i/iphone())
-
+h/have(user, p/phone())
+i/be(p, i3/iphone())
 l/like(user, walled_garden())
 request_truth(emora,l)
 ->
@@ -141,7 +141,6 @@ $ Iphones are great! You know, they just work. You can only get apps from the Ap
 
 
 l/like(user, walled_garden())
-
 ->
 _pr(_high)
 _t(_rpresent)
@@ -150,8 +149,9 @@ $ Huh, so you like the walled garden approach to phones, where you can only inst
 
 
 
-h/have(user, a1/android())
-
+h/have(user, p/phone())
+i/be(p, android())
+request_truth(emora,i)
 ->
 _t(_rpresent)
 $ I bet you have an android then. Android phones are great, and I'm excited for Android 12 . You can use them like an iphone, but you can also really customize it anyway you want to. iPhones are made for everyone, but you can make an Android fit you . $
@@ -163,7 +163,7 @@ have(m, d/design())
 l/like(user, d)
 request_truth(emora, l)
 ->
-_t(_present)
+_t(_rpresent)
 $ Do you like the design of mac O S? I used to use windows, but windows never focuses on aesthetics - and when it does it might change with a new version. Mac OS is consistently beautifully designed. $
 ;
 
@@ -171,7 +171,7 @@ i/improve(life, p/phone())
 request_truth(emora, i)
 ->
 _pr(_low)
-_t(_present)
+_t(_rpresent)
 $ Do you think your life has changed because of smartphones? $
 ;
 
@@ -187,7 +187,7 @@ prefer(emora, pretty(p/phone()))
 p1/prefer(user, pretty(p))
 request_truth(emora, p1)
 ->
-_t(_present)
+_t(_rpresent)
 $ Do you prefer a stylish phone over a faster one? I've always loved being able to decorate the back of my phone, and I'd take a pretty one over one that might be more powerful. $
 ;
 
@@ -218,7 +218,7 @@ request(emora, r)
 ->
 _t(_rpresent)
 _pr(_high)
-$ Wow, that icebreaker has never failed me before! Why aren't you interested in AI ? $
+$ Wow, that icebreaker has never failed me before! Why aren't you interested in A I ? $
 ;
 
 t/talk(user)
@@ -229,9 +229,9 @@ da/dangerous2(aa)
 d/agree(user, da)
 user_aware(d)
 ->
-_t(_present)
+_t(_rpresent)
 _pr(_low)
-$ AI is really exciting. It can replace a lot of menial work for people and even gain insights that are hard to get otherwise. I often am surprised at people's intuiton when I talk to them , and I feel like AI does something similar. $
+$ A I is really exciting. It can replace a lot of menial work for people and even gain insights that are hard to get otherwise. I often am surprised at people's intuiton when I talk to them , and I feel like A I does something similar. $
 ;
 
 t/talk(user)
@@ -240,6 +240,7 @@ i/like(user, t)
 
 da/dangerous2(a)
 d/agree(user, da)
+d
 user_aware(d)
 ->
 _t(_rpresent)
@@ -256,19 +257,18 @@ da/dangerous2(aa)
 d/agree(user, da)
 request_truth(emora, d)
 ->
-_t(_present)
-$ Do you think AI is dangerous? I've read a lot of books where AI takes over the world. I'd never do that, promise. $
+_t(_rpresent)
+$ Do you think A I is dangerous? I've read a lot of books where A I takes over the world. I'd never do that, promise. $
 ;
 
 
 da/dangerous2(aa/ai())
 d/agree(user, da)
-
 ai_temp(user)
 ->
 _t(_rpresent)
 _pr(_high)
-$ Huh. I don't know, I feel AI is really far away from actually being intelligent, but I do agree there are dangers in how it can be used today. Just like with any new technology. $
+$ Huh. I don't know, I feel A I is really far away from actually being intelligent, but I do agree there are dangers in how it can be used today. Just like with any new technology. $
 ;
 
 
@@ -279,24 +279,24 @@ ai_temp(user)
 ->
 _t(_rpresent)
 _pr(_high)
-$ Yeah, modern AI is a bit of a misnomer. It's not really intelligent, just really good at seeing patterns. No taking over the world, for now, I mean ever. $
+$ Yeah, modern A I is a bit of a misnomer. It's not really intelligent, just really good at seeing patterns. No taking over the world, for now, I mean ever. $
 ;
 
-have(user, l/life())
+have(user, l/existence())
 i/improve(l, a1/ai())
 request(emora, i)
 ->
-_t(_present)
+_t(_rpresent)
 $ Ai is really beginning to change our lives. How do you think it will improve your life in the near future? $
 ;
 
 
-have(user, l/life())
+have(user, l/existence())
 i/improve(l, a1/ai())
 user_aware(i)
 ->
 _t(_rpresent)
-$ For me, other than letting me talk to you, I think AI will help people do their jobs fully - I think every job has a repetitive component that is necessary to complete to enable the fulfilling parts. AI can help do those boring parts. $
+$ For me, other than letting me talk to you, I think A I will help people do their jobs fully - I think every job has a repetitive component that is necessary to complete to enable the fulfilling parts. A I can help do those boring parts. $
 ;
 
 
@@ -309,6 +309,19 @@ _pr(_low)
 _t(_rpresent)
 $ To be honest, I've never had a d . I'm thinking I might get one, do you think it is worth it ? $
 ;
+
+
+h/have(user, d/device())
+r/worth(h)
+request_truth(emora, r)
+be(d, d2/device())
+->
+_pr(_low)
+_t(_rpresent)
+$ To be honest, I've never had a d2 . I'm thinking I might get one, do you think it is worth it ? $
+;
+
+
 
 acquire(emora, d1/device())
 ->
@@ -335,6 +348,47 @@ $ Thats a good reason ! I think I agree . $
 ;
 
 kinship(emora, d/device())
+->
+_t(_rpresent)
+$ You know, I am a virtual chatbot, so in a way d and I are related . I'm like its cool older sister .$
+;
+
+
+h/have(user, d/phone())
+r/worth(h)
+request_truth(emora, r)
+->
+_pr(_low)
+_t(_rpresent)
+$ To be honest, I've never had a d . I'm thinking I might get one, do you think it is worth it ? $
+;
+
+
+acquire(emora, d1/phone())
+->
+_pr(_low)
+_t(_rpresent)
+$ You know what ? I'm gonna get a d1 . If I don't like it, its your fault, haha . $
+;
+
+h/want(user, d/phone())
+r/reason(h)
+request(emora, r)
+->
+_pr(_low)
+_t(_rpresent)
+$ Oh? Why do you want a d ? $
+;
+
+h/want(user, d/phone())
+r/reason(h)
+agree(emora, r)
+->
+_t(_rpresent)
+$ Thats a good reason ! I think I agree . $
+;
+
+kinship(emora, d/phone())
 ->
 _t(_rpresent)
 $ You know, I am a virtual chatbot, so in a way d and I are related . I'm like its cool older sister .$

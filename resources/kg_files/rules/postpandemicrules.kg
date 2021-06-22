@@ -14,7 +14,6 @@ have(user, w1/job())
 c/change(pandemic(), w1)
 qualifier(c, remote_work())
 l/like(user, c)
-
 ->
 temppred(l)
 ;
