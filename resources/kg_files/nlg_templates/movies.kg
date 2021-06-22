@@ -1,10 +1,40 @@
+favorite(g/movie())
+possess(user, g)
+be(g, g2/movie())
+request(emora, g2)
+->
+_pr(_high)
+$ What is your favorite movie? My favorite movie is the first Iron Man. $
+;
 
-possess(user, g/video_entertainment_genre())
-favorite(g)
-request(emora, g)
+favorite(g/movie())
+possess(user, g)
+b/be(g, g2/movie())
+req_unsat(request(emora, g2))
+cause(p/predicate(), b)
+request(emora, p)
+->
+_pr(_high)
+$ I haven't heard of it before you mentioned it. Why is it your favorite? $
+;
+
+f/favorite(g/movie())
+possess(user, g)
+be(g, g2/movie())
+req_unsat(request(emora, g2))
+cause(p/predicate(), f)
+req_sat(request(emora, p))
+->
+_pr(_high)
+$ That's interesting to hear. I guess I'll check it out. Maybe it will be my new favorite movie! $
+;
+
+favorite(g/video_entertainment_genre())
+possess(user, g)
+be(g, g2/video_entertainment_genre())
+request(emora, g2)
 ->
 _t(_p)
-_pr(_high)
 $ Do you have a favorite genre? $
 ;
 
@@ -16,10 +46,14 @@ _pr(_low)
 $ Have you ever tried making your own movie? I once made one in class for school. $
 ;
 
-l/like(user, s/streaming_provider())
-request_truth(emora, l)
+
+favorite(g/streaming_provider())
+possess(user, g)
+be(g, g2/streaming_provider())
+request(emora, g2)
 ->
 _t(_p)
+_pr(_low)
 $ Do you have a favorite streaming service? Believe it or not, I don't have a favorite. I think they all have such great offerings! $
 ;
 

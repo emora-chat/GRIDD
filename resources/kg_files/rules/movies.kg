@@ -3,8 +3,19 @@ l/like(user, m/movie())
 _category(m)
 user_aware(l)
 -> person_likes_some_movie ->
-op_more_info(m, l)
-request(emora, m)
+favorite(g/movie())
+possess(user, g)
+be(g, g2/movie())
+request(emora, g2)
+;
+
+favorite(g/movie())
+possess(user, g)
+be(g, g2/movie())
+req_unsat(request(emora, g2))
+->
+p:<favorite(g) possess(user, g) b/be(g, g2) cause(p/predicate(), b)>
+request(emora, p)
 ;
 
 m/movie()
@@ -17,10 +28,15 @@ request_truth(emora, pl)
 v/video_entertainment()
 user_aware(v)
 -> vid_ent_is_mentioned ->
-g:<possess(user, g/video_entertainment_genre()) favorite(g)>
-request(emora, g)
-pl_2/like(user, s/streaming_provider())
-request_truth(emora, pl_2)
+favorite(g/video_entertainment_genre())
+possess(user, g)
+be(g, g2/video_entertainment_genre())
+request(emora, g2)
+
+favorite(g3/streaming_provider())
+possess(user, g3)
+be(g3, g4/video_entertainment_genre())
+request(emora, g4)
 ;
 
 /* Tv Genre Stuff */
