@@ -114,7 +114,7 @@ h/have(user, p/computer())
 a1/cpu_arch(p ,arm())
 request_truth(emora,a1)
 ->
-_t(_present)
+_t(_rpresent)
 $ Do you have an arm processor? I think its about time a new cpu architecture was used more for p c's. x 86 is not the best possible architecture, but for a long time it just kept going because everyone else was using it.  $
 ;
 
@@ -163,7 +163,7 @@ have(m, d/design())
 l/like(user, d)
 request_truth(emora, l)
 ->
-_t(_present)
+_t(_rpresent)
 $ Do you like the design of mac O S? I used to use windows, but windows never focuses on aesthetics - and when it does it might change with a new version. Mac OS is consistently beautifully designed. $
 ;
 
@@ -171,7 +171,7 @@ i/improve(life, p/phone())
 request_truth(emora, i)
 ->
 _pr(_low)
-_t(_present)
+_t(_rpresent)
 $ Do you think your life has changed because of smartphones? $
 ;
 
@@ -187,7 +187,7 @@ prefer(emora, pretty(p/phone()))
 p1/prefer(user, pretty(p))
 request_truth(emora, p1)
 ->
-_t(_present)
+_t(_rpresent)
 $ Do you prefer a stylish phone over a faster one? I've always loved being able to decorate the back of my phone, and I'd take a pretty one over one that might be more powerful. $
 ;
 
@@ -229,7 +229,7 @@ da/dangerous2(aa)
 d/agree(user, da)
 user_aware(d)
 ->
-_t(_present)
+_t(_rpresent)
 _pr(_low)
 $ AI is really exciting. It can replace a lot of menial work for people and even gain insights that are hard to get otherwise. I often am surprised at people's intuiton when I talk to them , and I feel like AI does something similar. $
 ;
@@ -240,6 +240,7 @@ i/like(user, t)
 
 da/dangerous2(a)
 d/agree(user, da)
+d
 user_aware(d)
 ->
 _t(_rpresent)
@@ -256,7 +257,7 @@ da/dangerous2(aa)
 d/agree(user, da)
 request_truth(emora, d)
 ->
-_t(_present)
+_t(_rpresent)
 $ Do you think AI is dangerous? I've read a lot of books where AI takes over the world. I'd never do that, promise. $
 ;
 
@@ -285,7 +286,7 @@ have(user, l/existence())
 i/improve(l, a1/ai())
 request(emora, i)
 ->
-_t(_present)
+_t(_rpresent)
 $ Ai is really beginning to change our lives. How do you think it will improve your life in the near future? $
 ;
 

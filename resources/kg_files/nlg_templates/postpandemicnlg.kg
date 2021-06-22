@@ -67,7 +67,6 @@ c/change(pandemic(), w1)
 qualifier(c, remote_work())
 l/like(user, c)
 user_aware(l)
-
 ->
 _t(_rpresent)
 _pr(_high)
@@ -96,7 +95,6 @@ $ I've also started just going for walks a lot more. Before the pandemic, I ofte
 
 m/more(like(user, outdoor_activity()))
 user_aware(m)
-
 -> 
 _t(_rpresent)
 _pr(_high)
