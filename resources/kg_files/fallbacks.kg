@@ -17,6 +17,19 @@ r/request(emora, f)
 $ Yeah . So anyway , I love trying new foods . What food do you like to eat ? $
 ;
 
+h/have(user, p/phone())
+r/request(emora, h)
+-> phone_fallback ->
+$ Oh, I was meaning to ask, do you have a phone ? $
+;
+
+have(user, l/life())
+c/change(pandemic(), l)
+request_truth(emora, c)
+-> postpandemic_fallback ->
+$ I've been thinking, the pandemic has really changed our lives hasn't it? Not just this year, I think a lot of things will never be the same for me now. Its kinda crazy how much my life has changed. $
+;
+
 l:<l/like(user, h/sport())>
 request_truth(emora, l)
 -> sport_fallback ->

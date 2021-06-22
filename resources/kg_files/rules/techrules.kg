@@ -184,12 +184,12 @@ request_truth(emora,m)
 
 h/have(user, p/phone())
 ->
-i:<i/have(user, iphone())>
+i:<i/be(user, iphone())>
 request_truth(emora,i)
 ;
 
-h/have(user, i/iphone())
-
+h/have(user, p/phone())
+i/be(p, i3/iphone())
 ->
 l:<l/like(user, walled_garden())>
 request_truth(emora,l)
@@ -199,7 +199,18 @@ h/have(user, p/phone())
 h1/have(user, i/iphone())
 not(h1)
 ->
-have(user, android())
+h2:<h2/be(p, android())>
+request_truth(emora, h2)
+;
+
+be(p/phone(), android())
+->
+not(be(p, iphone()))
+;
+
+be(p/phone(), iphone())
+->
+not(be(p, android()))
 ;
 
 h/have(user, ip/iphone())
@@ -293,6 +304,50 @@ kinship(emora, d1)
 ;
 
 h/have(user, d/device())
+r/worth(h)
+not(r)
+->
+kinship(emora, d)
+;
+
+h/have(user, d/phone())
+->
+r:<r/worth(h)>
+request_truth(emora, r)
+;
+
+h/have(user, d/phone())
+r/worth(h)
+->
+acquire(emora, d)
+;
+
+w/want(user, d/phone())
+->
+r:<r/reason(w)>
+request(emora, r)
+;
+
+h/want(user, d/phone())
+r/reason(h)
+req_sat(request(emora, r))
+->
+agree(emora, r)
+;
+
+h/want(user, d/phone())
+r/reason(h)
+user_aware(agree(emora, r))
+->
+kinship(emora, d)
+;
+
+user_aware(acquire(emora, d1/phone()))
+->
+kinship(emora, d1)
+;
+
+h/have(user, d/phone())
 r/worth(h)
 not(r)
 ->

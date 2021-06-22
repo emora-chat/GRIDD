@@ -1,15 +1,3 @@
-/* This may need to be a bit less general for coldstart, but would be first phrase. Tries to get user to ask question "How has the pandemic changed your life?" */
-have(user, l/life())
-c/change(pandemic(), l)
-req_unsat(request_truth(emora, c))
-->
-_t(_rpresent)
-_pr(_high)
-$ I've been thinking, the pandemic has really changed our lives hasn't it? Not just this year, I think a lot of things will never be the same for me now. Its kinda crazy how much my life has changed. $
-;
-
-
-
 
 possess(emora, life_0/life())
 change_0/change(pandemic(), life_0)
