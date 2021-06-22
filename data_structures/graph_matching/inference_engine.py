@@ -88,14 +88,14 @@ class InferenceEngine:
         """
         If dynamic_rules are passed, they are to be removed from facts graph
         """
-        #p.start('to digraph')
+        p.start('to digraph')
         facts_graph = facts.to_infcompat_graph(ignore=ignore)
-        #p.next(f'flatten types ({len(facts_types)} concepts)')
+        p.next(f'flatten types ({len(facts_types)} concepts)')
         facts_graph = self._flatten_types(facts, facts_graph, facts_types, ignore=ignore)
-        #p.next('quantities')
+        p.next('quantities')
         quantities = {c for c in facts.concepts() if isinstance(c, (float, int))}
         for node in quantities: facts_graph.data(node)['num'] = node
-        #p.stop()
+        p.stop()
         return facts_graph
 
     def _flatten_types(self, orig_cg, cg, types=None, for_query=False, ignore=None):
@@ -145,16 +145,16 @@ class InferenceEngine:
         """
         facts should have already had all types pulled (aka don't do type pull within inference engine)
         """
-        #p.start('facts graph types')
+        p.start('facts graph types')
         facts_types = facts_concept_graph.types()
-        #p.next('convert facts graph')
+        p.next('convert facts graph')
         if remove_rules:
             # get predicate ids to ignore
             ignore = {v for rule, info in dynamic_rules.items() for v in info[-1]}
             facts_graph = self._convert_facts(facts_concept_graph, facts_types, ignore)
         else:
             facts_graph = self._convert_facts(facts_concept_graph, facts_types)
-        #p.next('process dynamic rules')
+        p.next('process dynamic rules')
         if dynamic_rules is not None and not isinstance(dynamic_rules, dict):
             dynamic_rules = ConceptGraph(dynamic_rules).rules()
         elif dynamic_rules is None:
@@ -168,9 +168,9 @@ class InferenceEngine:
             converted_rules = Bimap(dynamic_converted_rules)
         # if len(converted_rules) == 0:
         #     return {}
-        #p.next('match')
+        p.next('match')
         all_sols = self.matcher.match(facts_graph, *list(converted_rules.values()))
-        #p.next('postprocess solutions')
+        p.next('postprocess solutions')
         solutions = {}
         for precondition, sols in all_sols.items():
             categories = set()
@@ -275,7 +275,7 @@ class InferenceEngine:
                 final_sols[rule_id] = (all_rules[rule_id][0], all_rules[rule_id][1], sol_ls)
             else:
                 final_sols[rule_id] = (all_rules[rule_id][0], sol_ls)
-        #p.stop()
+        p.stop()
         return final_sols
 
 if __name__ == '__main__':

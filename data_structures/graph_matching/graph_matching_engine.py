@@ -73,8 +73,8 @@ class GraphMatchingEngine:
     def match(self, data_graph, *query_graphs):
         torch.cuda.reset_peak_memory_stats(self.device)
         if len(query_graphs) == 0 and len(self.query_graphs) == 0: return {}
-        #p.start('match')
-        #p.start('querygen')
+        p.start('match')
+        p.start('querygen')
         display = None
         complete = {}                                                       # list<Tensor<steps: ((qn1, dn1), (qn2, dn2), ...)>> completed solutions
         if len(query_graphs) > 0:
@@ -86,17 +86,17 @@ class GraphMatchingEngine:
             query_id_index = self.q.index
             checklist, query_lengths = self.checklist, self.query_lengths
         if len(checklist) <= 0:
-            #p.stop(); #p.stop()
+            p.stop(); p.stop()
             return complete
-        #p.next(f'creating graph tensor ({len(data_graph.nodes())} nodes, {len(data_graph.edges())} edges)')
+        p.next(f'creating graph tensor ({len(data_graph.nodes())} nodes, {len(data_graph.edges())} edges)')
         edges = GraphTensor(data_graph, self.n, self.l, device=self.device) # GraphTensor<Tensor<X x 2: (s, l)>) -> (Tensor<Y: t>, Tensor<Y: inverse_index>>
-        #p.next('initializing solutions matrix')
+        p.next('initializing solutions matrix')
         sols = torch.full((int(checklist.size()[0]), 2), self.n.get(root),  # Tensor<solution x step: ((qn1, dn1), (qn2, dn2), ...)> in-progress solutions
                                dtype=torch.long, device=self.device)
         solqs = torch.arange(0, len(self.q),                                # Tensor<solution: query> inverse indices for solutions
                                dtype=torch.long, device=self.device)
-        #p.stop()
-        #p.start('loop')
+        p.stop()
+        p.start('loop')
         for num_checked, reqs in enumerate(checklist.transpose(0, 1)):      # Tensor<query x 3: (s, l, t)>: required next edges
             solreqs = reqs[solqs]
             if DISPLAY: print('{:#^50s}'.format(f' ITER {num_checked} '))
@@ -159,13 +159,13 @@ class GraphMatchingEngine:
                 complete.setdefault(q, []).append(assignments)
             if len(sols) == 0:
                 break
-        #p.stop()
-        #p.start(f'postprocessing (MAX MEMORY: {torch.cuda.max_memory_allocated(self.device) / 1073741824:.3f}GB)')
+        p.stop()
+        p.start(f'postprocessing (MAX MEMORY: {torch.cuda.max_memory_allocated(self.device) / 1073741824:.3f}GB)')
         for query_graph in query_graphs:
             del self.q[query_graph]
         self.q.index = query_id_index
-        #p.stop()
-        #p.stop()
+        p.stop()
+        p.stop()
         return complete
 
 
