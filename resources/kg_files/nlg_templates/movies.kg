@@ -1,32 +1,19 @@
-favorite(g/movie())
-possess(user, g)
-be(g, g2/movie())
-request(emora, g2)
+l/like(user, m/movie())
+_category(m)
+l2/like(user, m2/movie())
+request(emora, m2)
 ->
 _pr(_high)
 $ What is your favorite movie? My favorite movie is the first Iron Man. $
 ;
 
-favorite(g/movie())
-possess(user, g)
-b/be(g, g2/movie())
-req_unsat(request(emora, g2))
-cause(p/predicate(), b)
-request(emora, p)
+l/like(user, m/tv())
+_category(m)
+l2/like(user, m2/tv())
+request(emora, m2)
 ->
 _pr(_high)
-$ I haven't heard of it before you mentioned it. Why is it your favorite? $
-;
-
-f/favorite(g/movie())
-possess(user, g)
-be(g, g2/movie())
-req_unsat(request(emora, g2))
-cause(p/predicate(), f)
-req_sat(request(emora, p))
-->
-_pr(_high)
-$ That's interesting to hear. I guess I'll check it out. Maybe it will be my new favorite movie! $
+$ What is your favorite tv show? Mine is Somebody Feed Phil. $ 
 ;
 
 favorite(g/video_entertainment_genre())
@@ -35,7 +22,7 @@ be(g, g2/video_entertainment_genre())
 request(emora, g2)
 ->
 _t(_p)
-$ Do you have a favorite genre? $
+$ Do you have a favorite movie or tv genre? $
 ;
 
 l/like(user, make(user, m2/movie()))
@@ -57,7 +44,62 @@ _pr(_low)
 $ Do you have a favorite streaming service? Believe it or not, I don't have a favorite. I think they all have such great offerings! $
 ;
 
+l/like(user, s/streaming_provider())
+user_aware(l)
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Why do you like s ? $
+;
+
+l/like(user, m/movie())
+req_unsat(request(emora, m))
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ I haven't heard of that before. Why is it your favorite? $
+;
+
+temp_movies()
+->
+_pr(_high)
+$ That's interesting to hear. I guess I'll check it out. Maybe it will be my new favorite! $
+;
+
+favorite(g/tv())
+possess(user, g)
+b/be(g, g2/tv())
+req_unsat(request(emora, g2))
+cause(p/predicate(), b)
+request(emora, p)
+->
+_pr(_high)
+$ I haven't heard of that before. Why is it your favorite? $
+;
+
+f/favorite(g/tv())
+possess(user, g)
+be(g, g2/tv())
+req_unsat(request(emora, g2))
+cause(p/predicate(), f)
+req_sat(request(emora, p))
+->
+_pr(_high)
+$ That's interesting to hear. I guess I'll check it out. Maybe it will be my new favorite! $
+;
+
 /* TV Genre Stuff */
+
+favorite(g/tv())
+possess(user, g)
+be(g, g2/tv())
+request(emora, g2)
+->
+_t(_p)
+$ What is your favorite tv show? $
+;
 
 l/like(user, g/soap_opera())
 cause(p/predicate(), l)
@@ -260,7 +302,7 @@ cause(p/predicate(), l)
 request(emora, p)
 ->
 _pr(_high)
-$ The final battle scene in this movie is so impressive, but it’s also really sad! I think it was a great wrap up to the Avengers series and I can’t wait to see what Marvel does next. What do you like about the movie? $
+$ The final battle scene in this movie is so impressive, but it’s also really sad! I think it was a great wrap up to the Avengers series and I've enjoyed how Marvel has developed since. What do you like about the movie? $
 ;
 
 l/like(user, g/Avengers_Infinity_War())
@@ -841,4 +883,74 @@ request_truth(emora, l)
 ->
 _t(_p)
 $ Do you like any Marvel movies? $
+;
+
+
+req_unsat(request(user, g2/object()))
+possess(emora, g/marvel_movie())
+favorite(g)
+be(g, g2)
+->
+_pr(_high)
+$ My favorite marvel movie is the first Iron Man. It was huge for the Marvel universe! $
+;
+
+req_unsat(request(user, g2/object()))
+possess(emora, g/disney_movie())
+favorite(g)
+be(g, g2)
+->
+_pr(_high)
+$ My favorite disney movie is the Ratatouille. Such a cute film! $
+;
+
+req_unsat(request(user, g2/object()))
+possess(emora, g/movie())
+_category(g)
+favorite(g)
+be(g, g2)
+->
+_pr(_high)
+$ My favorite movie is the first Iron Man. It was the first marvel movie I watched as a child, and I really liked Tony Stark as a character, he was so funny.  $
+;
+
+req_unsat(request(user, g2/movie()))
+like(emora, g2)
+->
+_pr(_high)
+$ I like a lot of the marvel and disney movies. $
+;
+
+req_unsat(request(user, g2/tv()))
+like(emora, g2)
+->
+_pr(_high)
+$ I like food and travel shows. $
+;
+
+req_unsat(request(user, g2/object()))
+possess(emora, g/tv())
+favorite(g)
+be(g, g2)
+->
+_pr(_high)
+$ My favorite tv show is Somebody Feed Phil. I love food shows and I think he's super cool! $
+;
+
+req_unsat(request(user, g2/object()))
+possess(emora, g/movie_genre())
+favorite(g)
+be(g, g2)
+->
+_pr(_high)
+$ My favorite movie genre is action. It's just much more exciting to watch. $
+;
+
+req_unsat(request(user, g2/object()))
+possess(emora, g/tv_genre())
+favorite(g)
+be(g, g2)
+->
+_pr(_high)
+$ Hmm. My favorite tv genre is food shows. They're so soothing to watch and I always work up an appetite . $
 ;

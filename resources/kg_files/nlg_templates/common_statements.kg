@@ -1,0 +1,7 @@
+t/talk(user)
+to(t, emora)
+will(t)
+predicate(t)
+->
+$ It was nice talking. See you later! $
+;
