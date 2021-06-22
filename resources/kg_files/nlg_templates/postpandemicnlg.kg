@@ -29,13 +29,28 @@ request_2/request(user, object_1/object())
 change_2/change(object())
 req_unsat(request_2)
 qualifier(change_2, object_1)
+uturn(request_2, 0)
 ->
 _t(_rpresent)
 _pr(_high)
 $ Well, I think the isolation has helped me appreciate hanging out with friends more. I'll never take that for granted again . $
 ;
 
+req_unsat(request_truth(user, change_0/change(object())))
+qualifier(much())
+->
+_t(_rpresent)
+_pr(_high)
+$ Well, I think the isolation has helped me appreciate hanging out with friends more. I'll never take that for granted again . $
+;
 
+req_unsat(request_truth(user, change_0/change(prp())))
+qualifier(much())
+->
+_t(_rpresent)
+_pr(_high)
+$ Well, I think the isolation has helped me appreciate hanging out with friends more. I'll never take that for granted again . $
+;
 
 
 
