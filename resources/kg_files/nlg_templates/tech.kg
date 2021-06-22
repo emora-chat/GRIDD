@@ -218,7 +218,7 @@ request(emora, r)
 ->
 _t(_rpresent)
 _pr(_high)
-$ Wow, that icebreaker has never failed me before! Why aren't you interested in AI ? $
+$ Wow, that icebreaker has never failed me before! Why aren't you interested in A I ? $
 ;
 
 t/talk(user)
@@ -231,7 +231,7 @@ user_aware(d)
 ->
 _t(_rpresent)
 _pr(_low)
-$ AI is really exciting. It can replace a lot of menial work for people and even gain insights that are hard to get otherwise. I often am surprised at people's intuiton when I talk to them , and I feel like AI does something similar. $
+$ A I is really exciting. It can replace a lot of menial work for people and even gain insights that are hard to get otherwise. I often am surprised at people's intuiton when I talk to them , and I feel like A I does something similar. $
 ;
 
 t/talk(user)
@@ -258,7 +258,7 @@ d/agree(user, da)
 request_truth(emora, d)
 ->
 _t(_rpresent)
-$ Do you think AI is dangerous? I've read a lot of books where AI takes over the world. I'd never do that, promise. $
+$ Do you think A I is dangerous? I've read a lot of books where A I takes over the world. I'd never do that, promise. $
 ;
 
 
@@ -268,7 +268,7 @@ ai_temp(user)
 ->
 _t(_rpresent)
 _pr(_high)
-$ Huh. I don't know, I feel AI is really far away from actually being intelligent, but I do agree there are dangers in how it can be used today. Just like with any new technology. $
+$ Huh. I don't know, I feel A I is really far away from actually being intelligent, but I do agree there are dangers in how it can be used today. Just like with any new technology. $
 ;
 
 
@@ -279,7 +279,7 @@ ai_temp(user)
 ->
 _t(_rpresent)
 _pr(_high)
-$ Yeah, modern AI is a bit of a misnomer. It's not really intelligent, just really good at seeing patterns. No taking over the world, for now, I mean ever. $
+$ Yeah, modern A I is a bit of a misnomer. It's not really intelligent, just really good at seeing patterns. No taking over the world, for now, I mean ever. $
 ;
 
 have(user, l/existence())
@@ -296,7 +296,7 @@ i/improve(l, a1/ai())
 user_aware(i)
 ->
 _t(_rpresent)
-$ For me, other than letting me talk to you, I think AI will help people do their jobs fully - I think every job has a repetitive component that is necessary to complete to enable the fulfilling parts. AI can help do those boring parts. $
+$ For me, other than letting me talk to you, I think A I will help people do their jobs fully - I think every job has a repetitive component that is necessary to complete to enable the fulfilling parts. A I can help do those boring parts. $
 ;
 
 
