@@ -3,5 +3,5 @@ to(t, emora)
 will(t)
 predicate(t)
 ->
-$ It was nice talking. See you later! $
+$ It was nice talking. See you later! To end the conversation, say Alexa stop $
 ;

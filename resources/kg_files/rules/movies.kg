@@ -17,33 +17,70 @@ request(emora, m)
 
 l/like(user, m/movie())
 req_unsat(request(emora, m))
+eturn(request(emora, m), 1)
 ->
 p2:<l cause(p2/predicate(), l)>
 request(emora, p2)
-;
-
-l/like(user, m/movie())
-req_unsat(request(emora, m))
-cause(p/predicate(), l)
-user_aware(request(emora, p))
-->
-temp_movies()
+like(user, temp_movies())
 ;
 
 l/like(user, m/tv())
 req_unsat(request(emora, m))
+eturn(request(emora, m), 1)
 ->
 p2:<l cause(p2/predicate(), l)>
 request(emora, p2)
+like(user, temp_tv())
 ;
 
-l/like(user, streaming_provider)
+l/like(user, netflix())
 user_aware(l)
 ->
 p2:<l cause(p2/predicate(), l)>
 request(emora, p2)
 ;
 
+l/like(user, hulu())
+user_aware(l)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+;
+
+l/like(user, amazon_prime())
+user_aware(l)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+;
+
+l/like(user, disney_plus())
+user_aware(l)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+;
+
+l/like(user, hbo())
+user_aware(l)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+;
+
+l/like(user, paramount_plus())
+user_aware(l)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+;
+
+l/like(user, criterion_channel())
+user_aware(l)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+;
 
 _exists(movie())
 -> movie_is_mentioned ->
@@ -58,10 +95,8 @@ possess(user, g)
 be(g, g2/video_entertainment_genre())
 request(emora, g2)
 
-favorite(g3/streaming_provider())
-possess(user, g3)
-be(g3, g4/streaming_provider())
-request(emora, g4)
+l/like(user, s/streaming_provider())
+request(emora, s)
 ;
 
 /* Tv Genre Stuff */
