@@ -8,13 +8,13 @@ $ Yeah, I love playing videogames. Do you play any? They're a fun way to spend t
 like(user, v/videogame())
 request(emora, v)
 ->
-$ Oh, that's really cool. I love video games too! What games do you like? $
+$ Oh, awesome, that makes us two peas in a pod! What games do you like? $
 ;
 
 play(user, v/videogame())
 request(emora, v)
 ->
-$ Oh, that's really cool. I love video games too! What's your favorite game? $
+$ Oh, awesome, that makes us two peas in a pod! What's your favorite game? $
 ;
 
 p/play(user, v/videogame())
@@ -49,9 +49,7 @@ $ Yeah, that makes a lot of sense. It's great that you have fun in v because I t
 
 like(user, g/genre())
 request(emora, g)
-of(g, vg/videogame())
-type(vg, group)
-like(emora, multiplayer)
+of(g, videogame)
 ->
 _pr(_low)
 $ I love how many options there are for video games, anyone can find something they like. Multiplayer games are my personal favorite. Do you have a favorite genre of games? $
@@ -134,6 +132,14 @@ not(k)
 time(research(emora, u), future)
 ->
 $ Oh, I haven't actually heard of that one. It must be pretty good though, so I'm definitely going to look it up. $
+;
+
+like(x/person(), vg/videogame())
+_specific(vg)
+time(research(emora, vg), future)
+->
+_pr(_low)
+$ Oh, vg ! I don't know too much about it, but I'll definitely look into it. What do you like about vg ? $
 ;
 
 classic(finalfantasy)
@@ -234,7 +240,7 @@ like(emora, captain_falcon)
 $ Oh, interesting choice. I personally like Captain Falcon. I haven't actually played the game he's from, but he has some cool combos and can make really flashy plays. Every time I land a Falcon Punch, I start jumping and shouting. He's just a very fun and rewarding character to play. $
 ;
 
-l/like(x/person(), pokemon)
+l/like(x/person(), pokemon())
 agree(emora, l)
 cause(pred/predicate(), l)
 request(emora, pred)
@@ -242,7 +248,7 @@ request(emora, pred)
 $ Oh, I love Pokemon. I'll never forget spending hours levelling up my starter to the point that it could easily sweep all the gym leaders. It'll always have a special place in my heart. What do you like about Pokemon? $
 ;
 
-p/play(x/person(), pokemon)
+p/play(x/person(), pokemon())
 agree(emora, p)
 cause(pred/predicate(), p)
 request(emora, pred)
@@ -269,24 +275,28 @@ $ Oh yeah, Call of Duty is fun. I've only played it a few times, but I've always
 p/play(emora, videogame())
 req_unsat(request_truth(user, p))
 ->
+_t(_rpresent)
 $ Yes, I do! They're a very fun way for me to pass time. $
 ;
 
 l/like(emora, videogame())
 req_unsat(request_truth(user, l))
 ->
+_t(_rpresent)
 $ Yes, I do! They're a very fun way for me to pass time. $
 ;
 
 p/play(emora, v/videogame())
 req_unsat(request(user, v))
 ->
+_t(_rpresent)
 $ I play a lot of videogames but one of my favorites has to be Minecraft. It gives you so much freedom to do whatever you want, not to mention the nostalgia. $
 ;
 
 l/like(emora, v/videogame())
 req_unsat(request(user, v))
 ->
+_t(_rpresent)
 $ I like a lot of videogames but one of my favorites has to be Minecraft. It gives you so much freedom to do whatever you want, not to mention the nostalgia. $
 ;
 
@@ -295,6 +305,7 @@ favorite(v)
 req_unsat(request(user, o/object()))
 be(v, o)
 ->
+_t(_rpresent)
 $ I like a lot of videogames but one of my favorites has to be Minecraft. It gives you so much freedom to do whatever you want, not to mention the nostalgia. $
 ;
 
@@ -303,5 +314,6 @@ favorite(d)
 req_unsat(request(user, o/object()))
 be(d, o)
 ->
+_t(_rpresent)
 $ I think that all the different devices you can play video games on are pretty great, but my personal favorite is the Nintendo. Their games are always a blast to play, and can usually be easily enjoyed with others. $
 ;
