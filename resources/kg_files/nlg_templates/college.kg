@@ -418,7 +418,7 @@ as(eh,sm)
 time(eh,past)
 ->
 _t(_present)
-$ Sophomore year was a great year. That's when I decided on my majors . The transition from uncertainty to certainty is always comforting . $
+$ Sophomore year was great . That's when I decided on my majors . The transition from uncertainty to certainty is always comforting . $
 ;
 
 se/search(emora)
