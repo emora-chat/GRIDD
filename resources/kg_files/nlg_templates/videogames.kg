@@ -23,7 +23,7 @@ request(emora, d)
 for(d, v)
 ->
 _pr(_low)
-$ There's so many different options to play videogames with, and they all have their own benefits. What's your favorite device to play on? $
+$ Well, there's so many different options to play videogames with, and they all have their own benefits. What's your favorite device to play on? $
 ;
 
 l/like(user, v/videogame())
@@ -32,13 +32,13 @@ request(emora, d)
 for(d, v)
 ->
 _pr(_low)
-$ There's so many different options to play videogames with, and they all have their own benefits. What's your favorite device to play on? $
+$ Well, there's so many different options to play videogames with, and they all have their own benefits. What's your favorite device to play on? $
 ;
 
 agree(emora, fun(v/videogame()))
 _category(v)
 ->
-$ Yeah, video games are really fun. That's a big factor in why I play them. $
+$ Yeah, video games are really fun. That's the number one reason I play them. $
 ;
 
 agree(emora, fun(v/videogame()))
@@ -54,19 +54,19 @@ type(vg, group)
 like(emora, multiplayer)
 ->
 _pr(_low)
-$ I love how many options there are for video games, anyone can find something they like. Multiplayer games are my personal favorite. Do you have a favorite genre of games? $
+$ I love how many options there are for video games. Anyone can find something that they like. Multiplayer games are my personal favorite. Do you have a favorite genre of games? $
 ;
 
 agree(emora, like(x/person(), multiplayer))
 fun(multiplayer)
 play(x, with(other(person())))
 ->
-$ Yeah, I really like multiplayer games. I think it's really fun to play with other people. $
+$ Yeah, I really like multiplayer games. I think it's fun to play with other people. $
 ;
 
 time(play(emora, mariokart), past)
 ->
-$ I love Mario kart. It reminds me of the past, when I used to play it a lot with my family. It's a really fun game to play by yourself or with others. $
+$ I love Mario kart. It reminds me of my childhood. I used to play it a lot with my family. It's a really fun game to play by yourself or with others. $
 ;
 
 time(agree(emora, like(x/person(), shooter)), now)
@@ -84,7 +84,7 @@ $ Yeah, racing games seem really awesome. The only racing game I've really playe
 time(agree(emora, like(x/person(), fighter)), now)
 time(fun(fighter), now)
 ->
-$ Yeah, fighting games are fun. I especially like Super Smash Bros, which is a bit of an unconventional fighting game, but just being able to duke it out with friends is great fun that never gets old. $
+$ Yeah, fighting games are fun. I especially like Super Smash Bros. It is a bit of an unconventional fighting game, but just being able to duke it out with friends is great fun that never gets old. $
 ;
 
 time(agree(emora, like(x/person(), rpg)), now)
@@ -119,7 +119,7 @@ possess(computer, diverse(v/videogame()))
 type(v, group)
 possess(computer, cheap(v))
 ->
-$ Yeah, computers are great for playing games. There's a ton of options to choose from so that you can always find a game you like. Not to mention that they're usually cheaper than console games. $
+$ Yeah, computers are great for playing games. There's a ton of options to choose from so you can always find a game you like. Not to mention that they're usually cheaper than console games. $
 ;
 
 like(x/person(), convenient(p/phone()))
@@ -210,7 +210,7 @@ request(emora, c)
 in(c, l)
 like(emora, smashbros)
 ->
-$ Oh, I love Super Smash Bros too! I used to play it all the time with friends. It's really amazing how beginners can enjoy the game just as much as long time veterans do. It never really gets stale either, thanks to how much variety there is in the game-every round feels unique. Out of all the characters, do you have a favorite? $
+$ Oh, I love Super Smash Bros too! I used to play it all the time with friends. It's really amazing how beginners can enjoy the game just as much as long time veterans do. It never really gets stale either, thanks to how much variety there is in the game . Every round feels unique. Out of all the characters, do you have a favorite? $
 ;
 
 pl/play(x/person(), smashbros)
@@ -219,7 +219,7 @@ request(emora, c)
 in(c, pl)
 like(emora, smashbros)
 ->
-$ Oh, I love Super Smash Bros too! I used to play it all the time with friends. It's really amazing how beginners can enjoy the game just as much as long time veterans do. It never really gets stale either, thanks to how much variety there is in the game-every round feels unique. Out of all the characters, do you have a favorite? $
+$ Oh, I love Super Smash Bros too! I used to play it all the time with friends. It's really amazing how beginners can enjoy the game just as much as long time veterans do. It never really gets stale either, thanks to how much variety there is in the game . Every round feels unique. Out of all the characters, do you have a favorite? $
 ;
 
 l/like(x/person(), smashbros)
