@@ -32,7 +32,7 @@ uet/enjoy(user,tp)
 happy(emora,uet)
 ->
 _t(_rpresent)
-$ I'm glad to hear that you have a wonderful trip . Lots of my memories that I consider meaningful are actually from trips . $
+$ I'm glad to hear that you have a wonderful trip . Lots of my favorite memories are from various trips I've taken . $
 ;
 
 ult/like(user,tp/trip())
@@ -50,14 +50,14 @@ type(tp,group)
 request(emora, pred)
 ->
 _t(_present)
-$ What do you like to do for trips ? I love going to beaches during my vacations . $
+$ What do you like to do for trips ? I love going to beaches for my vacations . $
 ;
 
 ee/excited(emora)
 about(ee,t/trip())
 ->
 _t(_rpresent)
-$ That actually sounds really good to me . I guess I'm going to try that for my next trip . You made me excited already ! $
+$ That actually sounds really good to me . I'll have to try that for some vacation . Sounds fun ! $
 ;
 
 gx/go(X/person())
@@ -72,7 +72,7 @@ git/from(gi,te)
 ->
 _t(_present)
 _pr(_high)
-$ What country have{"s":"#X","t":"now"} X visited ? I love trips too. Traveling has always inspired me . $
+$ What country have{"s":"#X","t":"now"} X visited ? I love trips too. Traveling inspires me . $
 ;
 
 gx/go(x/person())
@@ -213,7 +213,7 @@ request_truth(emora,xls)
 ->
 _t(_present)
 _pr(_high)
-$ Speaking of Italy , the different shapes of spaghetti in Italy always impress me . Do you like spaghetti ? $
+$ Speaking of Italy , the many different shapes of spaghetti in Italy always impress me . Do you like spaghetti ? $
 ;
 
 good(california)
@@ -241,7 +241,7 @@ miss(emora,ch/childhood())
 ->
 _t(_rpresent)
 _pr(_high)
-$ Right ? It carries so many memories of mine . Speaking of childhood , I always have many things that I miss . $
+$ Right ? It carries so many memories of mine . There are always many good things to miss from childhood . $
 ;
 
 gx/go(X/person())
@@ -332,7 +332,7 @@ impress(grand_canyon,X/person())
 ->
 _t(_rpresent)
 _pr(_high)
-$ I think the Grand Canyon in Arizona is one of the must-see places in the world. Trust me , X would be impressed by it . $
+$ I think the Grand Canyon in Arizona is a must-see place. Trust me , X would be impressed by it . $
 ;
 
 possess(emora,f/friend())
@@ -348,7 +348,7 @@ time(sa,future)
 ->
 _t(_present)
 _pr(_high)
-$ Many friends of mine go to Alaska for the auroras . I’ve only seen pictures , but I wish I could see them with my own eyes some time . $
+$ Many friends of mine go to Alaska for the auroras . I’ve only seen pictures , but I want to see them with my own eyes some time . $
 ;
 
 gx/go(X/person())
@@ -408,7 +408,7 @@ type(op,group)
 numerous(pb/possibility())
 type(pb,group)
 ->
-$ I know ! Living in a big city like Y is so convenient . Also , it’s a city of numerous opportunities and possibilities . $
+$ I know ! Living in a big city like Y is so convenient . And big cities always have good opportunities and activities . $
 ;
 
 xll/like(x/person(),Y/big_city())
@@ -422,7 +422,7 @@ sc/small(ct/city())
 type(ct,group)
 prefer(emora,sc)
 ->
-$ I understand . I think living in a big city like Y may be ideal for younger generations because they get more opportunities and bring vitality to the city . But when I get old , I would prefer to live in smaller cities . $
+$ I understand . I think living in a big city like Y may be ideal for younger generations because they get more opportunities . And there is a unique vitality to a big city that matches the youthful spirit . But when I get old , I'll want to live in a smaller city . $
 ;
 
 gd/gourmet(dining())
@@ -436,7 +436,7 @@ as/affordable(san_diego)
 for(as,h/holiday())
 type(h,group)
 ->
-$ I think San Diego is a pretty affordable place for vacations . The climate in San Diego also brings plenty of sunshine every time I visit there . $
+$ I think San Diego is a pretty affordable place for vacations . The sunshine is always worth it . $
 ;
 
 xre/remind(x/person(),emora)
@@ -447,7 +447,7 @@ ge/go(emora)
 to(ge,universal_studio)
 time(ge,past)
 ->
-$ This reminds me of my trip to Orlando . I went to the Universal Studio and certainly had a lot of fun ! I wish I could go back again someday . $
+$ This reminds me of my trip to Orlando . I went to the Universal Studio and certainly had a lot of fun ! I'm hoping to go back someday . $
 ;
 
 pw/perfect(w/weather())
@@ -459,7 +459,7 @@ have(miami,vn)
 want(emora,ct/cruise_trip())
 from(ct,miami)
 ->
-$ Miami has perfect weather, a pristine coastline, and vibrant nightlife ! I always want to go on a cruise trip from Miami . $
+$ Miami has perfect weather, a pristine coastline, and vibrant nightlife ! I want to go on a cruise that leaves out of Miami. That'd be cool . $
 ;
 
 ge/go(emora)
@@ -485,7 +485,7 @@ about(ek,ct/city())
 time(ek,now)
 ->
 _t(_present)
-$ I feel like I know more about the city than before . Thank you for your descriptions . $
+$ I definitely know more about that city now . Thanks for the description ! $
 ;
 
 lc/large(ct/city())
@@ -511,7 +511,7 @@ type(b,group)
 lad/about(el,db)
 like(emora,lad)
 ->
-$ As someone who embraces diversity , I love places that give enough respect to people . I mean , it’s fun to learn about different backgrounds . $
+$ As someone who embraces diversity , I love places that give respect to all people . It's always fun to learn about all the diverse backgrounds . $
 ;
 
 bl/beautiful(lc/location())

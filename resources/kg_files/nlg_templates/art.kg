@@ -3,7 +3,7 @@ request_truth(emora,xba)
 ->
 _t(_present)
 _pr(_low)
-$ Do you consider yourself as an artist ? $
+$ Would you say that you're an artist ? $
 ;
 
 xba/be(user,artist())
@@ -28,7 +28,7 @@ reasonable(o/object())
 for(o,xla)
 ->
 _t(_rpresent)
-$ That's a reasonable answer . Thank you for sharing your opinion with me . $
+$ That's a reasonable answer . Thank you for sharing that! . $
 ;
 
 uld/like(user,draw(user))
@@ -54,7 +54,7 @@ request(emora,o)
 ->
 _t(_present)
 _pr(_low)
-$ What do you usually paint ? $
+$ What do you usually like to paint ? $
 ;
 
 upo/paint(user,o/object())
@@ -104,7 +104,7 @@ time(xtd,past)
 interesting(xtd)
 ->
 _t(_present)
-$ Digital drawing is fun , right ? I'm always amazed by how technology makes a lot of our lives different but more innovative than before . $
+$ Digital drawing is fun , right ? I'm always amazed by how technology can enhance our everyday activities and hobbies. $
 ;
 
 ut/talk(user)
@@ -112,7 +112,7 @@ to(ut,emora)
 amazing(ut)
 ->
 _t(_present)
-$ Well , the fact that you are talking to me is one of the best proofs that technology is driving our society now . $
+$ Well , I think the fact that you are talking to me is a pretty good proof of technology's advancement! How else could we be talking? . $
 ;
 
 xd/draw(user)
@@ -123,7 +123,7 @@ uld/learn(user,dd)
 time(uld,future)
 ->
 _t(_present)
-$ Then you should probably consider learning it some time ! I mean , since you like drawing , you will definitely have a lot of fun . $
+$ You should look into it at some point ! Since you like drawing , I think you would definitely have a lot of fun . $
 ;
 
 xd/draw(user)
@@ -133,7 +133,7 @@ have(user,h/hobby())
 request(emora,h)
 ->
 _t(_rpresent)
-$ Oh , I see . What hobby do you have ? $
+$ Oh , I see . What hobby would you say you put the most time into ? $
 ;
 
 to(gt/go(X/person()),e/exhibition())
@@ -142,7 +142,7 @@ time(gt,always)
 request_truth(emora,gt)
 ->
 _t(_present)
-$ Art always make me inspired even though I don't have plenty of knowledge to understand every piece of art . Do{"s":"#X","t":"now"} X often go to exhibitions then ? $
+$ Art always inspires me, even though I don't always understand it . Just knowing that someone put time into making something meaningful for others is enough. Do{"s":"#X","t":"now"} X often go to exhibitions ? $
 ;
 
 to(gt/go(x/person()),e/exhibition())
@@ -152,7 +152,7 @@ eka/know(emora,arr/art())
 not(eka)
 ->
 _t(_rpresent)
-$ Oh , that's so cool . I kind of like going to exhibitions , but the awkward part is that I cannot truly understand all the artworks . $
+$ Oh , that's so cool . I usually enjoy going to exhibitions , but I always struggle to understand the more abstract pieces. $
 ;
 
 to(gt/go(x/person()),e/exhibition())
@@ -164,7 +164,7 @@ to(ge,e)
 time(ge,sometimes)
 ->
 _t(_rpresent)
-$ I can definitely relate . I kind of like going to exhibitions , but the awkward part is that I cannot truly understand all the artworks . $
+$ I can definitely relate . I kind of like going to exhibitions , but I always struggle to understand the more abstract pieces. $
 ;
 
 b/be(X/artist(),ast/artist())
@@ -189,7 +189,7 @@ famous(bp)
 ->
 _t(_present)
 _pr(_high)
-$ Monet has so many incredible paintings . I like him because the colors of his paintings are so beautiful , which make me calm down and feel the peace .   $
+$ Monet has so many incredible paintings . I like him primarily for the beautiful colors he used . It always calms me to spend time looking at one of his paintings .   $
 ;
 
 b/be(X/artist(),ast/artist())
@@ -205,7 +205,7 @@ time(bb,now)
 ->
 _t(_rpresent)
 _pr(_high)
-$ Oh , I see . Well , even though X is not your favorite artist , the undeniable thing is that X indeed brought significant impact to the art field . My favorite artist is Claude Monet . $
+$ Oh , I see . Well , even if X is not your favorite artist , it's certain that they brought significant impact to the art field . My favorite artist is Claude Monet . $
 ;
 
 ed/draw(emora)

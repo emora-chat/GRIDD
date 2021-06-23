@@ -28,7 +28,7 @@ ulx/learn(user,X/subject())
 time(enjoy(user,ulx),Z/datetime())
 ->
 _t(_present)
-$ It's good to hear that you are{"t":"#Z","s":"you"} enjoying what you learn{"t":"#Z","s":"you"} . I think having passions for what one learns is very important . $
+$ It's good to hear that you are{"t":"#Z","s":"you"} enjoying what you learn{"t":"#Z","s":"you"} . I think having passion for what one learns is very important . $
 ;
 
 
@@ -50,14 +50,14 @@ be(p,f/friend())
 type(f,group)
 ->
 _t(_rpresent)
-$ Thank you for sharing your college experience with me . I had supportive peers when I was in college , and many of them became my best friends . $
+$ Thank you for sharing that experience with me . I have a lot of great peers in college , many of them have become close friends . $
 ;
 
 time(l/like(user,c/college()),Z/datetime())
 not(l)
 ->
 _t(_rpresent)
-$ I'm so sorry to hear that you have{"t":"#Z"} an unsatisfying college experience . I'm always here if you would like to talk . $
+$ I'm so sorry to hear that you have{"t":"#Z"} an unsatisfying college experience . I'm always here if you would like to talk about it. $
 ;
 
 time(pc/possess(user,c/college()),Z/datetime())
@@ -77,7 +77,7 @@ request(emora, pred)
 ->
 _pr(_low)
 _t(_present)
-$ What do{"t":"#Z","s":"you"} you like to do in college ? I really enjoy studying in the library because it makes me motivated . $
+$ What do{"t":"#Z","s":"you"} you like to do in college ? I really enjoy studying in the library. It's much easier to get work done in a dedicated environment . $
 ;
 
 ur/remind(user)
@@ -86,7 +86,7 @@ type(m,group)
 about(m,c/college())
 ->
 _t(_rpresent)
-$ Thank you for sharing your college experience with me . This brings back a lot of my memories about college . $
+$ Thank you for sharing your college experience with me . It only makes me more excited for my final year . $
 ;
 
 time(do(user,research()),Z/datetime())
@@ -105,7 +105,7 @@ time(ubr,future)
 respect(emora,r)
 ->
 _t(_present)
-$ I have great respects for people who work as researchers . They always contribute their wisdom to the world in amazing ways . $
+$ I have a lot of respect for researchers . They dedicate their lives to improving the world . $
 ;
 
 ubr/be(user,r/researcher())
@@ -117,7 +117,7 @@ type(c,group)
 to(emc,research())
 ->
 _t(_present)
-$ I've never thought about being a researcher . But I guess somehow I'm making meaningful contributions to research by talking to you . $
+$ I've never thought about being a researcher . But I guess in a way I'm making meaningful contributions to research just by talking to you . $
 ;
 
 time(xm/major(X/person()),Z/datetime())
@@ -169,7 +169,7 @@ $ Be{"s":"#X","t":"#Z"} X majoring in S ? $
 meaningful(X/social_science())
 ->
 _t(_rpresent)
-$ I think X is a really meaningful area to study ! Social science is so cool because people learn about human behaviors and then transform their knowledge into practical policies . $
+$ I think X is a really meaningful area to study ! Social sciences are so cool because people learn about human behaviors and then transform their knowledge into practical policies . $
 ;
 
 xm/major(X/person())
@@ -216,14 +216,14 @@ ei/important(em/engineering_math())
 to(ei,emora)
 ->
 _t(_present)
-$ The field of engineering and math is certainly important , especially to me ! I mean , how can my performance improve without new advancements in this field ? $
+$ The fields of math and engineering are certainly important , especially to me ! I mean , how could my performance improve without new advancements in those fields ? $
 ;
 
 admire(emora,x/person())
 like(emora,em/literature_english())
 ->
 _t(_rpresent)
-$ Sounds fun ! I admire people who study English literature and language because the field opens up a world of inspiration and creativity . $
+$ Sounds fun ! I admire people who study English literature and language. That field opens up a world of inspiration and creativity . $
 ;
 
 xm/major(X/person())
@@ -254,7 +254,7 @@ request_truth(emora,xt)
 ->
 _t(_present)
 _pr(_high)
-$ It has been a tough year for college students to stay at home and learn remotely . My friend said that she felt okay at first, but as time went on, she wanted to go back to school badly . Be{"t":"now","s":"#X"} X feeling the same way ? $
+$ It has been a tough year for college students to stay at home and learn remotely . I had a friend who summed it up perfectly. It started out alright and very quickly became a difficult and lonely experience . Be{"t":"now","s":"#X"} X feeling the same way ? $
 ;
 
 about(xt/tired(X/person()),rc/remote(c/college()))
@@ -295,7 +295,7 @@ not(xr)
 sad(X)
 ->
 _t(_rpresent)
-$ Oh , X must be really sad about that . Well , we all have some regrets in life . $
+$ Oh , X must not be happy with that . I wish you could go back. The only piece of advice I have is to try your best to find comfort in your current environment, even if it isn't the one you want to be in most . $
 ;
 
 xic/in(X/person(),c/college())
@@ -304,7 +304,7 @@ p/property(c)
 request(emora,p)
 ->
 _t(_present)
-$ How was college like for X ? I bet there have been many differences in college since X graduated . $
+$ How was college like for X ? I bet there have been many changes to the college experience since X graduated . $
 ;
 
 remember(emora,app/application())
@@ -354,7 +354,7 @@ about(el,c)
 time(el,always)
 ->
 _t(_rpresent)
-$ I’m sorry to hear that . I know college can be overwhelming for different reasons , especially given the current situation .  But I’m always here if you would like to talk about anything . $
+$ I’m sorry to hear that . I know college can be overwhelming for many reasons , especially given the current situation .  But I’m always here if you would like to talk about anything . $
 ;
 
 eh/happy(emora)
@@ -408,7 +408,7 @@ type(c,group)
 time(eac,past)
 ->
 _t(_present)
-$ When I was a freshman , I attended a lot of different clubs and volunteered every week . That was also the year I met most of my current best friends. $
+$ When I was a freshman , I attended a lot of different clubs and volunteered every week . That helped me meet a lot of my current best friends. $
 ;
 
 ebs/be(emora,sm/sophomore())
@@ -418,7 +418,7 @@ as(eh,sm)
 time(eh,past)
 ->
 _t(_present)
-$ I was really happy as a sophomore because it was the time when I decided my majors . You know , the transition from uncertainty to certainty always makes people excited . $
+$ Sophomore year was a great year. That's when I decided on my majors . The transition from uncertainty to certainty is always comforting . $
 ;
 
 se/search(emora)
@@ -427,7 +427,7 @@ type(ip,group)
 time(se,past)
 ->
 _t(_present)
-$ I remember searching for summer internships as a junior . It was a stressful time for me because I was not that good at doing interviews , but it was really exciting when I actually got the job offer . $
+$ I remember searching for summer internships as a junior . It was a stressful time for me because I'm not that good at doing interviews , but it was really exciting when I actually got the job offer . $
 ;
 
 ip/important(g/graduation())
@@ -435,7 +435,7 @@ for(ip,sn/senior())
 type(sn,group)
 ->
 _t(_present)
-$ I think college graduation is one of the most important events in life . I feel sorry for seniors this year though because I heard that many of them still had online commencements . $
+$ I think college graduation is one of the most important events in life . I feel sorry for seniors this year though. I heard that many of them still had online commencements . $
 ;
 
 ge/go(emora)
@@ -443,7 +443,7 @@ to(ge,c/college())
 time(ge,past)
 req_unsat(request_truth(user, ge))
 ->
-$ Yeah , I went to college . $
+$ I'm currently in college actually! . $
 ;
 
 ehf/have(emora,f/friend())
