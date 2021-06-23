@@ -47,7 +47,7 @@ h/have(user, p/computer())
 u/use(user, l/linux())
 request_truth(emora, u)
 ->
-_t(_present)
+_t(_rpresent)
 $ Do you use Linux ? I think it gives a lot of freedom to do whatever you want, but it can be complicated sometimes. $
 ;
 
@@ -122,7 +122,7 @@ h/have(user, p/phone())
 i/be(p, iphone())
 request_truth(emora,i)
 ->
-_t(_present)
+_t(_rpresent)
 $ Do you have an iPhone? $
 ;
 
