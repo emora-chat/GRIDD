@@ -74,7 +74,7 @@ rather than a specific subtype:
 
 ```
 like(user, s/sport())
-category(s)
+_category(s)
 ->
 favorite(st/sport())
 possess(user, st)

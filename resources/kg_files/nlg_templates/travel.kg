@@ -77,7 +77,7 @@ $ What country have{"s":"#X","t":"now"} X visited ? I love trips too. Traveling 
 
 gx/go(x/person())
 to(gx,c/country())
-category(c)
+_category(c)
 not(gx)
 gxx/go(x)
 to(gxx,cc/country())
