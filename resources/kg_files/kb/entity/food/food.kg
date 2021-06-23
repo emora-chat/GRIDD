@@ -150,6 +150,7 @@ coconut_cream_pie=(pie)
 expr("coconut cream pie",coconut_cream_pie)
 creme_brulee=(dessert)
 expr("creme brulee",creme_brulee)
+chocolate=(dessert)
 
 ;
 

@@ -67,7 +67,7 @@ _t(_present)
 $ I always prefer homemade meals because I can control the ingredients and the way I cook them . Do you often cook at home ? $
 ;
 
-ff/favorite(X/food())
+ff/favorite(user,X/food())
 request_truth(emora,ff)
 ->
 _pr(_low)
@@ -75,8 +75,7 @@ _t(_present)
 $ Is X your favorite food ? $
 ;
 
-ff/favorite(X/food())
-req/request_truth(emora,ff)
+ff/favorite(user,X/food())
 possess(emora,fd/food())
 favorite(fd)
 be(fd,ramen())
@@ -86,9 +85,8 @@ _t(_rpresent)
 $ I'm glad that you enjoy eating X ! My favorite food is ramen . It is a simple but delicious dish .  $
 ;
 
-ff/favorite(X/food())
+ff/favorite(user,X/food())
 not(ff)
-req/request_truth(emora,ff)
 like(user,fd/food())
 request(emora,fd)
 ->
