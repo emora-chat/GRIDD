@@ -167,7 +167,7 @@ _t(_rpresent)
 $ Do you like the design of mac O S? I used to use windows, but windows never focuses on aesthetics - and when it does it might change with a new version. Mac OS is consistently beautifully designed. $
 ;
 
-i/improve(life, p/phone())
+i/improve(existence(), p/phone())
 request_truth(emora, i)
 ->
 _pr(_low)
@@ -175,7 +175,7 @@ _t(_rpresent)
 $ Do you think your life has changed because of smartphones? $
 ;
 
-i/improve(life, p/phone())
+i/improve(existence(), p/phone())
 user_aware(i)
 ->
 _pr(_high)

@@ -216,7 +216,7 @@ not(be(p, android()))
 h/have(user, ip/iphone())
 _exists(h)
 ->
-i:<i/improve(life, p/phone())>
+i:<i/improve(existence(), p/phone())>
 request_truth(emora, i)
 ;
 
@@ -247,7 +247,7 @@ i/improve(l, a)>
 request(emora, i)
 ;
 
-i/improve(life, p/phone())
+i/improve(existence(), p/phone())
 _exists(i)
 user_aware(i)
 ->
