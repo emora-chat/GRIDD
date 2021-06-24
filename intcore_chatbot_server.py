@@ -3,7 +3,7 @@ import sys, os
 sys.path.append(os.getcwd())
 
 import time, json, requests
-from itertools import chain
+import gc
 
 from GRIDD.utilities.utilities import collect, _process_requests, _process_answers
 
@@ -907,6 +907,7 @@ class ChatbotServer:
                load("aux_state", state["aux_state"])
 
     def run(self):
+        # gc.disable()
         wm = self.dialogue_intcore.working_memory.copy()
         aux_state = {'turn_index': -1}
         utter = input('User: ')
@@ -918,6 +919,10 @@ class ChatbotServer:
                 else:
                     response, wm, aux_state = self.respond(utter, wm, aux_state)
                 elapsed = time.time() - s
+                # gcti = time.time()
+                # gc.collect()
+                # gctf = time.time()
+                # print(f'GARBAGE: {gctf-gcti}')
                 print('[%.2f s] %s\n' % (elapsed, response))
                 # print('\tAux State: %s\n' % aux_state)
             utter = input('User: ')

@@ -101,6 +101,8 @@ class ResponseTemplateFiller:
             candidates = list(set(fallback_options.keys()) - set(aux_state.get('fallbacks', [])))
             if len(candidates) > 0:
                 selected = random.choice(candidates)
+                # candidates = sorted(candidates)
+                # selected = candidates[0]
                 if 'fallbacks' not in aux_state:
                     aux_state['fallbacks'] = []
                 if selected not in aux_state['fallbacks']:
