@@ -1,11 +1,28 @@
+l/like(user, m/movie())
+_category(m)
+l2/like(user, m2/movie())
+request(emora, m2)
+->
+_pr(_high)
+$ What is your favorite movie? My favorite movie is the first Iron Man. $
+;
 
-possess(user, g/video_entertainment_genre())
-favorite(g)
-request(emora, g)
+l/like(user, m/tv())
+_category(m)
+l2/like(user, m2/tv())
+request(emora, m2)
+->
+_pr(_high)
+$ What is your favorite tv show? Mine is Somebody Feed Phil. $ 
+;
+
+favorite(g/video_entertainment_genre())
+possess(user, g)
+be(g, g2/video_entertainment_genre())
+request(emora, g2)
 ->
 _t(_p)
-_pr(_high)
-$ Do you have a favorite genre? $
+$ Do you have a favorite movie or tv genre? $
 ;
 
 l/like(user, make(user, m2/movie()))
@@ -16,14 +33,116 @@ _pr(_low)
 $ Have you ever tried making your own movie? I once made one in class for school. $
 ;
 
-l/like(user, s/streaming_provider())
-request_truth(emora, l)
+
+l/like(user, g2/streaming_provider())
+request(emora, g2)
 ->
 _t(_p)
 $ Do you have a favorite streaming service? Believe it or not, I don't have a favorite. I think they all have such great offerings! $
 ;
 
+l/like(user, g/netflix())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Netflix is so great because I don’t think you’ll ever run out of stuff to watch! I recently watched the series Derry Girls and loved it. It’s a hilarious show about coming to age in the 90s and I highly recommend it. $
+;
+
+l/like(user, hulu())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Hulu is a great choice. I love their selection of TV shows and series and they have some cool hidden gems. I recommend checking out their recent original movie Palm Springs if you’re looking for a funny, surprising comedy. $
+;
+
+l/like(user, amazon_prime())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Amazon prime has a really great variety of content. My family and I really loved watching the show The Marvelous Mrs. Maisel together. I also recommend the show Fleabag, it’s one of my favorite mini-series and it’s hilarious. $
+;
+
+l/like(user, disney_plus())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Disney Plus is great for watching classic movies. I’ve also loved watching Disney Channel shows from when I was younger. It’s always fun to take a trip down memory lane! $
+;
+
+l/like(user, hbo())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ HBO Max is a great streaming platform! I love HBO originals, especially Succession and The Sopranos. I highly recommend the recent mini-series Mare of Easttown. It’s a great crime drama with lots of thrilling twists and turns. $
+;
+
+l/like(user, paramount_plus())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Because Paramount Plus is so new, I haven’t been able to explore it fully yet, but I hear they have a diverse array of content. I saw that they rebooted iCarly, which is a show I loved as a kid, so I’ll have to check it out soon! $
+;
+
+l/like(user, criterion_channel())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Criterion has such an amazing collection of films! I love discovering classic films and Criterion is perfect for doing that. One of my favorites is Breathless. It’s fun to watch and pretend I’m living in 1960s Paris. $
+;
+
+l/like(user, m/movie())
+req_unsat(request(emora, m))
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ I haven't heard of that before. Why is it your favorite? $
+;
+
+l/like(user, m/movie())
+c/cause(p/predicate(), l)
+eturn(c, 1)
+l2/like(user, temp_movies())
+->
+_pr(_high)
+$ That's interesting to hear. I guess I'll check it out. Maybe it will be my new favorite! $
+;
+
+l/like(user, m/tv())
+req_unsat(request(emora, m))
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ I haven't heard of that before. Why is it your favorite? $
+;
+
+l/like(user, m/tv())
+c/cause(p/predicate(), l)
+eturn(c, 1)
+l2/like(user, temp_tv())
+->
+_pr(_high)
+$ That's interesting to hear. I guess I'll check it out. Maybe it will be my new favorite! $
+;
+
 /* TV Genre Stuff */
+
+favorite(g/tv())
+possess(user, g)
+be(g, g2/tv())
+request(emora, g2)
+->
+_t(_p)
+$ What is your favorite tv show? $
+;
 
 l/like(user, g/soap_opera())
 cause(p/predicate(), l)
@@ -226,7 +345,7 @@ cause(p/predicate(), l)
 request(emora, p)
 ->
 _pr(_high)
-$ The final battle scene in this movie is so impressive, but it’s also really sad! I think it was a great wrap up to the Avengers series and I can’t wait to see what Marvel does next. What do you like about the movie? $
+$ The final battle scene in this movie is so impressive, but it’s also really sad! I think it was a great wrap up to the Avengers series and I've enjoyed how Marvel has developed since. What do you like about the movie? $
 ;
 
 l/like(user, g/Avengers_Infinity_War())
@@ -807,4 +926,74 @@ request_truth(emora, l)
 ->
 _t(_p)
 $ Do you like any Marvel movies? $
+;
+
+
+req_unsat(request(user, g2/object()))
+possess(emora, g/marvel_movie())
+favorite(g)
+be(g, g2)
+->
+_pr(_high)
+$ My favorite marvel movie is the first Iron Man. It was huge for the Marvel universe! $
+;
+
+req_unsat(request(user, g2/object()))
+possess(emora, g/disney_movie())
+favorite(g)
+be(g, g2)
+->
+_pr(_high)
+$ My favorite disney movie is the Ratatouille. Such a cute film! $
+;
+
+req_unsat(request(user, g2/object()))
+possess(emora, g/movie())
+_category(g)
+favorite(g)
+be(g, g2)
+->
+_pr(_high)
+$ My favorite movie is the first Iron Man. It was the first marvel movie I watched as a child, and I really liked Tony Stark as a character, he was so funny.  $
+;
+
+req_unsat(request(user, g2/movie()))
+like(emora, g2)
+->
+_pr(_high)
+$ I like a lot of the marvel and disney movies. $
+;
+
+req_unsat(request(user, g2/tv()))
+like(emora, g2)
+->
+_pr(_high)
+$ I like food and travel shows. $
+;
+
+req_unsat(request(user, g2/object()))
+possess(emora, g/tv())
+favorite(g)
+be(g, g2)
+->
+_pr(_high)
+$ My favorite tv show is Somebody Feed Phil. I love food shows and I think he's super cool! $
+;
+
+req_unsat(request(user, g2/object()))
+possess(emora, g/movie_genre())
+favorite(g)
+be(g, g2)
+->
+_pr(_high)
+$ My favorite movie genre is action. It's just much more exciting to watch. $
+;
+
+req_unsat(request(user, g2/object()))
+possess(emora, g/tv_genre())
+favorite(g)
+be(g, g2)
+->
+_pr(_high)
+$ Hmm. My favorite tv genre is food shows. They're so soothing to watch and I always work up an appetite . $
 ;

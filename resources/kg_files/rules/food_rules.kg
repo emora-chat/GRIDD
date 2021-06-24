@@ -25,25 +25,22 @@ request_truth(emora, uc)
 
 f/food()
 _exists(f)
+_specific(f)
 user_aware(f)
 -> ask_if_favorite_food ->
-ff:<ff/favorite(f)>
+ff:<ff/favorite(user,f)>
 request_truth(emora,ff)
 ;
 
-ff/favorite(f/food())
-req/request_truth(emora,ff)
-user_aware(req)
+ff/favorite(user,f/food())
 ->
 possess(emora,fd/food())
 favorite(fd)
 be(fd,ramen())
 ;
 
-ff/favorite(f/food())
+ff/favorite(user,f/food())
 not(ff)
-req/request_truth(emora,ff)
-user_aware(req)
 ->
 fd:<like(user,fd/food())>
 request(emora,fd)
@@ -683,4 +680,9 @@ cook(x)
 xc/bake(x/person()) like(x,xc)
 ->
 bake(x)
+;
+
+make(x/person(),f/food())
+->
+cook(x)
 ;

@@ -12,6 +12,7 @@ from GRIDD.utilities.profiler import profiler as p
 class GraphTensor:
 
     def __init__(self, graph, nodemap=None, edgemap=None, device='cpu'):
+        p.start('setup')
         self.device = device
         self.nodemap = nodemap or IdMap(namespace=int)
         self.edgemap = edgemap or IdMap(namespace=int)
@@ -30,9 +31,13 @@ class GraphTensor:
             edgehashes[s * self.nn * self.ne + t * self.ne + l] = 1
         keys = {k: i for i, k in enumerate(dedges.keys())}
         vedges = {keys[k]: ts for k, ts in dedges.items()}
+        p.next('key tensor')
         self._keytensor = HashTensor(keys, device=self.device)
+        p.next('target tensor')
         self._targettensor = JaggedTensor([vedges[i] for i in range(len(vedges))], device=self.device)
+        p.next('edge tensor')
         self._edgestensor = HashTensor(edgehashes, device=self.device)
+        p.stop()
         return
 
     def __getitem__(self, source_label):

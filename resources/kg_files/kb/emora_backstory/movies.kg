@@ -1,0 +1,4 @@
+possess(emora, g/movie())
+favorite(g)
+be(g, i/Iron_Man_1())
+;

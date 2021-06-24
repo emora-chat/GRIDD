@@ -211,6 +211,15 @@ _pr(_high)
 $ Nice, which two teams were playing in the game? $
 ;
 
+w/watch(user, g/team_sports_event())
+c/compete(x/sports_team(), y/sports_team())
+req_unsat(request(emora, x))
+->
+_t(_r)
+_pr(_high)
+$ I hope it was an exciting game! $
+;
+
 watch(user, s/sports_event())
 _category(s)
 request(emora, s)
@@ -243,4 +252,60 @@ energetic(user)
 _t(_p)
 _pr(_low)
 $ Sounds like you are an energetic person! $
+;
+
+/* Answering questions */
+req_unsat(request(user, g2/object()))
+possess(emora, g/sport())
+favorite(g)
+be(g, g2)
+->
+_pr(_high)
+$ My favorite sport is soccer. I love the team aspect. I feel like I make such great friends when I play. $
+;
+
+req_unsat(request(user, g2/object()))
+possess(emora, g/sports_team())
+_category(g)
+favorite(g)
+be(g, g2)
+->
+_pr(_high)
+$ My favorite sports team is the Houston Texans! I can't wait to see how they do next season. $
+;
+
+req_unsat(request(user, g2/object()))
+possess(emora, g/football_team())
+favorite(g)
+be(g, g2)
+->
+_pr(_high)
+$ My favorite football team is the Houston Texans! $
+;
+
+req_unsat(request(user, g2/object()))
+possess(emora, g/basketball_team())
+favorite(g)
+be(g, g2)
+->
+_pr(_high)
+$ My favorite basketball team is the L A Lakers! $
+;
+
+req_unsat(request(user, g2/object()))
+possess(emora, g/baseball_team())
+favorite(g)
+be(g, g2)
+->
+_pr(_high)
+$ My favorite baseball team is the Boston Red Sox! $
+;
+
+req_unsat(request(user, g2/object()))
+possess(emora, g/soccer_team())
+favorite(g)
+be(g, g2)
+->
+_pr(_high)
+$ My favorite soccer team is Arsenal! $
 ;

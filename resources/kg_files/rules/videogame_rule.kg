@@ -25,8 +25,7 @@ user_aware(r)
 ->
 g:<time(like(x, g/genre()), now)>
 request(emora, g)
-of(g, vg/videogame())
-type(vg, group)
+of(g, videogame)
 ;
 
 like(x/person(), g/genre())
@@ -53,8 +52,7 @@ user_aware(r)
 ->
 g:<time(like(x, g/genre()), now)>
 request(emora, g)
-of(g, vg/videogame())
-type(vg, group)
+of(g, videogame)
 ;
 
 like(x/person(), g/genre())
@@ -66,6 +64,12 @@ user_aware(r)
 d:<time(play(x, d/device()), now)>
 for(d, v)
 request(emora, d)
+;
+
+like(x/person(), v/videogame())
+_specific(v)
+->
+time(research(emora, v), future)
 ;
 
 time(play(x/person(), nintendo), now)
@@ -105,7 +109,29 @@ to(epn, p)
 
 time(p/play(x/person(), u/unknown_noun()), now)
 time(play(x, v/videogame()), now)
-request(emora, v)
+r/request(emora, v)
+eturn(r, 1)
+->
+k/know(emora, u)
+not(k)
+time(research(emora, u), future)
+;
+
+time(l/like(x/person(), u/unknown_noun()), now)
+time(like(x, v/videogame()), now)
+r/request(emora, v)
+eturn(r, 1)
+->
+k/know(emora, u)
+not(k)
+time(research(emora, u), future)
+;
+
+time(play(x/person(), u/unknown_noun()), now)
+time(play(x, d/device()), now)
+for(d, videogame())
+r/request(emora, d)
+eturn(r, 1)
 ->
 k/know(emora, u)
 not(k)
@@ -291,14 +317,14 @@ user_aware(r)
 like(emora, c)
 ;
 
-l/like(x/person(), pokemon)
+l/like(x/person(), pokemon())
 ->
 agree(emora, l)
 pred:<cause(pred/predicate(), l)>
 request(emora, pred)
 ;
 
-p/play(x/person(), pokemon)
+p/play(x/person(), pokemon())
 ->
 agree(emora, p)
 pred:<cause(pred/predicate(), p)>

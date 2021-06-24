@@ -1,7 +1,6 @@
 /* Default Content if User Travels */
 
 time(t/travel(user),z/datetime())
-_exists(t)
 user_aware(t)
 -> user_travel ->
 p:<time(possess(user,tp/trip()),z) p/property(tp)>
@@ -9,7 +8,6 @@ request(emora,p)
 ;
 
 time(t/travel(user),z/datetime())
-_exists(t)
 user_aware(t)
 -> ask_if_user_likes_trip ->
 l:<l/like(user,tp/trip())>
@@ -56,6 +54,39 @@ l:<l/like(user,travel(user))>
 request_truth(emora,l)
 ;
 
+/* Default Content if User Does Not Answer Country Directly */
+
+gx/go(x/person())
+to(gx,c/country())
+_category(c)
+not(gx)
+->
+cc:<gxx/go(x) to(gxx,cc/country()) _specific(cc)>
+request(emora,cc)
+;
+
+gx/go(user)
+to(gx,c/country())
+time(gx,past)
+req/request(emora,c)
+user_aware(req)
+->
+like(emora,canada)
+gu:<gu/go(user) to(gu,canada) time(gu,past)>
+request_truth(emora,gu)
+;
+
+gx/go(user)
+to(gx,c/country())
+time(gx,past)
+req/request(emora,c)
+user_aware(req)
+->
+cc:<gxx/go(user) to(gxx,cc/country())>
+request(emora,cc)
+time(gxx,future)
+;
+
 /* More Specific Content */
 t/travel(x/person()) like(x,t)
 ->
@@ -69,14 +100,13 @@ gi/get(emora,inspired())
 git/from(gi,te)
 ;
 
-/* More Specific Content */
 t/travel(x/person())
 lt/like(x,t)
 not(lt)
 ->
 es/stay(emora)
 at(es,home)
-lc:<lc/like(x,cook(x))>
+lc:<lc/cook(x)>
 request_truth(emora,lc)
 ;
 
@@ -144,6 +174,13 @@ time(ess,past)
 remember(emora,s)
 bs/beautiful(s)
 most(bs)
+;
+
+gx/go(x/person())
+to(gx,canada)
+not(gx)
+->
+know(emora,gx)
 ;
 
 gx/go(x/person())
@@ -466,6 +503,13 @@ to(ge,lc)
 
 xt/travel(x/person())
 to(xt,lc/location())
+->
+ge/go(x)
+to(ge,lc)
+;
+
+xb/be(x/person())
+to(xb,lc/location())
 ->
 ge/go(x)
 to(ge,lc)

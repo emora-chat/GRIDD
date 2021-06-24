@@ -56,6 +56,7 @@ expr("mexican cuisine, mexican food",mexican_cuisine)
 
 burger=(fast_food)
 expr("hamburger",burger)
+cheeseburger=(burger)
 french_fries=(fast_food)
 expr("french fries",french_fries)
 mashed_potato=(fast_food)

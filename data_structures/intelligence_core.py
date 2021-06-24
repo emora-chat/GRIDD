@@ -607,10 +607,10 @@ class IntelligenceCore:
     def prune_attended(self, aux_state, num_keep):
         # NOTE: essential predicates AND reference constraints must be maintained for selected concepts that are being kept
 
-        #p.start('setup')
+        p.start('setup')
         wm = self.working_memory
 
-        #p.next('select keep')
+        p.next('select keep')
         options = {i for s,t,o,i in wm.predicates() if t not in chain(self.subj_essential_types, self.obj_essential_types, PRIM, {TYPE})}
         soptions = sorted(options,
                           key=lambda x: wm.features.get(x, {}).get(SALIENCE, 0),
@@ -618,7 +618,7 @@ class IntelligenceCore:
         keep = soptions[:num_keep]
 
         # delete all user and emora spans that occured SPANTURN turns ago
-        #p.next('delete old spans')
+        p.next('delete old spans')
         deletions = set()
         current_turn = aux_state.get('turn_index', -1)
         for s,t,o,i in chain(wm.predicates(predicate_type=SPAN_REF, object='user'),
@@ -630,7 +630,7 @@ class IntelligenceCore:
             if int(span_obj.turn) <= current_turn - SPANTURN:
                 deletions.add(s)
 
-        #p.next('setup essentials')
+        p.next('setup essentials')
         keepers = set()
         type_predicates = self.working_memory.type_predicates()
         subj_essentials = {}
@@ -644,7 +644,7 @@ class IntelligenceCore:
             for c in wm.subtypes_of(pe):
                 if wm.has(predicate_id=c):
                     obj_essentials.setdefault(wm.object(c), set()).add(c)
-        #p.next('identify essentials')
+        p.next('identify essentials')
         for k in keep:
             ess = wm.structure(k, subj_essentials, obj_essentials, type_predicates=type_predicates)
             structs = {c for sig in ess for c in sig if c is not None}
@@ -655,7 +655,7 @@ class IntelligenceCore:
         for k in set(keepers):
             keepers.update({c for sig in type_predicates.get(k, []) for c in sig})
 
-        #p.next('remove not keep')
+        p.next('remove not keep')
         to_remove = (wm.concepts() - keepers) | deletions
 
         for r in to_remove:
@@ -665,7 +665,7 @@ class IntelligenceCore:
                 self.working_memory.remove(s)
             wm.remove(r)
             # todo - check if there is an expr of the thing being deleted and if the s of the expr is not used in any other preds, delete it too
-        #p.stop()
+        p.stop()
 
 
     def prune_predicates_of_type(self, inst_removals, subj_removals):
