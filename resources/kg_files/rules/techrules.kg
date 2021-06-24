@@ -184,7 +184,7 @@ request_truth(emora,m)
 
 h/have(user, p/phone())
 ->
-i:<i/be(user, iphone())>
+i:<i/be(p, iphone())>
 request_truth(emora,i)
 ;
 
