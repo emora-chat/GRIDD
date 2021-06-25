@@ -246,6 +246,12 @@ _pr(_low)
 $ You know, the famous author Terry Pratchett said real stupidity beats artificial intelligence every time . $
 ;
 
+t1/think(emora)
+l1/like(emora, t1)
+about(t1,ai())
+->
+$ Honestly, I like to just think about how A I works. I am a virtual chatbot, but even I don't understand that much of how A I works myself . $
+;
 
 t/talk(user)
 about(t,aa/ai())
