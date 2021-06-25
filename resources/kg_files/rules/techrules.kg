@@ -213,10 +213,26 @@ be(p/phone(), iphone())
 not(be(p, android()))
 ;
 
-h/have(user, ip/iphone())
-_exists(h)
+h/have(user, p/phone())
+be(p, iphone())
 ->
-i:<i/improve(existence(), p/phone())>
+i:<i/improve(existence(), p)>
+request_truth(emora, i)
+;
+
+l:<l/like(user, t) t/talk(user) about(t,ai())>
+r/request_truth(emora, l)
+user_aware(r)
+->
+t1/think(emora)
+l1/like(emora, t1)
+about(t1,ai())
+;
+
+h/have(user, p/phone())
+be(p, android())
+->
+i:<i/improve(existence(), p)>
 request_truth(emora, i)
 ;
 
