@@ -213,10 +213,17 @@ be(p/phone(), iphone())
 not(be(p, android()))
 ;
 
-h/have(user, ip/iphone())
-_exists(h)
+h/have(user, p/phone())
+be(p, iphone())
 ->
-i:<i/improve(existence(), p/phone())>
+i:<i/improve(existence(), p)>
+request_truth(emora, i)
+;
+
+h/have(user, p/phone())
+be(p, android())
+->
+i:<i/improve(existence(), p)>
 request_truth(emora, i)
 ;
 

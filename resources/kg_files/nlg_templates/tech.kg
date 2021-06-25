@@ -193,7 +193,6 @@ $ Do you prefer a stylish phone over a faster one? I've always loved being able 
 
 prefer(emora, pretty(p/phone()))
 p1/prefer(user, pretty(p))
-
 ->
 _t(_rpresent)
 $ Yup. I mean, nowadays new phones are faster, but its not noticable in any apps I use. Who cares if an app launches in 0 point 5 seconds instead of 0 point 8 ? $
@@ -224,7 +223,6 @@ $ Wow, that icebreaker has never failed me before! Why aren't you interested in 
 t/talk(user)
 about(t,aa/ai())
 i/like(user, t)
-
 da/dangerous2(aa)
 d/agree(user, da)
 user_aware(d)
