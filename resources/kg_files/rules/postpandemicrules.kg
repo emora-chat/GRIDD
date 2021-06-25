@@ -21,7 +21,7 @@ temppred(l)
 have(user, w1/job())
 c/change(pandemic(), w1)
 qualifier(c, remote_work())
-l/like(user, c)
+_exists(l/like(user, c))
 user_aware(request_truth(emora, l))
 ->
 m:<time(m/more(like(user, outdoor_activity())),now)>
