@@ -40,6 +40,8 @@ use=(predicate)
 
 talk=(predicate)
 
+stop=(predicate)
+
 help=(activity, self_improvement)
 ;
 
