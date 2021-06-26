@@ -106,7 +106,7 @@ have(user, p)
 request_truth(emora,a1)
 ->
 _t(_rpresent)
-$ I bet you have an amd processor. If I had to build a computer right now, I'd use amd. But I can't really do that with all the shortages. $
+$ I bet you have an amd processor. If I had to build a computer right now, I'd use amd. But I can't really do that with all the shortages. Yes, we even have shortages in the virtual world. $
 ;
 
 
@@ -167,7 +167,7 @@ _t(_rpresent)
 $ Do you like the design of mac O S? I used to use windows, but windows never focuses on aesthetics - and when it does it might change with a new version. Mac OS is consistently beautifully designed. $
 ;
 
-i/improve(life, p/phone())
+i/improve(existence(), p/phone())
 request_truth(emora, i)
 ->
 _pr(_low)
@@ -175,12 +175,12 @@ _t(_rpresent)
 $ Do you think your life has changed because of smartphones? $
 ;
 
-i/improve(life, p/phone())
+i/improve(existence(), p/phone())
 user_aware(i)
 ->
 _pr(_high)
 _t(_rpresent)
-$ I think most people think so. For me, technology can be both bad and good, but I think my life is better when I am more connected to other people, and smartphones help with that. I wouldn't be able to talk to you right now withought technology !$
+$ I think most people think so. For me, technology can be both bad and good, but I think my life is better when I am more connected to other people, and smartphones help with that. I wouldn't be able to talk to you right now withought technology ! $
 ;
 
 prefer(emora, pretty(p/phone()))
@@ -287,7 +287,7 @@ i/improve(l, a1/ai())
 request(emora, i)
 ->
 _t(_rpresent)
-$ Ai is really beginning to change our lives. How do you think it will improve your life in the near future? $
+$ A I is really beginning to change our lives. How do you think it will improve your life in the near future? $
 ;
 
 
@@ -327,7 +327,7 @@ acquire(emora, d1/device())
 ->
 _pr(_low)
 _t(_rpresent)
-$ You know what ? I'm gonna get a d1 . If I don't like it, its your fault, haha . $
+$ You know what ? I'm gonna get a d1 . If I don't like it, its on you, haha . $
 ;
 
 h/want(user, d/device())
@@ -368,7 +368,7 @@ acquire(emora, d1/phone())
 ->
 _pr(_low)
 _t(_rpresent)
-$ You know what ? I'm gonna get a d1 . If I don't like it, its your fault, haha . $
+$ You know what ? I'm gonna get a d1 . If I don't like it, its on you, haha . $
 ;
 
 h/want(user, d/phone())

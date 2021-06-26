@@ -58,7 +58,7 @@ request_truth(emora,l)
 
 gx/go(x/person())
 to(gx,c/country())
-category(c)
+_category(c)
 not(gx)
 ->
 cc:<gxx/go(x) to(gxx,cc/country()) _specific(cc)>

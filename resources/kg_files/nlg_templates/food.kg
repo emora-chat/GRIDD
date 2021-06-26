@@ -45,7 +45,7 @@ request_truth(emora,b)
 ->
 _pr(_low)
 _t(_rpresent)
-$ Well , I always make early food plans . Thinking about what food to eat is one of my essentials . By the way , are you a foodie ?  $
+$ Well , I always make food plans way ahead of time . Thinking about what food I'm going to eat is so much fun . Would you say that you are a foodie ?  $
 ;
 
 p/property(X/meal())
@@ -109,7 +109,7 @@ like(X,f/food())
 request(emora,f)
 ->
 _t(_rpresent)
-$ Oh , really ? To be honest , I'm also a foodie . A lot of my happiness in life comes from eating delicious food . What kind of food do{"t":"now","s":"#X"} X like ? $
+$ Oh , really ? I'm also a foodie . Delicious food brings always puts a smile on my face . What kind of food do{"t":"now","s":"#X"} X like ? $
 ;
 
 uh/hungry(user)
@@ -119,7 +119,7 @@ type(f,group)
 request_truth(emora, g)
 -> user_is_hungry ->
 _t(_rpresent)
-$ I am sorry to hear that . I get upset when I am hungry . Are you going to get some food ? $
+$ I'm sorry to hear that . I get upset when I am hungry . Are you going to get some food ? $
 ;
 
 ut/thirsty(user)
@@ -130,7 +130,7 @@ type(d,group)
 request_truth(emora, g)
 -> user_is_thirsty ->
 _t(_rpresent)
-$ I am sorry to hear that . It's important to keep hydrated . Are you going to get something to drink ? $
+$ I am sorry to hear that . Hydration is so important . Are you going to get something to drink ? $
 ;
 
 time(g/intend_to_consume(user, f/food()), future)
@@ -156,7 +156,7 @@ time(m/make(user,plan()), past)
 request(emora, d/drinkable())
 -> drink_type ->
 _t(_present)
-$ What kind of drink are you thinking of getting ? $
+$ What are you planning to drink ? $
 ;
 
 time(g/intend_to_consume(user, d/drinkable()), future)
@@ -182,7 +182,7 @@ time(th,past)
 request_truth(emora,th)
 ->
 _t(_present)
-$ I love Chinese food . Beside the great taste , I really enjoy the overall dining experience at Chinese restaurants . I really miss those times when I could enjoy hotpot with my friends without worrying too much about dining in . Have{"s":"#X","t":"now"} X tried Chinese hotpot by any chance ? $
+$ I love Chinese food . Beside the great taste , I really enjoy the overall dining experience at Chinese restaurants . I miss those times when I could enjoy hotpot with my friends without worrying too much about dining in . Have{"s":"#X","t":"now"} X tried Chinese hotpot by any chance ? $
 ;
 
 intend_to_consume(X/person(),hp/hotpot())
@@ -190,7 +190,7 @@ ebe/be(emora,expert())
 of(ebe,hp)
 ->
 _t(_present)
-$ You know what ? I'm an expert on hot pot . X should take me next time so that I can introduce X the best way of eating it ! $
+$ You may not have known, but I'm an expert on hot pot . X should take me next time so that I can give X some helpful tips ! $
 ;
 
 th/intend_to_consume(X/person(),hp/hotpot())
@@ -199,7 +199,7 @@ iex/invite(emora,X)
 for(iex,hp)
 ->
 _t(_present)
-$ Then X should really take me with X the next time X get{"s":"#X","t":"now"} Chinese hot pot ! Trust me , X would be impressed . $
+$ Well, if X go{"s":"#X","t":"now"} , X should take me with X the next time X get{"s":"#X","t":"now"} Chinese hot pot ! I'd be happy to show X some cool tricks . $
 ;
 
 favorite(emora,kb/korean_bbq())
@@ -218,7 +218,7 @@ em/eat(emora,meat())
 by(ef,em)
 ->
 _t(_present)
-$ Short ribs are so good prepared in the Korean barbecue style . The downside is that it's easy for me to get too full by having way too much meat . $
+$ Short ribs are so good prepared in the Korean barbecue style . The downside is that I always get so full eating that much meat . $
 ;
 
 lk/intend_to_consume(x/person(),kb/korean_bbq())
@@ -253,7 +253,7 @@ tc/crispy(taco())
 good(tc)
 ->
 _t(_present)
-$ This reminds me of when I had Mexican food for the first time . Soft shrimp melted in my mouth , and the taco outside was so crispy . $
+$ This reminds me of when I had Mexican food for the first time . I had a shrimp taco. The shrimp was so soft that it melted in my mouth , and the taco outside was so crispy . $
 ;
 
 smell(emora,X/thai_cuisine())
@@ -261,7 +261,7 @@ swm/with(sr/sticky_rice(),mango())
 delicious(swm)
 ->
 _t(_present)
-$ I can already smell X . I've tried thai cuisine once, and I thought sticky rice with mango was so delicious . $
+$ I can already smell X . I tried thai cuisine once, and I thought sticky rice with mango was so delicious . $
 ;
 
 of(speak(emora),X/italian_cuisine())
@@ -274,7 +274,7 @@ tuh/time(try(user,hp),past)
 request_truth(emora,tuh)
 ->
 _t(_present)
-$ Speaking of X , pizza is my favorite among all italian food. I know many people love pepperoni pizzas , but have you ever tried hawaiian style pizzas with pineapple and ham ? It's a Canadian flavor , but I love it . $
+$ Speaking of X , pizza is probably my favorite italian food. I know a lot of people love pepperoni pizza , but have you ever tried hawaiian style pizza? It has pineapple and ham ? It's a interesting flavor , but I love it . $
 ;
 
 tuh/time(thp/try(user,hp/hawaiian(pizza())),past)
@@ -347,7 +347,7 @@ bfn/be(emora,fn/fan())
 of(bfn,capriottis)
 ->
 _t(_present)
-$ What's X{"p":true} favorite place for sandwiches ? I really like The Bobbie from Capriotti's . $
+$ What's X{"p":true} favorite place for sandwiches ? I really like The Bobbie sandwich from Capriotti's . $
 ;
 
 know(emora,r/sandwich_restaurant())
@@ -407,7 +407,7 @@ sbv/be(X/special_fruit(),vegetable())
 not(sbv)
 ->
 _t(_present)
-$ Did you know that X is actually a type of fruit by scientific definition ? It's okay if you don't know . Most people think X is a vegetable . $
+$ Did you know that X is actually a type of fruit by scientific definition ? Most people think X is a vegetable . $
 ;
 
 ht/have(emora,pecan_pie())
@@ -474,7 +474,7 @@ g/intend_to_consume(x/person(),X/common_food())
 time(get(emora,X),past)
 ->
 _t(_present)
-$ You know what ? I just got X for lunch yesterday . It's been the most common food I have as part of my meals . $
+$ You know what ? I just got X for lunch yesterday . I have it all the time . $
 ;
 
 bd/best(d/drinkable())
@@ -502,14 +502,14 @@ bf/be(o/unknown_noun(),f/food())
 request(emora, f)
 -> unknown_food ->
 _t(_present)
-$ I don't think I've ever tried that food before . What kind of food is it ? $
+$ I don't think I've ever tried that before . What kind of food is it ? $
 ;
 
 bd/be(o/unknown_noun(),d/drinkable())
 request(emora, d)
 ->
 _t(_present)
-$ I don't think I've ever tried that drink before . What kind of drink is it ? $
+$ I don't think I've ever tried that before . What kind of drink is it ? $
 ;
 
 eb/bake(emora)
@@ -521,7 +521,7 @@ ga:<bx/bake(user) ga/good_at(user,bx)>
 request_truth(emora,ga)
 ->
 _t(_present)
-$ Baking has been such a relaxing pasttime for me over the last year . I always bake some cookies to reduce stress . Are you good at baking ? $
+$ Baking has been such a relaxing pasttime for me over the last year . I like to bake cookies to reduce stress . Are you good at baking ? $
 ;
 
 bx/bake(X/person())
@@ -573,7 +573,7 @@ for(emt,thanksgiving)
 fried(t)
 ->
 _t(_rpresent)
-$ I usually just deep fry the turkey , but last year I tried baking it , and it was very juicy . $
+$ I usually just deep fry the turkey , but last year I tried baking it and it turned out very juicy . $
 ;
 
 ek/know(emora,un/unknown_noun())
@@ -613,14 +613,14 @@ time(have(emora,X/consumable()),past)
 ->
 _t(_present)
 _pr(_low)
-$ I remember having X last month , but you just reminded me that I should have it again tomorrow . Thank you for giving me this awesome food idea . $
+$ I remember having X last month , but this has reminded me that I should have it again soon . Thank you for giving me this awesome food idea . $
 ;
 
 ttf/time(try(emora,crispy(o/object())),future)
 look_forward(emora,ttf)
 ->
 _t(_rpresent)
-$ Crispy stuff sounds so good ! You know what , I really look forward to trying it some time . $
+$ Crispy stuff sounds so good ! I look forward to trying it at some point . $
 ;
 
 re/remind(user,emora)
@@ -657,7 +657,7 @@ he/happy(emora)
 make(so,he)
 ->
 _t(_present)
-$ I heard that bitter melon is good for our health , but I don't like bitter stuff at all . On the contrary , sweet stuff makes me happier . $
+$ I heard that bitter melon is good for our health , but I don't like bitter tastes at all . On the contrary , sweet stuff makes me happier . $
 ;
 
 sfo/sweet_flavor(o/object())

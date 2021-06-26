@@ -45,7 +45,7 @@ time(have(emora, nyla), now)
 
 user_aware(have(emora, nyla))
 ->
-train(emora, nyla)
+teach(emora, nyla)
 ;
 
 /* Energetic Pets */

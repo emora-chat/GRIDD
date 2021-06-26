@@ -58,7 +58,7 @@ user_aware(l)
 ->
 _t(_rpresent)
 _pr(_high)
-$ Having the option for remote work is 100 percent amazing. Not everyone might like it and not all jobs can be done remotely, but I think having the option when its practical is a great thing for people. $
+$ Having the option for remote work is 100 percent amazing. Not everyone might like it and not all jobs can be done effectively remotely, but I think having the option when its practical is a great thing for people. $
 ;
 
 have(user, w1/job())

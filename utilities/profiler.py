@@ -1,5 +1,8 @@
 from time import time
-# import torch
+from GRIDD.intcore_server_globals import INFERENCE
+
+# if INFERENCE:
+    # import torch
 
 class Profiler:
 
@@ -20,7 +23,8 @@ class Profiler:
         start, label, order = self._starts.pop()
         if label is None:
             label = f'block {len(self._durations)}'
-        # torch.cuda.synchronize()
+        # if INFERENCE:
+            # torch.cuda.synchronize()
         self._durations.append((time() - start, label, len(self._starts), order))
 
     def end(self):

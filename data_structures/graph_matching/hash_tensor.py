@@ -19,7 +19,7 @@ class HashTensor:
     def update(self, mapping):
         if self.keys is not None:
             mapping.update(self.keys)
-        tablesize = prime(len(mapping) * 5) or len(mapping) * 5
+        tablesize = prime(len(mapping) * 1000) or len(mapping) * 1000
         self.keys = torch.full((tablesize,), -1, dtype=torch.long, device=self.device)
         self.values = torch.full((tablesize,), -1, dtype=torch.long, device=self.device)
         items = torch.tensor(list(mapping.items()), dtype=torch.long, device=self.device)
@@ -33,6 +33,9 @@ class HashTensor:
             self.values[insert_index] = values
             keys, values = keys[collided], values[collided]
 
+    def hash(self, key, tablesize):
+        return (key * (key + 3)) % tablesize
+
     def index(self, key):
         """
         Take keys as input and output the table index of those keys,
@@ -40,7 +43,7 @@ class HashTensor:
         """
         result = torch.full(key.size(), -1,                 # Tensor<key: index> mapping of keys to table indices (or -1 if no entry)
                             device=self.device)
-        search = key % len(self.keys)                       # Tensor<remaining: index> mapping remaining keys to table indices
+        search = self.hash(key, len(self.keys))             # Tensor<remaining: index> mapping remaining keys to table indices
         ri = torch.arange(0, len(key),                      # Tensor<remaining: rindex> mapping remaining keys to original key indices
                           dtype=torch.long, device=self.device)
         while len(search) > 0:                              # while there are undecided keys (neither found nor lost)
@@ -58,7 +61,7 @@ class HashTensor:
     def insertion_index(self, key):
         result = torch.full(key.size(), -1,                 # Tensor<key: index> mapping of keys to empty table indices
                             device=self.device)
-        search = key % len(self.keys)                       # Tensor<remaining: index> mapping remaining keys to table indices
+        search = self.hash(key, len(self.keys))             # Tensor<remaining: index> mapping remaining keys to table indices
         ri = torch.arange(0, len(key),                      # Tensor<remaining: rindex> mapping remaining keys to original key indices
                           dtype=torch.long, device=self.device)
         while len(search) > 0:                              # while there are undecided keys (neither found nor lost)
@@ -78,7 +81,7 @@ class HashTensor:
     def __getitem__(self, key):
         result = torch.full(key.size(), -1,                 # Tensor<key: index> mapping of keys to table indices (or -1 if no entry)
                             device=self.device)
-        search = key % len(self.keys)                       # Tensor<remaining: index> mapping remaining keys to table indices
+        search = self.hash(key, len(self.keys))             # Tensor<remaining: index> mapping remaining keys to table indices
         ri = torch.arange(0, len(key),                      # Tensor<remaining: rindex> mapping remaining keys to original key indices
                           dtype=torch.long, device=self.device)
         while len(search) > 0:                              # while there are undecided keys (neither found nor lost)
