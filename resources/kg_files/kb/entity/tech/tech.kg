@@ -33,4 +33,6 @@ acquire=(predicate)
 appliance=(device)
 electrical_device=(device)
 electronic_device=(device)
+alexa=(person)
+echo=(person)
 ;
