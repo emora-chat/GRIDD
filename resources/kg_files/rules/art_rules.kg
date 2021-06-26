@@ -36,6 +36,7 @@ request_truth(emora,uld)
 ;
 
 X/artist()
+_specific(X)
 user_aware(X)
 ->
 b:<b/be(X,ast/artist()) possess(user,ast) favorite(ast) time(b,now)>
