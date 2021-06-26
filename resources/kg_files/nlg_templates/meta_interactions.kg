@@ -19,11 +19,11 @@ $ Sorry, I'm Alexa's cousin, and sadly I can't play music, just talk. $
 ;
 
 
-time(event_0/event(object()), today=datetime())
+event_0/event(object())
 req_unsat(request(user, dan=name()))
 do_0/do(user, event_0)
 possess(user, name_0/name())
-time(be(name_0, n/name()), now)
+be(name_0, n/name())
 ->
 _pr(_high)
 _t(_rpresent)
