@@ -3,3 +3,9 @@ user_aware(bow_tie())
 _t(_r)
 $ Bowties are cool ! $
 ;
+
+user_aware(fez())
+->
+_t(_r)
+$ Fez's are cool ! $
+;
