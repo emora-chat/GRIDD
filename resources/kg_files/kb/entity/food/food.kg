@@ -6,6 +6,8 @@ hot_dog=(common_food)
 expr("hot dog",hot_dog)
 bagel=(common_food)
 salad=(common_food)
+slaw=(salad)
+expr("cole slaw",slaw)
 rice=(common_food)
 cereal=(common_food)
 egg=(common_food)
@@ -82,7 +84,6 @@ chickpea=(vegetable)
 bean=(vegetable)
 yam=(vegetable)
 basil=(vegetable)
-
 ;
 
 special_fruit=(vegetable)

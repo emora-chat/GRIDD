@@ -65,6 +65,10 @@ fried_chicken=(fast_food)
 expr("fried chicken",fried_chicken)
 chicken_wing=(fast_food)
 expr("chicken wing",chicken_wing)
+chicken_nugget=(fast_food)
+expr("chicken nugget",chicken_nugget)
+lobster_roll=(fast_food)
+expr("lobster roll",lobster_roll)
 
 ;
 
