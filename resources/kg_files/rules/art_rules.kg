@@ -2,11 +2,12 @@
 xla/like(user,a/art())
 user_aware(xla)
 ->
-xba:<xba/be(user,artist())>
+xba:<xba/be(user,att/artist()) _category(att)>
 request_truth(emora,xba)
 ;
 
-xba/be(user,artist())
+xba/be(user,att/artist())
+_category(att)
 not(xba)
 ->
 understand(emora,xba)
@@ -39,7 +40,7 @@ X/artist()
 _specific(X)
 user_aware(X)
 ->
-b:<b/be(X,ast/artist()) possess(user,ast) favorite(ast) time(b,now)>
+b:<b/be(X,ast/artist()) _category(ast) possess(user,ast) favorite(ast) time(b,now)>
 request_truth(emora,b)
 ;
 
@@ -160,18 +161,23 @@ time(ge,sometimes)
 ;
 
 b/be(x/artist(),ast/artist())
+_specific(x)
+_category(ast)
 possess(user,ast)
 favorite(ast)
 time(b,now)
 ->
 important(x)
 bb/be(arr/artist(),claude_monet)
+_category(arr)
 possess(emora,arr)
 favorite(arr)
 time(bb,now)
 ;
 
 b/be(x/artist(),ast/artist())
+_specific(x)
+_category(ast)
 possess(user,ast)
 favorite(ast)
 time(b,now)
@@ -179,12 +185,14 @@ not(b)
 ->
 important(x)
 bb/be(arr/artist(),claude_monet)
+_category(arr)
 possess(emora,arr)
 favorite(arr)
 time(bb,now)
 ;
 
 bb/be(arr/artist(),claude_monet)
+_category(arr)
 possess(emora,arr)
 favorite(arr)
 time(bb,now)
@@ -197,13 +205,44 @@ famous(bp)
 ;
 
 b/be(x/artist(),ast/artist())
+_specific(x)
+_category(ast)
 possess(user,ast)
 favorite(ast)
 time(b,now)
 ->
 important(x)
 bb/be(arr/artist(),claude_monet)
+_category(arr)
 possess(emora,arr)
 favorite(arr)
 time(bb,now)
+;
+
+b/be(x/unknown_artist(),ast/artist())
+_specific(x)
+_category(ast)
+possess(user,ast)
+favorite(ast)
+time(b,now)
+->
+ekx/know(emora,x)
+not(ekx)
+op_more_info(x,b)
+request(emora,x)
+;
+
+b/be(x/unknown_artist(),ast/artist())
+_specific(x)
+_category(ast)
+possess(user,ast)
+favorite(ast)
+time(b,now)
+ekx/know(emora,x)
+not(ekx)
+req/request(emora,x)
+user_aware(req)
+->
+eub/understand(emora,b)
+time(eub,now)
 ;

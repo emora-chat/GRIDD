@@ -74,3 +74,6 @@ research=(entity)
 contribution=(entity)
 art=(entity)
 music=(entity)
+
+RV_trip=(entity)
+expr("R V trip",RV_trip)
