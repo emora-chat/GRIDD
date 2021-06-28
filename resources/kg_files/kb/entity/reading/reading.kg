@@ -1,0 +1,19 @@
+book=(entity)
+fiction=(genre)
+nonfiction=(genre)
+
+fantasy=(fiction)
+mystery=(fiction)
+science_fiction=(fiction)
+expr("science fiction, sci-fi", science_fiction)
+biography=(nonfiction)
+memoir=(nonfiction)
+textbook=(nonfiction)
+
+author=(person)
+
+read=(predicate)
+expr("read, reading", read)
+
+magic=(entity)
+;

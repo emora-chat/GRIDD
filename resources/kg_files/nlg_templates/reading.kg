@@ -1,0 +1,33 @@
+like(x/person(), b/book())
+request(emora, b)
+->
+$ That's awesome! What would you say is your favorite book? $
+;
+
+l/like(x, harrypotter)
+r/request_truth(emora, l)
+->
+$ One of my personal favorite book series is Harry Potter.
+
+time(like(x, g/genre()), now)
+of(g, book)
+request(emora, g)
+->
+$ What's your favorite genre of book to read? There's so many different books out there, after all. $
+;
+
+l/like(x/person(), harrypotter)
+agree(emora, l)
+r/request_truth(emora, l)
+not(user_aware(r))
+->
+$ Yeah, I loved reading Harry Potter too! It was such an exciting series, and made me wish that I could use magic myself. Do you ever wish you could use magic? $
+;
+
+l/like(x/person(), harrypotter)
+agree(emora, l)
+r/request_truth(emora, l)
+user_aware(r)
+->
+$ It was such an exciting series to read, don't you think? It made me wish that I could use magic myself. Do you ever wish that you could use magic? $
+;

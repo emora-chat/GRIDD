@@ -1,0 +1,8 @@
+harrypotter=(book)
+expr("harry potter", harrypotter)
+hungergames=(book)
+expr("the hunger games, hunger games", hungergames)
+lotr=(book)
+expr("the lord of the rings, lord of the rings", lotr)
+
+;

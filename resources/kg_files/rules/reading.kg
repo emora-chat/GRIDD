@@ -1,0 +1,41 @@
+l/like(x/person(), b/book())
+_category(b)
+->
+op_more_info(b, l)
+request(emora, b)
+;
+
+l/like(x/person(), b/book())
+r/request(emora, b)
+user_aware(r)
+->
+l:<l/like(x, harrypotter)>
+request_truth(emora, l)
+;
+
+l/like(x/person(), harrypotter)
+->
+agree(emora, l)
+w:<want(x, use(x, magic))>
+request_truth(emora, w)
+;
+
+
+l/like(x, harrypotter)
+r/request_truth(emora, l)
+user_aware(r)
+->
+g:<time(like(x, g/genre()), now)>
+of(g, book)
+request(emora, g)
+;
+
+time(l/like(x/person(), u/unknown_noun()), now)
+like(x, b/book())
+request(emora, b)
+eturn(r, 1)
+->
+k/know(emora, u)
+not(k)
+time(research(emora, u), future)
+;
