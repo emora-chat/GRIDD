@@ -61,6 +61,13 @@ request_truth(emora, l)
 $ So , you know, I really enjoy learning about new movies . Do you like movies too ? $
 ;
 
+l/like(user, paradox())
+request_truth(emora, l)
+->
+_t(_rpresent)
+$ There's a paradox I've been racking my head against . Do you like paradoxes ? $
+;
+
 l:<l/like(user,a/art())>
 request_truth(emora, l)
 -> art_fallback ->
