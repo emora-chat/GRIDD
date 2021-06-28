@@ -18,27 +18,33 @@ CONSTRAINTS = set(DP_LABELS) - NOT_CONSTRAINTS
 def subtree_dependencies(ref_span_node, cg):
     frontier = [ref_span_node]
     subtree = set()
+    visited = set()
     while len(frontier) > 0:
         node = frontier.pop(0)
-        for s,t,o,i in cg.predicates(node):
-            if t in CONSTRAINTS:
-                frontier.append(o)
-                subtree.add(o)
+        if node not in visited:
+            visited.add(node)
+            for s,t,o,i in cg.predicates(node):
+                if t in CONSTRAINTS:
+                    frontier.append(o)
+                    subtree.add(o)
     return list(subtree)
 
 def all_connected_dependencies(ref_span_node, cg):
     frontier = [ref_span_node]
     connections = set()
+    visited = set()
     while len(frontier) > 0:
         node = frontier.pop(0)
-        for s,t,o,i in cg.predicates(node):
-            if t in CONSTRAINTS and o not in connections:
-                frontier.append(o)
-                connections.add(o)
-        for s,t,o,i in cg.predicates(object=node):
-            if t in CONSTRAINTS and s not in connections:
-                frontier.append(s)
-                connections.add(s)
+        if node not in visited:
+            visited.add(node)
+            for s,t,o,i in cg.predicates(node):
+                if t in CONSTRAINTS and o not in connections:
+                    frontier.append(o)
+                    connections.add(o)
+            for s,t,o,i in cg.predicates(object=node):
+                if t in CONSTRAINTS and s not in connections:
+                    frontier.append(s)
+                    connections.add(s)
     return list(connections - {ref_span_node})
 
 def parent_subtree_dependencies(ref_span_node, cg):
