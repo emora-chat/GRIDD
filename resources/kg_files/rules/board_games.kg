@@ -1,0 +1,34 @@
+l/like(user, b4/board_game())
+_category(b4)
+user_aware(l)
+-> person_likes_some_board_game ->
+l2/like(user, b/board_game_genre())
+request(emora, b)
+
+l3/like(user, b2/board_game())
+request(emora, b2)
+;
+
+l/like(user, p/party_game())
+user_aware(l)
+->
+temp_board_game()
+;
+
+l/like(user, m/board_game())
+req_unsat(request(emora, m))
+eturn(request(emora, m), 1)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+like(user, temp_board_game())
+;
+
+l/like(user, m/board_game_genre())
+req_unsat(request(emora, m))
+eturn(request(emora, m), 1)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+like(user, temp_board_game_genre())
+;

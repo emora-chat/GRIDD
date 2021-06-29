@@ -1,4 +1,31 @@
 /* Default Content if User Travels */
+ut/travel(user)
+ult/like(user,ut)
+user_aware(ult)
+-> user_likes_travel ->
+utr:<utr/try(user,rt/RV_trip()) type(rt,group) time(utr,past)>
+request_truth(emora,utr)
+;
+
+utr/try(user,rt/RV_trip())
+type(rt,group)
+time(utr,past)
+->
+etr/try(emora,rtt/RV_trip())
+type(rtt,group)
+time(etr,past)
+not(etr)
+;
+
+utr/try(user,rt/RV_trip())
+type(rt,group)
+time(utr,past)
+not(utr)
+->
+ee/explain(emora)
+to(ee,user)
+about(ee,rt)
+;
 
 time(t/travel(user),z/datetime())
 user_aware(t)
@@ -90,8 +117,8 @@ time(gxx,future)
 /* More Specific Content */
 t/travel(x/person()) like(x,t)
 ->
-c:<gx/go(x) to(gx,c/country()) time(gx,past)>
-request(emora,c)
+lc:<gx/go(x) to(gx,lc/location()) time(gx,past)>
+request(emora,lc)
 
 te/travel(emora)
 elt/love(emora,tp/trip())
@@ -126,6 +153,22 @@ time(sg/see(f,pd),past)
 in(sg,szechuan)
 time(fth/try(f,hotpot()),past)
 in(fth,szechuan)
+;
+
+gx/go(x/person())
+to(gx,united_states)
+->
+gxx:<gxx/go(x) to(gxx,florida) time(gxx,past)>
+request_truth(gxx)
+;
+
+gxx/go(x/person())
+to(gxx,florida)
+not(gxx)
+->
+ge/go(emora)
+to(ge,florida)
+time(ge,past)
 ;
 
 gx/go(x/person())
@@ -352,6 +395,17 @@ gfx/for(gx,xmf)
 exciting(gfx)
 ;
 
+bc/big_city()
+_specific(bc)
+->
+eh/hear(emora)
+about(eh,bc)
+from(eh,f/friend())
+type(f,group)
+xll:<xll/like(user,bc)>
+request_truth(emora,xll)
+;
+
 gx/go(x/person())
 to(gx,bc/big_city())
 ->
@@ -364,6 +418,7 @@ request_truth(emora,xll)
 ;
 
 like(x/person(),bc/big_city())
+_specific(bc)
 ->
 convenient(bc)
 numerous(op/opportunity())
@@ -373,6 +428,7 @@ type(pb,group)
 ;
 
 xll/like(x/person(),bc/big_city())
+_specific(bc)
 not(xll)
 ->
 understand(emora,xll)
@@ -436,6 +492,17 @@ cause(user,ewg)
 
 gx/go(x/person())
 gt/to(gx,ct/city())
+->
+ge/go(emora)
+gtc/to(ge,ct)
+ewg/want(emora,gtc)
+time(ewg,always)
+p:<p/property(ct)>
+request(emora,p)
+;
+
+ct/city()
+_specific(ct)
 ->
 ge/go(emora)
 gtc/to(ge,ct)
