@@ -214,3 +214,25 @@ req_unsat(request_truth(user, l))
 ->
 $ Yeah , I like drawing . $
 ;
+
+ekx/know(emora,X/unknown_artist())
+not(ekx)
+request(emora,X)
+->
+_t(_present)
+$ I don't think I've ever heard about X before . Why is X your favorite artist ? $
+;
+
+b/be(x/unknown_artist(),ast/artist())
+possess(user,ast)
+favorite(ast)
+time(b,now)
+ekx/know(emora,x)
+not(ekx)
+req/request(emora,x)
+eub/understand(emora,b)
+time(eub,now)
+->
+_t(_present)
+$ Now I know better about your favorite artist . Thank you for introducing me a new artist to look up . $
+;

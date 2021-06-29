@@ -18,3 +18,5 @@ expr("salvador dali, dali",salvador_dali)
 
 andy_warhol=artist()
 expr("andy warhol",andy_warhol)
+
+unknown_artist=(unknown_noun)

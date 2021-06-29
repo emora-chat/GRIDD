@@ -375,6 +375,11 @@ ht/have(emora,pecan_pie())
 time(for(ht,thanksgiving),always)
 ;
 
+intend_to_consume(x/person(),m/meat())
+->
+intend_to_consume(emora,m)
+;
+
 intend_to_consume(x/person(),sf/seafood())
 ->
 br/best(r/restaurant())
@@ -430,6 +435,12 @@ g/intend_to_consume(x/person(),cf/common_food())
 ->
 intend_to_consume(emora, cf)
 time(get(emora,cf),often)
+;
+
+g/intend_to_consume(x/person(),s/salad())
+->
+intend_to_consume(emora,s)
+intend_to_consume(emora,lobster_roll())
 ;
 
 intend_to_consume(x/person(),m/milk())
