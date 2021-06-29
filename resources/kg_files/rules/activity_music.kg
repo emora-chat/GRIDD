@@ -1,0 +1,53 @@
+music()
+->
+p:<p/play(user,mi/musical_instrument()) _category(mi)>
+request_truth(emora,p)
+;
+
+to(listen(user),music())
+->
+p:<p/play(user,mi/musical_instrument()) _category(mi)>
+request_truth(emora,p)
+;
+
+p/play(user,mi/musical_instrument())
+_category(mi)
+->
+op_more_info(p,mi)
+request(emora,mi)
+;
+
+p/play(user,mi/musical_instrument())
+_specific(mi)
+->
+epp/play(emora,piano())
+time(epp,past)
+;
+
+p/play(user,mi/musical_instrument())
+_category(mi)
+not(p)
+->
+ulm:<ulm/learn(user,mi) time(ulm,future)>
+request_truth(emora,ulm)
+;
+
+ulm/learn(user,mi/musical_instrument())
+time(ulm,future)
+->
+exciting(ulm)
+;
+
+ulm/learn(user,mi/musical_instrument())
+time(ulm,future)
+not(ulm)
+->
+understand(emora,ulm)
+;
+
+/* Common Sense */
+
+like(user,m/music())
+->
+to(listen(user),m)
+;

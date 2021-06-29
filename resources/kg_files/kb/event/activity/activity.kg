@@ -20,7 +20,7 @@ outdoor_activity=(activity, outdoor)
 doggypaddle=(swim)
 [wash, sweep, vacuum, dust]=(clean)
 
-[play, watch, relax]=(activity, solo_or_social, leisure)
+[play, watch, relax, chill]=(activity, solo_or_social, leisure)
 
 work=(activity, obligatory)
 
@@ -47,3 +47,8 @@ draw=(activity,physical)
 expr("paint",draw)
 jump=(activity,physical)
 paint=(activity,physical)
+chat=(activity,physical)
+
+housework=(activity,physical)
+clean=(housework)
+mop=(housework)

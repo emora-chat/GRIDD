@@ -8,6 +8,14 @@ _t(_p)
 $ Did you have a good time doing that ? $
 ;
 
+utr/take(user,r/rest())
+time(utr,past)
+glad(emora,utr)
+->
+_t(_rpresent)
+$ I'm glad to hear that you took some rest . Its good to get yourself away from the busy life sometimes . $
+;
+
 /* house purchase */
 
 econgrat(emora, X/object())
@@ -113,4 +121,49 @@ uturn(l, 0)
 ->
 _t(_rpresent)
 $ I admire that . I also like to help people as much as I can . $
+;
+
+/* watch tv */
+
+h/have(user,t2/thought())
+type(t2,group)
+about(t2,t1/tv())
+request_truth(emora,h)
+->
+_t(_rpresent)
+_pr(_high)
+$ I really enjoy watching T V with my family ! By the way , I've always thought that cable T V was the best invention ever until streaming services started to be in the lead . Any thoughts ? $
+;
+
+h/have(user,t2/thought())
+type(t2,group)
+about(t2,t1/tv())
+request_truth(emora,h)
+appreciate(emora,h)
+->
+_t(_rpresent)
+_pr(_high)
+$ Thank you for sharing your opinions about T V with me . I really appreciate your thoughts . $
+;
+
+h/have(user,t2/thought())
+type(t2,group)
+about(t2,t1/tv())
+not(h)
+like(emora,t1)
+traditional(t1)
+->
+_t(_rpresent)
+_pr(_high)
+$ I'll share some more of my thoughts then . I really love how much convenience streaming services have brought us , but I kind of miss the traditional cable tv too . You know , there's nothing more exciting than waiting for a T V show to start on time . $
+;
+
+/* talk to emora */
+
+possess(user,t/time())
+appreciate(emora,t)
+->
+_t(_rpresent)
+_pr(_high)
+$ Oh , thank you for spending some time talking to me . I really appreciate that . $
 ;

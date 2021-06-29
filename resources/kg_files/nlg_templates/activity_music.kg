@@ -1,0 +1,46 @@
+p/play(user,musical_instrument())
+request_truth(emora,p)
+->
+_t(_rpresent)
+$ I like music a lot . Do you play any musical instrument ? $
+;
+
+p/play(user,mi/musical_instrument())
+request(emora,mi)
+->
+_t(_present)
+$ What musical instrument do you play ? $
+;
+
+p/play(user,mi/musical_instrument())
+epp/play(emora,piano())
+time(epp,past)
+->
+_t(_rpresent)
+$ That's very cool . I learned how to play the piano when I was little , but since I haven't practiced a lot , I gradually lost this skill . $
+;
+
+ulm/learn(user,mi/musical_instrument())
+time(ulm,future)
+request_truth(emora,ulm)
+->
+_t(_present)
+$ Do you plan to learn one of the musical instruments in the future ? $
+;
+
+ulm/learn(user,mi/musical_instrument())
+time(ulm,future)
+exciting(ulm)
+->
+_t(_rpresent)
+$ That sounds exciting ! I bet you would have a lot of fun learning to play it . $
+;
+
+ulm/learn(user,mi/musical_instrument())
+time(ulm,future)
+not(ulm)
+understand(emora,ulm)
+->
+_t(_rpresent)
+$ Oh , I understand . The challenge is that if you want to play a musical instrument very well , it requires tons of time practicing . $
+;
