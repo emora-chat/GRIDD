@@ -157,7 +157,7 @@ class IntelligenceCore:
 
         up_to_date_cached = {c for c in cached_knowledge
                              if os.path.getmtime(os.path.join(type, (c+'.json').replace(os.sep, CACHESEP)))
-                             > os.path.getmtime(c)}
+                             >= os.path.getmtime(c)}
         new_knowledge.update(cached_knowledge.difference(up_to_date_cached))
         up_to_date_cached = {(c + '.json').replace(os.sep, CACHESEP) for c in up_to_date_cached}
         return up_to_date_cached, new_knowledge
