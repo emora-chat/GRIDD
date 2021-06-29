@@ -48,7 +48,3 @@ expr("paint",draw)
 jump=(activity,physical)
 paint=(activity,physical)
 chat=(activity,physical)
-
-housework=(activity,physical)
-clean=(housework)
-mop=(housework)
