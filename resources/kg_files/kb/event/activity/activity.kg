@@ -26,7 +26,7 @@ work=(activity, obligatory)
 
 [teach, learn, practice]=(activity, mental, self_improvement)
 
-[motivate, think]=(activity, mental)
+[motivate, think]=(activity, mental, do)
 expr("encourage", motivate)
 
 [buy, meet, start]=(activity, physical)
