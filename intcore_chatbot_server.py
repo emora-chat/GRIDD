@@ -283,7 +283,7 @@ class ChatbotServer:
                     elements = [s, o, i]
                 for c in elements:
                     if c is not None:
-                        mega_mention_graph.features.setdefault(c, {}).setdefault(UTURN, []).append(int(aux_state.get('turn_index', -1)))
+                        mega_mention_graph.features.setdefault(c, {}).setdefault(UTURN, set()).add(int(aux_state.get('turn_index', -1)))
 
         self.dialogue_intcore.consider(mega_mention_graph)
         return subspans, self.dialogue_intcore.working_memory
@@ -473,7 +473,7 @@ class ChatbotServer:
         if salient_emora_request is not None:
             p.next('find answer')
             request_focus = salient_emora_request[2]
-            current_user_concepts = {c for c in wm.concepts() if aux_state["turn_index"] in wm.features.get(c, {}).get(UTURN, [])}
+            current_user_concepts = {c for c in wm.concepts() if aux_state["turn_index"] in wm.features.get(c, {}).get(UTURN, set())}
             if req_type == REQ_TRUTH:  # special case - y/n question requires yes/no fragment as answer (or full resolution from earlier in pipeline)
                 fragment_request_merges = self.truth_fragment_resolution(request_focus, current_user_concepts, wm, aux_state)
             else:
@@ -655,14 +655,14 @@ class ChatbotServer:
                 truths = list(wm.predicates('emora', REQ_TRUTH, ref_node))
                 if truths:
                     _process_answers(wm, truths[0][3])
-                    wm.features.get(truths[0][3], {}).get(UTURN, []).append(aux_state["turn_index"])
+                    wm.features.get(truths[0][3], {}).get(UTURN, set()).add(aux_state["turn_index"])
                     if not wm.has(truths[0][3], USER_AWARE):
                         wm.add(truths[0][3], USER_AWARE)
                 else:
                     args = list(wm.predicates('emora', REQ_ARG, ref_node))
                     if args:
                         _process_answers(wm, args[0][3])
-                        wm.features.get(args[0][3], {}).get(UTURN, []).append(aux_state["turn_index"])
+                        wm.features.get(args[0][3], {}).get(UTURN, set()).add(aux_state["turn_index"])
                         if not wm.has(args[0][3], USER_AWARE):
                             wm.add(args[0][3], USER_AWARE)
         self.dialogue_intcore.merge(reference_pairs)
@@ -702,7 +702,7 @@ class ChatbotServer:
                         if not wm.has(i, USER_AWARE):
                             wm.add(i, USER_AWARE)
                         wm.features[affirm_obj][SALIENCE] = 1.0
-                        wm.features[affirm_obj][UTURN] = [aux_state.get("turn_index", -1)]
+                        wm.features[affirm_obj][UTURN] = {aux_state.get("turn_index", -1)}
                         wm.features[i][SALIENCE] = 1.0
                         fragment_request_merges.append((affirm_obj, request_focus))
                     else:
@@ -712,7 +712,7 @@ class ChatbotServer:
                         if not wm.has(i, USER_AWARE):
                             wm.add(i, USER_AWARE)
                         wm.features[reject_obj][SALIENCE] = 1.0
-                        wm.features[reject_obj][UTURN] = [aux_state.get("turn_index", -1)]
+                        wm.features[reject_obj][UTURN] = {aux_state.get("turn_index", -1)}
                         wm.features[i][SALIENCE] = 1.0
                         fragment_request_merges.append((reject_obj, request_focus))
         # find type-compatible argument match for non-predicates, if there is one
