@@ -1,10 +1,12 @@
-user_aware(bow_tie())
+user_aware(b/bow_tie())
+uturn(b, 0)
 ->
 _t(_r)
 $ Bowties are cool ! $
 ;
 
-user_aware(fez())
+user_aware(f/fez())
+uturn(f, 0)
 ->
 _t(_r)
 $ Fez's are cool ! $
