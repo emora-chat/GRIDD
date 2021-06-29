@@ -18,7 +18,7 @@ $ Yeah . So anyway , I love trying new foods . What food do you like to eat ? $
 ;
 
 h/have(user, p/phone())
-r/request(emora, h)
+r/request_truth(emora, h)
 -> phone_fallback ->
 $ Oh, I was meaning to ask, do you have a phone ? $
 ;
@@ -31,7 +31,7 @@ $ I've been thinking, the pandemic has really changed our lives hasn't it? Not j
 ;
 
 h/have(user, p/computer())
-r/request(emora, h)
+r/request_truth(emora, h)
 -> computer_fallback ->
 $ Oh, I wanted to ask, do you have a computer? Of course, it would be hard for you to talk to me without one . $
 ;
