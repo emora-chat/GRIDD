@@ -18,7 +18,7 @@ $ Yeah . So anyway , I love trying new foods . What food do you like to eat ? $
 ;
 
 h/have(user, p/phone())
-r/request(emora, h)
+r/request_truth(emora, h)
 -> phone_fallback ->
 $ Oh, I was meaning to ask, do you have a phone ? $
 ;
@@ -28,6 +28,12 @@ c/change(pandemic(), l)
 request_truth(emora, c)
 -> postpandemic_fallback ->
 $ I've been thinking, the pandemic has really changed our lives hasn't it? Not just this year, I think a lot of things will never be the same for me now. Its kinda crazy how much my life has changed. $
+;
+
+h/have(user, p/computer())
+r/request_truth(emora, h)
+-> computer_fallback ->
+$ Oh, I wanted to ask, do you have a computer? Of course, it would be hard for you to talk to me without one . $
 ;
 
 l:<l/like(user, h/sport())>
@@ -53,6 +59,13 @@ maybe(l)
 request_truth(emora, l)
 -> movie_fallback ->
 $ So , you know, I really enjoy learning about new movies . Do you like movies too ? $
+;
+
+l/like(user, paradox())
+request_truth(emora, l)
+->
+_t(_rpresent)
+$ There's a paradox I've been racking my head against . Do you like paradoxes ? $
 ;
 
 l:<l/like(user,a/art())>

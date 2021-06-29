@@ -1,3 +1,5 @@
 get_along=(property)
 kinship=(predicate)
+tell=(predicate)
+tell_more=(predicate)
 ;

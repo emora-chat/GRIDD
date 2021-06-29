@@ -213,12 +213,38 @@ be(p/phone(), iphone())
 not(be(p, android()))
 ;
 
-h/have(user, ip/iphone())
-_exists(h)
+h/have(user, p/phone())
+be(p, iphone())
 ->
-i:<i/improve(existence(), p/phone())>
+i:<i/improve(existence(), p)>
 request_truth(emora, i)
 ;
+
+l:<l/like(user, t) t/talk(user) about(t,ai())>
+r/request_truth(emora, l)
+user_aware(r)
+->
+t1/think(emora)
+l1/like(emora, t1)
+about(t1,ai())
+;
+
+h/have(user, p/phone())
+be(p, android())
+->
+i:<i/improve(existence(), p)>
+request_truth(emora, i)
+;
+
+t/talk(user)
+about(t,a/ai())
+_exists(i/like(user, t))
+->
+t1/think(emora)
+l1/like(emora, t1)
+about(t1,ai())
+;
+
 
 t/talk(user)
 about(t,a/ai())
@@ -228,6 +254,9 @@ d:<da/dangerous2(a)
 d/agree(user, da)>
 request_truth(emora, d)
 ai_temp(user)
+i2:<have(user, l/existence())
+i2/improve(l, a)>
+request(emora, i2)
 ;
 
 t/talk(user)
@@ -239,13 +268,6 @@ r:<r/reason(i)>
 request(emora, r)
 ;
 
-da/dangerous2(a/ai())
-user_aware(da)
-->
-i:<have(user, l/existence())
-i/improve(l, a)>
-request(emora, i)
-;
 
 i/improve(existence(), p/phone())
 _exists(i)
