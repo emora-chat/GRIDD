@@ -30,7 +30,7 @@ class NodeFeatures(defaultdict):
                         else:
                             self[node]['span_data'] = other_value
                     elif feature in {UTURN_POS, ETURN_POS, UTURN, ETURN}:
-                        self[node].setdefault(feature, []).extend(other_value)
+                        self[node].setdefault(feature, set()).update(other_value)
                     else:
                         self[node][feature] = other_value
 
@@ -52,7 +52,7 @@ class NodeFeatures(defaultdict):
                     else:
                         self[kept]['span_data'] = other_value
                 elif feature in {UTURN_POS, ETURN_POS, UTURN, ETURN}:
-                    self[kept].setdefault(feature, []).extend(other_value)
+                    self[kept].setdefault(feature, set()).update(other_value)
                 else:
                     self[kept][feature] = other_value
             del self[replaced]
@@ -74,6 +74,8 @@ class NodeFeatures(defaultdict):
             for feature, value in features.items():
                 if feature == "span_data":
                     json_compatible[node][feature] = value.to_string()
+                elif feature in {ETURN_POS, UTURN_POS, UTURN, ETURN}:
+                    json_compatible[node][feature] = list(value)
                 elif isinstance(value, float):
                     json_compatible[node][feature] = round(value, 2)
                 else:
@@ -87,6 +89,8 @@ class NodeFeatures(defaultdict):
             for feature, value in features.items():
                 if feature == "span_data":
                     self[node][feature] = Span.from_string(value)
+                elif feature in {ETURN_POS, UTURN_POS, UTURN, ETURN}:
+                    self[node][feature] = set(value)
                 else:
                     self[node][feature] = value
 

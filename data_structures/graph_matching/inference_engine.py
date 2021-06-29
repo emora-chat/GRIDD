@@ -208,7 +208,7 @@ class InferenceEngine:
                     # turn checking
                     turn_check_failed = False
                     for check_turn_type, turn_type in {(ETURN_POS, ETURN), (UTURN_POS, UTURN)}:
-                        turn_pos = precondition_cg.features.get(variable, {}).get(check_turn_type, [])
+                        turn_pos = precondition_cg.features.get(variable, {}).get(check_turn_type, set())
                         if len(turn_pos) > 0:
                             if aux_state is None:
                                 print('[WARNING] Found turn checking rule but no aux state was passed to infer()')
@@ -216,9 +216,9 @@ class InferenceEngine:
                                 break
                             current_turn = int(aux_state.get('turn_index', None))
                             if current_turn is not None:
-                                relative_turn_checks = [current_turn - t for t in turn_pos]
-                                match_turn = facts_concept_graph.features.get(value, {}).get(turn_type, [])
-                                if not set(relative_turn_checks).issubset(set(match_turn)):  # post process filter of turn checking rules
+                                relative_turn_checks = {current_turn - t for t in turn_pos}
+                                match_turn = facts_concept_graph.features.get(value, {}).get(turn_type, set())
+                                if not relative_turn_checks.issubset(match_turn):  # post process filter of turn checking rules
                                     turn_check_failed = True
                                     break
                             else:  # no turn information can be found in aux state so cannot do any turn checking thus invalidating this rule
