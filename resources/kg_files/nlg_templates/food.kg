@@ -439,6 +439,12 @@ _t(_present)
 $ The best seafood place I've been to is in San Francisco . I could literally taste the ocean from fresh oysters . $
 ;
 
+intend_to_consume(emora,m/meat())
+->
+_t(_present)
+$ Who isn't a meat lover ? My favorite type of meat is beef , especially steaks . You made me really hungry . $
+;
+
 ltv/time(like(emora,v/vegetable()),past)
 type(v,group)
 not(ltv)
@@ -475,6 +481,12 @@ time(get(emora,X),past)
 ->
 _t(_present)
 $ You know what ? I just got X for lunch yesterday . I have it all the time . $
+;
+
+intend_to_consume(emora,salad)
+intend_to_consume(emora,lobster_roll())
+->
+$ Salad is the best ! I really enjoy having a lobster roll with cole slaw as the side . $
 ;
 
 bd/best(d/drinkable())

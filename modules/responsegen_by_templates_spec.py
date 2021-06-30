@@ -1,7 +1,7 @@
 from structpy import specification
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.concept_compiler import ConceptCompiler
-from GRIDD.data_structures.inference_engine import InferenceEngine
+from GRIDD.data_structures.graph_matching.inference_engine import InferenceEngine
 from GRIDD.utilities.utilities import collect
 from GRIDD.globals import *
 from os.path import join
@@ -122,7 +122,7 @@ class ResponseTemplatesSpec:
         Replace variables in string_spec_ls with expressions of matches found in match_dict and
         surface forms with grammatical realizations.
         """
-        cg = ConceptGraph()
+        cg = ConceptGraph(namespace='x_')
         ConceptGraph.construct(cg, 'time(hike(emora), now)')
         match_dict = {
             'X': 'emora'
@@ -134,7 +134,7 @@ class ResponseTemplatesSpec:
         filled = response_template_filler.fill_string(match_dict, expr_dict, string_spec_ls, cg)
         assert filled == 'I hike .'
 
-        cg = ConceptGraph()
+        cg = ConceptGraph(namespace='x_')
         ConceptGraph.construct(cg, 'time(hike(Mary), now)')
         match_dict = {
             'X': 'Mary',
@@ -148,7 +148,7 @@ class ResponseTemplatesSpec:
         filled = response_template_filler.fill_string(match_dict, expr_dict, string_spec_ls, cg)
         assert filled == 'Mary hikes .'
 
-        cg = ConceptGraph()
+        cg = ConceptGraph(namespace='x_')
         ConceptGraph.construct(cg, 'time(cute(c=cat()), now)')
         match_dict = {
             'X': 'c'
@@ -157,7 +157,7 @@ class ResponseTemplatesSpec:
         filled = response_template_filler.fill_string(match_dict, expr_dict, string_spec_ls, cg)
         assert filled == 'A cat is cute .'
 
-        cg = ConceptGraph()
+        cg = ConceptGraph(namespace='x_')
         ConceptGraph.construct(cg, f'time(cute(c=cat()), now) {USER_AWARE}(c)')
         ((s,t,o,i),) = cg.predicates('c', 'type', 'cat')
         cg.add(i, USER_AWARE)
@@ -168,7 +168,7 @@ class ResponseTemplatesSpec:
         filled = response_template_filler.fill_string(match_dict, expr_dict, string_spec_ls, cg)
         assert filled == 'The cat is cute .'
 
-        cg = ConceptGraph()
+        cg = ConceptGraph(namespace='x_')
         ConceptGraph.construct(cg, 'time(cute(c=cat()), now) type(c, group)')
         match_dict = {
             'X': 'c'
@@ -177,7 +177,7 @@ class ResponseTemplatesSpec:
         filled = response_template_filler.fill_string(match_dict, expr_dict, string_spec_ls, cg)
         assert filled == 'Cats are cute .'
 
-        cg = ConceptGraph()
+        cg = ConceptGraph(namespace='x_')
         ConceptGraph.construct(cg, 'time(cute(c=cat()), now) type(c, group)')
         match_dict = {
             'X': 'c'
@@ -186,7 +186,7 @@ class ResponseTemplatesSpec:
         filled = response_template_filler.fill_string(match_dict, expr_dict, string_spec_ls, cg)
         assert filled == 'Some cats are cute .'
 
-        cg = ConceptGraph()
+        cg = ConceptGraph(namespace='x_')
         ConceptGraph.construct(cg, f'time(cute(c=cat()), now) t=type(c, group) {USER_AWARE}(c) {USER_AWARE}(t)')
         ((s,t,o,i),) = cg.predicates('c', 'type', 'cat')
         cg.add(i, USER_AWARE)

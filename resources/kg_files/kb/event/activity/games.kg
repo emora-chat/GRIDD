@@ -2,9 +2,6 @@ game=(entity)
 
 [fetch, tag]=(game, physical)
 
-boardgame=(game)
-[monopoly,scrabble]=(boardgame)
-
 videogame=(game)
 expr("video game, videogames", videogame)
 

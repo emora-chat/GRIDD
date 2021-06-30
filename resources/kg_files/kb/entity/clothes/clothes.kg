@@ -1,0 +1,2 @@
+clothing=(entity)
+expr("apparel, clothes, costume, garments, attire, garb, finery", clothing)

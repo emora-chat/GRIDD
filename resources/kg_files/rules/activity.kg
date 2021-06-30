@@ -7,6 +7,13 @@ l:<l/like(user, e)>
 request_truth(emora, l)
 ;
 
+time(ac/activity(user),past)
+type(ac,leisure)
+->
+utr/take(user,r/rest())
+time(utr,past)
+glad(emora,utr)
+;
 
 /* house purchase */
 
@@ -82,4 +89,56 @@ like(emora, help(emora, p2/person()))
 type(p2, group)
 ;
 
+/* watch tv */
 
+time(uwt/watch(user,t1/tv()),past)
+-> user_watched_tv ->
+h:<h/have(user,t2/thought()) type(t2,group) about(t2,t1)>
+request_truth(emora,h)
+;
+
+h/have(user,t2/thought())
+type(t2,group)
+about(t2,t1/tv())
+req/request_truth(emora,h)
+user_aware(req)
+->
+appreciate(emora,h)
+;
+
+h/have(user,t2/thought())
+type(t2,group)
+about(t2,t1/tv())
+not(h)
+->
+like(emora,t1)
+traditional(t1)
+;
+
+/* talk to emora */
+
+to(talk(user),emora)
+->
+possess(user,t/time())
+appreciate(emora,t)
+;
+
+with(talk(user),emora)
+->
+to(talk(user),emora)
+;
+
+with(speak(user),emora)
+->
+to(talk(user),emora)
+;
+
+to(speak(user),emora)
+->
+to(talk(user),emora)
+;
+
+with(chat(user),emora)
+->
+to(talk(user),emora)
+;

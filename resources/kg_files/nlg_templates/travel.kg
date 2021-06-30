@@ -61,9 +61,9 @@ $ That actually sounds really good to me . I'll have to try that for some vacati
 ;
 
 gx/go(X/person())
-to(gx,c/country())
+to(gx,lc/location())
 time(gx,past)
-request(emora,c)
+request(emora,lc)
 te/travel(emora)
 elt/love(emora,tp/trip())
 type(tp,group)
@@ -72,7 +72,41 @@ git/from(gi,te)
 ->
 _t(_present)
 _pr(_high)
-$ What country have{"s":"#X","t":"now"} X visited ? I love trips too. Traveling inspires me . $
+$ Which country or city have{"s":"#X","t":"now"} X visited ? I love trips too. Traveling inspires me . $
+;
+
+utr/try(user,rt/RV_trip())
+type(rt,group)
+time(utr,past)
+request_truth(emora,utr)
+->
+_t(_present)
+_pr(_low)
+$ Have you ever heard about R V trips ? Since you like traveling , I bet you would enjoy that . $
+;
+
+utr/try(user,rt/RV_trip())
+type(rt,group)
+time(utr,past)
+etr/try(emora,rtt/RV_trip())
+type(rtt,group)
+time(etr,past)
+not(etr)
+->
+_t(_rpresent)
+$ Right ? I've been hearing R V trips for a long time but haven't gotten the chance to try . It's gotta be a lot of fun . $
+;
+
+utr/try(user,rt/RV_trip())
+type(rt,group)
+time(utr,past)
+not(utr)
+ee/explain(emora)
+to(ee,user)
+about(ee,rt)
+->
+_t(_present)
+$ Well , R V is the abbreviation for recreational vehicle . You can have a bedroom , a kitchen , a bathroom in it . Basically you own a moving hotel for trips . I think it's super cool . $
 ;
 
 gx/go(x/person())
@@ -95,6 +129,26 @@ time(gxx,future)
 _t(_present)
 _pr(_low)
 $ What country would you like to visit in the future ? $
+;
+
+gxx/go(X/person())
+to(gxx,florida)
+time(gxx,past)
+request_truth(gxx)
+->
+_t(_present)
+$ Oh , that's very cool ! I've visited Florida before in the United States . Have{"s":"#X","t":"now"} X ever been there ? $
+;
+
+gxx/go(x/person())
+to(gxx,florida)
+not(gxx)
+ge/go(emora)
+to(ge,florida)
+time(ge,past)
+->
+_t(_present)
+$ Then I really recommend going to Florida some time ! There is always plenty of sunshine . $
 ;
 
 like(emora,canada)
@@ -399,7 +453,20 @@ xll/like(X,Y)
 request_truth(emora,xll)
 ->
 _t(_rpresent)
-$ Sounds fun ! I’ve been hearing good and bad sides about Y from different friends of mine . Do{"s":"#X", "t":"#Z"} X like Y ? $
+_pr(_high)
+$ I’ve been hearing good and bad sides about Y from different friends of mine . Do{"s":"#X", "t":"#Z"} X like Y ? $
+;
+
+eh/hear(emora)
+about(eh,Y/big_city())
+from(eh,f/friend())
+type(f,group)
+xll/like(user,Y)
+request_truth(emora,xll)
+->
+_t(_rpresent)
+_pr(_high)
+$ I’ve been hearing good and bad sides about Y from different friends of mine . Do you like Y ? $
 ;
 
 convenient(Y/big_city())
@@ -408,6 +475,8 @@ type(op,group)
 numerous(pb/possibility())
 type(pb,group)
 ->
+_t(_rpresent)
+_pr(_high)
 $ I know ! Living in a big city like Y is so convenient . And big cities always have good opportunities and activities . $
 ;
 
@@ -422,6 +491,8 @@ sc/small(ct/city())
 type(ct,group)
 prefer(emora,sc)
 ->
+_t(_rpresent)
+_pr(_high)
 $ I understand . I think living in a big city like Y may be ideal for younger generations because they get more opportunities . And there is a unique vitality to a big city that matches the youthful spirit . But when I get old , I'll want to live in a smaller city . $
 ;
 
@@ -429,6 +500,8 @@ gd/gourmet(dining())
 in(gd,las_vegas)
 prefer(emora,gd)
 ->
+_t(_present)
+_pr(_high)
 $ Rather than going to casinos , I like the gourmet dining in Las Vegas more . I mean , that’s not something I can enjoy in many other cities . $
 ;
 
@@ -436,6 +509,8 @@ as/affordable(san_diego)
 for(as,h/holiday())
 type(h,group)
 ->
+_t(_present)
+_pr(_high)
 $ I think San Diego is a pretty affordable place for vacations . The sunshine is always worth it . $
 ;
 
@@ -447,6 +522,8 @@ ge/go(emora)
 to(ge,universal_studio)
 time(ge,past)
 ->
+_t(_present)
+_pr(_high)
 $ This reminds me of my trip to Orlando . I went to the Universal Studio and certainly had a lot of fun ! I'm hoping to go back someday . $
 ;
 
@@ -459,6 +536,8 @@ have(miami,vn)
 want(emora,ct/cruise_trip())
 from(ct,miami)
 ->
+_t(_present)
+_pr(_high)
 $ Miami has perfect weather, a pristine coastline, and vibrant nightlife ! I want to go on a cruise that leaves out of Miami. That'd be cool . $
 ;
 
@@ -467,6 +546,8 @@ gts/to(ge,santa_monica)
 ewg/want(emora,gts)
 cause(user,ewg)
 ->
+_t(_present)
+_pr(_high)
 $ I'm starting to think about the beach , sunshine , surfing , and cold drinks ... You know what , you make me want to go to Santa Monica right now . $
 ;
 
@@ -477,6 +558,8 @@ time(ewg,always)
 p/property(X)
 request(emora,p)
 ->
+_t(_present)
+_pr(_high)
 $ I’ve always wanted to go to X but never had the chance . What kind of city is it ? $
 ;
 
@@ -485,6 +568,7 @@ about(ek,ct/city())
 time(ek,now)
 ->
 _t(_present)
+_pr(_high)
 $ I definitely know more about that city now . Thanks for the description ! $
 ;
 
@@ -493,6 +577,7 @@ convenient(ct)
 el/lost(emora)
 in(el,lc)
 ->
+_t(_present)
 $ Big cities are convenient , but I feel like it’s easy to get lost when there are too many choices . $
 ;
 
@@ -501,6 +586,7 @@ el/live(emora)
 lis/in(el,sc)
 prefer(emora,lis)
 ->
+_t(_present)
 $ I would actually prefer to live in small cities when I get old . $
 ;
 
@@ -511,6 +597,7 @@ type(b,group)
 lad/about(el,db)
 like(emora,lad)
 ->
+_t(_present)
 $ As someone who embraces diversity , I love places that give respect to all people . It's always fun to learn about all the diverse backgrounds . $
 ;
 
@@ -519,6 +606,7 @@ etp/take(emora,p/picture())
 type(p,group)
 in(etp,bl)
 ->
+_t(_present)
 $ I wish I could see it with my own eyes . I bet I could take a lot of beautiful pictures there . $
 ;
 
@@ -527,5 +615,6 @@ from(e,childhood())
 understand(emora,xme)
 miss(emora,ic/ice_cream())
 ->
+_t(_rpresent)
 $ I totally get you . I really miss hearing the ice cream van music . I always asked my mom to take me out when I heard it , but I wasn’t able to get ice cream every time . $
 ;

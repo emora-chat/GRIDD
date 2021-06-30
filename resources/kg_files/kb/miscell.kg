@@ -1,4 +1,9 @@
 tempwall=(entity)
 tempiph=(entity)
 temppred=(predicate)
+smth_else=(object)
+expr("something else", smth_else)
+yoda=(person)
+let=(predicate)
+up=(property)
 ;

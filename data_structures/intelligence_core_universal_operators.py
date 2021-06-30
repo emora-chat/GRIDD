@@ -27,7 +27,7 @@ def eturn(cg, i, aux_state=None):
     concept, _, turn_pos, _ = cg.predicate(i)
     turn_pos = str(turn_pos)
     if turn_pos.isdigit():
-        cg.features[concept].setdefault(ETURN_POS, []).append(int(turn_pos))
+        cg.features[concept].setdefault(ETURN_POS, set()).add(int(turn_pos))
         if len(list(cg.predicates(predicate_type=OP_ETURN))) == 1:
             cg.remove(OP_ETURN)
         if len(list(chain(cg.subjects(turn_pos), cg.objects(turn_pos)))) == 1:
@@ -40,7 +40,7 @@ def uturn(cg, i, aux_state=None):
     concept, _, turn_pos, _ = cg.predicate(i)
     turn_pos = str(turn_pos)
     if turn_pos.isdigit():
-        cg.features[concept].setdefault(UTURN_POS, []).append(int(turn_pos))
+        cg.features[concept].setdefault(UTURN_POS, set()).add(int(turn_pos))
         if len(list(cg.predicates(predicate_type=OP_UTURN))) == 1:
             cg.remove(OP_UTURN)
         if len(list(chain(cg.subjects(turn_pos), cg.objects(turn_pos)))) == 1:
