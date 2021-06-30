@@ -39,9 +39,14 @@ class IntelligenceCore:
             self.knowledge_base = knowledge_base
         else:
             self.knowledge_base = ConceptGraph(namespace=KB)
-            if USECACHE:
+            if COBOTCACHE:
+                with open(os.path.join(CCACHE, 'full_kb.json'), 'r') as f:
+                    d = json.load(f)
+                self.knowledge_base.load(d)
+            elif USECACHE:
                 cached_knowledge, new_knowledge = self.stratify_cached_files(KBCACHE, knowledge_base)
                 self.load_kb(cached_knowledge, new_knowledge, knowledge_base, KBCACHE)
+                self.knowledge_base.save(os.path.join(CCACHE, 'full_kb.json')) # CACHE FOR COBOT
             else:
                 new_knowledge = knowledge_base.items()
                 for k, v in new_knowledge:
@@ -64,9 +69,24 @@ class IntelligenceCore:
             self.nlg_inference_engine = InferenceEngine(device=device)
             if nlg_templates is not None and not isinstance(nlg_templates, ConceptGraph):
                 print('checking templates')
-                if USECACHE:
+                if COBOTCACHE:
+                    with open(os.path.join(CCACHE, 'full_templates.json'), 'r') as f:
+                        d = json.load(f)
+                    templates = {}
+                    for rule, (pre, post, vars) in d.items():
+                        pre_cg = ConceptGraph(namespace=pre['namespace'])
+                        pre_cg.load(pre)
+                        template_obj = Template(*post)
+                        vars = set(vars)
+                        templates[rule] = (pre_cg, template_obj, vars)
+                    self.nlg_inference_engine.add(templates, pre_cg.id_map().namespace)
+                elif USECACHE:
                     cached_knowledge, new_knowledge = self.stratify_cached_files(NLGCACHE, nlg_templates)
                     self.load_templates(cached_knowledge, new_knowledge, nlg_templates, NLGCACHE)
+                    # CACHE FOR COBOT
+                    d = {rule: (pre.save(), post.save(), list(vars)) for rule, (pre, post, vars) in self.nlg_inference_engine.rules.items()}
+                    with open(os.path.join(CCACHE, 'full_templates.json'), 'w') as f:
+                        json.dump(d, f, indent=2)
                 else:
                     nlg = nlg_templates.items()
                     for k,v in nlg:
@@ -85,9 +105,25 @@ class IntelligenceCore:
             self.inference_engine = inference_engine
             if inference_rules is not None and not isinstance(inference_rules, ConceptGraph):
                 print('checking rules')
-                if USECACHE:
+                if COBOTCACHE:
+                    with open(os.path.join(CCACHE, 'full_rules.json'), 'r') as f:
+                        d = json.load(f)
+                    rules = {}
+                    for rule, (pre, post, vars) in d.items():
+                        pre_cg = ConceptGraph(namespace=pre['namespace'])
+                        pre_cg.load(pre)
+                        post_cg = ConceptGraph(namespace=post['namespace'])
+                        post_cg.load(post)
+                        vars = set(vars)
+                        rules[rule] = (pre_cg, post_cg, vars)
+                    self.inference_engine.add(rules, pre_cg.id_map().namespace)
+                elif USECACHE:
                     cached_knowledge, new_knowledge = self.stratify_cached_files(INFCACHE, inference_rules)
                     self.load_rules(cached_knowledge, new_knowledge, inference_rules, INFCACHE)
+                    # CACHE FOR COBOT
+                    d = {rule: (pre.save(), post.save(), list(vars)) for rule, (pre, post, vars) in self.inference_engine.rules.items()}
+                    with open(os.path.join(CCACHE, 'full_rules.json'), 'w') as f:
+                        json.dump(d, f, indent=2)
                 else:
                     rules = inference_rules.items()
                     for k, v in rules:
