@@ -997,3 +997,11 @@ be(g, g2)
 _pr(_high)
 $ Hmm. My favorite tv genre is food shows. They're so soothing to watch and I always work up an appetite . $
 ;
+
+req_unsat(request(user, o/object()))
+l/like(emora, Iron_Man_1())
+c/cause(l, o)
+->
+_pr(_high)
+$ I just think Tony Stark is really funny, and Iron Man has always been my favorite super hero. $
+;

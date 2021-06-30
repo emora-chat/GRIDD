@@ -6,4 +6,6 @@ expr("something else", smth_else)
 yoda=(person)
 let=(predicate)
 up=(property)
+record=(predicate)
+conversation=(object)
 ;

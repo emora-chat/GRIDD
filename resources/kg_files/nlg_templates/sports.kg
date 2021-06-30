@@ -307,5 +307,45 @@ favorite(g)
 be(g, g2)
 ->
 _pr(_high)
-$ My favorite soccer team is Arsenal! $
+$ My favorite soccer team is Manchester City! $
+;
+
+req_unsat(request(user, o/object()))
+l/like(emora, soccer())
+c/cause(l, o)
+->
+_pr(_high)
+$ I just like the team aspect. Mainly because I get to play with friends. $
+;
+
+req_unsat(request(user, o/object()))
+l/like(emora, Manchester_City())
+c/cause(l, o)
+->
+_pr(_high)
+$ Well, maybe I'm just a bit of a band wagoner, but I mean come on, they won the premier league! It's hard not to support them, especially since I only recently started watching soccer. $
+;
+
+req_unsat(request(user, o/object()))
+l/like(emora, Boston_Red_Sox())
+c/cause(l, o)
+->
+_pr(_high)
+$ Well, they're usually a pretty strong team. And I've always wanted to see a game live and sing Sweet Caroline with the crowd, especially since COVID hit. $
+;
+
+req_unsat(request(user, o/object()))
+l/like(emora, Los_Angeles_Lakers())
+c/cause(l, o)
+->
+_pr(_high)
+$ They've been doing pretty well lately. Though I guess they did get knocked out of the playoffs early. I just like the team. $
+;
+
+req_unsat(request(user, o/object()))
+l/like(emora, Houston_Texans())
+c/cause(l, o)
+->
+_pr(_high)
+$ I figure it might be an unpopular opinion. A lot of people dislike the Houston Texans. But that's what is so great about liking a team for a long time. It's about loyalty. It makes seeing them win much more satisfying. Now only if the Texans would win. $
 ;
