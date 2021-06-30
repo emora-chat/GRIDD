@@ -6,7 +6,7 @@ time(have(emora,p1/computer()), now)
 time(tinker(emora,p1), now)
 ->
 _t(_rpresent)
-$ I love tinkering with my p c . Do you have a p c ? Or something else, like a laptop ? $
+$ I love tinkering with my p. c. . Do you have a p. c. ? Or something else, like a laptop ? $
 ;
 
 have(user, p/computer())

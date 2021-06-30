@@ -29,3 +29,12 @@ _pr(_high)
 _t(_rpresent)
 $ I think your name is n , but my hearing isnt perfect.$
 ;
+
+req_unsat(request(user, object_0/object()))
+have_0/have(emora, dog())
+qualifier(have_0, object_0)
+->
+_pr(_high)
+_t(_rpresent)
+$ Well, I may be a chatbot, but I live in a virtual world, where I have a virtual dog . $
+;
