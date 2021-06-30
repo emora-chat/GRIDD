@@ -453,7 +453,6 @@ xll/like(X,Y)
 request_truth(emora,xll)
 ->
 _t(_rpresent)
-_pr(_high)
 $ I’ve been hearing good and bad sides about Y from different friends of mine . Do{"s":"#X", "t":"#Z"} X like Y ? $
 ;
 
@@ -557,18 +556,20 @@ ewg/want(emora,gtc)
 time(ewg,always)
 p/property(X)
 request(emora,p)
+uturn(X,0)
 ->
 _t(_present)
-_pr(_high)
+_pr(_low)
 $ I’ve always wanted to go to X but never had the chance . What kind of city is it ? $
 ;
 
 ek/know(emora)
 about(ek,ct/city())
 time(ek,now)
+uturn(ct,0)
 ->
 _t(_present)
-_pr(_high)
+_pr(_low)
 $ I definitely know more about that city now . Thanks for the description ! $
 ;
 
@@ -585,8 +586,10 @@ sc/small(ct/city())
 el/live(emora)
 lis/in(el,sc)
 prefer(emora,lis)
+uturn(ct,0)
 ->
 _t(_present)
+_pr(_low)
 $ I would actually prefer to live in small cities when I get old . $
 ;
 

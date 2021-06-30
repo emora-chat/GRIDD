@@ -15,6 +15,34 @@ time(utr,past)
 glad(emora,utr)
 ;
 
+/* take rest */
+
+time(un/nap(user),past)
+->
+glad(emora,un)
+;
+
+nap()
+->
+ne/nap(emora)
+love(emora,ne)
+;
+
+gu/go(user)
+to(gu,bed())
+time(gu,past)
+->
+time(nap(user),past)
+;
+
+gu/go(user)
+su/nap(user)
+to(gu,su)
+time(gu,past)
+->
+time(nap(user),past)
+;
+
 /* house purchase */
 
 time(b/buy(user, h/house()), past)
@@ -141,4 +169,44 @@ to(talk(user),emora)
 with(chat(user),emora)
 ->
 to(talk(user),emora)
+;
+
+/* transportation */
+
+time(urb/ride(user,bicycle()),past)
+->
+time(ub/bike(user),past)
+;
+
+time(ub/bike(user),past)
+->
+healthy(ub)
+;
+
+time(drive(user),past)
+->
+time(de/drive(emora),past)
+boring(de)
+;
+
+time(de/drive(emora),past)
+boring(de)
+user_aware(de)
+->
+time(re/rent(emora,car()),past)
+in(re,boston)
+;
+
+time(take(user,tr/trans_ob()),past)
+_specific(tr)
+->
+utr:<utr/try(user,rt/RV_trip()) type(rt,group) time(utr,past)>
+request_truth(emora,utr)
+;
+
+/* cleaning */
+
+time(uc/clean(user),past)
+->
+organized(uc)
 ;

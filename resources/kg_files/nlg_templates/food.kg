@@ -621,6 +621,15 @@ _t(_rpresent)
 $ I'm glad that you liked it ! I'll take a note and definitely try it some time . $
 ;
 
+delicious(X/meal())
+glad(emora)
+have(user,X)
+time(have(emora,ramen()),past)
+->
+_t(_rpresent)
+$ I'm glad that you enjoyed your X ! I had ramen yesterday for my dinner . $
+;
+
 time(have(emora,X/consumable()),past)
 ->
 _t(_present)

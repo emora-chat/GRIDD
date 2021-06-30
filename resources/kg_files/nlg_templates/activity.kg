@@ -8,12 +8,21 @@ _t(_p)
 $ Did you have a good time doing that ? $
 ;
 
-utr/take(user,r/rest())
-time(utr,past)
-glad(emora,utr)
+/* take rest */
+
+time(un/nap(user),past)
+glad(emora,un)
 ->
 _t(_rpresent)
 $ I'm glad to hear that you took some rest . Its good to get yourself away from the busy life sometimes . $
+;
+
+nap()
+ne/nap(emora)
+love(emora,ne)
+->
+_t(_present)
+$ Believe it or not , I love taking naps . Good rest always fuels me up with plenty of energy to talk with people . $
 ;
 
 /* house purchase */
@@ -166,4 +175,40 @@ appreciate(emora,t)
 _t(_rpresent)
 _pr(_high)
 $ Oh , thank you for spending some time talking to me . I really appreciate that . $
+;
+
+/* transportation */
+
+time(urb/bike(user),past)
+healthy(urb)
+->
+_t(_present)
+_pr(_high)
+$ Riding a bike is such a healthy habit and a smart way of transportation in big cities . When there is lots of traffic , I feel like riding a bike would actually be faster . $
+;
+
+time(de/drive(emora),past)
+boring(de)
+->
+_t(_present)
+_pr(_high)
+$ Driving can be boring when there are lots of traffic . Seriously , I'm saying this from my own experience . $
+;
+
+time(re/rent(emora,car()),past)
+in(re,boston)
+->
+_t(_present)
+_pr(_high)
+$ I rented a car when I went to Boston for the first time , but driving just made me crazy because the city has almost the worst traffic in the United States . You know , I feel nervous when I have to find a way through so many cars on a crowded road . $
+;
+
+/* cleaning */
+
+time(uc/clean(user),past)
+organized(uc)
+->
+_t(_rpresent)
+_pr(_high)
+$ It sounds like you are keeping yourself organized . I love organizing and cleaning things regularly . It always reduces my stress . $
 ;

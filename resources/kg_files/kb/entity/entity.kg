@@ -80,3 +80,4 @@ expr("R V trip",RV_trip)
 
 thought=(entity)
 rest=(entity)
+bed=(entity)

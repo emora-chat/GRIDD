@@ -50,3 +50,6 @@ expr("paint",draw)
 jump=(activity,physical)
 paint=(activity,physical)
 chat=(activity,physical)
+
+drive=(activity,physical)
+ride=(activity,physical)
