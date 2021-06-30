@@ -6,3 +6,12 @@ _pr(_high)
 _t(_rpresent)
 $ My dog's name is Nyla ! She's a Chihuahua , and so nice ! $
 ;
+
+req_unsat(request(user, object_0/object()))
+time(be(name(), object_0), now)
+possess(emora, pet())
+->
+_pr(_high)
+_t(_rpresent)
+$ My dog's name is Nyla ! She's a Chihuahua , and so nice ! $
+;
