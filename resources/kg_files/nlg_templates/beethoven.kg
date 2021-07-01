@@ -8,6 +8,7 @@ $ Oh, why do you not like paradoxes? I like trying to understand them . $
 
 l/like(user, p/paradox())
 like(emora, p)
+uturn(l,0)
 ->
 _pr(_high)
 _t(_r)
