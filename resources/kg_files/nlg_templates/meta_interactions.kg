@@ -26,7 +26,7 @@ _specific(n)
 ->
 _pr(_high)
 _t(_rpresent)
-$ Sorry, my hearing isn't perfect, I couldn't quite catch your name. $
+$ I think your name is n , but my hearing isnt perfect.$
 ;
 
 req_unsat(request(user, object_1/object()))
@@ -36,7 +36,7 @@ _category(object_1)
 ->
 _pr(_high)
 _t(_rpresent)
-$  $
+$ Sorry, my hearing isn't perfect, I couldn't quite catch your name. $
 ;
 
 req_unsat(request(user, object_0/object()))
