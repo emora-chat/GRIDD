@@ -46,7 +46,10 @@ class IntelligenceCore:
             elif USECACHE:
                 cached_knowledge, new_knowledge = self.stratify_cached_files(KBCACHE, knowledge_base)
                 self.load_kb(cached_knowledge, new_knowledge, knowledge_base, KBCACHE)
-                self.knowledge_base.save(os.path.join(CCACHE, 'full_kb.json')) # CACHE FOR COBOT
+                # CACHE FOR COBOT
+                if not os.path.exists(CCACHE):
+                    os.mkdir(CCACHE)
+                self.knowledge_base.save(os.path.join(CCACHE, 'full_kb.json'))
             else:
                 new_knowledge = knowledge_base.items()
                 for k, v in new_knowledge:
@@ -84,6 +87,8 @@ class IntelligenceCore:
                     cached_knowledge, new_knowledge = self.stratify_cached_files(NLGCACHE, nlg_templates)
                     self.load_templates(cached_knowledge, new_knowledge, nlg_templates, NLGCACHE)
                     # CACHE FOR COBOT
+                    if not os.path.exists(CCACHE):
+                        os.mkdir(CCACHE)
                     d = {rule: (pre.save(), post.save(), list(vars)) for rule, (pre, post, vars) in self.nlg_inference_engine.rules.items()}
                     with open(os.path.join(CCACHE, 'full_templates.json'), 'w') as f:
                         json.dump(d, f, indent=2)
@@ -121,6 +126,8 @@ class IntelligenceCore:
                     cached_knowledge, new_knowledge = self.stratify_cached_files(INFCACHE, inference_rules)
                     self.load_rules(cached_knowledge, new_knowledge, inference_rules, INFCACHE)
                     # CACHE FOR COBOT
+                    if not os.path.exists(CCACHE):
+                        os.mkdir(CCACHE)
                     d = {rule: (pre.save(), post.save(), list(vars)) for rule, (pre, post, vars) in self.inference_engine.rules.items()}
                     with open(os.path.join(CCACHE, 'full_rules.json'), 'w') as f:
                         json.dump(d, f, indent=2)
