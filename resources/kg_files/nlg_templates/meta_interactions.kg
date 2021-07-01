@@ -19,15 +19,24 @@ $ Sorry, I'm Alexa's cousin, and sadly I can't play music, just talk. $
 ;
 
 
-event_0/event(object())
 req_unsat(request(user, name()))
-do_0/do(user, event_0)
 possess(user, name_0/name())
 be(name_0, n/name())
+_specific(n)
 ->
 _pr(_high)
 _t(_rpresent)
-$ I think your name is n , but my hearing isnt perfect.$
+$ Sorry, my hearing isn't perfect, I couldn't quite catch your name. $
+;
+
+req_unsat(request(user, object_1/object()))
+possess(user, name_1/name())
+be_1/be(name_1, object_1)
+_category(object_1)
+->
+_pr(_high)
+_t(_rpresent)
+$  $
 ;
 
 req_unsat(request(user, object_0/object()))
