@@ -1,0 +1,33 @@
+/* default */
+l/like(user, exercise(user)) time(l, now)
+request_truth(emora, l)
+->
+_pr(_low)
+$ Do you like exercising ? I find it to be hard to enjoy the same workout more than a few times . $
+;
+
+f/fit(user, exercise(user)) time(f, now) in(f, day()) b/be(f, hard)
+request_truth(emora, b)
+->
+_pr(_low)
+$ I was wondering if you also find it hard to fit exercising into your daily life ? I always seem to run out of time even when I really am planning to work out that day . $
+;
+
+
+/* general exercise */
+
+time(E/exercise(user), past)
+w/with(E, p/person())
+type(p, group)
+request_truth(emora, w)
+-> q_exercise_with_others ->
+_pr(_low)
+$ I always find it enjoyable to exercise with other people. Did you exercise with anyone else ? $
+;
+
+/* swim */
+
+like(emora, d/doggypaddle(emora))
+->
+$ Swimming is awesome ! I can only do the doggypaddle, but it would be cool to get better at it and learn other swimming strokes . $
+;
