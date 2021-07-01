@@ -92,7 +92,7 @@ class IntelligenceCore:
                     for k,v in nlg:
                         nlg_templates = ConceptGraph(namespace='t_')
                         self.know(v, nlg_templates, emora_knowledge=True, identify_nonasserts=True)
-                        templates = nlg_templates.nlg_templates()
+                        templates = nlg_templates.nlg_templates(k)
                         self.nlg_inference_engine.add(templates, nlg_templates.id_map().namespace)
                         self._check(nlg_templates, use_kb=True, file=k)
                 self.nlg_inference_engine.matcher.process_queries()
@@ -239,7 +239,7 @@ class IntelligenceCore:
                 v = source[file]
                 nlg_templates = ConceptGraph(namespace='t_')
                 self.know(v, nlg_templates, emora_knowledge=True, identify_nonasserts=True)
-                templates = nlg_templates.nlg_templates()
+                templates = nlg_templates.nlg_templates(file)
                 savefile = os.path.join(dir, (file + '.json').replace(os.sep, CACHESEP))
                 d = {rule: (pre.save(), post.save(), list(vars)) for rule,(pre,post,vars) in templates.items()}
                 with open(savefile, 'w') as f:
@@ -647,11 +647,14 @@ class IntelligenceCore:
         wm = self.working_memory
 
         p.next('select keep')
-        options = {i for s,t,o,i in wm.predicates() if t not in chain(self.subj_essential_types, self.obj_essential_types, PRIM, {TYPE})}
+        options = {i for s,t,o,i in wm.predicates() if t not in chain(self.subj_essential_types, self.obj_essential_types, PRIM, {TYPE, '_tanchor'})}
         soptions = sorted(options,
                           key=lambda x: wm.features.get(x, {}).get(SALIENCE, 0),
                           reverse=True)
         keep = soptions[:num_keep]
+
+        # keep all topic anchors with sal > 0
+        keep.extend([i for s,t,o,i in wm.predicates(predicate_type='_tanchor') if wm.features[s][SALIENCE] > 0])
 
         # delete all user and emora spans that occured SPANTURN turns ago
         p.next('delete old spans')

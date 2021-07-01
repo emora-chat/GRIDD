@@ -54,16 +54,15 @@ request_truth(emora, l)
 $ Actually , I was wondering if you are interested in artificial intelligence ? $
 ;
 
-l/like(user, m/movie())
-maybe(l)
+l:<l/like(user, m/movie())>
 request_truth(emora, l)
 -> movie_fallback ->
 $ So , you know, I really enjoy learning about new movies . Do you like movies too ? $
 ;
 
-l/like(user, paradox())
+l:<l/like(user, paradox())>
 request_truth(emora, l)
-->
+-> paradox_fallback ->
 _t(_rpresent)
 $ There's a paradox I've been racking my head against . Do you like paradoxes ? $
 ;

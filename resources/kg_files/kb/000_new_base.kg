@@ -75,4 +75,5 @@ op_more_info=(predicate)
 _category=(predicate)
 _specific=(predicate)
 _exists=(predicate)
+_tanchor=(predicate)
 ;

@@ -13,7 +13,7 @@ from GRIDD.data_structures.meta_graph import MetaGraph
 from GRIDD.modules.responsegen_by_templates import Template
 
 from collections import defaultdict, deque
-import json
+import json, re, os
 from GRIDD.utilities import Counter
 from GRIDD.globals import *
 from itertools import chain
@@ -473,7 +473,10 @@ class ConceptGraph:
                 rules[rule] = (pre, post, vars)
         return rules
 
-    def nlg_templates(self):
+    def nlg_templates(self, file=None):
+        """
+        File is passed for templates who take the alphabetic filename as the topic anchor
+        """
         priority_map = {'_low': 0.1, '_high': 1.0}
         template_types = {'_react': '_react',
                           '_r': '_react',
@@ -481,6 +484,16 @@ class ConceptGraph:
                           '_p': '_present',
                           '_rpresent': '_rpresent',
                           '_rp': '_rpresent'}
+
+        topic_anchor = ''
+        if file is not None:
+            head, tail = os.path.split(file)
+            matches = re.findall(r'([^_]*)(?:\_.*)?\.kg', tail)
+            if len(matches) == 1:
+                topic_anchor = matches[0] + '__'
+            else:
+                print('[WARNING] More than one topic anchor found for file %s: %s' %(file, matches))
+
         templates = {}
         template_instances = set(self.subtypes_of('response')) - {'response'}
 
@@ -489,6 +502,8 @@ class ConceptGraph:
         for template in template_instances:
             # Get the rule that this template is the postcondition of
             (rule, ) = self.metagraph.sources(template, POST)
+            if file is None:
+                topic_anchor = rule.split('_')[0] + '__'
             # Get the precondition and vars
             pre_inst = self.metagraph.out_edges(rule, PRE)
             pre = [edge[1] for edge in pre_inst]
@@ -528,7 +543,8 @@ class ConceptGraph:
                 print('[WARNING] Template type %s must be one of %s'%(str(template_type), str(template_types.keys())))
             template_obj = Template(string_spec_ls,
                                     priority=priority_map.get(priority_tag, DEFAULT_PRIORITY),
-                                    template_type=template_types.get(template_type, DEFAULT_TEMPLATE_TYPE))
+                                    template_type=template_types.get(template_type, DEFAULT_TEMPLATE_TYPE),
+                                    topic_anchor=topic_anchor)
             instance_exclusions.update(chain(pre_inst, vars_inst))
             template_links[rule] = (pre, template_obj, vars)
 

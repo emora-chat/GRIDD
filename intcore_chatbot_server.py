@@ -812,7 +812,8 @@ class ChatbotServer:
         if PRINT_WM:
             print('\n<< Working Memory After Inferences Applied >>')
             print(working_memory.pretty_print(exclusions={SPAN_DEF, SPAN_REF, USER_AWARE, ASSERT, 'imp_trigger'}))
-
+            for s,t,o,i in working_memory.predicates(predicate_type='_tanchor'):
+                print(f"{s} = {working_memory.features[s][SALIENCE]}, {working_memory.features[i][SALIENCE]}")
         p.next('prepare template nlg')
         working_memory, expr_dict = self.run_prepare_template_nlg(working_memory)
         p.next('template infer')
