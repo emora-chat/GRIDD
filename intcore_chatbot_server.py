@@ -370,7 +370,7 @@ class ChatbotServer:
     def run_dynamic_inference(self, rules, working_memory, aux_state):
         self.load_working_memory(working_memory)
         inference_results = self.reference_engine.infer(self.dialogue_intcore.working_memory, aux_state, rules,
-                                                        cached=False, remove_rules=True)
+                                                        cached=False)
         return inference_results, {}
 
     @serialized('inference_results')
@@ -387,40 +387,61 @@ class ChatbotServer:
             inference_results = {}
         compatible_pairs = {}
         if len(inference_results) > 0:
+            wm_types = wm.types(set(inference_results.keys()))
             for reference_node, (pre, matches) in inference_results.items():
-                compatible_pairs[reference_node] = {}
+                match_dict = {}
+                ref_types = wm_types[reference_node]
                 for match, virtual_preds in matches:
-                    # do not want match between itself and itself
-                    # also, ref node and match must either both be predicates or both be entities
-                    if reference_node in match and reference_node != match[reference_node] and \
-                        ((wm.has(predicate_id=match[reference_node]) and wm.has(predicate_id=reference_node)) or
-                         (not wm.has(predicate_id=match[reference_node]) and not wm.has(predicate_id=reference_node))):
-                        compatible_pairs[reference_node][match[reference_node]] = []
+                    # constraints: (1) do not want match between itself and itself, (2) ref node and match must either both be predicates
+                    # or both be entities, (3) any type of the reference is not a candidate, and user and emora are not
+                    # (4) candidates for pronoun references
+                    ref_match = match[reference_node]
+                    if reference_node in match and reference_node != ref_match and \
+                            wm.has(predicate_id=ref_match) == wm.has(predicate_id=reference_node) and \
+                            ref_match not in ref_types and (('prp' not in ref_types and 'prop$' not in ref_types) or ref_match not in {'user','emora'}):
+                        match_dict[ref_match] = []
                         for node in match:
                             if node != reference_node:
                                 if not node.startswith('__virt_') and not match[node].startswith('__virt_'): # nothing to merge if matched node is virtual type
-                                    compatible_pairs[reference_node][match[reference_node]].append((match[node], node))
-            wm_types = wm.types(set(compatible_pairs.keys()))
-            pairs_to_merge = [] # todo - make into a set???
-            for ref_node, compatibilities in compatible_pairs.items():
-                resolution_options = []
-                ref_types = wm_types[ref_node]
-                for ref_match, constraint_matches in compatibilities.items():
-                    if ref_match not in ref_types and (('prp' not in ref_types and 'prop$' not in ref_types) or ref_match not in {'user', 'emora'}):
-                        # any type of the reference is not a candidate
-                        # user and emora are not candidates for pronoun references
-                        if wm.metagraph.targets(ref_match, REF):
-                            # found other references that perfectly match (exact same reference constraints); merge all
-                            # pairs_to_merge.extend([(ref_match, ref_node)] + constraint_matches)
-                            # todo - error-prone right now, it overmatches (ex: X -type-> living_thing and Y -type-> animal would merge)
-                            pass
-                        else:
-                            # found resolution to reference; merge only one
-                            resolution_options.append(ref_match)
-                if len(resolution_options) > 0:
-                    salient_resol = max(resolution_options,
-                                        key=lambda x: wm.features.get(x, {}).get(SALIENCE, 0))
-                    pairs_to_merge.extend([(salient_resol, ref_node)] + compatibilities[salient_resol])
+                                    match_dict[ref_match].append((match[node], node))
+                if match_dict:
+                    compatible_pairs[reference_node] = match_dict
+
+            pairs_to_merge = []
+            while compatible_pairs:
+                print(compatible_pairs.items())
+                sorted_compat_pairs = sorted(compatible_pairs.items(),
+                                             key=lambda item: max([wm.features.get(cand, {}).get(SALIENCE, 0) for cand in item[1]], default=0),
+                                             reverse=True)
+                ref_node, matches = sorted_compat_pairs.pop()
+                constant_matches = []
+                reference_matches = []
+                for match_node in matches:
+                    if wm.metagraph.targets(match_node, REF):
+                        reference_matches.append(match_node)
+                    else:
+                        constant_matches.append(match_node)
+                if len(constant_matches) > 0:
+                    salient_constant = max(constant_matches, key=lambda x: wm.features.get(x, {}).get(SALIENCE, 0))
+                    candidates = set([salient_constant] + reference_matches)
+                else:
+                    candidates = set(reference_matches)
+                while candidates:
+                    selection = max(candidates, key=lambda x: wm.features.get(x, {}).get(SALIENCE, 0))
+                    pairs_to_merge.extend([(selection, ref_node)] + matches[selection])
+                    if selection in reference_matches:
+                        # reference merged in; update candidates of both current reference and merged reference to be the most restrictive set
+                        if selection in compatible_pairs:
+                            candidates.intersection_update(compatible_pairs[selection].keys())
+                            for c in list(compatible_pairs[selection]):
+                                if c not in candidates:
+                                    del compatible_pairs[selection][c]
+                    else:
+                        # constant merged in; remove all candidates that are references where constant is not in their candidates
+                        candidates = set([c for c in candidates if c not in reference_matches or selection in compatible_pairs.get(c, {})])
+                    candidates.discard(selection)
+                del compatible_pairs[ref_node]
+
             if len(pairs_to_merge) > 0:
                 self.merge_references(pairs_to_merge, aux_state)
         return self.dialogue_intcore.working_memory
