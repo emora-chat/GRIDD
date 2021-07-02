@@ -73,9 +73,10 @@ class InferenceEngine:
             precondition = pre.to_infcompat_graph()
             precondition = self._flatten_types(pre, precondition, for_query=True)
             instances = {n for n in pre.concepts()
-                         if 'isinstance' in pre.features(n) and pre.features(n)['isinstance']}
+                         if pre.features.get(n, None) and 'isinstance' in pre.features[n] and pre.features[n]['isinstance']}
             for instance in instances:
-                precondition.add(instance, '__instance__', 't')
+                if instance in precondition: # duck tape to prevent adding this on type predicate instances that aren't represented as a predicate (instead the direct "t" edge)
+                    precondition.add(instance, '__instance__', 't')
             for node in categories:
                 precondition.data(node)['category'] = True
             for node in specifics:
@@ -97,9 +98,10 @@ class InferenceEngine:
         p.next(f'flatten types ({len(facts_types)} concepts)')
         facts_graph = self._flatten_types(facts, facts_graph, facts_types, ignore=ignore)
         instances = {n for n in facts.concepts()
-                     if 'isinstance' in facts.features(n) and facts.features(n)['isinstance']}
+                     if facts.features.get(n, None) and 'isinstance' in facts.features[n] and facts.features[n]['isinstance']}
         for instance in instances:
-            facts_graph.add(instance, '__instance__', 't')
+            if instance in facts_graph: # duck tape to prevent adding this on type predicate instances that aren't represented as a predicate (instead the direct "t" edge)
+                facts_graph.add(instance, '__instance__', 't')
         p.next('quantities')
         quantities = {c for c in facts.concepts() if isinstance(c, (float, int))}
         for node in quantities: facts_graph.data(node)['num'] = node

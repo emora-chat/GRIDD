@@ -131,6 +131,7 @@ class ParseToLogic:
                 c = next(iter(sf_concepts))
                 wm.add(span_node, 'ref', f'"{surface_form}"')
                 wm.add(f'"{surface_form}"', 'expr', c)
+                wm.features[f'"{surface_form}"']['isinstance'] = True
             l_concepts = None
             if len(sf_concepts) == 0:
                 l_concepts = kb.objects(f'"{lemma}"', 'expr')
@@ -138,6 +139,7 @@ class ParseToLogic:
                     c = next(iter(l_concepts))
                     wm.add(span_node, 'ref', f'"{lemma}"')
                     wm.add(f'"{lemma}"', 'expr', c)
+                    wm.features[f'"{lemma}"']['isinstance'] = True
             if not sf_concepts and not l_concepts:
                 # Create "UNK" expression nodes for all nodes with no expr references.
                 unk_node = wm.add(wm.id_map().get())
@@ -152,6 +154,8 @@ class ParseToLogic:
                     wm.add('unknown_%s' % pos_type, 'type', 'object')
                 wm.add(span_node, 'ref', f'"{surface_form}"')
                 wm.add(f'"{surface_form}"', 'expr', unk_node)
+                wm.features[f'"{surface_form}"']['isinstance'] = True
+                wm.features[unk_node]['isinstance'] = True
 
     def _update_centers(self, centers_handled, post, center, solution):
         centers_handled.add(center)
