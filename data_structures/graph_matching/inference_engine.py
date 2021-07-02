@@ -115,9 +115,9 @@ class InferenceEngine:
         for c in orig_cg.concepts():
             if ignore is None or c not in ignore:
                 handled = set()
-                if not for_query:
-                    # add self-loop type
-                    cg.add(c, c, 't')
+                # if not for_query:
+                #     # add self-loop type
+                #     cg.add(c, c, 't')
                 if orig_cg.has(predicate_id=c):
                     pred_type = orig_cg.type(c)
                     if pred_type != TYPE:  # add predicate type as a type, if not type predicate itself
@@ -158,12 +158,12 @@ class InferenceEngine:
         p.start('facts graph types')
         facts_types = facts_concept_graph.types()
         p.next('convert facts graph')
-        if remove_rules:
-            # get predicate ids to ignore
-            ignore = {v for rule, info in dynamic_rules.items() for v in info[-1]}
-            facts_graph = self._convert_facts(facts_concept_graph, facts_types, ignore)
-        else:
-            facts_graph = self._convert_facts(facts_concept_graph, facts_types)
+        # if remove_rules:
+        #     # get predicate ids to ignore
+        #     ignore = {v for rule, info in dynamic_rules.items() for v in info[-1]}
+        #     facts_graph = self._convert_facts(facts_concept_graph, facts_types, ignore)
+        # else:
+        facts_graph = self._convert_facts(facts_concept_graph, facts_types)
         p.next('process dynamic rules')
         if dynamic_rules is not None and not isinstance(dynamic_rules, dict):
             dynamic_rules = ConceptGraph(dynamic_rules).rules()

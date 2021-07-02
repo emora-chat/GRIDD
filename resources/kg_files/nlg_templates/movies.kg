@@ -41,7 +41,7 @@ _t(_p)
 $ Do you have a favorite streaming service? Believe it or not, I don't have a favorite. I think they all have such great offerings! $
 ;
 
-l/like(user, g/netflix())
+l/like(user, netflix)
 cause(p/predicate(), l)
 request(emora, p)
 ->
