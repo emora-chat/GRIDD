@@ -14,6 +14,8 @@ unknown_pron = (object)
 unknown_adv = (object)
 unknown_other = (object)
 
+;
+
 inst_det = (object)
 a = (inst_det)
 expr(["a"], a)
@@ -34,6 +36,19 @@ expr(["this"], this)
 it = (ref_det)
 expr(["it"], it)
 
+;
+
+pos_tag = (entity)
+[prp, propds] = (pos_tag)
+
+;
+
+ner_tag = (entity)
+person_ner = (ner_tag, name)
+[work_of_art_ner, loc_ner] = (ner_tag)
+
+;
+
 affirm = (predicate)
 expr(["yes", "yeah", "yea", "sure", "yep", "yup",
       "exactly", "definitely", "right", "absolutely", "of course"], affirm)
@@ -47,6 +62,10 @@ expr(["hello", "hi", "hey"], greet)
 dismiss = (predicate)
 expr(["bye", "goodbye"], dismiss)
 
+relay_info = (predicate)
+
+;
+
 ack_conf = (predicate)
 user_aware = (predicate, subj_essential)
 
@@ -55,10 +74,14 @@ request = (_request)
 request_truth = (_request, nonassert)
 [req_unsat, req_sat] = (predicate, subj_essential)
 
+;
+
 _pr=(predicate)
 [_low,_high]=(object)
 
 [uturn, _uturn, eturn, _eturn]=(predicate, subj_essential)
+
+;
 
 _t=(predicate)
 _react=object()
@@ -67,6 +90,7 @@ _rpresent=object()
 _p=object()
 _r=object()
 _rp=object()
+
 ;
 
 imp_trigger = (predicate)

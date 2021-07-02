@@ -52,7 +52,7 @@ class IntelligenceCore:
                 for k, v in new_knowledge:
                     self.know(v, self.knowledge_base, emora_knowledge=True)
 
-        print('checking kb')
+        print('Undefined KB concepts - need to be fixed:')
         self._check(self.knowledge_base)
 
         self.kb_predicate_types = self.knowledge_base.type_predicates()
@@ -68,7 +68,7 @@ class IntelligenceCore:
         if INFERENCE:
             self.nlg_inference_engine = InferenceEngine(device=device)
             if nlg_templates is not None and not isinstance(nlg_templates, ConceptGraph):
-                print('checking templates')
+                print('Undefined template concepts - need to be fixed:')
                 if COBOTCACHE:
                     with open(os.path.join(CCACHE, 'full_templates.json'), 'r') as f:
                         d = json.load(f)
@@ -104,7 +104,7 @@ class IntelligenceCore:
                 preprocess_queries = False
             self.inference_engine = inference_engine
             if inference_rules is not None and not isinstance(inference_rules, ConceptGraph):
-                print('checking rules')
+                print('Undefined rule concepts - need to be fixed:')
                 if COBOTCACHE:
                     with open(os.path.join(CCACHE, 'full_rules.json'), 'r') as f:
                         d = json.load(f)
@@ -289,7 +289,7 @@ class IntelligenceCore:
         for c in cg.concepts():
             if c not in ConceptCompiler._default_predicates \
                 and c not in ConceptCompiler._default_types \
-                and not cg.has(predicate_id=c):
+                and not cg.has(predicate_id=c) and not c.endswith('__t'):
                 if len(cg.objects(c, TYPE)) == 0:
                     if not use_kb:
                         print('\t%s'%(c))
@@ -320,10 +320,12 @@ class IntelligenceCore:
         if associations is None and evidence is None:
             updates = {c: {SALIENCE: (salience*SENSORY_SALIENCE)} for c in considered.concepts()}
         elif evidence is None:
-            s = min([self.working_memory.features.get(c, {}).get(SALIENCE, 0) for c in associations]) - ASSOCIATION_DECAY
+            sals = [self.working_memory.features.get(c, {}).get(SALIENCE, 0) for c in associations]
+            s = (sum(sals) / len(sals)) - ASSOCIATION_DECAY
             updates = {c: {SALIENCE: (salience*s)} for c in considered.concepts()}
         elif associations is None:
-            s = min([self.working_memory.features.get(c, {}).get(SALIENCE, 0) for c in evidence]) - EVIDENCE_DECAY
+            sals = [self.working_memory.features.get(c, {}).get(SALIENCE, 0) for c in evidence]
+            s = (sum(sals) / len(sals)) - EVIDENCE_DECAY
             updates = {c: {SALIENCE: (salience*s)} for c in considered.concepts()}
         for c, d in updates.items():
             if c not in considered.features or SALIENCE not in considered.features[c]:
@@ -383,9 +385,12 @@ class IntelligenceCore:
         for rule, results in result_dict.items():
             pre, post = inferences[rule][0], inferences[rule][1]
             for evidence, implication in results:
+                # add constants to evidence
+                const_evidence = {n: n for n in pre.concepts() if n not in evidence}
+                evidence.update(const_evidence)
                 # check whether rule has already been applied with the given evidence
                 old_solution = False
-                current_evidence = set([x for x in evidence.values() if self.working_memory.has(predicate_id=x)])  # AND links only set up from predicate instances
+                current_evidence = set(evidence.values())
                 for node, features in self.working_memory.features.items():
                     if 'origin_rule' in features and features['origin_rule'] == rule:
                         prev_evidence = {s for s, _, l in self.working_memory.metagraph.in_edges(node) if AND_LINK in l}
@@ -397,9 +402,8 @@ class IntelligenceCore:
                     implied_nodes = self.consider(implication, evidence=evidence.values())
                     and_node = self.working_memory.id_map().get()
                     self.working_memory.features[and_node]['origin_rule'] = rule # store the implication rule that resulted in this and_node as metadata
-                    for pre_node, evidence_node in evidence.items():
-                        if self.working_memory.has(predicate_id=evidence_node):
-                            self.working_memory.metagraph.add(evidence_node, and_node, AND_LINK)
+                    for _, evidence_node in evidence.items():
+                        self.working_memory.metagraph.add(evidence_node, and_node, AND_LINK)
                     for imp_node in implication.concepts():
                         if not implication.metagraph.in_edges(imp_node, REF): # add or_link only if imp_node is not part of a reference
                             self.working_memory.metagraph.add(and_node, implied_nodes[imp_node], OR_LINK)

@@ -3,13 +3,15 @@ l/like(user, exercise(user)) time(l, now)
 request_truth(emora, l)
 ->
 _pr(_low)
+_t(_p)
 $ Do you like exercising ? I find it to be hard to enjoy the same workout more than a few times . $
 ;
 
-f/fit(user, exercise(user)) time(f, now) in(f, day()) b/be(f, hard)
-request_truth(emora, b)
+f/do(user, exercise(user)) time(f, now) in(f, day()) d/difficult(f)
+request_truth(emora, d)
 ->
 _pr(_low)
+_t(_p)
 $ I was wondering if you also find it hard to fit exercising into your daily life ? I always seem to run out of time even when I really am planning to work out that day . $
 ;
 

@@ -255,8 +255,10 @@ class ChatbotServer:
             if not span.startswith('__linking__'):
                 # mega_mention_graph.add(span, 'def', center)
                 span_obj = Span.from_string(span)
-                if span_obj.pos_tag in {'prp', 'prop$'}:
+                if span_obj.pos_tag == 'prp':
                     mega_mention_graph.add(focus, TYPE, span_obj.pos_tag)
+                elif span_obj.pos_tag == 'prop$':
+                    mega_mention_graph.add(focus, TYPE, 'propds')
         self.assign_cover(mega_mention_graph)
         for s,t,l in mega_mention_graph.metagraph.edges():
             update = False
@@ -406,7 +408,7 @@ class ChatbotServer:
                 resolution_options = []
                 ref_types = wm_types[ref_node]
                 for ref_match, constraint_matches in compatibilities.items():
-                    if ref_match not in ref_types and (('prp' not in ref_types and 'prop$' not in ref_types) or ref_match not in {'user', 'emora'}):
+                    if ref_match not in ref_types and (('prp' not in ref_types and 'propds' not in ref_types) or ref_match not in {'user', 'emora'}):
                         # any type of the reference is not a candidate
                         # user and emora are not candidates for pronoun references
                         if wm.metagraph.targets(ref_match, REF):
@@ -991,4 +993,5 @@ if __name__ == '__main__':
             device = 'cpu'
     chatbot = ChatbotServer(kb, rules, nlg_templates, fallbacks, wm, device=device)
     chatbot.full_init(device=device)
+    print()
     chatbot.run()

@@ -159,7 +159,7 @@ gx/go(x/person())
 to(gx,united_states)
 ->
 gxx:<gxx/go(x) to(gxx,florida) time(gxx,past)>
-request_truth(gxx)
+request_truth(emora, gxx)
 ;
 
 gxx/go(x/person())

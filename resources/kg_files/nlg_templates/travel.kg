@@ -134,7 +134,7 @@ $ What country would you like to visit in the future ? $
 gxx/go(X/person())
 to(gxx,florida)
 time(gxx,past)
-request_truth(gxx)
+request_truth(emora, gxx)
 ->
 _t(_present)
 $ Oh , that's very cool ! I've visited Florida before in the United States . Have{"s":"#X","t":"now"} X ever been there ? $

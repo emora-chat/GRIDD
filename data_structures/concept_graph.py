@@ -490,7 +490,7 @@ class ConceptGraph:
             head, tail = os.path.split(file)
             matches = re.findall(r'([^_]*)(?:\_.*)?\.kg', tail)
             if len(matches) == 1:
-                topic_anchor = matches[0] + '__'
+                topic_anchor = matches[0] + '__t'
             else:
                 print('[WARNING] More than one topic anchor found for file %s: %s' %(file, matches))
 
@@ -503,7 +503,7 @@ class ConceptGraph:
             # Get the rule that this template is the postcondition of
             (rule, ) = self.metagraph.sources(template, POST)
             if file is None:
-                topic_anchor = rule.split('_')[0] + '__'
+                topic_anchor = rule.split('_')[0] + '__t'
             # Get the precondition and vars
             pre_inst = self.metagraph.out_edges(rule, PRE)
             pre = [edge[1] for edge in pre_inst]
