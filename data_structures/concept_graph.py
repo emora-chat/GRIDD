@@ -618,6 +618,8 @@ class ConceptGraph:
         return graph
 
     def merge(self, concept_a, concept_b, strict_order=False, merged=None, no_warning=False):
+        if concept_a is None or concept_b is None:
+            print('[ERROR] One node in merge pair is a None (%s, %s)'%(concept_a, concept_b))
         unique_preds = {USER_AWARE, TIME, TYPE, 'not', 'maybe'}
         unique_pred_merges = set()
         if concept_a != concept_b:
