@@ -44,6 +44,7 @@ class ConceptGraph:
                 self.add(concept)
         if predicates is not None:
             ConceptGraph.construct(self, predicates, metalinks, metadata)
+        self._connection_counts = {}
 
     @classmethod
     def construct(cls, cg, predicates, metalinks=None, metadata=None, compiler=None):
@@ -780,6 +781,10 @@ class ConceptGraph:
                 else:
                     frontier.extend(self.related(node))
         return False
+
+    def compile_connection_counts(self):
+        counts = self._connection_counts
+
 
     def copy(self, namespace=None):
         if namespace is None:

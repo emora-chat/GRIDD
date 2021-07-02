@@ -1,4 +1,3 @@
-from GRIDD.data_structures.inference_engine_spec import InferenceEngineSpec
 
 from GRIDD.data_structures.graph_matching.graph_matching_engine import GraphMatchingEngine
 from structpy.map import Bimap
@@ -8,7 +7,7 @@ from GRIDD.globals import *
 from GRIDD.utilities.utilities import Counter
 
 from GRIDD.utilities.profiler import profiler as p
-import time
+
 
 class InferenceEngine:
 
