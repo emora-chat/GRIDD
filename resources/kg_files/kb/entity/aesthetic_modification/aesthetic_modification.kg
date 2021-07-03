@@ -1,6 +1,6 @@
 aesthetic_modification=(entity)
-piercing=(aesthetic_modification)
-expr("ear piercing, ear piercings", piercing)
+ear_piercing=(aesthetic_modification)
+expr("ear piercing, ear piercings", ear_piercing)
 haircut=(aesthetic_modification)
 expr("hair cut", haircut)
 nails_done=(aesthetic_modification)
