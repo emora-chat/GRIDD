@@ -9,7 +9,6 @@ cat = (pet)
 kitten = (cat)
 fish = (pet)
 hamster = (pet)
-
 ;
 
 animal_event=(event)
