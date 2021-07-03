@@ -1,0 +1,12 @@
+g/get(user, a/aesthetic_modification())
+->
+l/like(user, a)
+request_truth(emora, l)
+;
+
+g/get(user, m/nails_done())
+->
+possess(user, t/nails())
+c/color(t)
+request(emora, c)
+;

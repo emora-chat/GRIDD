@@ -1,0 +1,16 @@
+aesthetic_modification=(entity)
+piercing=(aesthetic_modification)
+expr("ear piercing, ear piercings", piercing)
+haircut=(aesthetic_modification)
+expr("hair cut", haircut)
+nails_done=(aesthetic_modification)
+expr("nails done", nails_done)
+manicure=(nails_done)
+expr("fingernails done", manicure)
+pedicure=(nails_done)
+expr("toenails done", pedicure)
+makeover=(aesthetic_modification)
+
+body_part=(entity)
+
+nails=(body_part)
