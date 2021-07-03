@@ -1,0 +1,8 @@
+short_video_entertainment=(entity)
+youtube=(short_video_entertainment)
+tiktok=(short_video_entertainment)
+video=(entity)
+content_creator=(person)
+expr("content creator", content_creator)
+youtuber=(content_creator)
+tiktoker=(content_creator)
