@@ -781,6 +781,13 @@ class ConceptGraph:
                     frontier.extend(self.related(node))
         return False
 
+    def compile_connection_counts(self):
+        self.counts = {'s': defaultdict(int), 't': defaultdict(int), 'o': defaultdict(int)}
+        for s, t, o, i in self.predicates():
+            self.counts['s'][s] += 1
+            self.counts['t'][t] += 1
+            self.counts['o'][o] += 1
+
     def copy(self, namespace=None):
         if namespace is None:
             namespace = self._ids
