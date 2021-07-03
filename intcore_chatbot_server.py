@@ -104,6 +104,8 @@ class ChatbotServer:
                                      timeout=3.0)
             json_results = response.json()["context_manager"]
             elit_results = load('elit_results', json_results['elit_results'])
+            for k,v in elit_results.items():
+                print(k, v)
         else:
             if len(user_utterance.strip()) == 0:
                 elit_results = {}
