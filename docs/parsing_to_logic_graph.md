@@ -1446,11 +1446,19 @@ is a noun or pronoun; otherwise, instantiate it as a lone concept.
 
 <details>
   <summary>Conversions</summary>
+
+    X/singular()
+    ltype(X, object)
+    kbinstance(X)
+    -> instance_singular_noun ->
+    focus(X)
+    center(X)
+    ;
     
     X/singular()
     ltype(X, object)
-    -> singular_noun ->
-    focus(X)
+    -> notinstance_singular_noun ->
+    focus(X())
     center(X)
     ;
     
