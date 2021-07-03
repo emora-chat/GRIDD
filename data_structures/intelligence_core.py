@@ -190,6 +190,7 @@ class IntelligenceCore:
         self.obj_essential_types = {i for i in self.knowledge_base.subtypes_of(OBJ_ESSENTIAL)
                                 if not self.knowledge_base.has(predicate_id=i)}
         self.obj_essential_types.update({SPAN_REF, SPAN_DEF})
+        self.knowledge_base.compile_connection_counts()
 
     def stratify_cached_files(self, type, sources):
         if not os.path.exists(type):
@@ -600,13 +601,14 @@ class IntelligenceCore:
         wmp = set(self.working_memory.predicates())
         solutions = kb_match.match(query, variables, self.knowledge_base, prioritize)
         pulled = {}
-        for ins in [x for x in solutions.values() if self.knowledge_base.has(predicate_id=x)]:
-            to_add = set(self.knowledge_base.structure(ins,
+        for solution in solutions:
+            for ins in [x for x in solution.values() if self.knowledge_base.has(predicate_id=x)]:
+                to_add = set(self.knowledge_base.structure(ins,
                                       subj_essentials=self.kb_subj_essentials,
                                       obj_essentials=self.kb_obj_essentials,
-                                      type_predicates=self.kb_predicate_types)) - wmp
-            for pred in to_add - wmp:
-                pulled[pred] = focus
+                                      type_predicates=self.kb_predicate_types))
+                for pred in to_add - wmp:
+                    pulled[pred] = focus
         return pulled
 
     def pull_expressions(self):

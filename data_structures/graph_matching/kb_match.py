@@ -7,7 +7,7 @@ rootpredicate = object()
 
 
 def match(query, variables, kb, priorities=True, limit=10, reduction=3):
-    solutions = []
+    solutions = [{}]
     constraints = create_constraint_list(query, variables, kb if priorities else None)
     for center, constraint in constraints:
         new_solutions = []
@@ -41,6 +41,7 @@ def satisfactions(constriant, assignments, variables, kb, branch_limit=10, reduc
             if t in variables: assigned[t] = typ
             if o in variables: assigned[o] = obj
             if i in variables: assigned[i] = ins
+            result.append(assigned)
     return result
 
 
@@ -50,11 +51,11 @@ def create_constraint_list(query, variables, kb=None):
     ptodo = set(query.predicates())
     visited = set()
     while ctodo:
-        options = []
+        options = set()
         for concept in ctodo:
-            options.extend(expand_options(concept, query, ptodo))
+            options.update(expand_options(concept, query, ptodo))
         if options:
-            constraint = max(options, key=lambda x: priority(*x, variables, kb))
+            constraint = min(options, key=lambda x: priority(*x, variables, kb))
         else:
             concept = ctodo.pop()
             constraint = (concept, (rootconcept, rootpredicate, concept, None))
@@ -68,12 +69,12 @@ def create_constraint_list(query, variables, kb=None):
             options = expand_options(expander, query, ptodo)
             visited.add(concept)
             if options:
-                constraint = max(options, key=lambda x: priority(*x, variables, kb))
+                constraint = min(options, key=lambda x: priority(*x, variables, kb))
                 concept, predicate = constraint
                 constraints.append(constraint)
                 ctodo.difference_update({*predicate})
                 ptodo.discard(predicate)
-                toexpand.extend([c for c in predicate if c not in visited])
+                toexpand.extend([c for c in predicate if c not in visited and c is not None])
     return constraints
 
 
@@ -83,13 +84,13 @@ def priority(concept, predicate, variables, kb=None):
         return 0 if concept not in variables else 1
     elif concept not in variables:
         if concept == s:
-            return kb.counts['s'][concept]
+            return -(1 / (1 + kb.counts['s'][concept]))
         elif concept == t:
-            return kb.counts['t'][concept]
+            return -(1 / (1 + kb.counts['t'][concept]))
         elif concept == o:
-            return kb.counts['o'][concept]
+            return -(1 / (1 + kb.counts['o'][concept]))
         elif concept == i:
-            return 0
+            return -1
         else:
             raise ValueError
     else:
@@ -108,9 +109,10 @@ def expand_options(concept, query, ptodo):
     for predicate in chain(
             query.predicates(subject=concept),
             query.predicates(object=concept),
-            query.predicates(type=concept)
+            query.predicates(predicate_type=concept),
+            [query.predicate(concept)] if query.has(predicate_id=concept) else []
     ):
-        if predicate not in ptodo:
+        if predicate in ptodo:
             options.append((concept, predicate))
     return options
 

@@ -44,7 +44,6 @@ class ConceptGraph:
                 self.add(concept)
         if predicates is not None:
             ConceptGraph.construct(self, predicates, metalinks, metadata)
-        self._connection_counts = {}
 
     @classmethod
     def construct(cls, cg, predicates, metalinks=None, metadata=None, compiler=None):
@@ -785,8 +784,11 @@ class ConceptGraph:
         return False
 
     def compile_connection_counts(self):
-        counts = self._connection_counts
-
+        self.counts = {'s': defaultdict(int), 't': defaultdict(int), 'o': defaultdict(int)}
+        for s, t, o, i in self.predicates():
+            self.counts['s'][s] += 1
+            self.counts['t'][t] += 1
+            self.counts['o'][o] += 1
 
     def copy(self, namespace=None):
         if namespace is None:
