@@ -8,7 +8,7 @@ a:<time(possess(user, a/animal()), now) time(favorite(a), now)>
 request(emora, a)
 ;
 
-like(x/person(), animal())
+like(x/person(), animal)
 ->
 a:<time(possess(user, a/animal()), now) time(favorite(a), now)>
 request(emora, a)
@@ -69,4 +69,30 @@ not(w)
 ->
 pred:<time(cause(pred/predicate(), l), now)>
 request(emora, pred)
+;
+
+time(l/like(user, a/animal()), now)
+not(l)
+time(c/cause(pred/predicate(), l), now)
+r/request(emora, pred)
+user_aware(r)
+->
+think(emora, diverse(animal))
+;
+
+time(l/like(user, a/animal()), now)
+time(c/cause(pred/predicate(), w/want(user, p/pet())), now)
+not(w)
+r/request(emora, pred)
+user_aware(r)
+->
+think(emora, awesome(animal))
+;
+
+time(l/like(user, a/animal()), now)
+_specific(a)
+uturn(l, 0)
+->
+time(agree(emora, cool(a)), now)
+time(cause(fast(cheetah), like(emora, cheetah)), now)
 ;
