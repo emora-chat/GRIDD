@@ -1,14 +1,15 @@
-time(l/like(user, a/animal()), now)
+time(l/like(user, ani/animal()), now)
 request_truth(emora, l)
 ->
 $ Oh, I see. Do you like animals in general or are you just not an animal person? $
 ;
 
-time(like(user, a/animal()), now)
-time(c/cause(pred/predicate(), want(user, p/pet())), now)
+time(like(user, ani/animal()), now)
+time(c/cause(pred/predicate(), w/want(user, p/pet())), now)
+not(w)
 request(emora, pred)
 ->
-$ That's pretty interesting. Most people I know that don't want a pet also don't like animals. I guess you are a bit special. $
+$ That's pretty interesting. Most people I know that don't want a pet also don't like animals. I guess you are a bit special in that regard. Why don't you want a pet? $
 ;
 
 time(l/like(user, a/animal()), now)
@@ -74,4 +75,17 @@ favorite(act)
 request(emora, act)
 ->
 $ Oh, I see. It can be a hassle to travel and get tickets, so that makes sense. When you do go, what's your favorite thing to do in the zoo? I love to watch the flamingos. Their knees give them such a funky appearance, so watching them is a lot of fun. $
+;
+
+think(emora, diverse(animal))
+time(l/like(user, ani/animal()), now)
+not(l)
+->
+$ Oh, well I guess that makes sense. I personally like how diverse different animals are. They could be cute and friendly, or cool and fierce. That diversity also means that there will be animals you don't like though. $
+;
+
+think(emora, awesome(animal))
+time(l/like(user, a/animal()), now)
+->
+$ Well, I suppose that's logical. I still think pets are really awesome, but I think it's perfectly reasonable for you to not want one. $
 ;

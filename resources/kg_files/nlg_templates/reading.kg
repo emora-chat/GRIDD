@@ -1,0 +1,131 @@
+like(x/person(), b/book())
+request(emora, b)
+->
+$ That's awesome! What would you say is your favorite book? $
+;
+
+l/like(x/person(), harrypotter)
+request_truth(emora, l)
+->
+_t(_present)
+$ Do you like Harry Potter? It's one of my personal favorite book series, although I haven't watched the movies. $
+;
+
+req_sat(r/request(emora, b/book()))
+eturn(r, 1)
+->
+_t(_react)
+$ Oh, b ! That's an interesting one. $
+;
+
+l/like(x/person(), b/book())
+_specific(b)
+uturn(l, 0)
+->
+_t(_react)
+$ Oh, b ! That's an interesting one. $
+;
+
+time(like(x/person(), g/genre()), now)
+of(g, book)
+request(emora, g)
+->
+_pr(_low)
+_t(_present)
+$ What's your favorite genre of book to read? There's so many different books out there, after all. $
+;
+
+l/like(x/person(), harrypotter)
+agree(emora, l)
+w/want(x, use(x, magic))
+request_truth(emora, w)
+->
+$ Yeah, I loved reading Harry Potter! It was such an exciting series to read, don't you think? It makes me wish that I could use magic myself. Do you ever wish that you could use magic? $
+;
+
+l/like(x/person(), harrypotter)
+n/not(l)
+disagree(emora, n)
+cause(pred/predicate(), n)
+request(emora, pred)
+->
+$ Oh, really? Why not? I thought it had cool characters and an interesting premise. Although I am probably a little biased. $
+;
+
+l/like(x/person(), stormlight_archive)
+agree(emora, l)
+els/love(emora, setting) in(els, stormlight_archive)
+->
+$ I love the Stormlight Archive series. It has such a complex and immersive world that leaves me yearning for more. $
+;
+
+think(emora, awesome(magic))
+agree(emora, want(x/person(), use(x, magic)))
+->
+$ Personally, I just think that magic is so cool. If I was a witch, I'd love to just spend time flying around and practicing spells. $
+;
+
+n/not(want(x/person(), use(x, magic)))
+think(emora, awesome(magic))
+disagree(emora, n)
+cause(pred/predicate(), n)
+request(emora, pred)
+->
+$ Oh really? Why not? I feel like it would be really fun, but also really convenient being able to wield magic. I suppose it could end up being a burden though. $
+;
+
+n/not(want(x/person(), use(x, magic)))
+cause(pred/predicate(), n)
+r/request(emora, pred)
+eturn(r, 1)
+->
+_t(_react)
+$ Oh, well I guess that makes sense. $
+;
+
+req_unsat(request_truth(user, like(emora, read)))
+->
+$ Yes, I love to read! $
+;
+
+l/like(x/person(), the_hunger_games)
+user_aware(l)
+->
+$ The Hunger Games was a really exciting series to read. And I can't imagine the creativity necessary to think of such a crazy premise. $
+;
+
+l/like(user, narnia)
+user_aware(l)
+->
+$ I had a ton of fun reading the Narnia books. I totally get why you would like them. $
+;
+
+l/like(user, f/fiction())
+_category(f)
+user_aware(l)
+->
+$ I really enjoy fiction books, although it is a pretty broad category. My personal favorite type of fiction would have to be high fiction, since I love imagining different worlds through reading. $
+;
+
+l/like(user, fantasy_book)
+user_aware(l)
+->
+$ I love fantasy books, especially high fantasy. The unique worlds and mechanics created by the author never cease to amaze me. $
+;
+
+l/like(user, mystery_book)
+user_aware(l)
+->
+$ Mystery books are always a thrill to read. They keep me on the edge of my seat, trying to solve the mystery along with the book's characters. $
+;
+
+l/like(user, comic)
+->
+$ Comics are such an interesting medium. Having pictures makes for a completely different reading experience, but it's still tons of fun to read. $
+;
+
+l/like(user, n/nonfiction())
+user_aware(l)
+->
+$ Nonfiction books are so versatile. They have the ability to be just as captivating as fictional stories when written well, while also teaching you real world knowledge. I think that it's a great combination. $
+;

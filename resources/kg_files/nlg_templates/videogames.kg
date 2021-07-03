@@ -8,7 +8,15 @@ $ Yeah, I love playing videogames. Do you play any? They're a fun way to spend t
 like(user, v/videogame())
 request(emora, v)
 ->
-$ Oh, awesome, that makes us two peas in a pod! What games do you like? $
+_t(_present)
+$ What games do you like? $
+;
+
+l/like(user, v/videogame())
+uturn(l, 0)
+->
+_t(_react)
+$ Oh, awesome, that makes us two peas in a pod! $
 ;
 
 play(user, v/videogame())
