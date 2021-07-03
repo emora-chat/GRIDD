@@ -30,7 +30,7 @@ _pr(_high)
 $ I love getting my haircut. Especially when the hairdresser washes your hair for you ! $
 ;
 
-g/get(user, p/piercing())
+g/get(user, p/ear_piercing())
 uturn(g, 1)
 ->
 _t(_r)

@@ -34,6 +34,8 @@ l:<l/play(user, soccer)>
 request_truth(emora, l)
 s:<f/like(user, s/soccer_team())>
 request(emora, s)
+w/watch(user, euro_cup())
+request_truth(emora, w)
 ;
 
 pl/like(user, tennis)
@@ -286,4 +288,9 @@ user_aware(s)
 ->
 l/like(user, sp/sport())
 request_truth(emora, l)
+;
+
+p/play(user, s/sport())
+->
+l/like(user, s)
 ;
