@@ -1,0 +1,13 @@
+l/like(user, s/social_media())
+user_aware(l)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+;
+
+u/use(user, s/social_media())
+user_aware(u)
+->
+l/like(user, s)
+request_truth(emora, l)
+;
