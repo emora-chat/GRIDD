@@ -62,6 +62,21 @@ _pr(_high)
 $ Have you played tennis at all in the past? $
 ;
 
+l/like(user, tennis)
+w/watch(user, wimbledon())
+request_truth(emora, w)
+->
+_t(_p)
+_pr(_high)
+$ Have you watched any Wimbledon matches ? $
+;
+
+w/watch(user, wimbledon())
+user_aware(w)
+->
+_pr(_high)
+$ What's been your favorite match you've seen ? $
+;
 l/like(user, basketball)
 pl/play(user, basketball)
 request_truth(emora, pl)
@@ -373,7 +388,53 @@ $ You know what is a sport that I can't believe existed: cross country jumping. 
 ;
 
 req_unsat(request(user, object_0/object()))
-be_1/be(euro_cup=entity(), object_0)
+be_1/be(euro_cup, object_0)
 ->
+_pr(_high)
 $ The euro cup is a competition that takes place every four years between the mens soccer teams of the countries in the Union of European Football Associations. $
+;
+
+req_unsat(request(user, object_0/object()))
+be_1/be(wimbledon, object_0)
+->
+_pr(_high)
+$ Wimbledon is a yearly tennis competition that takes place on grass courts in England. All the top players go and compete ! $
+;
+
+possess(emora, w/wimbledon_match())
+favorite(w)
+req_unsat(request(user, o/object()))
+b/be(w, o)
+->
+_pr(_high)
+$ Honestly, my favorite match was in round one. Seeing Kyrgios beat Humbert after so long out of the game was really impressive, especially given Humbert's recent success. $
+;
+
+eturn(wimbledon(), 2)
+possess(emora, m/sports_event())
+favorite(m)
+req_unsat(request(user, o/object()))
+b/be(m, o)
+->
+_pr(_high)
+$ Honestly, my favorite match was in round one. Seeing Kyrgios beat Humbert after so long out of the game was really impressive, especially given Humbert's recent success. $
+;
+
+possess(emora, w/euro_cup_game())
+favorite(w)
+req_unsat(request(user, o/object()))
+b/be(w, o)
+->
+_pr(_high)
+$ I really enjoyed the game between France and Switzerland. And it was so similar to the game between Spain and Croatia! $
+;
+
+eturn(euro_cup_game(), 2)
+possess(emora, w/sports_event())
+favorite(w)
+req_unsat(request(user, o/object()))
+b/be(w, o)
+->
+_pr(_high)
+$ I really enjoyed the game between France and Switzerland. And it was so similar to the game between Spain and Croatia! $
 ;

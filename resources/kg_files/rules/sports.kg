@@ -43,6 +43,8 @@ user_aware(pl)
 -> person_likes_tennis ->
 l:<l/play(user, tennis)>
 request_truth(emora, l)
+w/watch(user, wimbledon())
+request_truth(emora, w)
 ;
 
 pl/like(user, basketball)
