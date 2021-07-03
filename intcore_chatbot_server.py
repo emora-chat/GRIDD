@@ -324,8 +324,11 @@ class ChatbotServer:
     def run_knowledge_pull(self, working_memory, aux_state):
         self.load_working_memory(working_memory)
         working_memory = self.dialogue_intcore.working_memory
+        knowledge_by_refs = {}
+        for focus, (query, variables) in working_memory.references().items():
+            knowledge_by_refs.update(self.dialogue_intcore.pull_by_query(query, variables, focus))
         knowledge_by_source = self.dialogue_intcore.pull_knowledge(limit=100, num_pullers=50, association_limit=10, subtype_limit=10)
-        for pred, sources in knowledge_by_source.items():
+        for pred, sources in {**knowledge_by_refs, **knowledge_by_source}.items():
             if not working_memory.has(*pred) and not working_memory.has(predicate_id=pred[3]):
                 self.dialogue_intcore.consider([pred], namespace=self.dialogue_intcore.knowledge_base._ids, associations=sources)
                 working_memory.metagraph.update(self.dialogue_intcore.knowledge_base.metagraph,

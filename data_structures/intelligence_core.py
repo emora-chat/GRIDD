@@ -14,6 +14,7 @@ from GRIDD.data_structures.assertions import assertions
 from GRIDD.data_structures.confidence import *
 from GRIDD.data_structures.id_map import IdMap
 from GRIDD.data_structures.span import Span
+from GRIDD.data_structures.graph_matching import kb_match
 
 from GRIDD.modules.responsegen_by_templates import Template
 
@@ -594,6 +595,19 @@ class IntelligenceCore:
                     else:
                         return new_concepts_by_source
         return new_concepts_by_source
+
+    def pull_by_query(self, query, variables, focus, prioritize=True):
+        wmp = set(self.working_memory.predicates())
+        solutions = kb_match.match(query, variables, self.knowledge_base, prioritize)
+        pulled = {}
+        for ins in [x for x in solutions.values() if self.knowledge_base.has(predicate_id=x)]:
+            to_add = set(self.knowledge_base.structure(ins,
+                                      subj_essentials=self.kb_subj_essentials,
+                                      obj_essentials=self.kb_obj_essentials,
+                                      type_predicates=self.kb_predicate_types)) - wmp
+            for pred in to_add - wmp:
+                pulled[pred] = focus
+        return pulled
 
     def pull_expressions(self):
         to_add = set()

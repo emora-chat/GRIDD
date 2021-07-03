@@ -6,8 +6,75 @@ rootconcept = object()
 rootpredicate = object()
 
 
-def match(query, variables, kb):
+def match(query, variables, kb, priorities=True, limit=10, reduction=3):
     solutions = []
+    constraints = create_constraint_list(query, variables, kb if priorities else None)
+    for center, constraint in constraints:
+        new_solutions = []
+        for assignments in solutions:
+            for satisfaction in satisfactions(constraint, assignments, variables, kb):
+                new_solutions.append({**assignments, **satisfaction})
+        solutions = new_solutions
+        if not solutions:
+            break
+        if len(solutions) > limit:
+            solutions = solutions[:reduction]
+    return solutions
+
+def satisfactions(constriant, assignments, variables, kb, branch_limit=10, reduction=1):
+    result = []
+    constriant = [assignments.get(c, c) for c in constriant]
+    s, t, o, i = constriant
+    if (s is rootconcept and kb.has(o)) or (i not in variables and kb.has(s, t, o, i)):
+        return [{}]
+    else:
+        sub, typ, obj = [None if x in variables else x for x in (s, t, o)]
+        predicates = []
+        for num, predicate in enumerate(kb.predicates(sub, typ, obj)):
+            predicates.append(predicate)
+            if num > branch_limit:
+                predicates = predicates[:reduction]
+                break
+        for sub, typ, obj, ins in predicates:
+            assigned = {}
+            if s in variables: assigned[s] = sub
+            if t in variables: assigned[t] = typ
+            if o in variables: assigned[o] = obj
+            if i in variables: assigned[i] = ins
+    return result
+
+
+def create_constraint_list(query, variables, kb=None):
+    constraints = []
+    ctodo = set(query.concepts())
+    ptodo = set(query.predicates())
+    visited = set()
+    while ctodo:
+        options = []
+        for concept in ctodo:
+            options.extend(expand_options(concept, query, ptodo))
+        if options:
+            constraint = max(options, key=lambda x: priority(*x, variables, kb))
+        else:
+            concept = ctodo.pop()
+            constraint = (concept, (rootconcept, rootpredicate, concept, None))
+        concept, predicate = constraint
+        constraints.append(constraint)
+        ctodo.difference_update({*predicate})
+        ptodo.discard(predicate)
+        toexpand = list({*predicate} - {concept, None})
+        while toexpand:
+            expander = toexpand.pop()
+            options = expand_options(expander, query, ptodo)
+            visited.add(concept)
+            if options:
+                constraint = max(options, key=lambda x: priority(*x, variables, kb))
+                concept, predicate = constraint
+                constraints.append(constraint)
+                ctodo.difference_update({*predicate})
+                ptodo.discard(predicate)
+                toexpand.extend([c for c in predicate if c not in visited])
+    return constraints
 
 
 def priority(concept, predicate, variables, kb=None):
@@ -21,6 +88,8 @@ def priority(concept, predicate, variables, kb=None):
             return kb.counts['t'][concept]
         elif concept == o:
             return kb.counts['o'][concept]
+        elif concept == i:
+            return 0
         else:
             raise ValueError
     else:
@@ -34,20 +103,15 @@ def priority(concept, predicate, variables, kb=None):
             return 2
 
 
-def create_constraint_list(query, variables, kb=None):
-    ctodo = set(query.concepts())
-    ptodo = {(s, t, o) for s, t, o, i in query.predicates()}
-    constants = {c for c in query.concepts() if c not in variables}
-    predicates = set(ptodo)
-    while ctodo:
-        options = []
-        for concept in ctodo:
-            for predicate in chain(
-                    query.predicates(subject=concept),
-                    query.predicates(object=concept),
-                    query.predicates(type=concept)
-            ):
-                if predicate not in ptodo:
-                    options.append((concept, predicate))
-        constraint = max(options, key=lambda x: priority(*x, variables, kb))
+def expand_options(concept, query, ptodo):
+    options = []
+    for predicate in chain(
+            query.predicates(subject=concept),
+            query.predicates(object=concept),
+            query.predicates(type=concept)
+    ):
+        if predicate not in ptodo:
+            options.append((concept, predicate))
+    return options
+
 
