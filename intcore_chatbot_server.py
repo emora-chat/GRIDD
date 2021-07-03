@@ -104,8 +104,8 @@ class ChatbotServer:
                                      timeout=3.0)
             json_results = response.json()["context_manager"]
             elit_results = load('elit_results', json_results['elit_results'])
-            for k,v in elit_results.items():
-                print(k, v)
+            # for k,v in elit_results.items():
+            #     print(k, v)
         else:
             if len(user_utterance.strip()) == 0:
                 elit_results = {}
@@ -327,8 +327,10 @@ class ChatbotServer:
         self.load_working_memory(working_memory)
         working_memory = self.dialogue_intcore.working_memory
         knowledge_by_refs = {}
+        p.start(f'pull by query (queries: {len(working_memory.references())})')
         for focus, (query, variables) in working_memory.references().items():
             knowledge_by_refs.update(self.dialogue_intcore.pull_by_query(query, variables, focus))
+        p.next('knowledge pull')
         knowledge_by_source = self.dialogue_intcore.pull_knowledge(limit=100, num_pullers=50, association_limit=10, subtype_limit=10)
         for pred, sources in {**knowledge_by_refs, **knowledge_by_source}.items():
             if not working_memory.has(*pred) and not working_memory.has(predicate_id=pred[3]):
@@ -339,8 +341,10 @@ class ChatbotServer:
                 if pred[1] in {REQ_ARG, REQ_TRUTH}: # if request pulled from KB, add req_unsat to it
                     working_memory.add(pred[3], REQ_UNSAT)
         self._update_types(working_memory)
+        p.next('operate')
         self.dialogue_intcore.operate(self.dialogue_intcore.universal_operators, aux_state=aux_state)
         self.dialogue_intcore.operate(self.dialogue_intcore.wm_operators, aux_state=aux_state)
+        p.stop()
         return self.dialogue_intcore.working_memory, aux_state
 
     @serialized('inference_results')
@@ -800,6 +804,8 @@ class ChatbotServer:
         inference_results = self.run_dialogue_inference(working_memory, aux_state)
         p.next('apply inferences')
         working_memory, aux_state = self.run_apply_dialogue_inferences(inference_results, working_memory, aux_state)
+        p.next('knowledge pull 2')
+        working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state)
 
         p.next('reference id 2')
         rules, working_memory = self.run_reference_identification(working_memory)
