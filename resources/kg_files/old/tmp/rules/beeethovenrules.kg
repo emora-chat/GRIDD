@@ -1,0 +1,32 @@
+maybe(l/like(user, p/paradox()))
+->
+like(emora, p)
+l2:<want(user, time_travel(user, l2/location()))>
+request(emora, l2)
+;
+
+l/like(user, p/paradox())
+->
+like(emora, p)
+l2:<want(user, time_travel(user, l2/location()))>
+request(emora, l2)
+;
+
+
+like(emora, p/paradox())
+user_aware(want(user, time_travel(user, l2/location())))
+->
+t/tell(emora, p)
+w:<w/want(user, t)>
+request_truth(emora, w)
+;
+
+
+t/tell(emora, p/paradox())
+maybe(w/want(user, t))
+->
+tell_more(emora, p)
+f:<f/follow(user, p)>
+request_truth(emora, f)
+;
+

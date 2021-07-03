@@ -1,0 +1,173 @@
+l/like(user, m/music())
+_category(m)
+user_aware(l)
+-> person_likes_some_music ->
+l2/like(user, m2/music_genre())
+request(emora, m2)
+
+l3/like(user, s/song())
+request(emora, s)
+
+l4/like(user, a/album())
+request(emora, a)
+;
+
+l/like(user, rock())
+user_aware(l)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+;
+
+l/like(user, pop())
+user_aware(l)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+;
+
+l/like(user, jazz())
+user_aware(l)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+;
+
+l/like(user, hip_hop())
+user_aware(l)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+;
+
+l/like(user, folk())
+user_aware(l)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+;
+
+l/like(user, blues())
+user_aware(l)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+;
+
+l/like(user, country())
+user_aware(l)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+;
+
+l/like(user, metal())
+user_aware(l)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+;
+
+l/like(user, classical())
+user_aware(l)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+;
+
+l/like(user, edm())
+user_aware(l)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+;
+
+l/like(user, r_and_b())
+user_aware(l)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+;
+
+l/like(user, punk())
+user_aware(l)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+;
+
+l/like(user, musical_theater())
+user_aware(l)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+;
+
+l/like(user, soul())
+user_aware(l)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+;
+
+l/like(user, electronic())
+user_aware(l)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+;
+
+l/like(user, alternative())
+user_aware(l)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+;
+
+l/like(user, indie_rock())
+user_aware(l)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+;
+
+l/like(user, funk())
+user_aware(l)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+;
+
+l/like(user, disco())
+user_aware(l)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+;
+
+l/like(user, m/song())
+req_unsat(request(emora, m))
+eturn(request(emora, m), 1)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+like(user, temp_song())
+;
+
+l/like(user, m/music_genre())
+req_unsat(request(emora, m))
+eturn(request(emora, m), 1)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+like(user, temp_music_genre())
+;
+
+l/like(user, m/album())
+req_unsat(request(emora, m))
+eturn(request(emora, m), 1)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+like(user, temp_album())
+;
