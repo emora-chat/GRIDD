@@ -40,7 +40,7 @@ $ Talk like Yoda, I can try. $
 like(user, talk_like_some_rando())
 ->
 _pr(_high)
-$ Sorry, I can only talk like myself. Though I do have a good yoda impression: talk like others, I shall not. $
+$ Sorry, I can only talk like myself. Though I do have a good yoda impression: talk like others, I shall not. But that's my only good one. $
 ;
 
 like(user, ask_question())
