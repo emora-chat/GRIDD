@@ -72,3 +72,9 @@ like(user, know_who_yoda_is())
 _pr(_high)
 $ Yoda is a character in the famous movie series Star Wars. He's famous for his green skin and unique style of speaking which features inverted syntax. $
 ;
+
+req_unsat(request(user, t/time()))
+->
+_pr(_high)
+$ We keep time a little differently in the virtual world. Right now it's double one double zero, so just about to be lunch time! $
+;
