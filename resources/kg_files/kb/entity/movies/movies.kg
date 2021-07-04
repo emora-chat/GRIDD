@@ -200,6 +200,4 @@ princess_and_frog=(disney_fairly_tale)
 cinderella=(disney_fairly_tale)
 tangled=(disney_fairly_tale)
 
-harry_potter=(movie)
-expr("Harry Potter, Harry Potter series, Harry Potter movies", harry_potter)
 ;
