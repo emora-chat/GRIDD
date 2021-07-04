@@ -426,8 +426,8 @@ class ChatbotServer:
                     # constraints: (1) do not want match between itself and itself, (2) ref node and match must either both be predicates
                     # or both be entities, (3) any type of the reference is not a candidate, and user and emora are not
                     # (4) candidates for pronoun references
-                    ref_match = match[reference_node]
-                    if reference_node in match and reference_node != ref_match and \
+                    ref_match = match[reference_node] if reference_node in match else None
+                    if ref_match is not None and reference_node != ref_match and \
                             wm.has(predicate_id=ref_match) == wm.has(predicate_id=reference_node) and \
                             ref_match not in ref_types and (('prp' not in ref_types and 'prop$' not in ref_types) or ref_match not in {'user','emora'}):
                         match_dict[ref_match] = []
