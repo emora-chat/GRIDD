@@ -73,3 +73,9 @@ request_truth(emora, l)
 -> art_fallback ->
 $ So , I'm curious , do you like art ? $
 ;
+
+l:<l/like(user, book())>
+request_truth(emora, l)
+-> reading_fallback ->
+$ You know, I really enjoy reading books. What about you? Do you like to read? $
+;

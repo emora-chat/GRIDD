@@ -1,0 +1,4 @@
+type(x/clothing(), y/clothing()) _specific(y)
+->
+n/y() type(n, group) 
+;

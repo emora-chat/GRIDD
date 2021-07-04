@@ -1,0 +1,68 @@
+like(x/person(), read)
+->
+like(x, b/book())
+;
+
+l/like(x/person(), b/book())
+_category(b)
+->
+op_more_info(b, l)
+request(emora, b)
+;
+
+like(x/person(), b/book())
+r/request(emora, b)
+user_aware(r)
+->
+l:<time(l/like(x, harrypotter), now)>
+request_truth(emora, l)
+g:<time(like(x, g/genre()), now)>
+of(g, book)
+request(emora, g)
+;
+
+l/like(x/person(), harrypotter)
+->
+agree(emora, l)
+w:<w/want(x, use(x, magic))>
+request_truth(emora, w)
+;
+
+l/like(x/person(), harrypotter)
+n/not(l)
+->
+disagree(emora, n)
+pred:<cause(pred/predicate(), n)>
+request(emora, pred)
+;
+
+
+l/like(x/person(), stormlight_archive)
+->
+agree(emora, l)
+els/love(emora, setting) in(els, stormlight_archive)
+;
+
+time(l/like(x/person(), u/unknown_noun()), now)
+like(x, b/book())
+request(emora, b)
+eturn(r, 1)
+->
+k/know(emora, u)
+not(k)
+time(research(emora, u), future)
+;
+
+w/want(x/person(), use(x, magic))
+->
+think(emora, awesome(magic))
+agree(emora, w)
+;
+
+n/not(want(x/person(), use(x, magic)))
+->
+think(emora, awesome(magic))
+disagree(emora, n)
+pred:<cause(pred/predicate(), n)>
+request(emora, pred)
+;

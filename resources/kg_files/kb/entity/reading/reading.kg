@@ -1,0 +1,27 @@
+book=(entity)
+book_genre=(genre)
+fiction=(book_genre)
+expr("fiction books, fictional books", fiction)
+nonfiction=(book_genre)
+expr("nonfiction books, nonfictional books", nonfiction)
+
+fantasy_book=(fiction)
+expr("fantasy book, high fantasy", fantasy_book)
+mystery_book=(fiction)
+expr("mystery book, crime book", mystery_book)
+science_fiction_book=(fiction)
+expr("science fiction book, sci-fi book", science_fiction_book)
+comic=(fiction)
+expr("comic book, graphic novel", comic)
+biography=(nonfiction)
+memoir=(nonfiction)
+textbook=(nonfiction)
+
+author=(person)
+
+read=(predicate)
+expr("read, reading, to read", read)
+
+magic=(entity)
+setting=(entity)
+;
