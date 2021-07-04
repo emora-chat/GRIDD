@@ -42,3 +42,8 @@ r/record(emora, conversation())
 ->
 like(user, know_recording())
 ;
+
+b/be(yoda, o/object())
+->
+like(user, know_who_yoda_is())
+;

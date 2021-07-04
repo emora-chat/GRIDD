@@ -66,3 +66,9 @@ like(user, know_recording())
 _pr(_high)
 $ I’m designed to protect your privacy, so I only listen after your device detects the wake word or if the action button is pushed. On Echo devices, you’ll always know when your request is being processed because a blue light indicator will appear or an audio tone will sound. You can learn more by visiting amazon.com/alexaprivacy. $
 ;
+
+like(user, know_who_yoda_is())
+->
+_pr(_high)
+$ Yoda is a character in the famous movie series Star Wars. He's famous for his green skin and unique style of speaking which features inverted syntax. $
+;
