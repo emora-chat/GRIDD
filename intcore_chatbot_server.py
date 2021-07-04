@@ -378,6 +378,7 @@ class ChatbotServer:
     @serialized('inference_results', 'rules')
     def run_dynamic_inference(self, rules, working_memory, aux_state):
         self.load_working_memory(working_memory)
+        st=time.time()
         # filter out too broad of rules
         filters = {'object', 'entity', 'predicate'}
         filtered_rules = {}
@@ -398,6 +399,7 @@ class ChatbotServer:
             if not broad_entities and not broad_predicates: # remove if all entity instances are subset of filters OR all predicate instances are subset of filters
                 if pre.component_count() == 1: # remove if pre is composed of disconnected components
                     filtered_rules[rule] = (pre, vars)
+        print('filtering dynamic rules: %.2f sec'%(time.time()-st))
         inference_results = self.reference_engine.infer(self.dialogue_intcore.working_memory, aux_state, filtered_rules,
                                                         cached=False)
         return inference_results, {}
@@ -438,7 +440,6 @@ class ChatbotServer:
 
             pairs_to_merge = []
             while compatible_pairs:
-                print(compatible_pairs.items())
                 sorted_compat_pairs = sorted(compatible_pairs.items(),
                                              key=lambda item: max([wm.features.get(cand, {}).get(SALIENCE, 0) for cand in item[1]], default=0),
                                              reverse=True)
