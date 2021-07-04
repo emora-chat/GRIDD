@@ -378,7 +378,7 @@ class ChatbotServer:
     @serialized('inference_results', 'rules')
     def run_dynamic_inference(self, rules, working_memory, aux_state):
         self.load_working_memory(working_memory)
-        # filter out too broad of rules - all entity instances are subset of filters OR all predicate instances are subset of filters OR pre is composed of disconnected components
+        # filter out too broad of rules
         filters = {'object', 'entity', 'predicate'}
         filtered_rules = {}
         for rule, (pre, vars) in rules.items():
@@ -390,12 +390,14 @@ class ChatbotServer:
                 if not t.issubset(filters):
                     broad_entities = False
                     break
-            for c, t in pred_var_types.items():
-                if not t.issubset(filters):
-                    broad_predicates = False
-                    break
-            if not broad_entities and not broad_predicates:
-                filtered_rules[rule] = (pre, vars)
+            if not broad_entities:
+                for c, t in pred_var_types.items():
+                    if not t.issubset(filters):
+                        broad_predicates = False
+                        break
+            if not broad_entities and not broad_predicates: # remove if all entity instances are subset of filters OR all predicate instances are subset of filters
+                if pre.component_count() == 1: # remove if pre is composed of disconnected components
+                    filtered_rules[rule] = (pre, vars)
         inference_results = self.reference_engine.infer(self.dialogue_intcore.working_memory, aux_state, filtered_rules,
                                                         cached=False)
         return inference_results, {}
