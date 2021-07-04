@@ -1,0 +1,44 @@
+can(t/talk(emora))
+like(t, yoda)
+->
+like(user, talk_like_yoda())
+;
+
+like(talk(), yoda)
+->
+like(user, talk_like_yoda())
+;
+
+can(t/talk(emora))
+like(t, u/unknown_noun())
+->
+like(user, talk_like_some_rando())
+;
+
+like(talk(), u/unknown_noun())
+->
+like(user, talk_like_some_rando())
+;
+
+a/ask(user, question())
+c/can(a)
+->
+like(user, ask_question())
+;
+
+can(a/ask(emora, question()))
+stop(a)
+->
+like(user, emora_stop_asking_questions())
+;
+
+b/be(emora, old())
+qualifier(b, o/object())
+->
+like(user, know_emora_age())
+;
+
+r/record(emora, conversation())
+->
+like(user, know_recording())
+;
