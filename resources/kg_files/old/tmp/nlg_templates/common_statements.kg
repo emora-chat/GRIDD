@@ -1,0 +1,32 @@
+t/talk(user)
+to(t, emora)
+will(t)
+predicate(t)
+->
+$ It was nice talking. See you later! To end the conversation, say Alexa stop $
+;
+
+req_unsat(request(user, object_0/object()))
+go_0/go(day_0/day())
+qualifier(go_0, object_0)
+time(go_0, now)
+possess(emora, day_0)
+->
+_pr(_high)
+$ It's going pretty well. Thanks for asking! $
+;
+
+req_unsat(request(user, o/object()))
+possess(emora, n/name())
+be(n, o)
+->
+_pr(_high)
+$ Sorry, but due to competition rules, I'm not allowed to tell you. I appreciate you asking though. $
+;
+
+req_unsat(request(user, o/object()))
+be(o, up())
+->
+_pr(_high)
+$ Not much. What about you? $
+;

@@ -602,21 +602,21 @@ class ConceptGraph:
             graph.add(c)
         return graph
 
-    def to_infcompat_graph(self, ignore=None):
+    def to_infcompat_graph(self):
         graph = Graph()
         for s, t, o, i in self.predicates():
-            if ignore is None or i not in ignore:
-                graph.add(i, s, 's')
-                if t == TYPE:
-                    graph.add(i, t, 't')
-                if o is not None:
-                    graph.add(i, o, 'o')
+            graph.add(i, s, 's')
+            if t == TYPE:
+                graph.add(i, t, 't')
+            if o is not None:
+                graph.add(i, o, 'o')
         for c in self.concepts():
-            if ignore is None or c not in ignore:
-                graph.add(c)
+            graph.add(c)
         return graph
 
     def merge(self, concept_a, concept_b, strict_order=False, merged=None, no_warning=False):
+        if concept_a is None or concept_b is None:
+            print('[ERROR] One node in merge pair is a None (%s, %s)'%(concept_a, concept_b))
         unique_preds = {USER_AWARE, TIME, TYPE, 'not', 'maybe'}
         unique_pred_merges = set()
         if concept_a != concept_b:
@@ -780,6 +780,31 @@ class ConceptGraph:
                 else:
                     frontier.extend(self.related(node))
         return False
+
+    def component_count(self):
+        visited = set()
+        concepts = self.concepts()
+        components = 0
+        while concepts:
+            c = concepts.pop()
+            if c not in visited:
+                visited.add(c)
+                components += 1
+                related = set(self.related(c)) - visited
+                while related:
+                    r = related.pop()
+                    if r not in visited:
+                        visited.add(r)
+                        concepts -= {r}
+                        related.update(set(self.related(r)) - visited)
+        return components
+
+    def compile_connection_counts(self):
+        self.counts = {'s': defaultdict(int), 't': defaultdict(int), 'o': defaultdict(int)}
+        for s, t, o, i in self.predicates():
+            self.counts['s'][s] += 1
+            self.counts['t'][t] += 1
+            self.counts['o'][o] += 1
 
     def copy(self, namespace=None):
         if namespace is None:

@@ -68,12 +68,9 @@ class ResponseTemplateFiller:
 
         r_predicates, r_string, r_score = None, None, None
         curr_turn = aux_state.get('turn_index', 0)
-        if curr_turn > 0:
-            if len(react_cands) > 0:
-                print('React Options: ')
-                r_predicates, r_string, r_score = self.select_best_candidate(react_cands, cg, check_aware=False)
-        else:
-            r_string = ""
+        if len(react_cands) > 0:
+            print('React Options: ')
+            r_predicates, r_string, r_score = self.select_best_candidate(react_cands, cg, check_aware=False)
 
         if rp_score is not None and (p_score is None or rp_score >= p_score):
             string = rp_string
@@ -86,7 +83,10 @@ class ResponseTemplateFiller:
                 string = p_string
                 aux_state.setdefault('spoken_responses', []).append(string.lower())
                 predicates = p_predicates
-                s = random.choice(['Yeah .', 'Gotcha .', 'I see .', 'Okay .'])
+                if curr_turn > 0:
+                    s = random.choice(['Yeah .', 'Gotcha .', 'I see .', 'Okay .'])
+                else:
+                    s = ''
                 if r_string is not None:
                     s = r_string
                 # Do not add reaction predicates to predicates list in order to avoid them being treated as spoken and getting the eturn predicate

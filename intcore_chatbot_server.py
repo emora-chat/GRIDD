@@ -104,6 +104,8 @@ class ChatbotServer:
                                      timeout=3.0)
             json_results = response.json()["context_manager"]
             elit_results = load('elit_results', json_results['elit_results'])
+            # for k,v in elit_results.items():
+            #     print(k, v)
         else:
             if len(user_utterance.strip()) == 0:
                 elit_results = {}
@@ -324,8 +326,13 @@ class ChatbotServer:
     def run_knowledge_pull(self, working_memory, aux_state):
         self.load_working_memory(working_memory)
         working_memory = self.dialogue_intcore.working_memory
+        knowledge_by_refs = {}
+        p.start(f'pull by query (queries: {len(working_memory.references())})')
+        for focus, (query, variables) in working_memory.references().items():
+            knowledge_by_refs.update(self.dialogue_intcore.pull_by_query(query, variables, focus))
+        p.next('knowledge pull')
         knowledge_by_source = self.dialogue_intcore.pull_knowledge(limit=100, num_pullers=50, association_limit=10, subtype_limit=10)
-        for pred, sources in knowledge_by_source.items():
+        for pred, sources in {**knowledge_by_refs, **knowledge_by_source}.items():
             if not working_memory.has(*pred) and not working_memory.has(predicate_id=pred[3]):
                 self.dialogue_intcore.consider([pred], namespace=self.dialogue_intcore.knowledge_base._ids, associations=sources)
                 working_memory.metagraph.update(self.dialogue_intcore.knowledge_base.metagraph,
@@ -334,8 +341,10 @@ class ChatbotServer:
                 if pred[1] in {REQ_ARG, REQ_TRUTH}: # if request pulled from KB, add req_unsat to it
                     working_memory.add(pred[3], REQ_UNSAT)
         self._update_types(working_memory)
+        p.next('operate')
         self.dialogue_intcore.operate(self.dialogue_intcore.universal_operators, aux_state=aux_state)
         self.dialogue_intcore.operate(self.dialogue_intcore.wm_operators, aux_state=aux_state)
+        p.stop()
         return self.dialogue_intcore.working_memory, aux_state
 
     @serialized('inference_results')
@@ -369,8 +378,30 @@ class ChatbotServer:
     @serialized('inference_results', 'rules')
     def run_dynamic_inference(self, rules, working_memory, aux_state):
         self.load_working_memory(working_memory)
-        inference_results = self.reference_engine.infer(self.dialogue_intcore.working_memory, aux_state, rules,
-                                                        cached=False, remove_rules=True)
+        st=time.time()
+        # filter out too broad of rules
+        filters = {'object', 'entity', 'predicate'}
+        filtered_rules = {}
+        for rule, (pre, vars) in rules.items():
+            entity_var_types = {c: t - {c} for c, t in pre.types().items() if c in vars and not pre.has(predicate_id=c)}
+            pred_var_types = {c: t - {c} for c, t in pre.types().items() if c in vars and pre.has(predicate_id=c)}
+            broad_entities = True if entity_var_types else False
+            broad_predicates = True if pred_var_types else False
+            for c, t in entity_var_types.items():
+                if not t.issubset(filters):
+                    broad_entities = False
+                    break
+            if not broad_entities:
+                for c, t in pred_var_types.items():
+                    if not t.issubset(filters):
+                        broad_predicates = False
+                        break
+            if not broad_entities and not broad_predicates: # remove if all entity instances are subset of filters OR all predicate instances are subset of filters
+                if pre.component_count() == 1: # remove if pre is composed of disconnected components
+                    filtered_rules[rule] = (pre, vars)
+        print('filtering dynamic rules: %.2f sec'%(time.time()-st))
+        inference_results = self.reference_engine.infer(self.dialogue_intcore.working_memory, aux_state, filtered_rules,
+                                                        cached=False)
         return inference_results, {}
 
     @serialized('inference_results')
@@ -387,40 +418,60 @@ class ChatbotServer:
             inference_results = {}
         compatible_pairs = {}
         if len(inference_results) > 0:
+            wm_types = wm.types(set(inference_results.keys()))
             for reference_node, (pre, matches) in inference_results.items():
-                compatible_pairs[reference_node] = {}
+                match_dict = {}
+                ref_types = wm_types[reference_node]
                 for match, virtual_preds in matches:
-                    # do not want match between itself and itself
-                    # also, ref node and match must either both be predicates or both be entities
-                    if reference_node in match and reference_node != match[reference_node] and \
-                        ((wm.has(predicate_id=match[reference_node]) and wm.has(predicate_id=reference_node)) or
-                         (not wm.has(predicate_id=match[reference_node]) and not wm.has(predicate_id=reference_node))):
-                        compatible_pairs[reference_node][match[reference_node]] = []
+                    # constraints: (1) do not want match between itself and itself, (2) ref node and match must either both be predicates
+                    # or both be entities, (3) any type of the reference is not a candidate, and user and emora are not
+                    # (4) candidates for pronoun references
+                    ref_match = match[reference_node] if reference_node in match else None
+                    if ref_match is not None and reference_node != ref_match and \
+                            wm.has(predicate_id=ref_match) == wm.has(predicate_id=reference_node) and \
+                            ref_match not in ref_types and (('prp' not in ref_types and 'prop$' not in ref_types) or ref_match not in {'user','emora'}):
+                        match_dict[ref_match] = []
                         for node in match:
                             if node != reference_node:
                                 if not node.startswith('__virt_') and not match[node].startswith('__virt_'): # nothing to merge if matched node is virtual type
-                                    compatible_pairs[reference_node][match[reference_node]].append((match[node], node))
-            wm_types = wm.types(set(compatible_pairs.keys()))
-            pairs_to_merge = [] # todo - make into a set???
-            for ref_node, compatibilities in compatible_pairs.items():
-                resolution_options = []
-                ref_types = wm_types[ref_node]
-                for ref_match, constraint_matches in compatibilities.items():
-                    if ref_match not in ref_types and (('prp' not in ref_types and 'prop$' not in ref_types) or ref_match not in {'user', 'emora'}):
-                        # any type of the reference is not a candidate
-                        # user and emora are not candidates for pronoun references
-                        if wm.metagraph.targets(ref_match, REF):
-                            # found other references that perfectly match (exact same reference constraints); merge all
-                            # pairs_to_merge.extend([(ref_match, ref_node)] + constraint_matches)
-                            # todo - error-prone right now, it overmatches (ex: X -type-> living_thing and Y -type-> animal would merge)
-                            pass
-                        else:
-                            # found resolution to reference; merge only one
-                            resolution_options.append(ref_match)
-                if len(resolution_options) > 0:
-                    salient_resol = max(resolution_options,
-                                        key=lambda x: wm.features.get(x, {}).get(SALIENCE, 0))
-                    pairs_to_merge.extend([(salient_resol, ref_node)] + compatibilities[salient_resol])
+                                    match_dict[ref_match].append((match[node], node))
+                if match_dict:
+                    compatible_pairs[reference_node] = match_dict
+
+            pairs_to_merge = []
+            while compatible_pairs:
+                sorted_compat_pairs = sorted(compatible_pairs.items(),
+                                             key=lambda item: max([wm.features.get(cand, {}).get(SALIENCE, 0) for cand in item[1]], default=0),
+                                             reverse=True)
+                ref_node, matches = sorted_compat_pairs.pop()
+                constant_matches = []
+                reference_matches = []
+                for match_node in matches:
+                    if wm.metagraph.targets(match_node, REF):
+                        reference_matches.append(match_node)
+                    else:
+                        constant_matches.append(match_node)
+                if len(constant_matches) > 0:
+                    salient_constant = max(constant_matches, key=lambda x: wm.features.get(x, {}).get(SALIENCE, 0))
+                    candidates = set([salient_constant] + reference_matches)
+                else:
+                    candidates = set(reference_matches)
+                while candidates:
+                    selection = max(candidates, key=lambda x: wm.features.get(x, {}).get(SALIENCE, 0))
+                    pairs_to_merge.extend([(selection, ref_node)] + matches[selection])
+                    if selection in reference_matches:
+                        # reference merged in; update candidates of both current reference and merged reference to be the most restrictive set
+                        if selection in compatible_pairs:
+                            candidates.intersection_update(compatible_pairs[selection].keys())
+                            for c in list(compatible_pairs[selection]):
+                                if c not in candidates:
+                                    del compatible_pairs[selection][c]
+                    else:
+                        # constant merged in; remove all candidates that are references where constant is not in their candidates
+                        candidates = set([c for c in candidates if c not in reference_matches or selection in compatible_pairs.get(c, {})])
+                    candidates.discard(selection)
+                del compatible_pairs[ref_node]
+
             if len(pairs_to_merge) > 0:
                 self.merge_references(pairs_to_merge, aux_state)
         return self.dialogue_intcore.working_memory
@@ -795,6 +846,8 @@ class ChatbotServer:
         inference_results = self.run_dialogue_inference(working_memory, aux_state)
         p.next('apply inferences')
         working_memory, aux_state = self.run_apply_dialogue_inferences(inference_results, working_memory, aux_state)
+        p.next('knowledge pull 2')
+        working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state)
 
         p.next('reference id 2')
         rules, working_memory = self.run_reference_identification(working_memory)

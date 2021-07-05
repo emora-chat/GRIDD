@@ -1,0 +1,26 @@
+/* general exercise */
+
+time(e/exercise(user), past)
+-> general_exercise_followup ->
+w:<w/with(e, p/person()) type(p, group)>
+request_truth(emora, w)
+
+eproud(emora, e)
+like(emora, h/hike(emora))
+with(h, f/friend())
+type(f, group)
+;
+
+/* swim */
+time(s/swim(user), past)
+->
+like(emora, d/doggypaddle(emora))
+like(emora, hot(pool()))
+;
+
+time(s/swim(user), past)
+user_aware(like(emora, doggypaddle(emora)))
+->
+s2:<like(user, s2/swim(user))>
+request(emora, s2)
+;

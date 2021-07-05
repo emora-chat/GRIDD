@@ -61,6 +61,7 @@ Represented as `copula(sbj, request(user, question_concept))`.
 	cop(X/pstg(), Y/present_tense())
 	sbj(X, Z/pstg())
 	det(X, D/question_word())
+	precede(Y, Z)
 	-> qdet_copula_present ->
 	p/Y(Z, inst/X())
 	request(user, inst)
@@ -73,6 +74,7 @@ Represented as `copula(sbj, request(user, question_concept))`.
 	cop(X/pstg(), Y/past_tense())
 	sbj(X, Z/pstg())
 	det(X, D/question_word())
+	precede(Y, Z)
 	-> qdet_copula_past ->
 	p/Y(Z, inst/X())
 	request(user, inst)
@@ -84,6 +86,7 @@ Represented as `copula(sbj, request(user, question_concept))`.
   
 	cop(X/question_word(), Y/present_tense())
 	sbj(X, Z/pstg())
+	precede(Y, Z)
 	-> qw_copula_present ->
 	p/Y(Z, o/object())
 	request(user, o)
@@ -94,6 +97,7 @@ Represented as `copula(sbj, request(user, question_concept))`.
 	
 	cop(X/question_word(), Y/past_tense())
 	sbj(X, Z/pstg())
+	precede(Y, Z)
 	-> qw_copula_past ->
 	p/Y(Z, o/object())
 	request(user, o)
