@@ -63,8 +63,8 @@ _pr(_high)
 $ What sport do you play? I've enjoyed soccer in the past. Something about working with a team makes the experience more fulfilling, in my opinion.$
 ;
 
-play(user, s/sport())
-request_truth(be(user, athlete()))
+b/be(user, athlete())
+request_truth(emora, b)
 ->
 _t(_p)
 _pr(_low)

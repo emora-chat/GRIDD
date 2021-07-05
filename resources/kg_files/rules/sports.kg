@@ -115,7 +115,8 @@ request(emora,i)
 pl/play(user, s/sport())
 user_aware(pl)
 -> user_plays_known_sport ->
-request_truth(be(user, athlete()))
+b:<b/be(user, athlete())>
+request_truth(emora, b)
 ;
 
 /* Wants to Play Sports */

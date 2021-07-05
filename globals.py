@@ -83,7 +83,8 @@ META = {COMPS, VAR,
 
 SAL_FREE = {ASSERT, NONASSERT, AFFIRM,
             REJECT, TIME, SPAN_DEF,
-            SPAN_REF, USER_AWARE, REQ_SAT, REQ_UNSAT}    # Predicate types that do not propogate salience to subtypes and whose salience does not decrease
+            SPAN_REF, USER_AWARE, REQ_SAT, REQ_UNSAT,
+            '_tanchor'}    # Predicate types that do not propogate salience to subtypes and whose salience does not decrease
 
 PRIM = {SPAN_DEF, SPAN_REF,
         ASSERT, NONASSERT,

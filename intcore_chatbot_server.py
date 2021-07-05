@@ -248,8 +248,10 @@ class ChatbotServer:
             if not span.startswith('__linking__'):
                 # mega_mention_graph.add(span, 'def', center)
                 span_obj = Span.from_string(span)
-                if span_obj.pos_tag in {'prp', 'prop$'}:
+                if span_obj.pos_tag == 'prp':
                     mega_mention_graph.add(focus, TYPE, span_obj.pos_tag)
+                elif span_obj.pos_tag == 'prop$':
+                    mega_mention_graph.add(focus, TYPE, 'propds')
         self.assign_cover(mega_mention_graph)
         for s,t,l in mega_mention_graph.metagraph.edges():
             update = False
@@ -462,7 +464,6 @@ class ChatbotServer:
                         candidates = set([c for c in candidates if c not in reference_matches or selection in compatible_pairs.get(c, {})])
                     candidates.discard(selection)
                 del compatible_pairs[ref_node]
-
             if len(pairs_to_merge) > 0:
                 self.merge_references(pairs_to_merge, aux_state)
         return self.dialogue_intcore.working_memory
@@ -858,7 +859,8 @@ class ChatbotServer:
         if PRINT_WM:
             print('\n<< Working Memory After Inferences Applied >>')
             print(working_memory.pretty_print(exclusions={SPAN_DEF, SPAN_REF, USER_AWARE, ASSERT, 'imp_trigger'}))
-
+            for s,t,o,i in working_memory.predicates(predicate_type='_tanchor'):
+                print(f"{s} = {working_memory.features[s][SALIENCE]}, {working_memory.features[i][SALIENCE]}")
         p.next('prepare template nlg')
         working_memory, expr_dict = self.run_prepare_template_nlg(working_memory)
         p.next('template infer')
@@ -1036,4 +1038,5 @@ if __name__ == '__main__':
             device = 'cpu'
     chatbot = ChatbotServer(kb, rules, nlg_templates, fallbacks, wm, device=device)
     chatbot.full_init(device=device)
+    print()
     chatbot.run()

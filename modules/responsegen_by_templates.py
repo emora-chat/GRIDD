@@ -47,26 +47,26 @@ class ResponseTemplateFiller:
                     print('Error in NLG template filling of %s for rule %s => %s'%(string_spec_ls, rule, e))
                     continue
                 if post.template_type == '_react':
-                    react_cands.append((rule, match_dict, response_str, post.priority))
+                    react_cands.append((rule, match_dict, response_str, post.priority, post.topic_anchor))
                 else:
                     if response_str.lower() not in aux_state.get('spoken_responses', []):
                         # don't allow for repeated followups or rfollowups
                         if post.template_type == '_present':
-                            present_cands.append((rule, match_dict, response_str, post.priority))
+                            present_cands.append((rule, match_dict, response_str, post.priority, post.topic_anchor))
                         elif post.template_type == '_rpresent':
-                            rpresent_cands.append((rule, match_dict, response_str, post.priority))
+                            rpresent_cands.append((rule, match_dict, response_str, post.priority, post.topic_anchor))
 
-        rp_predicates, rp_string, rp_score = None, None, None
+        rp_predicates, rp_string, rp_score, rp_anchor = None, None, None, None
         if len(rpresent_cands) > 0:
             print('\nReact + Present Options: ')
-            rp_predicates, rp_string, rp_score = self.select_best_candidate(rpresent_cands, cg)
+            rp_predicates, rp_string, rp_score, rp_anchor = self.select_best_candidate(rpresent_cands, cg)
 
-        p_predicates, p_string, p_score = None, None, None
+        p_predicates, p_string, p_score, p_anchor = None, None, None, None
         if len(present_cands) > 0:
             print('\nPresent Options: ')
-            p_predicates, p_string, p_score = self.select_best_candidate(present_cands, cg)
+            p_predicates, p_string, p_score, p_anchor = self.select_best_candidate(present_cands, cg)
 
-        r_predicates, r_string, r_score = None, None, None
+        r_predicates, r_string, r_score, r_anchor = None, None, None, None
         curr_turn = aux_state.get('turn_index', 0)
         if len(react_cands) > 0:
             print('React Options: ')
@@ -75,12 +75,14 @@ class ResponseTemplateFiller:
         if rp_score is not None and (p_score is None or rp_score >= p_score):
             string = rp_string
             predicates = rp_predicates
+            anchor = rp_anchor
             aux_state.setdefault('spoken_responses', []).append(string.lower())
         else:
             if p_string is None:
-                string, predicates = (p_string, p_predicates)
+                string, predicates, anchor = (p_string, p_predicates, p_anchor)
             else:
                 string = p_string
+                anchor = p_anchor
                 aux_state.setdefault('spoken_responses', []).append(string.lower())
                 predicates = p_predicates
                 if curr_turn > 0:
@@ -111,18 +113,21 @@ class ResponseTemplateFiller:
                 predicates, template_obj, _ = fallback_options[selected]
                 string += ' '.join(template_obj.string_spec_ls)
                 type = "fallback"
+                anchor = template_obj.topic_anchor
             else:
                 string = None
+                predicates = None
+                anchor = None
 
         if string is not None:
             string = string.replace("’", "'")
 
-        return (string, predicates, type)
+        return (string, predicates, [(anchor, '_tanchor')], type)
 
     def select_best_candidate(self, candidates, cg, check_aware=True):
         # get highest salience candidate with at least one uncovered predicate
         with_sal = []
-        for rule, match_dict, string, priority in candidates:
+        for rule, match_dict, string, priority, topic_anchor in candidates:
             preds = [cg.predicate(x) for x in match_dict.values() if cg.has(predicate_id=x)
                      and cg.type(x) not in {EXPR, TYPE}]
             if check_aware and rule not in SPECIAL_NOT_CHECK_AWARE:
@@ -138,13 +143,13 @@ class ResponseTemplateFiller:
                 sals = [cg.features.get(x, {}).get(SALIENCE, 0) for x in match_dict.values()]
                 avg = sum(sals) / len(sals)
                 final_score = SAL_WEIGHT * avg + PRIORITY_WEIGHT * priority
-                with_sal.append((preds, string, final_score))
+                with_sal.append((preds, string, final_score, topic_anchor))
                 print('\t%s (s: %.2f, pr: %.2f)' % (string, avg, priority))
         print()
         if len(with_sal) > 0:
             return max(with_sal, key=lambda x: x[2])
         else:
-            return None, None, None
+            return None, None, None, None
 
     # todo - add in profanity check
     def fill_string(self, match_dict, expr_dict, string_spec_ls, cg):
@@ -318,18 +323,20 @@ class ResponseTemplateFiller:
 
 class Template:
 
-    def __init__(self, string_spec_ls, priority, template_type):
+    def __init__(self, string_spec_ls, priority, template_type, topic_anchor):
         self.string_spec_ls = string_spec_ls
         self.priority = priority
         self.template_type = template_type
+        self.topic_anchor = topic_anchor
 
     def save(self):
-        return (self.string_spec_ls, self.priority, self.template_type)
+        return (self.string_spec_ls, self.priority, self.template_type, self.topic_anchor)
 
     def load(self, d):
         self.string_spec_ls = d[0]
         self.priority = d[1]
         self.template_type = d[2]
+        self.topic_anchor = d[3]
 
 
 if __name__ == '__main__':
