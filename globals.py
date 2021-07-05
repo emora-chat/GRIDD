@@ -50,7 +50,6 @@ SALIENCE_OUT_LINK = 'salout'    # UpdateGraph label for salience propagation
 COLDSTART = 'coldstart'         # metadata bool feature preventing salience decay until selected
 SALIENCE = 'salience'           # metadata float feature representing attention w.r.t. emora
 CONNECTIVITY = 'conn'           # metadata integer feature representing neighborhood cardinality
-IS_TYPE = 'is_type'             # metadata type/instance specifier
 
 COMPS = 'comps'                 # metagraph link for component predicate and entity instances of mention
 VAR = 'var'                     # metagraph variable from one concept to another concept, in which the second concept is a variable

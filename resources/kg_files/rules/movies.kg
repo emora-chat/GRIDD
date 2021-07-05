@@ -33,7 +33,7 @@ request(emora, p2)
 like(user, temp_tv())
 ;
 
-l/like(user, netflix())
+l/like(user, netflix)
 user_aware(l)
 ->
 p2:<l cause(p2/predicate(), l)>

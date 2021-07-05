@@ -93,6 +93,7 @@ class ConceptGraph:
             self._monopredicate_instances[(concept, predicate_type)].add(predicate_id)
             self._bipredicates_graph.add(predicate_type)
             self._bipredicates_graph.add(predicate_id)
+            self.features[predicate_id]['isinstance'] = True
             return predicate_id
         else:                       # Add bipredicate
             if predicate_id is None:
@@ -106,6 +107,7 @@ class ConceptGraph:
             self._bipredicate_instances[(concept, predicate_type, object)].add(predicate_id)
             self._bipredicates_graph.add(predicate_type)
             self._bipredicates_graph.add(predicate_id)
+            self.features[predicate_id]['isinstance'] = True
             return predicate_id
 
     def remove(self, concept=None, predicate_type=None, object=None, predicate_id=None):
@@ -362,14 +364,6 @@ class ConceptGraph:
             concept = todo.pop()
             todo.difference_update(self.subtypes_of(concept, memo))
         return memo
-
-    def instances(self, concept=None, memo=None, limit=None):
-        count = 0
-        for subtype in self.subtypes_of(concept, memo):
-            if self.metagraph.features.get(subtype, {}).get(IS_TYPE, False):
-                if count < limit:
-                    yield subtype
-                else: break
 
     def types(self, concept=None, memo=None):
         if memo is None:

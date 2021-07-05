@@ -53,6 +53,7 @@ class ElitDPToLogic(ParseToLogic):
                 for t in add_ont_types | {'pstg'}:
                     cg.add(pos, 'type', t)
             cg.features[span_node]["span_data"] = span
+            cg.features[span_node]['isinstance'] = True
             self.spans.append(span_node)
             cg.add(span_node, 'type', pos)
             cg.add(span_node, 'type', 'span')

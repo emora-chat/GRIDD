@@ -3,6 +3,8 @@ from GRIDD.possible_tasks.trie import SpanMatcher
 from GRIDD.data_structures.concept_graph import ConceptGraph
 from GRIDD.data_structures.span import Span
 
+from GRIDD.globals import *
+
 class ExpressionMatcher:
 
     def __init__(self, expressions):
@@ -56,6 +58,7 @@ class ExpressionMatcher:
 class MultiwordExpressionMatcher:
 
     def __init__(self, knowledge_base):
+        self.knowledge_base = knowledge_base
         self.multiword_expressions = {s.replace('"','').lower(): o
                                       for s, _, o, _ in knowledge_base.predicates(predicate_type='expr')
                                       if len(s.split()) > 1 or "'" in s or "-" in s}
@@ -64,7 +67,6 @@ class MultiwordExpressionMatcher:
             self.run = False
         else:
             self.run = True
-        # print(self.multiword_expressions.keys())
 
     def __call__(self, elit_results):
         """
@@ -116,7 +118,15 @@ class MultiwordExpressionMatcher:
                     span = Span(string, sidx, eidx, tokens[0].sentence, tokens[0].turn, tokens[0].speaker, string, None)
                     cg = ConceptGraph(namespace='multi_')
                     concept = self.multiword_expressions[string]
-                    cg.add(concept, 'focus')
+                    if self.knowledge_base.features.get(concept, {}).get('isinstance', False):
+                        cg.add(concept, 'focus')
+                        cg.features[concept]['isinstance'] = True
+                    else:
+                        # found noninstance concept so must instantiate
+                        new_inst = cg.id_map().get()
+                        cg.add(new_inst, TYPE, concept)
+                        cg.add(new_inst, 'focus')
+                        cg.features[new_inst]['isinstance'] = True
                     cg.add(concept, 'center')
                     cg.add(span)
                     cg.features[span.to_string()]["span_data"] = span

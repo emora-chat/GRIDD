@@ -196,8 +196,6 @@ class ChatbotServer:
         covered_idx = {}
         for span, mention_graph in multiword_mentions.items():
             ((focus, t, o, i,),) = list(mention_graph.predicates(predicate_type='focus'))
-            center_pred = list(mention_graph.predicates(predicate_type='center'))
-            ((center, t, o, i,),) = center_pred
             mapped_ids = mega_mention_graph.concatenate(mention_graph, predicate_exclusions={'focus', 'center'})
             mega_mention_graph.add(span, SPAN_REF, mapped_ids.get(focus))
             mega_mention_graph.add(span, TYPE, 'span')
@@ -226,8 +224,6 @@ class ChatbotServer:
                             break
             if not decomposable:
                 ((focus, t, o, i,),) = list(mention_graph.predicates(predicate_type='focus'))
-                center_pred = list(mention_graph.predicates(predicate_type='center'))
-                ((center, t, o, i,),) = center_pred
                 mapped_ids = mega_mention_graph.concatenate(mention_graph, predicate_exclusions={'focus', 'center'})
                 mega_mention_graph.add(span, SPAN_REF, mapped_ids.get(focus))
                 mega_mention_graph.add(span, TYPE, 'span')
@@ -246,11 +242,6 @@ class ChatbotServer:
                     subspans[span] = covered_idx[span_obj.start]
                     continue
             ((focus, t, o, i,),) = list(mention_graph.predicates(predicate_type='focus'))
-            center_pred = list(mention_graph.predicates(predicate_type='center'))
-            if len(center_pred) > 0:
-                ((center, t, o, i,),) = center_pred
-            else:
-                ((center, t, o, i,),) = list(mention_graph.predicates(predicate_type='link'))
             mega_mention_graph.concatenate(mention_graph, predicate_exclusions={'focus', 'center', 'cover', 'link'})
             mega_mention_graph.add(span, SPAN_REF, focus)
             mega_mention_graph.add(span, TYPE, 'span')
@@ -725,7 +716,9 @@ class ChatbotServer:
         salient_concepts = sorted(current_user_concepts, key=lambda c: wm.features.get(c, {}).get(SALIENCE, 0),
                                   reverse=True)
         for c in salient_concepts:
-            if c != request_focus and request_focus_types < (types[c]): # todo - should it be types[c] - {c}?
+            req_is_instance = wm.features.get(request_focus, {}).get('isinstance', False)
+            match_is_instance = wm.features.get(c, {}).get('isinstance', False)
+            if c != request_focus and request_focus_types < (types[c]) and req_is_instance == match_is_instance:
                 subtype_set = current_user_concepts.intersection(wm.subtypes_of(c)) - {c}
                 # if concept is a reference or if other salient concepts are its subtypes, dont treat current concept as answer fragment
                 # also, concept and request focus must either both be predicates or both be entities

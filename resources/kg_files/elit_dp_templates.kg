@@ -950,8 +950,16 @@ center(X)
 
 X/singular()
 ltype(X, object)
--> singular_noun ->
+kbinstance(X)
+-> instance_singular_noun ->
 focus(X)
+center(X)
+;
+
+X/singular()
+ltype(X, object)
+-> notinstance_singular_noun ->
+focus(X())
 center(X)
 ;
 

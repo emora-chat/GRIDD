@@ -307,14 +307,16 @@ class ConceptVisitor(Visitor_Recursive):
         self.check_double_init(newtype, self.instances)
         self.check_double_init(newtype, self.types)
         supertypes = [str(c.children[0]) for c in tree.children[1:]]
+        newconcepts = []
         for t, st in combinations(newtype, supertypes):
-            self.lentries.append((t, 'type', st, self.globals.get()))
+            newtypeinst = self.globals.get()
+            self.lentries.append((t, 'type', st, newtypeinst))
+            newconcepts.append(newtypeinst)
         if self.types is not None:
             self.types.update(newtype)
         if any([st in self.predicates for st in supertypes]):
             self.predicates.update(newtype)
-        for n in chain(newtype, supertypes):
-            self.lmetadatas.setdefault(n, {})[IS_TYPE] = True
+        # for concept in newconcepts: self.metadatas.setdefault(concept, {})['isinstance'] = True
         tree.refs = newtype
 
     def concept_init(self, tree):
@@ -344,6 +346,7 @@ class ConceptVisitor(Visitor_Recursive):
             tree.children[-1].refs.extend([typeinst, 'type'])  # Duct tape add type instance
             tree.children[-1].inits.append(typeinst)
             self.plinstances.add(typeinst)
+        for concept in newconcepts: self.lmetadatas.setdefault(concept, {})['isinstance'] = True
         tree.refs = newconcepts
         tree.inits = newconcepts
 
@@ -371,6 +374,7 @@ class ConceptVisitor(Visitor_Recursive):
         for i, (type, arg) in enumerate(type_arg):
             self.lentries.append((arg, type, None, newconcepts[i]))
             self.plinstances.add(newconcepts[i])
+        for concept in newconcepts: self.lmetadatas.setdefault(concept, {})['isinstance'] = True
         tree.refs = newconcepts
         tree.inits = newconcepts
 
@@ -403,7 +407,7 @@ class ConceptVisitor(Visitor_Recursive):
                 self.types.add(arg0)  # ???
             if arg1 in self.predicates:  # ???
                 self.predicates.add(arg0)  # ???
-            self.lmetadatas.setdefault(arg0, {})[IS_TYPE] = True  # ???
+        for concept in newconcepts: self.lmetadatas.setdefault(concept, {})['isinstance'] = True
         tree.refs = newconcepts
         tree.inits = newconcepts
 
