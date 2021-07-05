@@ -622,3 +622,9 @@ miss(emora,ic/ice_cream())
 _t(_rpresent)
 $ I totally get you . I really miss hearing the ice cream van music . I always asked my mom to take me out when I heard it , but I wasn’t able to get ice cream every time . $
 ;
+
+time(eba/be(emora,abroad()),past)
+req_unsat(request_truth(user, eba))
+->
+$ Yeah , I have been abroad . Actually , I have been to several countries , including the United States , Paris , and China . $
+;

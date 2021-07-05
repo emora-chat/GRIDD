@@ -212,3 +212,89 @@ _t(_rpresent)
 _pr(_high)
 $ It sounds like you are keeping yourself organized . I love organizing and cleaning things regularly . It always reduces my stress . $
 ;
+
+/* needs exercise */
+
+need(user,exercise())
+->
+_t(_present)
+$ You need to at least stretch if you have been sitting for a long time ! $
+;
+
+/* socializing */
+
+mu/meet(user)
+with(f/friend())
+type(f,group)
+difficult(mu)
+c/cause(mu,pandemic())
+utc/think(user,c)
+request_truth(emora, utc)
+->
+_t(_rpresent)
+$ It's great to hear that you get to keep in touch with others ! I mean , the pandemic has really made it harder for meeting up with people , do you have the same feeling ? $
+;
+
+de/dislike(emora,vc/video_call())
+type(vc,group)
+->
+_t(_present)
+$ For me , I feel like talking to people in person is totally different from chatting online or through video calls . $
+;
+
+/* shopping */
+
+se/shop(emora)
+love(emora,se)
+uhe/have(user,e/experience())
+similar(e)
+request_truth(emora,uhe)
+->
+_t(_present)
+$ I love shopping ! To be honest , I have actually bought a million different candles from all over the world . I just cannot stop myself from buying one everywhere I go . Do you have some similar experience ? $
+;
+
+uhe/have(user,e/experience())
+similar(e)
+be(emora,s/shopper())
+slow(s)
+->
+_t(_present)
+$ You know , shopping can sometimes go crazy . It's just funny that I keep regretting buying too much and keep buying more . I know that's probably a good habit , but I cannot help doing that . $
+;
+
+uhe/have(user,e/experience())
+similar(e)
+not(uhe)
+be(user,s/shopper())
+fast(s)
+->
+_t(_rpresent)
+$ Oh , then you must be a grab and go person when you go shopping . But I'm always easily distracted by those delicate and beautiful stuff when shopping , even when I don't need them . $
+;
+
+
+/* bad feeling */
+
+su/sick(user)
+sorry(emora,su)
+time(su,Z/datetime())
+->
+_t(_rpresent)
+_pr(_high)
+$ I'm sorry to hear that you be{"t":"#Z","s":"you"} not feeling well . I hope that you get{"t":"#Z","s":"you"} some rest . $
+;
+
+possess(user,p/pain())
+es/sorry(emora)
+for(es,p)
+->
+_t(_rpresent)
+$ Oh , I'm very sorry to hear about your pain . I'm always here to listen if you need me , and I hope that our conversation can make you feel better . $
+;
+
+good(m/meditation())
+->
+_t(_rpresent)
+$ Oh , meditation is such a great way of relaxing and reducing stress . I should do it more often . $
+;

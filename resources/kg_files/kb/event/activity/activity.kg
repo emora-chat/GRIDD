@@ -53,3 +53,6 @@ chat=(activity,physical)
 
 drive=(activity,physical)
 ride=(activity,physical)
+surf=(activity,physical)
+shop=(activity,leisure)
+meditate=(activity,mental)
