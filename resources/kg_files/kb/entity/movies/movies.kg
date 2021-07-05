@@ -71,7 +71,7 @@ criterion_channel=(streaming_provider)
 expr("Criterion channel", criterion_channel)
 
 marvel_show=(tv)
-Loki=(marvel_show)
+loki=(marvel_show)
 
 
 marvel_movie=(movie)

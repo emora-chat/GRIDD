@@ -25,11 +25,4 @@ $ A paradox is a self contradiction. For example, If I say the sentence, this is
 ;
 
 
-req_unsat(request_truth(user, like_0/like(emora, do_0/do(emora, object_0/object()))))
-req_unsat(request(user, object_0))
-time(like_0, now)
-for(do_0, fun=property())
-watch(emora, loki())
-->
-$ I like to watch tv shows. I just watched Loki . $
-;
+
