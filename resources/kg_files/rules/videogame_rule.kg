@@ -66,11 +66,12 @@ for(d, v)
 request(emora, d)
 ;
 
-like(x/person(), v/videogame())
+like(x/person(), v/u_videogame())
 _specific(v)
 ->
 time(research(emora, v), future)
 ;
+
 
 time(play(x/person(), nintendo), now)
 ->
