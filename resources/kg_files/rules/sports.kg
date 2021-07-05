@@ -43,7 +43,7 @@ user_aware(pl)
 -> person_likes_tennis ->
 l:<l/play(user, tennis)>
 request_truth(emora, l)
-w/watch(user, wimbledon())
+w/see(user, wimbledon())
 request_truth(emora, w)
 ;
 
@@ -289,10 +289,17 @@ s/sports_event()
 user_aware(s)
 ->
 l/like(user, sp/sport())
-request_truth(emora, l)
+request(emora, sp)
 ;
 
 p/play(user, s/sport())
 ->
 l/like(user, s)
+;
+
+s/see(user, w/tennis_game())
+->
+compete(t/tennis_player(), t2/tennis_player())
+request(emora, t)
+l/like(user, tennis)
 ;

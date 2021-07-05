@@ -20,7 +20,8 @@ outdoor_activity=(activity, outdoor)
 doggypaddle=(swim)
 [wash, sweep, vacuum, dust]=(clean)
 
-[play, watch, relax, chill]=(activity, solo_or_social, leisure)
+[play, relax, chill]=(activity, solo_or_social, leisure)
+watch=(see)
 
 work=(activity, obligatory)
 

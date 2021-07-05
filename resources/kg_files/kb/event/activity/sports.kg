@@ -379,7 +379,7 @@ expr("euro cup game", euro_cup_game)
 wimbledon=(entity)
 
 wimbledon_match=(tennis_game)
-expr("wimbledon match", wimbledon_match)
+expr("wimbledon match, wimbledon game, wimbledon tennis match", wimbledon_match)
 
 sports_event = (entity)
 expr("sports event, match, the game, the big game", sports_event)
@@ -400,4 +400,10 @@ expr("baseball game, baseball match", baseball_game)
 
 basketball_game = (team_sports_event)
 expr("basketball game, basketball match", basketball_game)
+
+tennis_player=(athlete)
+roger_federer=(tennis_player)
+expr("Roger federer, federer", roger_federer)
+djokovic=(tennis_player)
+medvedev=(tennis_player)
 ;
