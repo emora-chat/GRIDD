@@ -378,7 +378,29 @@ class ChatbotServer:
     @serialized('inference_results', 'rules')
     def run_dynamic_inference(self, rules, working_memory, aux_state):
         self.load_working_memory(working_memory)
-        inference_results = self.reference_engine.infer(self.dialogue_intcore.working_memory, aux_state, rules,
+        st=time.time()
+        # filter out too broad of rules
+        filters = {'object', 'entity', 'predicate'}
+        filtered_rules = {}
+        for rule, (pre, vars) in rules.items():
+            entity_var_types = {c: t - {c} for c, t in pre.types().items() if c in vars and not pre.has(predicate_id=c)}
+            pred_var_types = {c: t - {c} for c, t in pre.types().items() if c in vars and pre.has(predicate_id=c)}
+            broad_entities = True if entity_var_types else False
+            broad_predicates = True if pred_var_types else False
+            for c, t in entity_var_types.items():
+                if not t.issubset(filters):
+                    broad_entities = False
+                    break
+            if not broad_entities:
+                for c, t in pred_var_types.items():
+                    if not t.issubset(filters):
+                        broad_predicates = False
+                        break
+            if not broad_entities and not broad_predicates: # remove if all entity instances are subset of filters OR all predicate instances are subset of filters
+                if pre.component_count() == 1: # remove if pre is composed of disconnected components
+                    filtered_rules[rule] = (pre, vars)
+        print('filtering dynamic rules: %.2f sec'%(time.time()-st))
+        inference_results = self.reference_engine.infer(self.dialogue_intcore.working_memory, aux_state, filtered_rules,
                                                         cached=False)
         return inference_results, {}
 
@@ -404,8 +426,8 @@ class ChatbotServer:
                     # constraints: (1) do not want match between itself and itself, (2) ref node and match must either both be predicates
                     # or both be entities, (3) any type of the reference is not a candidate, and user and emora are not
                     # (4) candidates for pronoun references
-                    ref_match = match[reference_node]
-                    if reference_node in match and reference_node != ref_match and \
+                    ref_match = match[reference_node] if reference_node in match else None
+                    if ref_match is not None and reference_node != ref_match and \
                             wm.has(predicate_id=ref_match) == wm.has(predicate_id=reference_node) and \
                             ref_match not in ref_types and (('prp' not in ref_types and 'prop$' not in ref_types) or ref_match not in {'user','emora'}):
                         match_dict[ref_match] = []
@@ -418,7 +440,6 @@ class ChatbotServer:
 
             pairs_to_merge = []
             while compatible_pairs:
-                print(compatible_pairs.items())
                 sorted_compat_pairs = sorted(compatible_pairs.items(),
                                              key=lambda item: max([wm.features.get(cand, {}).get(SALIENCE, 0) for cand in item[1]], default=0),
                                              reverse=True)

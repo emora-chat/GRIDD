@@ -115,6 +115,7 @@ _category(c)
 not(gx)
 gxx/go(x)
 to(gxx,cc/country())
+time(gxx, future)
 request(emora,cc)
 ->
 _t(_rpresent)

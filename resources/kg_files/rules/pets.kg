@@ -1,15 +1,6 @@
 
 /* Has Pet */
 
-time(do(user, e/event(object())), today)
-r/request(emora, e)
-user_aware(r)
--> today_activity_emora_share ->
-time(walk(emora, nyla), today)
-h:<time(h/have(user, p/pet()), now)>
-request_truth(emora, h)
-;
-
 t/time(h/have(user, p/pet()), now)
 _category(p)
 user_aware(h)
