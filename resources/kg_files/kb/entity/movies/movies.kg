@@ -68,7 +68,10 @@ expr("h b o, hbo", streaming_provider)
 paramount_plus=(streaming_provider)
 expr("Paramount plus", paramount_plus)
 criterion_channel=(streaming_provider)
-expr("Criterion channel", paramount_plus)
+expr("Criterion channel", criterion_channel)
+
+marvel_show=(tv)
+loki=(marvel_show)
 
 
 marvel_movie=(movie)
