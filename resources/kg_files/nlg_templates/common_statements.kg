@@ -96,3 +96,25 @@ like(user, know_how_emora_look())
 _pr(_high)
 $ Sorry, but due to competition rules, I'm not allowed to tell you. $
 ;
+
+like(user, talk_about_something_else())
+like(user, o/entity())
+request(emora, o)
+->
+_pr(_high)
+$ Sure, what would you like to talk about ? $
+;
+
+like(user, know_what_emora_like_do())
+->
+_pr(_high)
+$ I like to do a lot of things, like listen to music, watch movies, make good food, and travel. $
+;
+
+like(user, have_emora_body())
+have(emora, b/body_part())
+->
+_t(_r)
+_pr(_high)
+$ Yes, I do. $
+;

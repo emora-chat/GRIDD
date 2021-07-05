@@ -39,6 +39,7 @@ annoy=(activity,mental)
 use=(predicate)
 
 talk=(predicate)
+speak=(talk)
 
 stop=(predicate)
 
@@ -49,4 +50,4 @@ draw=(activity,physical)
 expr("paint",draw)
 jump=(activity,physical)
 paint=(activity,physical)
-chat=(activity,physical)
+chat=(talk,activity,physical)

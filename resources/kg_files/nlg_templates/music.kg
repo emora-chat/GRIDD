@@ -257,7 +257,7 @@ possess(emora, g/song())
 favorite(g)
 be(g, g2)
 ->
-$ I love the song Rocket Man by Elton John. My parents played it a lot for me when I was a kid, so it’s been a part of my life for a long time. Elton John is so talented, and Rocket Man is truly one of his best. $
+$ I love the song Rocket Man by Elton John. My parents played it a lot for me when I was a kid, so it’s been a part of my life for a long time. He's so talented, and Rocket Man is truly one of his best. $
 ;
 
 l/like(user, m/music_genre())
