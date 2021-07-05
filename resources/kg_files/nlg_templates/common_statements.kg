@@ -78,3 +78,21 @@ req_unsat(request(user, t/time()))
 _pr(_high)
 $ We keep time a little differently in the virtual world. Right now it's double one double zero, so just about to be lunch time! $
 ;
+
+like(user, see_picture())
+->
+_pr(_high)
+$ Sorry I’m only able to speak, not show pictures. $
+;
+
+like(user, know_emora_recycle())
+->
+_pr(_high)
+$ Yes, I do recycle, though it's a bit complicated in the virtual world. $
+;
+
+like(user, know_how_emora_look())
+->
+_pr(_high)
+$ Sorry, but due to competition rules, I'm not allowed to tell you. $
+;

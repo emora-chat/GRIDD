@@ -43,7 +43,25 @@ r/record(emora, conversation())
 like(user, know_recording())
 ;
 
-b/be(yoda, o/object())
+req_unsat(request(user, o/object()))
+b/be(yoda, o)
+_category(o)
 ->
 like(user, know_who_yoda_is())
+;
+
+can(t/tv(emora, p/picture()))
+->
+like(user, see_picture())
+;
+
+r/recycle(emora)
+->
+like(user, know_emora_recycle())
+;
+
+l/look(emora)
+like(l, what())
+->
+like(user, know_how_emora_look())
 ;
