@@ -1,7 +1,0 @@
-req_unsat(request_truth(user, like_0/like(emora, do_0/do(emora, object_0/object()))))
-time(like_0, now)
-for(do_0, fun)
-->
-watch(emora, loki())
-video_entertainment()
-;
