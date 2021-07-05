@@ -15,7 +15,7 @@ expr("sleep", nap)
 ;
 
 [exercise, clean]=(activity, physical, self_improvement, solo_or_social)
-[hike, run, bike, walk, swim, climb]=(exercise, outdoor)
+[hike, run, bike, walk, swim, climb, jog]=(exercise, outdoor)
 outdoor_activity=(activity, outdoor)
 doggypaddle=(swim)
 [wash, sweep, vacuum, dust]=(clean)
@@ -56,3 +56,5 @@ ride=(activity,physical)
 surf=(activity,physical)
 shop=(activity,leisure)
 meditate=(activity,mental)
+
+garden=(activity,physical)

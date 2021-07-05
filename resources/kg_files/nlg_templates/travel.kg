@@ -623,6 +623,31 @@ _t(_rpresent)
 $ I totally get you . I really miss hearing the ice cream van music . I always asked my mom to take me out when I heard it , but I wasn’t able to get ice cream every time . $
 ;
 
+love(emora,b/beach())
+type(b,group)
+time(su/surf(user),past)
+request_truth(emora,su)
+->
+_t(_rpresent)
+$ I love going to beaches ! Have you ever surfed ? I've always thought that surfing was so fun but never tried it . $
+;
+
+cool(user)
+se/surf(emora)
+ews/want(emora,se)
+time(ews,future)
+->
+_t(_rpresent)
+$ That's so cool ! I bet it feels like flying over the sea . I'll definitely try surfing for my next trip to the beach . $
+;
+
+se/surf(emora)
+time(se,future)
+->
+_t(_rpresent)
+$ Yeah , me either . But I think I'll try surfing for my next trip to the beach . $
+;
+
 time(eba/be(emora,abroad()),past)
 req_unsat(request_truth(user, eba))
 ->
