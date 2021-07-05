@@ -580,3 +580,11 @@ to(xb,lc/location())
 ge/go(x)
 to(ge,lc)
 ;
+
+b/beach()
+->
+love(emora,b)
+type(b,group)
+su:<time(su/surf(user),past)>
+request_truth(emora,su)
+;
