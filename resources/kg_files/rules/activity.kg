@@ -317,3 +317,26 @@ time(meditate(user),past)
 ->
 good(meditation())
 ;
+
+/* party */
+
+pt/party()
+->
+ge/go(emora)
+to(ge,ptt/party())
+type(ptt,group)
+time(ge,past)
+;
+
+/* having fun */
+
+hu/happy(user)
+->
+o:<cause(hu,o/object())>
+request(emora,o)
+;
+
+have(user,fun())
+->
+happy(user)
+;

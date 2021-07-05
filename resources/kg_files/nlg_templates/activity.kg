@@ -298,3 +298,20 @@ good(m/meditation())
 _t(_rpresent)
 $ Oh , meditation is such a great way of relaxing and reducing stress . I should do it more often . $
 ;
+
+ge/go(emora)
+to(ge,ptt/party())
+type(ptt,group)
+time(ge,past)
+->
+_t(_present)
+$ I remember going to parties with my friends when I was in college . But I prefer small parties over big ones because I feel like its easy to get lost in big parties . $
+;
+
+time(hu/happy(user),Z/datetime())
+cause(hu,o/object())
+request(emora,o)
+->
+_t(_present)
+$ Would you mind sharing what be{"t":"#Z","s":"he"} making you so happy with me ? I'd love to hear it if you are willing to tell me ! $
+;
