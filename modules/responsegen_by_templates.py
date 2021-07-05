@@ -70,7 +70,7 @@ class ResponseTemplateFiller:
         curr_turn = aux_state.get('turn_index', 0)
         if len(react_cands) > 0:
             print('React Options: ')
-            r_predicates, r_string, r_score = self.select_best_candidate(react_cands, cg, check_aware=False)
+            r_predicates, r_string, r_score, r_anchor = self.select_best_candidate(react_cands, cg, check_aware=False)
 
         if rp_score is not None and (p_score is None or rp_score >= p_score):
             string = rp_string
