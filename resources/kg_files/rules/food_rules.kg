@@ -571,6 +571,13 @@ delicious(c/consumable())
 time(have(emora,c),past)
 ;
 
+delicious(m/meal())
+->
+glad(emora)
+have(user,m)
+time(have(emora,ramen()),past)
+;
+
 co/crispy(o/object())
 ->
 ttf:<ttf/time(try(emora,co),future)>
