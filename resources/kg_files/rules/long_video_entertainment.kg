@@ -722,12 +722,13 @@ request_truth(emora, b)
 w/watch(user, u/work_of_art_ner())
 user_aware(w)
 ->
-b/be(u, y/unknown_movie())
+w2/watch(user, y/object())
+b/be(y, k/unknown_movie())
 request_truth(emora, b)
 ;
 
 w/watch(user, u/object())
-req_sat(request_truth(emora, be_0/be(u, unknown_movie())))
+be_0/be(u, y/unknown_movie())
 ->
 l/like(user, u)
 request_truth(emora, l)
@@ -740,9 +741,9 @@ request_truth(emora, pl2)
 ;
 
 w/watch(user, u/object())
-req_sat(request_truth(emora, be_0/be(u, unknown_movie())))
-req_sat(request_truth(emora, like_0/like(user, u)))
+be_0/be(u, unknown_movie())
+like_0/like(user, u)
 ->
-p:<c/like(user, t/object()) cause(p/predicate(), c)>
+p:<like_0 cause(p/predicate(), like_0)>
 request(emora, p)
 ;
