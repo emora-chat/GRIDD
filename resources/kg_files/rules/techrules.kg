@@ -10,6 +10,12 @@ b:<b/be(p, pc())>
 request_truth(emora, b)
 ;
 
+not(have(user,p/computer()))
+->
+w:<time(w/want(user, p), now)>
+request_truth(emora, w)
+;
+
 have(user,p/computer())
 use(user, linux)
 ->
