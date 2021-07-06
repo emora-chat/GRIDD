@@ -44,14 +44,14 @@ $ Oh, do you just not like the hassle ? Or would you like to get a p c one day ?
 ;
 
 h/have(user, p/computer())
-u/use(user, l/linux())
+u/use(user, l/linux)
 request_truth(emora, u)
 ->
 _t(_rpresent)
 $ Do you use Linux ? I think it gives a lot of freedom to do whatever you want, but it can be complicated sometimes. $
 ;
 
-u/use(user, l/linux())
+u/use(user, l/linux)
 request_truth(emora, u)
 _exists(u)
 user_aware(u)
@@ -111,7 +111,7 @@ $ I bet you have an amd processor. If I had to build a computer right now, I'd u
 
 
 h/have(user, p/computer())
-a1/cpu_arch(p ,ARM())
+a1/cpu_arch(p ,ARM)
 request_truth(emora,a1)
 ->
 _t(_rpresent)
@@ -130,7 +130,7 @@ $ Do you have an iPhone? $
 
 h/have(user, p/phone())
 i/be(p, i3/iphone())
-l/like(user, walled_garden())
+l/like(user, walled_garden)
 request_truth(emora,l)
 ->
 _pr(_high)
@@ -140,7 +140,7 @@ $ Iphones are great! You know, they just work. You can only get apps from the Ap
 
 
 
-l/like(user, walled_garden())
+l/like(user, walled_garden)
 ->
 _pr(_high)
 _t(_rpresent)
@@ -158,7 +158,7 @@ $ I bet you have an android then. Android phones are great, and I'm excited for 
 ;
 
 
-use(user, m/macos())
+use(user, m/macos)
 have(m, d/design())
 l/like(user, d)
 request_truth(emora, l)
