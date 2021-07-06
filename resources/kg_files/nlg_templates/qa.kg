@@ -24,5 +24,30 @@ _t(_rpresent)
 $ A paradox is a self contradiction. For example, If I say the sentence, this is a lie  $
 ;
 
+req_unsat(request(user, breed_0/breed()))
+be_1/be(dog_0/dog(), breed_0)
+possess(emora, dog_0)
+->
+_pr(_high)
+_t(_rpresent)
+$ She's a Chihuahua ! They're small and so cute, I love them .  $
+;
 
+req_unsat(request(user, kind_0/kind()))
+of(be_1/be(dog_0/dog(), kind_0), dog())
+possess(emora, dog_0)
+->
+_pr(_high)
+_t(_rpresent)
+$ She's a Chihuahua ! They're small and so cute, I love them .  $
+;
 
+req_unsat(request(user, sweet_0/sweet()))
+be_1/be(dog_0/dog(), sweet_0)
+possess(emora, dog_0)
+of(be_1, dog)
+->
+_pr(_high)
+_t(_rpresent)
+$ She's a Chihuahua ! They're small and so cute, I love them .  $
+;
