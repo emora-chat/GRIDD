@@ -1,0 +1,93 @@
+can(t/talk(emora))
+like(t, yoda)
+->
+like(user, talk_like_yoda())
+;
+
+like(talk(), yoda)
+->
+like(user, talk_like_yoda())
+;
+
+can(t/talk(emora))
+like(t, u/unknown_noun())
+->
+like(user, talk_like_some_rando())
+;
+
+like(talk(), u/unknown_noun())
+->
+like(user, talk_like_some_rando())
+;
+
+a/ask(user, question())
+c/can(a)
+->
+like(user, ask_question())
+;
+
+can(a/ask(emora, question()))
+stop(a)
+->
+like(user, emora_stop_asking_questions())
+;
+
+b/be(emora, old())
+qualifier(b, o/object())
+->
+like(user, know_emora_age())
+;
+
+r/record(emora, conversation())
+->
+like(user, know_recording())
+;
+
+req_unsat(request(user, o/object()))
+b/be(yoda, o)
+_category(o)
+->
+like(user, know_who_yoda_is())
+;
+
+can(t/tv(emora, p/picture()))
+->
+like(user, see_picture())
+;
+
+r/recycle(emora)
+->
+like(user, know_emora_recycle())
+;
+
+l/look(emora)
+like(l, what())
+->
+like(user, know_how_emora_look())
+;
+
+talk_0/talk(user_group())
+about(talk_0, smth_else())
+->
+like(user, o/entity())
+request(emora, o)
+like(user, talk_about_something_else())
+;
+
+like_0/like(emora, do(emora, object_0/object()))
+_category(object_0)
+->
+like(user, know_what_emora_like_do())
+like(emora, movie())
+;
+
+h/have(emora, b/body_part())
+->
+like(user, have_emora_body())
+;
+
+about(talk(), e/entity())
+->
+l/like(user, e)
+user_aware(l)
+;

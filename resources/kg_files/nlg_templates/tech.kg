@@ -6,7 +6,7 @@ time(have(emora,p1/computer()), now)
 time(tinker(emora,p1), now)
 ->
 _t(_rpresent)
-$ I love tinkering with my p c . Do you have a p c ? Or something else, like a laptop ? $
+$ I love tinkering with my p. c. . Do you have a p. c. ? Or something else, like a laptop ? $
 ;
 
 have(user, p/computer())
@@ -111,11 +111,11 @@ $ I bet you have an amd processor. If I had to build a computer right now, I'd u
 
 
 h/have(user, p/computer())
-a1/cpu_arch(p ,arm())
+a1/cpu_arch(p ,ARM())
 request_truth(emora,a1)
 ->
 _t(_rpresent)
-$ Do you have an arm processor? I think its about time a new cpu architecture was used more for p c's. x 86 is not the best possible architecture, but for a long time it just kept going because everyone else was using it.  $
+$ Do you have an ARM processor? I think its about time a new cpu architecture was used more for p c's. x 86 is not the best possible architecture, but for a long time it just kept going because everyone else was using it.  $
 ;
 
 h/have(user, p/phone())

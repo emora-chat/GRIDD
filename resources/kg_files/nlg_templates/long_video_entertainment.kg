@@ -859,7 +859,6 @@ $ I watched the Disney version of Alice in Wonderland all the time when I was a 
 ;
 
 w/watch(user, u/object())
-user_aware(w)
 b/be(u, y/unknown_movie())
 request_truth(emora, b)
 ->
@@ -869,7 +868,7 @@ $ Oh, is that a movie? $
 
 w/watch(user, u/object())
 l/like(user, u)
-req_sat(request_truth(emora, be_0/be(u, unknown_movie())))
+be_0/be(u, y/unknown_movie())
 request_truth(emora, l)
 ->
 _pr(_high)
@@ -877,7 +876,7 @@ $ Nice! Did you enjoy it? $
 ;
 
 w/watch(user, u/object())
-req_sat(request_truth(emora, be_0/be(u, unknown_movie())))
+be_0/be(u, y/unknown_movie())
 possess(u, g/movie_genre())
 request(emora, g)
 ->
@@ -886,8 +885,7 @@ $ What was the genre of the movie? $
 ;
 
 w/watch(user, u/object())
-req_sat(request_truth(emora, be_0/be(u, unknown_movie())))
-req_sat(request_truth(emora, like_0/like(user, u)))
+be_0/be(u, y/unknown_movie())
 l/like(user, u)
 cause(p/predicate(), l)
 request(emora, p)
@@ -897,8 +895,7 @@ $ What made you like it? I always enjoy movies that have exciting characters. $
 ;
 
 w/watch(user, u/object())
-req_sat(request_truth(emora, be_0/be(u, unknown_movie())))
-req_sat(request_truth(emora, like_0/like(user, u)))
+be_0/be(u, y/unknown_movie())
 l/like(user, u)
 not(l)
 cause(p/predicate(), l)
@@ -909,8 +906,7 @@ $ I'm sorry to hear that. Why do you think you didn't like it? $
 ;
 
 w/watch(user, u/object())
-req_sat(request_truth(emora, be_0/be(u, unknown_movie())))
-req_sat(request_truth(emora, like_0/like(user, u)))
+be_0/be(u, y/unknown_movie())
 l/like(user, d/disney_movie())
 request_truth(emora, l)
 ->
@@ -919,8 +915,7 @@ $ Do you like any Disney movies? $
 ;
 
 w/watch(user, u/object())
-req_sat(request_truth(emora, be_0/be(u, unknown_movie())))
-req_sat(request_truth(emora, like_0/like(user, u)))
+be_0/be(u, y/unknown_movie())
 l/like(user, d/marvel_movie())
 request_truth(emora, l)
 ->
@@ -996,4 +991,12 @@ be(g, g2)
 ->
 _pr(_high)
 $ Hmm. My favorite tv genre is food shows. They're so soothing to watch and I always work up an appetite . $
+;
+
+req_unsat(request(user, o/object()))
+l/like(emora, Iron_Man_1())
+c/cause(l, o)
+->
+_pr(_high)
+$ I just think Tony Stark is really funny, and Iron Man has always been my favorite super hero. $
 ;

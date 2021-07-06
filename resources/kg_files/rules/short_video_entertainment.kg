@@ -1,0 +1,22 @@
+l/like(user, s/short_video_entertainment())
+user_aware(l)
+->
+p2:<l cause(p2/predicate(), l)>
+request(emora, p2)
+;
+
+l/like(user, youtube())
+user_aware(l)
+->
+possess(user, y/youtuber())
+favorite(y)
+request(emora, y)
+;
+
+l/like(user, tiktok())
+user_aware(l)
+->
+possess(user, y/tiktoker())
+favorite(y)
+request(emora, y)
+;
