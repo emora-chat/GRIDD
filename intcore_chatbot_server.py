@@ -131,7 +131,7 @@ class ChatbotServer:
 
     def init_parse2logic(self, device=None):
         from GRIDD.modules.elit_dp_to_logic_model import ElitDPToLogic
-        file = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
+        file = join('GRIDD', 'resources', KB_FOLDERNAME, 'elit_dp_templates.kg')
         if USECACHE:
             if not os.path.exists(NLUCACHE):
                 os.mkdir(NLUCACHE)
@@ -858,7 +858,7 @@ class ChatbotServer:
 
         if PRINT_WM:
             print('\n<< Working Memory After Inferences Applied >>')
-            print(working_memory.pretty_print(exclusions={SPAN_DEF, SPAN_REF, USER_AWARE, ASSERT, 'imp_trigger'}))
+            print(working_memory.pretty_print(exclusions={SPAN_DEF, SPAN_REF, USER_AWARE, ASSERT}))
             for s,t,o,i in working_memory.predicates(predicate_type='_tanchor'):
                 print(f"{s} = {working_memory.features[s][SALIENCE]}, {working_memory.features[i][SALIENCE]}")
         p.next('prepare template nlg')
@@ -1004,11 +1004,11 @@ class ChatbotServer:
                 # print('\tAux State: %s\n'%aux_state)
 
 def get_filepaths():
-    kb = [join('GRIDD', 'resources', 'kg_files', 'kb')]
-    rules = [join('GRIDD', 'resources', 'kg_files', 'rules')]
-    wm = [join('GRIDD', 'resources', 'kg_files', 'wm')]
-    nlg_templates = [join('GRIDD', 'resources', 'kg_files', 'nlg_templates')]
-    fallbacks = [join('GRIDD', 'resources', 'kg_files', 'fallbacks.kg')]
+    kb = [join('GRIDD', 'resources', KB_FOLDERNAME, 'kb')]
+    rules = [join('GRIDD', 'resources', KB_FOLDERNAME, 'rules')]
+    wm = [join('GRIDD', 'resources', KB_FOLDERNAME, 'wm')]
+    nlg_templates = [join('GRIDD', 'resources', KB_FOLDERNAME, 'nlg_templates')]
+    fallbacks = [join('GRIDD', 'resources', KB_FOLDERNAME, 'fallbacks.kg')]
     return kb, rules, nlg_templates, fallbacks, wm
 
 PRINT_WM = False

@@ -1,0 +1,22 @@
+
+init_convo
+->
+greet(emora, user)
+;
+
+init_convo
+->
+h:<time(h/have(user, pet()), now)>
+request_truth(emora, h)
+;
+
+time(h/have(user, pet()), now)
+->
+cool(h)
+;
+
+time(h/have(user, pet()), now)
+not(h)
+->
+lame(h)
+;

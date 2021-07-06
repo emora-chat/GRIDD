@@ -1,0 +1,31 @@
+
+time = (predicate)
+timepoint = (entity)
+now = timepoint()
+;
+
+person = (entity)
+
+user = person()
+emora = person()
+name = (entity)
+;
+
+init_convo = object()
+;
+
+animal = (entity)
+pet = (animal)
+dog = (pet)
+cat = (pet)
+;
+
+attitude_quality = (predicate)
+cool = (attitude_quality)
+lame = (attitude_quality)
+;
+
+have = (predicate)
+;
+
+
