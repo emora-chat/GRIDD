@@ -257,8 +257,10 @@ class ChatbotServer:
             if not span.startswith('__linking__'):
                 # mega_mention_graph.add(span, 'def', center)
                 span_obj = Span.from_string(span)
-                if span_obj.pos_tag in {'prp', 'prop$'}:
+                if span_obj.pos_tag == 'prp':
                     mega_mention_graph.add(focus, TYPE, span_obj.pos_tag)
+                elif span_obj.pos_tag == 'prop$':
+                    mega_mention_graph.add(focus, TYPE, 'propds')
         self.assign_cover(mega_mention_graph)
         for s,t,l in mega_mention_graph.metagraph.edges():
             update = False
@@ -429,7 +431,7 @@ class ChatbotServer:
                     ref_match = match[reference_node] if reference_node in match else None
                     if ref_match is not None and reference_node != ref_match and \
                             wm.has(predicate_id=ref_match) == wm.has(predicate_id=reference_node) and \
-                            ref_match not in ref_types and (('prp' not in ref_types and 'prop$' not in ref_types) or ref_match not in {'user','emora'}):
+                            ref_match not in ref_types and (('prp' not in ref_types and 'propds' not in ref_types) or ref_match not in {'user','emora'}):
                         match_dict[ref_match] = []
                         for node in match:
                             if node != reference_node:
