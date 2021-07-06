@@ -546,6 +546,7 @@ class ChatbotServer:
     @serialized('working_memory', 'expr_dict')
     def run_prepare_template_nlg(self, working_memory):
         self.load_working_memory(working_memory)
+        self.dialogue_intcore.update_coherence() # record salience for concepts for windowed coherence calculation
         self.dialogue_intcore.decay_salience()
         expr_dict = {}
         for s,t,o,i in self.dialogue_intcore.pull_expressions(): # expressions from KB

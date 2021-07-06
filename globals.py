@@ -50,6 +50,9 @@ SALIENCE_OUT_LINK = 'salout'    # UpdateGraph label for salience propagation
 COLDSTART = 'coldstart'         # metadata bool feature preventing salience decay until selected
 SALIENCE = 'salience'           # metadata float feature representing attention w.r.t. emora
 CONNECTIVITY = 'conn'           # metadata integer feature representing neighborhood cardinality
+WINDOW = 10
+SAL_WINDOW = 'salw'
+COHERENCE = 'coherence'
 
 COMPS = 'comps'                 # metagraph link for component predicate and entity instances of mention
 VAR = 'var'                     # metagraph variable from one concept to another concept, in which the second concept is a variable
@@ -94,8 +97,9 @@ PRIM = {SPAN_DEF, SPAN_REF,
 UNKNOWN_TYPES = {'unknown_verb', 'unknown_noun', 'unknown_pron', 'unknown_adj', 'unknown_adv', 'unknown_other'}
 
 
-PRIORITY_WEIGHT = 0.5
-SAL_WEIGHT = 0.5
+PRIORITY_WEIGHT = 0.33
+SAL_WEIGHT = 0.33
+COH_WEIGHT = 0.33
 DEFAULT_PRIORITY = 0.5
 PRIORITY_PRED = '_pr'
 

@@ -667,6 +667,17 @@ class IntelligenceCore:
                 sal = wm.features.setdefault(c, {}).setdefault(SALIENCE, 0)
                 wm.features[c][SALIENCE] = max(0, sal - TIME_DECAY)
 
+    def update_coherence(self):
+        wm = self.working_memory
+        concepts = wm.concepts()
+        for c in concepts:
+            if c not in wm.features:
+                wm.features[c] = {}
+            wm.features[c].setdefault(SAL_WINDOW, []).append(wm.features[c].get(SALIENCE, 0))
+            if len(wm.features[c][SAL_WINDOW]) > WINDOW:
+                wm.features[c][SAL_WINDOW] = wm.features[c][SAL_WINDOW][1:WINDOW+1]
+            wm.features[c][COHERENCE] = sum(wm.features[c][SAL_WINDOW])
+
     def prune_attended(self, aux_state, num_keep):
         # NOTE: essential predicates AND reference constraints must be maintained for selected concepts that are being kept
 

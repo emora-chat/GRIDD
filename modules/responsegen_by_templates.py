@@ -141,10 +141,12 @@ class ResponseTemplateFiller:
                 # todo - stress test emora not asking a question she already has answer to or has asked before
                 # this should work, but we do have req_unsat predicate as backup, if needed
                 sals = [cg.features.get(x, {}).get(SALIENCE, 0) for x in match_dict.values()]
-                avg = sum(sals) / len(sals)
-                final_score = SAL_WEIGHT * avg + PRIORITY_WEIGHT * priority
+                sal_avg = sum(sals) / len(sals)
+                cohs = [cg.features.get(x, {}).get(COHERENCE, 0) for x in match_dict.values()]
+                coh_avg = sum(cohs)
+                final_score = SAL_WEIGHT * sal_avg + PRIORITY_WEIGHT * priority + COH_WEIGHT * coh_avg
                 with_sal.append((preds, string, final_score, topic_anchor))
-                print('\t%s (s: %.2f, pr: %.2f)' % (string, avg, priority))
+                print('\t%s (sal: %.2f, coh: %.2f, pri: %.2f)' % (string, sal_avg, coh_avg, priority))
         print()
         if len(with_sal) > 0:
             return max(with_sal, key=lambda x: x[2])
