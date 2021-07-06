@@ -21,7 +21,6 @@ know_what_emora_like_do=(object)
 have_emora_body=(object)
 see_picture=(object)
 ask_question=(object)
-stop=(predicate)
 recycle=(predicate)
 look=(predicate)
 ;

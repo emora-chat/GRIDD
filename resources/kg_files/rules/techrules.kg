@@ -50,12 +50,12 @@ request_truth(emora,a)
 
 have(user, m/mac())
 ->
-a:<a/have(m ,arm())>
+a:<a/have(m ,ARM())>
 request_truth(emora,a)
 ;
 
 p/computer()
-a/have(p ,arm())
+a/have(p ,ARM())
 ->
 a2/cpu_manuf(p, amd())
 not(a2)
@@ -65,19 +65,19 @@ not(a3)
 
 a2/cpu_manuf(p/computer(), amd())
 ->
-a/have(p ,arm())
+a/have(p ,ARM())
 not(a)
 ;
 
 a2/cpu_manuf(p/computer(), intel())
 ->
-a/have(p ,arm())
+a/have(p ,ARM())
 not(a)
 ;
 
 have(user, p/computer())
 ->
-a:<a/have(p ,arm())>
+a:<a/have(p ,ARM())>
 m:<m/mobile(p)>
 request_truth(emora,a)
 request_truth(emora,m)
@@ -85,7 +85,7 @@ request_truth(emora,m)
 
 
 
-have(p/computer(), arm())
+have(p/computer(), ARM())
 ->
 power_efficient(p)
 a:<a/good_program_compatibility(p)>
@@ -176,7 +176,7 @@ a:<a/cpu_manuf(p/computer(), amd())
 have(user, p)
 not(a)>
 ->
-aa:<aa/have(p ,arm())>
+aa:<aa/have(p ,ARM())>
 m:<m/mobile(p)>
 request_truth(emora,aa)
 request_truth(emora,m)
