@@ -272,11 +272,15 @@ class InferenceEngine:
                         if not_specific:
                             break
                     if variable in precede:
+                        precedes_sat = True
                         for n in precede[variable]:
                             value_span = facts_concept_graph.features[value]["span_data"]
                             match_span = facts_concept_graph.features[sol[n]]["span_data"]
                             if value_span.start > match_span.start: # value token must come before n's matched token
+                                precedes_sat = False
                                 break
+                        if not precedes_sat:
+                            break
                 else:
                     # postprocess type predicates
                     counter = 1
