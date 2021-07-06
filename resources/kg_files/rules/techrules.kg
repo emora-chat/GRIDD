@@ -2,7 +2,7 @@ have(user,p/computer())
 ->
 time(have(emora,p1/computer()), now)
 time(tinker(emora,p1), now)
-enth/pc_enthusiast(user)
+enth:<enth/pc_enthusiast(user)>
 request_truth(emora, enth)
 u:<time(u/use(user, l/linux()), now)>
 request_truth(emora, u)
