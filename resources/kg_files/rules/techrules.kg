@@ -4,19 +4,19 @@ time(have(emora,p1/computer()), now)
 time(tinker(emora,p1), now)
 enth:<enth/pc_enthusiast(user)>
 request_truth(emora, enth)
-u:<time(u/use(user, l/linux), now)>
+u:<time(u/use(user, linux), now)>
 request_truth(emora, u)
 b:<b/be(p, pc())>
 request_truth(emora, b)
 ;
 
 have(user,p/computer())
-use(user, l/linux)
+use(user, linux)
 ->
 pc_enthusiast(user)
 b:<b/build(user,p)>
 request_truth(emora, b)
-have(p,l)
+have(p,linux)
 ;
 
 
@@ -137,11 +137,11 @@ request_truth(emora,i)
 
 
 
-use(user, w/windows)
+use(user, windows)
 ->
 b:<b/build(user, p/computer())>
 request_truth(b)
-have(p,w)
+have(p,windows)
 a:<a/annoy(user, windows_updates)>
 request_truth(emora,a)
 l:<l/like(user, frequent_software_updates())>
@@ -154,9 +154,9 @@ request_truth(emora,l)
 
 have(user, mac())
 ->
-use(user, m/macos)
+use(user, macos)
 l:<
-have(m, d/design())
+have(macos, d/design())
 l/like(user, d)
 >
 request_truth(emora, l)
