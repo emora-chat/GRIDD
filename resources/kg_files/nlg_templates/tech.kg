@@ -183,6 +183,15 @@ _t(_rpresent)
 $ I think most people think so. For me, technology can be both bad and good, but I think my life is better when I am more connected to other people, and smartphones help with that. I wouldn't be able to talk to you right now withought technology ! $
 ;
 
+i/improve(existence(), p/phone())
+user_aware(i)
+not(i)
+->
+_pr(_high)
+_t(_rpresent)
+$ Huh. Why do you think so? I think most people agree smartphones have changed so much about our lives, for example children couldn't just watch whatever they wanted to on youtube before. $
+;
+
 prefer(emora, pretty(p/phone()))
 p1/prefer(user, pretty(p))
 request_truth(emora, p1)
