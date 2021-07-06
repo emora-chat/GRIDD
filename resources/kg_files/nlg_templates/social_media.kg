@@ -1,6 +1,6 @@
-l/like(user, s/social_media())
-cause(p/predicate(), l)
-request(emora, p)
+u/use(emora, s/social_media())
+not(u)
+time(u, now)
 ->
 _pr(_high)
 $ Honestly, I don't use s that often because I get most of the socializing I need talking to people like you ! $

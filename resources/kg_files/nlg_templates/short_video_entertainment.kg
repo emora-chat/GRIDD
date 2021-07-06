@@ -8,7 +8,8 @@ $ Why do you like s ? $
 
 possess(user, c/content_creator())
 favorite(c)
-request(emora, c)
+be(c, c2/content_creator())
+request(emora, c2)
 ->
 _pr(_high)
 $ Who is your favorite c $
