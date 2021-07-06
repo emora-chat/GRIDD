@@ -790,13 +790,14 @@ class ConceptGraph:
             if c not in visited:
                 visited.add(c)
                 components += 1
-                related = set(self.related(c)) - visited
+                related = set(chain(self.related(c), self.subtypes_of(c))) - visited
                 while related:
                     r = related.pop()
                     if r not in visited:
                         visited.add(r)
                         concepts -= {r}
-                        related.update(set(self.related(r)) - visited)
+                        addendums = set(chain(self.related(r), self.subtypes_of(r))) - visited
+                        related.update(addendums)
         return components
 
     def compile_connection_counts(self):
