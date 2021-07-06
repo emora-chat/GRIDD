@@ -666,10 +666,9 @@ class IntelligenceCore:
     def prune_attended(self, aux_state, num_keep):
         # NOTE: essential predicates AND reference constraints must be maintained for selected concepts that are being kept
 
-        p.start('setup')
         wm = self.working_memory
 
-        p.next('select keep')
+        p.start('select keep')
         options = {i for s,t,o,i in wm.predicates() if t not in chain(self.subj_essential_types, self.obj_essential_types, PRIM, {TYPE})}
         soptions = sorted(options,
                           key=lambda x: wm.features.get(x, {}).get(SALIENCE, 0),
