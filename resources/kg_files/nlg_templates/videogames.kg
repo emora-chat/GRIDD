@@ -22,7 +22,15 @@ $ Oh, awesome, that makes us two peas in a pod! $
 play(user, v/videogame())
 request(emora, v)
 ->
-$ Oh, awesome, that makes us two peas in a pod! What's your favorite game? $
+_t(_present)
+$ What games do you like? $
+;
+
+p/play(user, v/videogame())
+uturn(p, 0)
+->
+_t(_react)
+$ Oh, awesome, that makes us two peas in a pod! $
 ;
 
 p/play(user, v/videogame())

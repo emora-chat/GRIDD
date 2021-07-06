@@ -80,3 +80,11 @@ expr("R V trip",RV_trip)
 
 thought=(entity)
 rest=(entity)
+bed=(entity)
+
+pain=(entity)
+video_call=(entity)
+expr("video call",video_call)
+
+experience=(entity)
+meditation=(entity)

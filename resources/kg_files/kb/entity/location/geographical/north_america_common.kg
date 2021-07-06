@@ -383,3 +383,8 @@ expr("santa monica",santa_monica)
 in(santa_monica,california)
 
 ;
+
+newport_beach=selected_city()
+expr("newport, newport beach",newport_beach)
+in(newport_beach,california)
+;
