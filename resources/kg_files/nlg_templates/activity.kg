@@ -339,3 +339,15 @@ req_unsat(request(user, o))
 ->
 $ I hiked in a mountain with fresh air and a beautiful forest . I also barbecued over a campfire . $
 ;
+
+/* reaction */
+
+have_0/have(user, m/meal())
+time(have_0, past)
+uturn(have_0, 1)
+->
+_pr(_high)
+_t(_r)
+$ I hope it was good! $
+;
+
