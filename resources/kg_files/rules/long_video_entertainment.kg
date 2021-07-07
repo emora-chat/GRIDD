@@ -465,6 +465,14 @@ op_more_info(m, w)
 request(emora, m)
 ;
 
+w2/watch(user, m2/movie())
+req_unsat(r/request(emora, m2))
+-> user_watched_unknown_movie ->
+l/like(user, m2)
+request_truth(emora, l)
+;
+
+
 w/watch(user, m/marvel_movie())
 _category(m)
 user_aware(w)
@@ -506,224 +514,224 @@ op_more_info(m, l)
 request(emora, m)
 ;
 
-l/like(user, g/ratatouille())
+l/like(user, ratatouille)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/dalmatians())
+l/like(user, dalmatians)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/coco())
+l/like(user, coco)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/zootopia())
+l/like(user, zootopia)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/lady_and_tramp())
+l/like(user, lady_and_tramp)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/walle())
+l/like(user, walle)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/lion_king())
+l/like(user, lion_king)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/hunchback())
+l/like(user, hunchback)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/mulan())
+l/like(user, mulan)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/frozen())
+l/like(user, frozen)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/frozen_two())
+l/like(user, frozen_two)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/moana())
+l/like(user, moana)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/inside_out())
+l/like(user, inside_out)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/pocahontas())
+l/like(user, pocahontas)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/aladdin())
+l/like(user, aladdin)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/peter_pan())
+l/like(user, peter_pan)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/nightmare_before_christmas())
+l/like(user, nightmare_before_christmas)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/bambi())
+l/like(user, bambi)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/tangled())
+l/like(user, tangled)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/lilo_and_stitch())
+l/like(user, lilo_and_stitch)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/incredibles())
+l/like(user, incredibles)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/toy_story())
+l/like(user, toy_story)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/toy_story_2())
+l/like(user, toy_story_2)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/toy_story_3())
+l/like(user, toy_story_3)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/fantasia())
+l/like(user, fantasia)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/finding_nemo())
+l/like(user, finding_nemo)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/beauty_and_beast())
+l/like(user, beauty_and_beast)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/snow_white())
+l/like(user, snow_white)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/little_mermaid())
+l/like(user, little_mermaid)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/princess_and_frog())
+l/like(user, princess_and_frog)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/cinderella())
+l/like(user, cinderella)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/alice_in_wonderland())
+l/like(user, alice_in_wonderland)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>

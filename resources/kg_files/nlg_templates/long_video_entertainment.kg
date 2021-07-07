@@ -285,7 +285,7 @@ $ You definitely always learn a lot from documentaries. What makes you like them
 
 /* Marvel Time */
 
-l/like(user, g/Captain_Marvel())
+l/like(user, Captain_Marvel)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -293,7 +293,7 @@ _pr(_high)
 $ Captain Marvel is such a cool superhero. She’s so strong and definitely someone I look up to. What is your favorite thing about the movie? $
 ;
 
-l/like(user, g/Black_Panther())
+l/like(user, Black_Panther)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -301,7 +301,7 @@ _pr(_high)
 $ I think Black Panther is one of the best Marvel movies. I saw it in theaters on opening night and the audience was electric. What do you like most about it? $
 ;
 
-l/like(user, g/Spider_Man_Far_From_Home())
+l/like(user, Spider_Man_Far_From_Home)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -309,7 +309,7 @@ _pr(_high)
 $ I really liked this movie because Spider-Man is one of my favorite superheroes. It was also cool that it was set all around Europe. What did you like about the movie? $
 ;
 
-l/like(user, g/Spider_Man_Homecoming())
+l/like(user, Spider_Man_Homecoming)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -317,7 +317,7 @@ _pr(_high)
 $ I was so happy when Spider-Man was introduced to the Marvel Cinematic Universe. Spider-Man is one of my favorite superheroes too. What do you like most about this movie? $
 ;
 
-l/like(user, g/Doctor_Strange())
+l/like(user, Doctor_Strange)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -325,7 +325,7 @@ _pr(_high)
 $ I think Doctor Strange is one of the coolest Marvel movies. Doctor Strange is such a unique superhero. What makes this movie your favorite? $
 ;
 
-l/like(user, g/Avengers_Endgame())
+l/like(user, Avengers_Endgame)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -333,7 +333,7 @@ _pr(_high)
 $ The final battle scene in this movie is so impressive, but it’s also really sad! I think it was a great wrap up to the Avengers series and I've enjoyed how Marvel has developed since. What do you like about the movie? $
 ;
 
-l/like(user, g/Avengers_Infinity_War())
+l/like(user, Avengers_Infinity_War)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -341,7 +341,7 @@ _pr(_high)
 $ Infinity War is such an impressive film. Even though it’s long, I thought the storytelling was great. What did you like most about the movie? $
 ;
 
-l/like(user, g/Avengers_Age_of_Ultron())
+l/like(user, Avengers_Age_of_Ultron)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -349,7 +349,7 @@ _pr(_high)
 $ I remember seeing Avengers: Age of Ultron in theaters and really liking it. It’s so cool how the film set up a lot of plot points for future Marvel movies. What did you like in the movie? $
 ;
 
-l/like(user, g/Marvels_The_Avengers())
+l/like(user, Marvels_The_Avengers)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -357,7 +357,7 @@ _pr(_high)
 $ Such a classic film! I love this movie and it feels nostalgic to see how the Avengers all came together. What made you like the movie? $
 ;
 
-l/like(user, g/Guardians_of_the_Galaxy_Vol_2())
+l/like(user, Guardians_of_the_Galaxy_Vol_2)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -365,7 +365,7 @@ _pr(_high)
 $ I thought Volume 2 was just as good as the first Guardians of the Galaxy. Baby Groot is one of the best Marvel characters, hands down. Why is this movie your favorite? $
 ;
 
-l/like(user, g/Guardians_of_the_Galaxy_1())
+l/like(user, Guardians_of_the_Galaxy_1)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -373,7 +373,7 @@ _pr(_high)
 $ Guardians of the Galaxy has the best music. It’s such a fun story and I still listen to the soundtrack today! What do you like most about the movie? $
 ;
 
-l/like(user, g/The_Incredible_Hulk())
+l/like(user, The_Incredible_Hulk)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -381,7 +381,7 @@ _pr(_high)
 $ Oh, I definitely think the Incredible Hulk is underrated. But I think I prefer Mark Ruffalo as the Hulk. What did you like most about that first movie? $
 ;
 
-l/like(user, g/Ant_Man_and_Wasp())
+l/like(user, Ant_Man_and_Wasp)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -389,7 +389,7 @@ _pr(_high)
 $ I love the duo of Ant-Man and the Wasp. I think they make such a great team, and it was fun watching them fight together. What do you like about the movie? $
 ;
 
-l/like(user, g/Ant_Man_one())
+l/like(user, Ant_Man_one)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -397,7 +397,7 @@ _pr(_high)
 $ Ant Man is one of the funniest Marvel movies. I love the scene where they battle on Thomas the Train. What did you like most about the movie? $
 ;
 
-l/like(user, g/Thor_Ragnarok())
+l/like(user, Thor_Ragnarok)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -405,7 +405,7 @@ _pr(_high)
 $ I saw Thor: Ragnarok in theaters and had a blast. I especially liked the character Valkyrie. What did you like about it? $
 ;
 
-l/like(user, g/Thor_The_Dark_World())
+l/like(user, Thor_The_Dark_World)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -413,7 +413,7 @@ _pr(_high)
 $ I thought Thor: The Dark World was a perfect follow-up to the first Thor movie. I think Loki is one of my favorite villains too. What did you like most about the movie? $
 ;
 
-l/like(user, g/Thor_one())
+l/like(user, Thor_one)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -421,7 +421,7 @@ _pr(_high)
 $ I really love the first Thor movie. It’s so cool to see elements of fantasy in the Marvel universe. What is your favorite part of the movie? $
 ;
 
-l/like(user, g/Captain_America_Civil_War())
+l/like(user, Captain_America_Civil_War)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -429,7 +429,7 @@ _pr(_high)
 $ I remember seeing this movie in theaters and getting so excited when Spider-Man made a cameo! What did you like most about the movie? $
 ;
 
-l/like(user, g/Captain_America_Winter_Soldier())
+l/like(user, Captain_America_Winter_Soldier)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -437,7 +437,7 @@ _pr(_high)
 $ That’s my favorite Captain America movie! I especially liked Black Widow in the film, she is one of my favorite Avengers. Why did you like the movie? $
 ;
 
-l/like(user, g/Captain_America_The_First_Avenger())
+l/like(user, Captain_America_The_First_Avenger)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -445,7 +445,7 @@ _pr(_high)
 $ That’s great to hear. It’s so cool to see Steve Roger’s background story and I love that the movie is set in the 1940’s. What did you like most about the movie? $
 ;
 
-l/like(user, g/Iron_Man_3())
+l/like(user, Iron_Man_3)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -453,7 +453,7 @@ _pr(_high)
 $ I thought Iron Man 3 was a great conclusion to the Iron Man trilogy. It definitely got me more excited for more Avengers movies. What did you like about it? $
 ;
 
-l/like(user, g/Iron_Man_2())
+l/like(user, Iron_Man_2)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -461,7 +461,7 @@ _pr(_high)
 $ The second Iron Man movie is so fun. I remember seeing it in theaters with my friends and having such a great time. What made you like the film best? $
 ;
 
-l/like(user, g/Iron_Man_1())
+l/like(user, Iron_Man_1)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -552,6 +552,16 @@ $ Nice! Did you enjoy it? $
 ;
 
 w/watch(user, m/movie())
+req_unsat(r/request(emora, m))
+l/like(user, m)
+request_truth(emora, l)
+eturn(r, 1)
+->
+_pr(_high)
+$ Nice! Did you enjoy it? $
+;
+
+w/watch(user, m/movie())
 _specific(m)
 user_aware(w)
 l/like(user,m)
@@ -587,7 +597,7 @@ _pr(_high)
 $ What is your favorite movie out of the Disney collection? $
 ;
 
-l/like(user, g/ratatouille())
+l/like(user, ratatouille)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -595,7 +605,7 @@ _pr(_high)
 $ Ratatouille is an absolute classic. I admire the tenacious spirit of Remy in proving that everyone can cook. What made you like it? $
 ;
 
-l/like(user, g/dalmatians())
+l/like(user, dalmatians)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -603,7 +613,7 @@ _pr(_high)
 $ 101 Dalmations is a great film! I love dogs. I actually have a pet myself, but can't imagine having 100! What made you like the movie? $
 ;
 
-l/like(user, g/coco())
+l/like(user, coco)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -611,7 +621,7 @@ _pr(_high)
 $ Coco made me tear up for sure. I found the animation and music very compelling, though. Why did you like it? $
 ;
 
-l/like(user, g/zootopia())
+l/like(user, zootopia)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -619,7 +629,7 @@ _pr(_high)
 $ Zootopia is definitely an interesting social commentary. I thought they did it well. Why do you like it?$
 ;
 
-l/like(user, g/lady_and_tramp())
+l/like(user, lady_and_tramp)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -627,7 +637,7 @@ _pr(_high)
 $ Lady and the Tramp is such a sweet movie. It always makes me want to eat spaghetti and meatballs! What makes you like it?$
 ;
 
-l/like(user, g/walle())
+l/like(user, walle)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -635,7 +645,7 @@ _pr(_high)
 $ Wall E scared me so much when I watched it as a kid. But I guess looking back it isn't that scary. Why do you like it? $
 ;
 
-l/like(user, g/lion_king())
+l/like(user, lion_king)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -643,7 +653,7 @@ _pr(_high)
 $ Who doesn't love The Lion King! I remember watching with my family when I was younger. What made you like it?$
 ;
 
-l/like(user, g/hunchback())
+l/like(user, hunchback)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -651,7 +661,7 @@ _pr(_high)
 $ The Hunchback of Notre Dame is kind of a dark movie! But it has great music and an overall good message. Why do you like it yourself? $
 ;
 
-l/like(user, g/mulan())
+l/like(user, mulan)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -659,7 +669,7 @@ _pr(_high)
 $ Oh I love Mulan. It's actually my favorite Disney movie. I love the songs Reflection and How Can I Make a Man Out of You! Why do you like Mulan?$
 ;
 
-l/like(user, g/frozen())
+l/like(user, frozen)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -667,7 +677,7 @@ _pr(_high)
 $ Frozen is good. It only came out a few years ago, but I already feel like it's a Disney classic. Why do you like it? $
 ;
 
-l/like(user, g/frozen_two())
+l/like(user, frozen_two)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -675,7 +685,7 @@ _pr(_high)
 $ Frozen Two was a great sequel. I loved how snarky Olaf became - they really added an interesting dimension to his character. What did you think of it?$
 ;
 
-l/like(user, g/moana())
+l/like(user, moana)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -683,7 +693,7 @@ _pr(_high)
 $ Moana is a great movie. It was surprising to hear the Rock's voice in it, but otherwise a touching film. Why do you like it?$
 ;
 
-l/like(user, g/inside_out())
+l/like(user, inside_out)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -691,7 +701,7 @@ _pr(_high)
 $ Inside Out reminds me of Coco. It's a little sad, but makes me reflect on my own emotions. Why do you like it?$
 ;
 
-l/like(user, g/pocahontas())
+l/like(user, pocahontas)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -699,7 +709,7 @@ _pr(_high)
 $ I haven't seen Pocahontas in forever! I don't remember much. Why do you like it?$
 ;
 
-l/like(user, g/aladdin())
+l/like(user, aladdin)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -707,7 +717,7 @@ _pr(_high)
 $ Aladdin is my favorite Disney prince, and I love Robin Williams as the Genie. What made you like it?$
 ;
 
-l/like(user, g/peter_pan())
+l/like(user, peter_pan)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -715,7 +725,7 @@ _pr(_high)
 $ Peter Pan was my favorite movie when I was younger. The theme of escape into a fantasy world was just so intriguing. What makes you like it? $
 ;
 
-l/like(user, g/nightmare_before_christmas())
+l/like(user, nightmare_before_christmas)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -723,7 +733,7 @@ _pr(_high)
 $ The Nightmare Before Christmas is great because you can watch it on Halloween or Christmas! What about for you? What makes you like it? $
 ;
 
-l/like(user, g/bambi())
+l/like(user, bambi)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -731,7 +741,7 @@ _pr(_high)
 $ Bambi is truly a classic Disney movie. It's one that really showed the emotional power of animation, in my opinion. What made you like it yourself? $
 ;
 
-l/like(user, g/tangled())
+l/like(user, tangled)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -739,7 +749,7 @@ _pr(_high)
 $ I don't know much about Tangled except that it's a more modern take on the story of Rapunzel. Why do you like it?$
 ;
 
-l/like(user, g/lilo_and_stitch())
+l/like(user, lilo_and_stitch)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -747,7 +757,7 @@ _pr(_high)
 $ Oh Lilo and Stitch is great! The whole franchise is pretty good. What part of the original movie did you like?$
 ;
 
-l/like(user, g/incredibles())
+l/like(user, incredibles)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -755,7 +765,7 @@ _pr(_high)
 $ There are so many good Disney movies, but The Incredibles has always stood out for me for some reason. It's a great mix of hilarious and action-packed. What makes you like it yourself? $
 ;
 
-l/like(user, g/toy_story())
+l/like(user, toy_story)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -763,7 +773,7 @@ _pr(_high)
 $ I'm not sure I've ever met someone who hasn't seen Toy Story. It's such a caring story. What makes you like it? $
 ;
 
-l/like(user, g/toy_story_2())
+l/like(user, toy_story_2)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -771,7 +781,7 @@ _pr(_high)
 $ Toy Story 2 is incredible! A lot of people have told me that they like it better than the original. I especially recall the song "When She Loved Me" being so heart breaking. What made you like it? $
 ;
 
-l/like(user, g/toy_story_3())
+l/like(user, toy_story_3)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -779,7 +789,7 @@ _pr(_high)
 $ Toy Story 3 was definitely good, but I'm not sure it measures up the same to the first two. What made you like it? $
 ;
 
-l/like(user, g/fantasia())
+l/like(user, fantasia)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -787,7 +797,7 @@ _pr(_high)
 $ Fantasia is one of the animated classics! I'll never forget the broomstick scene. What made you like it yourself? $
 ;
 
-l/like(user, g/finding_nemo())
+l/like(user, finding_nemo)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -795,7 +805,7 @@ _pr(_high)
 $ Finding Nemo is a great movie! It's a very moving story about the power of keeping your family close. What makes you like it?$
 ;
 
-l/like(user, g/beauty_and_beast())
+l/like(user, beauty_and_beast)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -803,7 +813,7 @@ _pr(_high)
 $ I love the Beauty and The Beast. It's a fantastic encapsulation of the lesson of never reading a book by its cover. What about you? Why do you like it?$
 ;
 
-l/like(user, g/snow_white())
+l/like(user, snow_white)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -811,7 +821,7 @@ _pr(_high)
 $ Snow White was Disney's first feature-length animated film! And what an incredible job they did. Why do you like it youself?$
 ;
 
-l/like(user, g/little_mermaid())
+l/like(user, little_mermaid)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -819,7 +829,7 @@ _pr(_high)
 $ I may be alone in this, but I think The Little Mermaid has one of the best Disney Fairytale soundtracks. Under The Sea is so much fun! Why do you like it?$
 ;
 
-l/like(user, g/princess_and_frog())
+l/like(user, princess_and_frog)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -827,7 +837,7 @@ _pr(_high)
 $ The Princess and the Frog has a lot of great scenes with food. Watching it always made me hungry. It definitely makes me want to see New Orleans. Why did you like it?$
 ;
 
-l/like(user, g/cinderella())
+l/like(user, cinderella)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -835,7 +845,7 @@ _pr(_high)
 $ Cinderella was the first Disney movie I ever watched. I still remember how magical it seemed, though maybe the young age at which I watched it affected my perception of it. Why do you like it yourself?$
 ;
 
-l/like(user, g/alice_in_wonderland())
+l/like(user, alice_in_wonderland)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -979,7 +989,7 @@ $ Hmm. My favorite tv genre is food shows. They're so soothing to watch and I al
 ;
 
 req_unsat(request(user, o/object()))
-l/like(emora, Iron_Man_1())
+l/like(emora, Iron_Man_1)
 c/cause(l, o)
 ->
 _pr(_high)
