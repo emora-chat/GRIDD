@@ -377,7 +377,9 @@ time(for(ht,thanksgiving),always)
 
 intend_to_consume(x/person(),m/meat())
 ->
-intend_to_consume(emora,m)
+possess(emora,mt/meat())
+favorite(mt)
+be(mt,beef())
 ;
 
 intend_to_consume(x/person(),sf/seafood())

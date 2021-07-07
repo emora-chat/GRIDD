@@ -1,3 +1,10 @@
 time(have(emora, j/job()), now)
 time(be(j, t/customer_service_representative()), now)
 possess(emora, j)
+
+;
+
+time(he/hike(emora),past)
+in(he,mountain())
+
+;

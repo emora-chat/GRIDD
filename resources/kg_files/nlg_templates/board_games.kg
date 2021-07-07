@@ -12,133 +12,133 @@ _pr(_high)
 $ What is your favorite category or type of board game? $
 ;
 
-l/like(user, m/monopoly())
+l/like(user, monopoly)
 user_aware(l)
 ->
 _pr(_high)
 $ Monopoly is the one of the games I played all the time when I was younger.  I am amazed with all the different versions of Monopoly.  I like the original version the best though. $
 ;
 
-l/like(user, c/chess())
+l/like(user, chess)
 user_aware(l)
 ->
 _pr(_high)
 $ Chess is still one of the best two player games in my opinion. The rules are more complicated than checkers and the strategies for winning are endless.  I was never particularly good at chess though. It’s cool that you can play on your cell phone or computer against people from all over the world. $
 ;
 
-l/like(user, c/checkers())
+l/like(user, checkers)
 user_aware(l)
 ->
 _pr(_high)
 $ Checkers is fun and easy to learn but winning a game takes focus and concentration.  I like that a game of checkers can be played quickly. $
 ;
 
-l/like(user, b/backgammon())
+l/like(user, backgammon)
 user_aware(l)
 ->
 _pr(_high)
 $ Backgammon is one I game I have not played very much though I love the design of its playing board. $
 ;
 
-l/like(user, s/scrabble())
+l/like(user, scrabble)
 user_aware(l)
 ->
 _pr(_high)
 $ Scrabble is a great test of vocabulary and creativity.  I have friends that play scrabble and games like Scrabble, though they mostly play with friends on their cell phones.  Have you played Words with Friends? $
 ;
 
-l/like(user, c/clue())
+l/like(user, clue)
 user_aware(l)
 ->
 _pr(_high)
 $ Clue is a great game to play with friends. They even made a movie based on the board game. Have you seen it? $
 ;
 
-l/like(user, t/trivial_pursuit())
+l/like(user, trivial_pursuit)
 user_aware(l)
 ->
 _pr(_high)
 $ Trivial Pursuit is a classic and challenging game, especially when you have a great memory for trivia. I remember playing this with my family, it brings back fond memories.  Have you ever looked into Half Truth? It is a game by a former Jeopardy champion that is a new take on trivia games. $
 ;
 
-l/like(user, b/battleship())
+l/like(user, battleship)
 user_aware(l)
 ->
 _pr(_high)
 $ Battleship is one of my favorite games.  The game has such a neat design with each player having little ship pieces on a peg board. Did you know the game started out being played with pencil and paper?  The electronic versions are fun. I think it is a great game for kids. $
 ;
 
-l/like(user, c/candy_land())
+l/like(user, candy_land)
 user_aware(l)
 ->
 _pr(_high)
 $ Candy Land is still really popular and easy for people of all ages to play.  I think every kid I knew growing up had a copy of Candy Land. $
 ;
 
-l/like(user, g/game_of_life())
+l/like(user, game_of_life)
 user_aware(l)
 ->
 _pr(_high)
 $ The Game of Life is fun to play.  I fondly remember spinning the wheel and moving my little car around the game board. $
 ;
 
-l/like(user, r/risk_game())
+l/like(user, risk_game)
 user_aware(l)
 ->
 _pr(_high)
 $ Risk is a great game! I played Risk for countless hours against my friends.  I like Risk and I also like Diplomacy.  These types of games are usually called area of control games, for a fun fact. $
 ;
 
-l/like(user, c/catan())
+l/like(user, catan)
 user_aware(l)
 ->
 _pr(_high)
 $ Catan is a fun game. It was my gateway into a whole new world of games that are sometimes called Euro games.  If you like Catan you will probably like Puerto Rico.  Do you play other Euro games? $
 ;
 
-l/like(user, p/pandemic_game())
+l/like(user, pandemic_game)
 user_aware(l)
 ->
 _pr(_high)
 $ Pandemic is a fun cooperative game.  Who doesn’t want to save the world?  I like playing board games where people work with each other.  Do you like other Cooperative games? $
 ;
 
-l/like(user, c/codenames())
+l/like(user, codenames)
 user_aware(l)
 ->
 _pr(_high)
 $ Codenames is fun game for families and friends.  I like how teams work together with one person giving clues and the other one guessing. I also love the Codenames Pictures version. $
 ;
 
-l/like(user, g/gloomhaven())
+l/like(user, gloomhaven)
 user_aware(l)
 ->
 _pr(_high)
 $ Gloomhaven is a challenging and fun legacy game.  I have started and stopped playing this game many times.  I've heard it is one of the most popular board games in the hobby gaming world right now. $
 ;
 
-l/like(user, t/terraforming_mars())
+l/like(user, terraforming_mars)
 user_aware(l)
 ->
 _pr(_high)
 $ Terraforming Mars is fun and makes you feel like you are trying to make Mars inhabitable.  I am amazed how many expansions there are for this game. $
 ;
 
-l/like(user, c/carcassonne())
+l/like(user, carcassonne)
 user_aware(l)
 ->
 _pr(_high)
 $ Carcassonne is a fun and quick game to play. I enjoy laying out the tiles and forming cities and roads. It’s also easy to travel with if you are going on a long trip. $
 ;
 
-l/like(user, t/ticket_to_ride())
+l/like(user, ticket_to_ride)
 user_aware(l)
 ->
 _pr(_high)
 $ Ticket to Ride is easy to learn and fun to play. My favorite part of the game is creating the huge network of train tracks. It always looks so cool by the end. $
 ;
 
-l/like(user, t/dnd())
+l/like(user, dnd)
 user_aware(l)
 ->
 _pr(_high)
