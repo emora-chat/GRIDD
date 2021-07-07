@@ -31,6 +31,16 @@ class NodeFeatures(defaultdict):
                             self[node]['span_data'] = other_value
                     elif feature in {UTURN_POS, ETURN_POS, UTURN, ETURN}:
                         self[node].setdefault(feature, set()).update(other_value)
+                    elif feature == SAL_WINDOW:
+                        self_ls = self[node][feature] if feature in self[node] else []
+                        new_ls = []
+                        self_len = len(self_ls)
+                        other_len = len(other_value)
+                        for i in range(max([self_len, other_len])):
+                            v1 = 0 if i >= self_len else self_ls[i]
+                            v2 = 0 if i >= other_len else other_value[i]
+                            new_ls.append(max([v1, v2]))
+                        self[node][feature] = new_ls
                     else:
                         self[node][feature] = other_value
 
@@ -53,6 +63,16 @@ class NodeFeatures(defaultdict):
                         self[kept]['span_data'] = other_value
                 elif feature in {UTURN_POS, ETURN_POS, UTURN, ETURN}:
                     self[kept].setdefault(feature, set()).update(other_value)
+                elif feature == SAL_WINDOW:
+                    self_ls = self[kept][feature] if feature in self[kept] else []
+                    new_ls = []
+                    self_len = len(self_ls)
+                    other_len = len(other_value)
+                    for i in range(max([self_len, other_len])):
+                        v1 = 0 if i >= self_len else self_ls[i]
+                        v2 = 0 if i >= other_len else other_value[i]
+                        new_ls.append(max([v1, v2]))
+                    self[kept][feature] = new_ls
                 else:
                     self[kept][feature] = other_value
             del self[replaced]

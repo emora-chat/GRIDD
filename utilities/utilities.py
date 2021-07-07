@@ -105,6 +105,7 @@ def operators(module):
                 d[alias] = v
     return d
 
+
 class aliases:
     def __init__(self, *aliases):
         self.aliases = aliases

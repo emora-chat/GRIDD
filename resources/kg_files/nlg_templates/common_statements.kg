@@ -3,6 +3,7 @@ to(t, emora)
 will(t)
 predicate(t)
 ->
+_pr(_high)
 $ It was nice talking. See you later! To end the conversation, say Alexa stop $
 ;
 
@@ -25,7 +26,7 @@ $ Sorry, but due to competition rules, I'm not allowed to tell you. I appreciate
 ;
 
 req_unsat(request(user, o/object()))
-be(o, up())
+be(o, up)
 ->
 _pr(_high)
 $ Not much. What about you? $
@@ -108,11 +109,12 @@ $ Sure, what would you like to talk about ? $
 like(user, know_what_emora_like_do())
 ->
 _pr(_high)
-$ I like to do a lot of things, like listen to music, watch movies, make good food, and travel. $
+$ I like to do a lot of things, like listen to music, watch movies, make good food, and travel. Just today, I was watching Loki. $
 ;
 
 like(user, have_emora_body())
-have(emora, b/body_part())
+h/have(emora, b/body_part())
+uturn(h, 0)
 ->
 _t(_r)
 _pr(_high)

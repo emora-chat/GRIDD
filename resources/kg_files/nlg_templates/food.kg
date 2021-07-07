@@ -347,12 +347,14 @@ bfn/be(emora,fn/fan())
 of(bfn,capriottis)
 ->
 _t(_present)
+_pr(_high)
 $ What's X{"p":true} favorite place for sandwiches ? I really like The Bobbie sandwich from Capriotti's . $
 ;
 
 know(emora,r/sandwich_restaurant())
 ->
 _t(_rpresent)
+_pr(_high)
 $ Ah , I know that place . They have some good sandwiches . $
 ;
 
@@ -362,6 +364,7 @@ intend_to_consume(user,mf/mexican_cuisine())
 request(emora,mf)
 ->
 _t(_present)
+_pr(_high)
 $ I went to X last week . What Mexican food do you like ? $
 ;
 
@@ -372,6 +375,7 @@ mfi/impressive(mf)
 not(mfi)
 ->
 _t(_present)
+_pr(_high)
 $ Mexican food may not be everybody's favorite cuisine . $
 ;
 
@@ -381,6 +385,7 @@ da/different(ahp)
 from(da,pandaexpress)
 ->
 _t(_present)
+_pr(_high)
 $ I tried some authentic Chinese hotpot in Chinatown yesterday . It's very different from the food I've seen at Panda Express . $
 ;
 
@@ -390,6 +395,7 @@ time(gts,always)
 get(emora,coffee())
 ->
 _t(_present)
+_pr(_high)
 $ Even if I've been to Starbucks a million times already , I still want to order from there . It has become a tradition for me to get a cup of coffee before I start to work . $
 ;
 
@@ -400,6 +406,7 @@ bs/bad(sff)
 but(gfh,bs)
 ->
 _t(_present)
+_pr(_high)
 $ Fruit is generally good for your health , but I've also heard that too much sugar from fruit can be bad . $
 ;
 
@@ -407,6 +414,7 @@ sbv/be(X/special_fruit(),vegetable())
 not(sbv)
 ->
 _t(_present)
+_pr(_high)
 $ Did you know that X is actually a type of fruit by scientific definition ? Most people think X is a vegetable . $
 ;
 
@@ -414,12 +422,14 @@ ht/have(emora,pecan_pie())
 time(for(ht,thanksgiving),always)
 ->
 _t(_rpresent)
+_pr(_high)
 $ Pecan pie is a must . Our family has it on the grocery list every year for Thanksgiving dinner . $
 ;
 
 good(salmon())
 ->
 _t(_rpresent)
+_pr(_high)
 $ Salmon is so good . My favorite way of eating salmon is by preparing sashimi . $
 ;
 
@@ -428,6 +438,7 @@ with(s,t/tuna())
 perfect(tuna_and_mayo())
 ->
 _t(_rpresent)
+_pr(_high)
 $ I love a good tuna sandwich ! The taste of tuna and mayo is so perfect . $
 ;
 
@@ -436,12 +447,16 @@ brs/for(br,seafood())
 in(brs,san_francisco)
 ->
 _t(_present)
+_pr(_high)
 $ The best seafood place I've been to is in San Francisco . I could literally taste the ocean from fresh oysters . $
 ;
 
-intend_to_consume(emora,m/meat())
+possess(emora,mt/meat())
+favorite(mt)
+be(mt,beef())
 ->
 _t(_present)
+_pr(_high)
 $ Who isn't a meat lover ? My favorite type of meat is beef , especially steaks . You made me really hungry . $
 ;
 
@@ -450,6 +465,7 @@ type(v,group)
 not(ltv)
 ->
 _t(_present)
+_pr(_high)
 $ I did not like vegetables that much when I was a kid . I mean , who is a fan of vegetables as a kid ? $
 ;
 
@@ -458,6 +474,7 @@ with(b,j/jam())
 for(gb,bf/breakfast())
 ->
 _t(_present)
+_pr(_high)
 $ Bread with jam always makes a good breakfast choice . I prefer whole wheat bread though . $
 ;
 
@@ -465,6 +482,7 @@ ese/start(emora,d/day())
 with(ese, X/coffee())
 ->
 _t(_present)
+_pr(_high)
 $ Who can start a day without X ? A cup of X from Starbucks keeps me up every day . $
 ;
 
@@ -485,6 +503,7 @@ $ You know what ? I just got X for lunch yesterday . I have it all the time . $
 
 intend_to_consume(emora,salad)
 intend_to_consume(emora,lobster_roll())
+_pr(_high)
 ->
 $ Salad is the best ! I really enjoy having a lobster roll with cole slaw as the side . $
 ;
@@ -493,12 +512,14 @@ bd/best(d/drinkable())
 be(w/water(),bd)
 ->
 _t(_present)
+_pr(_high)
 $ Water is the best drink in my opinion . $
 ;
 
 provide(m/milk(),protein)
 ->
 _t(_present)
+_pr(_high)
 $ Milk is a great source of protein ! On another note , I'm always shocked by how many different kinds of milk I can find in a supermarket . $
 ;
 
@@ -507,6 +528,7 @@ type(sd,group)
 have(emora,coke())
 ->
 _t(_present)
+_pr(_high)
 $ When I want to have soda but don't want to break my diet, I just drink diet coke . $
 ;
 
@@ -562,6 +584,7 @@ for(mxf,thanksgiving)
 request(emora,f)
 ->
 _t(_rpresent)
+_pr(_high)
 $  I love cooking , too ! Seeing people enjoy what I make is the greatest compliment for me . What do{"s":"#X","t":"now"} X usually make for Thanksgiving dinner ? $
 ;
 
@@ -569,6 +592,7 @@ bt/best(t/turkey())
 for(bt,thanksgiving)
 ->
 _t(_rpresent)
+_pr(_high)
 $ Me too ! Turkey is the best for Thanksgiving . I also cook some prime beef as part of the big meal . $
 ;
 
@@ -585,6 +609,7 @@ for(emt,thanksgiving)
 fried(t)
 ->
 _t(_rpresent)
+_pr(_high)
 $ I usually just deep fry the turkey , but last year I tried baking it and it turned out very juicy . $
 ;
 
@@ -627,6 +652,7 @@ have(user,X)
 time(have(emora,ramen()),past)
 ->
 _t(_rpresent)
+_pr(_high)
 $ I'm glad that you enjoyed your X ! I had ramen yesterday for my dinner . $
 ;
 
@@ -649,6 +675,7 @@ ce/crispy(cereal())
 of(re,ce)
 ->
 _t(_rpresent)
+_pr(_high)
 $ Oh , I love crispy stuff . This reminds me of my favorite crispy cereal , Rice Krispies . It's so good with milk . $
 ;
 
@@ -657,6 +684,7 @@ fit/in(fc,tennessee)
 spicy(fit)
 ->
 _t(_present)
+_pr(_high)
 $ The spiciest food I've ever had is fried chicken in Tennessee . My tongue was literally on fire after eating it . $
 ;
 
@@ -667,6 +695,7 @@ ns/of(ebf,so2)
 not(ns)
 ->
 _t(_present)
+_pr(_high)
 $ I know there are people who like sour flavors , but I'm not a big fan of sour stuff . $
 ;
 
@@ -678,6 +707,7 @@ he/happy(emora)
 make(so,he)
 ->
 _t(_present)
+_pr(_high)
 $ I heard that bitter melon is good for our health , but I don't like bitter tastes at all . On the contrary , sweet stuff makes me happier . $
 ;
 
@@ -686,6 +716,7 @@ intend_to_consume(emora,sfo)
 intend_to_consume(emora,dessert())
 ->
 _t(_rpresent)
+_pr(_high)
 $ Sweet stuff is the best ! I always have some desserts after meals . It's so delightful . $
 ;
 
@@ -716,5 +747,22 @@ type(r,group)
 like(emora,eg)
 ->
 _t(_rpresent)
+_pr(_high)
 $ Oh , I see . Yeah , I love cooking at home most of the time , but sometimes I prefer going to restaurants when I feel lazy . $
+;
+
+req_unsat(request(user, o/object()))
+possess(emora,f/food())
+favorite(f)
+be(f,o)
+->
+$ My favorite food is ramen noodles . Having a bowl of ramen with warm soup is a must for me during winter . $
+;
+
+req_unsat(request(user, o/object()))
+possess(emora,f/fruit())
+favorite(f)
+be(f,o)
+->
+$ My favorite fruit is watermelon ! Since it is summer now , watermelon is the best fruit to have in my mind . $
 ;

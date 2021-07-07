@@ -1,3 +1,16 @@
+/* default */
+exercise__t
+-> exercise_default_like ->
+l:<l/like(user, exercise(user)) time(l, now)>
+request_truth(emora, l)
+;
+
+exercise__t
+-> exercise_default_time ->
+d:<f/do(user, exercise(user)) time(f, now) in(f, day()) d/difficult(f)>
+request_truth(emora, d)
+;
+
 /* general exercise */
 
 time(e/exercise(user), past)

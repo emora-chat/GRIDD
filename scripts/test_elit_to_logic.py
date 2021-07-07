@@ -1,5 +1,6 @@
 from os.path import join
 from GRIDD.intcore_chatbot import Chatbot
+from globals import *
 from GRIDD.utilities.utilities import spanning_tree_string_of
 
 copula_examples = [
@@ -90,9 +91,9 @@ bad_nlu_examples = [
 ]
 
 def run(utterances):
-    kb_dir = join('GRIDD', 'resources', 'kg_files', 'kb')
+    kb_dir = join('GRIDD', 'resources', KB_FOLDERNAME, 'kb')
     kb = [kb_dir]
-    rules_dir = join('GRIDD', 'resources', 'kg_files', 'rules')
+    rules_dir = join('GRIDD', 'resources', KB_FOLDERNAME, 'rules')
     rules = [rules_dir]
 
     chatbot = Chatbot(*kb, inference_rules=rules, starting_wm=None)

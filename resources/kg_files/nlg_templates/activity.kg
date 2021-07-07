@@ -8,6 +8,14 @@ _t(_p)
 $ Did you have a good time doing that ? $
 ;
 
+healthy(user)
+he/hike(emora)
+time(he,past)
+->
+_t(_rpresent)
+$ Exercising is such a healthy habit to have ! I actually just came back from hiking . $
+;
+
 /* take rest */
 
 time(un/nap(user),past)
@@ -172,9 +180,9 @@ $ I'll share some more of my thoughts then . I really love how much convenience 
 possess(user,t/time())
 appreciate(emora,t)
 ->
-_t(_rpresent)
+_t(_r)
 _pr(_high)
-$ Oh , thank you for spending some time talking to me . I really appreciate that . $
+$ Thank you for spending time talking to me . I appreciate it . $
 ;
 
 /* transportation */
@@ -315,3 +323,31 @@ request(emora,o)
 _t(_present)
 $ Would you mind sharing what be{"t":"#Z","s":"he"} making you so happy with me ? I'd love to hear it if you are willing to tell me ! $
 ;
+
+/* gardening */
+
+possess(emora,m/mother())
+time(garden(m),now)
+->
+$ My mom always does gardening . She makes our front and back yards so beautiful . $
+;
+
+/* answering questions */
+
+locate(he/hike(emora),o/object())
+req_unsat(request(user, o))
+->
+$ I hiked in a mountain with fresh air and a beautiful forest . I also barbecued over a campfire . $
+;
+
+/* reaction */
+
+have_0/have(user, m/meal())
+time(have_0, past)
+uturn(have_0, 1)
+->
+_pr(_high)
+_t(_r)
+$ I hope it was good! $
+;
+

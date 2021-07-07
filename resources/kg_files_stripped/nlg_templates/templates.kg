@@ -1,0 +1,22 @@
+
+time(d/do(user, activity()), past)
+request(emora, d)
+-> startc ->
+$ What did you get up to today? $
+;
+
+time(h/have(user, pet()), now)
+request_truth(emora, h)
+->
+$ Do you have a pet ? $
+;
+
+cool(object())
+->
+$ That's cool. $
+;
+
+lame(object())
+->
+$ That's lame. $
+;
