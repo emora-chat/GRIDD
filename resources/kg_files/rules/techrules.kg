@@ -2,21 +2,27 @@ have(user,p/computer())
 ->
 time(have(emora,p1/computer()), now)
 time(tinker(emora,p1), now)
-enth/pc_enthusiast(user)
+enth:<enth/pc_enthusiast(user)>
 request_truth(emora, enth)
-u:<time(u/use(user, l/linux()), now)>
+u:<time(u/use(user, linux), now)>
 request_truth(emora, u)
 b:<b/be(p, pc())>
 request_truth(emora, b)
 ;
 
+not(have(user,p/computer()))
+->
+w:<time(w/want(user, p), now)>
+request_truth(emora, w)
+;
+
 have(user,p/computer())
-use(user, l/linux())
+use(user, linux)
 ->
 pc_enthusiast(user)
 b:<b/build(user,p)>
 request_truth(emora, b)
-have(p,l)
+have(p,linux)
 ;
 
 
@@ -50,12 +56,12 @@ request_truth(emora,a)
 
 have(user, m/mac())
 ->
-a:<a/have(m ,arm())>
+a:<a/have(m ,ARM)>
 request_truth(emora,a)
 ;
 
 p/computer()
-a/have(p ,arm())
+a/have(p ,ARM)
 ->
 a2/cpu_manuf(p, amd())
 not(a2)
@@ -65,19 +71,19 @@ not(a3)
 
 a2/cpu_manuf(p/computer(), amd())
 ->
-a/have(p ,arm())
+a/have(p ,ARM)
 not(a)
 ;
 
 a2/cpu_manuf(p/computer(), intel())
 ->
-a/have(p ,arm())
+a/have(p ,ARM)
 not(a)
 ;
 
 have(user, p/computer())
 ->
-a:<a/have(p ,arm())>
+a:<a/have(p ,ARM)>
 m:<m/mobile(p)>
 request_truth(emora,a)
 request_truth(emora,m)
@@ -85,7 +91,7 @@ request_truth(emora,m)
 
 
 
-have(p/computer(), arm())
+have(p/computer(), ARM)
 ->
 power_efficient(p)
 a:<a/good_program_compatibility(p)>
@@ -127,7 +133,7 @@ request(emora,pr)
 
 
 
-use(user, photoshop()) have(user, p/computer())
+use(user, photoshop) have(user, p/computer())
 ->
 i<i/cpu_manuf(p, intel())>
 request_truth(emora,i)
@@ -137,12 +143,12 @@ request_truth(emora,i)
 
 
 
-use(user, w/windows())
+use(user, windows)
 ->
 b:<b/build(user, p/computer())>
 request_truth(b)
-have(p,w)
-a:<a/annoy(user, windows_updates())>
+have(p,windows)
+a:<a/annoy(user, windows_updates)>
 request_truth(emora,a)
 l:<l/like(user, frequent_software_updates())>
 request_truth(emora,l)
@@ -154,9 +160,9 @@ request_truth(emora,l)
 
 have(user, mac())
 ->
-use(user, m/macos())
+use(user, macos)
 l:<
-have(m, d/design())
+have(macos, d/design())
 l/like(user, d)
 >
 request_truth(emora, l)
@@ -166,7 +172,7 @@ request_truth(emora, l)
 
 
 
-use(user, macos())
+use(user, macos)
 ->
 a:<a/like(user, frequent_software_updates())>
 request_truth(emora,a)
@@ -176,7 +182,7 @@ a:<a/cpu_manuf(p/computer(), amd())
 have(user, p)
 not(a)>
 ->
-aa:<aa/have(p ,arm())>
+aa:<aa/have(p ,ARM)>
 m:<m/mobile(p)>
 request_truth(emora,aa)
 request_truth(emora,m)
@@ -191,7 +197,7 @@ request_truth(emora,i)
 h/have(user, p/phone())
 i/be(p, i3/iphone())
 ->
-l:<l/like(user, walled_garden())>
+l:<l/like(user, walled_garden)>
 request_truth(emora,l)
 ;
 

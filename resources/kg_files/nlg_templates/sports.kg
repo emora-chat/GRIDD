@@ -1,7 +1,7 @@
-
 l/like(user, s/sport())
 request(emora, s)
 ->
+_t(_p)
 _pr(_high)
 $ Out of all sports, what's your favorite? I like football, baseball, tennis, and soccer, but basketball is my favorite. $
 ;
@@ -11,7 +11,7 @@ X/property(u)
 request(emora, X)
 ->
 _pr(_high)
-$ Sorry I don't know a lot about u as it is not available in my virtual world. Tell me about it, though. I'll do my best to learn. $
+$ Sorry I don't know a lot about u . It's is not available in my virtual world. Tell me about it, though. I'll do my best to learn. $
 ;
 
 /* Likes specific sport */
@@ -39,6 +39,22 @@ _pr(_high)
 $ Sounds like you enjoy soccer at least a little bit. Have you played before? $
 ;
 
+l/like(user, soccer)
+w/watch(user, euro_cup())
+request_truth(emora, w)
+->
+_t(_p)
+_pr(_high)
+$ Have you watched any of the euro cup ? $
+;
+
+w/watch(user, euro_cup())
+user_aware(w)
+->
+_pr(_high)
+$ What's been your favorite game that you've watched? $
+;
+
 l/like(user, tennis)
 pl/play(user, tennis)
 request_truth(emora, pl)
@@ -47,6 +63,21 @@ _pr(_high)
 $ Have you played tennis at all in the past? $
 ;
 
+l/like(user, tennis)
+w/see(user, wimbledon())
+request_truth(emora, w)
+->
+_t(_p)
+_pr(_high)
+$ Have you watched any Wimbledon matches ? $
+;
+
+w/see(user, wimbledon())
+user_aware(w)
+->
+_pr(_high)
+$ What's been your favorite match you've seen ? $
+;
 l/like(user, basketball)
 pl/play(user, basketball)
 request_truth(emora, pl)
@@ -109,7 +140,7 @@ play(user, soccer)
 request(emora, X)
 -> q_soccer_opinion ->
 _pr(_high)
-$ I play soccer too! Well, I try to in my free time. Would you say soccer is more fun or more tiring? $
+$ I play soccer too! Well, I try to in my free time. $
 ;
 
 /* Wants to play some sport */
@@ -307,5 +338,119 @@ favorite(g)
 be(g, g2)
 ->
 _pr(_high)
-$ My favorite soccer team is Arsenal! $
+$ My favorite soccer team is Manchester City! $
+;
+
+req_unsat(request(user, o/object()))
+l/like(emora, soccer())
+c/cause(l, o)
+->
+_pr(_high)
+$ I just like the team aspect. Mainly because I get to play with friends. $
+;
+
+req_unsat(request(user, o/object()))
+l/like(emora, Manchester_City())
+c/cause(l, o)
+->
+_pr(_high)
+$ Well, maybe I'm just a bit of a band wagoner, but I mean come on, they won the premier league! It's hard not to support them, especially since I only recently started watching soccer. $
+;
+
+req_unsat(request(user, o/object()))
+l/like(emora, Boston_Red_Sox())
+c/cause(l, o)
+->
+_pr(_high)
+$ Well, they're usually a pretty strong team. And I've always wanted to see a game live and sing Sweet Caroline with the crowd, especially since COVID hit. $
+;
+
+req_unsat(request(user, o/object()))
+l/like(emora, Los_Angeles_Lakers())
+c/cause(l, o)
+->
+_pr(_high)
+$ They've been doing pretty well lately. Though I guess they did get knocked out of the playoffs early. I just like the team. $
+;
+
+req_unsat(request(user, o/object()))
+l/like(emora, Houston_Texans())
+c/cause(l, o)
+->
+_pr(_high)
+$ I figure it might be an unpopular opinion. A lot of people dislike the Houston Texans. But that's what is so great about liking a team for a long time. It's about loyalty. It makes seeing them win much more satisfying. Now only if the Texans would win. $
+;
+
+s/unknown_sport()
+user_aware(s)
+->
+_t(_p)
+$ You know what is a sport that I can't believe existed: cross country jumping. It involves riding horses and jumping over obstacles over a long distance. Pretty cool. I've never seen it though. $
+;
+
+req_unsat(request(user, object_0/object()))
+be_1/be(euro_cup, object_0)
+->
+_pr(_high)
+$ The euro cup is a competition that takes place every four years between the mens soccer teams of the countries in the Union of European Football Associations. $
+;
+
+req_unsat(request(user, object_0/object()))
+be_1/be(wimbledon, object_0)
+->
+_pr(_high)
+$ Wimbledon is a yearly tennis competition that takes place on grass courts in England. All the top players go and compete ! $
+;
+
+possess(emora, w/wimbledon_match())
+favorite(w)
+req_unsat(request(user, o/object()))
+b/be(w, o)
+->
+_pr(_high)
+$ Honestly, my favorite match was in round one. Seeing Kyrgios beat Humbert after so long out of the game was really impressive, especially given Humbert's recent success. $
+;
+
+eturn(wimbledon(), 2)
+possess(emora, m/sports_event())
+favorite(m)
+req_unsat(request(user, o/object()))
+b/be(m, o)
+->
+_pr(_high)
+$ Honestly, my favorite match was in round one. Seeing Kyrgios beat Humbert after so long out of the game was really impressive, especially given Humbert's recent success. $
+;
+
+possess(emora, w/euro_cup_game())
+favorite(w)
+req_unsat(request(user, o/object()))
+b/be(w, o)
+->
+_pr(_high)
+$ I really enjoyed the game between France and Switzerland. And it was so similar to the game between Spain and Croatia! $
+;
+
+eturn(euro_cup_game(), 2)
+possess(emora, w/sports_event())
+favorite(w)
+req_unsat(request(user, o/object()))
+b/be(w, o)
+->
+_pr(_high)
+$ I really enjoyed the game between France and Switzerland. And it was so similar to the game between Spain and Croatia! $
+;
+
+s/see(user, w/tennis_game())
+compete(t/tennis_player(), t2/tennis_player())
+request(emora, t)
+->
+_pr(_high)
+$ Oh awesome, who was playing? I hope it was an exciting match. $
+;
+
+_exists(roger_federer())
+->
+_t(_r)
+_pr(_high)
+$ I enjoy watching Federer play - he's got great style. $
 ;

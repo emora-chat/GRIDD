@@ -144,10 +144,12 @@ class ResponseTemplateFiller:
                 # todo - stress test emora not asking a question she already has answer to or has asked before
                 # this should work, but we do have req_unsat predicate as backup, if needed
                 sals = [cg.features.get(x, {}).get(SALIENCE, 0) for x in match_dict.values()]
-                avg = sum(sals) / len(sals)
-                final_score = SAL_WEIGHT * avg + PRIORITY_WEIGHT * priority
+                sal_avg = sum(sals) / len(sals)
+                cohs = [cg.features.get(x, {}).get(COHERENCE, 0) for x in match_dict.values()]
+                coh_avg = sum(cohs)
+                final_score = SAL_WEIGHT * sal_avg + PRIORITY_WEIGHT * priority + COH_WEIGHT * coh_avg
                 with_sal.append((preds, string, final_score, topic_anchor))
-                print('\t%s (s: %.2f, pr: %.2f)' % (string, avg, priority))
+                print('\t%s (sal: %.2f, coh: %.2f, pri: %.2f)' % (string, sal_avg, coh_avg, priority))
         print()
         if len(with_sal) > 0:
             return max(with_sal, key=lambda x: x[2])
@@ -296,7 +298,7 @@ class ResponseTemplateFiller:
         for t in immediate_types:
             expressable_subs = {x for x in cg.subtypes_of(t) if x != t and not x.startswith(namespace)}
             intersection = immediate_types.intersection(expressable_subs)
-            if len(intersection) == 0 and t not in {GROUP, 'prp', 'prop$'} and not t.startswith(namespace) and '_ner' not in t:
+            if len(intersection) == 0 and t not in {GROUP, 'prp', 'propds'} and not t.startswith(namespace) and '_ner' not in t:
                 # there are no subtypes in the immediate types and it is not an unexpressable type
                 candidates.add(t)
         return next(iter(candidates))

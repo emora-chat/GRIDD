@@ -42,8 +42,8 @@ class ElitDPToLogic(ParseToLogic):
         tokens = elit_results.get("tok", [])
         pos_tags = elit_results.get("pos", [])
         dependencies = elit_results.get("dep", [])
-        precede_token_idx = [idx for idx, (head_idx, label) in enumerate(dependencies)
-                             if label.lower() in PRECEDE_LABELS or pos_mapper(pos_tags[idx]) in QUEST]
+        # precede_token_idx = [idx for idx, (head_idx, label) in enumerate(dependencies)
+        #                      if label.lower() in PRECEDE_LABELS or pos_mapper(pos_tags[idx]) in QUEST]
         for token_idx in range(len(tokens)):
             span = tokens[token_idx]
             span_node = span.to_string()
@@ -59,10 +59,10 @@ class ElitDPToLogic(ParseToLogic):
             cg.add(span_node, 'type', 'span')
             if span.expression in TENSEFUL_AUX:
                 cg.add(span_node, 'type', 'tenseful_aux')
-            if token_idx > 0:
-                for pti in precede_token_idx:
-                    if pti < token_idx:
-                        cg.add(tokens[pti].to_string(), 'precede', span_node) # todo - quantity logic for position considerations
+            # if token_idx > 0:
+            #     for pti in precede_token_idx:
+            #         if pti < token_idx:
+            #             cg.add(tokens[pti].to_string(), 'precede', span_node) # todo - quantity logic for position considerations
 
         for token_idx, (head_idx, label) in enumerate(dependencies):
             if head_idx != -1:

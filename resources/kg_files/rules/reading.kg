@@ -45,7 +45,7 @@ els/love(emora, setting) in(els, stormlight_archive)
 
 time(l/like(x/person(), u/unknown_noun()), now)
 like(x, b/book())
-request(emora, b)
+r/request(emora, b)
 eturn(r, 1)
 ->
 k/know(emora, u)

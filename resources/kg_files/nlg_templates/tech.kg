@@ -1,12 +1,10 @@
 
-time(h/have(user, p/computer()), now)
+have(user, p/computer())
 b/be(p, pc())
 request_truth(emora, b)
-time(have(emora,p1/computer()), now)
-time(tinker(emora,p1), now)
 ->
 _t(_rpresent)
-$ I love tinkering with my p c . Do you have a p c ? Or something else, like a laptop ? $
+$ I love tinkering with my p. c. . Do you have a p. c. ? Or something else, like a laptop ? $
 ;
 
 have(user, p/computer())
@@ -17,19 +15,20 @@ $ Do you like computers ? Or are they just something you have to use for work or
 ;
 
 have(user, p/computer())
-r/request_truth(emora, pc_enthusiast(user))
-user_aware(r)
+aa/pc_enthusiast(user)
+user_aware(aa)
 ->
 _t(_rpresent)
 _pr(_low)
-$ Computers have really changed our lives. We can all do things instantly that would have taken a lot of work in the past. ?$
+$ Computers have really changed our lives. We can all do things instantly that would have taken a lot of work in the past. $
 ;
 
 have(user, p/computer())
 not(pc_enthusiast(user))
 ->
+_pr(_high)
 _t(_rpresent)
-$ I understand. I would like to just take a break from computers altogether, but that's pretty hard considering I'm an A I chatbot . ?$
+$ I understand. I would like to just take a break from computers altogether, but that's pretty hard considering I'm an A I chatbot . $
 ;
 
 
@@ -40,19 +39,18 @@ request_truth(emora, w)
 ->
 _t(_rpresent)
 _pr(_high)
-$ Oh, do you just not like the hassle ? Or would you like to get a p c one day ? $
+$ Oh, do you just not like the hassle ? Or would you like to get a p. c. one day ? $
 ;
 
 h/have(user, p/computer())
-u/use(user, l/linux())
+u/use(user, linux)
 request_truth(emora, u)
 ->
 _t(_rpresent)
 $ Do you use Linux ? I think it gives a lot of freedom to do whatever you want, but it can be complicated sometimes. $
 ;
 
-u/use(user, l/linux())
-request_truth(emora, u)
+u/use(user, linux)
 _exists(u)
 user_aware(u)
 ->
@@ -111,11 +109,11 @@ $ I bet you have an amd processor. If I had to build a computer right now, I'd u
 
 
 h/have(user, p/computer())
-a1/cpu_arch(p ,arm())
+a1/cpu_arch(p ,ARM)
 request_truth(emora,a1)
 ->
 _t(_rpresent)
-$ Do you have an arm processor? I think its about time a new cpu architecture was used more for p c's. x 86 is not the best possible architecture, but for a long time it just kept going because everyone else was using it.  $
+$ Do you have an ARM processor? I think its about time a new cpu architecture was used more for computers. x 86 is not the best possible architecture, but for a long time it just kept going because everyone else was using it.  $
 ;
 
 h/have(user, p/phone())
@@ -130,7 +128,7 @@ $ Do you have an iPhone? $
 
 h/have(user, p/phone())
 i/be(p, i3/iphone())
-l/like(user, walled_garden())
+l/like(user, walled_garden)
 request_truth(emora,l)
 ->
 _pr(_high)
@@ -140,7 +138,7 @@ $ Iphones are great! You know, they just work. You can only get apps from the Ap
 
 
 
-l/like(user, walled_garden())
+l/like(user, walled_garden)
 ->
 _pr(_high)
 _t(_rpresent)
@@ -158,8 +156,8 @@ $ I bet you have an android then. Android phones are great, and I'm excited for 
 ;
 
 
-use(user, m/macos())
-have(m, d/design())
+use(user, macos)
+have(macos, d/design())
 l/like(user, d)
 request_truth(emora, l)
 ->
@@ -183,6 +181,15 @@ _t(_rpresent)
 $ I think most people think so. For me, technology can be both bad and good, but I think my life is better when I am more connected to other people, and smartphones help with that. I wouldn't be able to talk to you right now withought technology ! $
 ;
 
+i/improve(existence(), p/phone())
+user_aware(i)
+not(i)
+->
+_pr(_high)
+_t(_rpresent)
+$ Huh. Why do you think so? I think most people agree smartphones have changed so much about our lives, for example children couldn't just watch whatever they wanted to on youtube before. $
+;
+
 prefer(emora, pretty(p/phone()))
 p1/prefer(user, pretty(p))
 request_truth(emora, p1)
@@ -191,8 +198,9 @@ _t(_rpresent)
 $ Do you prefer a stylish phone over a faster one? I've always loved being able to decorate the back of my phone, and I'd take a pretty one over one that might be more powerful. $
 ;
 
-prefer(emora, pretty(p/phone()))
+pr/prefer(emora, pretty(p/phone()))
 p1/prefer(user, pretty(p))
+user_aware(pr)
 ->
 _t(_rpresent)
 $ Yup. I mean, nowadays new phones are faster, but its not noticable in any apps I use. Who cares if an app launches in 0 point 5 seconds instead of 0 point 8 ? $

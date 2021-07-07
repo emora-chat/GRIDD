@@ -74,7 +74,7 @@ possess(user, act/activity()) in(act, z)
 favorite(act)
 request(emora, act)
 ->
-$ Oh, I see. It can be a hassle to travel and get tickets, so that makes sense. When you do go, what's your favorite thing to do in the zoo? I love to watch the flamingos. Their knees give them such a funky appearance, so watching them is a lot of fun. $
+$ Oh, I see. Yeah it's been hard to go during the pandemic, and even when I can go it's pretty expensive. When you do go, what's your favorite thing to do in the zoo? I love to watch the flamingos. Their knees give them such a funky appearance, so watching them is a lot of fun. $
 ;
 
 think(emora, diverse(animal))

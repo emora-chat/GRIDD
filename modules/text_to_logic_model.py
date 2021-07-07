@@ -109,6 +109,7 @@ class ParseToLogic:
         for s,_,_,_ in wm.predicates(predicate_type='expr'):
             if not wm.has(s, 'type', 'expression'):
                 wm.add(s, 'type', 'expression')
+        print(len(list(wm.predicates())))
         rule_assignments = self.intcore.infer()
         sorted_assignments = {}
         for k2 in self.intcore.inference_engine.rules:

@@ -434,7 +434,7 @@ class ChatbotServer:
                     ref_match = match[reference_node] if reference_node in match else None
                     if ref_match is not None and reference_node != ref_match and \
                             wm.has(predicate_id=ref_match) == wm.has(predicate_id=reference_node) and \
-                            ref_match not in ref_types and (('prp' not in ref_types and 'prop$' not in ref_types) or ref_match not in {'user','emora'}):
+                            ref_match not in ref_types and (('prp' not in ref_types and 'propds' not in ref_types) or ref_match not in {'user','emora'}):
                         match_dict[ref_match] = []
                         for node in match:
                             if node != reference_node:
@@ -558,6 +558,7 @@ class ChatbotServer:
     @serialized('working_memory', 'expr_dict')
     def run_prepare_template_nlg(self, working_memory):
         self.load_working_memory(working_memory)
+        self.dialogue_intcore.update_coherence() # record salience for concepts for windowed coherence calculation
         self.dialogue_intcore.decay_salience()
         expr_dict = {}
         for s,t,o,i in self.dialogue_intcore.pull_expressions(): # expressions from KB
