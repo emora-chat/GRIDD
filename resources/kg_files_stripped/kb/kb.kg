@@ -1,6 +1,7 @@
 
 time = (predicate)
 timepoint = (entity)
+past = timepoint()
 now = timepoint()
 ;
 
@@ -17,6 +18,7 @@ who = (entity)
 
 be = (predicate)
 do = (predicate)
+have = (predicate)
 ;
 
 person = (entity)
@@ -42,12 +44,18 @@ dog = (pet)
 cat = (pet)
 ;
 
+movie = (entity)
+;
+
 attitude_quality = (predicate)
 cool = (attitude_quality)
 lame = (attitude_quality)
 ;
 
-have = (predicate)
+event = (predicate)
+activity = (event)
+hike = (activity)
+watch = (activity)
 ;
 
 

@@ -744,7 +744,7 @@ class ChatbotServer:
 
     def truth_fragment_resolution(self, request_focus, current_user_concepts, wm, aux_state):
         fragment_request_merges = []
-        indicator_preds = [p[3] for p in list(wm.predicates('user', AFFIRM)) + list(wm.predicates('user', REJECT))]
+        indicator_preds = [p[3] for p in list(wm.predicates('user', AFFIRM)) + list(wm.predicates('user', REJECT)) if wm.object(p[3]) is not None]
         options = set(indicator_preds).intersection(current_user_concepts)
         if len(indicator_preds) > 0: # find yes or no answer to question
             max_indicator = max(options, key=lambda p: wm.features.get(p[3], {}).get(SALIENCE, 0))

@@ -58,6 +58,16 @@ $ Do you have a pet ? $
 
 ### Ask Typed Question
 
+Rules
+```
+
+```
+
+Templates
+```
+
+```
+
 
 ### Ask What-Kind Question
 
@@ -97,11 +107,25 @@ $ What kind of pet do you have ? $
 ```
 
 ### Ask Open-Ended Question
+
+
+
 ### Share Emora Experience
+
+
 ### React
+
+
 ### Answer Yes/No Question
+
+
 ### Answer Typed Question
+
+
 ### Answer Open-Ended Question
+
+
 ### Respond with Pronoun for Unknown Entity
+
 
 # Content

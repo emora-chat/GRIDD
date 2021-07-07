@@ -1,7 +1,8 @@
 
-greet(emora, user)
+time(d/do(user, activity()), past)
+request(emora, d)
 -> startc ->
-$ Hello how are you ? $
+$ What did you get up to today? $
 ;
 
 time(h/have(user, pet()), now)

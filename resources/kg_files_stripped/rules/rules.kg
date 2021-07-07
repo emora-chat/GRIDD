@@ -1,7 +1,8 @@
 
 init_convo
 ->
-greet(emora, user)
+d:<time(d/do(user, activity()), past)>
+request(emora, d)
 ;
 
 init_convo
@@ -20,3 +21,14 @@ not(h)
 ->
 lame(h)
 ;
+
+time(h/hike(user), past)
+->
+cool(h)
+;
+
+time(w/watch(user, movie()), past)
+->
+lame(w)
+;
+
