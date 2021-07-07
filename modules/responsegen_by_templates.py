@@ -41,6 +41,8 @@ class ResponseTemplateFiller:
         for rule, (pre_graph, post, solutions_list) in matches.items():
             for match_dict, virtual_preds in solutions_list:
                 string_spec_ls = list(post.string_spec_ls)  # need to create copy so as to not mutate the postcondition in the rule
+                consts = {n: n for n in pre_graph.concepts() if n not in match_dict}
+                match_dict.update(consts)
                 try:
                     response_str = self.fill_string(match_dict, expr_dict, string_spec_ls, cg)
                 except Exception as e:
@@ -140,13 +142,14 @@ class ResponseTemplateFiller:
                 # and all request predicates are not known by user, if there are requests in response
                 # todo - stress test emora not asking a question she already has answer to or has asked before
                 # this should work, but we do have req_unsat predicate as backup, if needed
-                sals = [cg.features.get(x, {}).get(SALIENCE, 0) for x in match_dict.values()]
+                concepts = list(match_dict.values())
+                sals = [cg.features.get(x, {}).get(SALIENCE, 0) for x in concepts]
                 sal_avg = sum(sals) / len(sals)
-                cohs = [cg.features.get(x, {}).get(COHERENCE, 0) for x in match_dict.values()]
-                coh_avg = sum(cohs)
-                final_score = SAL_WEIGHT * sal_avg + PRIORITY_WEIGHT * priority + COH_WEIGHT * coh_avg
+                # GET COHERENCE BY TOPIC ANCHOR SALIENCE
+                coh = cg.features.get(topic_anchor, {}).get(SALIENCE, 0)
+                final_score = SAL_WEIGHT * sal_avg + PRIORITY_WEIGHT * priority + COH_WEIGHT * coh
                 with_sal.append((preds, string, final_score, topic_anchor))
-                print('\t%s (sal: %.2f, coh: %.2f, pri: %.2f)' % (string, sal_avg, coh_avg, priority))
+                print('\t%s (sal: %.2f, coh: %.2f, pri: %.2f)' % (string, sal_avg, coh, priority))
         print()
         if len(with_sal) > 0:
             return max(with_sal, key=lambda x: x[2])
