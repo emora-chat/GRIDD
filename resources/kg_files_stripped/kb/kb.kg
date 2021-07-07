@@ -5,10 +5,17 @@ now = timepoint()
 ;
 
 person = (entity)
+socialbot = (entity, person)
 
 user = person()
-emora = person()
+emora = socialbot()
 name = (entity)
+expr(["you", "your", "yours"], emora)
+expr(["i", "me", "my", "mine"], user)
+
+user_group=person()
+type(user_group, group)
+expr("we, us, our", user_group)
 ;
 
 init_convo = object()

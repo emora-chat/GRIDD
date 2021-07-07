@@ -22,6 +22,8 @@ from inspect import signature
 
 from GRIDD.utilities.profiler import profiler as p
 
+from itertools import chain
+
 def serialized(*returns):
     def dectorator(f):
         if not IS_SERIALIZING:
@@ -391,7 +393,17 @@ class ChatbotServer:
                         break
             if not broad_entities and not broad_predicates: # remove if all entity instances are subset of filters OR all predicate instances are subset of filters
                 if pre.component_count() == 1: # remove if pre is composed of disconnected components
+                    print('\n\n<< here >>\n\n')
                     filtered_rules[rule] = (pre, vars)
+                    for s,t,o,i in pre.predicates(predicate_type='_exists'):
+                        for pred in chain(list(pre.predicates(s, predicate_type='not')),
+                                          list(pre.predicates(s, predicate_type='maybe'))):
+                            pre.remove(*pred)
+                            vars.remove(pred[3])
+                        if len(set(pre.subtypes_of('not'))) == 1:
+                            pre.remove('not')
+                        if len(set(pre.subtypes_of('maybe'))) == 1:
+                            pre.remove('maybe')
         print('filtering dynamic rules: %.2f sec'%(time.time()-st))
         inference_results = self.reference_engine.infer(self.dialogue_intcore.working_memory, aux_state, filtered_rules,
                                                         cached=False)

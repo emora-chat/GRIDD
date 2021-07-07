@@ -18,14 +18,24 @@ def assertions(cg, consider=None):
             if cg.has(predicate_id=o):
                 not_asserted.add(o)
     for na in predicates & not_asserted:
-        i = cg.add(na, 'maybe')
+        i1 = cg.add(na, 'maybe')
+        i2 = cg.add(na, '_exists')
         # if na is part of a rule, then need to add the `maybe` instance so that it can be properly extracted into pre/post-graphs
         pre_sources = cg.metagraph.sources(na, PRE)
         for s in pre_sources:
-            cg.metagraph.add(s, i, PRE)
-            cg.metagraph.add(s, i, VAR)
+            for i in [i1, i2]:
+                cg.metagraph.add(s, i, PRE)
+                if not cg.metagraph.has(s, i, VAR):
+                    cg.metagraph.add(s, i, VAR)
         post_sources = cg.metagraph.sources(na, POST)
         for s in post_sources:
-            cg.metagraph.add(s, i, POST)
-            if not cg.metagraph.has(s, i, VAR):
-                cg.metagraph.add(s, i, VAR)
+            for i in [i1, i2]:
+                cg.metagraph.add(s, i, POST)
+                if not cg.metagraph.has(s, i, VAR):
+                    cg.metagraph.add(s, i, VAR)
+        ref_sources = cg.metagraph.sources(na, REF)
+        for s in ref_sources:
+            for i in [i1, i2]:
+                cg.metagraph.add(s, i, REF)
+                if not cg.metagraph.has(s, i, VAR):
+                    cg.metagraph.add(s, i, VAR)
