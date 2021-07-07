@@ -1,7 +1,5 @@
 import os
 import unittest
-from globals import *
-
 dupe_count=0
 processed=set()
 
@@ -32,7 +30,7 @@ def process_file(filename):
 
 class TestDupes(unittest.TestCase):
      def test_dupes(self):
-        for subdir, dirs, files in os.walk(f"resources/{KB_FOLDERNAME}/kb"):
+        for subdir, dirs, files in os.walk("resources/kg_files/kb"):
             for file in files:
 
                 filepath = subdir + os.sep + file
