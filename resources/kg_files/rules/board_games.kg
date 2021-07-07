@@ -2,10 +2,10 @@ l/like(user, b4/board_game())
 _category(b4)
 user_aware(l)
 -> person_likes_some_board_game ->
-l2/like(user, b/board_game_genre())
+l2:<l2/like(user, b/board_game_genre())>
 request(emora, b)
 
-l3/like(user, b2/board_game())
+l3:<l3/like(user, b2/board_game())>
 request(emora, b2)
 ;
 
@@ -31,4 +31,11 @@ eturn(request(emora, m), 1)
 p2:<l cause(p2/predicate(), l)>
 request(emora, p2)
 like(user, temp_board_game_genre())
+;
+
+b/board_game()
+user_aware(b)
+->
+l:<l/like(user, g/board_game())>
+request_truth(emora, l)
 ;

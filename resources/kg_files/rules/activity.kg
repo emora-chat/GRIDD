@@ -15,6 +15,34 @@ time(utr,past)
 glad(emora,utr)
 ;
 
+/* take rest */
+
+time(un/nap(user),past)
+->
+glad(emora,un)
+;
+
+nap()
+->
+ne/nap(emora)
+love(emora,ne)
+;
+
+gu/go(user)
+to(gu,bed())
+time(gu,past)
+->
+time(nap(user),past)
+;
+
+gu/go(user)
+su/nap(user)
+to(gu,su)
+time(gu,past)
+->
+time(nap(user),past)
+;
+
 /* house purchase */
 
 time(b/buy(user, h/house()), past)
@@ -141,4 +169,174 @@ to(talk(user),emora)
 with(chat(user),emora)
 ->
 to(talk(user),emora)
+;
+
+/* transportation */
+
+time(urb/ride(user,bicycle()),past)
+->
+time(ub/bike(user),past)
+;
+
+time(ub/bike(user),past)
+->
+healthy(ub)
+;
+
+time(drive(user),past)
+->
+time(de/drive(emora),past)
+boring(de)
+;
+
+time(de/drive(emora),past)
+boring(de)
+user_aware(de)
+->
+time(re/rent(emora,car()),past)
+in(re,boston)
+;
+
+time(take(user,tr/trans_ob()),past)
+_specific(tr)
+->
+utr:<utr/try(user,rt/RV_trip()) type(rt,group) time(utr,past)>
+request_truth(emora,utr)
+;
+
+/* cleaning */
+
+time(uc/clean(user),past)
+->
+organized(uc)
+;
+
+/* needs exercise */
+
+time(s/sit(user),past)
+->
+need(user,exercise())
+;
+
+/* socializing */
+
+ut/talk(user)
+to(ut,p/person())
+time(ut,past)
+->
+utc:<   mu/meet(user)
+        with(fd/friend())
+        type(fd,group)
+        difficult(mu)
+        c/cause(mu,pandemic())
+        utc/think(user,c)   >
+request_truth(emora, utc)
+;
+
+meet(user,person())
+->
+utc:<   mu/meet(user)
+        with(fd/friend())
+        type(fd,group)
+        difficult(mu)
+        c/cause(mu,pandemic())
+        utc/think(user,c)   >
+request_truth(emora, utc)
+;
+
+mu/meet(user)
+with(fd/friend())
+type(fd,group)
+difficult(mu)
+c/cause(mu,pandemic())
+utc/think(user,c)
+->
+de/dislike(emora,vc/video_call())
+type(vc,group)
+;
+
+mu/meet(user)
+with(fd/friend())
+type(fd,group)
+difficult(mu)
+c/cause(mu,pandemic())
+utc/think(user,c)
+not(utc)
+->
+de/dislike(emora,vc/video_call())
+type(vc,group)
+;
+
+/* shopping */
+
+time(shop(user),past)
+->
+se/shop(emora)
+love(emora,se)
+uhe:<uhe/have(user,e/experience()) similar(e)>
+request_truth(emora,uhe)
+;
+
+uhe/have(user,e/experience())
+similar(e)
+->
+be(emora,s/shopper())
+slow(s)
+;
+
+uhe/have(user,e/experience())
+similar(e)
+not(uhe)
+->
+be(user,s/shopper())
+fast(s)
+;
+
+/* bad feeling */
+
+su/sick(user)
+->
+sorry(emora,su)
+;
+
+p/pain()
+->
+possess(user,p)
+es/sorry(emora)
+for(es,p)
+;
+
+/* meditation */
+
+m/meditation()
+->
+good(m)
+;
+
+time(meditate(user),past)
+->
+good(meditation())
+;
+
+/* party */
+
+pt/party()
+->
+ge/go(emora)
+to(ge,ptt/party())
+type(ptt,group)
+time(ge,past)
+;
+
+/* having fun */
+
+hu/happy(user)
+->
+o:<cause(hu,o/object())>
+request(emora,o)
+;
+
+have(user,fun())
+->
+happy(user)
 ;

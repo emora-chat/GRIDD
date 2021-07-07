@@ -53,3 +53,7 @@ to(eg,san_francisco)
 time(eg,past)
 
 ;
+
+time(be(emora,abroad()),past)
+
+;

@@ -24,7 +24,6 @@ expr("chick fil a",chick_fil_a)
 popeyes=chicken_restaurant()
 
 sandwich_restaurant=(restaurant)
-subway=sandwich_restaurant()
 panera_bread=sandwich_restaurant()
 expr("panera bread",panera_bread)
 arbys=sandwich_restaurant()

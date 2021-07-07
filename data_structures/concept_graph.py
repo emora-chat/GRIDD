@@ -781,6 +781,25 @@ class ConceptGraph:
                     frontier.extend(self.related(node))
         return False
 
+    def component_count(self):
+        visited = set()
+        concepts = self.concepts()
+        components = 0
+        while concepts:
+            c = concepts.pop()
+            if c not in visited:
+                visited.add(c)
+                components += 1
+                related = set(chain(self.related(c), self.subtypes_of(c))) - visited
+                while related:
+                    r = related.pop()
+                    if r not in visited:
+                        visited.add(r)
+                        concepts -= {r}
+                        addendums = set(chain(self.related(r), self.subtypes_of(r))) - visited
+                        related.update(addendums)
+        return components
+
     def compile_connection_counts(self):
         self.counts = {'s': defaultdict(int), 't': defaultdict(int), 'o': defaultdict(int)}
         for s, t, o, i in self.predicates():

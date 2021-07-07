@@ -88,7 +88,7 @@ to(gx,c/country())
 _category(c)
 not(gx)
 ->
-cc:<gxx/go(x) to(gxx,cc/country()) _specific(cc)>
+cc:<gxx/go(x) to(gxx,cc/country()) time(gxx, future)>
 request(emora,cc)
 ;
 
@@ -97,7 +97,7 @@ to(gx,c/country())
 time(gx,past)
 req/request(emora,c)
 user_aware(req)
-->
+-> ask_user_been_to_canada ->
 like(emora,canada)
 gu:<gu/go(user) to(gu,canada) time(gu,past)>
 request_truth(emora,gu)
@@ -109,9 +109,8 @@ time(gx,past)
 req/request(emora,c)
 user_aware(req)
 ->
-cc:<gxx/go(user) to(gxx,cc/country())>
+cc:<gxx/go(user) to(gxx,cc/country()) time(gxx,future)>
 request(emora,cc)
-time(gxx,future)
 ;
 
 /* More Specific Content */
@@ -580,4 +579,12 @@ to(xb,lc/location())
 ->
 ge/go(x)
 to(ge,lc)
+;
+
+b/beach()
+->
+love(emora,b)
+type(b,group)
+su:<time(su/surf(user),past)>
+request_truth(emora,su)
 ;

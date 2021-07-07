@@ -22,6 +22,7 @@ similar_to=(attitude)
 ;
 
 agree=(attitude)
+disagree=(attitude)
 intend=(attitude)
 
 

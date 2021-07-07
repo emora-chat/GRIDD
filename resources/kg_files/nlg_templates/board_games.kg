@@ -9,7 +9,7 @@ l/like(user, b/board_game_genre())
 request(emora, b)
 ->
 _pr(_high)
-$ What is your favorite category or type of board games? $
+$ What is your favorite category or type of board game? $
 ;
 
 l/like(user, m/monopoly())
@@ -138,6 +138,20 @@ _pr(_high)
 $ Ticket to Ride is easy to learn and fun to play. My favorite part of the game is creating the huge network of train tracks. It always looks so cool by the end. $
 ;
 
+l/like(user, t/dnd())
+user_aware(l)
+->
+_pr(_high)
+$ D n d is a great game! I had a friend who used to d m for me and a group of friends when I was in high school. I love open form games like that. Do you like any other board games? $
+;
+
+l/like(user, p/fun_games())
+user_aware(l)
+->
+_pr(_high)
+$ Fair enough. Even though that's not very specific, I agree: I also like fun games. $
+;
+
 l/like(user, p/party_game())
 user_aware(l)
 ->
@@ -166,7 +180,7 @@ _pr(_high)
 $ Deck Builder games are a lot of fun. I love exploring the synergies between different cards in a deck. I’ve never played Magic the Gathering but I’ve heard it’s a great deck builder. $
 ;
 
-l/like(user, a/area_of_control())
+l/like(user, ab/area_of_control())
 user_aware(l)
 ->
 _pr(_high)
@@ -233,4 +247,11 @@ l2/like(user, temp_board_game())
 _t(_r)
 _pr(_high)
 $ Well, I'll make sure to check it out later. $
+;
+
+l/like(user, b/board_game())
+request_truth(emora, l)
+->
+_pr(_high)
+$ Do you like board games? $
 ;
