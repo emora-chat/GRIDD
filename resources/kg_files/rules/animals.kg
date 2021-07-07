@@ -33,7 +33,8 @@ v/visit(user, z/zoo())
 often(v)
 ->
 cause(funny(flamingo, appearance), like(emora, flamingo))
-possess(user, a/activity()) in(a, z)
+a:<possess(user, a/activity())>
+in(a, z)
 favorite(a)
 request(emora, a)
 ;
@@ -42,7 +43,8 @@ v/visit(user, z/zoo())
 not(often(v))
 ->
 cause(funny(flamingo, appearance), like(emora, flamingo))
-possess(user, a/activity()) in(a, z)
+a:<possess(user, a/activity())>
+in(a, z)
 favorite(a)
 request(emora, a)
 ;
