@@ -25,15 +25,6 @@ _t(_p)
 $ Do you have a favorite movie or tv genre? $
 ;
 
-l/like(user, make(user, m2/movie()))
-request_truth(emora, l)
-->
-_t(_p)
-_pr(_low)
-$ Have you ever tried making your own movie? I once made one in class for school. $
-;
-
-
 l/like(user, g2/streaming_provider())
 request(emora, g2)
 ->
@@ -106,10 +97,7 @@ _pr(_high)
 $ I haven't heard of that before. Why is it your favorite? $
 ;
 
-l/like(user, m/movie())
-c/cause(p/predicate(), l)
-eturn(c, 1)
-l2/like(user, temp_movies())
+talk(user, temp_movies)
 ->
 _pr(_high)
 $ That's interesting to hear. I guess I'll check it out. Maybe it will be my new favorite! $
@@ -124,10 +112,7 @@ _pr(_high)
 $ I haven't heard of that before. Why is it your favorite? $
 ;
 
-l/like(user, m/tv())
-c/cause(p/predicate(), l)
-eturn(c, 1)
-l2/like(user, temp_tv())
+talk(user, temp_tv)
 ->
 _pr(_high)
 $ That's interesting to hear. I guess I'll check it out. Maybe it will be my new favorite! $

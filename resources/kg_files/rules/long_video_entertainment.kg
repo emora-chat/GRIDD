@@ -18,19 +18,43 @@ request(emora, m)
 l/like(user, m/movie())
 req_unsat(request(emora, m))
 eturn(request(emora, m), 1)
+uturn(l, 1)
 ->
 p2:<l cause(p2/predicate(), l)>
 request(emora, p2)
-like(user, temp_movies())
+like(user, temp_movies)
 ;
 
+l/like(user, m/movie())
+req_unsat(request(emora, m))
+eturn(request(emora, m), 2)
+c/cause(p/predicate(), l)
+l2/like(user, temp_movies)
+req_unsat(request(emora, p))
+eturn(request(emora, p), 1)
+->
+talk(user, temp_movies)
+;
+
+user_aware(l)
 l/like(user, m/tv())
 req_unsat(request(emora, m))
 eturn(request(emora, m), 1)
 ->
 p2:<l cause(p2/predicate(), l)>
 request(emora, p2)
-like(user, temp_tv())
+like(user, temp_tv)
+;
+
+l/like(user, m/tv())
+req_unsat(request(emora, m))
+eturn(request(emora, m), 2)
+c/cause(p/predicate(), l)
+l2/like(user, temp_tv)
+req_unsat(request(emora, p))
+eturn(request(emora, p), 1)
+->
+talk(user, temp_tv)
 ;
 
 l/like(user, netflix)
@@ -40,55 +64,49 @@ p2:<l cause(p2/predicate(), l)>
 request(emora, p2)
 ;
 
-l/like(user, hulu())
+l/like(user, hulu)
 user_aware(l)
 ->
 p2:<l cause(p2/predicate(), l)>
 request(emora, p2)
 ;
 
-l/like(user, amazon_prime())
+l/like(user, amazon_prime)
 user_aware(l)
 ->
 p2:<l cause(p2/predicate(), l)>
 request(emora, p2)
 ;
 
-l/like(user, disney_plus())
+l/like(user, disney_plus)
 user_aware(l)
 ->
 p2:<l cause(p2/predicate(), l)>
 request(emora, p2)
 ;
 
-l/like(user, hbo())
+l/like(user, hbo)
 user_aware(l)
 ->
 p2:<l cause(p2/predicate(), l)>
 request(emora, p2)
 ;
 
-l/like(user, paramount_plus())
+l/like(user, paramount_plus)
 user_aware(l)
 ->
 p2:<l cause(p2/predicate(), l)>
 request(emora, p2)
 ;
 
-l/like(user, criterion_channel())
+l/like(user, criterion_channel)
 user_aware(l)
 ->
 p2:<l cause(p2/predicate(), l)>
 request(emora, p2)
 ;
 
-_exists(movie())
--> movie_is_mentioned ->
-pl/like(user, make(user, m2/movie()))
-request_truth(emora, pl)
-;
-
-_exists(video_entertainment())
+_exists(video_entertainment)
 -> vid_ent_is_mentioned ->
 favorite(g/video_entertainment_genre())
 possess(user, g)
@@ -221,161 +239,161 @@ request(emora, p)
 
 /* Marvel Stuff */
 
-l/like(user, g/Captain_Marvel())
+l/like(user, Captain_Marvel)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/Black_Panther())
+l/like(user, Black_Panther)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/Spider_Man_Far_From_Home())
+l/like(user, Spider_Man_Far_From_Home)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/Spider_Man_Homecoming())
+l/like(user, Spider_Man_Homecoming)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/Doctor_Strange())
+l/like(user, Doctor_Strange)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/Avengers_Endgame())
+l/like(user, Avengers_Endgame)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/Avengers_Infinity_War())
+l/like(user, Avengers_Infinity_War)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/Avengers_Age_of_Ultron())
+l/like(user, Avengers_Age_of_Ultron)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/Marvels_The_Avengers())
+l/like(user, Marvels_The_Avengers)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/Guardians_of_the_Galaxy_Vol_2())
+l/like(user, Guardians_of_the_Galaxy_Vol_2)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/Guardians_of_the_Galaxy_1())
+l/like(user, Guardians_of_the_Galaxy_1)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/The_Incredible_Hulk())
+l/like(user, The_Incredible_Hulk)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/Ant_Man_and_Wasp())
+l/like(user, Ant_Man_and_Wasp)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/Ant_Man_one())
+l/like(user, Ant_Man_one)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/Thor_Ragnarok())
+l/like(user, Thor_Ragnarok)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/Thor_The_Dark_World())
+l/like(user, Thor_The_Dark_World)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/Thor_one())
+l/like(user, Thor_one)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/Captain_America_Civil_War())
+l/like(user, Captain_America_Civil_War)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/Captain_America_Winter_Soldier())
+l/like(user, Captain_America_Winter_Soldier)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/Captain_America_The_First_Avenger())
+l/like(user, Captain_America_The_First_Avenger)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/Iron_Man_3())
+l/like(user, Iron_Man_3)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/Iron_Man_2())
+l/like(user, Iron_Man_2)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
 request(emora, p)
 ;
 
-l/like(user, g/Iron_Man_1())
+l/like(user, Iron_Man_1)
 user_aware(l)
 ->
 p:<l cause(p/predicate(), l)>
@@ -746,4 +764,12 @@ like_0/like(user, u)
 ->
 p:<like_0 cause(p/predicate(), like_0)>
 request(emora, p)
+;
+
+_specific(m/movie())
+possess(user, m)
+favorite(m)
+be(m, m2/movie())
+->
+like(user, m2)
 ;
