@@ -7,12 +7,35 @@ l:<l/like(user, e)>
 request_truth(emora, l)
 ;
 
-time(ac/activity(user),past)
-type(ac,leisure)
+do(user,workout())
 ->
-utr/take(user,r/rest())
-time(utr,past)
-glad(emora,utr)
+healthy(user)
+he/hike(emora)
+time(he,past)
+;
+
+gu/go(user)
+to(gu,gym())
+->
+healthy(user)
+he/hike(emora)
+time(he,past)
+;
+
+gu/go(user)
+for(gu,walk())
+->
+healthy(user)
+he/hike(emora)
+time(he,past)
+;
+
+time(ac/exercise(user),past)
+type(ac,outdoor)
+->
+healthy(user)
+he/hike(emora)
+time(he,past)
 ;
 
 /* take rest */
@@ -339,4 +362,12 @@ request(emora,o)
 have(user,fun())
 ->
 happy(user)
+;
+
+/* gardening */
+
+time(garden(user),past)
+->
+possess(emora,m/mother())
+time(garden(m),now)
 ;

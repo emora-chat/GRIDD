@@ -1,0 +1,61 @@
+
+time = (predicate)
+timepoint = (entity)
+past = timepoint()
+now = timepoint()
+;
+
+locate = (predicate)
+expr("where", locate)
+cause = (predicate)
+expr("why, because", cause)
+qualifier = (predicate)
+expr("how", qualifier)
+but=(predicate)
+
+what = (entity)
+who = (entity)
+
+be = (predicate)
+do = (predicate)
+have = (predicate)
+;
+
+person = (entity)
+socialbot = (entity, person)
+
+user = person()
+emora = socialbot()
+name = (entity)
+expr(["you", "your", "yours"], emora)
+expr(["i", "me", "my", "mine"], user)
+
+user_group=person()
+type(user_group, group)
+expr("we, us, our", user_group)
+;
+
+init_convo = object()
+;
+
+animal = (entity)
+pet = (animal)
+dog = (pet)
+cat = (pet)
+;
+
+movie = (entity)
+;
+
+attitude_quality = (predicate)
+cool = (attitude_quality)
+lame = (attitude_quality)
+;
+
+event = (predicate)
+activity = (event)
+hike = (activity)
+watch = (activity)
+;
+
+

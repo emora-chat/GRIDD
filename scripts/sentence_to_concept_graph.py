@@ -17,7 +17,7 @@ if __name__ == '__main__':
     # specify directory of kb files
     # all concepts in sentence files should be defined in kb files, otherwise unknown_<postag> will be used
     # and ConceptGraph will be suboptimal
-    kb_dir = os.path.join('GRIDD', 'resources', 'kg_files', 'kb')
+    kb_dir = os.path.join('GRIDD', 'resources', KB_FOLDERNAME, 'kb')
     kb = [kb_dir]
     nlu_pipeline = ChatbotServer()
     nlu_pipeline.initialize_nlu(kb_files=kb, device='cpu', local=True)

@@ -22,6 +22,8 @@ from inspect import signature
 
 from GRIDD.utilities.profiler import profiler as p
 
+from itertools import chain
+
 def serialized(*returns):
     def dectorator(f):
         if not IS_SERIALIZING:
@@ -131,7 +133,7 @@ class ChatbotServer:
 
     def init_parse2logic(self, device=None):
         from GRIDD.modules.elit_dp_to_logic_model import ElitDPToLogic
-        file = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
+        file = join('GRIDD', 'resources', KB_FOLDERNAME, 'elit_dp_templates.kg')
         if USECACHE:
             if not os.path.exists(NLUCACHE):
                 os.mkdir(NLUCACHE)
@@ -392,6 +394,15 @@ class ChatbotServer:
             if not broad_entities and not broad_predicates: # remove if all entity instances are subset of filters OR all predicate instances are subset of filters
                 if pre.component_count() == 1: # remove if pre is composed of disconnected components
                     filtered_rules[rule] = (pre, vars)
+                    for s,t,o,i in pre.predicates(predicate_type='_exists'):
+                        for pred in chain(list(pre.predicates(s, predicate_type='not')),
+                                          list(pre.predicates(s, predicate_type='maybe'))):
+                            pre.remove(*pred)
+                            vars.remove(pred[3])
+                        if len(set(pre.subtypes_of('not'))) == 1:
+                            pre.remove('not')
+                        if len(set(pre.subtypes_of('maybe'))) == 1:
+                            pre.remove('maybe')
         print('filtering dynamic rules: %.2f sec'%(time.time()-st))
         inference_results = self.reference_engine.infer(self.dialogue_intcore.working_memory, aux_state, filtered_rules,
                                                         cached=False)
@@ -546,7 +557,6 @@ class ChatbotServer:
     @serialized('working_memory', 'expr_dict')
     def run_prepare_template_nlg(self, working_memory):
         self.load_working_memory(working_memory)
-        self.dialogue_intcore.update_coherence() # record salience for concepts for windowed coherence calculation
         self.dialogue_intcore.decay_salience()
         expr_dict = {}
         for s,t,o,i in self.dialogue_intcore.pull_expressions(): # expressions from KB
@@ -733,7 +743,7 @@ class ChatbotServer:
 
     def truth_fragment_resolution(self, request_focus, current_user_concepts, wm, aux_state):
         fragment_request_merges = []
-        indicator_preds = [p[3] for p in list(wm.predicates('user', AFFIRM)) + list(wm.predicates('user', REJECT))]
+        indicator_preds = [p[3] for p in list(wm.predicates('user', AFFIRM)) + list(wm.predicates('user', REJECT)) if wm.object(p[3]) is not None]
         options = set(indicator_preds).intersection(current_user_concepts)
         if len(indicator_preds) > 0: # find yes or no answer to question
             max_indicator = max(options, key=lambda p: wm.features.get(p[3], {}).get(SALIENCE, 0))
@@ -859,7 +869,7 @@ class ChatbotServer:
 
         if PRINT_WM:
             print('\n<< Working Memory After Inferences Applied >>')
-            print(working_memory.pretty_print(exclusions={SPAN_DEF, SPAN_REF, USER_AWARE, ASSERT, 'imp_trigger'}))
+            print(working_memory.pretty_print(exclusions={SPAN_DEF, SPAN_REF, USER_AWARE, ASSERT}))
             for s,t,o,i in working_memory.predicates(predicate_type='_tanchor'):
                 print(f"{s} = {working_memory.features[s][SALIENCE]}, {working_memory.features[i][SALIENCE]}")
         p.next('prepare template nlg')
@@ -1005,11 +1015,11 @@ class ChatbotServer:
                 # print('\tAux State: %s\n'%aux_state)
 
 def get_filepaths():
-    kb = [join('GRIDD', 'resources', 'kg_files', 'kb')]
-    rules = [join('GRIDD', 'resources', 'kg_files', 'rules')]
-    wm = [join('GRIDD', 'resources', 'kg_files', 'wm')]
-    nlg_templates = [join('GRIDD', 'resources', 'kg_files', 'nlg_templates')]
-    fallbacks = [join('GRIDD', 'resources', 'kg_files', 'fallbacks.kg')]
+    kb = [join('GRIDD', 'resources', KB_FOLDERNAME, 'kb')]
+    rules = [join('GRIDD', 'resources', KB_FOLDERNAME, 'rules')]
+    wm = [join('GRIDD', 'resources', KB_FOLDERNAME, 'wm')]
+    nlg_templates = [join('GRIDD', 'resources', KB_FOLDERNAME, 'nlg_templates')]
+    fallbacks = [join('GRIDD', 'resources', KB_FOLDERNAME, 'fallbacks.kg')]
     return kb, rules, nlg_templates, fallbacks, wm
 
 PRINT_WM = False

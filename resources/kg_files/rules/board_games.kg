@@ -32,10 +32,3 @@ p2:<l cause(p2/predicate(), l)>
 request(emora, p2)
 like(user, temp_board_game_genre())
 ;
-
-b/board_game()
-user_aware(b)
-->
-l:<l/like(user, g/board_game())>
-request_truth(emora, l)
-;

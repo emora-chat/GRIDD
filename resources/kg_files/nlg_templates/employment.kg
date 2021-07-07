@@ -290,7 +290,7 @@ possess(emora,f/friend())
 be(f,consultant())
 ->
 _t(_rpresent)
-$ Thank you for sharing your career story with me . People always end up being in different jobs for many different reasons . I have an older friend who planned on becoming a physician in college, but she ended up becoming a consultant. $
+$ Thank you for sharing some of your personal story with me . People always end up being in different jobs for many different reasons . I have an older friend who planned on becoming a physician in college, but she ended up becoming a consultant. $
 ;
 
 epf/possess(emora,f/friend())
