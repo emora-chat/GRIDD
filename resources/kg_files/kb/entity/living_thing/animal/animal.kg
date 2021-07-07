@@ -1,6 +1,11 @@
 init_ask_pet=init()
 ;
 
+invertebrate=(animal)
+amphibian=(animal)
+reptile=(animal)
+mammal=(animal)
+
 pet = (animal)
 
 dog = (pet)
@@ -9,6 +14,25 @@ cat = (pet)
 kitten = (cat)
 fish = (pet)
 hamster = (pet)
+;
+
+terrier=(dog)
+bulldog=(dog)
+retriever=(dog)
+german_shephard=(dog)
+expr("german shephard",german_shephard)
+poodle=(dog)
+beagle=(dog)
+rottweiler=(dog)
+dachshund=(dog)
+chihuahua=(dog)
+hound=(dog)
+briard=(dog)
+brussels_griffon=(dog)
+expr("brussels griffon",brussels_griffon)
+papillon=(dog)
+husky=(dog)
+
 ;
 
 animal_event=(event)
