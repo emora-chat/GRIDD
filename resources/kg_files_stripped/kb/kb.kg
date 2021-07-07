@@ -55,6 +55,7 @@ movie = (entity)
 attitude_quality = (predicate)
 cool = (attitude_quality)
 lame = (attitude_quality)
+great = (attitude_quality)
 ;
 
 activity = (event)

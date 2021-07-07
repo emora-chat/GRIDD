@@ -7,11 +7,6 @@ request(emora, q)
 ;
 
 time(h/have(user, pet()), now)
-->
-cool(h)
-;
-
-time(h/have(user, pet()), now)
 not(h)
 ->
 lame(h)
@@ -37,3 +32,15 @@ possess(user, a/animal()) favorite(a) be(a, q/dog())
 lame(a)
 ;
 
+time(h/have(user, p/pet()), now)
+_category(p)
+->
+op_more_info(p, h)
+request(emora, p)
+;
+
+time(have(user, p/pet()), now)
+_specific(p)
+->
+great(p)
+;

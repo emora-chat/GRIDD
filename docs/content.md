@@ -77,6 +77,7 @@ time(have(user, p/pet()), now)
 _specific(p)
 ->
 ...
+;
 ```
 Templates
 ```
@@ -131,6 +132,39 @@ $ What did you get up to today? $
 
 ### Ask Entity Question
 
+Rules
+```
+...
+->
+q:<possess(user, a/animal()) favorite(a) be(a, q/animal()) _specific(q)>
+request(emora, q)
+;
+
+possess(user, a/animal()) favorite(a) be(a, q/hawk())
+->
+...
+;
+
+possess(user, a/animal()) favorite(a) be(a, q/dog())
+->
+...
+;
+
+...
+->
+...
+;
+
+```
+
+Templates
+```
+possess(user, a/animal()) favorite(a) be(a, q/animal())
+request(emora, q)
+->
+$ What is your favorite animal? $
+;
+```
 
 
 ### Share Emora Experience

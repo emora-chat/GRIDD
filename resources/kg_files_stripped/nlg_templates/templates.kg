@@ -11,6 +11,12 @@ request_truth(emora, h)
 $ Do you have a pet ? $
 ;
 
+time(have(user, p/pet()), now)
+request(emora, p)
+->
+$ What kind of pet do you have ? $
+;
+
 possess(user, a/animal()) favorite(a) be(a, q/animal())
 request(emora, q)
 ->
@@ -25,4 +31,9 @@ $ That's cool. $
 lame(object())
 ->
 $ That's lame. $
+;
+
+great(object())
+->
+$ That's great. $
 ;
