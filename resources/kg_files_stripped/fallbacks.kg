@@ -5,3 +5,9 @@ r/request_truth(emora, l)
 $ By the way , do you have a pet ? $
 ;
 
+
+a:<a/activity(user) time(a, past)>
+request(emora, a)
+-> activity_fallback ->
+$ So what have you been up to today? $
+;

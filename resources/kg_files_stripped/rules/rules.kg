@@ -1,14 +1,9 @@
 
-init_convo
-->
-a:<a/activity(user) time(a, past)>
-request(emora, a)
-;
 
 init_convo
 ->
-h:<time(h/have(user, pet()), now)>
-request_truth(emora, h)
+q:<possess(user, a/animal()) favorite(a) be(a, q/animal()) _specific(q)>
+request(emora, q)
 ;
 
 time(h/have(user, pet()), now)
@@ -30,5 +25,15 @@ cool(h)
 time(w/watch(user, movie()), past)
 ->
 lame(w)
+;
+
+possess(user, a/animal()) favorite(a) be(a, q/hawk())
+->
+cool(q)
+;
+
+possess(user, a/animal()) favorite(a) be(a, q/dog())
+->
+lame(a)
 ;
 

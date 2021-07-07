@@ -56,19 +56,6 @@ $ Do you have a pet ? $
 ;
 ```
 
-### Ask Typed Question
-
-Rules
-```
-
-```
-
-Templates
-```
-
-```
-
-
 ### Ask What-Kind Question
 
 Rules
@@ -106,7 +93,43 @@ $ What kind of pet do you have ? $
 ;
 ```
 
-### Ask Open-Ended Question
+### Ask Predicate Question
+
+Rules
+```
+...
+->
+a:<a/activity(user) time(a, past)>
+request(emora, a)
+;
+
+time(h/hike(user), past)
+->
+...
+;
+
+time(w/watch(user, movie()), past)
+->
+...
+;
+
+...
+->
+...
+;
+```
+
+Templates
+```
+time(a/activity(user), past)
+request(emora, a)
+->
+$ What did you get up to today? $
+;
+```
+
+
+### Ask Entity Question
 
 
 

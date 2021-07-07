@@ -11,6 +11,12 @@ request_truth(emora, h)
 $ Do you have a pet ? $
 ;
 
+possess(user, a/animal()) favorite(a) be(a, q/animal())
+request(emora, q)
+->
+$ What is your favorite animal? $
+;
+
 cool(object())
 ->
 $ That's cool. $
