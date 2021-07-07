@@ -54,8 +54,8 @@ lame = (attitude_quality)
 
 event = (predicate)
 activity = (event)
-hike = (activity)
-watch = (activity)
+hike = (activity) expr("hiking", hike)
+watch = (activity) expr("watching", watch)
 ;
 
 

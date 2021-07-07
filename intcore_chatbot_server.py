@@ -725,8 +725,7 @@ class ChatbotServer:
         fragment_request_merges = []
         types = wm.types()
         request_focus_types = types[request_focus] - {request_focus}
-        salient_concepts = sorted(current_user_concepts, key=lambda c: wm.features.get(c, {}).get(SALIENCE, 0),
-                                  reverse=True)
+        salient_concepts = sorted(current_user_concepts, key=lambda c: wm.features.get(c, {}).get(SALIENCE, 0), reverse=True)
         for c in salient_concepts:
             req_is_instance = wm.features.get(request_focus, {}).get('isinstance', False)
             match_is_instance = wm.features.get(c, {}).get('isinstance', False)
@@ -735,8 +734,7 @@ class ChatbotServer:
                 # if concept is a reference or if other salient concepts are its subtypes, dont treat current concept as answer fragment
                 # also, concept and request focus must either both be predicates or both be entities
                 if not subtype_set and not wm.metagraph.out_edges(c, REF) and \
-                    ((wm.has(predicate_id=c) and wm.has(predicate_id=request_focus)) or
-                     (not wm.has(predicate_id=c) and not wm.has(predicate_id=request_focus))):
+                    (wm.has(predicate_id=request_focus) or not wm.has(predicate_id=c)):
                     fragment_request_merges.append((c, request_focus))
                     break
         return fragment_request_merges

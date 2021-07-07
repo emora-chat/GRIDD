@@ -1,6 +1,6 @@
 
-time(d/do(user, activity()), past)
-request(emora, d)
+time(a/activity(user), past)
+request(emora, a)
 -> startc ->
 $ What did you get up to today? $
 ;

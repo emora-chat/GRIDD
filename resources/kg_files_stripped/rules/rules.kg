@@ -1,8 +1,8 @@
 
 init_convo
 ->
-d:<time(d/do(user, activity()), past)>
-request(emora, d)
+a:<a/activity(user) time(a, past)>
+request(emora, a)
 ;
 
 init_convo
