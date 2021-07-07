@@ -4,6 +4,21 @@ timepoint = (entity)
 now = timepoint()
 ;
 
+locate = (predicate)
+expr("where", locate)
+cause = (predicate)
+expr("why, because", cause)
+qualifier = (predicate)
+expr("how", qualifier)
+but=(predicate)
+
+what = (entity)
+who = (entity)
+
+be = (predicate)
+do = (predicate)
+;
+
 person = (entity)
 socialbot = (entity, person)
 

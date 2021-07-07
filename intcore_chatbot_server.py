@@ -393,7 +393,6 @@ class ChatbotServer:
                         break
             if not broad_entities and not broad_predicates: # remove if all entity instances are subset of filters OR all predicate instances are subset of filters
                 if pre.component_count() == 1: # remove if pre is composed of disconnected components
-                    print('\n\n<< here >>\n\n')
                     filtered_rules[rule] = (pre, vars)
                     for s,t,o,i in pre.predicates(predicate_type='_exists'):
                         for pred in chain(list(pre.predicates(s, predicate_type='not')),
