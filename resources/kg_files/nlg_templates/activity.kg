@@ -315,3 +315,11 @@ request(emora,o)
 _t(_present)
 $ Would you mind sharing what be{"t":"#Z","s":"he"} making you so happy with me ? I'd love to hear it if you are willing to tell me ! $
 ;
+
+have_0/have(user, m/meal())
+time(have_0, past)
+->
+_pr(_high)
+_t(_r)
+$ I hope it was good! $
+;
