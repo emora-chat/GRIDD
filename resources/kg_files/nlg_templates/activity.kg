@@ -180,9 +180,9 @@ $ I'll share some more of my thoughts then . I really love how much convenience 
 possess(user,t/time())
 appreciate(emora,t)
 ->
-_t(_rpresent)
+_t(_r)
 _pr(_high)
-$ Oh , thank you for spending some time talking to me . I really appreciate that . $
+$ Thank you for spending time talking to me . I appreciate it . $
 ;
 
 /* transportation */

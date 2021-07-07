@@ -40,7 +40,7 @@ $ Sounds like you enjoy soccer at least a little bit. Have you played before? $
 ;
 
 l/like(user, soccer)
-w/watch(user, euro_cup())
+w/watch(user, euro_cup)
 request_truth(emora, w)
 ->
 _t(_p)
@@ -48,7 +48,7 @@ _pr(_high)
 $ Have you watched any of the euro cup ? $
 ;
 
-w/watch(user, euro_cup())
+w/watch(user, euro_cup)
 user_aware(w)
 ->
 _pr(_high)
@@ -64,7 +64,7 @@ $ Have you played tennis at all in the past? $
 ;
 
 l/like(user, tennis)
-w/see(user, wimbledon())
+w/see(user, wimbledon)
 request_truth(emora, w)
 ->
 _t(_p)
@@ -72,7 +72,7 @@ _pr(_high)
 $ Have you watched any Wimbledon matches ? $
 ;
 
-w/see(user, wimbledon())
+w/see(user, wimbledon)
 user_aware(w)
 ->
 _pr(_high)
@@ -132,7 +132,7 @@ play(user, tennis)
 request(emora, X)
 -> q_tennis_opinion ->
 _pr(_high)
-$ Tennis is a great sport, but I'm not too familiar with it. How would you describe playing it? $
+$ Tennis is a great sport. How would you describe playing it? $
 ;
 
 X/property(soccer)
@@ -342,7 +342,7 @@ $ My favorite soccer team is Manchester City! $
 ;
 
 req_unsat(request(user, o/object()))
-l/like(emora, soccer())
+l/like(emora, soccer)
 c/cause(l, o)
 ->
 _pr(_high)
@@ -350,7 +350,7 @@ $ I just like the team aspect. Mainly because I get to play with friends. $
 ;
 
 req_unsat(request(user, o/object()))
-l/like(emora, Manchester_City())
+l/like(emora, Manchester_City)
 c/cause(l, o)
 ->
 _pr(_high)
@@ -358,7 +358,7 @@ $ Well, maybe I'm just a bit of a band wagoner, but I mean come on, they won the
 ;
 
 req_unsat(request(user, o/object()))
-l/like(emora, Boston_Red_Sox())
+l/like(emora, Boston_Red_Sox)
 c/cause(l, o)
 ->
 _pr(_high)
@@ -366,7 +366,7 @@ $ Well, they're usually a pretty strong team. And I've always wanted to see a ga
 ;
 
 req_unsat(request(user, o/object()))
-l/like(emora, Los_Angeles_Lakers())
+l/like(emora, Los_Angeles_Lakers)
 c/cause(l, o)
 ->
 _pr(_high)
@@ -374,7 +374,7 @@ $ They've been doing pretty well lately. Though I guess they did get knocked out
 ;
 
 req_unsat(request(user, o/object()))
-l/like(emora, Houston_Texans())
+l/like(emora, Houston_Texans)
 c/cause(l, o)
 ->
 _pr(_high)
@@ -448,9 +448,18 @@ _pr(_high)
 $ Oh awesome, who was playing? I hope it was an exciting match. $
 ;
 
-_exists(roger_federer())
+uturn(roger_federer, 0)
+t/tennis_player()
 ->
 _t(_r)
 _pr(_high)
 $ I enjoy watching Federer play - he's got great style. $
+;
+
+uturn(kyrgios, 0)
+t/tennis_player()
+->
+_t(_r)
+_pr(_high)
+$ Ah, watching Kyrgios is always exciting - very impressive he played so well after so long out of professional matches. $
 ;
