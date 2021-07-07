@@ -97,9 +97,11 @@ source venv/bin/activate
    ```
    pip install -r GRIDD/requirements.txt
    ```
-1. The files that compose the knowledge base, inference rules, and template rules are found in `GRIDD/resources/kg_files/`.
+1. The files that compose the knowledge base, inference rules, and template rules are found in 
+   `GRIDD/resources/kg_files/`.
 
-   * Add your knowledge base content (ontology, world knowledge, etc.) to topic-specific files in `GRIDD/resources/kg_files/kb/`.
+   * Add your knowledge base content (ontology, world knowledge, etc.) to topic-specific files in 
+     `GRIDD/resources/kg_files/kb/`.
         
      NOTE! There are various common files already in place; before adding new content, verify that it is not already located in an existing file.
    

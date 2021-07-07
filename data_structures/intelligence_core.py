@@ -20,6 +20,7 @@ from GRIDD.modules.responsegen_by_templates import Template
 
 import GRIDD.data_structures.intelligence_core_universal_operators as intcoreops
 import GRIDD.data_structures.intelligence_core_wm_operators as wmintcoreops
+import GRIDD.data_structures.intelligence_core_rule_operators as ruleintcoreops
 
 from GRIDD.utilities.profiler import profiler as p
 
@@ -35,6 +36,7 @@ class IntelligenceCore:
         self.compiler = ConceptCompiler(namespace='__c__', warn=True)
         self.universal_operators = operators(intcoreops)
         self.wm_operators = operators(wmintcoreops)
+        self.rule_operators = operators(ruleintcoreops)
 
         if isinstance(knowledge_base, ConceptGraph):
             self.knowledge_base = knowledge_base
@@ -97,7 +99,7 @@ class IntelligenceCore:
                     nlg = nlg_templates.items()
                     for k,v in nlg:
                         nlg_templates = ConceptGraph(namespace='t_')
-                        self.know(v, nlg_templates, emora_knowledge=True, identify_nonasserts=True)
+                        self.know(v, nlg_templates, emora_knowledge=True, identify_nonasserts=True, is_rules=True)
                         templates = nlg_templates.nlg_templates(k)
                         self.nlg_inference_engine.add(templates, nlg_templates.id_map().namespace)
                         self._check(nlg_templates, use_kb=True, file=k)
@@ -136,7 +138,7 @@ class IntelligenceCore:
                     rules = inference_rules.items()
                     for k, v in rules:
                         inference_rules = ConceptGraph(namespace='t_')
-                        self.know(v, inference_rules, emora_knowledge=True, identify_nonasserts=True)
+                        self.know(v, inference_rules, emora_knowledge=True, identify_nonasserts=True, is_rules=True)
                         inferences = inference_rules.rules()
                         self.inference_engine.add(inferences, inference_rules.id_map().namespace)
                         self._check(inference_rules, use_kb=True, file=k)
@@ -173,6 +175,7 @@ class IntelligenceCore:
                             p2 = rpre.add(i, '_exists')
                             rvars.add(p2)
                     self.operate(self.universal_operators, cg=rpre)
+                    self.operate(self.rule_operators, cg=rpre)
                     fallback_recording_rules[rule_id] = (rpre, rpost, rvars)
                 self.inference_engine.add(fallback_recording_rules, namespace='t_') #namespace should match inference_rules namespace above
 
@@ -247,7 +250,7 @@ class IntelligenceCore:
             elif file in new_content:
                 v = source[file]
                 nlg_templates = ConceptGraph(namespace='t_')
-                self.know(v, nlg_templates, emora_knowledge=True, identify_nonasserts=True)
+                self.know(v, nlg_templates, emora_knowledge=True, identify_nonasserts=True, is_rules=True)
                 templates = nlg_templates.nlg_templates(file)
                 savefile = os.path.join(dir, (file + '.json').replace(os.sep, CACHESEP))
                 d = {rule: (pre.save(), post.save(), list(vars)) for rule,(pre,post,vars) in templates.items()}
@@ -283,7 +286,7 @@ class IntelligenceCore:
             elif file in new_content:
                 v = source[file]
                 inference_rules = ConceptGraph(namespace='t_')
-                self.know(v, inference_rules, emora_knowledge=True, identify_nonasserts=True)
+                self.know(v, inference_rules, emora_knowledge=True, identify_nonasserts=True, is_rules=True)
                 inferences = inference_rules.rules()
                 savefile = os.path.join(dir, (file + '.json').replace(os.sep, CACHESEP))
                 d = {rule: (pre.save(), post.save(), list(vars)) for rule,(pre,post,vars) in inferences.items()}
@@ -770,6 +773,8 @@ class IntelligenceCore:
                     cg.add(t,'type', NONASSERT)
         if 'assert_conf' in options:
             self._assertions(cg)
+        if 'is_rules' in options:
+            self.operate(self.rule_operators, cg=cg)
 
     def _assertions(self, cg):
         assertions(cg)

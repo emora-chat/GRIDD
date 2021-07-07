@@ -1,16 +1,16 @@
 from GRIDD.chatbot import Chatbot
 from os.path import join
 from GRIDD.data_structures.working_memory import WorkingMemory
-import GRIDD.globals as globals
+from globals import *
 from GRIDD.scripts import extract_elit_rules_from_doc
 
 if __name__ == '__main__':
 
     extract_elit_rules_from_doc.extract()
 
-    kb = join('GRIDD', 'resources', 'kg_files', 'kb')
-    test_kb = join('GRIDD', 'resources', 'kg_files', 'framework_test.kg')
-    rules_dir = join('GRIDD', 'resources', 'kg_files', 'rules')
+    kb = join('GRIDD', 'resources', KB_FOLDERNAME, 'kb')
+    test_kb = join('GRIDD', 'resources', KB_FOLDERNAME, 'framework_test.kg')
+    rules_dir = join('GRIDD', 'resources', KB_FOLDERNAME, 'rules')
     rules = [rules_dir]
 
     chatbot = Chatbot(kb, rules=rules, device='cuda:1')

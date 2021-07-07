@@ -41,8 +41,9 @@ class ResponseTemplateFiller:
         for rule, (pre_graph, post, solutions_list) in matches.items():
             for match_dict, virtual_preds in solutions_list:
                 string_spec_ls = list(post.string_spec_ls)  # need to create copy so as to not mutate the postcondition in the rule
-                consts = {n: n for n in pre_graph.concepts() if n not in match_dict}
-                match_dict.update(consts)
+                # add constants to evidence
+                const_matches = {n: n for n in pre_graph.concepts() if n not in match_dict}
+                match_dict.update(const_matches)
                 try:
                     response_str = self.fill_string(match_dict, expr_dict, string_spec_ls, cg)
                 except Exception as e:
@@ -351,7 +352,7 @@ if __name__ == '__main__':
     # from os.path import join
     # from GRIDD.data_structures.inference_engine import InferenceEngine
     #
-    # tfind = ResponseTemplateFinder(join('GRIDD', 'resources', 'kg_files', 'nlg_templates'))
+    # tfind = ResponseTemplateFinder(join('GRIDD', 'resources', KB_FOLDERNAME, 'nlg_templates'))
     # infer = InferenceEngine()
     #
     # logic = '''
