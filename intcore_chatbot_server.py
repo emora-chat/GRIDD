@@ -888,6 +888,7 @@ class ChatbotServer:
         p.stop()
         if DEBUG:
             p.report()
+            p.clear()
         return response, working_memory, aux_state
 
     def respond_serialize(self, user_utterance, working_memory, aux_state):
