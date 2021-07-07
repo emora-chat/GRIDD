@@ -750,3 +750,19 @@ _t(_rpresent)
 _pr(_high)
 $ Oh , I see . Yeah , I love cooking at home most of the time , but sometimes I prefer going to restaurants when I feel lazy . $
 ;
+
+req_unsat(request(user, o/object()))
+possess(emora,f/food())
+favorite(f)
+be(f,o)
+->
+$ My favorite food is ramen noodles . Having a bowl of ramen with warm soup is a must for me during winter . $
+;
+
+req_unsat(request(user, o/object()))
+possess(emora,f/fruit())
+favorite(f)
+be(f,o)
+->
+$ My favorite fruit is watermelon ! Since it is summer now , watermelon is the best fruit to have in my mind . $
+;
