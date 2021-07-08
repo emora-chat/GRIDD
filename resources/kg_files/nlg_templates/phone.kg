@@ -6,6 +6,37 @@ _t(_rpresent)
 $ Do you have an iPhone? $
 ;
 
+r/reliant(user_group, p/phone())
+aa/agree(user, r)
+request_truth(emora, aa)
+->
+_pr(_low)
+_t(_rpresent)
+$ Phones can be a godsend, but a lot of people agree we're just too reliant on them. What do you think ?  $
+;
+
+
+h/have(user, p/phone())
+i/be(p, iphone())
+_exists(i)
+user_aware(i)
+->
+_pr(_low)
+_t(_rpresent)
+$ You know, in a way phones make us cyborgs. We have a direct link to the internet through technology that has kind of become a part of us. $
+;
+
+r/reliant(user_group, p/phone())
+aa/agree(user, r)
+_exists(aa)
+user_aware(aa)
+->
+_pr(_low)
+_t(_rpresent)
+$ You know, in a way phones make us cyborgs. We have a direct link to the internet through technology that has kind of become a part of us. $
+;
+
+
 
 
 h/have(user, p/phone())
