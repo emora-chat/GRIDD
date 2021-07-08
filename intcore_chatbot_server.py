@@ -727,18 +727,22 @@ class ChatbotServer:
                     if user_truth_req:
                         processed = True
                         self.process_answers(user_truth_req[0][3], wm, aux_state)
-                        if wm.has(user_truth_req[0][3], USER_AWARE):
-                            wm.remove(user_truth_req[0][3], USER_AWARE)
-                        if wm.has(user_truth_req[0][2], USER_AWARE):
-                            wm.remove(user_truth_req[0][2], USER_AWARE)
+                        req_focus = user_truth_req[0][2]
+                        new_info = {user_truth_req[0][3], req_focus}
+                        new_info.update([t for s,t,l in wm.metagraph.out_edges(req_focus, REF)])
+                        for i in new_info:
+                            if wm.has(i, USER_AWARE):
+                                wm.remove(i, USER_AWARE)
                 if not processed:
                     user_arg_req = list(wm.predicates('user', REQ_ARG, ref_node))
                     if user_arg_req:
                         self.process_answers(user_arg_req[0][3], wm, aux_state)
-                        if wm.has(user_arg_req[0][3], USER_AWARE):
-                            wm.remove(user_arg_req[0][3], USER_AWARE)
-                        if wm.has(user_arg_req[0][2], USER_AWARE):
-                            wm.remove(user_arg_req[0][2], USER_AWARE)
+                        req_focus = user_arg_req[0][2]
+                        new_info = {user_arg_req[0][3], req_focus}
+                        new_info.update([t for s, t, l in wm.metagraph.out_edges(req_focus, REF)])
+                        for i in new_info:
+                            if wm.has(i, USER_AWARE):
+                                wm.remove(i, USER_AWARE)
         self.dialogue_intcore.merge(reference_pairs)
 
     def process_answers(self, pred_id, wm, aux_state):
