@@ -194,6 +194,8 @@ class IntelligenceCore:
                                 if not self.knowledge_base.has(predicate_id=i)}
         self.obj_essential_types.update({SPAN_REF, SPAN_DEF})
         self.knowledge_base.compile_connection_counts()
+        self.knowledge_base.compiled_types = self.knowledge_base.types()
+        self.knowledge_base.compiled_subtypes = self.knowledge_base.subtypes()
 
     def stratify_cached_files(self, type, sources):
         if not os.path.exists(type):

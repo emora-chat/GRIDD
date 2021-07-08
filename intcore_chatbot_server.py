@@ -324,7 +324,8 @@ class ChatbotServer:
         knowledge_by_refs = {}
         p.start(f'pull by query (queries: {len(working_memory.references())})')
         for focus, (query, variables) in working_memory.references().items():
-            knowledge_by_refs.update(self.dialogue_intcore.pull_by_query(query, variables, focus))
+            pbq_result = self.dialogue_intcore.pull_by_query(query, variables, focus)
+            knowledge_by_refs.update(pbq_result)
         p.next('knowledge pull')
         knowledge_by_source = self.dialogue_intcore.pull_knowledge(limit=100, num_pullers=50, association_limit=10, subtype_limit=10)
         for pred, sources in {**knowledge_by_refs, **knowledge_by_source}.items():
@@ -332,7 +333,7 @@ class ChatbotServer:
                 self.dialogue_intcore.consider([pred], namespace=self.dialogue_intcore.knowledge_base._ids, associations=sources)
                 working_memory.metagraph.update(self.dialogue_intcore.knowledge_base.metagraph,
                                                                       self.dialogue_intcore.knowledge_base.metagraph.features,
-                                                                      concepts=[pred[3]])
+                                                                      concepts=pred)
                 if pred[1] in {REQ_ARG, REQ_TRUTH}: # if request pulled from KB, add req_unsat to it
                     working_memory.add(pred[3], REQ_UNSAT)
         self._update_types(working_memory)
@@ -378,20 +379,21 @@ class ChatbotServer:
         filters = {'object', 'entity', 'predicate'}
         filtered_rules = {}
         for rule, (pre, vars) in rules.items():
-            entity_var_types = {c: t - {c} for c, t in pre.types().items() if c in vars and not pre.has(predicate_id=c)}
-            pred_var_types = {c: t - {c} for c, t in pre.types().items() if c in vars and pre.has(predicate_id=c)}
-            broad_entities = True if entity_var_types else False
-            broad_predicates = True if pred_var_types else False
-            for c, t in entity_var_types.items():
+            pre_types = pre.types()
+            var_types = {c: t - {c} for c, t in pre_types.items() if c in vars}
+            const_types = {c: t for c, t in pre_types.items() if c not in vars}
+            broad_vars = True if var_types else False
+            broad_consts = True if const_types else False
+            for c, t in var_types.items():
                 if not t.issubset(filters):
-                    broad_entities = False
+                    broad_vars = False
                     break
-            if not broad_entities:
-                for c, t in pred_var_types.items():
+            if not broad_vars:
+                for c, t in const_types.items():
                     if not t.issubset(filters):
-                        broad_predicates = False
+                        broad_consts = False
                         break
-            if not broad_entities and not broad_predicates: # remove if all entity instances are subset of filters OR all predicate instances are subset of filters
+            if not broad_vars and not broad_consts: # remove if all concepts are subset of filters
                 if pre.component_count() == 1: # remove if pre is composed of disconnected components
                     filtered_rules[rule] = (pre, vars)
                     for s,t,o,i in pre.predicates(predicate_type='_exists'):
@@ -706,27 +708,52 @@ class ChatbotServer:
         for match_node, ref_node in reference_pairs:
             # identify user answers to emora requests and add req_sat monopredicate on request predicate
             if not wm.metagraph.out_edges(match_node, REF):
-                truths = list(wm.predicates('emora', REQ_TRUTH, ref_node))
-                if truths:
-                    _process_answers(wm, truths[0][3])
-                    wm.features.get(truths[0][3], {}).get(UTURN, set()).add(aux_state["turn_index"])
-                    if not wm.has(truths[0][3], USER_AWARE):
-                        wm.add(truths[0][3], USER_AWARE)
-                else:
-                    args = list(wm.predicates('emora', REQ_ARG, ref_node))
-                    if args:
-                        _process_answers(wm, args[0][3])
-                        wm.features.get(args[0][3], {}).get(UTURN, set()).add(aux_state["turn_index"])
-                        if not wm.has(args[0][3], USER_AWARE):
-                            wm.add(args[0][3], USER_AWARE)
+                processed = False
+                emora_truth_req = list(wm.predicates('emora', REQ_TRUTH, ref_node))
+                if emora_truth_req:
+                    processed = True
+                    self.process_answers(emora_truth_req[0][3], wm, aux_state)
+                    if not wm.has(emora_truth_req[0][3], USER_AWARE):
+                        wm.add(emora_truth_req[0][3], USER_AWARE)
+                if not processed:
+                    emora_arg_req = list(wm.predicates('emora', REQ_ARG, ref_node))
+                    if emora_arg_req:
+                        processed = True
+                        self.process_answers(emora_arg_req[0][3], wm, aux_state)
+                        if not wm.has(emora_arg_req[0][3], USER_AWARE):
+                            wm.add(emora_arg_req[0][3], USER_AWARE)
+                if not processed:
+                    user_truth_req = list(wm.predicates('user', REQ_TRUTH, ref_node))
+                    if user_truth_req:
+                        processed = True
+                        self.process_answers(user_truth_req[0][3], wm, aux_state)
+                        req_focus = user_truth_req[0][2]
+                        new_info = {user_truth_req[0][3], req_focus}
+                        new_info.update([t for s,t,l in wm.metagraph.out_edges(req_focus, REF)])
+                        for i in new_info:
+                            if wm.has(i, USER_AWARE):
+                                wm.remove(i, USER_AWARE)
+                if not processed:
+                    user_arg_req = list(wm.predicates('user', REQ_ARG, ref_node))
+                    if user_arg_req:
+                        self.process_answers(user_arg_req[0][3], wm, aux_state)
+                        req_focus = user_arg_req[0][2]
+                        new_info = {user_arg_req[0][3], req_focus}
+                        new_info.update([t for s, t, l in wm.metagraph.out_edges(req_focus, REF)])
+                        for i in new_info:
+                            if wm.has(i, USER_AWARE):
+                                wm.remove(i, USER_AWARE)
         self.dialogue_intcore.merge(reference_pairs)
+
+    def process_answers(self, pred_id, wm, aux_state):
+        _process_answers(wm, pred_id)
+        wm.features.get(pred_id, {}).get(UTURN, set()).add(aux_state["turn_index"])
 
     def arg_fragment_resolution(self, request_focus, current_user_concepts, wm):
         fragment_request_merges = []
         types = wm.types()
         request_focus_types = types[request_focus] - {request_focus}
-        salient_concepts = sorted(current_user_concepts, key=lambda c: wm.features.get(c, {}).get(SALIENCE, 0),
-                                  reverse=True)
+        salient_concepts = sorted(current_user_concepts, key=lambda c: wm.features.get(c, {}).get(SALIENCE, 0), reverse=True)
         for c in salient_concepts:
             req_is_instance = wm.features.get(request_focus, {}).get('isinstance', False)
             match_is_instance = wm.features.get(c, {}).get('isinstance', False)
@@ -735,8 +762,7 @@ class ChatbotServer:
                 # if concept is a reference or if other salient concepts are its subtypes, dont treat current concept as answer fragment
                 # also, concept and request focus must either both be predicates or both be entities
                 if not subtype_set and not wm.metagraph.out_edges(c, REF) and \
-                    ((wm.has(predicate_id=c) and wm.has(predicate_id=request_focus)) or
-                     (not wm.has(predicate_id=c) and not wm.has(predicate_id=request_focus))):
+                    (wm.has(predicate_id=request_focus) or not wm.has(predicate_id=c)):
                     fragment_request_merges.append((c, request_focus))
                     break
         return fragment_request_merges
@@ -838,6 +864,10 @@ class ChatbotServer:
         working_memory, aux_state = self.run_merge_bridge(merges, subspans, working_memory, aux_state)
         p.next('knowledge pull')
         working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state)
+
+        if PRINT_WM:
+            print('\n<< Working Memory After Inferences Applied >>')
+            print(working_memory.pretty_print(exclusions={SPAN_DEF, SPAN_REF, USER_AWARE, ASSERT}))
 
         p.next('reference id')
         rules, working_memory = self.run_reference_identification(working_memory)

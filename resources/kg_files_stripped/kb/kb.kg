@@ -19,6 +19,10 @@ who = (entity)
 be = (predicate)
 do = (predicate)
 have = (predicate)
+possess = (obj_essential, have)
+;
+
+event = (predicate)
 ;
 
 person = (entity)
@@ -42,6 +46,7 @@ animal = (entity)
 pet = (animal)
 dog = (pet)
 cat = (pet)
+hawk = (animal)
 ;
 
 movie = (entity)
@@ -50,12 +55,25 @@ movie = (entity)
 attitude_quality = (predicate)
 cool = (attitude_quality)
 lame = (attitude_quality)
+great = (attitude_quality)
 ;
 
-event = (predicate)
 activity = (event)
-hike = (activity)
-watch = (activity)
+hike = (activity) expr("hiking", hike)
+watch = (activity) expr("watching", watch)
+;
+
+favorite = (predicate)
+like = (predicate)
+;
+
+nyla = dog()
+time(have(emora, nyla), now)
+;
+
+location = (entity)
+live = (predicate)
+locate(l/live(emora), virtual_world=location()) time(l, now)
 ;
 
 

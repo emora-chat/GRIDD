@@ -1,6 +1,7 @@
 
 from itertools import chain
 
+from GRIDD.globals import *
 
 rootconcept = object()
 rootpredicate = object()
@@ -22,11 +23,33 @@ def match(query, variables, kb, priorities=True, limit=10, reduction=3):
     return solutions
 
 def satisfactions(constriant, assignments, variables, kb, branch_limit=10, reduction=1):
+    supertypes = kb.compiled_types
+    subtypes = kb.compiled_subtypes
     result = []
     constriant = [assignments.get(c, c) for c in constriant]
     s, t, o, i = constriant
     if (s is rootconcept and kb.has(o)) or (i not in variables and kb.has(s, t, o, i)):
         return [{}]
+    elif t == TYPE:
+        if s in variables and o in variables and i in variables:
+            for i, (k, v) in enumerate(kb.compiled_types.values()):
+                result.append({s: k, t: t, o: v, i: None})
+                if i > branch_limit:
+                    return result[:reduction]
+        elif s in variables and i in variables:
+            for i, st in enumerate(subtypes.get(o, set()) - {o}):
+                result.append({s: st, i: None})
+                if i > branch_limit:
+                    return result[:reduction]
+        elif o in variables and i in variables:
+            for i, st in enumerate(supertypes.get(s, set()) - {s}):
+                result.append({o: st, i: None})
+                if i > branch_limit:
+                    return result[:reduction]
+        elif o in supertypes.get(s, []):
+            result.append({i: None})
+        else:
+            return []
     else:
         sub, typ, obj = [None if x in variables else x for x in (s, t, o)]
         predicates = []

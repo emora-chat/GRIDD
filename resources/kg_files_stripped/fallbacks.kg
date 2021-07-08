@@ -5,3 +5,15 @@ r/request_truth(emora, l)
 $ By the way , do you have a pet ? $
 ;
 
+
+a:<a/activity(user) time(a, past)>
+request(emora, a)
+-> activity_fallback ->
+$ So what have you been up to today? $
+;
+
+q:<possess(user, a/animal()) favorite(a) be(a, q/animal()) _specific(q)>
+request(emora, q)
+-> animal_fallback ->
+$ So what is your favorite animal? $
+;

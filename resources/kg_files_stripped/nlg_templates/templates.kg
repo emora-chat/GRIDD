@@ -1,6 +1,11 @@
 
-time(d/do(user, activity()), past)
-request(emora, d)
+greet(emora, user)
+->
+$ It's nice to meet you. $
+;
+
+time(a/activity(user), past)
+request(emora, a)
 -> startc ->
 $ What did you get up to today? $
 ;
@@ -11,6 +16,18 @@ request_truth(emora, h)
 $ Do you have a pet ? $
 ;
 
+time(have(user, p/pet()), now)
+request(emora, p)
+->
+$ What kind of pet do you have ? $
+;
+
+possess(user, a/animal()) favorite(a) be(a, q/animal())
+request(emora, q)
+->
+$ What is your favorite animal? $
+;
+
 cool(object())
 ->
 $ That's cool. $
@@ -19,4 +36,20 @@ $ That's cool. $
 lame(object())
 ->
 $ That's lame. $
+;
+
+great(object())
+->
+$ That's great. $
+;
+
+time(have(emora, nyla), now)
+->
+$ I have a dog named Nyla! $
+;
+
+locate(l/live(emora), virtual_world)
+time(l, now)
+-> emora_lives_where ->
+$ I live in a virtual world! $
 ;

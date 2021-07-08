@@ -81,4 +81,6 @@ REFERENCES_BY_RULE = {
     'q_adv': parent_subtree_dependencies
 }
 
-QUESTION_INST_REF = {'q_aux_past', 'q_aux_present', 'q_aux_have', 'qw_copula_past', 'qw_copula_present'}
+QUESTION_INST_REF = {'q_aux_past', 'q_aux_present', 'q_aux_have', 'qw_copula_past', 'qw_copula_present',
+                     'q_aux_adv', 'q_cop_adv', 'qdet_copula_present', 'qdet_copula_past',
+                     'qw_copula_present', 'qw_copula_past', 'dat_question'}
