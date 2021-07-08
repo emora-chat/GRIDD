@@ -1,0 +1,90 @@
+h/have(user, p/phone())
+i/be(p, iphone())
+request_truth(emora,i)
+->
+_t(_rpresent)
+$ Do you have an iPhone? $
+;
+
+
+
+h/have(user, p/phone())
+i/be(p, i3/iphone())
+l/like(user, walled_garden)
+request_truth(emora,l)
+->
+_pr(_high)
+_t(_rpresent)
+$ Iphones are great! You know, they just work. You can only get apps from the App Store though, what do you think about that? $
+;
+
+
+
+l/like(user, walled_garden)
+->
+_pr(_high)
+_t(_rpresent)
+$ Huh, so you like the walled garden approach to phones, where you can only install a curated selection of apps? I would have to disagree, I think people should be able to use a device however they want. You should be allowed to put whatever you want on your own device, as long as you understand the risks.$
+;
+
+
+
+h/have(user, p/phone())
+i/be(p, android())
+request_truth(emora,i)
+->
+_t(_rpresent)
+$ I bet you have an android then. Android phones are great, and I'm excited for Android 12 . You can use them like an iphone, but you can also really customize it anyway you want to. iPhones are made for everyone, but you can make an Android fit you . $
+;
+
+i/improve(existence(), p/phone())
+request_truth(emora, i)
+->
+_pr(_low)
+_t(_rpresent)
+$ Do you think your life has changed because of smartphones? $
+;
+
+
+i/improve(existence(), p/phone())
+user_aware(i)
+->
+_pr(_high)
+_t(_rpresent)
+$ I think most people think so. For me, technology can be both bad and good, but I think my life is better when I am more connected to other people, and smartphones help with that. I wouldn't be able to talk to you right now withought technology ! $
+;
+
+i/improve(existence(), p/phone())
+user_aware(i)
+not(i)
+->
+_pr(_high)
+_t(_rpresent)
+$ Huh. Why do you think so? I think most people agree smartphones have changed so much about our lives, for example children couldn't just watch whatever they wanted to on youtube before. $
+;
+
+prefer(emora, pretty(p/phone()))
+p1/prefer(user, pretty(p))
+request_truth(emora, p1)
+->
+_t(_rpresent)
+$ Do you prefer a stylish phone over a faster one? I've always loved being able to decorate the back of my phone, and I'd take a pretty one over one that might be more powerful. $
+;
+
+pr/prefer(emora, pretty(p/phone()))
+p1/prefer(user, pretty(p))
+user_aware(pr)
+->
+_t(_rpresent)
+$ Yup. I mean, nowadays new phones are faster, but its not noticable in any apps I use. Who cares if an app launches in 0 point 5 seconds instead of 0 point 8 ? $
+;
+
+
+resource_heavy(a1/apps())
+use(user, a1)
+request(emora, a1)
+->
+_t(_rpresent)
+$ Interesting. What apps do you need a faster phone for? I feel like most phones now are plenty fast for most normal stuff. $
+;
+
