@@ -11,6 +11,9 @@ from simplenlg.features.Feature             import *
 from simplenlg.features.Tense               import *
 from simplenlg.features.Person              import *
 
+from itertools import chain
+
+
 """
 This class works in conjunction with the service-implementation of the InferenceEngine
 in order to find appropriate template matches for a given concept graph and properly fill in the 
@@ -38,6 +41,19 @@ class ResponseTemplateFiller:
         react_cands = []
         present_cands = []
         rpresent_cands = []
+
+        previous_user_requests = [p for p in chain(list(cg.predicates('user', REQ_ARG)), list(cg.predicates('user', REQ_TRUTH)))
+                                  if aux_state.get('turn_index', -1) in cg.features.get(p[3], {}).get(UTURN, set())
+                                  and not cg.has(p[3], USER_AWARE)]
+        answer_checks = {}
+        ignore = set()
+        for p in previous_user_requests:
+            constraints = {t for s,t,l, in cg.metagraph.out_edges(p[2], RREF)}
+            for t in constraints:
+                if cg.has(predicate_id=t) and cg.type(t) == TYPE:
+                    ignore.update({t, cg.object(t)})
+            answer_checks[p] = constraints - ignore
+
         for rule, (pre_graph, post, solutions_list) in matches.items():
             for match_dict, virtual_preds in solutions_list:
                 string_spec_ls = list(post.string_spec_ls)  # need to create copy so as to not mutate the postcondition in the rule
@@ -62,18 +78,18 @@ class ResponseTemplateFiller:
         rp_predicates, rp_string, rp_score, rp_anchor = None, None, None, None
         if len(rpresent_cands) > 0:
             print('\nReact + Present Options: ')
-            rp_predicates, rp_string, rp_score, rp_anchor = self.select_best_candidate(rpresent_cands, cg)
+            rp_predicates, rp_string, rp_score, rp_anchor = self.select_best_candidate(rpresent_cands, cg, answer_checks)
 
         p_predicates, p_string, p_score, p_anchor = None, None, None, None
         if len(present_cands) > 0:
             print('\nPresent Options: ')
-            p_predicates, p_string, p_score, p_anchor = self.select_best_candidate(present_cands, cg)
+            p_predicates, p_string, p_score, p_anchor = self.select_best_candidate(present_cands, cg, answer_checks)
 
         r_predicates, r_string, r_score, r_anchor = None, None, None, None
         curr_turn = aux_state.get('turn_index', 0)
         if len(react_cands) > 0:
             print('React Options: ')
-            r_predicates, r_string, r_score, r_anchor = self.select_best_candidate(react_cands, cg, check_aware=False)
+            r_predicates, r_string, r_score, r_anchor = self.select_best_candidate(react_cands, cg, answer_checks, check_aware=False)
 
         if rp_score is not None and (p_score is None or rp_score >= p_score):
             string = rp_string
@@ -127,10 +143,17 @@ class ResponseTemplateFiller:
 
         return (string, predicates, [(anchor, '_tanchor')], type)
 
-    def select_best_candidate(self, candidates, cg, check_aware=True):
+    def select_best_candidate(self, responses, cg, answer_checks, check_aware=True):
         # get highest salience candidate with at least one uncovered predicate
-        with_sal = []
-        for rule, match_dict, string, priority, topic_anchor in candidates:
+        # prefer answers to unanswered user requests above all else
+        candidates = []
+        answer_candidates = []
+
+        for rule, match_dict, string, priority, topic_anchor in responses:
+            # check if template that give sanswer to user request
+            for req, req_concepts in answer_checks.items():
+                if req_concepts.issubset(set(match_dict.values())):
+                    answer_candidates.append(rule)
             preds = [cg.predicate(x) for x in match_dict.values() if cg.has(predicate_id=x)
                      and cg.type(x) not in {EXPR, TYPE}]
             if check_aware and rule not in SPECIAL_NOT_CHECK_AWARE:
@@ -149,11 +172,14 @@ class ResponseTemplateFiller:
                 # GET COHERENCE BY TOPIC ANCHOR SALIENCE
                 coh = cg.features.get(topic_anchor, {}).get(SALIENCE, 0)
                 final_score = SAL_WEIGHT * sal_avg + PRIORITY_WEIGHT * priority + COH_WEIGHT * coh
-                with_sal.append((preds, string, final_score, topic_anchor))
+                candidates.append((preds, string, final_score, topic_anchor, rule))
                 print('\t%s (sal: %.2f, coh: %.2f, pri: %.2f)' % (string, sal_avg, coh, priority))
         print()
-        if len(with_sal) > 0:
-            return max(with_sal, key=lambda x: x[2])
+        if len(answer_candidates) > 0:
+            with_scores = [x for x in candidates if x[4] in answer_candidates]
+            return max(with_scores, key=lambda x: x[2])[:-1]
+        if len(candidates) > 0:
+            return max(candidates, key=lambda x: x[2])[:-1]
         else:
             return None, None, None, None
 

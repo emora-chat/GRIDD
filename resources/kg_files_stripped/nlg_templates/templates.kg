@@ -48,7 +48,8 @@ time(have(emora, nyla), now)
 $ I have a dog named Nyla! $
 ;
 
-locate(live(emora), location())
+locate(l/live(emora), virtual_world)
+time(l, now)
 -> emora_lives_where ->
 $ I live in a virtual world! $
 ;
