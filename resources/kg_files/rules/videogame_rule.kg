@@ -1,14 +1,14 @@
 like(x/person(), g/game())
 _category(g)
 ->
-l:l/like(x, videogame())
+l:<l/like(x, videogame())>
 request_truth(emora, l)
 ;
 
 play(x/person(), g/game())
 _category(g)
 ->
-p:p/play(x, videogame())
+p:<p/play(x, videogame())>
 request_truth(emora, p)
 ;
 
