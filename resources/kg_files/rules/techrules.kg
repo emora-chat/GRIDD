@@ -192,6 +192,9 @@ h/have(user, p/phone())
 ->
 i:<i/be(p, iphone())>
 request_truth(emora,i)
+a:<r/reliant(user_group, p)
+a/agree(user, r)>
+request_truth(emora, a)
 ;
 
 h/have(user, p/phone())
@@ -381,3 +384,13 @@ not(r)
 ->
 kinship(emora, d)
 ;
+
+
+h/have(user, p/phone())
+maybe(h)
+->
+a:<r/reliant(user_group, p)
+a/agree(user, r)>
+request_truth(emora, a)
+;
+
