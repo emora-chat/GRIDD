@@ -1,9 +1,7 @@
 
-
 init_convo
 ->
-q:<possess(user, a/animal()) favorite(a) be(a, q/animal()) _specific(q)>
-request(emora, q)
+greet(emora, user)
 ;
 
 time(h/have(user, pet()), now)

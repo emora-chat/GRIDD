@@ -44,6 +44,8 @@ class ConceptGraph:
                 self.add(concept)
         if predicates is not None:
             ConceptGraph.construct(self, predicates, metalinks, metadata)
+        self.compiled_types = {}
+        self.compiled_subtypes = {}
 
     @classmethod
     def construct(cls, cg, predicates, metalinks=None, metadata=None, compiler=None):

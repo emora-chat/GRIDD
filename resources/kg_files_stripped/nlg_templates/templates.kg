@@ -1,4 +1,9 @@
 
+greet(emora, user)
+->
+$ It's nice to meet you. $
+;
+
 time(a/activity(user), past)
 request(emora, a)
 -> startc ->
@@ -41,4 +46,9 @@ $ That's great. $
 time(have(emora, nyla), now)
 ->
 $ I have a dog named Nyla! $
+;
+
+locate(live(emora), location())
+-> emora_lives_where ->
+$ I live in a virtual world! $
 ;

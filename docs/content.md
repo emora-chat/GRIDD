@@ -174,22 +174,41 @@ $ What did you get up to today? $
 
 ### Answer Yes/No Question
 
+Knowledge Base
+```
+nyla = dog()
+time(have(emora, nyla), now)
+;
+```
 
+Templates
+```
+time(have(emora, nyla), now)
+->
+$ I have a dog named Nyla! $
+;
+```
 
 
 ### Answer Typed Question
+```
+
+```
 
 
-### Answer Open-Ended Question
+
+### Respond to Open-Ended Question/Presentation
 
 
-### Share Emora Experience
-
-
-### React
 
 
 ### Respond with Pronoun for Unknown Entity
+
+
+
+### Respond with Predicate With Correct Surface Form
+
+
 
 
 # Content

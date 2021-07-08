@@ -37,16 +37,13 @@ class ResponseExpansion:
                 for s, t, o, i in exps:
                     if COLDSTART in wm.features[i]:
                         del wm.features[i][COLDSTART]
-                    if s == 'user' and t in {REQ_TRUTH, REQ_ARG}: # identify emora answers to user requests and add req_sat to request predicate
-                        _process_answers(wm, i)
-                    else: # all other predicates are maintained as expansions and spoken predicates
-                        final_exps.append((s,t,o,i))
-                        if t != EXPR:
-                            spoken_concepts.add(i)
-                            # emora turn tracking
-                            for c in [s,o,i]:
-                                if c is not None:
-                                    wm.features.setdefault(c, {}).setdefault(ETURN, set()).add(int(aux_state.get('turn_index', -1)))
+                    final_exps.append((s,t,o,i))
+                    if t != EXPR:
+                        spoken_concepts.add(i)
+                        # emora turn tracking
+                        for c in [s,o,i]:
+                            if c is not None:
+                                wm.features.setdefault(c, {}).setdefault(ETURN, set()).add(int(aux_state.get('turn_index', -1)))
                 final_responses.append((main, final_exps, generation_type))
                 self.assign_cover(wm, concepts=spoken_concepts)
 
