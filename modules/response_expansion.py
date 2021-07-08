@@ -58,7 +58,6 @@ class ResponseExpansion:
                         # todo - add salience links from exp preds to c
                         spoken_concepts.add(c[0])
 
-
                 self.assign_salience(wm, concepts=spoken_concepts)
         return final_responses
 
@@ -67,11 +66,11 @@ class ResponseExpansion:
             concepts = graph.concepts()
         for concept in concepts:
             if graph.has(predicate_id=concept):
-                if graph.type(concept) not in PRIM and not graph.has(concept, USER_AWARE):
-                    i2 = graph.add(concept, USER_AWARE)
+                if graph.type(concept) not in {USER_AWARE} and not graph.has(concept, USER_AWARE):
+                    graph.add(concept, USER_AWARE)
             else:
                 if not graph.has(concept, USER_AWARE):
-                    i2 = graph.add(concept, USER_AWARE)
+                    graph.add(concept, USER_AWARE)
 
     def assign_salience(self, graph, concepts=None):
         if concepts is None:

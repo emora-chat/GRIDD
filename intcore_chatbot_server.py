@@ -708,29 +708,38 @@ class ChatbotServer:
         for match_node, ref_node in reference_pairs:
             # identify user answers to emora requests and add req_sat monopredicate on request predicate
             if not wm.metagraph.out_edges(match_node, REF):
+                processed = False
                 emora_truth_req = list(wm.predicates('emora', REQ_TRUTH, ref_node))
-                emora_arg_req = list(wm.predicates('emora', REQ_ARG, ref_node))
-                user_truth_req = list(wm.predicates('user', REQ_TRUTH, ref_node))
-                user_arg_req = list(wm.predicates('user', REQ_ARG, ref_node))
-                if truths:
-                    _process_answers(wm, truths[0][3])
-                    wm.features.get(truths[0][3], {}).get(UTURN, set()).add(aux_state["turn_index"])
-                    if not wm.has(truths[0][3], USER_AWARE):
-                        wm.add(truths[0][3], USER_AWARE)
-                else:
-                    args =
-                    if args:
-                        _process_answers(wm, args[0][3])
-                        wm.features.get(args[0][3], {}).get(UTURN, set()).add(aux_state["turn_index"])
-                        if not wm.has(args[0][3], USER_AWARE):
-                            wm.add(args[0][3], USER_AWARE)
+                if emora_truth_req:
+                    processed = True
+                    self.process_answers(emora_truth_req[0][3], wm, aux_state)
+                    if not wm.has(emora_truth_req[0][3], USER_AWARE):
+                        wm.add(emora_truth_req[0][3], USER_AWARE)
+                if not processed:
+                    emora_arg_req = list(wm.predicates('emora', REQ_ARG, ref_node))
+                    if emora_arg_req:
+                        processed = True
+                        self.process_answers(emora_arg_req[0][3], wm, aux_state)
+                        if not wm.has(emora_arg_req[0][3], USER_AWARE):
+                            wm.add(emora_arg_req[0][3], USER_AWARE)
+                if not processed:
+                    user_truth_req = list(wm.predicates('user', REQ_TRUTH, ref_node))
+                    if user_truth_req:
+                        processed = True
+                        self.process_answers(user_truth_req[0][3], wm, aux_state)
+                        if wm.has(user_truth_req[0][3], USER_AWARE):
+                            wm.remove(user_truth_req[0][3], USER_AWARE)
+                if not processed:
+                    user_arg_req = list(wm.predicates('user', REQ_ARG, ref_node))
+                    if user_arg_req:
+                        self.process_answers(user_arg_req[0][3], wm, aux_state)
+                        if wm.has(user_arg_req[0][3], USER_AWARE):
+                            wm.remove(user_arg_req[0][3], USER_AWARE)
         self.dialogue_intcore.merge(reference_pairs)
 
-        if s == 'user' and t in {REQ_TRUTH,
-                                 REQ_ARG}:  # identify emora answers to user requests and add req_sat to request predicate
-            _process_answers(wm, i)
-        else:  # all other predicates are maintained as expansions and spoken predicates
-
+    def process_answers(self, pred_id, wm, aux_state):
+        _process_answers(wm, pred_id)
+        wm.features.get(pred_id, {}).get(UTURN, set()).add(aux_state["turn_index"])
 
     def arg_fragment_resolution(self, request_focus, current_user_concepts, wm):
         fragment_request_merges = []
