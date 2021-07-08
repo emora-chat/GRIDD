@@ -729,12 +729,16 @@ class ChatbotServer:
                         self.process_answers(user_truth_req[0][3], wm, aux_state)
                         if wm.has(user_truth_req[0][3], USER_AWARE):
                             wm.remove(user_truth_req[0][3], USER_AWARE)
+                        if wm.has(user_truth_req[0][2], USER_AWARE):
+                            wm.remove(user_truth_req[0][2], USER_AWARE)
                 if not processed:
                     user_arg_req = list(wm.predicates('user', REQ_ARG, ref_node))
                     if user_arg_req:
                         self.process_answers(user_arg_req[0][3], wm, aux_state)
                         if wm.has(user_arg_req[0][3], USER_AWARE):
                             wm.remove(user_arg_req[0][3], USER_AWARE)
+                        if wm.has(user_arg_req[0][2], USER_AWARE):
+                            wm.remove(user_arg_req[0][2], USER_AWARE)
         self.dialogue_intcore.merge(reference_pairs)
 
     def process_answers(self, pred_id, wm, aux_state):
