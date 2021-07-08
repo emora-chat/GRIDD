@@ -1,5 +1,6 @@
 # Interactions
 
+
 ### Initiate Conversation
 
 Working Memory
@@ -14,6 +15,7 @@ greet(emora, user)
 $ Hello, ... $
 ```
 
+
 ### Initiate New Topic
 
 Fallbacks
@@ -24,6 +26,7 @@ r/request_truth(emora, l)
 $ By the way , do you have a pet ? $
 ;
 ```
+
 
 ### Ask Yes/No Question
 
@@ -55,6 +58,7 @@ request_truth(emora, h)
 $ Do you have a pet ? $
 ;
 ```
+
 
 ### Ask What-Kind Question
 
@@ -91,41 +95,6 @@ time(have(user, p/pet()), now)
 request(emora, p)
 ->
 $ What kind of pet do you have ? $
-;
-```
-
-### Ask Predicate Question
-
-Rules
-```
-...
-->
-a:<a/activity(user) time(a, past)>
-request(emora, a)
-;
-
-time(h/hike(user), past)
-->
-...
-;
-
-time(w/watch(user, movie()), past)
-->
-...
-;
-
-...
-->
-...
-;
-```
-
-Templates
-```
-time(a/activity(user), past)
-request(emora, a)
-->
-$ What did you get up to today? $
 ;
 ```
 
@@ -167,19 +136,57 @@ $ What is your favorite animal? $
 ```
 
 
-### Share Emora Experience
+### Ask Predicate Question
 
+Rules
+```
+...
+->
+a:<a/activity(user) time(a, past)>
+request(emora, a)
+;
 
-### React
+time(h/hike(user), past)
+->
+...
+;
+
+time(w/watch(user, movie()), past)
+->
+...
+;
+
+...
+->
+...
+;
+```
+
+Templates
+```
+time(a/activity(user), past)
+request(emora, a)
+->
+$ What did you get up to today? $
+;
+```
 
 
 ### Answer Yes/No Question
+
+
 
 
 ### Answer Typed Question
 
 
 ### Answer Open-Ended Question
+
+
+### Share Emora Experience
+
+
+### React
 
 
 ### Respond with Pronoun for Unknown Entity

@@ -66,4 +66,8 @@ watch = (activity) expr("watching", watch)
 favorite = (predicate)
 ;
 
+nyla = dog()
+time(have(emora, nyla), now)
+;
+
 

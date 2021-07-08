@@ -37,3 +37,8 @@ great(object())
 ->
 $ That's great. $
 ;
+
+time(have(emora, nyla), now)
+->
+$ I have a dog named Nyla! $
+;
