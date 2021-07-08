@@ -81,6 +81,55 @@ l:<l/like(user,travel(user))>
 request_truth(emora,l)
 ;
 
+c/country()
+_specific(c)
+->
+l:<l/like(user,c)>
+request_truth(emora,l)
+;
+
+like(user,c/country())
+_specific(c)
+->
+o:< possess(user,p/part())
+    about(p,c)
+    be(p,o/object())>
+request(emora,o)
+;
+
+possess(user,p/part())
+about(p,c/country())
+_specific(c)
+be(p,o/object())
+req/request(emora,o)
+user_aware(req)
+->
+ulx/like(user,c)
+glad(ulx)
+like(emora,cu/culture())
+of(c,ct/country())
+_category(ct)
+type(ct,group)
+;
+
+l/like(user,c/country())
+_specific(c)
+not(l)
+->
+o:<cause(l,o/object())>
+request(emora,o)
+;
+
+l/like(user,c/country())
+_specific(c)
+not(l)
+cause(l,o/object())
+req/request(emora,o)
+user_aware(req)
+->
+reasonable(user)
+;
+
 /* Default Content if User Does Not Answer Country Directly */
 
 gx/go(x/person())
@@ -158,7 +207,7 @@ gx/go(x/person())
 to(gx,united_states)
 ->
 gxx:<gxx/go(x) to(gxx,florida) time(gxx,past)>
-request_truth(gxx)
+request_truth(emora, gxx)
 ;
 
 gxx/go(x/person())
@@ -587,4 +636,19 @@ love(emora,b)
 type(b,group)
 su:<time(su/surf(user),past)>
 request_truth(emora,su)
+;
+
+time(su/surf(user),past)
+->
+cool(user)
+se/surf(emora)
+ews/want(emora,se)
+time(ews,future)
+;
+
+time(su/surf(user),past)
+not(su)
+->
+se/surf(emora)
+time(se,future)
 ;

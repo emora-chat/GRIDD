@@ -31,5 +31,6 @@ def get_ner_mentions(elit_results):
             cg.add('"%s"'%string, EXPR, concept)
             cg.add(span)
             cg.features[span.to_string()]["span_data"] = span
+            cg.features[concept]['isinstance'] = True
             mentions[span.to_string()] = cg
     return mentions

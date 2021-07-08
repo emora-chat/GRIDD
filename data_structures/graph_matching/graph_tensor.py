@@ -16,16 +16,13 @@ class GraphTensor:
         self.device = device
         self.nodemap = nodemap or IdMap(namespace=int)
         self.edgemap = edgemap or IdMap(namespace=int)
-        p.next('edges')
         nodes = set(graph.nodes())
         edges = set(graph.edges())
         edges.update({(t, s, Rlabel(l)) for s, t, l in edges})
         edges.update({(root, n, rooted_edge) for n in nodes})
-        p.next('medges')
         medges = [(self.nodemap.get(s), self.nodemap.get(t), self.edgemap.get(l)) for s, t, l in edges]
         self.ne = len(self.edgemap)
         self.nn = len(self.nodemap)
-        p.next('dedges')
         dedges = {}
         for s, t, l in medges:
             dedges.setdefault((s * self.ne + l), []).append(t)

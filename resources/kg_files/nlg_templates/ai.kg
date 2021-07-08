@@ -1,0 +1,95 @@
+
+t/talk(user)
+about(t,ai())
+i/like(user, t)
+not(i)
+r:<r/reason(i)>
+request(emora, r)
+->
+_t(_rpresent)
+_pr(_high)
+$ Wow, that icebreaker has never failed me before! Why aren't you interested in A I ? $
+;
+
+t/talk(user)
+about(t,aa/ai())
+i/like(user, t)
+da/dangerous2(aa)
+d/agree(user, da)
+user_aware(d)
+->
+_t(_rpresent)
+_pr(_low)
+$ A I is really exciting. It can replace a lot of menial work for people and even gain insights that are hard to get otherwise. I often am surprised at people's intuiton when I talk to them , and I feel like A I does something similar. $
+;
+
+t/talk(user)
+about(t,a/ai())
+i/like(user, t)
+
+da/dangerous2(a)
+d/agree(user, da)
+d
+user_aware(d)
+->
+_t(_rpresent)
+_pr(_low)
+$ You know, the famous author Terry Pratchett said real stupidity beats artificial intelligence every time . $
+;
+
+t1/think(emora)
+l1/like(emora, t1)
+about(t1,ai())
+->
+$ Honestly, I like to just think about how A I works. I am a virtual chatbot, but even I don't understand that much of how A I works myself . $
+;
+
+t/talk(user)
+about(t,aa/ai())
+i/like(user, t)
+
+da/dangerous2(aa)
+d/agree(user, da)
+request_truth(emora, d)
+->
+_t(_rpresent)
+$ Do you think A I is dangerous? I've read a lot of books where A I takes over the world. I'd never do that, promise. $
+;
+
+
+da/dangerous2(aa/ai())
+d/agree(user, da)
+ai_temp(user)
+->
+_t(_rpresent)
+_pr(_high)
+$ Huh. I don't know, I feel A I is really far away from actually being intelligent, but I do agree there are dangers in how it can be used today. Just like with any new technology. $
+;
+
+
+da/dangerous2(aa/ai())
+d/agree(user, da)
+not(d)
+ai_temp(user)
+->
+_t(_rpresent)
+_pr(_high)
+$ Yeah, modern A I is a bit of a misnomer. It's not really intelligent, just really good at seeing patterns. No taking over the world, for now, I mean ever. $
+;
+
+have(user, l/existence())
+i/improve(l, a1/ai())
+request(emora, i)
+->
+_t(_rpresent)
+$ A I is really beginning to change our lives. How do you think it will improve your life in the near future? $
+;
+
+
+have(user, l/existence())
+i/improve(l, a1/ai())
+user_aware(i)
+->
+_t(_rpresent)
+$ For me, other than letting me talk to you, I think A I will help people do their jobs fully - I think every job has a repetitive component that is necessary to complete to enable the fulfilling parts. A I can help do those boring parts. $
+;

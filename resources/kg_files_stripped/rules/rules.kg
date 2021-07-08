@@ -1,0 +1,34 @@
+
+init_convo
+->
+d:<time(d/do(user, activity()), past)>
+request(emora, d)
+;
+
+init_convo
+->
+h:<time(h/have(user, pet()), now)>
+request_truth(emora, h)
+;
+
+time(h/have(user, pet()), now)
+->
+cool(h)
+;
+
+time(h/have(user, pet()), now)
+not(h)
+->
+lame(h)
+;
+
+time(h/hike(user), past)
+->
+cool(h)
+;
+
+time(w/watch(user, movie()), past)
+->
+lame(w)
+;
+

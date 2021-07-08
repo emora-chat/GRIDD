@@ -34,7 +34,7 @@ l:<l/play(user, soccer)>
 request_truth(emora, l)
 s:<f/like(user, s/soccer_team())>
 request(emora, s)
-w/watch(user, euro_cup())
+w/watch(user, euro_cup)
 request_truth(emora, w)
 ;
 
@@ -43,7 +43,7 @@ user_aware(pl)
 -> person_likes_tennis ->
 l:<l/play(user, tennis)>
 request_truth(emora, l)
-w/see(user, wimbledon())
+w/see(user, wimbledon)
 request_truth(emora, w)
 ;
 
@@ -119,7 +119,8 @@ request(emora,i)
 pl/play(user, s/sport())
 user_aware(pl)
 -> user_plays_known_sport ->
-request_truth(be(user, athlete()))
+b:<b/be(user, athlete())>
+request_truth(emora, b)
 ;
 
 /* Wants to Play Sports */
@@ -295,6 +296,7 @@ request(emora, sp)
 p/play(user, s/sport())
 ->
 l/like(user, s)
+user_aware(l)
 ;
 
 s/see(user, w/tennis_game())
@@ -302,4 +304,5 @@ s/see(user, w/tennis_game())
 compete(t/tennis_player(), t2/tennis_player())
 request(emora, t)
 l/like(user, tennis)
+user_aware(l)
 ;
