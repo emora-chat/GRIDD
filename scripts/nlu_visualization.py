@@ -1,7 +1,7 @@
 from GRIDD.chatbot import Chatbot
 from os.path import join
 from GRIDD.data_structures.working_memory import WorkingMemory
-from globals import *
+from GRIDD.globals import *
 from GRIDD.scripts import extract_elit_rules_from_doc
 
 if __name__ == '__main__':

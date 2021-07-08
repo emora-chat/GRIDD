@@ -1,6 +1,6 @@
 from os.path import join
 from GRIDD.intcore_chatbot import Chatbot
-from globals import *
+from GRIDD.globals import *
 from GRIDD.utilities.utilities import spanning_tree_string_of
 
 copula_examples = [

@@ -6,7 +6,7 @@ from nltk.corpus import wordnet as wn
 import nltk
 import string
 nltk.download('wordnet')
-from globals import *
+from GRIDD.globals import *
 
 class Node:
 	def __init__(self, word_key, parent):

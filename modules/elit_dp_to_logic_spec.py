@@ -2,7 +2,7 @@
 from structpy import specification
 from GRIDD.data_structures.span import Span
 from GRIDD.data_structures.id_map import IdMap
-from globals import *
+from GRIDD.globals import *
 from GRIDD.data_structures.concept_graph import ConceptGraph
 import os
 

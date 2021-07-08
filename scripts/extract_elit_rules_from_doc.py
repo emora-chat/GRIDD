@@ -1,5 +1,5 @@
 import os
-from globals import *
+from GRIDD.globals import *
 
 def extract():
     rules = ""
