@@ -60,6 +60,53 @@ _t(_rpresent)
 $ That actually sounds really good to me . I'll have to try that for some vacation . Sounds fun ! $
 ;
 
+l/like(user,X/country())
+request_truth(emora,l)
+uturn(X,0)
+->
+_t(_present)
+$ I've traveled to several countries too , like China , France , and the United States . Do you like X ? $
+;
+
+like(user,X/country())
+possess(user,p/part())
+about(p,X)
+be(p,o/object())
+request(emora,o)
+->
+_t(_rpresent)
+$ That sounds nice . I really love the fact that different countries have their unique characteristics . What's your favorite part about X ? $
+;
+
+ulx/like(user,X/country())
+glad(ulx)
+like(emora,c/culture())
+of(c,ct/country())
+type(ct,group)
+->
+_t(_rpresent)
+$ I'm glad that you have some good impressions of X . For me , it is always fun to get to know the culture of each place wherever I travel to . $
+;
+
+l/like(user,X/country())
+not(l)
+cause(l,o/object())
+request(emora,o)
+->
+_t(_p)
+$ Is there a specific reason why you don't like X ? $
+;
+
+l/like(user,c/country())
+not(l)
+cause(l,o/object())
+req/request(emora,o)
+reasonable(user)
+->
+_t(_r)
+$ That's a reasonable answer . $
+;
+
 gx/go(X/person())
 to(gx,lc/location())
 time(gx,past)
@@ -117,6 +164,7 @@ gxx/go(x)
 to(gxx,cc/country())
 time(gxx, future)
 request(emora,cc)
+uturn(x,0)
 ->
 _t(_rpresent)
 $ Oh , if X have{"s":"#X","t":"now"} not been to any countries , what country would X like to visit ? $
@@ -452,6 +500,7 @@ from(eh,f/friend())
 type(f,group)
 xll/like(X,Y)
 request_truth(emora,xll)
+uturn(Y,0)
 ->
 _t(_rpresent)
 $ I’ve been hearing good and bad sides about Y from different friends of mine . Do{"s":"#X", "t":"#Z"} X like Y ? $
@@ -463,6 +512,7 @@ from(eh,f/friend())
 type(f,group)
 xll/like(user,Y)
 request_truth(emora,xll)
+uturn(Y,0)
 ->
 _t(_rpresent)
 _pr(_high)
@@ -474,6 +524,7 @@ numerous(op/opportunity())
 type(op,group)
 numerous(pb/possibility())
 type(pb,group)
+uturn(Y,0)
 ->
 _t(_rpresent)
 _pr(_high)

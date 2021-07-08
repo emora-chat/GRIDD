@@ -1,4 +1,10 @@
 /* Default Content */
+l/like(user,art())
+not(l)
+->
+understand(emora,l)
+;
+
 xla/like(user,a/art())
 user_aware(xla)
 ->
