@@ -51,6 +51,7 @@ $ Well , I always make food plans way ahead of time . Thinking about what food I
 p/property(X/meal())
 time(p,Z/datetime())
 request(emora,p)
+uturn(X,0)
 ->
 _pr(_low)
 _t(_present)
@@ -69,6 +70,7 @@ $ I always prefer homemade meals because I can control the ingredients and the w
 
 ff/favorite(user,X/food())
 request_truth(emora,ff)
+uturn(X,0)
 ->
 _pr(_low)
 _t(_present)
@@ -79,7 +81,7 @@ ff/favorite(user,X/food())
 possess(emora,fd/food())
 favorite(fd)
 be(fd,ramen())
-uturn(ff, 0)
+uturn(X, 0)
 ->
 _t(_rpresent)
 $ I'm glad that you enjoy eating X ! My favorite food is ramen . It is a simple but delicious dish .  $
@@ -96,6 +98,7 @@ $ Ah , I see . What food do you like then ? $
 
 fd/favorite(X/drink())
 request_truth(emora,fd)
+uturn(X,0)
 ->
 _pr(_low)
 $ Is X your favorite drink ? $
@@ -319,6 +322,7 @@ mbb/make(burger_and_ff,best(meal()))
 type(burger,burger_and_ff)
 type(french_fries,burger_and_ff)
 but(nt,mbb)
+uturn(Y,0)
 ->
 _t(_rpresent)
 $ Y sound{"t":"now","s":"#Y"} so good right now . You know what , I'm getting hungry just from talking with you . People say that fast food is not healthy , but sometimes burgers and french fries really hit the spot . $
@@ -362,6 +366,7 @@ gtp/time(go(emora),past)
 to(gtp,X/mexican_restaurant())
 intend_to_consume(user,mf/mexican_cuisine())
 request(emora,mf)
+uturn(X,0)
 ->
 _t(_present)
 _pr(_high)
@@ -412,6 +417,7 @@ $ Fruit is generally good for your health , but I've also heard that too much su
 
 sbv/be(X/special_fruit(),vegetable())
 not(sbv)
+uturn(X,0)
 ->
 _t(_present)
 _pr(_high)
@@ -480,6 +486,7 @@ $ Bread with jam always makes a good breakfast choice . I prefer whole wheat bre
 
 ese/start(emora,d/day())
 with(ese, X/coffee())
+uturn(X,0)
 ->
 _t(_present)
 _pr(_high)
@@ -488,6 +495,7 @@ $ Who can start a day without X ? A cup of X from Starbucks keeps me up every da
 
 intend_to_consume(emora, X/common_drink())
 time(get(emora,X),often)
+uturn(X,0)
 ->
 _t(_present)
 _pr(_low)
@@ -496,6 +504,7 @@ $ I love drinking X too ! Honestly , I get two to three cups of X each week . $
 
 g/intend_to_consume(x/person(),X/common_food())
 time(get(emora,X),past)
+uturn(X,0)
 ->
 _t(_present)
 $ You know what ? I just got X for lunch yesterday . I have it all the time . $
@@ -599,6 +608,7 @@ $ Me too ! Turkey is the best for Thanksgiving . I also cook some prime beef as 
 good(X/food())
 emt/make(emora,turkey())
 for(emt,thanksgiving)
+uturn(X,0)
 ->
 _t(_rpresent)
 $ X sound{"t":"now","s":"#X"} like a great dish ! I try to cook Turkey in different ways for Thanksgiving each year . $
@@ -626,6 +636,7 @@ $ I haven't heard about that type of food before , but I will search for its rec
 time(qf/qualifier(f/food(),o/object()),Z/datetime())
 at(f,X/restaurant())
 request(emora,o)
+uturn(X,0)
 ->
 _t(_present)
 $ How be{"t":"#Z"} the food at X ? I hope that you have{"t":"#Z"} a great time there . $
@@ -633,6 +644,7 @@ $ How be{"t":"#Z"} the food at X ? I hope that you have{"t":"#Z"} a great time t
 
 blr/be(X/unknown_noun(),r/restaurant())
 request_truth(emora,blr)
+uturn(X,0)
 ->
 _pr(_low)
 $ Is X a restaurant ? $
@@ -650,6 +662,7 @@ delicious(X/meal())
 glad(emora)
 have(user,X)
 time(have(emora,ramen()),past)
+uturn(X,0)
 ->
 _t(_rpresent)
 _pr(_high)
@@ -657,6 +670,7 @@ $ I'm glad that you enjoyed your X ! I had ramen yesterday for my dinner . $
 ;
 
 time(have(emora,X/consumable()),past)
+uturn(X,0)
 ->
 _t(_present)
 _pr(_low)
@@ -733,6 +747,7 @@ type(i,group)
 gif/from(egi,X)
 
 cause(gif,mkp)
+uturn(Y,0)
 ->
 _t(_present)
 _pr(_high)

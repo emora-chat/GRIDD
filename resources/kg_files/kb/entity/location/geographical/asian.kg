@@ -14,6 +14,10 @@ in(shanghai,china)
 szechuan=city()
 in(szechuan,china)
 
+hong_kong=city()
+expr("hong kong",hong_kong)
+in(hong_kong,china)
+
 ;
 
 korea=country()
@@ -29,6 +33,9 @@ in(japan,asia)
 
 tokyo=city()
 in(tokyo,japan)
+
+osaka=city()
+in(osaka,japan)
 
 ;
 
@@ -53,5 +60,53 @@ in(malaysia,asia)
 sri_lanka=country()
 expr("sri lanka",sri_lanka)
 in(sri_lanka,asia)
+
+;
+
+india=country()
+in(india,asia)
+
+delhi=city()
+in(delhi,india)
+
+mumbai=city()
+in(mumbai,india)
+
+;
+
+afghanistan=country()
+in(afghanistan,asia)
+
+kabul=city()
+in(kabul,afghanistan)
+
+;
+
+indonesia=country()
+in(indonesia,asia)
+
+jakarta=city()
+in(jakarta,indonesia)
+
+;
+
+phillippines=country()
+in(phillippines,asia)
+
+manila=city()
+in(manila,phillippines)
+
+;
+
+pakistan=country()
+in(pakistan,asia)
+
+karachi=city()
+in(karachi,pakistan)
+
+;
+
+vietnam=country()
+in(vietnam,asia)
 
 ;
