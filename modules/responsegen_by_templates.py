@@ -56,6 +56,14 @@ class ResponseTemplateFiller:
 
         for rule, (pre_graph, post, solutions_list) in matches.items():
             for match_dict, virtual_preds in solutions_list:
+                # the previous form of this template is removed from candidates
+                candidates = list(post.keys())
+                previous_form = aux_state.get('responses', {}).get(rule, None)
+                if previous_form is not None:
+                    candidates.remove(previous_form)
+                selection = random.choice(candidates)
+
+                post = post[selection]
                 string_spec_ls = list(post.string_spec_ls)  # need to create copy so as to not mutate the postcondition in the rule
                 # add constants to evidence
                 const_matches = {n: n for n in pre_graph.concepts() if n not in match_dict}

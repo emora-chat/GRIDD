@@ -490,40 +490,26 @@ class ConceptGraph:
             else:
                 print('[WARNING] More than one topic anchor found for file %s: %s' %(file, matches))
 
-        templates = {}
         template_instances = set(self.subtypes_of('response')) - {'response'}
-
         template_links = {}
-        instance_exclusions = set()
         for template in template_instances:
-            # Get the rule that this template is the postcondition of
-            (rule, ) = self.metagraph.sources(template, POST)
+            (rule,) = self.metagraph.sources(template, POST)
+            if rule not in template_links:
+                template_links[rule] = {'templates': [], 'specs': {}}
+            template_links[rule]['templates'].append(template)
+
+        instance_exclusions = set()
+        for rule, template_d in template_links.items():
+            templates = template_d['templates']
             if file is None:
                 topic_anchor = rule.split('_')[0] + '__t'
             # Get the precondition and vars
             pre_inst = self.metagraph.out_edges(rule, PRE)
-            pre = [edge[1] for edge in pre_inst]
+            template_d['pre'] = [edge[1] for edge in pre_inst]
             vars_inst = self.metagraph.out_edges(rule, VAR)
-            vars = {edge[1] for edge in vars_inst}
-            # get the post and represent it as a list of string element specifications
-            elements = self.objects(template, 'token_seq')
-            elements = sorted(elements, key=lambda x: self.features[x]['response_index'])
-            string_spec_ls = []
-            for e in elements:
-                string_literal = self.features[e]['response_str']
-                if string_literal is None:
-                    (var,) = self.metagraph.targets(e, 'response_var')
-                    string_repr = f"{var}.var"
-                else:
-                    string_repr = string_literal
-                string_data = self.features[e].get('response_data', None)
-                if string_data is not None:
-                    for key, value in string_data.items():
-                        if isinstance(value, str) and value[0] == '#':
-                            (node,) = self.metagraph.targets(e, key)
-                            string_data[key] = node
-                final_element = (string_repr, string_data) if string_data is not None else string_repr
-                string_spec_ls.append(final_element)
+            template_d['vars'] = {edge[1] for edge in vars_inst}
+            instance_exclusions.update(chain(pre_inst, vars_inst))
+            # get template tags
             post_inst = list(self.metagraph.targets(rule, POST))
             priority_tag = None
             template_type = DEFAULT_TEMPLATE_TYPE
@@ -534,19 +520,42 @@ class ConceptGraph:
                     elif self.type(inst) == TEMPLATE_TYPE:
                         template_type = self.subject(inst)
             if priority_tag is not None and priority_tag not in priority_map:
-                print('[WARNING] Priority tag %s must be one of %s'%(str(priority_tag), str(priority_map.keys())))
+                print('[WARNING] Priority tag %s must be one of %s' % (str(priority_tag), str(priority_map.keys())))
             if template_type is not None and template_type not in template_types:
-                print('[WARNING] Template type %s must be one of %s'%(str(template_type), str(template_types.keys())))
-            template_obj = Template(string_spec_ls,
-                                    priority=priority_map.get(priority_tag, DEFAULT_PRIORITY),
-                                    template_type=template_types.get(template_type, DEFAULT_TEMPLATE_TYPE),
-                                    topic_anchor=topic_anchor)
-            instance_exclusions.update(chain(pre_inst, vars_inst))
-            template_links[rule] = (pre, template_obj, vars)
+                print('[WARNING] Template type %s must be one of %s' % (str(template_type), str(template_types.keys())))
+            # compose template string specifications
+            for template in templates:
+                elements = self.objects(template, 'token_seq')
+                elements = sorted(elements, key=lambda x: self.features[x]['response_index'])
+                string_spec_ls = []
+                for e in elements:
+                    string_literal = self.features[e]['response_str']
+                    if string_literal is None:
+                        (var,) = self.metagraph.targets(e, 'response_var')
+                        string_repr = f"{var}.var"
+                    else:
+                        string_repr = string_literal
+                    string_data = self.features[e].get('response_data', None)
+                    if string_data is not None:
+                        for key, value in string_data.items():
+                            if isinstance(value, str) and value[0] == '#':
+                                (node,) = self.metagraph.targets(e, key)
+                                string_data[key] = node
+                    final_element = (string_repr, string_data) if string_data is not None else string_repr
+                    string_spec_ls.append(final_element)
+                template_obj = Template(string_spec_ls,
+                                        priority=priority_map.get(priority_tag, DEFAULT_PRIORITY),
+                                        template_type=template_types.get(template_type, DEFAULT_TEMPLATE_TYPE),
+                                        topic_anchor=topic_anchor)
+                template_d['specs'][template] = template_obj
 
-        for rule, (pre, template_obj, vars) in template_links.items():
+        templates = {}
+        for rule, template_d in template_links.items():
+            pre = template_d['pre']
+            vars = template_d['vars']
+            specs = template_d['specs']
             pre = self.subgraph(pre, meta_exclusions=instance_exclusions)
-            templates[rule] = (pre, template_obj, vars)
+            templates[rule] = (pre, specs, vars)
         return templates
 
 
