@@ -23,6 +23,15 @@ uc:<uc/cook(user) at(uc,home) time(uc,always)>
 request_truth(emora, uc)
 ;
 
+l/like(user, f/food())
+_category(f)
+->
+f3:<possess(user, f2/food())
+favorite(f2)
+be(f2, f3/food())>
+request(emora, f3)
+;
+
 f/food()
 _exists(f)
 _specific(f)
