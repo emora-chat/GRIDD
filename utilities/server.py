@@ -9,17 +9,10 @@ from GRIDD.modules.responsegen_by_templates import Template
 
 class DataEncoder(json.JSONEncoder):
     def default(self, obj):
-        print(isinstance(obj, ConceptGraph))
         if isinstance(obj, Span):
             return obj.to_string()
         elif isinstance(obj, ConceptGraph):
             x = obj.save()
-            for y in x:
-                print(y, x[y])
-                try:
-                    json.dumps(x[y])
-                except TypeError as e:
-                    print('FAILED TO DUMP TO JSON: %s'%e)
             return x
         return json.JSONEncoder.default(self, obj)
 
@@ -70,7 +63,6 @@ def save(key, object):
                 predicates = predicates.save()
             new_l.append(((string, predicates, topic_anchors), type))
         object = new_l
-    print(key, object)
     object = json.dumps(object, cls=DataEncoder)
     return object
 
