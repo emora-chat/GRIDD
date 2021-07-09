@@ -98,17 +98,23 @@ class ParseToLogic:
         wm = self.intcore.working_memory
         self.intcore.working_memory.clear()
         parse_graph = self.text_to_graph(*args)
-        if len(parse_graph.concepts()) == 0: # empty utterance
+        cs = parse_graph.concepts()
+        print('Parse graph concepts: %d'%len(cs))
+        if len(cs) == 0: # empty utterance
             return {}, []
         self.intcore.consider(parse_graph)
+        print('intcore graph concepts: %d' % len(self.intcore.working_memory.concepts()))
         self._span_to_concepts()
+        print('intcore graph concepts: %d' % len(self.intcore.working_memory.concepts()))
         types = self.intcore.pull_types()
         type_preds = {p for concept in types for p in types[concept]}
         self.intcore.consider(type_preds)
+        print('intcore graph concepts: %d' % len(self.intcore.working_memory.concepts()))
         # todo - this is just a temporary patch for missing type expression
         for s,_,_,_ in wm.predicates(predicate_type='expr'):
             if not wm.has(s, 'type', 'expression'):
                 wm.add(s, 'type', 'expression')
+        print('intcore graph concepts: %d' % len(self.intcore.working_memory.concepts()))
         rule_assignments = self.intcore.infer()
         sorted_assignments = {}
         for k2 in self.intcore.inference_engine.rules:

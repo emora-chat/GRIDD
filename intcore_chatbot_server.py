@@ -552,9 +552,9 @@ class ChatbotServer:
             salient_emora_request = salient_emora_truth_request
             req_type = REQ_TRUTH
 
-        if DEBUG:
-            print('ARG REQUESTS: %s' % emora_arg_requests)
-            print('TRUTH REQUESTS: %s' % emora_truth_requests)
+        # if DEBUG:
+        #     print('ARG REQUESTS: %s' % emora_arg_requests)
+        #     print('TRUTH REQUESTS: %s' % emora_truth_requests)
 
         if salient_emora_request is not None:
             p.next('find answer')
