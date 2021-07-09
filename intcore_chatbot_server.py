@@ -345,11 +345,13 @@ class ChatbotServer:
 
     @serialized('working_memory', 'aux_state')
     def run_knowledge_pull(self, working_memory, aux_state):
+        p.start('load')
         self.load_working_memory(working_memory)
         working_memory = self.dialogue_intcore.working_memory
         knowledge_by_refs = {}
-        p.start(f'pull by query (queries: {len(working_memory.references())})')
-        for focus, (query, variables) in working_memory.references().items():
+        references = working_memory.references()
+        p.next(f'pull by query (queries: {len(references)})')
+        for focus, (query, variables) in references.items():
             pbq_result = self.dialogue_intcore.pull_by_query(query, variables, focus)
             knowledge_by_refs.update(pbq_result)
         p.next('knowledge pull')
@@ -392,9 +394,13 @@ class ChatbotServer:
 
     @serialized('rules', 'working_memory')
     def run_reference_identification(self, working_memory):
+        p.start('load')
         self.load_working_memory(working_memory)
+        p.next('convert')
         self.dialogue_intcore.convert_metagraph_span_links(REF_SP, [REF, VAR])
+        p.next('references')
         rules = self.dialogue_intcore.working_memory.references()
+        p.stop()
         return rules, self.dialogue_intcore.working_memory
 
     @serialized('inference_results', 'rules')
