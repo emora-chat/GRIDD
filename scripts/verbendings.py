@@ -75,6 +75,7 @@ while True:
 
 #find verbs
 import nltk
+nltk.download('wordnet')
 verbs=set()
 from nltk.corpus import wordnet as wn
 predicates.remove('predicate')
