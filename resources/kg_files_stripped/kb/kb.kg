@@ -42,11 +42,15 @@ expr("we, us, our", user_group)
 init_convo = object()
 ;
 
-animal = (entity)
+living_thing = (entity)
+animal = (living_thing)
 pet = (animal)
 dog = (pet)
 cat = (pet)
 hawk = (animal)
+
+breed = (entity)
+chihuahua = (breed)
 ;
 
 movie = (entity)
@@ -69,6 +73,8 @@ like = (predicate)
 
 nyla = dog()
 time(have(emora, nyla), now)
+time(be(b/breed(), chihuahua()), now)
+possess(nyla, b)
 ;
 
 location = (entity)

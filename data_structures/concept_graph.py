@@ -557,8 +557,23 @@ class ConceptGraph:
             pre = self.metagraph.targets(ref, REF)
             vars = set(self.metagraph.targets(ref, VAR))
             if pre:
-                pre = self.subgraph(pre)
                 references[ref] = (pre, vars)
+        # delete references that are completely covered by an outer reference
+        to_delete = []
+        for ref, (pre, vars) in references.items():
+            for oref, (opre, ovars) in references.items():
+                if ref != oref:
+                    if opre.issubset(pre) and [oref, opre, ovars] not in to_delete:
+                        to_delete.append([oref, opre, ovars])
+        for ref, pre, vars in to_delete:
+            for p in pre:
+                self.metagraph.remove(ref, p, REF)
+            for v in vars:
+                self.metagraph.remove(ref, v, VAR)
+            del references[ref]
+        # convert remaining pre targets to concept graph
+        for ref, (pre, vars) in references.items():
+            references[ref] = (self.subgraph(pre), vars)
         return references
 
     def subgraph(self, concepts=None, types=None, exclusions=None, type_exclusions=None, meta_exclusions=None):
