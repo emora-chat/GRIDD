@@ -50,6 +50,32 @@ def serialized(*returns):
         return f_with_serialization
     return dectorator
 
+def mega_serialized(*returns):
+    def dectorator(f):
+        if not IS_MEGA_SERIALIZING:
+            return f
+        params = signature(f).parameters
+        def f_with_serialization(cls, json):
+            kwargs = {}
+            s = time.time()
+            for k, serialized in json.items():
+                if k in params:
+                    obj = load(k, serialized)
+                    kwargs[k] = obj
+            print(f'{f.__name__[:20]:20} serial load - {time.time() - s:.2f}', end= ' ')
+            result = f(cls, **kwargs)
+            results = {}
+            s = time.time()
+            if isinstance(result, tuple):
+                for i, r in enumerate(result):
+                    results[returns[i]] = save(returns[i], r)
+            elif result is not None:
+                results[returns[0]] = save(returns[0], result)
+            print('save - %.2f' % (time.time() - s))
+            return results
+        return f_with_serialization
+    return dectorator
+
 class ChatbotServer:
 
     def __init__(self, knowledge_base, inference_rules, nlg_templates, fallbacks, starting_wm=None, device=None):
@@ -833,6 +859,87 @@ class ChatbotServer:
         self.init_response_by_rules()
         self.init_response_nlg_model()
         self.init_response_assember()
+
+    def nlu_to_response_init(self, device=None):
+        self.init_parse2logic(device=device)
+        self.init_multiword_matcher()
+        self.init_template_nlg()
+        self.init_response_selection()
+        self.init_response_expansion()
+        self.init_response_by_rules()
+        self.init_response_nlg_model()
+
+    @mega_serialized('rule_responses', 'working_memory', 'aux_state')
+    def nlu_to_response(self, elit_results, working_memory, aux_state):
+        p.next('parse2logic')
+        mentions, merges = self.run_parse2logic(elit_results)
+        p.next('multiword mentions')
+        multiword_mentions = self.run_multiword_matcher(elit_results)
+        p.next('ner mentions')
+        ner_mentions = self.run_ner_mentions(elit_results)
+        p.next('mention bridge')
+        subspans, working_memory = self.run_mention_bridge(mentions, multiword_mentions, ner_mentions, working_memory,
+                                                           aux_state)
+        p.next('merge bridge')
+        working_memory, aux_state = self.run_merge_bridge(merges, subspans, working_memory, aux_state)
+        p.next('knowledge pull')
+        working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state)
+
+        if PRINT_WM:
+            print('\n<< Working Memory After Inferences Applied >>')
+            print(working_memory.pretty_print(exclusions={SPAN_DEF, SPAN_REF, USER_AWARE, ASSERT}))
+
+        p.next('reference id')
+        rules, working_memory = self.run_reference_identification(working_memory)
+        p.next('reference infer')
+        inference_results, rules = self.run_dynamic_inference(rules, working_memory, aux_state)
+        p.next('reference resolution')
+        working_memory = self.run_reference_resolution(inference_results, working_memory, aux_state)
+        p.next('fragment resolution')
+        working_memory, aux_state = self.run_fragment_resolution(working_memory, aux_state)
+        p.next('dialogue infer')
+        inference_results = self.run_dialogue_inference(working_memory, aux_state)
+        p.next('apply inferences')
+        working_memory, aux_state = self.run_apply_dialogue_inferences(inference_results, working_memory, aux_state)
+        p.next('knowledge pull 2')
+        working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state)
+
+        p.next('reference id 2')
+        rules, working_memory = self.run_reference_identification(working_memory)
+        p.next('reference infer 2')
+        inference_results, rules = self.run_dynamic_inference(rules, working_memory, aux_state)
+        p.next('reference resolution 2')
+        working_memory = self.run_reference_resolution(inference_results, working_memory, aux_state)
+        p.next('fragment resolution 2')
+        working_memory, aux_state = self.run_fragment_resolution(working_memory, aux_state)
+        p.next('dialogue infer 2')
+        inference_results = self.run_dialogue_inference(working_memory, aux_state)
+        p.next('apply inferences 2')
+        working_memory, aux_state = self.run_apply_dialogue_inferences(inference_results, working_memory, aux_state)
+
+        if PRINT_WM:
+            print('\n<< Working Memory After Inferences Applied >>')
+            print(working_memory.pretty_print(exclusions={SPAN_DEF, SPAN_REF, USER_AWARE, ASSERT}))
+            for s, t, o, i in working_memory.predicates(predicate_type='_tanchor'):
+                print(f"{s} = {working_memory.features[s][SALIENCE]}, {working_memory.features[i][SALIENCE]}")
+
+        p.next('prepare template nlg')
+        working_memory, expr_dict = self.run_prepare_template_nlg(working_memory)
+        p.next('template infer')
+        inference_results = self.run_template_inference(working_memory, aux_state)
+        p.next('template fillers')
+        template_response_sel, aux_state = self.run_template_fillers(inference_results, expr_dict,
+                                                                     working_memory, aux_state)
+        p.next('response sel')
+        aux_state, response_predicates = self.run_response_selection(working_memory, aux_state,
+                                                                     template_response_sel)
+        p.next('response exp')
+        expanded_response_predicates, working_memory = self.run_response_expansion(response_predicates,
+                                                                                   working_memory, aux_state)
+        p.next('response rules')
+        rule_responses = self.run_response_by_rules(aux_state, expanded_response_predicates)
+
+        return rule_responses, working_memory, aux_state
 
     def run_mention_merge(self, user_utterance, working_memory, aux_state):
         aux_state = self.run_next_turn(aux_state)
