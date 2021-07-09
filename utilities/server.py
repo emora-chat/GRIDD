@@ -13,7 +13,10 @@ class DataEncoder(json.JSONEncoder):
         if isinstance(obj, Span):
             return obj.to_string()
         elif isinstance(obj, ConceptGraph):
-            return obj.save()
+            x = obj.save()
+            for y in x:
+                print(y, x[y])
+            return x
         return json.JSONEncoder.default(self, object)
 
 def save(key, object):
