@@ -120,7 +120,7 @@ expr("playstation, playstation four, playstation five, p.s. four, p.s. five", pl
 nintendo=device()
 expr("nintendo, nintendo switch, wii, wii u, ds, nintendo ds, 3ds, nintendo 3ds, three d. s.", nintendo)
 computer=(machine)
-expr("computer game, pc, desktop, p. c.", computer)
+expr("computer game, pc, desktop", computer)
 
 story=(entity)
 expr("story arc, storyline, narrative, campaign", story)
