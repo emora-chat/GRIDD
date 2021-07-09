@@ -945,6 +945,27 @@ class ChatbotServer:
 
         return rule_responses, working_memory, aux_state
 
+    def nlu_to_response_serialize(self, user_utterance, working_memory, aux_state):
+        state = {'user_utterance': save('user_utterance', user_utterance),
+                 'working_memory': save('working_memory', working_memory),
+                 'aux_state': save('aux_state', aux_state)
+                }
+
+        state_update = self.run_next_turn(state)
+        state.update(state_update)
+        state_update = self.run_sentence_caser(state)
+        state.update(state_update)
+        state_update = self.run_elit_models(state)
+        state.update(state_update)
+        state_update = self.nlu_to_response(state)
+        state.update(state_update)
+        state_update = self.run_response_assembler(state)
+        state.update(state_update)
+
+        return load("response", state["response"]), \
+               load("working_memory", state["working_memory"]), \
+               load("aux_state", state["aux_state"])
+
     def run_mention_merge(self, user_utterance, working_memory, aux_state):
         aux_state = self.run_next_turn(aux_state)
         user_utterance = self.run_sentence_caser(user_utterance)
@@ -1117,6 +1138,8 @@ class ChatbotServer:
                 s = time.time()
                 if IS_SERIALIZING:
                     response, wm, aux_state = self.respond_serialize(utter, wm, aux_state)
+                elif IS_MEGA_SERIALIZING:
+                    response, wm, aux_state = self.nlu_to_response_serialize(utter, wm, aux_state)
                 else:
                     response, wm, aux_state = self.respond(utter, wm, aux_state)
                 elapsed = time.time() - s

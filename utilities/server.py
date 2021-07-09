@@ -62,6 +62,7 @@ def save(key, object):
                 predicates = predicates.save()
             new_l.append(((string, predicates, topic_anchors), type))
         object = new_l
+    print(object)
     object = json.dumps(object, cls=DataEncoder)
     return object
 
