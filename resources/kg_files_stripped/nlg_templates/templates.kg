@@ -52,6 +52,7 @@ time(be(b/breed(), chihuahua()), now)
 possess(nyla, b)
 -> nyla_breed ->
 $ She is a tiny chihuahua . $
+$ She's a chihuahua . $
 ;
 
 locate(l/live(emora), virtual_world)
