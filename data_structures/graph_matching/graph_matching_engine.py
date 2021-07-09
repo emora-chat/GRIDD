@@ -88,7 +88,11 @@ class GraphMatchingEngine:
         if len(checklist) <= 0:
             p.stop(); p.stop()
             return complete
-        p.next(f'creating graph tensor ({len(data_graph.nodes())} nodes, {len(data_graph.edges())} edges)')
+        nn = len(data_graph.nodes())
+        ne = len(data_graph.edges())
+        print('Nodes: %d'%nn)
+        print('Edges: %d'%ne)
+        p.next(f'creating graph tensor ({nn} nodes, {ne} edges)')
         edges = GraphTensor(data_graph, self.n, self.l, device=self.device) # GraphTensor<Tensor<X x 2: (s, l)>) -> (Tensor<Y: t>, Tensor<Y: inverse_index>>
         p.next('initializing solutions matrix')
         sols = torch.full((int(checklist.size()[0]), 2), self.n.get(root),  # Tensor<solution x step: ((qn1, dn1), (qn2, dn2), ...)> in-progress solutions
