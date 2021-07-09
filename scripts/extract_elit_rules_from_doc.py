@@ -1,4 +1,5 @@
 import os
+from GRIDD.globals import *
 
 def extract():
     rules = ""
@@ -16,7 +17,7 @@ def extract():
             if '<summary>' in line:
                 start = True
 
-    with open(os.path.join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg'), 'w') as f:
+    with open(os.path.join('GRIDD', 'resources', KB_FOLDERNAME, 'elit_dp_templates.kg'), 'w') as f:
         f.write(rules)
 
     print('\nWrote %d parse-to-logic rules'%count)

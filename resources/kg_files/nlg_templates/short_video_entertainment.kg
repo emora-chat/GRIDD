@@ -1,0 +1,16 @@
+l/like(user, s/short_video_entertainment())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Why do you like s ? $
+;
+
+possess(user, c/content_creator())
+favorite(c)
+be(c, c2/content_creator())
+request(emora, c2)
+->
+_pr(_high)
+$ Who is your favorite c $
+;

@@ -25,13 +25,13 @@ $ Oh, I was meaning to ask, do you have a phone ? $
 
 c:<have(user, l/life()) c/change(pandemic(), l)>
 request_truth(emora, c)
--> postpandemic_fallback ->
+-> postpandemicnlg_fallback ->
 $ I've been thinking, the pandemic has really changed our lives hasn't it? Not just this year, I think a lot of things will never be the same for me now. Its kinda crazy how much my life has changed. $
 ;
 
-h:h<h/have(user, p/computer())>
+h:<h/have(user, p/computer())>
 r/request_truth(emora, h)
--> computer_fallback ->
+-> tech_fallback ->
 $ Oh, I wanted to ask, do you have a computer? Of course, it would be hard for you to talk to me without one . $
 ;
 
@@ -50,7 +50,7 @@ $ You know , I have always felt a connection to video games since, they're of a 
 l:<l/like(user, t) t/talk(user) about(t,ai())>
 request_truth(emora, l)
 -> ai_fallback ->
-$ Actually , I was wondering if you are interested in artificial intelligence ? $
+$ Actually , I was wondering if you are interested in a. i. , or artificial intelligence ? $
 ;
 
 l:<l/like(user, m/movie())>

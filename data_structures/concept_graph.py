@@ -13,7 +13,7 @@ from GRIDD.data_structures.meta_graph import MetaGraph
 from GRIDD.modules.responsegen_by_templates import Template
 
 from collections import defaultdict, deque
-import json
+import json, re, os
 from GRIDD.utilities import Counter
 from GRIDD.globals import *
 from itertools import chain
@@ -44,6 +44,8 @@ class ConceptGraph:
                 self.add(concept)
         if predicates is not None:
             ConceptGraph.construct(self, predicates, metalinks, metadata)
+        self.compiled_types = {}
+        self.compiled_subtypes = {}
 
     @classmethod
     def construct(cls, cg, predicates, metalinks=None, metadata=None, compiler=None):
@@ -93,6 +95,7 @@ class ConceptGraph:
             self._monopredicate_instances[(concept, predicate_type)].add(predicate_id)
             self._bipredicates_graph.add(predicate_type)
             self._bipredicates_graph.add(predicate_id)
+            self.features[predicate_id]['isinstance'] = True
             return predicate_id
         else:                       # Add bipredicate
             if predicate_id is None:
@@ -106,6 +109,7 @@ class ConceptGraph:
             self._bipredicate_instances[(concept, predicate_type, object)].add(predicate_id)
             self._bipredicates_graph.add(predicate_type)
             self._bipredicates_graph.add(predicate_id)
+            self.features[predicate_id]['isinstance'] = True
             return predicate_id
 
     def remove(self, concept=None, predicate_type=None, object=None, predicate_id=None):
@@ -363,14 +367,6 @@ class ConceptGraph:
             todo.difference_update(self.subtypes_of(concept, memo))
         return memo
 
-    def instances(self, concept=None, memo=None, limit=None):
-        count = 0
-        for subtype in self.subtypes_of(concept, memo):
-            if self.metagraph.features.get(subtype, {}).get(IS_TYPE, False):
-                if count < limit:
-                    yield subtype
-                else: break
-
     def types(self, concept=None, memo=None):
         if memo is None:
             memo = {}
@@ -473,7 +469,10 @@ class ConceptGraph:
                 rules[rule] = (pre, post, vars)
         return rules
 
-    def nlg_templates(self):
+    def nlg_templates(self, file=None):
+        """
+        File is passed for templates who take the alphabetic filename as the topic anchor
+        """
         priority_map = {'_low': 0.1, '_high': 1.0}
         template_types = {'_react': '_react',
                           '_r': '_react',
@@ -481,6 +480,16 @@ class ConceptGraph:
                           '_p': '_present',
                           '_rpresent': '_rpresent',
                           '_rp': '_rpresent'}
+
+        topic_anchor = ''
+        if file is not None:
+            head, tail = os.path.split(file)
+            matches = re.findall(r'([^_]*)(?:\_.*)?\.kg', tail)
+            if len(matches) == 1:
+                topic_anchor = matches[0] + '__t'
+            else:
+                print('[WARNING] More than one topic anchor found for file %s: %s' %(file, matches))
+
         templates = {}
         template_instances = set(self.subtypes_of('response')) - {'response'}
 
@@ -489,6 +498,8 @@ class ConceptGraph:
         for template in template_instances:
             # Get the rule that this template is the postcondition of
             (rule, ) = self.metagraph.sources(template, POST)
+            if file is None:
+                topic_anchor = rule.split('_')[0] + '__t'
             # Get the precondition and vars
             pre_inst = self.metagraph.out_edges(rule, PRE)
             pre = [edge[1] for edge in pre_inst]
@@ -528,7 +539,8 @@ class ConceptGraph:
                 print('[WARNING] Template type %s must be one of %s'%(str(template_type), str(template_types.keys())))
             template_obj = Template(string_spec_ls,
                                     priority=priority_map.get(priority_tag, DEFAULT_PRIORITY),
-                                    template_type=template_types.get(template_type, DEFAULT_TEMPLATE_TYPE))
+                                    template_type=template_types.get(template_type, DEFAULT_TEMPLATE_TYPE),
+                                    topic_anchor=topic_anchor)
             instance_exclusions.update(chain(pre_inst, vars_inst))
             template_links[rule] = (pre, template_obj, vars)
 
@@ -790,13 +802,14 @@ class ConceptGraph:
             if c not in visited:
                 visited.add(c)
                 components += 1
-                related = set(self.related(c)) - visited
+                related = set(chain(self.related(c), self.subtypes_of(c))) - visited
                 while related:
                     r = related.pop()
                     if r not in visited:
                         visited.add(r)
                         concepts -= {r}
-                        related.update(set(self.related(r)) - visited)
+                        addendums = set(chain(self.related(r), self.subtypes_of(r))) - visited
+                        related.update(addendums)
         return components
 
     def compile_connection_counts(self):

@@ -1,0 +1,79 @@
+
+time = (predicate)
+timepoint = (entity)
+past = timepoint()
+now = timepoint()
+;
+
+locate = (predicate)
+expr("where", locate)
+cause = (predicate)
+expr("why, because", cause)
+qualifier = (predicate)
+expr("how", qualifier)
+but=(predicate)
+
+what = (entity)
+who = (entity)
+
+be = (predicate)
+do = (predicate)
+have = (predicate)
+possess = (obj_essential, have)
+;
+
+event = (predicate)
+;
+
+person = (entity)
+socialbot = (entity, person)
+
+user = person()
+emora = socialbot()
+name = (entity)
+expr(["you", "your", "yours"], emora)
+expr(["i", "me", "my", "mine"], user)
+
+user_group=person()
+type(user_group, group)
+expr("we, us, our", user_group)
+;
+
+init_convo = object()
+;
+
+animal = (entity)
+pet = (animal)
+dog = (pet)
+cat = (pet)
+hawk = (animal)
+;
+
+movie = (entity)
+;
+
+attitude_quality = (predicate)
+cool = (attitude_quality)
+lame = (attitude_quality)
+great = (attitude_quality)
+;
+
+activity = (event)
+hike = (activity) expr("hiking", hike)
+watch = (activity) expr("watching", watch)
+;
+
+favorite = (predicate)
+like = (predicate)
+;
+
+nyla = dog()
+time(have(emora, nyla), now)
+;
+
+location = (entity)
+live = (predicate)
+locate(l/live(emora), virtual_world=location()) time(l, now)
+;
+
+

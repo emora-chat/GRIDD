@@ -181,9 +181,9 @@ $ I'll share some more of my thoughts then . I really love how much convenience 
 possess(user,t/time())
 appreciate(emora,t)
 ->
-_t(_rpresent)
+_t(_r)
 _pr(_high)
-$ Oh , thank you for spending some time talking to me . I really appreciate that . $
+$ Thank you for spending time talking to me . I appreciate it . $
 ;
 
 /* transportation */
@@ -345,4 +345,15 @@ hem/have(emora,mother())
 req_unsat(request_truth(user,hem))
 ->
 $ Yeah , I know it's kinda hard to believe , but I do have a mother . $
+;
+
+/* reaction */
+
+have_0/have(user, m/meal())
+time(have_0, past)
+uturn(have_0, 1)
+->
+_pr(_high)
+_t(_r)
+$ I hope it was good! $
 ;

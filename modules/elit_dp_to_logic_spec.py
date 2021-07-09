@@ -2,6 +2,7 @@
 from structpy import specification
 from GRIDD.data_structures.span import Span
 from GRIDD.data_structures.id_map import IdMap
+from GRIDD.globals import *
 from GRIDD.data_structures.concept_graph import ConceptGraph
 import os
 
@@ -15,8 +16,8 @@ class ElitDPSpec:
         `template_file_names` are a variable number of filenames specifying parse-to-logic templates to load
         `device` specifies whether to run the inference engine on cpu or gpu for the conversions
         """
-        kb_dir = os.path.join('GRIDD', 'resources', 'kg_files', 'kb')
-        template_file = os.path.join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
+        kb_dir = os.path.join('GRIDD', 'resources', KB_FOLDERNAME, 'kb')
+        template_file = os.path.join('GRIDD', 'resources', KB_FOLDERNAME, 'elit_dp_templates.kg')
         elit_dp_to_logic = ElitDPToLogic(ConceptGraph(kb_dir), template_file, device=device)
         return elit_dp_to_logic
 

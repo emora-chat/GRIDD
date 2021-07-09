@@ -859,7 +859,7 @@ $ I watched the Disney version of Alice in Wonderland all the time when I was a 
 ;
 
 w/watch(user, u/object())
-user_aware(w)
+uturn(w, 0)
 b/be(u, y/unknown_movie())
 request_truth(emora, b)
 ->

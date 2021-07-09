@@ -16,6 +16,9 @@ in(germany,europe)
 berlin=city()
 in(berlin,germany)
 
+hamburg=city()
+in(hamburg,germany)
+
 ;
 
 united_kingdom=country()
@@ -32,5 +35,35 @@ in(italy,europe)
 
 rome=city()
 in(rome,italy)
+
+milan=city()
+in(milan,italy)
+
+;
+
+spain=country()
+in(spain,europe)
+
+madrid=city()
+in(madrid,spain)
+
+barcelona=city()
+in(barcelona,spain)
+
+;
+
+russia=country()
+in(russia,europe)
+
+moscow=city()
+in(moscow,russia)
+
+;
+
+ukraine=country()
+in(ukraine,europe)
+
+kyiv=city()
+in(kyiv,ukraine)
 
 ;

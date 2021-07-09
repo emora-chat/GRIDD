@@ -38,4 +38,9 @@ class Profiler:
         print()
         self._durations = []
 
+    def clear(self):
+        self._durations = []
+        self._starts = []
+        self._i = 0
+
 profiler = Profiler()

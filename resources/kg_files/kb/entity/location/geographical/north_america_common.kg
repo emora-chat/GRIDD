@@ -3,11 +3,23 @@ expr("north america",north_america)
 
 ;
 
+mexico=country()
+in(mexico,north_america)
+
+mexico_city=city()
+expr("mexico city",mexico_city)
+in(mexico_city,mexico)
+
+;
+
 canada=country()
 in(canada,north_america)
 
 vancouver=city()
 in(vancouver,canada)
+
+toronto=city()
+in(toronto,canada)
 
 ;
 

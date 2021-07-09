@@ -126,11 +126,13 @@ class ParseToLogic:
             data = wm.features[span_node]['span_data']
             surface_form = data.string
             lemma = data.expression
+            c = None
             sf_concepts = kb.objects(f'"{surface_form}"', 'expr')
             if len(sf_concepts) > 0:
                 c = next(iter(sf_concepts))
                 wm.add(span_node, 'ref', f'"{surface_form}"')
                 wm.add(f'"{surface_form}"', 'expr', c)
+                wm.features[f'"{surface_form}"']['isinstance'] = True
             l_concepts = None
             if len(sf_concepts) == 0:
                 l_concepts = kb.objects(f'"{lemma}"', 'expr')
@@ -138,6 +140,9 @@ class ParseToLogic:
                     c = next(iter(l_concepts))
                     wm.add(span_node, 'ref', f'"{lemma}"')
                     wm.add(f'"{lemma}"', 'expr', c)
+                    wm.features[f'"{lemma}"']['isinstance'] = True
+            if c is not None and self.intcore.knowledge_base.features.get(c, {}).get('isinstance', False):
+                wm.add(span_node, 'kbinstance')
             if not sf_concepts and not l_concepts:
                 # Create "UNK" expression nodes for all nodes with no expr references.
                 unk_node = wm.add(wm.id_map().get())
@@ -152,6 +157,8 @@ class ParseToLogic:
                     wm.add('unknown_%s' % pos_type, 'type', 'object')
                 wm.add(span_node, 'ref', f'"{surface_form}"')
                 wm.add(f'"{surface_form}"', 'expr', unk_node)
+                wm.features[f'"{surface_form}"']['isinstance'] = True
+                wm.features[unk_node]['isinstance'] = True
 
     def _update_centers(self, centers_handled, post, center, solution):
         centers_handled.add(center)
@@ -220,6 +227,14 @@ class ParseToLogic:
                         mention_cg.features.update(ewm.features, concepts={center})
                     else:
                         mention_cg.features[center]["span_data"] = ewm.features[center.replace('__linking__','')]["span_data"]
+                    # synchronize isinstance metadata between postcondition and KB
+                    for c in mention_cg.concepts():
+                        if self.intcore.knowledge_base.has(c):
+                            c_features = self.intcore.knowledge_base.features.get(c, {})
+                            if 'isinstance' in c_features and c_features['isinstance']:
+                                mention_cg.features[c]['isinstance'] = True
+                            else:
+                                mention_cg.features[c]['isinstance'] = False
         self._promote_time(time_promotions, ewm, mentions)
         return mentions
 

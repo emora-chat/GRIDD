@@ -20,7 +20,12 @@ outdoor_activity=(activity, outdoor)
 doggypaddle=(swim)
 [wash, sweep, vacuum, dust]=(clean)
 
-[play, watch, relax, chill]=(activity, solo_or_social, leisure)
+[relax, chill]=(activity, solo_or_social, leisure)
+
+play=(activity, solo_or_social)
+
+watch=(see, activity, solo_or_social, leisure)
+
 
 work=(activity, obligatory)
 
@@ -39,6 +44,7 @@ annoy=(activity,mental)
 use=(predicate)
 
 talk=(predicate)
+speak=(talk)
 
 stop=(predicate)
 
@@ -49,12 +55,20 @@ draw=(activity,physical)
 expr("paint",draw)
 jump=(activity,physical)
 paint=(activity,physical)
-chat=(activity,physical)
+
+chat=(talk,activity,physical)
+
 
 drive=(activity,physical)
 ride=(activity,physical)
 surf=(activity,physical)
 shop=(activity,leisure)
 meditate=(activity,mental)
+<<<<<<< HEAD
 
 garden=(activity,physical)
+=======
+interest=(like)
+garden=(activity,physical)
+
+>>>>>>> main

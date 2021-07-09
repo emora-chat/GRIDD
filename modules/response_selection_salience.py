@@ -7,8 +7,8 @@ class ResponseSelectionSalience:
     def __call__(self, aux_state, working_memory, template_response_selection):
         if template_response_selection[0] is not None:
             # template response takes priority
-            responses = [((template_response_selection[0],template_response_selection[1]),
-                         template_response_selection[2])]
+            responses = [((template_response_selection[0],template_response_selection[1], template_response_selection[2]),
+                          template_response_selection[3])]
         else:
             # removed nlg model
             responses = []

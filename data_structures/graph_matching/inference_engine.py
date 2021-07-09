@@ -69,14 +69,31 @@ class InferenceEngine:
                 pre.remove(predicate_type='_exists')
                 if pre.has('_exists'):
                     pre.remove('_exists')
+            precedes = set()
+            for s, t, o, i in set(pre.predicates(predicate_type='_precede')):
+                precedes.add((s, o))
+                pre.remove(predicate_id=i)
+            if pre.has('_precede'):
+                pre.remove(predicate_type='_precede')
+                if pre.has('_precede'):
+                    pre.remove('_precede')
             precondition = pre.to_infcompat_graph()
             precondition = self._flatten_types(pre, precondition, for_query=True)
+            instances = {n for n in pre.concepts()
+                         if pre.features.get(n, None) and 'isinstance' in pre.features[n] and pre.features[n]['isinstance']}
+            for instance in instances:
+                if instance in precondition: # duck tape to prevent adding this on type predicate instances that aren't represented as a predicate (instead the direct "t" edge)
+                    precondition.add(instance, '__instance__', 't')
             for node in categories:
                 precondition.data(node)['category'] = True
             for node in specifics:
                 precondition.data(node)['specific'] = True
             for node in exists:
                 precondition.data(node)['exists'] = True
+            for n1, n2 in precedes:
+                if 'precede' not in precondition.data(n1):
+                    precondition.data(n1)['precede'] = []
+                precondition.data(n1)['precede'].append(n2)
             for var in vars: # vars includes both pre and post vars
                 if precondition.has(var):
                     precondition.data(var)['var'] = True
@@ -91,6 +108,11 @@ class InferenceEngine:
         facts_graph = facts.to_infcompat_graph()
         p.next(f'flatten types ({len(facts_types)} concepts)')
         facts_graph = self._flatten_types(facts, facts_graph, facts_types)
+        instances = {n for n in facts.concepts()
+                     if facts.features.get(n, None) and 'isinstance' in facts.features[n] and facts.features[n]['isinstance']}
+        for instance in instances:
+            if instance in facts_graph: # duck tape to prevent adding this on type predicate instances that aren't represented as a predicate (instead the direct "t" edge)
+                facts_graph.add(instance, '__instance__', 't')
         p.next('quantities')
         quantities = {c for c in facts.concepts() if isinstance(c, (float, int))}
         for node in quantities: facts_graph.data(node)['num'] = node
@@ -146,6 +168,11 @@ class InferenceEngine:
         p.start('facts graph types')
         facts_types = facts_concept_graph.types()
         p.next('convert facts graph')
+        # if remove_rules:
+        #     # get predicate ids to ignore
+        #     ignore = {v for rule, info in dynamic_rules.items() for v in info[-1]}
+        #     facts_graph = self._convert_facts(facts_concept_graph, facts_types, ignore)
+        # else:
         facts_graph = self._convert_facts(facts_concept_graph, facts_types)
         p.next('process dynamic rules')
         if dynamic_rules is not None and not isinstance(dynamic_rules, dict):
@@ -169,6 +196,7 @@ class InferenceEngine:
             categories = set()
             specifics = set()
             exists = set()
+            precede = {}
             for node in precondition.nodes():
                 if 'category' in precondition.data(node):
                     categories.add(node)
@@ -176,6 +204,8 @@ class InferenceEngine:
                     specifics.add(node)
                 if 'exists' in precondition.data(node):
                     exists.add(node)
+                if 'precede' in precondition.data(node):
+                    precede[node] = precondition.data(node)['precede']
             if not cached:
                 precondition_id = converted_rules.reverse()[precondition]
             else:
@@ -240,6 +270,16 @@ class InferenceEngine:
                             if value_types <= facts_types.get(t, set()):
                                 not_specific = True
                         if not_specific:
+                            break
+                    if variable in precede:
+                        precedes_sat = True
+                        for n in precede[variable]:
+                            value_span = facts_concept_graph.features[value]["span_data"]
+                            match_span = facts_concept_graph.features[sol[n]]["span_data"]
+                            if value_span.start > match_span.start: # value token must come before n's matched token
+                                precedes_sat = False
+                                break
+                        if not precedes_sat:
                             break
                 else:
                     # postprocess type predicates
