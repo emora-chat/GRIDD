@@ -24,3 +24,4 @@ jobs:
     - name: Test with unittest
       run: |
         python scripts/checkdupes.py
+
