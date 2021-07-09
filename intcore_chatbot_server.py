@@ -400,7 +400,6 @@ class ChatbotServer:
     @serialized('inference_results', 'rules')
     def run_dynamic_inference(self, rules, working_memory, aux_state):
         self.load_working_memory(working_memory)
-        st=time.time()
         # filter out too broad of rules
         filters = {'object', 'entity', 'predicate'}
         filtered_rules = {}
@@ -431,7 +430,6 @@ class ChatbotServer:
                             pre.remove('not')
                         if len(set(pre.subtypes_of('maybe'))) == 1:
                             pre.remove('maybe')
-        print('filtering dynamic rules: %.2f sec'%(time.time()-st))
         inference_results = self.reference_engine.infer(self.dialogue_intcore.working_memory, aux_state, filtered_rules,
                                                         cached=False)
         return inference_results, {}
