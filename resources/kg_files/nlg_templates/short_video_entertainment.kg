@@ -1,4 +1,4 @@
-l/like(user, s/short_video_entertainment())
+l/like(user, s/tiktok())
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -13,4 +13,117 @@ request(emora, c2)
 ->
 _pr(_high)
 $ Who is your favorite c $
+;
+
+l/like(user, y/youtube())
+l2/like(user, t/youtube_genre())
+request(emora, t)
+->
+_pr(_high)
+_t(_p)
+$ I really enjoy YouTube too! It’s amazing to see how large and diverse the platform has grown over the past few years. I’ve found so many amazing videos and talented creators over the years, and now I love to watch YouTube videos in my free time. What type of video do you like watching on youtube? $
+;
+
+l/like(user, cooking_videos)
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ I love watching cooking videos on YouTube! It’s so fun to discover new, unique recipes. One cooking YouTuber I’ve been enjoying recently is Joshua Weissman. His recipes are really accessible, and he has a series where he remakes popular fast-food items, which is pretty cool. Have you ever made a recipe from a YouTube video? $
+;
+
+l/like(user, comedy_videos)
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ That’s a great choice! You can watch such a diverse range of comedy on YouTube, from skits to professional stand up. I really enjoy reaction videos too, especially channels like Cody Ko and Danny Gonzalez. Who are your favorite comedians on YouTube? $
+;
+
+l/like(user, beauty_videos)
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ There’s so much great beauty content on YouTube! When I was younger, beauty tutorials on YouTube were how I first learned how to do makeup. Now, I really like watching Vogue’s Beauty Secrets series on YouTube. It’s so fascinating to see how celebrities do their makeup. Who is your favorite beauty YouTuber?  $
+;
+
+l/like(user, fashion_videos)
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ I’ve found so much fashion inspiration on YouTube. I’ll admit that it’s fun to live through other people’s clothing haul videos. One fashion channel that I’ve been watching recently is Karen Brit Chick. She has great style and is really creative with her outfits. Who is your favorite fashion YouTuber? $
+;
+
+l/like(user, travel_videos)
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Travel videos on YouTube are some of my favorite to watch. It’s so fun to live through other people’s travels around the world. My favorite travel channel recently is Damon Dominique. He speaks a ton of languages and it’s so cool to watch him explore different cities like Milan, Paris, and Berlin. What is your dream city to travel to? $
+;
+
+l/like(user, book_videos)
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ There’s so much great content about books and reading on YouTube. I’ve discovered so many new great book recommendations but now my to-read list is miles long! I’ve recently enjoyed videos by Jack Edwards. He’s super funny and always has great book recommendations. Who are your favorite booktubers? $
+;
+
+l/like(user, video_essays)
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ I love video essays on YouTube. I enjoy learning new things and always learn about the most random, cool topics on YouTube. My favorite video essayist is Sarah Zed. She is practically a YouTube historian at this point and her videos are always so engaging. What are some of your favorite video essays on YouTube? $
+;
+
+l/like(user, diy_videos)
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ There are so many great DIY videos to explore on YouTube. You can find anything from cool art projects to easy home fixes. What kinds of DIY videos do you like to watch on YouTube? $
+;
+
+l/like(user, fitness_videos)
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ That’s a great choice. I’m always so impressed, and maybe a little jealous, of fitness YouTubers. But they always inspire me to get up and do something active, even if it’s just going for a quick walk. Who are your favorite fitness YouTubers? $
+;
+
+l/like(user, vlogs)
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Vlogs are classic on YouTube. When I was younger, I used to love watching daily vlogs, but I don’t watch too many nowadays. Who are some of your favorite vloggers that I should check out? $
+;
+
+l/like(user, gaming_videos)
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Gaming videos are always a blast. I've always thought Dunkey was hilarious, but I don't watch too many nowadays otherwise. $
+;
+
+l/like(user, sports_videos)
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Sports videos are great because you can catch up on short highlight clips or watch the entirety of the longest tennis match ever played, which was over 11 hours by the way. $
+;
+
+l/like(user, stem_videos)
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Who doesn't love learning on youtube! If you like science videos on youtube, I'm sure you've heard of him, but three blue one brown is my all time favorite youtuber. What a good teacher and kind person. $
 ;
