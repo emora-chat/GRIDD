@@ -16,8 +16,12 @@ class DataEncoder(json.JSONEncoder):
             x = obj.save()
             for y in x:
                 print(y, x[y])
+                try:
+                    json.dumps(x[y])
+                except TypeError as e:
+                    print('FAILED TO DUMP TO JSON: %s'%e)
             return x
-        return json.JSONEncoder.default(self, object)
+        return json.JSONEncoder.default(self, obj)
 
 def save(key, object):
     if key == 'aux_state':

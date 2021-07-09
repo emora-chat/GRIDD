@@ -128,7 +128,7 @@ class MultiwordExpressionMatcher:
                         cg.add(new_inst, 'focus')
                         cg.features[new_inst]['isinstance'] = True
                     cg.add(concept, 'center')
-                    cg.add(span)
+                    cg.add(span.to_string())
                     cg.features[span.to_string()]["span_data"] = span
                     mentions[span.to_string()] = cg
         return mentions
