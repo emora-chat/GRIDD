@@ -30,7 +30,7 @@ he/hike(emora)
 time(he,past)
 ;
 
-time(ac/exercise(user),past)
+ac/exercise(user)
 type(ac,outdoor)
 ->
 healthy(user)
@@ -40,7 +40,7 @@ time(he,past)
 
 /* take rest */
 
-time(un/nap(user),past)
+un/nap(user)
 ->
 glad(emora,un)
 ;
@@ -142,8 +142,8 @@ type(p2, group)
 
 /* watch tv */
 
-time(uwt/watch(user,t1/tv()),past)
--> user_watched_tv ->
+uwt/watch(user,t1/tv())
+-> user_watch_tv ->
 h:<h/have(user,t2/thought()) type(t2,group) about(t2,t1)>
 request_truth(emora,h)
 ;
@@ -196,17 +196,17 @@ to(talk(user),emora)
 
 /* transportation */
 
-time(urb/ride(user,bicycle()),past)
+urb/ride(user,bicycle())
 ->
-time(ub/bike(user),past)
+ub/bike(user)
 ;
 
-time(ub/bike(user),past)
+ub/bike(user)
 ->
 healthy(ub)
 ;
 
-time(drive(user),past)
+drive(user)
 ->
 time(de/drive(emora),past)
 boring(de)
@@ -220,7 +220,7 @@ time(re/rent(emora,car()),past)
 in(re,boston)
 ;
 
-time(take(user,tr/trans_ob()),past)
+take(user,tr/trans_ob())
 _specific(tr)
 ->
 utr:<utr/try(user,rt/RV_trip()) type(rt,group) time(utr,past)>
@@ -229,14 +229,14 @@ request_truth(emora,utr)
 
 /* cleaning */
 
-time(uc/clean(user),past)
+uc/clean(user)
 ->
 organized(uc)
 ;
 
 /* needs exercise */
 
-time(s/sit(user),past)
+s/sit(user)
 ->
 need(user,exercise())
 ;
@@ -245,7 +245,6 @@ need(user,exercise())
 
 ut/talk(user)
 to(ut,p/person())
-time(ut,past)
 ->
 utc:<   mu/meet(user)
         with(fd/friend())
@@ -292,7 +291,7 @@ type(vc,group)
 
 /* shopping */
 
-time(shop(user),past)
+shop(user)
 ->
 se/shop(emora)
 love(emora,se)
@@ -336,7 +335,7 @@ m/meditation()
 good(m)
 ;
 
-time(meditate(user),past)
+meditate(user)
 ->
 good(meditation())
 ;
@@ -366,7 +365,7 @@ happy(user)
 
 /* gardening */
 
-time(garden(user),past)
+garden(user)
 ->
 possess(emora,m/mother())
 time(garden(m),now)

@@ -64,11 +64,6 @@ ride=(activity,physical)
 surf=(activity,physical)
 shop=(activity,leisure)
 meditate=(activity,mental)
-<<<<<<< HEAD
 
 garden=(activity,physical)
-=======
 interest=(like)
-garden=(activity,physical)
-
->>>>>>> main

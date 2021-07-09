@@ -692,6 +692,15 @@ _t(_rpresent)
 $ That's so cool ! I bet it feels like flying over the sea . I'll definitely try surfing for my next trip to the beach . $
 ;
 
+gx/go(user)
+to(gx,lc/location())
+_specific(lc)
+busy(user)
+->
+_t(_r)
+$ It's good to hear that you are moving around . $
+;
+
 se/surf(emora)
 time(se,future)
 ->

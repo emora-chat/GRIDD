@@ -170,6 +170,7 @@ $ Ah , that’s understandable . I know that some people feel more comfortable w
 X/tech_job()
 cool(X)
 admire(emora,X)
+uturn(X,0)
 ->
 _t(_rpresent)
 _pr(_high)
@@ -179,6 +180,7 @@ $ X is such a cool job ! I always admire people who really know how to use compu
 be(p/person(),X/tech_job())
 cool(X)
 admire(emora,X)
+uturn(X,0)
 ->
 _t(_rpresent)
 _pr(_high)
@@ -191,8 +193,10 @@ de/dream(emora)
 ebj/be(emora,jewelry_designer())
 to(de,ebj)
 time(de,past)
+uturn(X,0)
 ->
 _t(_rpresent)
+_pr(_high)
 $ X is such a cool job ! I actually wanted to be a jewelry designer when I was little . $
 ;
 
@@ -202,8 +206,10 @@ de/dream(emora)
 ebj/be(emora,jewelry_designer())
 to(de,ebj)
 time(de,past)
+uturn(X,0)
 ->
 _t(_rpresent)
+_pr(_high)
 $ X is such a cool job ! I actually wanted to be a jewelry designer when I was little . $
 ;
 
@@ -214,6 +220,7 @@ time(l,now)
 request_truth(emora,l)
 ->
 _t(_rpresent)
+_pr(_high)
 $ Being an artist is so cool . And actually , music is one of my favorite types of art . Do you like music ?  $
 ;
 
@@ -224,6 +231,7 @@ time(l,now)
 request_truth(emora,l)
 ->
 _t(_rpresent)
+_pr(_high)
 $ Being an artist is so cool . And actually , music is one of my favorite types of art . Do you like music ?  $
 ;
 
@@ -234,6 +242,7 @@ type(d,group)
 big(d)
 ->
 _t(_present)
+_pr(_high)
 $ I would imagine that managing people is not easy . To simultaneously handle the needs of the business and a team seems like a difficult task . $
 ;
 
@@ -244,6 +253,7 @@ type(d,group)
 big(d)
 ->
 _t(_present)
+_pr(_high)
 $ I would imagine that managing people is not easy . To simultaneously handle the needs of the business and a team seems like a difficult task . $
 
 ;
@@ -304,6 +314,43 @@ _pr(_low)
 _t(_rpresent)
 $ Yeah . She switched professions because biology just wasn't the right fit for her . $
 ;
+
+n/nonprofit()
+meaningful(n)
+->
+_t(_present)
+_pr(_high)
+$ I remember volunteering for nonprofit organizations when I was in college . I mean , it is very meaningful to work in a nonprofit . $
+;
+
+c/company()
+l/like(user,c)
+time(l,now)
+request_truth(emora,l)
+->
+_t(_present)
+_pr(_low)
+$ Do you like c ? $
+;
+
+l/like(user,c/company())
+time(l,now)
+awesome(l)
+->
+_t(_r)
+$ It's awesome to hear that you like c . $
+;
+
+l/like(user,c/company())
+not(l)
+time(l,now)
+sorry(emora,l)
+->
+_t(_r)
+$ I'm sorry that you don't like c so much . $
+;
+
+/* answering questions */
 
 time(h/have(emora, c/colleague()), now)
 type(c,group)

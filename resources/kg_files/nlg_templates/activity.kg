@@ -19,7 +19,7 @@ $ Exercising is such a healthy habit to have ! I actually just came back from hi
 
 /* take rest */
 
-time(un/nap(user),past)
+un/nap(user)
 glad(emora,un)
 ->
 _t(_rpresent)
@@ -214,7 +214,7 @@ $ I rented a car when I went to Boston for the first time , but driving just mad
 
 /* cleaning */
 
-time(uc/clean(user),past)
+uc/clean(user)
 organized(uc)
 ->
 _t(_rpresent)
