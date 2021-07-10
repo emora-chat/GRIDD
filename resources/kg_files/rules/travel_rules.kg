@@ -130,6 +130,13 @@ user_aware(req)
 reasonable(user)
 ;
 
+gx/go(user)
+to(gx,lc/location())
+_specific(lc)
+->
+busy(user)
+;
+
 /* Default Content if User Does Not Answer Country Directly */
 
 gx/go(x/person())

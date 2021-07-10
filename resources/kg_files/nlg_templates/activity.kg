@@ -1,3 +1,4 @@
+/* general activity */
 
 time(e/event(user), past)
 l/like(user, e)
@@ -18,7 +19,7 @@ $ Exercising is such a healthy habit to have ! I actually just came back from hi
 
 /* take rest */
 
-time(un/nap(user),past)
+un/nap(user)
 glad(emora,un)
 ->
 _t(_rpresent)
@@ -213,7 +214,7 @@ $ I rented a car when I went to Boston for the first time , but driving just mad
 
 /* cleaning */
 
-time(uc/clean(user),past)
+uc/clean(user)
 organized(uc)
 ->
 _t(_rpresent)
@@ -340,6 +341,12 @@ req_unsat(request(user, o))
 $ I hiked in a mountain with fresh air and a beautiful forest . I also barbecued over a campfire . $
 ;
 
+hem/have(emora,mother())
+req_unsat(request_truth(user,hem))
+->
+$ Yeah , I know it's kinda hard to believe , but I do have a mother . $
+;
+
 /* reaction */
 
 have_0/have(user, m/meal())
@@ -350,4 +357,3 @@ _pr(_high)
 _t(_r)
 $ I hope it was good! $
 ;
-

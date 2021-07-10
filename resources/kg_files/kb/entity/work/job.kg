@@ -52,6 +52,7 @@ manager_job=(job)
 ceo=(manager_job)
 expr("C E O, chief executive officer",ceo)
 manager=(manager_job)
+president=(manager_job)
 
 ;
 

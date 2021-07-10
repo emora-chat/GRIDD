@@ -2,3 +2,5 @@ company=(entity)
 amd=(company)
 intel=(company)
 ;
+nonprofit=(company)
+;
