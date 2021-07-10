@@ -89,17 +89,17 @@ class ResponseTemplateFiller:
                         selection = random.choice(candidates)
 
                 rule = (rule, selection)
-                post = post[selection]
-                response_str = self._fill_template(rule, post, match_dict, expr_dict, cg)
+                selection = post[selection]
+                response_str = self._fill_template(rule, selection, match_dict, expr_dict, cg)
                 if response_str is None:
                     continue # skip to next template
 
-                if post.template_type == '_react':
-                    react_cands.append((rule, match_dict, response_str, post.priority, post.topic_anchor))
-                elif post.template_type == '_present':
-                    present_cands.append((rule, match_dict, response_str, post.priority, post.topic_anchor))
-                elif post.template_type == '_rpresent':
-                    rpresent_cands.append((rule, match_dict, response_str, post.priority, post.topic_anchor))
+                if selection.template_type == '_react':
+                    react_cands.append((rule, match_dict, response_str, selection.priority, selection.topic_anchor))
+                elif selection.template_type == '_present':
+                    present_cands.append((rule, match_dict, response_str, selection.priority, selection.topic_anchor))
+                elif selection.template_type == '_rpresent':
+                    rpresent_cands.append((rule, match_dict, response_str, selection.priority, selection.topic_anchor))
 
         rp_predicates, rp_string, rp_score, rp_anchor, rp_id = None, None, None, None, None
         if len(rpresent_cands) > 0:
@@ -224,11 +224,11 @@ class ResponseTemplateFiller:
         print()
         if len(answer_candidates) > 0:
             with_scores = [x for x in candidates if x[4][0] in answer_candidates]
-            return max(with_scores, key=lambda x: x[2])
+            if len(with_scores) > 0:
+                return max(with_scores, key=lambda x: x[2])
         if len(candidates) > 0:
             return max(candidates, key=lambda x: x[2])
-        else:
-            return None, None, None, None, None
+        return None, None, None, None, None
 
     # todo - add in profanity check
     def fill_string(self, match_dict, expr_dict, string_spec_ls, cg):

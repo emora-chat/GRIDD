@@ -35,7 +35,9 @@ $ That's cool. $
 
 lame(object())
 ->
+_rep(_r)
 $ That's lame. $
+$ That's stupid . $
 ;
 
 great(object())
@@ -52,7 +54,6 @@ time(be(b/breed(), chihuahua()), now)
 possess(nyla, b)
 -> nyla_breed ->
 $ She is a tiny chihuahua . $
-$ She's a chihuahua . $
 ;
 
 locate(l/live(emora), virtual_world)
