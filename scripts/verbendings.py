@@ -114,7 +114,7 @@ for i in verbs:
     except:
         pass
 
-f = open(f"resources{os.sep}kg_files{os.sep}kb{os.sep}expressions.kg", "w")
+f = open(f"resources{os.sep}kg_files{os.sep}expressions.kg", "w")
 for i in exprs:
     f.write(f"expr(\"{i}\",{verbmap[i]})\n")
 f.close()
