@@ -101,6 +101,7 @@ class GraphMatchingEngine:
                                dtype=torch.long, device=self.device)
         p.stop()
         p.start('loop')
+        print('Checklist:', checklist.size())
         for num_checked, reqs in enumerate(checklist.transpose(0, 1)):      # Tensor<query x 3: (s, l, t)>: required next edges
             solreqs = reqs[solqs]
             if DISPLAY: print('{:#^50s}'.format(f' ITER {num_checked} '))
@@ -134,6 +135,7 @@ class GraphMatchingEngine:
                 sources[expanderindx].unsqueeze(1),
                 solreqs[expanderindx][:,1:2]
             ], 1 )
+            print(num_checked, end = ' ')
             targets, ii = edges.targets(sourcelabels)
             sols_expanded = torch.cat([
                 sols[expanderindx][ii],

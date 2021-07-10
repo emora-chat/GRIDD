@@ -189,6 +189,7 @@ class InferenceEngine:
         # if len(converted_rules) == 0:
         #     return {}
         print('Rules: %d'%len(converted_rules))
+        print('Loaded queries: %d'%len(self.matcher.query_graphs))
         p.next('match')
         all_sols = self.matcher.match(facts_graph, *list(converted_rules.values()))
         p.next('postprocess solutions')
