@@ -4,13 +4,15 @@ prop/property(pt/pet())
 r/request(emora, prop)
 user_aware(r)
 -> ask_fave_animal ->
-a:<time(possess(user, a/animal()), now) time(favorite(a), now)>
+a:<time(possess(user, a/animal()), now)>
+time(favorite(a), now)
 request(emora, a)
 ;
 
-like(x/person(), animal)
+like(x/person(), animal())
 ->
-a:<time(possess(user, a/animal()), now) time(favorite(a), now)>
+a:<time(possess(user, a/animal()), now)>
+time(favorite(a), now)
 request(emora, a)
 ;
 
@@ -49,8 +51,7 @@ favorite(a)
 request(emora, a)
 ;
 
-agr/agree(emora, cool(a/animal()))
-user_aware(agr)
+animal__t
 ->
 l:<time(l/like(x/person(), zoo), now)>
 request_truth(emora, l)
