@@ -81,7 +81,7 @@ class ResponseTemplateFiller:
                         selection = random.choice(candidates)
                     else: # template used before
                         prev_form, prev_string = prev
-                        curr = self._fill_template(post[prev_form], match_dict, expr_dict, cg)
+                        curr = self._fill_template(rule, post[prev_form], match_dict, expr_dict, cg)
                         if curr != prev_string: # is a unique match
                             candidates.remove(prev_form)
                         else: # is not a unique match
@@ -90,7 +90,7 @@ class ResponseTemplateFiller:
 
                 rule = (rule, selection)
                 post = post[selection]
-                response_str = self._fill_template(post, match_dict, expr_dict, cg)
+                response_str = self._fill_template(rule, post, match_dict, expr_dict, cg)
                 if response_str is None:
                     continue # skip to next template
 
@@ -181,7 +181,7 @@ class ResponseTemplateFiller:
                 candidates.remove(previous_form)
         return candidates
 
-    def _fill_template(self, post, match_dict, expr_dict, cg):
+    def _fill_template(self, rule, post, match_dict, expr_dict, cg):
         string_spec_ls = list(post.string_spec_ls)  # need to create copy so as to not mutate the postcondition in the rule
         try:
             return self.fill_string(match_dict, expr_dict, string_spec_ls, cg)
