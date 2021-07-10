@@ -298,22 +298,23 @@ class ParseToLogic:
     def _promote_time(self, promotions, ewm, mentions):
         for p in promotions: # replaces obj of `time` of head predicate of promotion with obj of `p_time`
             heads = chain(ewm.subjects(p, 'aux'), ewm.subjects(p, 'raise'))
+            promotion_cg = mentions[p]
             for head in heads:
-                promotion_cg = mentions[p]
-                preds = list(promotion_cg.predicates(predicate_type='p_time'))
-                if len(preds) > 0:
-                    (promotion_time_pred,) = preds
-                    head_cg = mentions[head]
-                    preds = list(head_cg.predicates(predicate_type='time'))
+                if head in mentions:
+                    preds = list(promotion_cg.predicates(predicate_type='p_time'))
                     if len(preds) > 0:
-                        ((s,t,o,i), ) = preds
-                        head_cg.remove(s,t,o,i)
-                    else:
-                        ((s,_,_,_), ) = list(head_cg.predicates(predicate_type='focus'))
-                        i = head_cg.id_map().get()
-                    head_cg.add(s, TIME, promotion_time_pred[2], i)
-                    head_cg.metagraph.add(s, i, COMPS)
-                    promotion_cg.remove(*promotion_time_pred)
+                        (promotion_time_pred,) = preds
+                        head_cg = mentions[head]
+                        preds = list(head_cg.predicates(predicate_type='time'))
+                        if len(preds) > 0:
+                            ((s,t,o,i), ) = preds
+                            head_cg.remove(s,t,o,i)
+                        else:
+                            ((s,_,_,_), ) = list(head_cg.predicates(predicate_type='focus'))
+                            i = head_cg.id_map().get()
+                        head_cg.add(s, TIME, promotion_time_pred[2], i)
+                        head_cg.metagraph.add(s, i, COMPS)
+                        promotion_cg.remove(*promotion_time_pred)
             if not list(mentions[p].predicates(predicate_type='focus')):
                 del mentions[p]
 
