@@ -19,23 +19,17 @@ op_more_info(v, l)
 request(emora, v)
 ;
 
-l/like(x/person(), v/videogame())
-r/request(emora, v)
-user_aware(r)
+videogame__t
 ->
-g:<time(like(x, g/genre()), now)>
+g:<time(like(user, g/genre()), now)>
 request(emora, g)
 of(g, videogame)
 ;
 
-like(x/person(), g/genre())
-like(x, v/videogame())
-r/request(emora, g)
-of(g, vg/videogame())
-user_aware(r)
+videogame__t
 ->
-d:<time(play(x, d/device()), now)>
-for(d, v)
+d:<time(play(user, d/device()), now)>
+for(d, videogame)
 request(emora, d)
 ;
 
@@ -46,25 +40,6 @@ op_more_info(v, p)
 request(emora, v)
 ;
 
-p/play(x/person(), v/videogame())
-r/request(emora, v)
-user_aware(r)
-->
-g:<time(like(x, g/genre()), now)>
-request(emora, g)
-of(g, videogame)
-;
-
-like(x/person(), g/genre())
-play(x, v/videogame())
-r/request(emora, g)
-of(g, vg/videogame())
-user_aware(r)
-->
-d:<time(play(x, d/device()), now)>
-for(d, v)
-request(emora, d)
-;
 
 like(x/person(), v/u_videogame())
 _specific(v)

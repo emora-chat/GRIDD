@@ -10,4 +10,5 @@ type(t, group)
 time(w2/want(emora, c/cat()), past)
 time(w2, always)
 
+be(cheetah(), fast)
 ;
