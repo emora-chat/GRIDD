@@ -5,7 +5,7 @@ IS_MEGA_SERIALIZING = False
 INFERENCE = True
 USECACHE = True
 COBOTCACHE = False
-DEBUG = True
+DEBUG = False
 
 KBCACHE = 'kbcache'
 NLGCACHE = 'nlgcache'

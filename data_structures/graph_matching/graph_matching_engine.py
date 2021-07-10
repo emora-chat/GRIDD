@@ -71,7 +71,8 @@ class GraphMatchingEngine:
         return result
 
     def match(self, data_graph, *query_graphs):
-        torch.cuda.reset_peak_memory_stats(self.device)
+        if self.device != 'cpu':
+            torch.cuda.reset_peak_memory_stats(self.device)
         if len(query_graphs) == 0 and len(self.query_graphs) == 0: return {}
         p.start('match')
         p.start('querygen')
@@ -90,8 +91,8 @@ class GraphMatchingEngine:
             return complete
         nn = len(data_graph.nodes())
         ne = len(data_graph.edges())
-        print('Nodes: %d'%nn)
-        print('Edges: %d'%ne)
+        # print('Nodes: %d'%nn)
+        # print('Edges: %d'%ne)
         p.next(f'creating graph tensor ({nn} nodes, {ne} edges)')
         edges = GraphTensor(data_graph, self.n, self.l, device=self.device) # GraphTensor<Tensor<X x 2: (s, l)>) -> (Tensor<Y: t>, Tensor<Y: inverse_index>>
         p.next('initializing solutions matrix')
@@ -101,7 +102,7 @@ class GraphMatchingEngine:
                                dtype=torch.long, device=self.device)
         p.stop()
         p.start('loop')
-        print('Checklist:', checklist.size())
+        # print('Checklist:', checklist.size())
         for num_checked, reqs in enumerate(checklist.transpose(0, 1)):      # Tensor<query x 3: (s, l, t)>: required next edges
             solreqs = reqs[solqs]
             if DISPLAY: print('{:#^50s}'.format(f' ITER {num_checked} '))
@@ -135,7 +136,7 @@ class GraphMatchingEngine:
                 sources[expanderindx].unsqueeze(1),
                 solreqs[expanderindx][:,1:2]
             ], 1 )
-            print(num_checked, end = ' ')
+            # print(num_checked, end = ' ')
             targets, ii = edges.targets(sourcelabels)
             sols_expanded = torch.cat([
                 sols[expanderindx][ii],
@@ -166,7 +167,11 @@ class GraphMatchingEngine:
             if len(sols) == 0:
                 break
         p.stop()
-        p.start(f'postprocessing (MAX MEMORY: {torch.cuda.max_memory_allocated(self.device) / 1073741824:.3f}GB)')
+        if self.device != 'cpu':
+            mem = torch.cuda.max_memory_allocated(self.device) / 1073741824
+        else:
+            mem = 0
+        p.start(f'postprocessing (MAX MEMORY: {mem:.3f}GB)')
         for query_graph in query_graphs:
             del self.q[query_graph]
         self.q.index = query_id_index

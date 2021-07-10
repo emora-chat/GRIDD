@@ -50,7 +50,7 @@ class GraphTensor:
         inodes = self._keytensor[transform]
         exists = torch.nonzero(torch.ne(inodes, -1)).squeeze(1)
         inodes = inodes[exists]
-        print('Inodes: %d'%len(inodes))
+        # print('Inodes: %d'%len(inodes))
         targets, inverse = self._targettensor.map(inodes)
         inverse = exists[inverse]
         return targets, inverse
