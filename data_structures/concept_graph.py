@@ -480,6 +480,10 @@ class ConceptGraph:
                           '_p': '_present',
                           '_rpresent': '_rpresent',
                           '_rp': '_rpresent'}
+        repetition = {'_r', '_nr', '_ur'}
+        repetition_def = {'_react': '_r',
+                          '_present': '_nr',
+                          '_rpresent': '_nr'}
 
         topic_anchor = ''
         if file is not None:
@@ -512,17 +516,22 @@ class ConceptGraph:
             # get template tags
             post_inst = list(self.metagraph.targets(rule, POST))
             priority_tag = None
-            template_type = DEFAULT_TEMPLATE_TYPE
+            template_type = None
+            rep = None
             for inst in post_inst:
                 if self.has(predicate_id=inst):
                     if self.type(inst) == PRIORITY_PRED:
                         priority_tag = self.subject(inst)
                     elif self.type(inst) == TEMPLATE_TYPE:
                         template_type = self.subject(inst)
+                    elif self.type(inst) == REP_TYPE:
+                        rep = self.subject(inst)
             if priority_tag is not None and priority_tag not in priority_map:
                 print('[WARNING] Priority tag %s must be one of %s' % (str(priority_tag), str(priority_map.keys())))
             if template_type is not None and template_type not in template_types:
                 print('[WARNING] Template type %s must be one of %s' % (str(template_type), str(template_types.keys())))
+            if rep is not None and rep not in repetition:
+                print('[WARNING] Repetition type %s must be one of %s' % (str(rep), str(repetition)))
             # compose template string specifications
             for template in templates:
                 elements = self.objects(template, 'token_seq')
@@ -543,9 +552,11 @@ class ConceptGraph:
                                 string_data[key] = node
                     final_element = (string_repr, string_data) if string_data is not None else string_repr
                     string_spec_ls.append(final_element)
+                template_type = template_types.get(template_type, DEFAULT_TEMPLATE_TYPE)
                 template_obj = Template(string_spec_ls,
                                         priority=priority_map.get(priority_tag, DEFAULT_PRIORITY),
-                                        template_type=template_types.get(template_type, DEFAULT_TEMPLATE_TYPE),
+                                        template_type=template_type,
+                                        repetition_type=rep if rep is not None else repetition_def.get(template_type, '_nr'),
                                         topic_anchor=topic_anchor)
                 template_d['specs'][template] = template_obj
 

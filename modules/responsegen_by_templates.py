@@ -55,68 +55,87 @@ class ResponseTemplateFiller:
             answer_checks[p] = constraints - ignore
 
         for rule, (pre_graph, post, solutions_list) in matches.items():
+            repetition_type = list(post.values())[0].repetition_type
             for match_dict, virtual_preds in solutions_list:
-                # the previous form of this template is removed from candidates
-                candidates = list(post.keys())
-                previous_form = aux_state.get('responses', {}).get(rule, None)
-                if previous_form is not None:
-                    candidates.remove(previous_form)
-                selection = random.choice(candidates)
-
-                post = post[selection]
-                string_spec_ls = list(post.string_spec_ls)  # need to create copy so as to not mutate the postcondition in the rule
-                # add constants to evidence
+                # add constants to match
                 const_matches = {n: n for n in pre_graph.concepts() if n not in match_dict}
                 match_dict.update(const_matches)
-                try:
-                    response_str = self.fill_string(match_dict, expr_dict, string_spec_ls, cg)
-                except Exception as e:
-                    print('Error in NLG template filling of %s for rule %s => %s'%(string_spec_ls, rule, e))
-                    continue
+
+                if repetition_type == '_r':
+                    # (1) pick unused form, if there is more than one form, else pick used form
+                    candidates = self._get_candidates(post, aux_state, rule)
+                    selection = random.choice(candidates)
+                elif repetition_type == '_nr':
+                    # if template never used before, do (1)
+                    if rule not in aux_state.get('responses', {}):
+                        candidates = self._get_candidates(post, aux_state, rule)
+                        selection = random.choice(candidates)
+                    else:
+                        continue # skip to next template
+                elif repetition_type == '_ur':
+                    # get current realization of previously used form
+                    # if unique from previous, do (1)
+                    candidates = list(post.keys())
+                    prev = aux_state.get('responses', {}).get(rule, None)
+                    if prev is None: # template never used before
+                        selection = random.choice(candidates)
+                    else: # template used before
+                        prev_form, prev_string = prev
+                        curr = self._fill_template(post[prev_form], match_dict, expr_dict, cg)
+                        if curr != prev_string: # is a unique match
+                            candidates.remove(prev_form)
+                        else: # is not a unique match
+                            continue # skip to next template
+                        selection = random.choice(candidates)
+
+                rule = (rule, selection)
+                post = post[selection]
+                response_str = self._fill_template(post, match_dict, expr_dict, cg)
+                if response_str is None:
+                    continue # skip to next template
+
                 if post.template_type == '_react':
                     react_cands.append((rule, match_dict, response_str, post.priority, post.topic_anchor))
-                else:
-                    if response_str.lower() not in aux_state.get('spoken_responses', []):
-                        # don't allow for repeated followups or rfollowups
-                        if post.template_type == '_present':
-                            present_cands.append((rule, match_dict, response_str, post.priority, post.topic_anchor))
-                        elif post.template_type == '_rpresent':
-                            rpresent_cands.append((rule, match_dict, response_str, post.priority, post.topic_anchor))
+                elif post.template_type == '_present':
+                    present_cands.append((rule, match_dict, response_str, post.priority, post.topic_anchor))
+                elif post.template_type == '_rpresent':
+                    rpresent_cands.append((rule, match_dict, response_str, post.priority, post.topic_anchor))
 
-        rp_predicates, rp_string, rp_score, rp_anchor = None, None, None, None
+        rp_predicates, rp_string, rp_score, rp_anchor, rp_id = None, None, None, None, None
         if len(rpresent_cands) > 0:
             print('\nReact + Present Options: ')
-            rp_predicates, rp_string, rp_score, rp_anchor = self.select_best_candidate(rpresent_cands, cg, answer_checks)
+            rp_predicates, rp_string, rp_score, rp_anchor, rp_id = self.select_best_candidate(rpresent_cands, cg, answer_checks)
 
-        p_predicates, p_string, p_score, p_anchor = None, None, None, None
+        p_predicates, p_string, p_score, p_anchor, p_id = None, None, None, None, None
         if len(present_cands) > 0:
             print('\nPresent Options: ')
-            p_predicates, p_string, p_score, p_anchor = self.select_best_candidate(present_cands, cg, answer_checks)
+            p_predicates, p_string, p_score, p_anchor, p_id = self.select_best_candidate(present_cands, cg, answer_checks)
 
-        r_predicates, r_string, r_score, r_anchor = None, None, None, None
+        r_predicates, r_string, r_score, r_anchor, r_id = None, None, None, None, None
         curr_turn = aux_state.get('turn_index', 0)
         if len(react_cands) > 0:
             print('React Options: ')
-            r_predicates, r_string, r_score, r_anchor = self.select_best_candidate(react_cands, cg, answer_checks, check_aware=False)
+            r_predicates, r_string, r_score, r_anchor, r_id = self.select_best_candidate(react_cands, cg, answer_checks, check_aware=False)
 
         if rp_score is not None and (p_score is None or rp_score >= p_score):
             string = rp_string
             predicates = rp_predicates
             anchor = rp_anchor
-            aux_state.setdefault('spoken_responses', []).append(string.lower())
+            aux_state.setdefault('responses', {})[rp_id[0]] = (rp_id[1], rp_string)
         else:
             if p_string is None:
                 string, predicates, anchor = (p_string, p_predicates, p_anchor)
             else:
                 string = p_string
                 anchor = p_anchor
-                aux_state.setdefault('spoken_responses', []).append(string.lower())
+                aux_state.setdefault('responses', {})[p_id[0]] = (p_id[1], p_string)
                 predicates = p_predicates
                 if curr_turn > 0:
                     s = random.choice(['Yeah .', 'Gotcha .', 'I see .', 'Okay .'])
                 else:
                     s = ''
                 if r_string is not None:
+                    aux_state.setdefault('responses', {})[r_id[0]] = (r_id[1], r_string)
                     s = r_string
                 # Do not add reaction predicates to predicates list in order to avoid them being treated as spoken and getting the eturn predicate
                 string = s + ' ' + string
@@ -126,6 +145,7 @@ class ResponseTemplateFiller:
             # can still use reaction even with fallback
             string = ''
             if r_string is not None:
+                aux_state.setdefault('responses', {})[r_id[0]] = (r_id[1], r_string)
                 string = r_string + ' '
             candidates = list(set(fallback_options.keys()) - set(aux_state.get('fallbacks', [])))
             # candidates = ['pet_fallback', 'ai_fallback', 'art_fallback']
@@ -137,7 +157,8 @@ class ResponseTemplateFiller:
                     aux_state['fallbacks'] = []
                 if selected not in aux_state['fallbacks']:
                     aux_state['fallbacks'].append(selected)
-                predicates, template_obj, _ = fallback_options[selected]
+                predicates, template_d, _ = fallback_options[selected]
+                template_obj = list(template_d.values())[0]
                 string += ' '.join(template_obj.string_spec_ls)
                 type = "fallback"
                 anchor = template_obj.topic_anchor
@@ -151,6 +172,23 @@ class ResponseTemplateFiller:
 
         return (string, predicates, [(anchor, '_tanchor')], type)
 
+    def _get_candidates(self, post, aux_state, rule):
+        candidates = list(post.keys())
+        if len(candidates) > 1:
+            prev = aux_state.get('responses', {}).get(rule, None)
+            if prev is not None:
+                previous_form, previous_str = prev
+                candidates.remove(previous_form)
+        return candidates
+
+    def _fill_template(self, post, match_dict, expr_dict, cg):
+        string_spec_ls = list(post.string_spec_ls)  # need to create copy so as to not mutate the postcondition in the rule
+        try:
+            return self.fill_string(match_dict, expr_dict, string_spec_ls, cg)
+        except Exception as e:
+            print('Error in NLG template filling of %s for rule %s => %s' % (string_spec_ls, rule, e))
+            return None
+
     def select_best_candidate(self, responses, cg, answer_checks, check_aware=True):
         # get highest salience candidate with at least one uncovered predicate
         # prefer answers to unanswered user requests above all else
@@ -158,7 +196,8 @@ class ResponseTemplateFiller:
         answer_candidates = []
 
         for rule, match_dict, string, priority, topic_anchor in responses:
-            # check if template that give sanswer to user request
+            rule, selection = rule
+            # check if template that gives answer to user request
             for req, req_concepts in answer_checks.items():
                 if req_concepts.issubset(set(match_dict.values())):
                     answer_candidates.append(rule)
@@ -180,16 +219,16 @@ class ResponseTemplateFiller:
                 # GET COHERENCE BY TOPIC ANCHOR SALIENCE
                 coh = cg.features.get(topic_anchor, {}).get(SALIENCE, 0)
                 final_score = SAL_WEIGHT * sal_avg + PRIORITY_WEIGHT * priority + COH_WEIGHT * coh
-                candidates.append((preds, string, final_score, topic_anchor, rule))
+                candidates.append((preds, string, final_score, topic_anchor, (rule, selection)))
                 print('\t%s (sal: %.2f, coh: %.2f, pri: %.2f)' % (string, sal_avg, coh, priority))
         print()
         if len(answer_candidates) > 0:
-            with_scores = [x for x in candidates if x[4] in answer_candidates]
-            return max(with_scores, key=lambda x: x[2])[:-1]
+            with_scores = [x for x in candidates if x[4][0] in answer_candidates]
+            return max(with_scores, key=lambda x: x[2])
         if len(candidates) > 0:
-            return max(candidates, key=lambda x: x[2])[:-1]
+            return max(candidates, key=lambda x: x[2])
         else:
-            return None, None, None, None
+            return None, None, None, None, None
 
     # todo - add in profanity check
     def fill_string(self, match_dict, expr_dict, string_spec_ls, cg):
@@ -363,20 +402,22 @@ class ResponseTemplateFiller:
 
 class Template:
 
-    def __init__(self, string_spec_ls, priority, template_type, topic_anchor):
+    def __init__(self, string_spec_ls, priority, template_type, repetition_type, topic_anchor):
         self.string_spec_ls = string_spec_ls
         self.priority = priority
         self.template_type = template_type
+        self.repetition_type = repetition_type
         self.topic_anchor = topic_anchor
 
     def save(self):
-        return (self.string_spec_ls, self.priority, self.template_type, self.topic_anchor)
+        return (self.string_spec_ls, self.priority, self.template_type, self.repetition_type, self.topic_anchor)
 
     def load(self, d):
         self.string_spec_ls = d[0]
         self.priority = d[1]
         self.template_type = d[2]
-        self.topic_anchor = d[3]
+        self.repetition_type = d[3]
+        self.topic_anchor = d[4]
 
 
 if __name__ == '__main__':
