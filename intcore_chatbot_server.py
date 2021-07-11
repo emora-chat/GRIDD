@@ -571,9 +571,9 @@ class ChatbotServer:
                 for so, t, l in ref_links:
                     wm.features.setdefault(t, {})[SALIENCE] = wm.features.setdefault(fragment, {}).get(SALIENCE, 0)
                     # wm.features[t][BASE] = True todo - check if the BASE indication matters here
-            if DEBUG:
-                print('CURRENT USER CONCEPTS: %s'%current_user_concepts)
-                print('FRAGMENT REQUEST MERGES: %s'%fragment_request_merges)
+            # if DEBUG:
+            #     print('CURRENT USER CONCEPTS: %s'%current_user_concepts)
+            #     print('FRAGMENT REQUEST MERGES: %s'%fragment_request_merges)
             self.merge_references(fragment_request_merges, aux_state)
             self.dialogue_intcore.operate(self.dialogue_intcore.universal_operators, aux_state=aux_state)
             self.dialogue_intcore.operate(self.dialogue_intcore.wm_operators, aux_state=aux_state)
@@ -952,7 +952,7 @@ class ChatbotServer:
                  'working_memory': save('working_memory', working_memory),
                  'aux_state': save('aux_state', aux_state)
                 }
-
+        p.start('gridd')
         state_update = self.run_next_turn(state)
         state.update(state_update)
         state_update = self.run_sentence_caser(state)
@@ -963,7 +963,9 @@ class ChatbotServer:
         state.update(state_update)
         state_update = self.run_response_assembler(state)
         state.update(state_update)
-
+        if DEBUG:
+            p.report()
+            p.clear()
         return load("response", state["response"]), \
                load("working_memory", state["working_memory"]), \
                load("aux_state", state["aux_state"])

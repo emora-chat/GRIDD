@@ -88,18 +88,18 @@ class ResponseTemplateFiller:
                             continue # skip to next template
                         selection = random.choice(candidates)
 
-                rule = (rule, selection)
+                rule_info = (rule, selection)
                 selection = post[selection]
-                response_str = self._fill_template(rule, selection, match_dict, expr_dict, cg)
+                response_str = self._fill_template(rule_info, selection, match_dict, expr_dict, cg)
                 if response_str is None:
                     continue # skip to next template
 
                 if selection.template_type == '_react':
-                    react_cands.append((rule, match_dict, response_str, selection.priority, selection.topic_anchor))
+                    react_cands.append((rule_info, match_dict, response_str, selection.priority, selection.topic_anchor))
                 elif selection.template_type == '_present':
-                    present_cands.append((rule, match_dict, response_str, selection.priority, selection.topic_anchor))
+                    present_cands.append((rule_info, match_dict, response_str, selection.priority, selection.topic_anchor))
                 elif selection.template_type == '_rpresent':
-                    rpresent_cands.append((rule, match_dict, response_str, selection.priority, selection.topic_anchor))
+                    rpresent_cands.append((rule_info, match_dict, response_str, selection.priority, selection.topic_anchor))
 
         rp_predicates, rp_string, rp_score, rp_anchor, rp_id = None, None, None, None, None
         if len(rpresent_cands) > 0:

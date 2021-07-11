@@ -67,7 +67,7 @@ def save(key, object):
         object = json.dumps(object, cls=DataEncoder)
     except TypeError as e:
         print('Error: %s'%e)
-        print(object)
+        print(key, object)
         print(isinstance(object, ConceptGraph))
         if isinstance(object, ConceptGraph):
             x = object.save()
