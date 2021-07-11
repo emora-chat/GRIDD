@@ -77,10 +77,10 @@ class GraphMatchingEngine:
         p.start('match')
         p.start('querygen')
         display = None
+        if DISPLAY: display = Display()
         complete = {}                                                       # list<Tensor<steps: ((qn1, dn1), (qn2, dn2), ...)>> completed solutions
         if len(query_graphs) > 0:
             query_graphs = preprocess_query_tuples(query_graphs)
-            if DISPLAY: display = Display()
             query_id_index = self.q.index                                   # Query index to reset after match is complete
             checklist, query_lengths = self._add_queries(query_graphs)
         else:
