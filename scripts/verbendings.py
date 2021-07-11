@@ -99,7 +99,8 @@ print(f"Existing length:{len(exprsexisting)}, Verbs length: {verbs}")
 #print(verbs)
 from word_forms.lemmatizer import lemmatize
 from word_forms.word_forms import get_word_forms
-
+verbs=list(verbs)
+verbs.sort()
 exprs=[]
 verbmap={}
 for i in verbs:
