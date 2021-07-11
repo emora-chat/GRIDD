@@ -24,9 +24,9 @@ from GRIDD.utilities.profiler import profiler as p
 
 from itertools import chain
 
-def serialized(*returns):
+def serialized(*returns, serializing=IS_SERIALIZING):
     def dectorator(f):
-        if not IS_SERIALIZING:
+        if not serializing:
             return f
         params = signature(f).parameters
         def f_with_serialization(cls, json):
@@ -875,7 +875,7 @@ class ChatbotServer:
 
     @mega_serialized('rule_responses', 'working_memory', 'aux_state')
     def nlu_to_response(self, elit_results, working_memory, aux_state):
-        p.next('parse2logic')
+        p.start('parse2logic')
         mentions, merges = self.run_parse2logic(elit_results)
         p.next('multiword mentions')
         multiword_mentions = self.run_multiword_matcher(elit_results)
@@ -942,6 +942,8 @@ class ChatbotServer:
                                                                                    working_memory, aux_state)
         p.next('response rules')
         rule_responses = self.run_response_by_rules(aux_state, expanded_response_predicates)
+
+        p.stop()
 
         return rule_responses, working_memory, aux_state
 

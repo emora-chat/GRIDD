@@ -195,8 +195,8 @@ class ResponseTemplateFiller:
         candidates = []
         answer_candidates = []
 
-        for rule, match_dict, string, priority, topic_anchor in responses:
-            rule, selection = rule
+        for rule_info, match_dict, string, priority, topic_anchor in responses:
+            rule, selection = rule_info
             # check if template that gives answer to user request
             for req, req_concepts in answer_checks.items():
                 if req_concepts.issubset(set(match_dict.values())):
@@ -219,7 +219,7 @@ class ResponseTemplateFiller:
                 # GET COHERENCE BY TOPIC ANCHOR SALIENCE
                 coh = cg.features.get(topic_anchor, {}).get(SALIENCE, 0)
                 final_score = SAL_WEIGHT * sal_avg + PRIORITY_WEIGHT * priority + COH_WEIGHT * coh
-                candidates.append((preds, string, final_score, topic_anchor, (rule, selection)))
+                candidates.append((preds, string, final_score, topic_anchor, rule_info))
                 print('\t%s (sal: %.2f, coh: %.2f, pri: %.2f)' % (string, sal_avg, coh, priority))
         print()
         if len(answer_candidates) > 0:
