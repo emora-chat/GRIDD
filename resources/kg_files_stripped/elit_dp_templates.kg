@@ -776,7 +776,7 @@ poss(X/pstg(), Y/pstg())
 -> agent_of_possessive ->
 p/possess(Y, X)
 focus(p)
-center(Y)
+link(Y)
 ;
 
 

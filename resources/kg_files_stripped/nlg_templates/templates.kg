@@ -33,9 +33,18 @@ cool(object())
 $ That's cool. $
 ;
 
-lame(object())
+lame(o/entity())
 ->
+_rep(_ur)
+$ o ? That's lame. $
+$ o ? That's stupid . $
+;
+
+lame(predicate())
+->
+_rep(_r)
 $ That's lame. $
+$ That's stupid . $
 ;
 
 great(object())
@@ -46,6 +55,12 @@ $ That's great. $
 time(have(emora, nyla), now)
 ->
 $ I have a dog named Nyla! $
+;
+
+time(be(b/breed(), chihuahua()), now)
+possess(nyla, b)
+-> nyla_breed ->
+$ She is a tiny chihuahua . $
 ;
 
 locate(l/live(emora), virtual_world)

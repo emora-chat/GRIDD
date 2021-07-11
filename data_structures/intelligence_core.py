@@ -82,9 +82,9 @@ class IntelligenceCore:
                     for rule, (pre, post, vars) in d.items():
                         pre_cg = ConceptGraph(namespace=pre['namespace'])
                         pre_cg.load(pre)
-                        template_obj = Template(*post)
+                        specs = {x: Template(*y) for x,y in post.items()}
                         vars = set(vars)
-                        templates[rule] = (pre_cg, template_obj, vars)
+                        templates[rule] = (pre_cg, specs, vars)
                     self.nlg_inference_engine.add(templates, pre_cg.id_map().namespace)
                 elif USECACHE:
                     cached_knowledge, new_knowledge = self.stratify_cached_files(NLGCACHE, nlg_templates)
@@ -92,7 +92,7 @@ class IntelligenceCore:
                     # CACHE FOR COBOT
                     if not os.path.exists(CCACHE):
                         os.mkdir(CCACHE)
-                    d = {rule: (pre.save(), post.save(), list(vars)) for rule, (pre, post, vars) in self.nlg_inference_engine.rules.items()}
+                    d = {rule: (pre.save(), {x: y.save() for x,y in post.items()}, list(vars)) for rule, (pre, post, vars) in self.nlg_inference_engine.rules.items()}
                     with open(os.path.join(CCACHE, 'full_templates.json'), 'w') as f:
                         json.dump(d, f, indent=2)
                 else:
@@ -240,9 +240,9 @@ class IntelligenceCore:
                 for rule, (pre, post, vars) in d.items():
                     pre_cg = ConceptGraph(namespace=pre['namespace'])
                     pre_cg.load(pre)
-                    template_obj = Template(*post)
+                    specs = {x: Template(*y) for x,y in post.items()}
                     vars = set(vars)
-                    templates[rule] = (pre_cg, template_obj, vars)
+                    templates[rule] = (pre_cg, specs, vars)
                     if mega_template_cg is None:
                         mega_template_cg = ConceptGraph(namespace=pre['namespace'])
                     mega_template_cg.concatenate(pre_cg)
@@ -255,7 +255,7 @@ class IntelligenceCore:
                 self.know(v, nlg_templates, emora_knowledge=True, identify_nonasserts=True, is_rules=True)
                 templates = nlg_templates.nlg_templates(file)
                 savefile = os.path.join(dir, (file + '.json').replace(os.sep, CACHESEP))
-                d = {rule: (pre.save(), post.save(), list(vars)) for rule,(pre,post,vars) in templates.items()}
+                d = {rule: (pre.save(), {x: y.save() for x,y in post.items()}, list(vars)) for rule,(pre,post,vars) in templates.items()}
                 with open(savefile, 'w') as f:
                     json.dump(d, f, indent=2)
                 self.nlg_inference_engine.add(templates, nlg_templates.id_map().namespace)
