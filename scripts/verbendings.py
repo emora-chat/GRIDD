@@ -115,6 +115,7 @@ for i in verbs:
         pass
 
 f = open(f"resources{os.sep}kg_files{os.sep}expressions.kg", "w")
+exprs.sort()
 for i in exprs:
     f.write(f"expr(\"{i}\",{verbmap[i]})\n")
 f.close()
