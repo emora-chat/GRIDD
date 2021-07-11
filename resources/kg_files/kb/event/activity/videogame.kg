@@ -134,7 +134,7 @@ captain_falcon=character()
 expr("captain falcon", captain_falcon)
 
 gamemode=(entity)
-expr("gamemode, game mode,", gamemode)
+expr("gamemode, game mode", gamemode)
 survival_mode=gamemode()
 expr("survival, survival mode", survival_mode)
 creative_mode=gamemode()
