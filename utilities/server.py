@@ -63,7 +63,16 @@ def save(key, object):
                 predicates = predicates.save()
             new_l.append(((string, predicates, topic_anchors), type))
         object = new_l
-    object = json.dumps(object, cls=DataEncoder)
+    try:
+        object = json.dumps(object, cls=DataEncoder)
+    except TypeError as e:
+        print('Error: %s'%e)
+        print(object)
+        print(isinstance(object, ConceptGraph))
+        if isinstance(object, ConceptGraph):
+            x = object.save()
+            for a,b in x.items():
+                print(a, b)
     return object
 
 def load(key, value):
