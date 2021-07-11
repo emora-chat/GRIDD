@@ -96,7 +96,6 @@ for subdir, dirs, files in os.walk("resources/kg_files/kb"):
                 if filepath.endswith(".kg") and  "expressions.kg" != file:
                     process_file_expr(filepath)
 print(f"Existing length:{len(exprsexisting)}, Verbs length: {verbs}")
-#print(verbs)
 from word_forms.lemmatizer import lemmatize
 from word_forms.word_forms import get_word_forms
 verbs=list(verbs)
