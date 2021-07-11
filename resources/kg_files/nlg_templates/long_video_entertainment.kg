@@ -283,6 +283,78 @@ _pr(_high)
 $ You definitely always learn a lot from documentaries. What makes you like them? $
 ;
 
+l/like(user, g/war_movie())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ I don't love war movies, I tend to get a little scared. What do you think about them. $
+;
+
+l/like(user, g/sports_movie())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Sports movies can be so inspiring! And always exciting too, of course. $
+;
+
+l/like(user, g/crime_movie())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Crime movies can be riveting watches. What are your favorites? $
+;
+
+l/like(user, g/history_movie())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ I love history movies. You always learn so much. $
+;
+
+l/like(user, g/biography_movies())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Biography movies are great. There's always so much that is valuable to explore in someone's life. $
+;
+
+l/like(user, g/adventure_movies())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ There's nothing more exciting than movies with a good amount of adventure. $
+;
+
+l/like(user, g/family_movies())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ I love movies that you can watch with your family. Especially for the holidays. $
+;
+
+l/like(user, g/animation_movies())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ I'm always so impressed with the detailed work that goes into animated films. $
+;
+
+l/like(user, g/film_noir())
+cause(p/predicate(), l)
+request(emora, p)
+->
+_pr(_high)
+$ Film noir movies are so neat. Watching them makes me feel like I've been transported in time. $
+;
+
 /* Marvel Time */
 
 l/like(user, Captain_Marvel)
@@ -571,21 +643,21 @@ _pr(_high)
 $ I'm sorry to hear that. Why do you think you didn't enjoy it? $
 ;
 
-h/hate(user, m/movie())
+h/dislike(user, m/movie())
 _category(m)
 cause(p/predicate(), h)
 request(emora, p)
 ->
 _pr(_high)
-$ Why do you hate movies? I've found that they're a great way to relax. $
+$ Why do you dislike movies? I've found that they're a great way to relax. $
 ;
 
-h/hate(user, m/movie())
+h/dislike(user, m/movie())
 cause(p/predicate(), h)
 request(emora, p)
 ->
 _pr(_high)
-$ Why do you hate m? $
+$ Why do you dislike m? $
 ;
 
 /* Disney Time */
