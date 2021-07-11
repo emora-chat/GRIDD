@@ -73,6 +73,7 @@ def save(key, object):
             x = object.save()
             for a,b in x.items():
                 print(a, b)
+        raise Exception()
     return object
 
 def load(key, value):
