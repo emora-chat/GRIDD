@@ -95,11 +95,11 @@ for subdir, dirs, files in os.walk("resources/kg_files/kb"):
                 filepath = subdir + os.sep + file
                 if filepath.endswith(".kg") and  "expressions.kg" != file:
                     process_file_expr(filepath)
-print(f"Existing length:{len(exprsexisting)}, Verbs length: {verbs}")
-#print(verbs)
+print(f"Existing length:{len(exprsexisting)}, Verbs: {verbs}")
 from word_forms.lemmatizer import lemmatize
 from word_forms.word_forms import get_word_forms
-
+verbs=list(verbs)
+verbs.sort()
 exprs=[]
 verbmap={}
 for i in verbs:
@@ -118,5 +118,6 @@ f = open(f"resources{os.sep}kg_files{os.sep}expressions.kg", "w")
 exprs.sort()
 for i in exprs:
     f.write(f"expr(\"{i}\",{verbmap[i]})\n")
+
 f.close()
 
