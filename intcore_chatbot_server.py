@@ -97,7 +97,7 @@ class ChatbotServer:
     ## Pipeline Modules
     ###################################################
 
-    @serialized('aux_state', serializing=IS_MEGA_SERIALIZING)
+    @serialized('aux_state', serializing=IS_MEGA_SERIALIZING or IS_SERIALIZING)
     def run_next_turn(self, aux_state):
         aux_state["turn_index"] += 1
         return aux_state
@@ -109,7 +109,7 @@ class ChatbotServer:
             SentenceCaser = (lambda: (lambda x: x))
         self.sentence_caser = SentenceCaser()
 
-    @serialized('user_utterance', serializing=IS_MEGA_SERIALIZING)
+    @serialized('user_utterance', serializing=IS_MEGA_SERIALIZING or IS_SERIALIZING)
     def run_sentence_caser(self, user_utterance):
         words = user_utterance.split()
         user_utterance = ' '.join(words[:UTTER_TRUNC]) # safeguard out of memory exception in rest of pipeline by limiting length of user utterance
@@ -120,7 +120,7 @@ class ChatbotServer:
         from GRIDD.modules.elit_models import ElitModels
         self.elit_models = ElitModels()
 
-    @serialized('elit_results', serializing=IS_MEGA_SERIALIZING)
+    @serialized('elit_results', serializing=IS_MEGA_SERIALIZING or IS_SERIALIZING)
     def run_elit_models(self, user_utterance, aux_state):
         if LOCAL:
             input_dict = {"user_utterance": user_utterance,
@@ -674,7 +674,7 @@ class ChatbotServer:
         from GRIDD.modules.response_assembler import ResponseAssembler
         self.response_assembler = ResponseAssembler()
 
-    @serialized('response', 'working_memory', serializing=IS_MEGA_SERIALIZING)
+    @serialized('response', 'working_memory', serializing=IS_MEGA_SERIALIZING or IS_SERIALIZING)
     def run_response_assembler(self, working_memory, aux_state, rule_responses):
         if rule_responses is None:
             rule_responses = [None]
