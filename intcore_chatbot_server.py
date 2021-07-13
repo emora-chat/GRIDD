@@ -2,7 +2,7 @@ from os.path import join
 import sys, os
 sys.path.append(os.getcwd())
 
-import time, json, requests
+import time, json, requests, traceback
 import gc
 
 from GRIDD.utilities.utilities import collect, _process_requests, _process_answers
@@ -97,7 +97,7 @@ class ChatbotServer:
     ## Pipeline Modules
     ###################################################
 
-    @serialized('aux_state')
+    @serialized('aux_state', serializing=IS_MEGA_SERIALIZING or IS_SERIALIZING)
     def run_next_turn(self, aux_state):
         aux_state["turn_index"] += 1
         return aux_state
@@ -109,7 +109,7 @@ class ChatbotServer:
             SentenceCaser = (lambda: (lambda x: x))
         self.sentence_caser = SentenceCaser()
 
-    @serialized('user_utterance')
+    @serialized('user_utterance', serializing=IS_MEGA_SERIALIZING or IS_SERIALIZING)
     def run_sentence_caser(self, user_utterance):
         words = user_utterance.split()
         user_utterance = ' '.join(words[:UTTER_TRUNC]) # safeguard out of memory exception in rest of pipeline by limiting length of user utterance
@@ -120,7 +120,7 @@ class ChatbotServer:
         from GRIDD.modules.elit_models import ElitModels
         self.elit_models = ElitModels()
 
-    @serialized('elit_results')
+    @serialized('elit_results', serializing=IS_MEGA_SERIALIZING or IS_SERIALIZING)
     def run_elit_models(self, user_utterance, aux_state):
         if LOCAL:
             input_dict = {"user_utterance": user_utterance,
@@ -674,7 +674,7 @@ class ChatbotServer:
         from GRIDD.modules.response_assembler import ResponseAssembler
         self.response_assembler = ResponseAssembler()
 
-    @serialized('response', 'working_memory')
+    @serialized('response', 'working_memory', serializing=IS_MEGA_SERIALIZING or IS_SERIALIZING)
     def run_response_assembler(self, working_memory, aux_state, rule_responses):
         if rule_responses is None:
             rule_responses = [None]
@@ -873,53 +873,93 @@ class ChatbotServer:
         self.init_response_by_rules()
         self.init_response_nlg_model()
 
+    def error_print(self, module, e):
+        print("[ERROR] %s: %s" % (module, e))
+        traceback.print_exc(file=sys.stdout)
+        sys.stdout.flush()
+
     @mega_serialized('rule_responses', 'working_memory', 'aux_state')
     def nlu_to_response(self, elit_results, working_memory, aux_state):
         p.start('parse2logic')
-        mentions, merges = self.run_parse2logic(elit_results)
+        try:
+            mentions, merges = self.run_parse2logic(elit_results)
+        except Exception as e:
+            self.error_print('parse2logic', e)
+            mentions, merges = {}, []
         p.next('multiword mentions')
-        multiword_mentions = self.run_multiword_matcher(elit_results)
+        try:
+            multiword_mentions = self.run_multiword_matcher(elit_results)
+        except Exception as e:
+            self.error_print('multiword_mentions', e)
+            multiword_mentions = {}
         p.next('ner mentions')
-        ner_mentions = self.run_ner_mentions(elit_results)
+        try:
+            ner_mentions = self.run_ner_mentions(elit_results)
+        except Exception as e:
+            self.error_print('ner_mentions', e)
+            ner_mentions = {}
         p.next('mention bridge')
-        subspans, working_memory = self.run_mention_bridge(mentions, multiword_mentions, ner_mentions, working_memory,
-                                                           aux_state)
+        try:
+            subspans, working_memory = self.run_mention_bridge(mentions, multiword_mentions, ner_mentions, working_memory, aux_state)
+        except Exception as e:
+            self.error_print('mention_bridge', e)
+            subspans = {}
+            self.load_working_memory(working_memory) # working_memory might be modified before crashing?
+            working_memory = self.dialogue_intcore.working_memory
         p.next('merge bridge')
-        working_memory, aux_state = self.run_merge_bridge(merges, subspans, working_memory, aux_state)
-        p.next('knowledge pull')
-        working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state)
-
+        try:
+            working_memory, aux_state = self.run_merge_bridge(merges, subspans, working_memory, aux_state)
+        except Exception as e:
+            self.error_print('merge_bridge', e)
+        p.next('knowledge pull 0')
+        try:
+            working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state)
+        except Exception as e:
+            self.error_print('knowledge_pull 0', e)
         if PRINT_WM:
             print('\n<< Working Memory After Inferences Applied >>')
             print(working_memory.pretty_print(exclusions={SPAN_DEF, SPAN_REF, USER_AWARE, ASSERT}))
-
-        p.next('reference id')
-        rules, working_memory = self.run_reference_identification(working_memory)
-        p.next('reference infer')
-        inference_results, rules = self.run_dynamic_inference(rules, working_memory, aux_state)
-        p.next('reference resolution')
-        working_memory = self.run_reference_resolution(inference_results, working_memory, aux_state)
-        p.next('fragment resolution')
-        working_memory, aux_state = self.run_fragment_resolution(working_memory, aux_state)
-        p.next('dialogue infer')
-        inference_results = self.run_dialogue_inference(working_memory, aux_state)
-        p.next('apply inferences')
-        working_memory, aux_state = self.run_apply_dialogue_inferences(inference_results, working_memory, aux_state)
-        p.next('knowledge pull 2')
-        working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state)
-
-        p.next('reference id 2')
-        rules, working_memory = self.run_reference_identification(working_memory)
-        p.next('reference infer 2')
-        inference_results, rules = self.run_dynamic_inference(rules, working_memory, aux_state)
-        p.next('reference resolution 2')
-        working_memory = self.run_reference_resolution(inference_results, working_memory, aux_state)
-        p.next('fragment resolution 2')
-        working_memory, aux_state = self.run_fragment_resolution(working_memory, aux_state)
-        p.next('dialogue infer 2')
-        inference_results = self.run_dialogue_inference(working_memory, aux_state)
-        p.next('apply inferences 2')
-        working_memory, aux_state = self.run_apply_dialogue_inferences(inference_results, working_memory, aux_state)
+        n = 2
+        for i in range(n):
+            p.next('reference id %d'%i)
+            try:
+                rules, working_memory = self.run_reference_identification(working_memory)
+            except Exception as e:
+                self.error_print('reference_id %d'%i, e)
+                rules = {}
+            p.next('reference infer %d'%i)
+            try:
+                inference_results, rules = self.run_dynamic_inference(rules, working_memory, aux_state)
+            except Exception as e:
+                self.error_print('dynamic_inference %d'%i, e)
+                inference_results, rules = {}, {}
+            p.next('reference resolution %d'%i)
+            try:
+                working_memory = self.run_reference_resolution(inference_results, working_memory, aux_state)
+            except Exception as e:
+                self.error_print('reference_resolution %d'%i, e)
+            p.next('fragment resolution %d'%i)
+            try:
+                working_memory, aux_state = self.run_fragment_resolution(working_memory, aux_state)
+            except Exception as e:
+                self.error_print('fragment_resolution %d'%i, e)
+            p.next('dialogue infer %d'%i)
+            try:
+                inference_results = self.run_dialogue_inference(working_memory, aux_state)
+            except Exception as e:
+                self.error_print('dialogue_inference %d'%i, e)
+                inference_results = {}
+            p.next('apply inferences %d'%i)
+            try:
+                working_memory, aux_state = self.run_apply_dialogue_inferences(inference_results, working_memory, aux_state)
+            except Exception as e:
+                self.error_print('apply_dialogue_inference %d'%i, e)
+            if i < n - 1:
+                p.next('knowledge pull %d'%(i+1))
+                try:
+                    working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state)
+                except Exception as e:
+                    self.error_print('knowledge pull %d'%(i+1), e)
 
         if PRINT_WM:
             print('\n<< Working Memory After Inferences Applied >>')
@@ -928,23 +968,42 @@ class ChatbotServer:
                 print(f"{s} = {working_memory.features[s][SALIENCE]}, {working_memory.features[i][SALIENCE]}")
 
         p.next('prepare template nlg')
-        working_memory, expr_dict = self.run_prepare_template_nlg(working_memory)
+        try:
+            working_memory, expr_dict = self.run_prepare_template_nlg(working_memory)
+        except Exception as e:
+            self.error_print('prep_template_nlg', e)
+            expr_dict = {}
         p.next('template infer')
-        inference_results = self.run_template_inference(working_memory, aux_state)
+        try:
+            inference_results = self.run_template_inference(working_memory, aux_state)
+        except Exception as e:
+            self.error_print('template_inference', e)
+            inference_results = {}
         p.next('template fillers')
-        template_response_sel, aux_state = self.run_template_fillers(inference_results, expr_dict,
-                                                                     working_memory, aux_state)
+        try:
+            template_response_sel, aux_state = self.run_template_fillers(inference_results, expr_dict, working_memory, aux_state)
+        except Exception as e:
+            self.error_print('template_fillers', e)
+            template_response_sel = None
         p.next('response sel')
-        aux_state, response_predicates = self.run_response_selection(working_memory, aux_state,
-                                                                     template_response_sel)
+        try:
+            aux_state, response_predicates = self.run_response_selection(working_memory, aux_state, template_response_sel)
+        except Exception as e:
+            self.error_print('response_sel', e)
+            response_predicates = []
         p.next('response exp')
-        expanded_response_predicates, working_memory = self.run_response_expansion(response_predicates,
-                                                                                   working_memory, aux_state)
+        try:
+            expanded_response_predicates, working_memory = self.run_response_expansion(response_predicates, working_memory, aux_state)
+        except Exception as e:
+            self.error_print('response_exp', e)
+            expanded_response_predicates = []
         p.next('response rules')
-        rule_responses = self.run_response_by_rules(aux_state, expanded_response_predicates)
-
+        try:
+            rule_responses = self.run_response_by_rules(aux_state, expanded_response_predicates)
+        except Exception as e:
+            self.error_print('rule_responses', e)
+            rule_responses = []
         p.stop()
-
         return rule_responses, working_memory, aux_state
 
     def nlu_to_response_serialize(self, user_utterance, working_memory, aux_state):
