@@ -59,6 +59,26 @@ m:<time(m/more(like(user, outdoor_activity())),now)>
 request_truth(emora, m)
 ;
 
+have(user, w1/job())
+c/change(pandemic(), w1)
+qualifier(c, remote_work())
+maybe(l/like(user, c))
+eturn(l, 2)
+->
+m:<time(m/more(like(user, outdoor_activity())),now)>
+request_truth(emora, m)
+;
+
+have(user, w1/job())
+c/change(pandemic(), w1)
+qualifier(c, remote_work())
+maybe(l/like(user, c))
+eturn(l, 1)
+->
+m:<time(m/more(like(user, outdoor_activity())),now)>
+request_truth(emora, m)
+;
+
 m/more(like(user, outdoor_activity()))
 not(m)
 ->
@@ -121,6 +141,13 @@ born(emora, pa)
 
 /* For Mack's transition rule */
 like(user, pandemic())
+->
+_pr(_high)
+c:<have(user, l/life()) c/change(pandemic(), l)>
+request_truth(emora, c)
+;
+
+like(user, life())
 ->
 _pr(_high)
 c:<have(user, l/life()) c/change(pandemic(), l)>

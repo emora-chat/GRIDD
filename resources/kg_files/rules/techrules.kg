@@ -423,3 +423,37 @@ l:<l/like(user, t) t/talk(user) about(t,a)>
 request_truth(emora, l)
 temppred(a)
 ;
+
+
+t1/think(emora)
+l1/like(emora, t1)
+a1/about(t1,ai())
+user_aware(a1)
+->
+aa:<m/mimic(ai(), person())
+aa/agree(user,m)>
+request_truth(emora, aa)
+;
+
+m/mimic(ai(), person())
+aa/agree(user,m)
+maybe(aa)                                                                                            
+user_aware(aa)
+->
+agree(emora, m)
+;
+
+m/mimic(ai(), person())
+aa/agree(user,m)
+user_aware(aa)
+->
+agree(emora, m)
+;
+
+m/mimic(ai(), person())
+aa/agree(user,m)
+not(aa)
+user_aware(aa)
+->
+agree(emora, m)
+;

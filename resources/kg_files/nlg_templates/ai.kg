@@ -98,3 +98,18 @@ temppred(a)
 _pr(_high)
 $ Actually , I was wondering if you are interested in a. i. , or artificial intelligence ? $
 ;
+
+m/mimic(ai(), person())
+aa/agree(user,m)
+request_truth(emora, aa)
+->
+_pr(_high)
+$ A lot of people think the problem with current a. i. is that its just mimicking real intelligence, and they say that is not the correct path to true general intelligence. Would you agree with that?$
+;
+
+m/mimic(ai(), person())
+aa/agree(emora,m)
+->
+_pr(_high)
+$ I loved the show westworld, and it had a great answer to whether mimicking intelligence is good enough. A character said: If you can't tell the difference, does it really matter? $
+;
