@@ -1,0 +1,24 @@
+south_america=continent()
+expr("south america",south_america)
+
+brazil=country()
+in(brazil,south_america)
+
+chile=country()
+in(chile,south_america)
+
+peru=country()
+in(peru,south_america)
+
+;
+
+oceania=continent()
+
+australia=country()
+in(australia,oceania)
+
+new_zealand=country()
+expr("new zealand",new_zealand)
+in(new_zealand,oceania)
+
+;

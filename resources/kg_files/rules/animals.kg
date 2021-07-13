@@ -4,13 +4,15 @@ prop/property(pt/pet())
 r/request(emora, prop)
 user_aware(r)
 -> ask_fave_animal ->
-a:<time(possess(user, a/animal()), now) time(favorite(a), now)>
+a:<time(possess(user, a/animal()), now)>
+time(favorite(a), now)
 request(emora, a)
 ;
 
-like(x/person(), animal)
+like(x/person(), animal())
 ->
-a:<time(possess(user, a/animal()), now) time(favorite(a), now)>
+a:<time(possess(user, a/animal()), now)>
+time(favorite(a), now)
 request(emora, a)
 ;
 
@@ -33,7 +35,8 @@ v/visit(user, z/zoo())
 often(v)
 ->
 cause(funny(flamingo, appearance), like(emora, flamingo))
-possess(user, a/activity()) in(a, z)
+a:<possess(user, a/activity())>
+in(a, z)
 favorite(a)
 request(emora, a)
 ;
@@ -42,13 +45,13 @@ v/visit(user, z/zoo())
 not(often(v))
 ->
 cause(funny(flamingo, appearance), like(emora, flamingo))
-possess(user, a/activity()) in(a, z)
+a:<possess(user, a/activity())>
+in(a, z)
 favorite(a)
 request(emora, a)
 ;
 
-agr/agree(emora, cool(a/animal()))
-user_aware(agr)
+animal__t
 ->
 l:<time(l/like(x/person(), zoo), now)>
 request_truth(emora, l)

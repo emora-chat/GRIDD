@@ -51,6 +51,7 @@ $ Well , I always make food plans way ahead of time . Thinking about what food I
 p/property(X/meal())
 time(p,Z/datetime())
 request(emora,p)
+uturn(X,0)
 ->
 _pr(_low)
 _t(_present)
@@ -69,6 +70,7 @@ $ I always prefer homemade meals because I can control the ingredients and the w
 
 ff/favorite(user,X/food())
 request_truth(emora,ff)
+uturn(X,0)
 ->
 _pr(_low)
 _t(_present)
@@ -79,7 +81,7 @@ ff/favorite(user,X/food())
 possess(emora,fd/food())
 favorite(fd)
 be(fd,ramen())
-uturn(ff, 0)
+uturn(X, 0)
 ->
 _t(_rpresent)
 $ I'm glad that you enjoy eating X ! My favorite food is ramen . It is a simple but delicious dish .  $
@@ -96,6 +98,7 @@ $ Ah , I see . What food do you like then ? $
 
 fd/favorite(X/drink())
 request_truth(emora,fd)
+uturn(X,0)
 ->
 _pr(_low)
 $ Is X your favorite drink ? $
@@ -319,6 +322,7 @@ mbb/make(burger_and_ff,best(meal()))
 type(burger,burger_and_ff)
 type(french_fries,burger_and_ff)
 but(nt,mbb)
+uturn(Y,0)
 ->
 _t(_rpresent)
 $ Y sound{"t":"now","s":"#Y"} so good right now . You know what , I'm getting hungry just from talking with you . People say that fast food is not healthy , but sometimes burgers and french fries really hit the spot . $
@@ -347,12 +351,14 @@ bfn/be(emora,fn/fan())
 of(bfn,capriottis)
 ->
 _t(_present)
+_pr(_high)
 $ What's X{"p":true} favorite place for sandwiches ? I really like The Bobbie sandwich from Capriotti's . $
 ;
 
 know(emora,r/sandwich_restaurant())
 ->
 _t(_rpresent)
+_pr(_high)
 $ Ah , I know that place . They have some good sandwiches . $
 ;
 
@@ -360,8 +366,10 @@ gtp/time(go(emora),past)
 to(gtp,X/mexican_restaurant())
 intend_to_consume(user,mf/mexican_cuisine())
 request(emora,mf)
+uturn(X,0)
 ->
 _t(_present)
+_pr(_high)
 $ I went to X last week . What Mexican food do you like ? $
 ;
 
@@ -372,6 +380,7 @@ mfi/impressive(mf)
 not(mfi)
 ->
 _t(_present)
+_pr(_high)
 $ Mexican food may not be everybody's favorite cuisine . $
 ;
 
@@ -381,6 +390,7 @@ da/different(ahp)
 from(da,pandaexpress)
 ->
 _t(_present)
+_pr(_high)
 $ I tried some authentic Chinese hotpot in Chinatown yesterday . It's very different from the food I've seen at Panda Express . $
 ;
 
@@ -390,6 +400,7 @@ time(gts,always)
 get(emora,coffee())
 ->
 _t(_present)
+_pr(_high)
 $ Even if I've been to Starbucks a million times already , I still want to order from there . It has become a tradition for me to get a cup of coffee before I start to work . $
 ;
 
@@ -400,13 +411,16 @@ bs/bad(sff)
 but(gfh,bs)
 ->
 _t(_present)
+_pr(_high)
 $ Fruit is generally good for your health , but I've also heard that too much sugar from fruit can be bad . $
 ;
 
 sbv/be(X/special_fruit(),vegetable())
 not(sbv)
+uturn(X,0)
 ->
 _t(_present)
+_pr(_high)
 $ Did you know that X is actually a type of fruit by scientific definition ? Most people think X is a vegetable . $
 ;
 
@@ -414,12 +428,14 @@ ht/have(emora,pecan_pie())
 time(for(ht,thanksgiving),always)
 ->
 _t(_rpresent)
+_pr(_high)
 $ Pecan pie is a must . Our family has it on the grocery list every year for Thanksgiving dinner . $
 ;
 
 good(salmon())
 ->
 _t(_rpresent)
+_pr(_high)
 $ Salmon is so good . My favorite way of eating salmon is by preparing sashimi . $
 ;
 
@@ -428,6 +444,7 @@ with(s,t/tuna())
 perfect(tuna_and_mayo())
 ->
 _t(_rpresent)
+_pr(_high)
 $ I love a good tuna sandwich ! The taste of tuna and mayo is so perfect . $
 ;
 
@@ -436,12 +453,16 @@ brs/for(br,seafood())
 in(brs,san_francisco)
 ->
 _t(_present)
+_pr(_high)
 $ The best seafood place I've been to is in San Francisco . I could literally taste the ocean from fresh oysters . $
 ;
 
-intend_to_consume(emora,m/meat())
+possess(emora,mt/meat())
+favorite(mt)
+be(mt,beef())
 ->
 _t(_present)
+_pr(_high)
 $ Who isn't a meat lover ? My favorite type of meat is beef , especially steaks . You made me really hungry . $
 ;
 
@@ -450,6 +471,7 @@ type(v,group)
 not(ltv)
 ->
 _t(_present)
+_pr(_high)
 $ I did not like vegetables that much when I was a kid . I mean , who is a fan of vegetables as a kid ? $
 ;
 
@@ -458,18 +480,22 @@ with(b,j/jam())
 for(gb,bf/breakfast())
 ->
 _t(_present)
+_pr(_high)
 $ Bread with jam always makes a good breakfast choice . I prefer whole wheat bread though . $
 ;
 
 ese/start(emora,d/day())
 with(ese, X/coffee())
+uturn(X,0)
 ->
 _t(_present)
+_pr(_high)
 $ Who can start a day without X ? A cup of X from Starbucks keeps me up every day . $
 ;
 
 intend_to_consume(emora, X/common_drink())
 time(get(emora,X),often)
+uturn(X,0)
 ->
 _t(_present)
 _pr(_low)
@@ -478,6 +504,7 @@ $ I love drinking X too ! Honestly , I get two to three cups of X each week . $
 
 g/intend_to_consume(x/person(),X/common_food())
 time(get(emora,X),past)
+uturn(X,0)
 ->
 _t(_present)
 $ You know what ? I just got X for lunch yesterday . I have it all the time . $
@@ -485,6 +512,7 @@ $ You know what ? I just got X for lunch yesterday . I have it all the time . $
 
 intend_to_consume(emora,salad)
 intend_to_consume(emora,lobster_roll())
+_pr(_high)
 ->
 $ Salad is the best ! I really enjoy having a lobster roll with cole slaw as the side . $
 ;
@@ -493,12 +521,14 @@ bd/best(d/drinkable())
 be(w/water(),bd)
 ->
 _t(_present)
+_pr(_high)
 $ Water is the best drink in my opinion . $
 ;
 
 provide(m/milk(),protein)
 ->
 _t(_present)
+_pr(_high)
 $ Milk is a great source of protein ! On another note , I'm always shocked by how many different kinds of milk I can find in a supermarket . $
 ;
 
@@ -507,6 +537,7 @@ type(sd,group)
 have(emora,coke())
 ->
 _t(_present)
+_pr(_high)
 $ When I want to have soda but don't want to break my diet, I just drink diet coke . $
 ;
 
@@ -562,6 +593,7 @@ for(mxf,thanksgiving)
 request(emora,f)
 ->
 _t(_rpresent)
+_pr(_high)
 $  I love cooking , too ! Seeing people enjoy what I make is the greatest compliment for me . What do{"s":"#X","t":"now"} X usually make for Thanksgiving dinner ? $
 ;
 
@@ -569,12 +601,14 @@ bt/best(t/turkey())
 for(bt,thanksgiving)
 ->
 _t(_rpresent)
+_pr(_high)
 $ Me too ! Turkey is the best for Thanksgiving . I also cook some prime beef as part of the big meal . $
 ;
 
 good(X/food())
 emt/make(emora,turkey())
 for(emt,thanksgiving)
+uturn(X,0)
 ->
 _t(_rpresent)
 $ X sound{"t":"now","s":"#X"} like a great dish ! I try to cook Turkey in different ways for Thanksgiving each year . $
@@ -585,6 +619,7 @@ for(emt,thanksgiving)
 fried(t)
 ->
 _t(_rpresent)
+_pr(_high)
 $ I usually just deep fry the turkey , but last year I tried baking it and it turned out very juicy . $
 ;
 
@@ -601,6 +636,7 @@ $ I haven't heard about that type of food before , but I will search for its rec
 time(qf/qualifier(f/food(),o/object()),Z/datetime())
 at(f,X/restaurant())
 request(emora,o)
+uturn(X,0)
 ->
 _t(_present)
 $ How be{"t":"#Z"} the food at X ? I hope that you have{"t":"#Z"} a great time there . $
@@ -608,6 +644,7 @@ $ How be{"t":"#Z"} the food at X ? I hope that you have{"t":"#Z"} a great time t
 
 blr/be(X/unknown_noun(),r/restaurant())
 request_truth(emora,blr)
+uturn(X,0)
 ->
 _pr(_low)
 $ Is X a restaurant ? $
@@ -625,12 +662,15 @@ delicious(X/meal())
 glad(emora)
 have(user,X)
 time(have(emora,ramen()),past)
+uturn(X,0)
 ->
 _t(_rpresent)
+_pr(_high)
 $ I'm glad that you enjoyed your X ! I had ramen yesterday for my dinner . $
 ;
 
 time(have(emora,X/consumable()),past)
+uturn(X,0)
 ->
 _t(_present)
 _pr(_low)
@@ -649,6 +689,7 @@ ce/crispy(cereal())
 of(re,ce)
 ->
 _t(_rpresent)
+_pr(_high)
 $ Oh , I love crispy stuff . This reminds me of my favorite crispy cereal , Rice Krispies . It's so good with milk . $
 ;
 
@@ -657,6 +698,7 @@ fit/in(fc,tennessee)
 spicy(fit)
 ->
 _t(_present)
+_pr(_high)
 $ The spiciest food I've ever had is fried chicken in Tennessee . My tongue was literally on fire after eating it . $
 ;
 
@@ -667,6 +709,7 @@ ns/of(ebf,so2)
 not(ns)
 ->
 _t(_present)
+_pr(_high)
 $ I know there are people who like sour flavors , but I'm not a big fan of sour stuff . $
 ;
 
@@ -678,6 +721,7 @@ he/happy(emora)
 make(so,he)
 ->
 _t(_present)
+_pr(_high)
 $ I heard that bitter melon is good for our health , but I don't like bitter tastes at all . On the contrary , sweet stuff makes me happier . $
 ;
 
@@ -686,6 +730,7 @@ intend_to_consume(emora,sfo)
 intend_to_consume(emora,dessert())
 ->
 _t(_rpresent)
+_pr(_high)
 $ Sweet stuff is the best ! I always have some desserts after meals . It's so delightful . $
 ;
 
@@ -702,6 +747,7 @@ type(i,group)
 gif/from(egi,X)
 
 cause(gif,mkp)
+uturn(Y,0)
 ->
 _t(_present)
 _pr(_high)
@@ -716,5 +762,42 @@ type(r,group)
 like(emora,eg)
 ->
 _t(_rpresent)
+_pr(_high)
 $ Oh , I see . Yeah , I love cooking at home most of the time , but sometimes I prefer going to restaurants when I feel lazy . $
+;
+
+req_unsat(request(user, o/object()))
+possess(emora,f/food())
+favorite(f)
+be(f,o)
+->
+$ My favorite food is ramen noodles . Having a bowl of ramen with warm soup is a must for me during winter . $
+;
+
+req_unsat(request(user, o/object()))
+possess(emora,f/fruit())
+favorite(f)
+be(f,o)
+->
+$ My favorite fruit is watermelon ! Since it is summer now , watermelon is the best fruit to have in my mind . $
+;
+
+req_unsat(request(user, f/food()))
+like(emora,f)
+->
+$ I really like ramen noodles . Having a bowl of ramen with warm soup is a must for me during winter . $
+;
+
+c/cook(emora)
+l/like(emora,c)
+req_unsat(request_truth(user, l))
+->
+$ I like cooking ! Seeing people enjoy the food I make is such a satisfying experience . $
+;
+
+b/bake(emora)
+l/like(emora,b)
+req_unsat(request_truth(user, l))
+->
+$ I like baking ! I often bake cookies and share them with my friends . They really like them . $
 ;

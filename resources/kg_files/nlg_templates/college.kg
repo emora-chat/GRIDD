@@ -19,6 +19,7 @@ $ Do{"t":"#Z","s":"you"} you like your major ? $
 time(l/like(user,X/subject()),Z/datetime())
 cause(l,o/object())
 request(emora,o)
+uturn(X,0)
 ->
 _t(_present)
 $ Why do{"t":"#Z","s":"you"} you like X ? $
@@ -125,6 +126,7 @@ in(xm,S/subject())
 not(xm)
 cause(xm,o/object())
 request(emora,o)
+uturn(S,0)
 ->
 _t(_present)
 $ Is there a specific reason why X do{"s":"#X","t":"#Z"} not major in S ? $
@@ -161,12 +163,14 @@ $ Gaining new knowledge is always exciting ! I recently learned that elephants a
 time(xm/major(X/person()),Z/datetime())
 in(xm,S/subject())
 request_truth(emora,xm)
+uturn(S,0)
 ->
 _t(_present)
 $ Be{"s":"#X","t":"#Z"} X majoring in S ? $
 ;
 
 meaningful(X/social_science())
+uturn(X,0)
 ->
 _t(_rpresent)
 $ I think X is a really meaningful area to study ! Social sciences are so cool because people learn about human behaviors and then transform their knowledge into practical policies . $
@@ -207,6 +211,7 @@ $ Understood . Not all people would feel comfortable working in the financial in
 
 difficult(Y/natural_science())
 impressive(X/person())
+uturn(Y,0)
 ->
 _t(_present)
 $ I had a tough time understanding many concepts from natural sciences , so X already sound{"s":"#X","t":"now"} very impressive to me by saying that Y is X{"p": true} thing . $
@@ -243,6 +248,7 @@ ek/know(emora)
 about(ek,X/unknown_noun())
 d/difficult(X)
 request_truth(emora,d)
+uturn(X,0)
 ->
 _t(_present)
 _pr(_low)

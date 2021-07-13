@@ -1,4 +1,6 @@
 
+KB_FOLDERNAME = 'kg_files'      # Folder name for knowledge base .kg files
+
 KB = 'kb'                       # Namespace of Knowledge Base Concept Graph
 WM = 'wm'                       # Namespace of Working Memory Concept Graph
 
@@ -50,7 +52,9 @@ SALIENCE_OUT_LINK = 'salout'    # UpdateGraph label for salience propagation
 COLDSTART = 'coldstart'         # metadata bool feature preventing salience decay until selected
 SALIENCE = 'salience'           # metadata float feature representing attention w.r.t. emora
 CONNECTIVITY = 'conn'           # metadata integer feature representing neighborhood cardinality
-IS_TYPE = 'is_type'             # metadata type/instance specifier
+WINDOW = 10
+SAL_WINDOW = 'salw'
+COHERENCE = 'coherence'
 
 COMPS = 'comps'                 # metagraph link for component predicate and entity instances of mention
 VAR = 'var'                     # metagraph variable from one concept to another concept, in which the second concept is a variable
@@ -84,7 +88,8 @@ META = {COMPS, VAR,
 
 SAL_FREE = {ASSERT, NONASSERT, AFFIRM,
             REJECT, TIME, SPAN_DEF,
-            SPAN_REF, USER_AWARE, REQ_SAT, REQ_UNSAT}    # Predicate types that do not propogate salience to subtypes and whose salience does not decrease
+            SPAN_REF, USER_AWARE, REQ_SAT, REQ_UNSAT,
+            '_tanchor'}    # Predicate types that do not propogate salience to subtypes and whose salience does not decrease
 
 PRIM = {SPAN_DEF, SPAN_REF,
         ASSERT, NONASSERT,
@@ -94,12 +99,15 @@ PRIM = {SPAN_DEF, SPAN_REF,
 UNKNOWN_TYPES = {'unknown_verb', 'unknown_noun', 'unknown_pron', 'unknown_adj', 'unknown_adv', 'unknown_other'}
 
 
-PRIORITY_WEIGHT = 0.5
-SAL_WEIGHT = 0.5
+PRIORITY_WEIGHT = 0.33
+SAL_WEIGHT = 0.33
+COH_WEIGHT = 0.33
 DEFAULT_PRIORITY = 0.5
 PRIORITY_PRED = '_pr'
 
-DEFAULT_TEMPLATE_TYPE = '_rp'
+DEFAULT_TEMPLATE_TYPE = '_rpresent'
 TEMPLATE_TYPE = '_t'
+
+REP_TYPE = '_rep'
 
 NLU_NAMESPACE = 'r_'

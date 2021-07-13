@@ -53,3 +53,7 @@ office=(location)
 
 museum=(location)
 exhibition=(location)
+mountain=(nature)
+
+gym=(location)
+church=(location)

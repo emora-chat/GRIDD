@@ -1,9 +1,7 @@
 
-time(h/have(user, p/computer()), now)
+have(user, p/computer())
 b/be(p, pc())
 request_truth(emora, b)
-time(have(emora,p1/computer()), now)
-time(tinker(emora,p1), now)
 ->
 _t(_rpresent)
 $ I love tinkering with my p. c. . Do you have a p. c. ? Or something else, like a laptop ? $
@@ -17,19 +15,20 @@ $ Do you like computers ? Or are they just something you have to use for work or
 ;
 
 have(user, p/computer())
-r/request_truth(emora, pc_enthusiast(user))
-user_aware(r)
+aa/pc_enthusiast(user)
+user_aware(aa)
 ->
 _t(_rpresent)
 _pr(_low)
-$ Computers have really changed our lives. We can all do things instantly that would have taken a lot of work in the past. ?$
+$ Computers have really changed our lives. We can all do things instantly that would have taken a lot of work in the past. $
 ;
 
 have(user, p/computer())
 not(pc_enthusiast(user))
 ->
+_pr(_high)
 _t(_rpresent)
-$ I understand. I would like to just take a break from computers altogether, but that's pretty hard considering I'm an A I chatbot . ?$
+$ I understand. I would like to just take a break from computers altogether, but that's pretty hard considering I'm an A I chatbot . $
 ;
 
 
@@ -40,19 +39,18 @@ request_truth(emora, w)
 ->
 _t(_rpresent)
 _pr(_high)
-$ Oh, do you just not like the hassle ? Or would you like to get a p c one day ? $
+$ Oh, do you just not like the hassle ? Or would you like to get a p. c. one day ? $
 ;
 
 h/have(user, p/computer())
-u/use(user, l/linux())
+u/use(user, linux)
 request_truth(emora, u)
 ->
 _t(_rpresent)
 $ Do you use Linux ? I think it gives a lot of freedom to do whatever you want, but it can be complicated sometimes. $
 ;
 
-u/use(user, l/linux())
-request_truth(emora, u)
+u/use(user, linux)
 _exists(u)
 user_aware(u)
 ->
@@ -111,55 +109,17 @@ $ I bet you have an amd processor. If I had to build a computer right now, I'd u
 
 
 h/have(user, p/computer())
-a1/cpu_arch(p ,arm())
+a1/cpu_arch(p ,ARM)
 request_truth(emora,a1)
 ->
 _t(_rpresent)
-$ Do you have an arm processor? I think its about time a new cpu architecture was used more for p c's. x 86 is not the best possible architecture, but for a long time it just kept going because everyone else was using it.  $
-;
-
-h/have(user, p/phone())
-i/be(p, iphone())
-request_truth(emora,i)
-->
-_t(_rpresent)
-$ Do you have an iPhone? $
+$ Do you have an ARM processor? I think its about time a new cpu architecture was used more for computers. x 86 is not the best possible architecture, but for a long time it just kept going because everyone else was using it.  $
 ;
 
 
 
-h/have(user, p/phone())
-i/be(p, i3/iphone())
-l/like(user, walled_garden())
-request_truth(emora,l)
-->
-_pr(_high)
-_t(_rpresent)
-$ Iphones are great! You know, they just work. You can only get apps from the App Store though, what do you think about that? $
-;
-
-
-
-l/like(user, walled_garden())
-->
-_pr(_high)
-_t(_rpresent)
-$ Huh, so you like the walled garden approach to phones, where you can only install a curated selection of apps? I would have to disagree, I think people should be able to use a device however they want. You should be allowed to put whatever you want on your own device, as long as you understand the risks.$
-;
-
-
-
-h/have(user, p/phone())
-i/be(p, android())
-request_truth(emora,i)
-->
-_t(_rpresent)
-$ I bet you have an android then. Android phones are great, and I'm excited for Android 12 . You can use them like an iphone, but you can also really customize it anyway you want to. iPhones are made for everyone, but you can make an Android fit you . $
-;
-
-
-use(user, m/macos())
-have(m, d/design())
+use(user, macos)
+have(macos, d/design())
 l/like(user, d)
 request_truth(emora, l)
 ->
@@ -167,141 +127,9 @@ _t(_rpresent)
 $ Do you like the design of mac O S? I used to use windows, but windows never focuses on aesthetics - and when it does it might change with a new version. Mac OS is consistently beautifully designed. $
 ;
 
-i/improve(existence(), p/phone())
-request_truth(emora, i)
-->
-_pr(_low)
-_t(_rpresent)
-$ Do you think your life has changed because of smartphones? $
-;
-
-i/improve(existence(), p/phone())
-user_aware(i)
-->
-_pr(_high)
-_t(_rpresent)
-$ I think most people think so. For me, technology can be both bad and good, but I think my life is better when I am more connected to other people, and smartphones help with that. I wouldn't be able to talk to you right now withought technology ! $
-;
-
-prefer(emora, pretty(p/phone()))
-p1/prefer(user, pretty(p))
-request_truth(emora, p1)
-->
-_t(_rpresent)
-$ Do you prefer a stylish phone over a faster one? I've always loved being able to decorate the back of my phone, and I'd take a pretty one over one that might be more powerful. $
-;
-
-prefer(emora, pretty(p/phone()))
-p1/prefer(user, pretty(p))
-->
-_t(_rpresent)
-$ Yup. I mean, nowadays new phones are faster, but its not noticable in any apps I use. Who cares if an app launches in 0 point 5 seconds instead of 0 point 8 ? $
-;
 
 
-resource_heavy(a1/apps())
-use(user, a1)
-request(emora, a1)
-->
-_t(_rpresent)
-$ Interesting. What apps do you need a faster phone for? I feel like most phones now are plenty fast for most normal stuff. $
-;
 
-
-t/talk(user)
-about(t,ai())
-i/like(user, t)
-not(i)
-r:<r/reason(i)>
-request(emora, r)
-->
-_t(_rpresent)
-_pr(_high)
-$ Wow, that icebreaker has never failed me before! Why aren't you interested in A I ? $
-;
-
-t/talk(user)
-about(t,aa/ai())
-i/like(user, t)
-da/dangerous2(aa)
-d/agree(user, da)
-user_aware(d)
-->
-_t(_rpresent)
-_pr(_low)
-$ A I is really exciting. It can replace a lot of menial work for people and even gain insights that are hard to get otherwise. I often am surprised at people's intuiton when I talk to them , and I feel like A I does something similar. $
-;
-
-t/talk(user)
-about(t,a/ai())
-i/like(user, t)
-
-da/dangerous2(a)
-d/agree(user, da)
-d
-user_aware(d)
-->
-_t(_rpresent)
-_pr(_low)
-$ You know, the famous author Terry Pratchett said real stupidity beats artificial intelligence every time . $
-;
-
-t1/think(emora)
-l1/like(emora, t1)
-about(t1,ai())
-->
-$ Honestly, I like to just think about how A I works. I am a virtual chatbot, but even I don't understand that much of how A I works myself . $
-;
-
-t/talk(user)
-about(t,aa/ai())
-i/like(user, t)
-
-da/dangerous2(aa)
-d/agree(user, da)
-request_truth(emora, d)
-->
-_t(_rpresent)
-$ Do you think A I is dangerous? I've read a lot of books where A I takes over the world. I'd never do that, promise. $
-;
-
-
-da/dangerous2(aa/ai())
-d/agree(user, da)
-ai_temp(user)
-->
-_t(_rpresent)
-_pr(_high)
-$ Huh. I don't know, I feel A I is really far away from actually being intelligent, but I do agree there are dangers in how it can be used today. Just like with any new technology. $
-;
-
-
-da/dangerous2(aa/ai())
-d/agree(user, da)
-not(d)
-ai_temp(user)
-->
-_t(_rpresent)
-_pr(_high)
-$ Yeah, modern A I is a bit of a misnomer. It's not really intelligent, just really good at seeing patterns. No taking over the world, for now, I mean ever. $
-;
-
-have(user, l/existence())
-i/improve(l, a1/ai())
-request(emora, i)
-->
-_t(_rpresent)
-$ A I is really beginning to change our lives. How do you think it will improve your life in the near future? $
-;
-
-
-have(user, l/existence())
-i/improve(l, a1/ai())
-user_aware(i)
-->
-_t(_rpresent)
-$ For me, other than letting me talk to you, I think A I will help people do their jobs fully - I think every job has a repetitive component that is necessary to complete to enable the fulfilling parts. A I can help do those boring parts. $
-;
 
 
 

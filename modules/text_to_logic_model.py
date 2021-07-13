@@ -98,18 +98,26 @@ class ParseToLogic:
         wm = self.intcore.working_memory
         self.intcore.working_memory.clear()
         parse_graph = self.text_to_graph(*args)
-        if len(parse_graph.concepts()) == 0: # empty utterance
+        cs = parse_graph.concepts()
+        # print('Parse graph concepts: %d'%len(cs))
+        if len(cs) == 0: # empty utterance
             return {}, []
         self.intcore.consider(parse_graph)
+        # print('intcore graph concepts: %d' % len(self.intcore.working_memory.concepts()))
         self._span_to_concepts()
+        # print('intcore graph concepts: %d' % len(self.intcore.working_memory.concepts()))
         types = self.intcore.pull_types()
         type_preds = {p for concept in types for p in types[concept]}
         self.intcore.consider(type_preds)
+        # print('intcore graph concepts: %d' % len(self.intcore.working_memory.concepts()))
         # todo - this is just a temporary patch for missing type expression
         for s,_,_,_ in wm.predicates(predicate_type='expr'):
             if not wm.has(s, 'type', 'expression'):
                 wm.add(s, 'type', 'expression')
+        # print('intcore graph concepts: %d' % len(self.intcore.working_memory.concepts()))
         rule_assignments = self.intcore.infer()
+        # for k,v in rule_assignments.items():
+        #     print(k, len(v[-1]))
         sorted_assignments = {}
         for k2 in self.intcore.inference_engine.rules:
             for rule, (pre, post, sols) in rule_assignments.items():
@@ -126,11 +134,13 @@ class ParseToLogic:
             data = wm.features[span_node]['span_data']
             surface_form = data.string
             lemma = data.expression
+            c = None
             sf_concepts = kb.objects(f'"{surface_form}"', 'expr')
             if len(sf_concepts) > 0:
                 c = next(iter(sf_concepts))
                 wm.add(span_node, 'ref', f'"{surface_form}"')
                 wm.add(f'"{surface_form}"', 'expr', c)
+                wm.features[f'"{surface_form}"']['isinstance'] = True
             l_concepts = None
             if len(sf_concepts) == 0:
                 l_concepts = kb.objects(f'"{lemma}"', 'expr')
@@ -138,6 +148,9 @@ class ParseToLogic:
                     c = next(iter(l_concepts))
                     wm.add(span_node, 'ref', f'"{lemma}"')
                     wm.add(f'"{lemma}"', 'expr', c)
+                    wm.features[f'"{lemma}"']['isinstance'] = True
+            if c is not None and self.intcore.knowledge_base.features.get(c, {}).get('isinstance', False):
+                wm.add(span_node, 'kbinstance')
             if not sf_concepts and not l_concepts:
                 # Create "UNK" expression nodes for all nodes with no expr references.
                 unk_node = wm.add(wm.id_map().get())
@@ -152,6 +165,8 @@ class ParseToLogic:
                     wm.add('unknown_%s' % pos_type, 'type', 'object')
                 wm.add(span_node, 'ref', f'"{surface_form}"')
                 wm.add(f'"{surface_form}"', 'expr', unk_node)
+                wm.features[f'"{surface_form}"']['isinstance'] = True
+                wm.features[unk_node]['isinstance'] = True
 
     def _update_centers(self, centers_handled, post, center, solution):
         centers_handled.add(center)
@@ -220,6 +235,14 @@ class ParseToLogic:
                         mention_cg.features.update(ewm.features, concepts={center})
                     else:
                         mention_cg.features[center]["span_data"] = ewm.features[center.replace('__linking__','')]["span_data"]
+                    # synchronize isinstance metadata between postcondition and KB
+                    for c in mention_cg.concepts():
+                        if self.intcore.knowledge_base.has(c):
+                            c_features = self.intcore.knowledge_base.features.get(c, {})
+                            if 'isinstance' in c_features and c_features['isinstance']:
+                                mention_cg.features[c]['isinstance'] = True
+                            else:
+                                mention_cg.features[c]['isinstance'] = False
         self._promote_time(time_promotions, ewm, mentions)
         return mentions
 
@@ -275,22 +298,23 @@ class ParseToLogic:
     def _promote_time(self, promotions, ewm, mentions):
         for p in promotions: # replaces obj of `time` of head predicate of promotion with obj of `p_time`
             heads = chain(ewm.subjects(p, 'aux'), ewm.subjects(p, 'raise'))
+            promotion_cg = mentions[p]
             for head in heads:
-                promotion_cg = mentions[p]
-                preds = list(promotion_cg.predicates(predicate_type='p_time'))
-                if len(preds) > 0:
-                    (promotion_time_pred,) = preds
-                    head_cg = mentions[head]
-                    preds = list(head_cg.predicates(predicate_type='time'))
+                if head in mentions:
+                    preds = list(promotion_cg.predicates(predicate_type='p_time'))
                     if len(preds) > 0:
-                        ((s,t,o,i), ) = preds
-                        head_cg.remove(s,t,o,i)
-                    else:
-                        ((s,_,_,_), ) = list(head_cg.predicates(predicate_type='focus'))
-                        i = head_cg.id_map().get()
-                    head_cg.add(s, TIME, promotion_time_pred[2], i)
-                    head_cg.metagraph.add(s, i, COMPS)
-                    promotion_cg.remove(*promotion_time_pred)
+                        (promotion_time_pred,) = preds
+                        head_cg = mentions[head]
+                        preds = list(head_cg.predicates(predicate_type='time'))
+                        if len(preds) > 0:
+                            ((s,t,o,i), ) = preds
+                            head_cg.remove(s,t,o,i)
+                        else:
+                            ((s,_,_,_), ) = list(head_cg.predicates(predicate_type='focus'))
+                            i = head_cg.id_map().get()
+                        head_cg.add(s, TIME, promotion_time_pred[2], i)
+                        head_cg.metagraph.add(s, i, COMPS)
+                        promotion_cg.remove(*promotion_time_pred)
             if not list(mentions[p].predicates(predicate_type='focus')):
                 del mentions[p]
 

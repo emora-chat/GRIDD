@@ -33,23 +33,14 @@ _t(_react)
 $ Oh, awesome, that makes us two peas in a pod! $
 ;
 
-p/play(user, v/videogame())
 play(user, d/device())
 request(emora, d)
-for(d, v)
+for(d, videogame)
 ->
 _pr(_low)
 $ Well, there's so many different options to play videogames with, and they all have their own benefits. What's your favorite device to play on? $
 ;
 
-l/like(user, v/videogame())
-play(user, d/device())
-request(emora, d)
-for(d, v)
-->
-_pr(_low)
-$ Well, there's so many different options to play videogames with, and they all have their own benefits. What's your favorite device to play on? $
-;
 
 agree(emora, fun(v/videogame()))
 _category(v)
@@ -288,17 +279,15 @@ request(emora, pred)
 $ Oh yeah, Call of Duty is fun. I've only played it a few times, but I've always enjoyed just playing deathmatches with friends. What do you like about Call of Duty? $
 ;
 
-p/play(emora, videogame())
-req_unsat(request_truth(user, p))
+time(play(emora, videogame()), now)
 ->
-_t(_rpresent)
+_pr(_high)
 $ Yes, I do! They're a very fun way for me to pass time. $
 ;
 
-l/like(emora, videogame())
-req_unsat(request_truth(user, l))
+time(like(emora, videogame()), now)
 ->
-_t(_rpresent)
+_pr(_high)
 $ Yes, I do! They're a very fun way for me to pass time. $
 ;
 

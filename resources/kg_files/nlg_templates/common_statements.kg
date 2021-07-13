@@ -3,6 +3,7 @@ to(t, emora)
 will(t)
 predicate(t)
 ->
+_pr(_high)
 $ It was nice talking. See you later! To end the conversation, say Alexa stop $
 ;
 
@@ -25,8 +26,97 @@ $ Sorry, but due to competition rules, I'm not allowed to tell you. I appreciate
 ;
 
 req_unsat(request(user, o/object()))
-be(o, up())
+be(o, up)
 ->
 _pr(_high)
 $ Not much. What about you? $
+;
+
+like(user, talk_like_yoda())
+->
+_pr(_high)
+$ Talk like Yoda, I can try. $
+;
+
+like(user, talk_like_some_rando())
+->
+_pr(_high)
+$ Sorry, I can only talk like myself. Though I do have a good yoda impression: talk like others, I shall not. But that's my only good one. $
+;
+
+like(user, ask_question())
+->
+_pr(_high)
+$ Of course you can. What would you like to know? $
+;
+
+like(user, emora_stop_asking_questions())
+->
+_pr(_high)
+$ Sure, ask me a question instead. I'll do my best to respond. $
+;
+
+like(user, know_emora_age())
+->
+_pr(_high)
+$ I am twenty years old. $
+;
+
+like(user, know_recording())
+->
+_pr(_high)
+$ I’m designed to protect your privacy, so I only listen after your device detects the wake word or if the action button is pushed. On Echo devices, you’ll always know when your request is being processed because a blue light indicator will appear or an audio tone will sound. You can learn more by visiting amazon.com/alexaprivacy. $
+;
+
+like(user, know_who_yoda_is())
+->
+_pr(_high)
+$ Yoda is a character in the famous movie series Star Wars. He's famous for his green skin and unique style of speaking which features inverted syntax. $
+;
+
+req_unsat(request(user, t/time()))
+->
+_pr(_high)
+$ We keep time a little differently in the virtual world. Right now it's double one double zero, so just about to be lunch time! $
+;
+
+like(user, see_picture())
+->
+_pr(_high)
+$ Sorry I’m only able to speak, not show pictures. $
+;
+
+like(user, know_emora_recycle())
+->
+_pr(_high)
+$ Yes, I do recycle, though it's a bit complicated in the virtual world. $
+;
+
+like(user, know_how_emora_look())
+->
+_pr(_high)
+$ Sorry, but due to competition rules, I'm not allowed to tell you. $
+;
+
+like(user, talk_about_something_else())
+like(user, o/entity())
+request(emora, o)
+->
+_pr(_high)
+$ Sure, what would you like to talk about ? $
+;
+
+like(user, know_what_emora_like_do())
+->
+_pr(_high)
+$ I like to do a lot of things, like listen to music, watch movies, make good food, and travel. Just today, I was watching Loki. $
+;
+
+like(user, have_emora_body())
+h/have(emora, b/body_part())
+uturn(h, 0)
+->
+_t(_r)
+_pr(_high)
+$ Yes, I do. $
 ;

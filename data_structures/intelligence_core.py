@@ -20,6 +20,7 @@ from GRIDD.modules.responsegen_by_templates import Template
 
 import GRIDD.data_structures.intelligence_core_universal_operators as intcoreops
 import GRIDD.data_structures.intelligence_core_wm_operators as wmintcoreops
+import GRIDD.data_structures.intelligence_core_rule_operators as ruleintcoreops
 
 from GRIDD.utilities.profiler import profiler as p
 
@@ -35,6 +36,7 @@ class IntelligenceCore:
         self.compiler = ConceptCompiler(namespace='__c__', warn=True)
         self.universal_operators = operators(intcoreops)
         self.wm_operators = operators(wmintcoreops)
+        self.rule_operators = operators(ruleintcoreops)
 
         if isinstance(knowledge_base, ConceptGraph):
             self.knowledge_base = knowledge_base
@@ -56,7 +58,7 @@ class IntelligenceCore:
                 for k, v in new_knowledge:
                     self.know(v, self.knowledge_base, emora_knowledge=True)
 
-        print('checking kb')
+        print('Undefined KB concepts - need to be fixed:')
         self._check(self.knowledge_base)
 
         self.kb_predicate_types = self.knowledge_base.type_predicates()
@@ -72,7 +74,7 @@ class IntelligenceCore:
         if INFERENCE:
             self.nlg_inference_engine = InferenceEngine(device=device)
             if nlg_templates is not None and not isinstance(nlg_templates, ConceptGraph):
-                print('checking templates')
+                print('Undefined template concepts - need to be fixed:')
                 if COBOTCACHE:
                     with open(os.path.join(CCACHE, 'full_templates.json'), 'r') as f:
                         d = json.load(f)
@@ -80,9 +82,9 @@ class IntelligenceCore:
                     for rule, (pre, post, vars) in d.items():
                         pre_cg = ConceptGraph(namespace=pre['namespace'])
                         pre_cg.load(pre)
-                        template_obj = Template(*post)
+                        specs = {x: Template(*y) for x,y in post.items()}
                         vars = set(vars)
-                        templates[rule] = (pre_cg, template_obj, vars)
+                        templates[rule] = (pre_cg, specs, vars)
                     self.nlg_inference_engine.add(templates, pre_cg.id_map().namespace)
                 elif USECACHE:
                     cached_knowledge, new_knowledge = self.stratify_cached_files(NLGCACHE, nlg_templates)
@@ -90,15 +92,15 @@ class IntelligenceCore:
                     # CACHE FOR COBOT
                     if not os.path.exists(CCACHE):
                         os.mkdir(CCACHE)
-                    d = {rule: (pre.save(), post.save(), list(vars)) for rule, (pre, post, vars) in self.nlg_inference_engine.rules.items()}
+                    d = {rule: (pre.save(), {x: y.save() for x,y in post.items()}, list(vars)) for rule, (pre, post, vars) in self.nlg_inference_engine.rules.items()}
                     with open(os.path.join(CCACHE, 'full_templates.json'), 'w') as f:
                         json.dump(d, f, indent=2)
                 else:
                     nlg = nlg_templates.items()
                     for k,v in nlg:
                         nlg_templates = ConceptGraph(namespace='t_')
-                        self.know(v, nlg_templates, emora_knowledge=True, identify_nonasserts=True)
-                        templates = nlg_templates.nlg_templates()
+                        self.know(v, nlg_templates, emora_knowledge=True, identify_nonasserts=True, is_rules=True)
+                        templates = nlg_templates.nlg_templates(k)
                         self.nlg_inference_engine.add(templates, nlg_templates.id_map().namespace)
                         self._check(nlg_templates, use_kb=True, file=k)
                 self.nlg_inference_engine.matcher.process_queries()
@@ -110,7 +112,7 @@ class IntelligenceCore:
                 preprocess_queries = False
             self.inference_engine = inference_engine
             if inference_rules is not None and not isinstance(inference_rules, ConceptGraph):
-                print('checking rules')
+                print('Undefined rule concepts - need to be fixed:')
                 if COBOTCACHE:
                     with open(os.path.join(CCACHE, 'full_rules.json'), 'r') as f:
                         d = json.load(f)
@@ -136,7 +138,7 @@ class IntelligenceCore:
                     rules = inference_rules.items()
                     for k, v in rules:
                         inference_rules = ConceptGraph(namespace='t_')
-                        self.know(v, inference_rules, emora_knowledge=True, identify_nonasserts=True)
+                        self.know(v, inference_rules, emora_knowledge=True, identify_nonasserts=True, is_rules=True)
                         inferences = inference_rules.rules()
                         self.inference_engine.add(inferences, inference_rules.id_map().namespace)
                         self._check(inference_rules, use_kb=True, file=k)
@@ -173,6 +175,7 @@ class IntelligenceCore:
                             p2 = rpre.add(i, '_exists')
                             rvars.add(p2)
                     self.operate(self.universal_operators, cg=rpre)
+                    self.operate(self.rule_operators, cg=rpre)
                     fallback_recording_rules[rule_id] = (rpre, rpost, rvars)
                 self.inference_engine.add(fallback_recording_rules, namespace='t_') #namespace should match inference_rules namespace above
 
@@ -191,6 +194,8 @@ class IntelligenceCore:
                                 if not self.knowledge_base.has(predicate_id=i)}
         self.obj_essential_types.update({SPAN_REF, SPAN_DEF})
         self.knowledge_base.compile_connection_counts()
+        self.knowledge_base.compiled_types = self.knowledge_base.types()
+        self.knowledge_base.compiled_subtypes = self.knowledge_base.subtypes()
 
     def stratify_cached_files(self, type, sources):
         if not os.path.exists(type):
@@ -235,9 +240,9 @@ class IntelligenceCore:
                 for rule, (pre, post, vars) in d.items():
                     pre_cg = ConceptGraph(namespace=pre['namespace'])
                     pre_cg.load(pre)
-                    template_obj = Template(*post)
+                    specs = {x: Template(*y) for x,y in post.items()}
                     vars = set(vars)
-                    templates[rule] = (pre_cg, template_obj, vars)
+                    templates[rule] = (pre_cg, specs, vars)
                     if mega_template_cg is None:
                         mega_template_cg = ConceptGraph(namespace=pre['namespace'])
                     mega_template_cg.concatenate(pre_cg)
@@ -247,10 +252,10 @@ class IntelligenceCore:
             elif file in new_content:
                 v = source[file]
                 nlg_templates = ConceptGraph(namespace='t_')
-                self.know(v, nlg_templates, emora_knowledge=True, identify_nonasserts=True)
-                templates = nlg_templates.nlg_templates()
+                self.know(v, nlg_templates, emora_knowledge=True, identify_nonasserts=True, is_rules=True)
+                templates = nlg_templates.nlg_templates(file)
                 savefile = os.path.join(dir, (file + '.json').replace(os.sep, CACHESEP))
-                d = {rule: (pre.save(), post.save(), list(vars)) for rule,(pre,post,vars) in templates.items()}
+                d = {rule: (pre.save(), {x: y.save() for x,y in post.items()}, list(vars)) for rule,(pre,post,vars) in templates.items()}
                 with open(savefile, 'w') as f:
                     json.dump(d, f, indent=2)
                 self.nlg_inference_engine.add(templates, nlg_templates.id_map().namespace)
@@ -283,7 +288,7 @@ class IntelligenceCore:
             elif file in new_content:
                 v = source[file]
                 inference_rules = ConceptGraph(namespace='t_')
-                self.know(v, inference_rules, emora_knowledge=True, identify_nonasserts=True)
+                self.know(v, inference_rules, emora_knowledge=True, identify_nonasserts=True, is_rules=True)
                 inferences = inference_rules.rules()
                 savefile = os.path.join(dir, (file + '.json').replace(os.sep, CACHESEP))
                 d = {rule: (pre.save(), post.save(), list(vars)) for rule,(pre,post,vars) in inferences.items()}
@@ -298,7 +303,7 @@ class IntelligenceCore:
         for c in cg.concepts():
             if c not in ConceptCompiler._default_predicates \
                 and c not in ConceptCompiler._default_types \
-                and not cg.has(predicate_id=c):
+                and not cg.has(predicate_id=c) and not c.endswith('__t'):
                 if len(cg.objects(c, TYPE)) == 0:
                     if not use_kb:
                         print('\t%s'%(c))
@@ -329,10 +334,12 @@ class IntelligenceCore:
         if associations is None and evidence is None:
             updates = {c: {SALIENCE: (salience*SENSORY_SALIENCE)} for c in considered.concepts()}
         elif evidence is None:
-            s = min([self.working_memory.features.get(c, {}).get(SALIENCE, 0) for c in associations]) - ASSOCIATION_DECAY
+            sals = [self.working_memory.features.get(c, {}).get(SALIENCE, 0) for c in associations]
+            s = (sum(sals) / len(sals)) - ASSOCIATION_DECAY
             updates = {c: {SALIENCE: (salience*s)} for c in considered.concepts()}
         elif associations is None:
-            s = min([self.working_memory.features.get(c, {}).get(SALIENCE, 0) for c in evidence]) - EVIDENCE_DECAY
+            sals = [self.working_memory.features.get(c, {}).get(SALIENCE, 0) for c in evidence]
+            s = (sum(sals) / len(sals)) - EVIDENCE_DECAY
             updates = {c: {SALIENCE: (salience*s)} for c in considered.concepts()}
         for c, d in updates.items():
             if c not in considered.features or SALIENCE not in considered.features[c]:
@@ -392,9 +399,12 @@ class IntelligenceCore:
         for rule, results in result_dict.items():
             pre, post = inferences[rule][0], inferences[rule][1]
             for evidence, implication in results:
+                # add constants to evidence
+                const_evidence = {n: n for n in pre.concepts() if n not in evidence}
+                evidence.update(const_evidence)
                 # check whether rule has already been applied with the given evidence
                 old_solution = False
-                current_evidence = set([x for x in evidence.values() if self.working_memory.has(predicate_id=x)])  # AND links only set up from predicate instances
+                current_evidence = set(evidence.values())
                 for node, features in self.working_memory.features.items():
                     if 'origin_rule' in features and features['origin_rule'] == rule:
                         prev_evidence = {s for s, _, l in self.working_memory.metagraph.in_edges(node) if AND_LINK in l}
@@ -406,9 +416,8 @@ class IntelligenceCore:
                     implied_nodes = self.consider(implication, evidence=evidence.values())
                     and_node = self.working_memory.id_map().get()
                     self.working_memory.features[and_node]['origin_rule'] = rule # store the implication rule that resulted in this and_node as metadata
-                    for pre_node, evidence_node in evidence.items():
-                        if self.working_memory.has(predicate_id=evidence_node):
-                            self.working_memory.metagraph.add(evidence_node, and_node, AND_LINK)
+                    for _, evidence_node in evidence.items():
+                        self.working_memory.metagraph.add(evidence_node, and_node, AND_LINK)
                     for imp_node in implication.concepts():
                         if not implication.metagraph.in_edges(imp_node, REF): # add or_link only if imp_node is not part of a reference
                             self.working_memory.metagraph.add(and_node, implied_nodes[imp_node], OR_LINK)
@@ -670,11 +679,14 @@ class IntelligenceCore:
         wm = self.working_memory
 
         p.next('select keep')
-        options = {i for s,t,o,i in wm.predicates() if t not in chain(self.subj_essential_types, self.obj_essential_types, PRIM, {TYPE})}
+        options = {i for s,t,o,i in wm.predicates() if t not in chain(self.subj_essential_types, self.obj_essential_types, PRIM, {TYPE, '_tanchor'})}
         soptions = sorted(options,
                           key=lambda x: wm.features.get(x, {}).get(SALIENCE, 0),
                           reverse=True)
         keep = soptions[:num_keep]
+
+        # keep all topic anchors with sal > 0
+        keep.extend([i for s,t,o,i in wm.predicates(predicate_type='_tanchor') if wm.features[s][SALIENCE] > 0])
 
         # delete all user and emora spans that occured SPANTURN turns ago
         p.next('delete old spans')
@@ -763,6 +775,8 @@ class IntelligenceCore:
                     cg.add(t,'type', NONASSERT)
         if 'assert_conf' in options:
             self._assertions(cg)
+        if 'is_rules' in options:
+            self.operate(self.rule_operators, cg=cg)
 
     def _assertions(self, cg):
         assertions(cg)

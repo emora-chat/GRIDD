@@ -5,17 +5,17 @@ expr("fiction books, fictional books", fiction)
 nonfiction=(book_genre)
 expr("nonfiction books, nonfictional books", nonfiction)
 
-fantasy_book=(fiction)
+fantasy_book=fiction()
 expr("fantasy book, high fantasy", fantasy_book)
-mystery_book=(fiction)
+mystery_book=fiction()
 expr("mystery book, crime book", mystery_book)
-science_fiction_book=(fiction)
+science_fiction_book=fiction()
 expr("science fiction book, sci-fi book", science_fiction_book)
-comic=(fiction)
+comic=fiction()
 expr("comic book, graphic novel", comic)
-biography=(nonfiction)
-memoir=(nonfiction)
-textbook=(nonfiction)
+biography=nonfiction()
+memoir=nonfiction()
+textbook=nonfiction()
 
 author=(person)
 
@@ -24,4 +24,11 @@ expr("read, reading, to read", read)
 
 magic=(entity)
 setting=(entity)
+
+time(like(emora, b/book()), now)
+type(b, group)
+
+time(like(emora, read()), now)
+
+time(read(emora), now)
 ;

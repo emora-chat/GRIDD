@@ -1,4 +1,4 @@
-like(x/person(), read)
+like(x/person(), read())
 ->
 like(x, b/book())
 ;
@@ -10,13 +10,15 @@ op_more_info(b, l)
 request(emora, b)
 ;
 
-like(x/person(), b/book())
-r/request(emora, b)
-user_aware(r)
+reading__t
 ->
-l:<time(l/like(x, harrypotter), now)>
+l:<time(l/like(user, harrypotter), now)>
 request_truth(emora, l)
-g:<time(like(x, g/genre()), now)>
+;
+
+reading__t
+->
+g:<time(like(user, g/genre()), now)>
 of(g, book)
 request(emora, g)
 ;
@@ -45,7 +47,7 @@ els/love(emora, setting) in(els, stormlight_archive)
 
 time(l/like(x/person(), u/unknown_noun()), now)
 like(x, b/book())
-request(emora, b)
+r/request(emora, b)
 eturn(r, 1)
 ->
 k/know(emora, u)

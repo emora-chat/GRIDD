@@ -1,3 +1,11 @@
+l/like(user,art())
+not(l)
+understand(emora,l)
+->
+_t(_r)
+$ Oh , you don't like art ? I love art , but I understand that it is not a thing for everyone . $
+;
+
 xba/be(user,artist())
 request_truth(emora,xba)
 ->

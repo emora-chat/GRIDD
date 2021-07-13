@@ -11,8 +11,8 @@ def elitmodels():
 
 @pytest.fixture
 def elit_to_logic():
-    kb = KnowledgeBase(join('GRIDD', 'resources', 'kg_files', 'framework_test.kg'))
-    template_file = join('GRIDD', 'resources', 'kg_files', 'elit_dp_templates.kg')
+    kb = KnowledgeBase(join('GRIDD', 'resources', KB_FOLDERNAME, 'framework_test.kg'))
+    template_file = join('GRIDD', 'resources', KB_FOLDERNAME, 'elit_dp_templates.kg')
     return ElitDPToLogic(kb, template_file)
 
 def test_svdo_simple(elitmodels, elit_to_logic):

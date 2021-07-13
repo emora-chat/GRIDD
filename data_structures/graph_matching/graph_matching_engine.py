@@ -1,6 +1,7 @@
 
 import torch
 from itertools import chain
+from copy import deepcopy
 
 from GRIDD.data_structures.id_map import IdMap
 from GRIDD.data_structures.graph_matching.graph_tensor import GraphTensor
@@ -71,102 +72,124 @@ class GraphMatchingEngine:
         return result
 
     def match(self, data_graph, *query_graphs):
-        torch.cuda.reset_peak_memory_stats(self.device)
-        if len(query_graphs) == 0 and len(self.query_graphs) == 0: return {}
-        p.start('match')
-        p.start('querygen')
-        display = None
-        complete = {}                                                       # list<Tensor<steps: ((qn1, dn1), (qn2, dn2), ...)>> completed solutions
-        if len(query_graphs) > 0:
-            query_graphs = preprocess_query_tuples(query_graphs)
-            if DISPLAY: display = Display()
-            query_id_index = self.q.index                                   # Query index to reset after match is complete
-            checklist, query_lengths = self._add_queries(query_graphs)
-        else:
-            query_id_index = self.q.index
-            checklist, query_lengths = self.checklist, self.query_lengths
-        if len(checklist) <= 0:
-            p.stop(); p.stop()
+        with GmeCtxt(self):
+            torch.cuda.reset_peak_memory_stats(self.device)
+            if len(query_graphs) == 0 and len(self.query_graphs) == 0: return {}
+            p.start('match')
+            p.start('querygen')
+            display = None
+            complete = {}                                                       # list<Tensor<steps: ((qn1, dn1), (qn2, dn2), ...)>> completed solutions
+            if len(query_graphs) > 0:
+                query_graphs = preprocess_query_tuples(query_graphs)
+                if DISPLAY: display = Display()
+                query_id_index = self.q.index                                   # Query index to reset after match is complete
+                checklist, query_lengths = self._add_queries(query_graphs)
+            else:
+                query_id_index = self.q.index
+                checklist, query_lengths = self.checklist, self.query_lengths
+            if len(checklist) <= 0:
+                p.stop(); p.stop()
+                return complete
+            p.next(f'creating graph tensor ({len(data_graph.nodes())} nodes, {len(data_graph.edges())} edges)')
+            edges = GraphTensor(data_graph, self.n, self.l, device=self.device) # GraphTensor<Tensor<X x 2: (s, l)>) -> (Tensor<Y: t>, Tensor<Y: inverse_index>>
+            p.next('initializing solutions matrix')
+            sols = torch.full((int(checklist.size()[0]), 2), self.n.get(root),  # Tensor<solution x step: ((qn1, dn1), (qn2, dn2), ...)> in-progress solutions
+                                   dtype=torch.long, device=self.device)
+            solqs = torch.arange(0, len(self.q),                                # Tensor<solution: query> inverse indices for solutions
+                                   dtype=torch.long, device=self.device)
+            p.stop()
+            p.start('loop')
+            for num_checked, reqs in enumerate(checklist.transpose(0, 1)):      # Tensor<query x 3: (s, l, t)>: required next edges
+                solreqs = reqs[solqs]
+                if DISPLAY: print('{:#^50s}'.format(f' ITER {num_checked} '))
+                if DISPLAY: display(solreqs, self.n, self.l, self.n, label='Requirements')
+                if DISPLAY: display(sols, *[self.n for _ in range(sols.size()[1])], label='sols')
+                tarfilters = self.assigned(sols, solreqs[:,2])
+                istarconst = solreqs[:,2] >= 0
+                target_const_indx = torch.nonzero(istarconst).squeeze(1)
+                tarfilters[target_const_indx] = solreqs[target_const_indx][:,2]
+                sources = self.assigned(sols, solreqs[:,0])
+                isfilter = tarfilters >= 0
+                filterindx = torch.nonzero(isfilter)
+                filterindx = filterindx.squeeze(1)
+                filters = torch.cat([
+                    sources[filterindx].unsqueeze(1),
+                    solreqs[filterindx][:,1:2],
+                    tarfilters[filterindx].unsqueeze(1)
+                ], 1 )
+                satisfied = edges.has(filters)
+                if DISPLAY: display(torch.cat([filters, satisfied.to(torch.long)[:,None]], 1),
+                                    self.n, self.l, self.n, None, label='filter')
+                satindx = torch.nonzero(satisfied).squeeze(1)
+                sols_to_keep = torch.cat([
+                    sols[filterindx][satindx],
+                    solreqs[filterindx][satindx][:,2:3],
+                    tarfilters[filterindx][satindx].unsqueeze(1)
+                ], 1 )
+                qs_to_keep = solqs[filterindx][satindx]
+                expanderindx = torch.nonzero(~isfilter).squeeze(1)
+                sourcelabels = torch.cat([
+                    sources[expanderindx].unsqueeze(1),
+                    solreqs[expanderindx][:,1:2]
+                ], 1 )
+                targets, ii = edges.targets(sourcelabels)
+                sols_expanded = torch.cat([
+                    sols[expanderindx][ii],
+                    solreqs[expanderindx][ii][:,2:3],
+                    targets.unsqueeze(1)
+                ], 1 )
+                if DISPLAY: display(sols_expanded, *[self.n for _ in range(sols_expanded.size()[1])], label='expansion')
+                qs_expanded = solqs[expanderindx][ii]
+                sols = torch.cat([sols_to_keep, sols_expanded], 0)
+                solqs = torch.cat([qs_to_keep, qs_expanded], 0)
+                solved = (num_checked + 1 >= query_lengths)[solqs]
+                solvedindx = torch.nonzero(solved).squeeze(1)
+                unsolvedindx = torch.nonzero(~solved).squeeze(1)
+                full_solutions = sols[solvedindx]
+                full_solqs = solqs[solvedindx]
+                sols = sols[unsolvedindx]
+                solqs = solqs[unsolvedindx]
+                for i, sol in enumerate(full_solutions):
+                    q = self.q.identify(full_solqs[i].item())
+                    assignments = {}
+                    for i, vi in enumerate(sol[2::2]):
+                        v = vi.item()
+                        if v < 0:
+                            nid = sol[i * 2 + 3].item()
+                            nident = self.n.identify(nid)
+                            assignments[self.v.identify(v)] = nident
+                    complete.setdefault(q, []).append(assignments)
+                if len(sols) == 0:
+                    break
+            p.stop()
+            p.start(f'postprocessing (MAX MEMORY: {torch.cuda.max_memory_allocated(self.device) / 1073741824:.3f}GB)')
+            # for query_graph in query_graphs:
+            #     del self.q[query_graph]           SWITCHED THIS FOR CM STRATEGY
+            # self.q.index = query_id_index
+            p.stop()
+            p.stop()
             return complete
-        p.next(f'creating graph tensor ({len(data_graph.nodes())} nodes, {len(data_graph.edges())} edges)')
-        edges = GraphTensor(data_graph, self.n, self.l, device=self.device) # GraphTensor<Tensor<X x 2: (s, l)>) -> (Tensor<Y: t>, Tensor<Y: inverse_index>>
-        p.next('initializing solutions matrix')
-        sols = torch.full((int(checklist.size()[0]), 2), self.n.get(root),  # Tensor<solution x step: ((qn1, dn1), (qn2, dn2), ...)> in-progress solutions
-                               dtype=torch.long, device=self.device)
-        solqs = torch.arange(0, len(self.q),                                # Tensor<solution: query> inverse indices for solutions
-                               dtype=torch.long, device=self.device)
-        p.stop()
-        p.start('loop')
-        for num_checked, reqs in enumerate(checklist.transpose(0, 1)):      # Tensor<query x 3: (s, l, t)>: required next edges
-            solreqs = reqs[solqs]
-            if DISPLAY: print('{:#^50s}'.format(f' ITER {num_checked} '))
-            if DISPLAY: display(solreqs, self.n, self.l, self.n, label='Requirements')
-            if DISPLAY: display(sols, *[self.n for _ in range(sols.size()[1])], label='sols')
-            tarfilters = self.assigned(sols, solreqs[:,2])
-            istarconst = solreqs[:,2] >= 0
-            target_const_indx = torch.nonzero(istarconst).squeeze(1)
-            tarfilters[target_const_indx] = solreqs[target_const_indx][:,2]
-            sources = self.assigned(sols, solreqs[:,0])
-            isfilter = tarfilters >= 0
-            filterindx = torch.nonzero(isfilter)
-            filterindx = filterindx.squeeze(1)
-            filters = torch.cat([
-                sources[filterindx].unsqueeze(1),
-                solreqs[filterindx][:,1:2],
-                tarfilters[filterindx].unsqueeze(1)
-            ], 1 )
-            satisfied = edges.has(filters)
-            if DISPLAY: display(torch.cat([filters, satisfied.to(torch.long)[:,None]], 1),
-                                self.n, self.l, self.n, None, label='filter')
-            satindx = torch.nonzero(satisfied).squeeze(1)
-            sols_to_keep = torch.cat([
-                sols[filterindx][satindx],
-                solreqs[filterindx][satindx][:,2:3],
-                tarfilters[filterindx][satindx].unsqueeze(1)
-            ], 1 )
-            qs_to_keep = solqs[filterindx][satindx]
-            expanderindx = torch.nonzero(~isfilter).squeeze(1)
-            sourcelabels = torch.cat([
-                sources[expanderindx].unsqueeze(1),
-                solreqs[expanderindx][:,1:2]
-            ], 1 )
-            targets, ii = edges.targets(sourcelabels)
-            sols_expanded = torch.cat([
-                sols[expanderindx][ii],
-                solreqs[expanderindx][ii][:,2:3],
-                targets.unsqueeze(1)
-            ], 1 )
-            if DISPLAY: display(sols_expanded, *[self.n for _ in range(sols_expanded.size()[1])], label='expansion')
-            qs_expanded = solqs[expanderindx][ii]
-            sols = torch.cat([sols_to_keep, sols_expanded], 0)
-            solqs = torch.cat([qs_to_keep, qs_expanded], 0)
-            solved = (num_checked + 1 >= query_lengths)[solqs]
-            solvedindx = torch.nonzero(solved).squeeze(1)
-            unsolvedindx = torch.nonzero(~solved).squeeze(1)
-            full_solutions = sols[solvedindx]
-            full_solqs = solqs[solvedindx]
-            sols = sols[unsolvedindx]
-            solqs = solqs[unsolvedindx]
-            for i, sol in enumerate(full_solutions):
-                q = self.q.identify(full_solqs[i].item())
-                assignments = {}
-                for i, vi in enumerate(sol[2::2]):
-                    v = vi.item()
-                    if v < 0:
-                        nid = sol[i * 2 + 3].item()
-                        nident = self.n.identify(nid)
-                        assignments[self.v.identify(v)] = nident
-                complete.setdefault(q, []).append(assignments)
-            if len(sols) == 0:
-                break
-        p.stop()
-        p.start(f'postprocessing (MAX MEMORY: {torch.cuda.max_memory_allocated(self.device) / 1073741824:.3f}GB)')
-        for query_graph in query_graphs:
-            del self.q[query_graph]
-        self.q.index = query_id_index
-        p.stop()
-        p.stop()
-        return complete
+
+
+class GmeCtxt:
+
+    def __init__(self, gme):
+        self.gme = gme
+        self.olds = []
+        self.indices = []
+
+    def __enter__(self):
+        idmaps = [self.gme.n, self.gme.v, self.gme.l, self.gme.q]
+        for idmap in idmaps:
+            self.olds.append(set(idmap))
+            self.indices.append(idmap.index)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        idmaps = [self.gme.n, self.gme.v, self.gme.l, self.gme.q]
+        for i, idmap in enumerate(idmaps):
+            for new in set(idmap) - self.olds[i]:
+                del idmap[new]
+            idmap.index = self.indices[i]
 
 
 if __name__ == '__main__':

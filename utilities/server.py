@@ -12,8 +12,9 @@ class DataEncoder(json.JSONEncoder):
         if isinstance(obj, Span):
             return obj.to_string()
         elif isinstance(obj, ConceptGraph):
-            return obj.save()
-        return json.JSONEncoder.default(self, object)
+            x = obj.save()
+            return x
+        return json.JSONEncoder.default(self, obj)
 
 def save(key, object):
     if key == 'aux_state':
@@ -50,19 +51,29 @@ def save(key, object):
             vars_json = list(vars)
             object[rule] = (pre_json, vars_json)
     elif key == 'template_response_sel':
-        string, predicates, type = object
+        string, predicates, topic_anchors, type = object
         if isinstance(predicates, ConceptGraph):
             predicates = predicates.save()
-        object = (string, predicates, type)
+        object = (string, predicates, topic_anchors, type)
     elif key == 'response_predicates':
         new_l = []
         for item in object:
-            (string, predicates), type = item
+            (string, predicates, topic_anchors), type = item
             if isinstance(predicates, ConceptGraph):
                 predicates = predicates.save()
-            new_l.append(((string, predicates), type))
+            new_l.append(((string, predicates, topic_anchors), type))
         object = new_l
-    object = json.dumps(object, cls=DataEncoder)
+    try:
+        object = json.dumps(object, cls=DataEncoder)
+    except TypeError as e:
+        print('Error: %s'%e)
+        print(key, object)
+        print(isinstance(object, ConceptGraph))
+        if isinstance(object, ConceptGraph):
+            x = object.save()
+            for a,b in x.items():
+                print(a, b)
+        raise Exception()
     return object
 
 def load(key, value):
@@ -124,22 +135,22 @@ def load(key, value):
         elif key == 'user_utterance':
             value = str(value)
         elif key == 'template_response_sel':
-            string, predicates, type = value
+            string, predicates, topic_anchors, type = value
             if isinstance(predicates, dict):
                 # is saved ConceptGraph
                 cg = ConceptGraph(namespace=predicates["namespace"])
                 ConceptGraph.load(cg, predicates)
                 predicates = cg
-            value = (string, predicates, type)
+            value = (string, predicates, topic_anchors, type)
         elif key == 'response_predicates':
             new_l = []
             for item in value:
-                (string, predicates), type = item
+                (string, predicates, topic_anchors), type = item
                 if isinstance(predicates, dict):
                     # is saved ConceptGraph
                     cg = ConceptGraph(namespace=predicates["namespace"])
                     ConceptGraph.load(cg, predicates)
                     predicates = cg
-                new_l.append(((string, predicates), type))
+                new_l.append(((string, predicates, topic_anchors), type))
             value = new_l
     return value

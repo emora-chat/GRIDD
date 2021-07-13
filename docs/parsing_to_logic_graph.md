@@ -15,8 +15,8 @@ The mapping between question word and semantic concept is:
 	adv(X/pstg(), Y/question_word())
 	aux(X, Z/pstg())
 	sbj(X, A/pstg())
-	precede(Y, Z)
-	precede(Z, A)
+	_precede(Y, Z)
+	_precede(Z, A)
 	-> q_aux_adv ->
 	p/Y(X, o/object())
 	request(user, o)
@@ -28,8 +28,8 @@ The mapping between question word and semantic concept is:
 	adv(X/pstg(), Y/question_word())
 	cop(X, Z/pstg())
 	sbj(X, A/pstg())
-	precede(Y, Z)
-	precede(Z, A)
+	_precede(Y, Z)
+	_precede(Z, A)
 	-> q_cop_adv ->
 	p/Y(X, o/object())
 	request(user, o)
@@ -61,7 +61,7 @@ Represented as `copula(sbj, request(user, question_concept))`.
 	cop(X/pstg(), Y/present_tense())
 	sbj(X, Z/pstg())
 	det(X, D/question_word())
-	precede(Y, Z)
+	_precede(Y, Z)
 	-> qdet_copula_present ->
 	p/Y(Z, inst/X())
 	request(user, inst)
@@ -74,7 +74,7 @@ Represented as `copula(sbj, request(user, question_concept))`.
 	cop(X/pstg(), Y/past_tense())
 	sbj(X, Z/pstg())
 	det(X, D/question_word())
-	precede(Y, Z)
+	_precede(Y, Z)
 	-> qdet_copula_past ->
 	p/Y(Z, inst/X())
 	request(user, inst)
@@ -86,7 +86,7 @@ Represented as `copula(sbj, request(user, question_concept))`.
   
 	cop(X/question_word(), Y/present_tense())
 	sbj(X, Z/pstg())
-	precede(Y, Z)
+	_precede(Y, Z)
 	-> qw_copula_present ->
 	p/Y(Z, o/object())
 	request(user, o)
@@ -97,7 +97,7 @@ Represented as `copula(sbj, request(user, question_concept))`.
 	
 	cop(X/question_word(), Y/past_tense())
 	sbj(X, Z/pstg())
-	precede(Y, Z)
+	_precede(Y, Z)
 	-> qw_copula_past ->
 	p/Y(Z, o/object())
 	request(user, o)
@@ -144,8 +144,8 @@ Represented by wrapping the subject/object/dative with the `request` predicate.
 	dat(X/pstg(), Y/question_word())
 	aux(X, Z/pstg())
 	sbj(X, A/pstg())
-	precede(Y, Z)
-	precede(Z, A)
+	_precede(Y, Z)
+	_precede(Z, A)
 	-> dat_question ->
 	p/beneficiary(X, o/object())
 	request(user, o)
@@ -225,14 +225,14 @@ What show has dinosaurs
 
 ## Interrogative Copula
 
-Copula constructions are in interrogative form when the copula precedes the subject. 
+Copula constructions are in interrogative form when the copula _precedes the subject. 
 
 <details>
   <summary>Conversions</summary>
 
 	cop(X/pstg(), Y/present_tense())
 	sbj(X, Z/pstg())
-	precede(Y, Z)
+	_precede(Y, Z)
 	-> q_sbj_copula_present ->
 	p/Y(Z,X)
 	q/request_truth(user, p)
@@ -243,7 +243,7 @@ Copula constructions are in interrogative form when the copula precedes the subj
 	
 	cop(X/pstg(), Y/past_tense())
 	sbj(X, Z/pstg())
-	precede(Y, Z)
+	_precede(Y, Z)
 	-> q_sbj_copula_past ->
 	p/Y(Z,X)
 	q/request_truth(user, p)
@@ -419,8 +419,8 @@ Captures truth questions asked about sentences with passive voice.
 	sbj(X/pstg(), Y/pstg())
 	obj(X, Z/pstg())
 	aux(X, A/past_tense())
-	precede(Z, X)
-	precede(A, Z)
+	_precede(Z, X)
+	_precede(A, Z)
 	-> q_sbj_obj_passive_voice_past ->
 	p/X(Y, Z)
 	time(p, past)
@@ -432,8 +432,8 @@ Captures truth questions asked about sentences with passive voice.
 
 	obj(X/pstg(), Z/pstg())
 	aux(X, A/past_tense())
-	precede(Z, X)
-	precede(A, Z)
+	_precede(Z, X)
+	_precede(A, Z)
 	-> q_obj_passive_voice_past ->
 	p/X(object(), Z)
 	time(p, past)
@@ -446,8 +446,8 @@ Captures truth questions asked about sentences with passive voice.
 	sbj(X/pstg(), Y/pstg())
 	obj(X, Z/pstg())
 	aux(X, A/present_tense())
-	precede(Z, X)
-	precede(A, Z)
+	_precede(Z, X)
+	_precede(A, Z)
 	-> q_sbj_obj_passive_voice_present ->
 	p/X(Y, Z)
 	time(p, now)
@@ -459,8 +459,8 @@ Captures truth questions asked about sentences with passive voice.
 
 	obj(X/pstg(), Z/pstg())
 	aux(X, A/present_tense())
-	precede(Z, X)
-	precede(A, Z)
+	_precede(Z, X)
+	_precede(A, Z)
 	-> q_obj_passive_voice_present ->
 	p/X(object(), Z)
 	time(p, now)
@@ -490,8 +490,8 @@ Captures sentences with passive voice.
 	sbj(X/pstg(), Y/pstg())
 	obj(X, Z/pstg())
 	aux(X, A/past_tense())
-	precede(Z, X)
-	precede(Z, A)
+	_precede(Z, X)
+	_precede(Z, A)
 	-> sbj_obj_passive_voice_past ->
 	p/X(Y, Z)
 	time(p, past)
@@ -503,8 +503,8 @@ Captures sentences with passive voice.
 	sbj(X/pstg(), Y/pstg())
 	obj(X, Z/pstg())
 	aux(X, A/present_tense())
-	precede(Z, X)
-	precede(Z, A)
+	_precede(Z, X)
+	_precede(Z, A)
 	-> sbj_obj_passive_voice_present ->
 	p/X(Y, Z)
 	time(p, now)
@@ -515,8 +515,8 @@ Captures sentences with passive voice.
 
 	obj(X/pstg(), Y/pstg())
 	aux(X, A/past_tense())
-	precede(Y, X)
-	precede(Y, A)
+	_precede(Y, X)
+	_precede(Y, A)
 	-> obj_passive_voice_past ->
 	p/X(object(), Y)
 	time(p, past)
@@ -527,8 +527,8 @@ Captures sentences with passive voice.
 
 	obj(X/pstg(), Y/pstg())
 	aux(X, A/present_tense())
-	precede(Y, X)
-	precede(Y, A)
+	_precede(Y, X)
+	_precede(Y, A)
 	-> obj_passive_voice_present ->
 	p/X(object(), Y)
 	time(p, now)
@@ -833,7 +833,7 @@ The overall tense of the question is also affected by the aux verb.
 	aux(X/pstg(), Y/past_tense())
 	type(Y, tenseful_aux)
 	sbj(X, Z/pstg())
-	precede(Y,Z)
+	_precede(Y,Z)
 	-> q_aux_past ->
 	q/request_truth(user, X)
 	p_time(X, past)
@@ -844,7 +844,7 @@ The overall tense of the question is also affected by the aux verb.
 	aux(X/pstg(), Y/present_tense())
 	type(Y, tenseful_aux)
 	sbj(X, Z/pstg())
-	precede(Y,Z)
+	_precede(Y,Z)
 	-> q_aux_present ->
 	q/request_truth(user, X)
 	p_time(X, now)
@@ -856,7 +856,7 @@ The overall tense of the question is also affected by the aux verb.
 	ref(Y, E/expression())
 	expr(E, have)
 	sbj(X, Z/pstg())
-	precede(Y,Z)
+	_precede(Y,Z)
 	-> q_aux_have ->
 	q/request_truth(user, X)
 	center(Y)
@@ -915,7 +915,7 @@ The overall meaning of the verb is also modified by the modal.
   
 	modal(X/pstg(), Y/md())
 	sbj(X, Z/pstg())
-	precede(Y, Z)
+	_precede(Y, Z)
 	-> q_modal ->
 	m/Y(X)
 	q/request_truth(user, m)
@@ -1131,7 +1131,7 @@ Captures possessive phrases by constructing a `possess` predicate between the po
 	-> agent_of_possessive ->
 	p/possess(Y, X)
 	focus(p)
-	center(Y)
+	link(Y)
 	;
 
 </details>
@@ -1450,11 +1450,19 @@ is a noun or pronoun; otherwise, instantiate it as a lone concept.
 
 <details>
   <summary>Conversions</summary>
+
+    X/singular()
+    ltype(X, object)
+    kbinstance(X)
+    -> instance_singular_noun ->
+    focus(X)
+    center(X)
+    ;
     
     X/singular()
     ltype(X, object)
-    -> singular_noun ->
-    focus(X)
+    -> notinstance_singular_noun ->
+    focus(X())
     center(X)
     ;
     

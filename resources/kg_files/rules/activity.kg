@@ -7,17 +7,40 @@ l:<l/like(user, e)>
 request_truth(emora, l)
 ;
 
-time(ac/activity(user),past)
-type(ac,leisure)
+do(user,workout())
 ->
-utr/take(user,r/rest())
-time(utr,past)
-glad(emora,utr)
+healthy(user)
+he/hike(emora)
+time(he,past)
+;
+
+gu/go(user)
+to(gu,gym())
+->
+healthy(user)
+he/hike(emora)
+time(he,past)
+;
+
+gu/go(user)
+for(gu,walk())
+->
+healthy(user)
+he/hike(emora)
+time(he,past)
+;
+
+ac/exercise(user)
+type(ac,outdoor)
+->
+healthy(user)
+he/hike(emora)
+time(he,past)
 ;
 
 /* take rest */
 
-time(un/nap(user),past)
+un/nap(user)
 ->
 glad(emora,un)
 ;
@@ -119,8 +142,8 @@ type(p2, group)
 
 /* watch tv */
 
-time(uwt/watch(user,t1/tv()),past)
--> user_watched_tv ->
+uwt/watch(user,t1/tv())
+-> user_watch_tv ->
 h:<h/have(user,t2/thought()) type(t2,group) about(t2,t1)>
 request_truth(emora,h)
 ;
@@ -173,17 +196,17 @@ to(talk(user),emora)
 
 /* transportation */
 
-time(urb/ride(user,bicycle()),past)
+urb/ride(user,bicycle())
 ->
-time(ub/bike(user),past)
+ub/bike(user)
 ;
 
-time(ub/bike(user),past)
+ub/bike(user)
 ->
 healthy(ub)
 ;
 
-time(drive(user),past)
+drive(user)
 ->
 time(de/drive(emora),past)
 boring(de)
@@ -197,7 +220,7 @@ time(re/rent(emora,car()),past)
 in(re,boston)
 ;
 
-time(take(user,tr/trans_ob()),past)
+take(user,tr/trans_ob())
 _specific(tr)
 ->
 utr:<utr/try(user,rt/RV_trip()) type(rt,group) time(utr,past)>
@@ -206,14 +229,14 @@ request_truth(emora,utr)
 
 /* cleaning */
 
-time(uc/clean(user),past)
+uc/clean(user)
 ->
 organized(uc)
 ;
 
 /* needs exercise */
 
-time(s/sit(user),past)
+s/sit(user)
 ->
 need(user,exercise())
 ;
@@ -222,7 +245,6 @@ need(user,exercise())
 
 ut/talk(user)
 to(ut,p/person())
-time(ut,past)
 ->
 utc:<   mu/meet(user)
         with(fd/friend())
@@ -269,7 +291,7 @@ type(vc,group)
 
 /* shopping */
 
-time(shop(user),past)
+shop(user)
 ->
 se/shop(emora)
 love(emora,se)
@@ -313,7 +335,7 @@ m/meditation()
 good(m)
 ;
 
-time(meditate(user),past)
+meditate(user)
 ->
 good(meditation())
 ;
@@ -339,4 +361,12 @@ request(emora,o)
 have(user,fun())
 ->
 happy(user)
+;
+
+/* gardening */
+
+garden(user)
+->
+possess(emora,m/mother())
+time(garden(m),now)
 ;

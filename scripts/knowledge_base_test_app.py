@@ -60,7 +60,7 @@ if __name__ == '__main__':
                     wm.concatenate(cg)
 
             print('*'*20)
-            output = wm.ugly_print(exclusions={'is_type', 'object', 'predicate', 'entity', 'post', 'pre'})
+            output = wm.ugly_print(exclusions={'object', 'predicate', 'entity', 'post', 'pre'})
             print(output)
             print('*'*20)
             logic_string = input('>>> ')

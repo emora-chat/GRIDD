@@ -74,7 +74,7 @@ possess(user, act/activity()) in(act, z)
 favorite(act)
 request(emora, act)
 ->
-$ Oh, I see. It can be a hassle to travel and get tickets, so that makes sense. When you do go, what's your favorite thing to do in the zoo? I love to watch the flamingos. Their knees give them such a funky appearance, so watching them is a lot of fun. $
+$ Oh, I see. Yeah it's been hard to go during the pandemic, and even when I can go it's pretty expensive. When you do go, what's your favorite thing to do in the zoo? I love to watch the flamingos. Their knees give them such a funky appearance, so watching them is a lot of fun. $
 ;
 
 think(emora, diverse(animal))
@@ -88,4 +88,11 @@ think(emora, awesome(animal))
 time(l/like(user, a/animal()), now)
 ->
 $ Well, I suppose that's logical. I still think pets are really awesome, but I think it's perfectly reasonable for you to not want one. $
+;
+
+be_0/be(cheetah(), fast)
+req_unsat(request(user, object_0/object()))
+qualifier(be_0, object_0)
+->
+$ They can run at speeds of up to around 60 miles per hour. Isn't that crazy? That's as fast as a car. $
 ;
