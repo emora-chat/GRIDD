@@ -148,11 +148,11 @@ class ResponseTemplateFiller:
                 aux_state.setdefault('responses', {})[r_id[0]] = (r_id[1], r_string)
                 string = r_string + ' '
             candidates = list(set(fallback_options.keys()) - set(aux_state.get('fallbacks', [])))
-            # candidates = ['pet_fallback', 'ai_fallback', 'art_fallback']
+            # candidates = ['ai', 'pet', 'sport', 'movie', 'postpandemicnlg',
+            #               'art', 'reading', 'tech', 'food', 'videogame', 'travel', 'phone']
             if len(candidates) > 0:
                 selected = random.choice(candidates)
-                # idx = len(aux_state.get('fallbacks', []))
-                # selected = candidates[idx]
+                # selected = candidates[len(aux_state.get('fallbacks', []))] + '_fallback'
                 if 'fallbacks' not in aux_state:
                     aux_state['fallbacks'] = []
                 if selected not in aux_state['fallbacks']:
