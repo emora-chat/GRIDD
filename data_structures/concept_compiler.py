@@ -306,7 +306,7 @@ class ConceptVisitor(Visitor_Recursive):
     def type_init(self, tree):
         newtype = [str(c) for c in tree.children[0].children]
         self.check_double_init(newtype, self.instances)
-        self.check_double_init(newtype, self.types)
+        # self.check_double_init(newtype, self.types)
         supertypes = [str(c.children[0]) for c in tree.children[1:]]
         newconcepts = []
         for t, st in combinations(newtype, supertypes):
@@ -405,9 +405,9 @@ class ConceptVisitor(Visitor_Recursive):
             self.lentries.append((arg0, type, arg1, newconcepts[i]))
             self.plinstances.add(newconcepts[i])
             if type == 'type':  # ???   Explicit new type creation with type bipredicate
-                self.types.add(arg0)  # ???
-            if arg1 in self.predicates:  # ???
-                self.predicates.add(arg0)  # ???
+                self.types.add(arg1)  # ???
+                if arg1 in self.predicates:  # ???
+                    self.predicates.add(arg0)  # ???
         for concept in newconcepts: self.lmetadatas.setdefault(concept, {})['isinstance'] = True
         tree.refs = newconcepts
         tree.inits = newconcepts

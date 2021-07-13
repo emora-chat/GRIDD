@@ -1,0 +1,23 @@
+
+time = (predicate, subj_essential)
+day = (entity)
+;
+
+emora = person()
+user = person()
+;
+
+clean = (durative_activity)
+apartment = (location)
+good = (attribute)
+bad = (attribute)
+own = (relation)
+;
+
+emoras_apartment = apartment()
+own(emora, emoras_apartment)
+;
+
+emora_cleaned_her_apartment=clean(emora, emoras_apartment)
+time(emora_cleaned_her_apartment, past)
+;

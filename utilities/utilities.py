@@ -56,6 +56,15 @@ def collect(*files_folders_or_strings, extension=None):
             counter += 1
     return collected
 
+
+def dict_of_sets_merge(*dictionaries):
+    result = {}
+    for d in dictionaries:
+        for k, v in d.items():
+            result.setdefault(k, v).update(v)
+    return result
+
+
 class hashabledict(dict):
   def __key(self):
     return tuple((k,self[k]) for k in sorted(self))

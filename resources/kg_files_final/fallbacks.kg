@@ -1,0 +1,6 @@
+
+a:<do(user, a/activity())>
+request(emora, a)
+-> pet_fallback ->
+$ So, what have you been up to today ? $
+;

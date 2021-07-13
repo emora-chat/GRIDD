@@ -1,5 +1,5 @@
 
-KB_FOLDERNAME = 'kg_files'      # Folder name for knowledge base .kg files
+KB_FOLDERNAME = 'kg_files_final'      # Folder name for knowledge base .kg files
 
 KB = 'kb'                       # Namespace of Knowledge Base Concept Graph
 WM = 'wm'                       # Namespace of Working Memory Concept Graph
@@ -105,7 +105,7 @@ COH_WEIGHT = 0.33
 DEFAULT_PRIORITY = 0.5
 PRIORITY_PRED = '_pr'
 
-DEFAULT_TEMPLATE_TYPE = '_rpresent'
+DEFAULT_TEMPLATE_TYPE = '_present'
 TEMPLATE_TYPE = '_t'
 
 REP_TYPE = '_rep'

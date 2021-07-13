@@ -1,0 +1,12 @@
+activity__t
+->
+emora_cleaned_her_apartment
+;
+
+activity__t
+->
+g:<have(user, d/day()) g/good(d)>
+request_truth(emora, g)
+;
+
+
