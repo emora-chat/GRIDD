@@ -1,37 +1,41 @@
 emora_cleaned_her_apartment
 ->
+_pr(_low)
 $ Today I cleaned my apartment! $
 ;
 
-have(user, d/day()) g/good(d)
+possess(user, d/day()) g/good(d)
 request_truth(emora, g)
 ->
+_pr(_low)
 $ Has your day been going well? $
 ;
 
 uturn(g, 0)
-h/have(user, d/day()) g/good(d)
+h/possess(user, d/day()) g/good(d)
 ->
 _t(_r)
 $ That's great! I'm glad you're having a good day! $
 ;
 
 uturn(g, 0)
-h/have(user, d/day()) not(g/good(d))
+h/possess(user, d/day()) not(g/good(d))
 ->
 _t(_r)
 $ Oh no! Well I hope it gets better for you soon! $
 ;
 
-h/have(user, d/day()) g/good(d)
+h/possess(user, d/day()) g/good(d)
 cause(h, object())
 ->
+_pr(_high)
 $ Tell me, why is your day going well? $
 ;
 
-h/have(user, d/day()) not(g/good(d))
+h/possess(user, d/day()) not(g/good(d))
 cause(h, object())
 ->
+_pr(_high)
 $ Tell me, why is your day not going so well? $
 ;
 
@@ -39,5 +43,7 @@ emora_loves_naps
 ->
 $ I love naps. Some people say they feel guilty afterwards but I think its just nice to relax. $
 ;
+
+
 
 

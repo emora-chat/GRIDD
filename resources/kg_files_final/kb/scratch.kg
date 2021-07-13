@@ -5,13 +5,17 @@ day = (entity)
 
 emora = person()
 user = person()
+expr("i, me, my, mine", user)
+expr("you, your, yours", emora)
 ;
 
 clean = (durative_activity)
 apartment = (location)
 good = (attribute)
 bad = (attribute)
-own = (relation)
+possess = (relation)
+have = (possess)
+own = (have)
 ;
 
 emoras_apartment = apartment()
