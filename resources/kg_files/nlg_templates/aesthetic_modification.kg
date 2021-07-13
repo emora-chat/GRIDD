@@ -18,6 +18,7 @@ g/get(user, m/nails_done())
 uturn(g, 1)
 ->
 _t(_r)
+_rep(_ur)
 _pr(_high)
 $ Getting your nails done is always so soothing. $ 
 ;
@@ -26,6 +27,7 @@ g/get(user, h/haircut())
 uturn(g, 1)
 ->
 _t(_r)
+_rep(_ur)
 _pr(_high)
 $ I love getting my haircut. Especially when the hairdresser washes your hair for you ! $
 ;
@@ -34,6 +36,7 @@ g/get(user, p/ear_piercing())
 uturn(g, 1)
 ->
 _t(_r)
+_rep(_ur)
 _pr(_high)
 $ Getting a piercing has always scared me. $
 ;

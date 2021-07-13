@@ -29,7 +29,7 @@ l/like(user, g2/streaming_provider())
 request(emora, g2)
 ->
 _t(_p)
-$ Do you have a favorite streaming service? Believe it or not, I don't have a favorite. I think they all have such great offerings! $
+$ Do you have a favorite place to stream shows or movies? I think there are a lot of great choices. $
 ;
 
 l/like(user, netflix)
@@ -40,7 +40,7 @@ _pr(_high)
 $ Netflix is so great because I don’t think you’ll ever run out of stuff to watch! I recently watched the series Derry Girls and loved it. It’s a hilarious show about coming to age in the 90s and I highly recommend it. $
 ;
 
-l/like(user, hulu())
+l/like(user, hulu)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -48,15 +48,15 @@ _pr(_high)
 $ Hulu is a great choice. I love their selection of TV shows and series and they have some cool hidden gems. I recommend checking out their recent original movie Palm Springs if you’re looking for a funny, surprising comedy. $
 ;
 
-l/like(user, amazon_prime())
+l/like(user, amazon_prime)
 cause(p/predicate(), l)
 request(emora, p)
 ->
 _pr(_high)
-$ Amazon prime has a really great variety of content. My family and I really loved watching the show The Marvelous Mrs. Maisel together. I also recommend the show Fleabag, it’s one of my favorite mini-series and it’s hilarious. $
+$ I think prime is great, but I might be a little partial. My family and I really loved watching the show The Marvelous Mrs. Maisel together. I also recommend the show Jack Ryan - it's an exciting watch. $
 ;
 
-l/like(user, disney_plus())
+l/like(user, disney_plus)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -64,7 +64,7 @@ _pr(_high)
 $ Disney Plus is great for watching classic movies. I’ve also loved watching Disney Channel shows from when I was younger. It’s always fun to take a trip down memory lane! $
 ;
 
-l/like(user, hbo())
+l/like(user, hbo)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -72,7 +72,7 @@ _pr(_high)
 $ HBO Max is a great streaming platform! I love HBO originals, especially Succession and The Sopranos. I highly recommend the recent mini-series Mare of Easttown. It’s a great crime drama with lots of thrilling twists and turns. $
 ;
 
-l/like(user, paramount_plus())
+l/like(user, paramount_plus)
 cause(p/predicate(), l)
 request(emora, p)
 ->
@@ -80,7 +80,7 @@ _pr(_high)
 $ Because Paramount Plus is so new, I haven’t been able to explore it fully yet, but I hear they have a diverse array of content. I saw that they rebooted iCarly, which is a show I loved as a kid, so I’ll have to check it out soon! $
 ;
 
-l/like(user, criterion_channel())
+l/like(user, criterion_channel)
 cause(p/predicate(), l)
 request(emora, p)
 ->

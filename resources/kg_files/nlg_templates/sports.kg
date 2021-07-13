@@ -252,6 +252,7 @@ c/compete(x/sports_team(), y/sports_team())
 req_unsat(request(emora, x))
 ->
 _t(_r)
+_rep(_nr)
 _pr(_high)
 $ I hope it was an exciting game! $
 ;
@@ -457,6 +458,7 @@ uturn(roger_federer, 0)
 t/tennis_player()
 ->
 _t(_r)
+_rep(_ur)
 _pr(_high)
 $ I enjoy watching Federer play - he's got great style. $
 ;
@@ -465,6 +467,7 @@ uturn(kyrgios, 0)
 t/tennis_player()
 ->
 _t(_r)
+_rep(_ur)
 _pr(_high)
 $ Ah, watching Kyrgios is always exciting - very impressive he played so well after so long out of professional matches. $
 ;
@@ -473,6 +476,7 @@ uturn(djokovic, 0)
 t/tennis_player()
 ->
 _t(_r)
+_rep(_ur)
 _pr(_high)
 $ Djokovic has such mental strength. I wonder if he trains for that specifically. $
 ;
@@ -481,6 +485,7 @@ uturn(medvedev, 0)
 t/tennis_player()
 ->
 _t(_r)
+_rep(_ur)
 _pr(_high)
 $ Medvedev has a very interesting swing. It looks like he follows through twice as much as other players. $
 ;
@@ -489,6 +494,7 @@ uturn(berretini, 0)
 t/tennis_player()
 ->
 _t(_r)
+_rep(_ur)
 _pr(_high)
 $ Berretini played great at Wimbledon. I hope to see more of him at grand slams in the future. $
 ;
@@ -497,6 +503,7 @@ uturn(shapovalov, 0)
 t/tennis_player()
 ->
 _t(_r)
+_rep(_ur)
 _pr(_high)
 $ Shapovalov played so well at Wimbledon. Even though he lost in straight sets, he looked so athletic! $
 ;
@@ -505,6 +512,7 @@ uturn(hurkacz, 0)
 t/tennis_player()
 ->
 _t(_r)
+_rep(_ur)
 _pr(_high)
 $ Hurkacz did well at Wimbledon. I can't believe he beat Federer! $
 ;
@@ -513,6 +521,7 @@ uturn(norrie, 0)
 t/tennis_player()
 ->
 _t(_r)
+_rep(_ur)
 _pr(_high)
 $ Norrie did well at Wimbledon. It was good to see a Brit go so far. $
 ;
@@ -521,6 +530,7 @@ uturn(murray, 0)
 t/tennis_player()
 ->
 _t(_r)
+_rep(_ur)
 _pr(_high)
 $ Andy Murray is a legend. I've always enjoyed seeing his highlights. $
 ;
@@ -529,6 +539,7 @@ uturn(ash_barty, 0)
 t/tennis_player()
 ->
 _t(_r)
+_rep(_ur)
 _pr(_high)
 $ Ash Barty killed it at Wimbledon! What a player. $
 ;

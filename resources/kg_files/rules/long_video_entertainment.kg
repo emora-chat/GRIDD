@@ -461,11 +461,11 @@ w/watch(user, m/movie())
 _category(m)
 user_aware(w)
 -> user_watched_unspecified_movie ->
-op_more_info(m, w)
 request(emora, m)
 ;
 
 w2/watch(user, m2/movie())
+_specific(m2)
 req_unsat(r/request(emora, m2))
 -> user_watched_unknown_movie ->
 l/like(user, m2)
@@ -900,4 +900,16 @@ l/like(user, a/film_noir())
 _specific(a)
 ->
 l2/like(user, b/film_noir())
+;
+
+w/watch(user, s/streaming_provider())
+->
+l/like(user, s)
+user_aware(l)
+;
+
+u/use(user, s/streaming_provider())
+->
+l/like(user, s)
+user_aware(l)
 ;
