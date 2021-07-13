@@ -29,7 +29,6 @@ i/like(user, t)
 
 da/dangerous2(a)
 d/agree(user, da)
-d
 user_aware(d)
 ->
 _t(_rpresent)
@@ -47,7 +46,6 @@ $ Honestly, I like to just think about how A I works. I am a virtual chatbot, bu
 t/talk(user)
 about(t,aa/ai())
 i/like(user, t)
-
 da/dangerous2(aa)
 d/agree(user, da)
 request_truth(emora, d)
