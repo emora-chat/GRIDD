@@ -79,7 +79,7 @@ def save(key, object):
 def load(key, value):
     if value is not None:
         try:
-            value = json.loads(value) if isinstance(value, str) else value
+            value = json.loads(value) if isinstance(value, str) and key != 'text' else value
         except json.JSONDecodeError as e:
             print('--SERVER LOAD UTILITY--')
             print('ERROR:', e)
