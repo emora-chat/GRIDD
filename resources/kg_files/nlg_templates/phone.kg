@@ -119,3 +119,10 @@ _t(_rpresent)
 $ Interesting. What apps do you need a faster phone for? I feel like most phones now are plenty fast for most normal stuff. $
 ;
 
+h:<h/have(user, p/phone())>
+r/request_truth(emora, h)
+temppred(h)
+-> 
+_pr(_high)
+$ Oh, I was meaning to ask, do you have a phone ? $
+;

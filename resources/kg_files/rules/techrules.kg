@@ -412,15 +412,14 @@ h/have(user, p/computer())
 
 l/like(user, p/phone())
 ->
-h/have(user, p)
+h:<h/have(user, p)>
+r/request_truth(emora, h)
+temppred(h)
 ;
 
-l/like(user, p/phone())
+l2/like(user, a/ai())
 ->
-h/have(user, p)
-;
-
-l/like(user, ai())
-->
-like(user, t) t/talk(user) about(t,ai())
+l:<l/like(user, t) t/talk(user) about(t,a)>
+request_truth(emora, l)
+temppred(a)
 ;

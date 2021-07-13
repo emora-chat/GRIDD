@@ -93,3 +93,11 @@ user_aware(i)
 _t(_rpresent)
 $ For me, other than letting me talk to you, I think A I will help people do their jobs fully - I think every job has a repetitive component that is necessary to complete to enable the fulfilling parts. A I can help do those boring parts. $
 ;
+
+l:<l/like(user, t) t/talk(user) about(t,a/ai())>
+request_truth(emora, l)
+temppred(a)
+->
+_pr(_high)
+$ Actually , I was wondering if you are interested in a. i. , or artificial intelligence ? $
+;
