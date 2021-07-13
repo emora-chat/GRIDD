@@ -15,3 +15,25 @@ h/have(user, d/day()) g/good(d)
 _t(_r)
 $ That's great! I'm glad you're having a good day! $
 ;
+
+uturn(g, 0)
+h/have(user, d/day()) not(g/good(d))
+->
+_t(_r)
+$ Oh no! Well I hope it gets better for you soon! $
+;
+
+h/have(user, d/day()) g/good(d)
+cause(h, object())
+->
+$ Tell me, why is your day going well? $
+;
+
+h/have(user, d/day()) not(g/good(d))
+cause(h, object())
+->
+$ Tell me, why is your day not going so well? $
+;
+
+
+

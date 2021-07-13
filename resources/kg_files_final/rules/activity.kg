@@ -9,4 +9,8 @@ g:<have(user, d/day()) g/good(d)>
 request_truth(emora, g)
 ;
 
-
+h/have(user, d/day()) g/good(d)
+_exists(g)
+->
+cause(h, object())
+;
