@@ -141,7 +141,7 @@ type(v, group)
 possess(computer, cheap(v))
 ->
 $ Yeah, computers are great for playing games. There's a ton of options to choose from so you can always find a game you like. Not to mention that they're usually cheaper than console games. $
-$ Computers are pretty great for gaming. They easily have the biggest variety of games, and you can customize your setup to your needs.
+$ Computers are pretty great for gaming. They easily have the biggest variety of games, and you can customize your setup to your needs. $
 ;
 
 like(x/person(), convenient(p/phone()))
