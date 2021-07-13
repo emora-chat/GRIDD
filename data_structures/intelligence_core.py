@@ -308,7 +308,7 @@ class IntelligenceCore:
                     if not use_kb:
                         print('\t%s'%(c))
                     else:
-                        if len(self.knowledge_base.objects(c, TYPE)) == 0:
+                        if not self.knowledge_base.has(predicate_id=c) and len(self.knowledge_base.objects(c, TYPE)) == 0:
                             print('\t%s (%s)'%(c, file))
 
     def know(self, knowledge, source_cg, **options):

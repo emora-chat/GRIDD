@@ -1,5 +1,5 @@
 
-KB_FOLDERNAME = 'kg_files'      # Folder name for knowledge base .kg files
+KB_FOLDERNAME = 'kg_files_stripped'      # Folder name for knowledge base .kg files
 
 KB = 'kb'                       # Namespace of Knowledge Base Concept Graph
 WM = 'wm'                       # Namespace of Working Memory Concept Graph
