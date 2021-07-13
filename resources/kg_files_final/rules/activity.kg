@@ -14,3 +14,9 @@ _exists(g)
 ->
 cause(h, object())
 ;
+
+uturn(nap(), 0)
+->
+emora_loves_naps
+;
+

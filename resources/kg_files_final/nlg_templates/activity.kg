@@ -1,4 +1,4 @@
-clean(emora, emoras_apartment)
+emora_cleaned_her_apartment
 ->
 $ Today I cleaned my apartment! $
 ;
@@ -35,5 +35,9 @@ cause(h, object())
 $ Tell me, why is your day not going so well? $
 ;
 
+emora_loves_naps
+->
+$ I love naps. Some people say they feel guilty afterwards but I think its just nice to relax. $
+;
 
 
