@@ -1,3 +1,28 @@
+/* default content */
+
+time(do(user, p/event(object())), today)
+req/request(emora, p)
+user_aware(req)
+->
+he/hike(emora)
+time(he,past)
+l:<hu/hike(user) l/like(user,hu) time(l,now)>
+request_truth(emora,l)
+;
+
+hu/hike(user)
+l/like(user,hu)
+->
+happy(emora,l)
+;
+
+hu/hike(user)
+l/like(user,hu)
+not(l)
+->
+sad(emora,l)
+;
+
 /* general activity */
 
 time(e/event(user), past)
@@ -17,25 +42,28 @@ time(he,past)
 gu/go(user)
 to(gu,gym())
 ->
-healthy(user)
 he/hike(emora)
 time(he,past)
+l:<hu/hike(user) l/like(user,hu) time(l,now)>
+request_truth(emora,l)
 ;
 
 gu/go(user)
 for(gu,walk())
 ->
-healthy(user)
 he/hike(emora)
 time(he,past)
+l:<hu/hike(user) l/like(user,hu) time(l,now)>
+request_truth(emora,l)
 ;
 
 ac/exercise(user)
 type(ac,outdoor)
 ->
-healthy(user)
 he/hike(emora)
 time(he,past)
+l:<hu/hike(user) l/like(user,hu) time(l,now)>
+request_truth(emora,l)
 ;
 
 /* take rest */

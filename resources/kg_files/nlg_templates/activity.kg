@@ -1,3 +1,31 @@
+he/hike(emora)
+time(he,past)
+hu/hike(user)
+l/like(user,hu)
+time(l,now)
+request_truth(emora,l)
+->
+_t(_rp)
+$ It's good to hear that you are keeping yourself healthy by getting some exercise ! I actually just came back from hiking . Do you enjoy hiking too ? $
+;
+
+hu/hike(user)
+l/like(user,hu)
+happy(emora,l)
+->
+_t(_p)
+$ For me , I really love breathing the fresh air and walking across the trees . I always feel refreshed after hiking . $
+;
+
+hu/hike(user)
+l/like(user,hu)
+not(l)
+sad(emora,l)
+->
+_t(_rp)
+$ I understand that . Sometimes , I also prefer more leisure activities like listening to soft music when laying in bed . $
+;
+
 /* general activity */
 
 time(e/event(user), past)
@@ -7,14 +35,6 @@ request_truth(emora, l)
 _pr(_low)
 _t(_p)
 $ Did you have a good time doing that ? $
-;
-
-healthy(user)
-he/hike(emora)
-time(he,past)
-->
-_t(_rpresent)
-$ Exercising is such a healthy habit to have ! I actually just came back from hiking . $
 ;
 
 /* take rest */

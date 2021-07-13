@@ -8,6 +8,7 @@ request_truth(emora,lc)
 ->
 _t(_rpresent)
 $ Ah , I see . Sometimes I like staying at home too . Do you prefer cooking at home over going to restaurants then ? $
+$ That makes sense to me . Because of similar reasons , sometimes I would prefer cooking at home over going to restaurant .  Do you feel the same way ? $
 ;
 
 time(possess(user,tp/trip()),Z/datetime())
@@ -16,6 +17,7 @@ request(emora,p)
 ->
 _t(_present)
 _pr(_low)
+_rep(_nr)
 $ How is{"t":"#Z"} your trip ? I hope everything go{"t":"#Z","s":"everything"} well for you . $
 ;
 
@@ -24,6 +26,7 @@ request_truth(emora,l)
 ->
 _t(_present)
 _pr(_low)
+_rep(_nr)
 $ Do you like the trip ? I have actually traveled to many places . I like most of my trips , but sometimes unpleasant things still happen . The virtual world can be unpredictable . $
 ;
 
@@ -65,7 +68,9 @@ request_truth(emora,l)
 uturn(X,0)
 ->
 _t(_present)
+_rep(_ur)
 $ I've traveled to several countries too , like China , France , and the United States . Do you like X ? $
+$ Do you like X a lot ? $
 ;
 
 like(user,X/country())
