@@ -20,5 +20,6 @@ great_gatsby=book()
 expr("the great gatsby, great gatsby", great_gatsby)
 fahrenheit_451=book()
 expr("fahrenheit 451", fahrenheit_451)
-
+percy_jackson=book()
+expr("percy jackson, percy jackson and the olypmians, the lightning thief, the sea of monsters, the titan's curse, the battle of the labyrinth, the last olympian, the lost hero, the son of neptune, the mark of athena, the house of hades, the blood of olympus", percy_jackson)
 ;

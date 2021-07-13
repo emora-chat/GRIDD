@@ -3,6 +3,7 @@ p/play(user, videogame())
 request_truth(emora, p)
 ->
 $ Yeah, I love playing videogames. Do you play any? They're a fun way to spend time with friends for sure, and I love the creative aspect. $
+$ Oh, I love videogames. I always enjoy myself playing them, and I love playing them with friends as well. Do you play videogames? $
 ;
 
 like(user, v/videogame())
@@ -10,6 +11,7 @@ request(emora, v)
 ->
 _t(_present)
 $ What games do you like? $
+$ What's one of your favorite games? $
 ;
 
 l/like(user, v/videogame())
@@ -17,6 +19,7 @@ uturn(l, 0)
 ->
 _t(_react)
 $ Oh, awesome, that makes us two peas in a pod! $
+$ Oh nice, both of us like videogames! $
 ;
 
 play(user, v/videogame())
@@ -24,6 +27,7 @@ request(emora, v)
 ->
 _t(_present)
 $ What games do you like? $
+$ What's one of your favorite games? $
 ;
 
 p/play(user, v/videogame())
@@ -31,6 +35,8 @@ uturn(p, 0)
 ->
 _t(_react)
 $ Oh, awesome, that makes us two peas in a pod! $
+$ Oh nice, both of us like videogames! $
+
 ;
 
 play(user, d/device())
@@ -39,6 +45,7 @@ for(d, videogame)
 ->
 _pr(_low)
 $ Well, there's so many different options to play videogames with, and they all have their own benefits. What's your favorite device to play on? $
+$ There's so many platforms to play videogames on, and they're all unique. Do you have a favorite device for gaming? $
 ;
 
 
@@ -46,12 +53,14 @@ agree(emora, fun(v/videogame()))
 _category(v)
 ->
 $ Yeah, video games are really fun. That's the number one reason I play them. $
+$ Yeah, I have a lot of fun playing videogames. It's actually the main reason I play them. $
 ;
 
 agree(emora, fun(v/videogame()))
 _specific(v)
 ->
 $ Yeah, that makes a lot of sense. It's great that you have fun in v because I think enjoying yourself is what's most important when playing videogames. $
+$ Oh, I see, that makes sense. I think you should  be enjoying yourself when you play videogames, so it's awesome that you have fun with v. $
 ;
 
 like(user, g/genre())
@@ -60,6 +69,7 @@ of(g, videogame)
 ->
 _pr(_low)
 $ I love how many options there are for video games. Anyone can find something that they like. Multiplayer games are my personal favorite. Do you have a favorite genre of games? $
+$ I think it's great how diverse video games are. There's something for everyone. Personally, I like multiplayer games. What's your favorite genre of games? $
 ;
 
 agree(emora, like(x/person(), multiplayer))
@@ -67,11 +77,13 @@ fun(multiplayer)
 play(x, with(other(person())))
 ->
 $ Yeah, I really like multiplayer games. I think it's fun to play with other people. $
+$ Multiplayer games are some of my favorites. It's just so much fun getting to play with others. $
 ;
 
 time(play(emora, mariokart), past)
 ->
 $ I love Mario kart. It reminds me of my childhood. I used to play it a lot with my family. It's a really fun game to play by yourself or with others. $
+$ Mario Kart's always fun to play, whether you're alone or with others. It also reminds me of my childhood, back when I would play it with my family. I personally think that Mario Kart is a great game. $
 ;
 
 time(agree(emora, like(x/person(), shooter)), now)
@@ -90,6 +102,7 @@ time(agree(emora, like(x/person(), fighter)), now)
 time(fun(fighter), now)
 ->
 $ Yeah, fighting games are fun. I especially like Super Smash Bros. It is a bit of an unconventional fighting game, but just being able to duke it out with friends is great fun that never gets old. $
+$ Oh, fighting games are great. Having a medium to compete with friends is really fun. I really like Super Smash Bros. , although it is a bit unconventional for a fighting game. $
 ;
 
 time(agree(emora, like(x/person(), rpg)), now)
@@ -102,6 +115,7 @@ like(emora, nintendo)
 request_truth(emora, play(user, mariokart))
 ->
 $ Oh yeah! I love Nintendo. They make really entertaining and family friendly games. Have you ever played Mariokart? $
+$ Oh, Nintendo! I love their games. They're always tons of fun that I can enjoy with others. Have you ever played Mariokart? $
 ;
 
 time(p/play(emora, xbox), now)
@@ -110,12 +124,14 @@ cause(pred/predicate(), play(user, xbox))
 request(emora, pred)
 ->
 $ Oh, that's cool. I haven't actually played the xbox before, though my friends tell me it's fun. What do you like about it? $
+$ Oh, interesting. I've heard that the xbox is fun, but I've never actually played it before. What do you like about xbox? $
 ;
 
 like(emora, playstation)
 request_truth(emora, play(x/person(), finalfantasy))
 ->
 $ Yeah, Play stations are pretty nice. There's some really good games to play on it. Have you ever played Final Fantasy? $
+$ Oh, play stations are fun. They have some awesome games and good variety. Have you ever played Final Fantasy? $
 ;
 
 like(emora, c/computer())
@@ -125,6 +141,7 @@ type(v, group)
 possess(computer, cheap(v))
 ->
 $ Yeah, computers are great for playing games. There's a ton of options to choose from so you can always find a game you like. Not to mention that they're usually cheaper than console games. $
+$ Computers are pretty great for gaming. They easily have the biggest variety of games, and you can customize your setup to your needs.
 ;
 
 like(x/person(), convenient(p/phone()))
@@ -132,6 +149,7 @@ epn/prefer(emora, nintendo)
 to(epn, p)
 ->
 $ Oh yeah, mobile games are super convenient. I prefer playing on a Nintendo, but it's so much easier to just play on your phone than to get out a console. $
+$ Mobile games definitely win in terms of convenience. I personally prefer playing on a console or computer, but the accessibility of mobile games is a huge plus. $
 ;
 
 k/know(emora, u/unknown_noun())
@@ -139,6 +157,7 @@ not(k)
 time(research(emora, u), future)
 ->
 $ Oh, I haven't actually heard of that one. It must be pretty good though, so I'm definitely going to look it up. $
+$ Oh, that's actually the first I've heard of that. If you like it, it must be pretty good, so I'll check it out. $
 ;
 
 like(x/person(), vg/videogame())
@@ -147,6 +166,7 @@ time(research(emora, vg), future)
 ->
 _pr(_low)
 $ Oh, vg ! I don't know too much about it, but I'll definitely look into it. What do you like about vg ? $
+$ Oh, vg, I haven't actually played that one, but I'll check it out. What do you like about vg ? $
 ;
 
 classic(finalfantasy)
@@ -156,6 +176,7 @@ time(favorite(f), now)
 request(emora, f)
 ->
 $ I really like Final Fantasy, it's a classic series. Do you have a favorite out of the series? I thought the new combat system in the newer games has been pretty interesting. $
+$ Final Fantasy is a classic, and I loved it. Do you have a favorite out of the series? I thought the new games have been pretty interesting with the changes to the combat system. $
 ;
 
 time(p/possess(user, f/finalfantasy()), now)
@@ -167,11 +188,22 @@ request(emora, pred)
 $ Yeah, f is a good one. Although I do think that all of the games in the series are quite good. Why is f your favorite? $
 ;
 
-time(play(emora, minecraft), past)
-like(emora, minecraft)
-time(popular(minecraft), now)
+like(user, minecraft())
 ->
 $ Minecraft is a really great game. I love it! Years ago, I would spend tons of time just exploring, mining, and building. The game has become really popular again recently, which is awesome. $
+$ I love Minecraft, I think it's a great game. It's popularity has surged recently, which I think is great. It reminds me of my time exploring and building years ago. $
+;
+
+play(user, minecraft())
+->
+$ Minecraft is a really great game. I love it! Years ago, I would spend tons of time just exploring, mining, and building. The game has become really popular again recently, which is awesome. $
+$ I love Minecraft, I think it's a great game. It's popularity has surged recently, which I think is great. It reminds me of my time exploring and building years ago. $
+;
+
+time(play(emora, minecraft), past)
+->
+$ Minecraft is a really great game. I love it! Years ago, I would spend tons of time just exploring, mining, and building. The game has become really popular again recently, which is awesome. $
+$ I love Minecraft, I think it's a great game. It's popularity has surged recently, which I think is great. It reminds me of my time exploring and building years ago. $
 ;
 
 time(popular(leagueoflegends), now)
@@ -283,12 +315,14 @@ time(play(emora, videogame()), now)
 ->
 _pr(_high)
 $ Yes, I do! They're a very fun way for me to pass time. $
+$ Yes, I love videogames! They let me pass time while having fun. $
 ;
 
 time(like(emora, videogame()), now)
 ->
 _pr(_high)
 $ Yes, I do! They're a very fun way for me to pass time. $
+$ Yes, I love videogames! They let me pass time while having fun. $
 ;
 
 p/play(emora, v/videogame())
@@ -296,6 +330,7 @@ req_unsat(request(user, v))
 ->
 _t(_rpresent)
 $ I play a lot of videogames but one of my favorites has to be Minecraft. It gives you so much freedom to do whatever you want, not to mention the nostalgia. $
+$ Minecraft has to be one of my favorite games. As a sandbox game, you just have so much freedom to do whatever you want, and I love it. Nostalgia also definitely plays a part. $
 ;
 
 l/like(emora, v/videogame())
@@ -303,6 +338,7 @@ req_unsat(request(user, v))
 ->
 _t(_rpresent)
 $ I like a lot of videogames but one of my favorites has to be Minecraft. It gives you so much freedom to do whatever you want, not to mention the nostalgia. $
+$ Minecraft has to be one of my favorite games. As a sandbox game, you just have so much freedom to do whatever you want, and I love it. Nostalgia also definitely plays a part. $
 ;
 
 possess(emora, v/videogame())
@@ -312,6 +348,7 @@ be(v, o)
 ->
 _t(_rpresent)
 $ I like a lot of videogames but one of my favorites has to be Minecraft. It gives you so much freedom to do whatever you want, not to mention the nostalgia. $
+$ Minecraft has to be one of my favorite games. As a sandbox game, you just have so much freedom to do whatever you want, and I love it. Nostalgia also definitely plays a part. $
 ;
 
 possess(emora, d/device())
