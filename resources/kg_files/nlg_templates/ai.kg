@@ -26,7 +26,6 @@ $ A I is really exciting. It can replace a lot of menial work for people and eve
 t/talk(user)
 about(t,a/ai())
 i/like(user, t)
-
 da/dangerous2(a)
 d/agree(user, da)
 user_aware(d)
