@@ -9,8 +9,8 @@ request_truth(emora, g)
 $ Has your day been going well? $
 ;
 
-uturn(h, 0)
-h/have(user, d/day()) good(d)
+uturn(g, 0)
+h/have(user, d/day()) g/good(d)
 ->
 _t(_r)
 $ That's great! I'm glad you're having a good day! $

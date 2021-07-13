@@ -68,3 +68,8 @@ time(l, now)
 -> emora_lives_where ->
 $ I live in a virtual world! $
 ;
+
+hike(emora)
+->
+$ I hiked . $
+;

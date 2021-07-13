@@ -308,7 +308,7 @@ class IntelligenceCore:
                     if not use_kb:
                         print('\t%s'%(c))
                     else:
-                        if len(self.knowledge_base.objects(c, TYPE)) == 0:
+                        if not self.knowledge_base.has(predicate_id=c) and len(self.knowledge_base.objects(c, TYPE)) == 0:
                             print('\t%s (%s)'%(c, file))
 
     def know(self, knowledge, source_cg, **options):
@@ -608,13 +608,14 @@ class IntelligenceCore:
 
     def pull_structure(self):
         wm = self.working_memory
-        concepts = {i for _, _, _, i in wm.predicates()}
+        concepts = {i for i in wm.concepts() if self.knowledge_base.has(predicate_id=i)}
         to_add = {}
         for concept in concepts:
             structure = set(self.knowledge_base.structure(concept,
                              subj_essentials=self.kb_subj_essentials,
                              obj_essentials=self.kb_obj_essentials,
                              type_predicates=self.kb_predicate_types))
+            structure = {x for x in structure if x[1] != TYPE}
             for struct in structure:
                 to_add.setdefault(struct, set()).add(concept)
         result = {c: v for c, v in to_add.items() if c not in concepts}
