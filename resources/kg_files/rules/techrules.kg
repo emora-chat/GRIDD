@@ -296,6 +296,12 @@ use(user, a)>
 request(emora, a)
 ;
 
+user_aware(d/device())
+->
+r:<h/have(user, d)
+r/worth(h)>
+request_truth(emora, r)
+;
 
 h/have(user, d/device())
 ->
