@@ -29,7 +29,7 @@ import os, json
 
 class IntelligenceCore:
 
-    def __init__(self, knowledge_base=None, inference_rules=None, nlg_templates=None, fallbacks=None, working_memory=None, inference_engine=None, device='cpu'):
+    def __init__(self, knowledge_base=None, inference_rules=None, nlg_templates=None, fallbacks=None, working_memory=None, inference_engine=None, device='cpu', run_checks=True):
         """
         knowledge_base is a dict of identifiers (usually filenames) to logicstrings
         """
@@ -58,8 +58,7 @@ class IntelligenceCore:
                 for k, v in new_knowledge:
                     self.know(v, self.knowledge_base, emora_knowledge=True)
 
-        print('Undefined KB concepts - need to be fixed:')
-        self._check(self.knowledge_base)
+        if run_checks: print('Undefined KB concepts - need to be fixed:'); self._check(self.knowledge_base)
 
         self.kb_predicate_types = self.knowledge_base.type_predicates()
         self.kb_subj_essentials = {}

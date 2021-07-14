@@ -26,12 +26,12 @@ class ParseToLogic:
             parse_inference = InferenceEngine(rules, NLU_NAMESPACE, device=device)
             self.intcore = IntelligenceCore(knowledge_base=kb,
                                         inference_engine=parse_inference,
-                                        device=device)
+                                        device=device, run_checks=False)
         else:
             parse_inference = InferenceEngine(device=device)
             self.intcore = IntelligenceCore(knowledge_base=kb,
                                             inference_engine=parse_inference,
-                                            device=device)
+                                            device=device, run_checks=False)
         self.spans = []
 
     def parse_rules_from_file(self, file):
