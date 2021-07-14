@@ -24,6 +24,7 @@ like(user, nap(user))
 ->
 ukbpre
 emora_loves_naps
+l:<l/like(user, hike(user))>
 ;
 
 like(user, hike(user))

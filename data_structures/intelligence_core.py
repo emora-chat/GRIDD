@@ -366,10 +366,15 @@ class IntelligenceCore:
                                                           obj_essentials=oe,
                                                           type_predicates=tp)
                 for struct in structure:
-                    if '<span>' not in struct[0] and not self.user_kb.has(*struct[:-1]):
+                    if '<span>' not in struct[0] and UNODE not in self.working_memory.features.get(struct[3], {}):
                         ukb_concat.add(*struct)
                         visited.update(struct)
-        self.user_kb.concatenate(ukb_concat)
+        mapped_ids = self.user_kb.concatenate(ukb_concat)
+        for orig, unode in mapped_ids.items():
+            if orig != unode:
+                if orig in self.working_memory.features and UNODE in self.working_memory.features[orig]:
+                    print('[WARNING] WM node %s already has ukb node %s but trying to add ukb node %s'%(orig, self.working_memory.features[orig][UNODE], unode))
+                self.working_memory.features.setdefault(orig, {})[UNODE] = unode
 
     def apply(self, inferences):
         implications = {}
@@ -643,10 +648,10 @@ class IntelligenceCore:
         result = {c: v for c, v in to_add.items() if c not in concepts}
         return result
 
-    def pull_by_query(self, query, variables, focus, prioritize=True):
+    def pull_by_query(self, query, variables, focus, user_kb_info, prioritize=True):
         wmp = set(self.working_memory.predicates())
-        solutions = kb_match.match(query, variables, self.knowledge_base, prioritize)
         pulled = {}
+        solutions, constraints = kb_match.match(query, variables, self.knowledge_base, prioritize)
         for solution in solutions:
             for ins in [x for x in solution.values() if self.knowledge_base.has(predicate_id=x)]:
                 to_add = set(self.knowledge_base.structure(ins,
@@ -655,6 +660,17 @@ class IntelligenceCore:
                                       type_predicates=self.kb_predicate_types))
                 for pred in to_add - wmp:
                     pulled[pred] = {focus}
+        solutions, constraints = kb_match.match(query, variables, self.user_kb, prioritize, constraints=constraints)
+        wm_nodes_to_ukb_nodes = user_kb_info[3]
+        for solution in solutions:
+            for ins in [x for x in solution.values() if self.user_kb.has(predicate_id=x)]:
+                to_add = set(self.user_kb.structure(ins,
+                                                    subj_essentials=user_kb_info[0],
+                                                    obj_essentials=user_kb_info[1],
+                                                    type_predicates=user_kb_info[2]))
+                for pred in to_add - wmp:
+                    if pred[3] not in wm_nodes_to_ukb_nodes:
+                        pulled[pred] = {focus}
         return pulled
 
     def pull_expressions(self):
@@ -709,20 +725,20 @@ class IntelligenceCore:
                 sal = wm.features.setdefault(c, {}).setdefault(SALIENCE, 0)
                 wm.features[c][SALIENCE] = max(0, sal - TIME_DECAY)
 
-    def setup_essentials(self):
-        wm = self.working_memory
-        type_predicates = wm.type_predicates()
+    def setup_essentials(self, cg=None):
+        if cg is None:
+            cg = self.working_memory
+        type_predicates = cg.type_predicates()
         subj_essentials = {}
         for pe in self.subj_essential_types:
-            for c in wm.subtypes_of(pe):
-                if wm.has(predicate_id=c):
-                    subj_essentials.setdefault(wm.subject(c), set()).add(c)
-
+            for c in cg.subtypes_of(pe):
+                if cg.has(predicate_id=c):
+                    subj_essentials.setdefault(cg.subject(c), set()).add(c)
         obj_essentials = {}
         for pe in self.obj_essential_types:
-            for c in wm.subtypes_of(pe):
-                if wm.has(predicate_id=c):
-                    obj_essentials.setdefault(wm.object(c), set()).add(c)
+            for c in cg.subtypes_of(pe):
+                if cg.has(predicate_id=c):
+                    obj_essentials.setdefault(cg.object(c), set()).add(c)
         return subj_essentials, obj_essentials, type_predicates
 
     def prune_attended(self, aux_state, num_keep):

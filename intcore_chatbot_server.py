@@ -79,7 +79,7 @@ def mega_serialized(*returns):
 
 class ChatbotServer:
 
-    def __init__(self, knowledge_base, inference_rules, nlg_templates, fallbacks, starting_wm=None, device=None):
+    def __init__(self, knowledge_base, inference_rules, nlg_templates, fallbacks, starting_wm=None, user_kb=None, device=None):
         s = time.time()
         knowledge = collect(*knowledge_base)
         inference_rules = collect(*inference_rules)
@@ -88,6 +88,8 @@ class ChatbotServer:
         fallbacks = collect(*fallbacks)
         self.dialogue_intcore = IntelligenceCore(knowledge_base=knowledge, inference_rules=inference_rules,
                                                  nlg_templates=nlg_templates, fallbacks=fallbacks, device=device)
+        if user_kb is not None:
+            ConceptGraph.construct(self.dialogue_intcore.user_kb, user_kb)
         if INFERENCE:
             self.reference_engine = InferenceEngine(device=device)
         if self.starting_wm is not None:
@@ -354,8 +356,11 @@ class ChatbotServer:
         knowledge_by_refs = {}
         references = working_memory.references()
         p.next(f'pull by query (queries: {len(references)})')
+        user_kb_info = self.dialogue_intcore.setup_essentials(self.dialogue_intcore.user_kb)
+        wm_nodes_to_ukb_nodes = {d[UNODE] for n, d in self.dialogue_intcore.working_memory.features.items() if UNODE in d}
+        user_kb_info = (*user_kb_info, wm_nodes_to_ukb_nodes)
         for focus, (query, variables) in references.items():
-            pbq_result = self.dialogue_intcore.pull_by_query(query, variables, focus)
+            pbq_result = self.dialogue_intcore.pull_by_query(query, variables, focus, user_kb_info)
             knowledge_by_refs.update(pbq_result)
         p.next('knowledge pull')
         knowledge_by_source = self.dialogue_intcore.pull_knowledge(limit=100, num_pullers=50, association_limit=10, subtype_limit=10)
@@ -1265,7 +1270,8 @@ def get_filepaths():
     wm = [join('GRIDD', 'resources', KB_FOLDERNAME, 'wm')]
     nlg_templates = [join('GRIDD', 'resources', KB_FOLDERNAME, 'nlg_templates')]
     fallbacks = [join('GRIDD', 'resources', KB_FOLDERNAME, 'fallbacks.kg')]
-    return kb, rules, nlg_templates, fallbacks, wm
+    user_kb = [join('GRIDD', 'resources', KB_FOLDERNAME, 'user_kb_test.kg')] if TEST_UKB else None
+    return kb, rules, nlg_templates, fallbacks, wm, user_kb
 
 PRINT_WM = False
 
@@ -1281,7 +1287,7 @@ if __name__ == '__main__':
     except FileNotFoundError:
         pass
 
-    kb, rules, nlg_templates, fallbacks, wm = get_filepaths()
+    kb, rules, nlg_templates, fallbacks, wm, user_kb = get_filepaths()
 
     device = input('device (cpu/cuda:0/cuda:1/...) >>> ').strip()
     print_wm = input('debug (n/y) >>> ').strip()
@@ -1292,7 +1298,7 @@ if __name__ == '__main__':
             device = 'cuda:0'
         else:
             device = 'cpu'
-    chatbot = ChatbotServer(kb, rules, nlg_templates, fallbacks, wm, device=device)
+    chatbot = ChatbotServer(kb, rules, nlg_templates, fallbacks, wm, user_kb, device=device)
     chatbot.full_init(device=device)
     print()
     chatbot.run()
