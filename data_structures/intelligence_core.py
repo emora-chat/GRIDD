@@ -606,6 +606,21 @@ class IntelligenceCore:
                         return new_concepts_by_source
         return new_concepts_by_source
 
+    def pull_structure(self):
+        wm = self.working_memory
+        concepts = {i for i in wm.concepts() if self.knowledge_base.has(predicate_id=i)}
+        to_add = {}
+        for concept in concepts:
+            structure = set(self.knowledge_base.structure(concept,
+                             subj_essentials=self.kb_subj_essentials,
+                             obj_essentials=self.kb_obj_essentials,
+                             type_predicates=self.kb_predicate_types))
+            structure = {x for x in structure if x[1] != TYPE}
+            for struct in structure:
+                to_add.setdefault(struct, set()).add(concept)
+        result = {c: v for c, v in to_add.items() if c not in concepts}
+        return result
+
     def pull_by_query(self, query, variables, focus, prioritize=True):
         wmp = set(self.working_memory.predicates())
         solutions = kb_match.match(query, variables, self.knowledge_base, prioritize)

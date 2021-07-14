@@ -21,6 +21,7 @@ from GRIDD.utilities.server import save, load
 from inspect import signature
 
 from GRIDD.utilities.profiler import profiler as p
+from GRIDD.utilities.utilities import dict_of_sets_merge
 
 from itertools import chain
 
@@ -358,7 +359,9 @@ class ChatbotServer:
             knowledge_by_refs.update(pbq_result)
         p.next('knowledge pull')
         knowledge_by_source = self.dialogue_intcore.pull_knowledge(limit=100, num_pullers=50, association_limit=10, subtype_limit=10)
-        for pred, sources in {**knowledge_by_refs, **knowledge_by_source}.items():
+        knowledge_structures = self.dialogue_intcore.pull_structure()
+        all_pulled = dict_of_sets_merge(knowledge_by_refs, knowledge_by_source, knowledge_structures)
+        for pred, sources in all_pulled.items():
             if not working_memory.has(*pred) and not working_memory.has(predicate_id=pred[3]):
                 self.dialogue_intcore.consider([pred], namespace=self.dialogue_intcore.knowledge_base._ids, associations=sources)
                 working_memory.metagraph.update(self.dialogue_intcore.knowledge_base.metagraph,

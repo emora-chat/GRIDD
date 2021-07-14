@@ -1,0 +1,22 @@
+activity__t
+->
+emora_cleaned_her_apartment
+;
+
+activity__t
+->
+g:<possess(user, d/day()) g/good(d)>
+request_truth(emora, g)
+;
+
+h/possess(user, d/day()) g/good(d)
+_exists(g)
+->
+cause(h, object())
+;
+
+uturn(nap(), 0)
+->
+emora_loves_naps
+;
+

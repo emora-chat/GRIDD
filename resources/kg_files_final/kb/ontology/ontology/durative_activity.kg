@@ -1,0 +1,19 @@
+
+
+durative_activity=(activity)
+
+prepare=(durative_activity)
+expr("prepare", prepare)
+
+durative_leisure=(durative_activity)
+
+durative_obligation=(durative_activity)
+
+rest=(durative_leisure)
+expr("rest", rest)
+
+work=(durative_obligation)
+expr("work", work)
+
+nap=(rest)
+expr("nap", nap)

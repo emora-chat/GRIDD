@@ -473,7 +473,7 @@ class ConceptGraph:
         """
         File is passed for templates who take the alphabetic filename as the topic anchor
         """
-        priority_map = {'_low': 0.1, '_high': 1.0}
+        priority_map = {'_low': 0.1, '_high': 1.0, '_mid': 0.8, '_sup': 2.0, '_int': 100.0}
         template_types = {'_react': '_react',
                           '_r': '_react',
                           '_present': '_present',
