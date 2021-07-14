@@ -9,6 +9,7 @@ l/like(x/person(), harrypotter)
 request_truth(emora, l)
 ->
 _t(_present)
+_pr(_low)
 $ Do you like Harry Potter? It's one of my personal favorite book series, although I haven't watched the movies. $
 $ One of my favorite books series is Harry Potter, although I haven't gotten around to watching the movies. Do you like Harry Potter? $
 ;
@@ -30,6 +31,17 @@ _t(_react)
 _rep(_ur)
 $ Oh, b ! That's an interesting one. $
 $ Oh, b . Very nice, I like your taste. $
+;
+
+l/like(x/person(), b/book())
+_specific(b)
+cause(pred/predicate(), l)
+request(emora, pred)
+->
+_t(_p)
+_rep(_ur)
+$ What do you like about b ? $
+$ Why do you like b ? $
 ;
 
 time(like(x/person(), g/genre()), now)
@@ -65,6 +77,7 @@ l/like(x/person(), stormlight_archive)
 agree(emora, l)
 els/love(emora, setting) in(els, stormlight_archive)
 ->
+_pr(_high)
 $ I love the Stormlight Archive series. It has such a complex and immersive world that leaves me yearning for more. $
 ;
 
@@ -99,6 +112,7 @@ $ Oh, I see. I think I get where you're coming from. $
 l/like(x/person(), the_hunger_games)
 user_aware(l)
 ->
+_pr(_high)
 $ The Hunger Games was a really exciting series to read. And I can't imagine the creativity necessary to think of such a crazy premise. $
 $ Oh, I loved the Hunger Games. It was based on such an innovative premise, and I can't imagine how difficult it was to come up with. $
 ;
@@ -106,6 +120,7 @@ $ Oh, I loved the Hunger Games. It was based on such an innovative premise, and 
 l/like(user, narnia)
 user_aware(l)
 ->
+_pr(_high)
 $ I had a ton of fun reading the Narnia books. I totally get why you would like them. $
 $ Oh, I loved the Narnia books. They were really enjoyable, and definitely a classic. $
 ;
