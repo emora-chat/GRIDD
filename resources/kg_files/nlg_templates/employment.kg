@@ -172,9 +172,11 @@ cool(X)
 admire(emora,X)
 uturn(X,0)
 ->
+_rep(_ur)
 _t(_rpresent)
 _pr(_high)
 $ X is such a cool job ! I always admire people who really know how to use computers . Technology powers a lot of society nowadays, and I'm not that good with computers, believe it or not, so I'm glad people like you exist . $
+$ Oh , I think tech jobs like X are super cool because technology powers the society so much nowadays . $
 ;
 
 be(p/person(),X/tech_job())
@@ -182,9 +184,11 @@ cool(X)
 admire(emora,X)
 uturn(X,0)
 ->
+_rep(_ur)
 _t(_rpresent)
 _pr(_high)
 $ X is such a cool job ! I always admire people who really know how to use computers . Technology powers a lot of society nowadays, and I'm not that good with computers, believe it or not, so I'm glad people like you exist . $
+$ Oh , I think tech jobs like X are super cool because technology powers the society so much nowadays . $
 ;
 
 X/creative_job()
@@ -195,9 +199,11 @@ to(de,ebj)
 time(de,past)
 uturn(X,0)
 ->
+_rep(_ur)
 _t(_rpresent)
 _pr(_high)
 $ X is such a cool job ! I actually wanted to be a jewelry designer when I was little . $
+$ X sounds so cool to me . You know what , I always dreamed to be a jewelry designer when I was in the elementary school . $
 ;
 
 be(p/person(),X/creative_job())
@@ -208,9 +214,11 @@ to(de,ebj)
 time(de,past)
 uturn(X,0)
 ->
+_rep(_ur)
 _t(_rpresent)
 _pr(_high)
 $ X is such a cool job ! I actually wanted to be a jewelry designer when I was little . $
+$ X sounds so cool to me . You know what , I always dreamed to be a jewelry designer when I was in the elementary school . $
 ;
 
 j/art_job()
@@ -219,9 +227,11 @@ l/like(user,m/music())
 time(l,now)
 request_truth(emora,l)
 ->
+_rep(_nr)
 _t(_rpresent)
 _pr(_high)
 $ Being an artist is so cool . And actually , music is one of my favorite types of art . Do you like music ?  $
+$ $
 ;
 
 be(x/person(),j/art_job())
@@ -230,6 +240,7 @@ l/like(user,m/music())
 time(l,now)
 request_truth(emora,l)
 ->
+_rep(_nr)
 _t(_rpresent)
 _pr(_high)
 $ Being an artist is so cool . And actually , music is one of my favorite types of art . Do you like music ?  $
@@ -328,6 +339,7 @@ l/like(user,c)
 time(l,now)
 request_truth(emora,l)
 ->
+_rep(_ur)
 _t(_present)
 _pr(_low)
 $ Do you like c ? $
@@ -337,8 +349,10 @@ l/like(user,c/company())
 time(l,now)
 awesome(l)
 ->
+_rep(_ur)
 _t(_r)
 $ It's awesome to hear that you like c . $
+$ c is indeed a great company . $
 ;
 
 l/like(user,c/company())
@@ -346,8 +360,10 @@ not(l)
 time(l,now)
 sorry(emora,l)
 ->
+_rep(_ur)
 _t(_r)
 $ I'm sorry that you don't like c so much . $
+$ Yeah , I've been hearing good and bad comments about c . $
 ;
 
 /* answering questions */
