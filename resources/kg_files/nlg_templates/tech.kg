@@ -44,6 +44,15 @@ _pr(_high)
 $ Oh, do you just not like the hassle ? Or would you like to get a p. c. one day ? $
 ;
 
+have(user, p/computer())
+b/be(p, pc())
+not(b)
+->
+_t(_rpresent)
+_pr(_high)
+$ Oh, why not ? To be fair laptops are all most people need . $
+;
+
 h/have(user, p/computer())
 u/use(user, linux)
 request_truth(emora, u)
@@ -197,3 +206,10 @@ $ You know, I am a virtual chatbot, so in a way d and I are related . I'm like i
 $ Us devices stick together so you'd better treat d well. Just kidding, haha .$
 ;
 
+h/have(user, p/computer())
+r/request_truth(emora, h)
+temppred(p)
+-> 
+_pr(_high)
+$ Oh, I wanted to ask, do you have a computer? Of course, it would be hard for you to talk to me without one . $
+;

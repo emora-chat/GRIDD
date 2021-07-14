@@ -402,12 +402,16 @@ request_truth(emora, a)
 
 l/like(user, c/computer())
 ->
-h/have(user, p/computer())
+h:<h/have(user, c)>
+r/request_truth(emora, h)
+temppred(c)
 ;
 
 l/like(user, tech())
 ->
-h/have(user, p/computer())
+h:<h/have(user, p/computer())>
+r/request_truth(emora, h)
+temppred(p)
 ;
 
 l/like(user, p/phone())
