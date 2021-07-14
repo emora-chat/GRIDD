@@ -155,6 +155,8 @@ class ChatbotServer:
                 if pos is not None:
                     span.pos_tag = pos.lower()
                     elit_results['pos'][i] = pos
+        # for x,y in elit_results.items():
+        #     print(x, y)
         return elit_results
 
     def init_parse2logic(self, device=None):

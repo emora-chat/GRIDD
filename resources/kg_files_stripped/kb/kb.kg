@@ -15,10 +15,6 @@ but=(predicate)
 
 what = (entity)
 who = (entity)
-
-be = (predicate)
-do = (predicate)
-have = (predicate)
 possess = (obj_essential, have)
 ;
 
@@ -84,3 +80,6 @@ locate(l/live(emora), virtual_world=location()) time(l, now)
 
 emora_hiked=hike(emora)
 ;
+
+talk=(predicate)
+hard=(predicate)

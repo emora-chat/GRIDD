@@ -48,3 +48,9 @@ expr("he, his, him", he)
 she=(entity)
 expr("she, hers, her", she)
 
+;
+
+be = (predicate)
+do = (predicate)
+have = (predicate)
+
