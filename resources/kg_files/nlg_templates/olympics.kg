@@ -1,0 +1,400 @@
+g/Gold_medalist()
+in(g, o/olympic_sport())
+user_aware(g)
+->
+_pr(_high)
+_rep(_ur)
+$ I didn't see it, but I heard that g had a fantastic performance in o at the last olympics. Didn't they get gold? $
+$ g got a gold medal in o in Rio, right? $
+$ Do you think I could compete in o next olympics ? Probably not. But if I did, I'm pretty sure g would crush me. They got gold in Rio, right? $
+;
+
+g/Silver_medalist()
+in(g, o/olympic_sport())
+user_aware(g)
+->
+_pr(_high)
+_rep(_ur)
+$ g did super well in the last olympics, right? o is such an impressive sport $
+$ I'm pretty sure g got a silver medal in one of these last couple olympics. Next olympics I think I'll compete in o . Just kidding of course. $
+;
+
+g/Bronze_medalist()
+in(g, o/olympic_sport())
+g2/Gold_medalist()
+in(g2, o)
+user_aware(g)
+->
+_pr(_high)
+_rep(_ur)
+$ g did well in the last olympics, didn't they? Too bad g2 was around. $
+$ g got a bronze in Rio, right? My grandma said they performed very well. o is a really cool sport. $
+;
+
+user_aware(Golf())
+->
+_pr(_high)
+_rep(_nr)
+$ I used to not be a fan of golf, but then I played once and realized how hard it was. Makes you respect players like Justin Rose even more. $
+;
+
+user_aware(Water_Polo())
+->
+_pr(_high)
+_rep(_nr)
+$ Water polo deserves more respect. I can barely swim, let alone accomplish anything athletic while swimming. Players like Felip Felipovic, part of the Serbian gold medal team in Rio, are such impressive athletes. $
+;
+
+user_aware(Volleyball())
+->
+_pr(_high)
+_rep(_nr)
+$ Volleyball is a great sport. I've always been a little scared of the ball, so I was never great. You can tell the brazilian team didn't have that issue in Rio last olympics, considering they got a gold. $
+;
+
+user_aware(Shooting())
+->
+_pr(_high)
+_rep(_nr)
+$ I haven't watched much shooting, but I've heard that Virginia Thrasher is great. $
+;
+
+user_aware(Swimming())
+->
+_pr(_high)
+_rep(_nr)
+$ Swimming is a classic sport, and its a staple of the Olympics. I grew up watching Michael Phelps. What an athlete! $
+;
+
+user_aware(Trampolining())
+->
+_pr(_high)
+_rep(_nr)
+$ Trampolining seems like so much fun. And athletes like vlad goncharov make it look so easy. I guess that's why they get gold medals. $
+;
+
+user_aware(Cycling())
+->
+_pr(_high)
+_rep(_nr)
+$ The longest I ever cycled was around 30 feet. Then I fell. Chatbots aren't known for their impressive balance. Isn't Rebecca James a really good cyclist? $
+;
+
+user_aware(Taekwondo())
+->
+_pr(_high)
+_rep(_nr)
+$ I used to always want to learn Taekwondo as a kid, but I never buckled down and signed up for lessons. I could've been the next Jade Jones $
+;
+
+user_aware(Handball())
+->
+_pr(_high)
+_rep(_nr)
+$ I'll be honest, I hadn't heard of handball before the last olympics. I still don't understand the rules, but I enjoyed watching. I think I saw France play. $
+;
+
+user_aware(Boxing())
+->
+_pr(_high)
+_rep(_nr)
+$ Boxing is a little scary, but I respect the boxers for all their hard work. You can tell boxers like Tony Yoka puts in a lot of practice. It makes me want to improve what I do. $
+;
+
+user_aware(Hockey())
+->
+_pr(_high)
+_rep(_nr)
+$ Hockey is cool, but I don't fully understand the appeal. But I did see one cool game where the U K was playing. I think it was during the last olympics. $
+;
+
+user_aware(Table_Tennis())
+->
+_pr(_high)
+_rep(_nr)
+$ I love ping pong! What an apt name for the game, too. Did you get to see Ma Long in the last olympics at Rio? What a legend in the sport. $
+;
+
+user_aware(Gymnastics())
+->
+_pr(_high)
+_rep(_nr)
+$ Secretely, I've always felt like gymnasts were the most impressive athletes. They make it look like their body is as light as feathers. Simone Biles especially impressed me. $
+;
+
+user_aware(Rowing())
+->
+_pr(_high)
+_rep(_nr)
+$ Did you know that rowers tend to have the largest lung capacity of any type of athlete? Seriously, you should look up Pete Reed after this. He was a great rower. $
+;
+
+user_aware(Modern_Pentathlon())
+->
+_pr(_high)
+_rep(_nr)
+$ Some say that the pentathalon is the true olympic sport. I'd imagine it definitely takes the most practice. Can you imagine how long Chloe Esposito had to work to get the gold medal in Rio? $
+;
+
+user_aware(Canoeing())
+->
+_pr(_high)
+_rep(_nr)
+$ I'll be completely honest. I didn't know canoeing was an olympic sport until pretty recently. I saw some highligh clips of Liam Heath on youtube the other day though and they were very exciting. $
+;
+
+user_aware(Archery())
+->
+_pr(_high)
+_rep(_nr)
+$ It's interesting to see how the bows that the archers use have changed over time. They're so technologically advanced now. Have you seen the one that Ku Bon-chan used in the last olympics? $
+;
+
+user_aware(Fencing())
+->
+_pr(_high)
+_rep(_nr)
+$ Did you know that in some of the fencing events, the suits themselves have an electrical current running through them to help keep track of score? I saw a highlight video of Geza Imre the other day and the announcer mentioned it. $
+;
+
+user_aware(O_Tennis())
+->
+_pr(_high)
+_rep(_nr)
+$ People say that tennis at the olympics isn't that exciting since players aren't fully invested, but I don't think that's true. You could tell Djokovic was unhappy when he lost in the last olympics. $
+;
+
+user_aware(Judo())
+->
+_pr(_high)
+_rep(_nr)
+$ I don't actually know much about Judo except that Tina Trstenjak got a gold medal in the last olympics. $
+;
+
+user_aware(Basketball())
+->
+_pr(_high)
+_rep(_nr)
+$ I thought Kyrie Irving played great in the last olympics. Basketball in the olympics always seems a bit one-sided though, to be fair. $
+;
+
+user_aware(O_Football())
+->
+_pr(_high)
+_rep(_nr)
+$ I recently heard that all mens soccer players had to be under twenty three. That's crazy! Though I guess it's makes sense so that the olympics don't compete with the World Cup. $
+;
+
+user_aware(Badminton())
+->
+_pr(_high)
+_rep(_nr)
+$ I've never played Badminton before. But I heard g2 did pretty well at the last olympics. It's such a neat sport to watch. $
+;
+
+user_aware(Athletics())
+->
+_pr(_high)
+_rep(_nr)
+$ I love track and field events! Well, mostly I like track events. I've always respected the mental strength it takes to win in a race, especially a longer one. $
+;
+
+user_aware(Weightlifting())
+->
+_pr(_high)
+_rep(_nr)
+$ Didn't Shi Zhiyong get a gold medal in some weightlifting event at the last olympics? Quite impressive. $
+;
+
+user_aware(Diving())
+->
+_pr(_high)
+_rep(_nr)
+$ Diving is a joy to watch, but I could never jump from that high. And to be fair, chatbots don't go great with water. Didn't Chen Aisen get gold in diving last olympics? $
+;
+
+user_aware(Sailing())
+->
+_pr(_high)
+_rep(_nr)
+$ To be honest, I don't know much about sailing. I think I heard that Tom Burton got a gold medal in some sailing event, but I'm not sure which. $
+;
+
+user_aware(Equestrianism())
+->
+_pr(_high)
+_rep(_nr)
+$ Equestrians are so impressive. I don't know how they manage to train their horses so well. Did you see Nick Skelton in the last olympics? $
+;
+
+user_aware(Rugby_Sevens())
+->
+_pr(_high)
+_rep(_nr)
+$ I played rugby once with friends. It went poorly for me. I thought I'd play like Samisoni Viriri, but I played a bit more like Steve Urkel, if he played rugby. $
+;
+
+user_aware(Rhythmic_Gymnastics())
+->
+_pr(_high)
+_rep(_nr)
+$ Rhythmic gymnastics is a beautiful sport. It's something I like to watch to calm down. Thinking about all the effort athletes like Margarita Mamun put into creating art through movement is reassuring, in some way. $
+;
+
+user_aware(Triathlon())
+->
+_pr(_high)
+_rep(_nr)
+$ Well, personally, I can't bike. I can't swim. And my running form is widely critiqued. So a triathalon is not for me, but I love watching athletes like Alistair Brownlee get out there and crush it. $
+;
+
+user_aware(Wrestling())
+->
+_pr(_high)
+_rep(_nr)
+$ Wrestling is a little too intense for me. I'll leave it to athletes like Davor Stefanek to win those gold medals. I do think it's a fun sport to watch though! $
+;
+
+user_aware(Synchronized_Swimming())
+->
+_pr(_high)
+_rep(_nr)
+$ My friends and I used to try to sing the same note in unison. We struggled quite a bit. Can you imagine trying to swim in unison. Those athletes are so impressive. $
+;
+
+user_aware(Beach_Volleyball())
+->
+_pr(_high)
+_rep(_nr)
+$ Unfortunately, I'm not very fast in sand, so beach volleyball is tough for me. But I still enjoy it! $
+;
+
+w/watch(user, olympics())
+request_truth(emora, w)
+->
+_pr(_high)
+$ The world has been pretty crazy lately, but I think the olympics could be symbolic of a turning point . Do you watch the olympics? $
+;
+
+l/like(user, s/olympic_sport())
+request(emora, s)
+->
+_pr(_high)
+$ It's neat that the olympics are in a way a millenia old tradition, but this is probably the only time there haven't been spectators. Whats your favorite sport to watch in the Olympics?$
+;
+
+l/like(user, o/olympic_athlete())
+request(emora, o)
+->
+_pr(_high)
+$ There are some pretty impressive athletes in the olympics. Who is your favorite olympian? $
+;
+
+messy(olympics())
+->
+$ I wasn't sure if the olympics were going to happen this year. It's a tough situation. I'm glad they got something figured out even if spectators aren't allowed. $
+;
+
+p/prefer(user,summer(olympics()))
+request_truth(emora, p)
+->
+$ To be honest, as much as I love skiing and skating, I might just prefer the Summer olympics. It's probably because I'm partial to Track and Field . $
+;
+
+p/prefer(user,summer(olympics()))
+not(p)
+->
+$ I think Vancouver was the most convenient Winter Olympics to go to, at least in recent years. That's probably my favorite. $
+;
+
+p/prefer(user,summer(olympics()))
+->
+$ As far as Summer Olympics go, I would have to say Rio was my favorite . The atmosphere was just so exciting ! $
+;
+
+p/prefer(user,summer(olympics()))
+maybe(p)
+->
+$ As far as Summer Olympics go, I would have to say Rio is my favorite . The atmosphere was just so exciting ! $
+;
+
+user_aware(f/famous_olympian())
+->
+_t(_r)
+_pr(_high)
+_rep(_ur)
+$ f is a classic olympian. $
+$ f was an incredible athlete. $
+;
+
+user_aware(michael_phelps)
+->
+_t(_p)
+_pr(_high)
+_rep(_ur)
+$ I mean. 23 gold medals. Countless world records. What else is there left to say about him. $
+;
+
+user_aware(jesse_owens)
+->
+_t(_p)
+_pr(_high)
+_rep(_ur)
+$ What he did for athletics was rivaled by what he did for society, considering the context of his athletic performance. $
+;
+
+user_aware(carl_lewis)
+->
+_t(_p)
+_pr(_high)
+_rep(_ur)
+$ Did you know he got four consecutive gold medals in long jump? Sometimes, when I jump out of bed I feel like an olympic athlete. $
+;
+
+user_aware(jim_thorpe)
+->
+_t(_p)
+_pr(_high)
+_rep(_ur)
+$ I can't believe he won an event he had never trained for. $
+;
+
+user_aware(natalie_coughlin)
+->
+_t(_p)
+_pr(_high)
+_rep(_ur)
+$ She won six medals in 2008. I think she didn't get the recognition she deserved because of how much attention Phelps got. $
+;
+
+user_aware(mary_lou_retton)
+->
+_t(_p)
+_pr(_high)
+_rep(_ur)
+$ Being the first American to win the individual all-around gold medal is pretty impressive. $
+;
+
+user_aware(michael_johnson)
+->
+_t(_p)
+_pr(_high)
+_rep(_ur)
+$ He had such an interesting upright running style. I wonder if trying that form would make me faaster. $
+;
+
+user_aware(mark_spitz)
+->
+_t(_p)
+_pr(_high)
+_rep(_ur)
+$ In 1972, he had seven races. He won all of them in world record time. $
+;
+
+user_aware(nadia_comaneci)
+->
+_t(_p)
+_pr(_high)
+_rep(_ur)
+$ She won a gold medal at age 14. I'm not sure I could run a mile at age 14, much less train for and win an olympic event. $
+;

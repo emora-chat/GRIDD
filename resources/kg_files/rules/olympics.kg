@@ -1,0 +1,41 @@
+like(user, olympics())
+->
+w/watch(user, olympics())
+user_aware(w)
+;
+
+w/watch(user, olympics())
+user_aware(w)
+->
+l/like(user, s/olympic_sport())
+request(emora, s)
+l2/like(user, o/olympic_athlete())
+request(emora, o)
+;
+
+w/watch(user, olympics())
+maybe(w)
+user_aware(w)
+->
+l/like(user, s/olympic_sport())
+request(emora, s)
+;
+
+l/like(user, s/olympic_sport())
+req_sat(r/request(emora, s))
+->
+messy(olympics())
+;
+
+l/like(user, s/olympic_sport())
+req_unsat(r/request(emora, s))
+user_aware(r)
+->
+messy(olympics())
+;
+
+user_aware(messy(o/olympics()))
+->
+p:<p/prefer(user,summer(o))>
+request_truth(emora, p)
+;
