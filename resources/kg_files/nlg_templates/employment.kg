@@ -231,7 +231,6 @@ _rep(_nr)
 _t(_rpresent)
 _pr(_high)
 $ Being an artist is so cool . And actually , music is one of my favorite types of art . Do you like music ?  $
-$ $
 ;
 
 be(x/person(),j/art_job())
