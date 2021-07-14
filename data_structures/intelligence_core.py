@@ -748,7 +748,7 @@ class IntelligenceCore:
         wm = self.working_memory
 
         p.next('select keep')
-        options = {i for s,t,o,i in wm.predicates() if t not in chain(self.subj_essential_types, self.obj_essential_types, PRIM, {TYPE, '_tanchor'})}
+        options = {i for s,t,o,i in wm.predicates() if t not in chain(self.subj_essential_types, self.obj_essential_types, PRIM, {TYPE, '_tanchor', 'is_return'})}
         soptions = sorted(options,
                           key=lambda x: wm.features.get(x, {}).get(SALIENCE, 0),
                           reverse=True)
@@ -756,6 +756,7 @@ class IntelligenceCore:
 
         # keep all topic anchors with sal > 0
         keep.extend([i for s,t,o,i in wm.predicates(predicate_type='_tanchor') if wm.features[s][SALIENCE] > 0])
+        keep.extend([pred[3] for pred in wm.predicates('user', 'is_return')])
 
         # delete all user and emora spans that occured SPANTURN turns ago
         p.next('delete old spans')

@@ -101,7 +101,12 @@ class ChatbotServer:
     ###################################################
 
     @serialized('aux_state', serializing=IS_MEGA_SERIALIZING or IS_SERIALIZING)
-    def run_next_turn(self, aux_state):
+    def run_next_turn(self, aux_state, prev_aux_state):
+        if aux_state is None:
+            aux_state = {'turn_index': -1}
+            if prev_aux_state is not None: # returning user
+                aux_state['is_returning'] = True
+                aux_state['responses'] = prev_aux_state.get('responses', {})
         aux_state["turn_index"] += 1
         return aux_state
 
@@ -219,7 +224,7 @@ class ChatbotServer:
 
     @serialized('subspans', 'working_memory')
     def run_mention_bridge(self, mentions, multiword_mentions, ner_mentions, working_memory, aux_state):
-        self.load_working_memory(working_memory)
+        self.load_working_memory(working_memory, aux_state)
         if mentions is None: mentions = {}
         if multiword_mentions is None: multiword_mentions = {}
         namespace = list(mentions.items())[0][1].id_map() if len(mentions) > 0 else "ment_"
@@ -710,12 +715,14 @@ class ChatbotServer:
     ## Helpers
     ###################################################
 
-    def load_working_memory(self, working_memory):
+    def load_working_memory(self, working_memory, aux_state=None):
         if working_memory is not None:
             self.dialogue_intcore.working_memory = working_memory
         else:
             self.dialogue_intcore.working_memory = ConceptGraph(namespace='wm', supports={AND_LINK: False})
             self.dialogue_intcore.consider(list(self.starting_wm.values()))
+            if aux_state is not None and aux_state.get('is_returning', False):
+                self.dialogue_intcore.working_memory.add('user', 'is_returning')
 
     def load_user_kb(self, user_kb):
         if user_kb is not None:
@@ -1027,10 +1034,12 @@ class ChatbotServer:
         p.stop()
         return rule_responses, working_memory, aux_state
 
-    def nlu_to_response_serialize(self, user_utterance, working_memory, aux_state):
+    def nlu_to_response_serialize(self, user_utterance, working_memory, aux_state, prev_aux_state, user_kb):
         state = {'user_utterance': save('user_utterance', user_utterance),
                  'working_memory': save('working_memory', working_memory),
-                 'aux_state': save('aux_state', aux_state)
+                 'aux_state': save('aux_state', aux_state),
+                 'prev_aux_state': save('prev_aux_state', prev_aux_state),
+                 'user_kb': save('user_kb', user_kb)
                 }
         p.start('gridd')
         state_update = self.run_next_turn(state)
@@ -1050,8 +1059,8 @@ class ChatbotServer:
                load("working_memory", state["working_memory"]), \
                load("aux_state", state["aux_state"])
 
-    def run_mention_merge(self, user_utterance, working_memory, aux_state):
-        aux_state = self.run_next_turn(aux_state)
+    def run_mention_merge(self, user_utterance, working_memory, aux_state, prev_aux_state):
+        aux_state = self.run_next_turn(aux_state, prev_aux_state)
         user_utterance = self.run_sentence_caser(user_utterance)
         elit_results = self.run_elit_models(user_utterance, aux_state)
         mentions, merges = self.run_parse2logic(elit_results)
@@ -1061,9 +1070,9 @@ class ChatbotServer:
         working_memory = self.run_merge_bridge(merges, subspans, working_memory)
         return working_memory
 
-    def respond(self, user_utterance, working_memory, aux_state, user_kb):
+    def respond(self, user_utterance, working_memory, aux_state, prev_aux_state, user_kb):
         p.start('next turn')
-        aux_state = self.run_next_turn(aux_state)
+        aux_state = self.run_next_turn(aux_state, prev_aux_state)
         p.next('sentence caser')
         user_utterance = self.run_sentence_caser(user_utterance)
         p.next('elit')
@@ -1214,9 +1223,11 @@ class ChatbotServer:
 
     def run(self):
         # gc.disable()
-        wm = self.dialogue_intcore.working_memory.copy()
-        user_kb = self.dialogue_intcore.user_kb.copy()
-        aux_state = {'turn_index': -1}
+        wm = None
+        user_kb = None
+        aux_state = None
+        # prev_aux_state = None
+        prev_aux_state = {'responses': {'test1': ('test2', 'test3')}}
         utter = input('User: ')
         while utter != 'q':
             if utter.strip() != '':
@@ -1224,9 +1235,9 @@ class ChatbotServer:
                 if IS_SERIALIZING:
                     response, wm, aux_state = self.respond_serialize(utter, wm, aux_state)
                 elif IS_MEGA_SERIALIZING:
-                    response, wm, aux_state = self.nlu_to_response_serialize(utter, wm, aux_state)
+                    response, wm, aux_state = self.nlu_to_response_serialize(utter, wm, aux_state, prev_aux_state, user_kb)
                 else:
-                    response, wm, aux_state = self.respond(utter, wm, aux_state, user_kb)
+                    response, wm, aux_state = self.respond(utter, wm, aux_state, prev_aux_state, user_kb)
                 elapsed = time.time() - s
                 # gcti = time.time()
                 # gc.collect()
