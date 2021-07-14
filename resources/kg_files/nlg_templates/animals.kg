@@ -89,3 +89,10 @@ time(l/like(user, a/animal()), now)
 ->
 $ Well, I suppose that's logical. I still think pets are really awesome, but I think it's perfectly reasonable for you to not want one. $
 ;
+
+be_0/be(cheetah(), fast)
+req_unsat(request(user, object_0/object()))
+qualifier(be_0, object_0)
+->
+$ They can run at speeds of up to around 60 miles per hour. Isn't that crazy? That's as fast as a car. $
+;

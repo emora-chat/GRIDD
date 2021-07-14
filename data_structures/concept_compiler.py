@@ -105,7 +105,7 @@ class ConceptCompiler:
         number_init: number
         reference: ID
         ID: /[a-zA-Z_.0-9]+/
-        rule: precondition "->" (ID "->")? (template | (postcondition template?))
+        rule: precondition "->" (ID "->")? (template+ | (postcondition template*))
         precondition: declaration+
         postcondition: declaration+
         template: "$" token+ "$"
@@ -172,52 +172,53 @@ class ConceptVisitor(Visitor_Recursive):
         postcondition, post_variables = postcondition[0].data if postcondition else (None, set())
         variables.update(post_variables)
 
-        template = [c for c in tree.children if hasattr(c, 'data') and c.data == 'template']
-        template = template[0] if template else None
-        if template is not None:
-            tmplt = []
-            for token in template.children:
-                tok = self.locals.get(token.children[0], str(token.children[0]))
-                json = None
-                if len(token.children) > 1:
-                    json = token.children[1].children[0].data
-                tmplt.append((tok, json))
-            template = tmplt
-            response = self.globals.get()
-            instance = self.globals.get()
-            self.instances.update((instance, response))
-            self.lentries.append((response, 'type', 'response', instance))
-            response_set = {response, instance}
-            for i, (token, json) in enumerate(template):
-                tok_concept = self.globals.get()
-                if token in variables:
-                    tokenvar = token
-                    tokendata = None
-                else:
+        templates = [c for c in tree.children if hasattr(c, 'data') and c.data == 'template']
+        for alt_idx, template in enumerate(templates):
+            if template is not None:
+                tmplt = []
+                for token in template.children:
+                    tok = self.locals.get(token.children[0], str(token.children[0]))
+                    json = None
+                    if len(token.children) > 1:
+                        json = token.children[1].children[0].data
+                    tmplt.append((tok, json))
+                template = tmplt
+                response = self.globals.get()
+                instance = self.globals.get()
+                self.instances.update((instance, response))
+                self.lentries.append((response, 'type', 'response', instance))
+                response_set = {response, instance}
+                for tok_idx, (token, json) in enumerate(template):
                     tok_concept = self.globals.get()
-                    tokenvar = None
-                    tokendata = token
-                instance = self.globals.get()
-                self.instances.update((tok_concept, instance))
-                self.lentries.append((tok_concept, 'type', 'response_token', instance))
-                response_set.update((tok_concept, instance))
-                self.metadatas.setdefault(tok_concept, {})['response_str'] = tokendata
-                if tokenvar is not None:
-                    self.llinks.append((tok_concept, 'response_var', tokenvar))
-                self.metadatas[tok_concept]['response_index'] = i
-                instance = self.globals.get()
-                self.instances.add(instance)
-                self.lentries.append((response, 'token_seq', tok_concept, instance))
-                response_set.add(instance)
-                if json is not None:
-                    for key, value in json.items():
-                        if isinstance(value, str) and value[0] == '#':
-                            self.llinks.append((tok_concept, key, self.locals.get(value[1:], value[1:])))
-                    self.lmetadatas.setdefault(tok_concept, {})['response_data'] = json
-            if postcondition is None:
-                postcondition = response_set
-            else:
-                postcondition.update(response_set)
+                    if token in variables:
+                        tokenvar = token
+                        tokendata = None
+                    else:
+                        tok_concept = self.globals.get()
+                        tokenvar = None
+                        tokendata = token
+                    instance = self.globals.get()
+                    self.instances.update((tok_concept, instance))
+                    self.lentries.append((tok_concept, 'type', 'response_token', instance))
+                    response_set.update((tok_concept, instance))
+                    self.metadatas.setdefault(tok_concept, {})['response_str'] = tokendata
+                    if tokenvar is not None:
+                        self.llinks.append((tok_concept, 'response_var', tokenvar))
+                    self.metadatas[tok_concept]['response_index'] = tok_idx
+                    self.metadatas[tok_concept]['alt_index'] = alt_idx
+                    instance = self.globals.get()
+                    self.instances.add(instance)
+                    self.lentries.append((response, 'token_seq', tok_concept, instance))
+                    response_set.add(instance)
+                    if json is not None:
+                        for key, value in json.items():
+                            if isinstance(value, str) and value[0] == '#':
+                                self.llinks.append((tok_concept, key, self.locals.get(value[1:], value[1:])))
+                        self.lmetadatas.setdefault(tok_concept, {})['response_data'] = json
+                if postcondition is None:
+                    postcondition = response_set
+                else:
+                    postcondition.update(response_set)
         if postcondition is not None:
             self.check_double_init([rid], self.instances)
             self.instances.add(rid)

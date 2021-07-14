@@ -1,10 +1,18 @@
 /* Common Sense */
-have(x/person(),j/job())
+be(x/person(),j/job())
+_specific(j)
 ->
 work(x)
 ;
 
-possess(x/person(),job())
+have(x/person(),j/job())
+_category(j)
+->
+work(x)
+;
+
+possess(x/person(),j/job())
+_category(j)
 ->
 work(x)
 ;
@@ -20,6 +28,27 @@ have(x,c)
 ;
 
 /* Default Content */
+c/company()
+_exists(c)
+user_aware(c)
+->
+l:<l/like(user,c) time(l,now)>
+request_truth(emora,l)
+;
+
+l/like(user,c/company())
+time(l,now)
+->
+awesome(l)
+;
+
+l/like(user,c/company())
+not(l)
+time(l,now)
+->
+sorry(emora,l)
+;
+
 uw/work(user)
 _exists(uw)
 user_aware(uw)
@@ -263,4 +292,9 @@ req/request(emora, prop_i)
 user_aware(req)
 ->
 understand(emora,uj)
+;
+
+n/nonprofit()
+->
+meaningful(n)
 ;

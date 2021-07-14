@@ -2,7 +2,7 @@ from os.path import join
 import sys, os
 sys.path.append(os.getcwd())
 
-import time, json, requests
+import time, json, requests, traceback
 import gc
 
 from GRIDD.utilities.utilities import collect, _process_requests, _process_answers
@@ -24,9 +24,35 @@ from GRIDD.utilities.profiler import profiler as p
 
 from itertools import chain
 
-def serialized(*returns):
+def serialized(*returns, serializing=IS_SERIALIZING):
     def dectorator(f):
-        if not IS_SERIALIZING:
+        if not serializing:
+            return f
+        params = signature(f).parameters
+        def f_with_serialization(cls, json):
+            kwargs = {}
+            s = time.time()
+            for k, serialized in json.items():
+                if k in params:
+                    obj = load(k, serialized)
+                    kwargs[k] = obj
+            print(f'{f.__name__[:20]:20} serial load - {time.time() - s:.2f}', end= ' ')
+            result = f(cls, **kwargs)
+            results = {}
+            s = time.time()
+            if isinstance(result, tuple):
+                for i, r in enumerate(result):
+                    results[returns[i]] = save(returns[i], r)
+            elif result is not None:
+                results[returns[0]] = save(returns[0], result)
+            print('save - %.2f' % (time.time() - s))
+            return results
+        return f_with_serialization
+    return dectorator
+
+def mega_serialized(*returns):
+    def dectorator(f):
+        if not IS_MEGA_SERIALIZING:
             return f
         params = signature(f).parameters
         def f_with_serialization(cls, json):
@@ -71,7 +97,7 @@ class ChatbotServer:
     ## Pipeline Modules
     ###################################################
 
-    @serialized('aux_state')
+    @serialized('aux_state', serializing=IS_MEGA_SERIALIZING or IS_SERIALIZING)
     def run_next_turn(self, aux_state):
         aux_state["turn_index"] += 1
         return aux_state
@@ -83,7 +109,7 @@ class ChatbotServer:
             SentenceCaser = (lambda: (lambda x: x))
         self.sentence_caser = SentenceCaser()
 
-    @serialized('user_utterance')
+    @serialized('user_utterance', serializing=IS_MEGA_SERIALIZING or IS_SERIALIZING)
     def run_sentence_caser(self, user_utterance):
         words = user_utterance.split()
         user_utterance = ' '.join(words[:UTTER_TRUNC]) # safeguard out of memory exception in rest of pipeline by limiting length of user utterance
@@ -94,7 +120,7 @@ class ChatbotServer:
         from GRIDD.modules.elit_models import ElitModels
         self.elit_models = ElitModels()
 
-    @serialized('elit_results')
+    @serialized('elit_results', serializing=IS_MEGA_SERIALIZING or IS_SERIALIZING)
     def run_elit_models(self, user_utterance, aux_state):
         if LOCAL:
             input_dict = {"user_utterance": user_utterance,
@@ -319,11 +345,13 @@ class ChatbotServer:
 
     @serialized('working_memory', 'aux_state')
     def run_knowledge_pull(self, working_memory, aux_state):
+        p.start('load')
         self.load_working_memory(working_memory)
         working_memory = self.dialogue_intcore.working_memory
         knowledge_by_refs = {}
-        p.start(f'pull by query (queries: {len(working_memory.references())})')
-        for focus, (query, variables) in working_memory.references().items():
+        references = working_memory.references()
+        p.next(f'pull by query (queries: {len(references)})')
+        for focus, (query, variables) in references.items():
             pbq_result = self.dialogue_intcore.pull_by_query(query, variables, focus)
             knowledge_by_refs.update(pbq_result)
         p.next('knowledge pull')
@@ -366,15 +394,18 @@ class ChatbotServer:
 
     @serialized('rules', 'working_memory')
     def run_reference_identification(self, working_memory):
+        p.start('load')
         self.load_working_memory(working_memory)
+        p.next('convert')
         self.dialogue_intcore.convert_metagraph_span_links(REF_SP, [REF, VAR])
+        p.next('references')
         rules = self.dialogue_intcore.working_memory.references()
+        p.stop()
         return rules, self.dialogue_intcore.working_memory
 
     @serialized('inference_results', 'rules')
     def run_dynamic_inference(self, rules, working_memory, aux_state):
         self.load_working_memory(working_memory)
-        st=time.time()
         # filter out too broad of rules
         filters = {'object', 'entity', 'predicate'}
         filtered_rules = {}
@@ -405,7 +436,6 @@ class ChatbotServer:
                             pre.remove('not')
                         if len(set(pre.subtypes_of('maybe'))) == 1:
                             pre.remove('maybe')
-        print('filtering dynamic rules: %.2f sec'%(time.time()-st))
         inference_results = self.reference_engine.infer(self.dialogue_intcore.working_memory, aux_state, filtered_rules,
                                                         cached=False)
         return inference_results, {}
@@ -522,9 +552,9 @@ class ChatbotServer:
             salient_emora_request = salient_emora_truth_request
             req_type = REQ_TRUTH
 
-        if DEBUG:
-            print('ARG REQUESTS: %s' % emora_arg_requests)
-            print('TRUTH REQUESTS: %s' % emora_truth_requests)
+        # if DEBUG:
+        #     print('ARG REQUESTS: %s' % emora_arg_requests)
+        #     print('TRUTH REQUESTS: %s' % emora_truth_requests)
 
         if salient_emora_request is not None:
             p.next('find answer')
@@ -541,9 +571,9 @@ class ChatbotServer:
                 for so, t, l in ref_links:
                     wm.features.setdefault(t, {})[SALIENCE] = wm.features.setdefault(fragment, {}).get(SALIENCE, 0)
                     # wm.features[t][BASE] = True todo - check if the BASE indication matters here
-            if DEBUG:
-                print('CURRENT USER CONCEPTS: %s'%current_user_concepts)
-                print('FRAGMENT REQUEST MERGES: %s'%fragment_request_merges)
+            # if DEBUG:
+            #     print('CURRENT USER CONCEPTS: %s'%current_user_concepts)
+            #     print('FRAGMENT REQUEST MERGES: %s'%fragment_request_merges)
             self.merge_references(fragment_request_merges, aux_state)
             self.dialogue_intcore.operate(self.dialogue_intcore.universal_operators, aux_state=aux_state)
             self.dialogue_intcore.operate(self.dialogue_intcore.wm_operators, aux_state=aux_state)
@@ -644,7 +674,7 @@ class ChatbotServer:
         from GRIDD.modules.response_assembler import ResponseAssembler
         self.response_assembler = ResponseAssembler()
 
-    @serialized('response', 'working_memory')
+    @serialized('response', 'working_memory', serializing=IS_MEGA_SERIALIZING or IS_SERIALIZING)
     def run_response_assembler(self, working_memory, aux_state, rule_responses):
         if rule_responses is None:
             rule_responses = [None]
@@ -834,6 +864,171 @@ class ChatbotServer:
         self.init_response_nlg_model()
         self.init_response_assember()
 
+    def nlu_to_response_init(self, device=None):
+        self.init_parse2logic(device=device)
+        self.init_multiword_matcher()
+        self.init_template_nlg()
+        self.init_response_selection()
+        self.init_response_expansion()
+        self.init_response_by_rules()
+        self.init_response_nlg_model()
+
+    def error_print(self, module, e):
+        print("[ERROR] %s: %s" % (module, e))
+        traceback.print_exc(file=sys.stdout)
+        sys.stdout.flush()
+
+    @mega_serialized('rule_responses', 'working_memory', 'aux_state')
+    def nlu_to_response(self, elit_results, working_memory, aux_state):
+        p.start('parse2logic')
+        try:
+            mentions, merges = self.run_parse2logic(elit_results)
+        except Exception as e:
+            self.error_print('parse2logic', e)
+            mentions, merges = {}, []
+        p.next('multiword mentions')
+        try:
+            multiword_mentions = self.run_multiword_matcher(elit_results)
+        except Exception as e:
+            self.error_print('multiword_mentions', e)
+            multiword_mentions = {}
+        p.next('ner mentions')
+        try:
+            ner_mentions = self.run_ner_mentions(elit_results)
+        except Exception as e:
+            self.error_print('ner_mentions', e)
+            ner_mentions = {}
+        p.next('mention bridge')
+        try:
+            subspans, working_memory = self.run_mention_bridge(mentions, multiword_mentions, ner_mentions, working_memory, aux_state)
+        except Exception as e:
+            self.error_print('mention_bridge', e)
+            subspans = {}
+            self.load_working_memory(working_memory) # working_memory might be modified before crashing?
+            working_memory = self.dialogue_intcore.working_memory
+        p.next('merge bridge')
+        try:
+            working_memory, aux_state = self.run_merge_bridge(merges, subspans, working_memory, aux_state)
+        except Exception as e:
+            self.error_print('merge_bridge', e)
+        p.next('knowledge pull 0')
+        try:
+            working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state)
+        except Exception as e:
+            self.error_print('knowledge_pull 0', e)
+        if PRINT_WM:
+            print('\n<< Working Memory After Inferences Applied >>')
+            print(working_memory.pretty_print(exclusions={SPAN_DEF, SPAN_REF, USER_AWARE, ASSERT}))
+        n = 2
+        for i in range(n):
+            p.next('reference id %d'%i)
+            try:
+                rules, working_memory = self.run_reference_identification(working_memory)
+            except Exception as e:
+                self.error_print('reference_id %d'%i, e)
+                rules = {}
+            p.next('reference infer %d'%i)
+            try:
+                inference_results, rules = self.run_dynamic_inference(rules, working_memory, aux_state)
+            except Exception as e:
+                self.error_print('dynamic_inference %d'%i, e)
+                inference_results, rules = {}, {}
+            p.next('reference resolution %d'%i)
+            try:
+                working_memory = self.run_reference_resolution(inference_results, working_memory, aux_state)
+            except Exception as e:
+                self.error_print('reference_resolution %d'%i, e)
+            p.next('fragment resolution %d'%i)
+            try:
+                working_memory, aux_state = self.run_fragment_resolution(working_memory, aux_state)
+            except Exception as e:
+                self.error_print('fragment_resolution %d'%i, e)
+            p.next('dialogue infer %d'%i)
+            try:
+                inference_results = self.run_dialogue_inference(working_memory, aux_state)
+            except Exception as e:
+                self.error_print('dialogue_inference %d'%i, e)
+                inference_results = {}
+            p.next('apply inferences %d'%i)
+            try:
+                working_memory, aux_state = self.run_apply_dialogue_inferences(inference_results, working_memory, aux_state)
+            except Exception as e:
+                self.error_print('apply_dialogue_inference %d'%i, e)
+            if i < n - 1:
+                p.next('knowledge pull %d'%(i+1))
+                try:
+                    working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state)
+                except Exception as e:
+                    self.error_print('knowledge pull %d'%(i+1), e)
+
+        if PRINT_WM:
+            print('\n<< Working Memory After Inferences Applied >>')
+            print(working_memory.pretty_print(exclusions={SPAN_DEF, SPAN_REF, USER_AWARE, ASSERT}))
+            for s, t, o, i in working_memory.predicates(predicate_type='_tanchor'):
+                print(f"{s} = {working_memory.features[s][SALIENCE]}, {working_memory.features[i][SALIENCE]}")
+
+        p.next('prepare template nlg')
+        try:
+            working_memory, expr_dict = self.run_prepare_template_nlg(working_memory)
+        except Exception as e:
+            self.error_print('prep_template_nlg', e)
+            expr_dict = {}
+        p.next('template infer')
+        try:
+            inference_results = self.run_template_inference(working_memory, aux_state)
+        except Exception as e:
+            self.error_print('template_inference', e)
+            inference_results = {}
+        p.next('template fillers')
+        try:
+            template_response_sel, aux_state = self.run_template_fillers(inference_results, expr_dict, working_memory, aux_state)
+        except Exception as e:
+            self.error_print('template_fillers', e)
+            template_response_sel = None
+        p.next('response sel')
+        try:
+            aux_state, response_predicates = self.run_response_selection(working_memory, aux_state, template_response_sel)
+        except Exception as e:
+            self.error_print('response_sel', e)
+            response_predicates = []
+        p.next('response exp')
+        try:
+            expanded_response_predicates, working_memory = self.run_response_expansion(response_predicates, working_memory, aux_state)
+        except Exception as e:
+            self.error_print('response_exp', e)
+            expanded_response_predicates = []
+        p.next('response rules')
+        try:
+            rule_responses = self.run_response_by_rules(aux_state, expanded_response_predicates)
+        except Exception as e:
+            self.error_print('rule_responses', e)
+            rule_responses = []
+        p.stop()
+        return rule_responses, working_memory, aux_state
+
+    def nlu_to_response_serialize(self, user_utterance, working_memory, aux_state):
+        state = {'user_utterance': save('user_utterance', user_utterance),
+                 'working_memory': save('working_memory', working_memory),
+                 'aux_state': save('aux_state', aux_state)
+                }
+        p.start('gridd')
+        state_update = self.run_next_turn(state)
+        state.update(state_update)
+        state_update = self.run_sentence_caser(state)
+        state.update(state_update)
+        state_update = self.run_elit_models(state)
+        state.update(state_update)
+        state_update = self.nlu_to_response(state)
+        state.update(state_update)
+        state_update = self.run_response_assembler(state)
+        state.update(state_update)
+        if DEBUG:
+            p.report()
+            p.clear()
+        return load("response", state["response"]), \
+               load("working_memory", state["working_memory"]), \
+               load("aux_state", state["aux_state"])
+
     def run_mention_merge(self, user_utterance, working_memory, aux_state):
         aux_state = self.run_next_turn(aux_state)
         user_utterance = self.run_sentence_caser(user_utterance)
@@ -1006,6 +1201,8 @@ class ChatbotServer:
                 s = time.time()
                 if IS_SERIALIZING:
                     response, wm, aux_state = self.respond_serialize(utter, wm, aux_state)
+                elif IS_MEGA_SERIALIZING:
+                    response, wm, aux_state = self.nlu_to_response_serialize(utter, wm, aux_state)
                 else:
                     response, wm, aux_state = self.respond(utter, wm, aux_state)
                 elapsed = time.time() - s

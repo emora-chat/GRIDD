@@ -1131,7 +1131,7 @@ Captures possessive phrases by constructing a `possess` predicate between the po
 	-> agent_of_possessive ->
 	p/possess(Y, X)
 	focus(p)
-	center(Y)
+	link(Y)
 	;
 
 </details>

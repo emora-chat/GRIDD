@@ -790,3 +790,23 @@ be(f,o)
 ->
 $ My favorite fruit is watermelon ! Since it is summer now , watermelon is the best fruit to have in my mind . $
 ;
+
+req_unsat(request(user, f/food()))
+like(emora,f)
+->
+$ I really like ramen noodles . Having a bowl of ramen with warm soup is a must for me during winter . $
+;
+
+c/cook(emora)
+l/like(emora,c)
+req_unsat(request_truth(user, l))
+->
+$ I like cooking ! Seeing people enjoy the food I make is such a satisfying experience . $
+;
+
+b/bake(emora)
+l/like(emora,b)
+req_unsat(request_truth(user, l))
+->
+$ I like baking ! I often bake cookies and share them with my friends . They really like them . $
+;

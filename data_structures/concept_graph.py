@@ -480,6 +480,10 @@ class ConceptGraph:
                           '_p': '_present',
                           '_rpresent': '_rpresent',
                           '_rp': '_rpresent'}
+        repetition = {'_r', '_nr', '_ur'}
+        repetition_def = {'_react': '_r',
+                          '_present': '_nr',
+                          '_rpresent': '_nr'}
 
         topic_anchor = ''
         if file is not None:
@@ -490,63 +494,79 @@ class ConceptGraph:
             else:
                 print('[WARNING] More than one topic anchor found for file %s: %s' %(file, matches))
 
-        templates = {}
         template_instances = set(self.subtypes_of('response')) - {'response'}
-
         template_links = {}
-        instance_exclusions = set()
         for template in template_instances:
-            # Get the rule that this template is the postcondition of
-            (rule, ) = self.metagraph.sources(template, POST)
+            (rule,) = self.metagraph.sources(template, POST)
+            if rule not in template_links:
+                template_links[rule] = {'templates': [], 'specs': {}}
+            template_links[rule]['templates'].append(template)
+
+        instance_exclusions = set()
+        for rule, template_d in template_links.items():
+            templates = template_d['templates']
             if file is None:
                 topic_anchor = rule.split('_')[0] + '__t'
             # Get the precondition and vars
             pre_inst = self.metagraph.out_edges(rule, PRE)
-            pre = [edge[1] for edge in pre_inst]
+            template_d['pre'] = [edge[1] for edge in pre_inst]
             vars_inst = self.metagraph.out_edges(rule, VAR)
-            vars = {edge[1] for edge in vars_inst}
-            # get the post and represent it as a list of string element specifications
-            elements = self.objects(template, 'token_seq')
-            elements = sorted(elements, key=lambda x: self.features[x]['response_index'])
-            string_spec_ls = []
-            for e in elements:
-                string_literal = self.features[e]['response_str']
-                if string_literal is None:
-                    (var,) = self.metagraph.targets(e, 'response_var')
-                    string_repr = f"{var}.var"
-                else:
-                    string_repr = string_literal
-                string_data = self.features[e].get('response_data', None)
-                if string_data is not None:
-                    for key, value in string_data.items():
-                        if isinstance(value, str) and value[0] == '#':
-                            (node,) = self.metagraph.targets(e, key)
-                            string_data[key] = node
-                final_element = (string_repr, string_data) if string_data is not None else string_repr
-                string_spec_ls.append(final_element)
+            template_d['vars'] = {edge[1] for edge in vars_inst}
+            instance_exclusions.update(chain(pre_inst, vars_inst))
+            # get template tags
             post_inst = list(self.metagraph.targets(rule, POST))
             priority_tag = None
-            template_type = DEFAULT_TEMPLATE_TYPE
+            template_type = None
+            rep = None
             for inst in post_inst:
                 if self.has(predicate_id=inst):
                     if self.type(inst) == PRIORITY_PRED:
                         priority_tag = self.subject(inst)
                     elif self.type(inst) == TEMPLATE_TYPE:
                         template_type = self.subject(inst)
+                    elif self.type(inst) == REP_TYPE:
+                        rep = self.subject(inst)
             if priority_tag is not None and priority_tag not in priority_map:
-                print('[WARNING] Priority tag %s must be one of %s'%(str(priority_tag), str(priority_map.keys())))
+                print('[WARNING] Priority tag %s must be one of %s' % (str(priority_tag), str(priority_map.keys())))
             if template_type is not None and template_type not in template_types:
-                print('[WARNING] Template type %s must be one of %s'%(str(template_type), str(template_types.keys())))
-            template_obj = Template(string_spec_ls,
-                                    priority=priority_map.get(priority_tag, DEFAULT_PRIORITY),
-                                    template_type=template_types.get(template_type, DEFAULT_TEMPLATE_TYPE),
-                                    topic_anchor=topic_anchor)
-            instance_exclusions.update(chain(pre_inst, vars_inst))
-            template_links[rule] = (pre, template_obj, vars)
+                print('[WARNING] Template type %s must be one of %s' % (str(template_type), str(template_types.keys())))
+            if rep is not None and rep not in repetition:
+                print('[WARNING] Repetition type %s must be one of %s' % (str(rep), str(repetition)))
+            # compose template string specifications
+            for template in templates:
+                elements = self.objects(template, 'token_seq')
+                elements = sorted(elements, key=lambda x: self.features[x]['response_index'])
+                string_spec_ls = []
+                for e in elements:
+                    string_literal = self.features[e]['response_str']
+                    if string_literal is None:
+                        (var,) = self.metagraph.targets(e, 'response_var')
+                        string_repr = f"{var}.var"
+                    else:
+                        string_repr = string_literal
+                    string_data = self.features[e].get('response_data', None)
+                    if string_data is not None:
+                        for key, value in string_data.items():
+                            if isinstance(value, str) and value[0] == '#':
+                                (node,) = self.metagraph.targets(e, key)
+                                string_data[key] = node
+                    final_element = (string_repr, string_data) if string_data is not None else string_repr
+                    string_spec_ls.append(final_element)
+                template_type = template_types.get(template_type, DEFAULT_TEMPLATE_TYPE)
+                template_obj = Template(string_spec_ls,
+                                        priority=priority_map.get(priority_tag, DEFAULT_PRIORITY),
+                                        template_type=template_type,
+                                        repetition_type=rep if rep is not None else repetition_def.get(template_type, '_nr'),
+                                        topic_anchor=topic_anchor)
+                template_d['specs'][template] = template_obj
 
-        for rule, (pre, template_obj, vars) in template_links.items():
+        templates = {}
+        for rule, template_d in template_links.items():
+            pre = template_d['pre']
+            vars = template_d['vars']
+            specs = template_d['specs']
             pre = self.subgraph(pre, meta_exclusions=instance_exclusions)
-            templates[rule] = (pre, template_obj, vars)
+            templates[rule] = (pre, specs, vars)
         return templates
 
 
@@ -557,8 +577,23 @@ class ConceptGraph:
             pre = self.metagraph.targets(ref, REF)
             vars = set(self.metagraph.targets(ref, VAR))
             if pre:
-                pre = self.subgraph(pre)
                 references[ref] = (pre, vars)
+        # delete references that are completely covered by an outer reference
+        to_delete = []
+        for ref, (pre, vars) in references.items():
+            for oref, (opre, ovars) in references.items():
+                if ref != oref:
+                    if opre.issubset(pre) and [oref, opre, ovars] not in to_delete:
+                        to_delete.append([oref, opre, ovars])
+        for ref, pre, vars in to_delete:
+            for p in pre:
+                self.metagraph.remove(ref, p, REF)
+            for v in vars:
+                self.metagraph.remove(ref, v, VAR)
+            del references[ref]
+        # convert remaining pre targets to concept graph
+        for ref, (pre, vars) in references.items():
+            references[ref] = (self.subgraph(pre), vars)
         return references
 
     def subgraph(self, concepts=None, types=None, exclusions=None, type_exclusions=None, meta_exclusions=None):

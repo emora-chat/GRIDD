@@ -1,0 +1,39 @@
+sbj(X/present_tense(), Y/pstg())
+obj(X, Z/pstg())
+-> sbj_dobj_present ->
+p/X(Y,Z)
+time(p, now)
+focus(p)
+center(X)
+;
+
+det(X/pstg(), Y/dt())
+ltype(Y, inst_det)
+-> inst_concept_determiner ->
+focus(inst/X())
+center(X)
+cover(Y)
+;
+
+
+X/singular()
+ltype(X, object)
+kbinstance(X)
+-> instance_singular_noun ->
+focus(X)
+center(X)
+;
+
+X/singular()
+ltype(X, object)
+-> notinstance_singular_noun ->
+focus(X())
+center(X)
+;
+
+X/pron()
+ltype(X, object)
+-> pronoun ->
+focus(X)
+center(X)
+;

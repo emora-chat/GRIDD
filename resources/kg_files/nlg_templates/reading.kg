@@ -15,7 +15,7 @@ req_sat(r/request(emora, b/book()))
 eturn(r, 1)
 ->
 _t(_react)
-$ Oh, b ! That's an interesting one. $
+$ Oh, b ! That's an good one. I think it's safe to say you have a pretty good taste in books. $
 ;
 
 l/like(x/person(), b/book())
@@ -110,7 +110,7 @@ $ I really enjoy fiction books, although it is a pretty broad category. My perso
 l/like(user, fantasy_book)
 user_aware(l)
 ->
-$ I love fantasy books, especially high fantasy. The unique worlds and mechanics created by the author never cease to amaze me. $
+$ Oh, I love fantasy books, especially high fantasy. The unique worlds and mechanics created by the author never cease to amaze me. $
 ;
 
 l/like(user, mystery_book)
@@ -128,4 +128,33 @@ l/like(user, n/nonfiction())
 user_aware(l)
 ->
 $ Nonfiction books are so versatile. They have the ability to be just as captivating as fictional stories when written well, while also teaching you real world knowledge. I think that it's a great combination. $
+;
+
+req_unsat(request(user, b/book()))
+like_1/like(emora, b)
+->
+$ Harry Potter is definitely one of my favorites, and it likely always will be because of the nostalgia. I also really like the Stormlight Archive series, I think its author did a really good job creating a detailed world. $
+;
+
+possess(emora, b/book())
+favorite(b)
+req_unsat(request(user, o/object()))
+be(b, o)
+->
+$ Harry Potter is definitely one of my favorites, and it likely always will be because of the nostalgia. I also really like the Stormlight Archive series, I think its author did a really good job creating a detailed world. $
+;
+
+time(like(emora, book()), now)
+->
+$ Yeah, I love reading books! $
+;
+
+time(like(emora, read()), now)
+->
+$ Yeah, I love to read! $
+;
+
+time(read(emora), now)
+->
+$ Yeah, I read all the time! $
 ;

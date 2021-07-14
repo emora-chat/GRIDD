@@ -23,6 +23,7 @@ doggypaddle=(swim)
 [relax, chill]=(activity, solo_or_social, leisure)
 
 play=(activity, solo_or_social)
+expr("playing, played", play)
 
 watch=(see, activity, solo_or_social, leisure)
 
@@ -64,6 +65,6 @@ ride=(activity,physical)
 surf=(activity,physical)
 shop=(activity,leisure)
 meditate=(activity,mental)
-interest=(like)
-garden=(activity,physical)
 
+garden=(activity,physical)
+interest=(like)

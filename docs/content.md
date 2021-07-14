@@ -191,10 +191,23 @@ $ I have a dog named Nyla! $
 
 
 ### Answer Typed Question
+
+Knowledge Base
+```
+location = (entity)
+live = (predicate)
+locate(l/live(emora), virtual_world=location()) time(l, now)
+;
 ```
 
+Templates
 ```
-
+locate(l/live(emora), virtual_world)
+time(l, now)
+-> emora_lives_where ->
+$ I live in a virtual world! $
+;
+```
 
 
 ### Respond to Open-Ended Question/Presentation

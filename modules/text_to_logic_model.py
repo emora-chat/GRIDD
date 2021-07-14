@@ -98,19 +98,26 @@ class ParseToLogic:
         wm = self.intcore.working_memory
         self.intcore.working_memory.clear()
         parse_graph = self.text_to_graph(*args)
-        if len(parse_graph.concepts()) == 0: # empty utterance
+        cs = parse_graph.concepts()
+        # print('Parse graph concepts: %d'%len(cs))
+        if len(cs) == 0: # empty utterance
             return {}, []
         self.intcore.consider(parse_graph)
+        # print('intcore graph concepts: %d' % len(self.intcore.working_memory.concepts()))
         self._span_to_concepts()
+        # print('intcore graph concepts: %d' % len(self.intcore.working_memory.concepts()))
         types = self.intcore.pull_types()
         type_preds = {p for concept in types for p in types[concept]}
         self.intcore.consider(type_preds)
+        # print('intcore graph concepts: %d' % len(self.intcore.working_memory.concepts()))
         # todo - this is just a temporary patch for missing type expression
         for s,_,_,_ in wm.predicates(predicate_type='expr'):
             if not wm.has(s, 'type', 'expression'):
                 wm.add(s, 'type', 'expression')
-        print(len(list(wm.predicates())))
+        # print('intcore graph concepts: %d' % len(self.intcore.working_memory.concepts()))
         rule_assignments = self.intcore.infer()
+        # for k,v in rule_assignments.items():
+        #     print(k, len(v[-1]))
         sorted_assignments = {}
         for k2 in self.intcore.inference_engine.rules:
             for rule, (pre, post, sols) in rule_assignments.items():
@@ -291,22 +298,23 @@ class ParseToLogic:
     def _promote_time(self, promotions, ewm, mentions):
         for p in promotions: # replaces obj of `time` of head predicate of promotion with obj of `p_time`
             heads = chain(ewm.subjects(p, 'aux'), ewm.subjects(p, 'raise'))
+            promotion_cg = mentions[p]
             for head in heads:
-                promotion_cg = mentions[p]
-                preds = list(promotion_cg.predicates(predicate_type='p_time'))
-                if len(preds) > 0:
-                    (promotion_time_pred,) = preds
-                    head_cg = mentions[head]
-                    preds = list(head_cg.predicates(predicate_type='time'))
+                if head in mentions:
+                    preds = list(promotion_cg.predicates(predicate_type='p_time'))
                     if len(preds) > 0:
-                        ((s,t,o,i), ) = preds
-                        head_cg.remove(s,t,o,i)
-                    else:
-                        ((s,_,_,_), ) = list(head_cg.predicates(predicate_type='focus'))
-                        i = head_cg.id_map().get()
-                    head_cg.add(s, TIME, promotion_time_pred[2], i)
-                    head_cg.metagraph.add(s, i, COMPS)
-                    promotion_cg.remove(*promotion_time_pred)
+                        (promotion_time_pred,) = preds
+                        head_cg = mentions[head]
+                        preds = list(head_cg.predicates(predicate_type='time'))
+                        if len(preds) > 0:
+                            ((s,t,o,i), ) = preds
+                            head_cg.remove(s,t,o,i)
+                        else:
+                            ((s,_,_,_), ) = list(head_cg.predicates(predicate_type='focus'))
+                            i = head_cg.id_map().get()
+                        head_cg.add(s, TIME, promotion_time_pred[2], i)
+                        head_cg.metagraph.add(s, i, COMPS)
+                        promotion_cg.remove(*promotion_time_pred)
             if not list(mentions[p].predicates(predicate_type='focus')):
                 del mentions[p]
 

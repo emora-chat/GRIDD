@@ -24,4 +24,11 @@ expr("read, reading, to read", read)
 
 magic=(entity)
 setting=(entity)
+
+time(like(emora, b/book()), now)
+type(b, group)
+
+time(like(emora, read()), now)
+
+time(read(emora), now)
 ;
