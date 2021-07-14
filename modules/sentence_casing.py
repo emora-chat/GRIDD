@@ -1,4 +1,5 @@
 import string, math, nltk, zipfile, os
+from nltk.tokenize.treebank import TreebankWordDetokenizer
 import _pickle as cPickle
 
 
@@ -6,6 +7,7 @@ class SentenceCaser:
 
     def __init__(self):
         self.load_model()
+        self.detokenizer = TreebankWordDetokenizer()
 
     def load_model(self):
         f = zipfile.ZipFile(os.path.join('GRIDD', 'resources' ,'english_distributions.obj.zip'), 'r').open('distributions.obj')
@@ -116,8 +118,10 @@ class SentenceCaser:
         results = []
         for sentence in inputs:
             tokens = [token.lower() for token in nltk.word_tokenize(sentence)]
-            true_cased = ' '.join(self.getTrueCase(tokens, 'title'))
-            results.append(true_cased)
+            true_cased = self.getTrueCase(tokens, 'title')
+            cased_str = self.detokenizer.detokenize(true_cased)
+            # cased_str = ' '.join(true_cased)
+            results.append(cased_str)
         return results
 
     def __call__(self, sentence):
@@ -128,3 +132,10 @@ class SentenceCaser:
         sentence = sentence.replace(" '", "'").replace("' ", "'") # alexa ASR puts whitespace before apostrophe in contractions
         cased_sent = self.run_model([sentence])[0]
         return cased_sent
+
+if __name__ == '__main__':
+
+    sc = SentenceCaser()
+    print(sc("i'm happy today"))
+    print(sc("you know what i've wanted to go too"))
+    print(sc("that's a terrible thing you've said"))
