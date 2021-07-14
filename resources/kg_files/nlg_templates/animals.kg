@@ -103,7 +103,7 @@ $ Oh, well I guess that makes sense. I personally like how diverse different ani
 ;
 
 think(emora, awesome(animal))
-time(l/like(user, a/animal()), now)
+time(l/like(user, ani/animal()), now)
 ->
 $ Well, I suppose that's logical. I still think pets are really awesome, but I think it's perfectly reasonable for you to not want one. $
 $ Oh, I guess that's true. It makes sense why you don't want a pet, although I still think they're pretty great. $
@@ -136,6 +136,7 @@ $ Neat, I've always found the ani pretty interesting. $
 
 time(possess(user, ani/animal()), now)
 time(f/favorite(ani), now)
+user_aware(ani)
 r/request(emora, ani)
 eturn(r, 1)
 ->
@@ -147,6 +148,7 @@ time(possess(user, ani/animal()), now)
 time(f/favorite(ani), now)
 cause(pred/predicate(), f)
 r/request(emora, pred)
+_specific(ani)
 ->
 _t(_present)
 _rep(_ur)
@@ -204,4 +206,24 @@ uturn(s, 0)
 _t(_r)
 $ Oh, yeah, ani are always fun to see. $
 $ Oh, I really enjoy watching ani too. $
+;
+
+h/have(user, ani/animal())
+not(h)
+favorite(ani)
+uturn(h, 0)
+->
+_pr(_high)
+_t(_r)
+$ Yeah, choosing a favorite can definitely be pretty hard. $
+;
+
+h/have(user, favorite())
+not(h)
+uturn(h, 0)
+r/request(emora, ani/animal())
+eturn(r, 1)
+->
+_t(_r)
+$ Oh, well choosing a favorite is pretty hard, so I get it. $
 ;

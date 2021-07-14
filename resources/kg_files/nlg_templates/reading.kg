@@ -18,7 +18,7 @@ eturn(r, 1)
 ->
 _t(_react)
 _rep(_ur)
-$ Oh, b ! That's an good one. I think it's safe to say you have a pretty good taste in books. $
+$ Oh, b ! That's a good one. I think it's safe to say you have a pretty good taste in books. $
 $ b ! That is indeed a good book. Good choice, good choice. $
 ;
 
@@ -175,3 +175,22 @@ time(read(emora), now)
 $ Yeah, I read all the time! $
 ;
 
+h/have(user, b/book())
+not(h)
+favorite(b)
+uturn(h, 0)
+->
+_pr(_high)
+_t(_r)
+$ Oh, I see. Yeah, I guess it's pretty hard to choose a favorite. $
+;
+
+h/have(user, favorite())
+not(h)
+uturn(h, 0)
+r/request(emora, b/book())
+eturn(r, 1)
+->
+_t(_r)
+$ Oh, I see. Yeah, I guess it's pretty hard to choose a favorite. $
+;

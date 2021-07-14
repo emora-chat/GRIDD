@@ -51,7 +51,7 @@ person_ner = (ner_tag, name)
 
 affirm = (predicate)
 expr(["yes", "yeah", "yea", "sure", "yep", "yup",
-      "exactly", "definitely", "right", "absolutely", "of course"], affirm)
+      "exactly", "definitely", "right", "absolutely", "of course", "indeed"], affirm)
 reject = (predicate)
 expr(["no", "nope", "nah", "of course not"], reject)
 acknowledge = (predicate)

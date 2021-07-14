@@ -118,3 +118,19 @@ user_aware(r)
 time(cause(fast(cheetah), like(emora, cheetah)), now)
 ;
 
+h/have(user, a/animal())
+not(h)
+favorite(a)
+->
+time(cause(fast(cheetah), like(emora, cheetah)), now)
+;
+
+h/have(user, favorite())
+not(h)
+uturn(h, 0)
+r/request(emora, ani/animal())
+eturn(r, 1)
+->
+time(agree(emora, cool(ani)), now)
+time(cause(fast(cheetah), like(emora, cheetah)), now)
+;
