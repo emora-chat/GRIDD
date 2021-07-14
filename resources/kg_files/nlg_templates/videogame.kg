@@ -166,7 +166,7 @@ time(research(emora, vg), future)
 ->
 _pr(_low)
 $ Oh, vg ! I don't know too much about it, but I'll definitely look into it. What do you like about vg ? $
-$ Oh, vg, I haven't actually played that one, but I'll check it out. What do you like about vg ? $
+$ Oh, vg , I haven't actually played that one, but I'll check it out. What do you like about vg ? $
 ;
 
 classic(finalfantasy)
@@ -188,13 +188,15 @@ request(emora, pred)
 $ Yeah, f is a good one. Although I do think that all of the games in the series are quite good. Why is f your favorite? $
 ;
 
-like(user, minecraft())
+l/like(user, minecraft())
+user_aware(l)
 ->
 $ Minecraft is a really great game. I love it! Years ago, I would spend tons of time just exploring, mining, and building. The game has become really popular again recently, which is awesome. $
 $ I love Minecraft, I think it's a great game. It's popularity has surged recently, which I think is great. It reminds me of my time exploring and building years ago. $
 ;
 
-play(user, minecraft())
+p/play(user, minecraft())
+user_aware(p)
 ->
 $ Minecraft is a really great game. I love it! Years ago, I would spend tons of time just exploring, mining, and building. The game has become really popular again recently, which is awesome. $
 $ I love Minecraft, I think it's a great game. It's popularity has surged recently, which I think is great. It reminds me of my time exploring and building years ago. $

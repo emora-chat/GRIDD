@@ -51,6 +51,7 @@ $ Since you have a pet, I'm guessing that you also like animals. Do you have a f
 time(l/like(x/person(), zoo), now)
 request_truth(emora, l)
 ->
+_pr(_low)
 $ Considering you like animals, I was wondering, do you like the zoo? There are plenty of different animals to see there. $
 $ I was wondering, since you like animals, you must also like the zoo right? There are countless different animals to see there. $
 ;
@@ -63,10 +64,19 @@ request_truth(emora, oft)
 $ Yeah, the zoo is really awesome. Years ago, I would visit as much as I could and just spend the entire day staring at animals, mesmerized. Do you visit often? $
 ;
 
+like(x/person(), zoo)
+v/visit(user, z/zoo())
+time(oft/often(v), now)
+request_truth(emora, oft)
+->
+$ Yeah, the zoo is really awesome. Years ago, I would visit as much as I could and just spend the entire day staring at animals, mesmerized. Do you visit often? $
+;
+
+
 v/visit(user, z/zoo())
 often(v)
 cause(funny(flamingo, appearance), like(emora, flamingo))
-possess(user, act/activity()) in(a, z)
+possess(user, act/activity()) in(act, z)
 favorite(act)
 request(emora, act)
 ->
@@ -150,21 +160,48 @@ r/request(emora, pred)
 eturn(r, 1)
 ->
 _rep(_ur)
+_t(_r)
 $ Yeah, ani are really cute aren't they? I totally get why you would like them. $
 ;
 
 c/cute(ani/animal())
-user(c, 0)
+uturn(c, 0)
 ->
 _rep(_ur)
+_t(_r)
 $ Yeah, ani are really cute aren't they? I totally get why you would like them. $
 $ Yeah, I think ani are super cute. They're just such lovable creatures. $
 ;
 
-f/fast(ani/animal())
-user(f, 0)
+c/cool(ani/animal())
+uturn(c, 0)
 ->
 _rep(_ur)
+_t(_r)
+$ Yeah, ani are definitely pretty cool. I can see why you would like them. $
+$ Yeah, I think ani are actually pretty likeable because they're cool $
+;
+
+f/fast(ani/animal())
+uturn(f, 0)
+->
+_rep(_ur)
+_t(_r)
 $ Yeah, I really like fast animals. My favorite animal is the cheetah after all. There's just something so cool about being lightning fast. $
 ;
 
+w/watch(user, ani/animal())
+uturn(w, 0)
+->
+_t(_r)
+$ Oh, yeah, ani are always fun to watch. $
+$ Oh, I really enjoy watching ani too. $
+;
+
+s/see(user, ani/animal())
+uturn(s, 0)
+->
+_t(_r)
+$ Oh, yeah, ani are always fun to see. $
+$ Oh, I really enjoy watching ani too. $
+;

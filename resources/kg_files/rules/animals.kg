@@ -32,6 +32,12 @@ oft:<v/visit(user, z) time(oft/often(v), now)>
 request_truth(emora, oft)
 ;
 
+time(like(user, zoo), now)
+->
+oft:<v/visit(user, z/zoo()) time(oft/often(v), now)>
+request_truth(emora, oft)
+;
+
 v/visit(user, z/zoo())
 often(v)
 ->
