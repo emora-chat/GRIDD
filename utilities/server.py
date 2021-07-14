@@ -85,10 +85,10 @@ def load(key, value):
             print('ERROR:', e)
             print('SOURCE: (%s,%s)'%(key,value))
             value = value
-        if key == 'working_memory':
-            working_memory = ConceptGraph(namespace=value["namespace"])
-            ConceptGraph.load(working_memory, value)
-            value = working_memory
+        if key in {'working_memory', 'user_kb'}:
+            cg = ConceptGraph(namespace=value["namespace"])
+            ConceptGraph.load(cg, value)
+            value = cg
         elif key == 'aux_state':
             coref_context = value.get('coref_context', None)
             if coref_context is not None:

@@ -20,3 +20,14 @@ uturn(nap(), 0)
 emora_loves_naps
 ;
 
+like(user, nap(user))
+->
+ukbpre
+emora_loves_naps
+;
+
+like(user, hike(user))
+->
+ukb
+athletic(user)
+;

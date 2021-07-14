@@ -187,6 +187,8 @@ class IntelligenceCore:
             self.working_memory = ConceptGraph(namespace='wm', supports={AND_LINK: False})
             self.consider(working_memory)
 
+        self.user_kb = ConceptGraph(namespace='ukb')
+
         self.subj_essential_types = {i for i in self.knowledge_base.subtypes_of(SUBJ_ESSENTIAL)
                                 if not self.knowledge_base.has(predicate_id=i)}
         self.obj_essential_types = {i for i in self.knowledge_base.subtypes_of(OBJ_ESSENTIAL)
@@ -354,6 +356,21 @@ class IntelligenceCore:
             solutions = self.inference_engine.infer(self.working_memory, aux_state, dynamic_rules=rules)
         return solutions
 
+    def save_to_ukb(self, nodes, se, oe, tp):
+        ukb_concat = ConceptGraph(namespace='wm')
+        visited = set()
+        for n in nodes:
+            if n not in visited:
+                structure = self.working_memory.structure(n,
+                                                          subj_essentials=se,
+                                                          obj_essentials=oe,
+                                                          type_predicates=tp)
+                for struct in structure:
+                    if '<span>' not in struct[0] and not self.user_kb.has(*struct[:-1]):
+                        ukb_concat.add(*struct)
+                        visited.update(struct)
+        self.user_kb.concatenate(ukb_concat)
+
     def apply(self, inferences):
         implications = {}
         for rid, (pre, post, sols) in inferences.items():
@@ -389,12 +406,10 @@ class IntelligenceCore:
         """
         # todo - think about type-based evidence
         #  (type predicates not found in solutions explicitly right now)
-        # todo - evidence is currently the variable solution dictionary
-        #  -> thus salience right now is only based on vars in precondition and
-        #  if the precondition contains no vars, there is no evidence!
         if inferences is None:
             inferences = self.infer()
         result_dict = self.apply(inferences)
+        user_kb_saves = []
         for rule, results in result_dict.items():
             pre, post = inferences[rule][0], inferences[rule][1]
             for evidence, implication in results:
@@ -420,6 +435,14 @@ class IntelligenceCore:
                     for imp_node in implication.concepts():
                         if not implication.metagraph.in_edges(imp_node, REF): # add or_link only if imp_node is not part of a reference
                             self.working_memory.metagraph.add(and_node, implied_nodes[imp_node], OR_LINK)
+                    if post.has('ukbpre'):
+                        user_kb_saves.append(('ukbpre', evidence.values()))
+                    elif post.has('ukbpost'):
+                        user_kb_saves.append(('ukbpost', set(implied_nodes.values()) - {'ukbpost'}))
+                    elif post.has('ukb'):
+                        user_kb_saves.append(('ukb', evidence.values()))
+                        user_kb_saves.append(('ukb', set(implied_nodes.values()) - {'ukb'}))
+        return user_kb_saves
 
     def _get_excluded_question_links(self, cg):
         constraints = set()
@@ -631,7 +654,7 @@ class IntelligenceCore:
                                       obj_essentials=self.kb_obj_essentials,
                                       type_predicates=self.kb_predicate_types))
                 for pred in to_add - wmp:
-                    pulled[pred] = focus
+                    pulled[pred] = {focus}
         return pulled
 
     def pull_expressions(self):
@@ -686,6 +709,22 @@ class IntelligenceCore:
                 sal = wm.features.setdefault(c, {}).setdefault(SALIENCE, 0)
                 wm.features[c][SALIENCE] = max(0, sal - TIME_DECAY)
 
+    def setup_essentials(self):
+        wm = self.working_memory
+        type_predicates = wm.type_predicates()
+        subj_essentials = {}
+        for pe in self.subj_essential_types:
+            for c in wm.subtypes_of(pe):
+                if wm.has(predicate_id=c):
+                    subj_essentials.setdefault(wm.subject(c), set()).add(c)
+
+        obj_essentials = {}
+        for pe in self.obj_essential_types:
+            for c in wm.subtypes_of(pe):
+                if wm.has(predicate_id=c):
+                    obj_essentials.setdefault(wm.object(c), set()).add(c)
+        return subj_essentials, obj_essentials, type_predicates
+
     def prune_attended(self, aux_state, num_keep):
         # NOTE: essential predicates AND reference constraints must be maintained for selected concepts that are being kept
 
@@ -717,18 +756,7 @@ class IntelligenceCore:
 
         p.next('setup essentials')
         keepers = set()
-        type_predicates = self.working_memory.type_predicates()
-        subj_essentials = {}
-        for pe in self.subj_essential_types:
-            for c in wm.subtypes_of(pe):
-                if wm.has(predicate_id=c):
-                    subj_essentials.setdefault(wm.subject(c), set()).add(c)
-
-        obj_essentials = {}
-        for pe in self.obj_essential_types:
-            for c in wm.subtypes_of(pe):
-                if wm.has(predicate_id=c):
-                    obj_essentials.setdefault(wm.object(c), set()).add(c)
+        subj_essentials, obj_essentials, type_predicates = self.setup_essentials()
         p.next('identify essentials')
         for k in keep:
             ess = wm.structure(k, subj_essentials, obj_essentials, type_predicates=type_predicates)

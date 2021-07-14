@@ -382,20 +382,25 @@ class ChatbotServer:
         inference_results = self.dialogue_intcore.infer(aux_state)
         return inference_results
 
-    @serialized('working_memory', 'aux_state')
-    def run_apply_dialogue_inferences(self, inference_results, working_memory, aux_state):
+    @serialized('working_memory', 'aux_state', 'user_kb')
+    def run_apply_dialogue_inferences(self, inference_results, working_memory, aux_state, user_kb):
         self.load_working_memory(working_memory)
+        self.load_user_kb(user_kb)
         p.start('apply')
-        self.dialogue_intcore.apply_inferences(inference_results)
-        p.next('update types')
+        user_kb_saves = self.dialogue_intcore.apply_inferences(inference_results)
         self._update_types(self.dialogue_intcore.working_memory)
+        p.next('update user_kb')
+        subj_essentials, obj_essentials, type_predicates = self.dialogue_intcore.setup_essentials()
+        for save_type, nodes_to_save in user_kb_saves: # handle saving to user_kb
+            self.dialogue_intcore.save_to_ukb(nodes_to_save, subj_essentials, obj_essentials, type_predicates)
+            if self.dialogue_intcore.working_memory.has(save_type):
+                self.dialogue_intcore.working_memory.remove(save_type)
         p.next('operate')
         self.dialogue_intcore.operate(self.dialogue_intcore.universal_operators, aux_state=aux_state)
         self.dialogue_intcore.operate(self.dialogue_intcore.wm_operators, aux_state=aux_state)
-        p.next('sal')
         self.dialogue_intcore.update_salience(iterations=SAL_ITER)
         p.stop()
-        return working_memory, aux_state
+        return working_memory, aux_state, user_kb
 
     @serialized('rules', 'working_memory')
     def run_reference_identification(self, working_memory):
@@ -707,6 +712,12 @@ class ChatbotServer:
             self.dialogue_intcore.working_memory = ConceptGraph(namespace='wm', supports={AND_LINK: False})
             self.dialogue_intcore.consider(list(self.starting_wm.values()))
 
+    def load_user_kb(self, user_kb):
+        if user_kb is not None:
+            self.dialogue_intcore.user_kb = user_kb
+        else:
+            self.dialogue_intcore.user_kb = ConceptGraph(namespace='ukb')
+
     def assign_cover(self, graph, concepts=None):
         if concepts is None:
             concepts = graph.concepts()
@@ -884,7 +895,7 @@ class ChatbotServer:
         sys.stdout.flush()
 
     @mega_serialized('rule_responses', 'working_memory', 'aux_state')
-    def nlu_to_response(self, elit_results, working_memory, aux_state):
+    def nlu_to_response(self, elit_results, working_memory, aux_state, user_kb):
         p.start('parse2logic')
         try:
             mentions, merges = self.run_parse2logic(elit_results)
@@ -922,7 +933,7 @@ class ChatbotServer:
         except Exception as e:
             self.error_print('knowledge_pull 0', e)
         if PRINT_WM:
-            print('\n<< Working Memory After Inferences Applied >>')
+            print('\n<< Working Memory After NLU >>')
             print(working_memory.pretty_print(exclusions={SPAN_DEF, SPAN_REF, USER_AWARE, ASSERT}))
         n = 2
         for i in range(n):
@@ -956,7 +967,7 @@ class ChatbotServer:
                 inference_results = {}
             p.next('apply inferences %d'%i)
             try:
-                working_memory, aux_state = self.run_apply_dialogue_inferences(inference_results, working_memory, aux_state)
+                working_memory, aux_state, user_kb = self.run_apply_dialogue_inferences(inference_results, working_memory, aux_state, user_kb)
             except Exception as e:
                 self.error_print('apply_dialogue_inference %d'%i, e)
             if i < n - 1:
@@ -1045,7 +1056,7 @@ class ChatbotServer:
         working_memory = self.run_merge_bridge(merges, subspans, working_memory)
         return working_memory
 
-    def respond(self, user_utterance, working_memory, aux_state):
+    def respond(self, user_utterance, working_memory, aux_state, user_kb):
         p.start('next turn')
         aux_state = self.run_next_turn(aux_state)
         p.next('sentence caser')
@@ -1066,7 +1077,7 @@ class ChatbotServer:
         working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state)
 
         if PRINT_WM:
-            print('\n<< Working Memory After Inferences Applied >>')
+            print('\n<< Working Memory After NLU >>')
             print(working_memory.pretty_print(exclusions={SPAN_DEF, SPAN_REF, USER_AWARE, ASSERT}))
 
         p.next('reference id')
@@ -1080,7 +1091,7 @@ class ChatbotServer:
         p.next('dialogue infer')
         inference_results = self.run_dialogue_inference(working_memory, aux_state)
         p.next('apply inferences')
-        working_memory, aux_state = self.run_apply_dialogue_inferences(inference_results, working_memory, aux_state)
+        working_memory, aux_state, user_kb = self.run_apply_dialogue_inferences(inference_results, working_memory, aux_state, user_kb)
         p.next('knowledge pull 2')
         working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state)
 
@@ -1095,7 +1106,7 @@ class ChatbotServer:
         p.next('dialogue infer 2')
         inference_results = self.run_dialogue_inference(working_memory, aux_state)
         p.next('apply inferences 2')
-        working_memory, aux_state = self.run_apply_dialogue_inferences(inference_results, working_memory, aux_state)
+        working_memory, aux_state, user_kb = self.run_apply_dialogue_inferences(inference_results, working_memory, aux_state, user_kb)
 
         if PRINT_WM:
             print('\n<< Working Memory After Inferences Applied >>')
@@ -1199,6 +1210,7 @@ class ChatbotServer:
     def run(self):
         # gc.disable()
         wm = self.dialogue_intcore.working_memory.copy()
+        user_kb = self.dialogue_intcore.user_kb.copy()
         aux_state = {'turn_index': -1}
         utter = input('User: ')
         while utter != 'q':
@@ -1209,7 +1221,7 @@ class ChatbotServer:
                 elif IS_MEGA_SERIALIZING:
                     response, wm, aux_state = self.nlu_to_response_serialize(utter, wm, aux_state)
                 else:
-                    response, wm, aux_state = self.respond(utter, wm, aux_state)
+                    response, wm, aux_state = self.respond(utter, wm, aux_state, user_kb)
                 elapsed = time.time() - s
                 # gcti = time.time()
                 # gc.collect()
