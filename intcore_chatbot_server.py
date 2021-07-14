@@ -354,9 +354,10 @@ class ChatbotServer:
         return self.dialogue_intcore.working_memory, aux_state
 
     @serialized('working_memory', 'aux_state')
-    def run_knowledge_pull(self, working_memory, aux_state):
+    def run_knowledge_pull(self, working_memory, aux_state, user_kb):
         p.start('load')
         self.load_working_memory(working_memory)
+        self.load_user_kb(user_kb)
         working_memory = self.dialogue_intcore.working_memory
         knowledge_by_refs = {}
         references = working_memory.references()
@@ -906,7 +907,7 @@ class ChatbotServer:
         traceback.print_exc(file=sys.stdout)
         sys.stdout.flush()
 
-    @mega_serialized('rule_responses', 'working_memory', 'aux_state')
+    @mega_serialized('rule_responses', 'working_memory', 'aux_state', 'user_kb')
     def nlu_to_response(self, elit_results, working_memory, aux_state, user_kb):
         p.start('parse2logic')
         try:
@@ -941,7 +942,7 @@ class ChatbotServer:
             self.error_print('merge_bridge', e)
         p.next('knowledge pull 0')
         try:
-            working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state)
+            working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state, user_kb)
         except Exception as e:
             self.error_print('knowledge_pull 0', e)
         if PRINT_WM:
@@ -985,7 +986,7 @@ class ChatbotServer:
             if i < n - 1:
                 p.next('knowledge pull %d'%(i+1))
                 try:
-                    working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state)
+                    working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state, user_kb)
                 except Exception as e:
                     self.error_print('knowledge pull %d'%(i+1), e)
 
@@ -1032,7 +1033,7 @@ class ChatbotServer:
             self.error_print('rule_responses', e)
             rule_responses = []
         p.stop()
-        return rule_responses, working_memory, aux_state
+        return rule_responses, working_memory, aux_state, user_kb
 
     def nlu_to_response_serialize(self, user_utterance, working_memory, aux_state, prev_aux_state, user_kb):
         state = {'user_utterance': save('user_utterance', user_utterance),
@@ -1057,7 +1058,8 @@ class ChatbotServer:
             p.clear()
         return load("response", state["response"]), \
                load("working_memory", state["working_memory"]), \
-               load("aux_state", state["aux_state"])
+               load("aux_state", state["aux_state"]), \
+               load("user_kb", state["user_kb"])
 
     def run_mention_merge(self, user_utterance, working_memory, aux_state, prev_aux_state):
         aux_state = self.run_next_turn(aux_state, prev_aux_state)
@@ -1148,7 +1150,7 @@ class ChatbotServer:
         if DEBUG:
             p.report()
             p.clear()
-        return response, working_memory, aux_state
+        return response, working_memory, aux_state, user_kb
 
     def respond_serialize(self, user_utterance, working_memory, aux_state):
         state = {'user_utterance': save('user_utterance', user_utterance),
@@ -1235,9 +1237,9 @@ class ChatbotServer:
                 if IS_SERIALIZING:
                     response, wm, aux_state = self.respond_serialize(utter, wm, aux_state)
                 elif IS_MEGA_SERIALIZING:
-                    response, wm, aux_state = self.nlu_to_response_serialize(utter, wm, aux_state, prev_aux_state, user_kb)
+                    response, wm, aux_state, user_kb = self.nlu_to_response_serialize(utter, wm, aux_state, prev_aux_state, user_kb)
                 else:
-                    response, wm, aux_state = self.respond(utter, wm, aux_state, prev_aux_state, user_kb)
+                    response, wm, aux_state, user_kb = self.respond(utter, wm, aux_state, prev_aux_state, user_kb)
                 elapsed = time.time() - s
                 # gcti = time.time()
                 # gc.collect()

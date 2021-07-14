@@ -17,52 +17,53 @@ class DataEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 def save(key, object):
-    if key == 'aux_state':
-        coref_context = object.get('coref_context', None)
-        if coref_context is not None:
-            global_tokens = coref_context.get('global_tokens', [])
-            global_tokens = [span.to_string() for span in global_tokens]
-            coref_context['global_tokens'] = global_tokens
-            object['coref_context'] = coref_context if len(coref_context) > 0 else None
-    elif key in {'mentions', 'ner_mentions', 'multiword_mentions'}:
-        new_d = {}
-        for span,cg in object.items():
-            new_d[span] = cg.save()
-        object = new_d
-    elif key == 'inference_results':
-        for rule, info in object.items():
-            if len(info) == 3:
-                pre, post, match_dict = info
-                pre_json = pre.save()
-                if isinstance(post, ConceptGraph):
-                    post_json = post.save()
-                elif isinstance(post, Template):
-                    post_json = post.save()
+    if object is not None:
+        if 'aux_state' in key:
+            coref_context = object.get('coref_context', None)
+            if coref_context is not None:
+                global_tokens = coref_context.get('global_tokens', [])
+                global_tokens = [span.to_string() for span in global_tokens]
+                coref_context['global_tokens'] = global_tokens
+                object['coref_context'] = coref_context if len(coref_context) > 0 else None
+        elif key in {'mentions', 'ner_mentions', 'multiword_mentions'}:
+            new_d = {}
+            for span,cg in object.items():
+                new_d[span] = cg.save()
+            object = new_d
+        elif key == 'inference_results':
+            for rule, info in object.items():
+                if len(info) == 3:
+                    pre, post, match_dict = info
+                    pre_json = pre.save()
+                    if isinstance(post, ConceptGraph):
+                        post_json = post.save()
+                    elif isinstance(post, Template):
+                        post_json = post.save()
+                    else:
+                        post_json = post
+                    object[rule] = (pre_json, post_json, match_dict)
                 else:
-                    post_json = post
-                object[rule] = (pre_json, post_json, match_dict)
-            else:
-                pre, match_dict = info
+                    pre, match_dict = info
+                    pre_json = pre.save()
+                    object[rule] = (pre_json, match_dict)
+        elif key == 'rules':
+            for rule, (pre, vars) in object.items():
                 pre_json = pre.save()
-                object[rule] = (pre_json, match_dict)
-    elif key == 'rules':
-        for rule, (pre, vars) in object.items():
-            pre_json = pre.save()
-            vars_json = list(vars)
-            object[rule] = (pre_json, vars_json)
-    elif key == 'template_response_sel':
-        string, predicates, topic_anchors, type = object
-        if isinstance(predicates, ConceptGraph):
-            predicates = predicates.save()
-        object = (string, predicates, topic_anchors, type)
-    elif key == 'response_predicates':
-        new_l = []
-        for item in object:
-            (string, predicates, topic_anchors), type = item
+                vars_json = list(vars)
+                object[rule] = (pre_json, vars_json)
+        elif key == 'template_response_sel':
+            string, predicates, topic_anchors, type = object
             if isinstance(predicates, ConceptGraph):
                 predicates = predicates.save()
-            new_l.append(((string, predicates, topic_anchors), type))
-        object = new_l
+            object = (string, predicates, topic_anchors, type)
+        elif key == 'response_predicates':
+            new_l = []
+            for item in object:
+                (string, predicates, topic_anchors), type = item
+                if isinstance(predicates, ConceptGraph):
+                    predicates = predicates.save()
+                new_l.append(((string, predicates, topic_anchors), type))
+            object = new_l
     try:
         object = json.dumps(object, cls=DataEncoder)
     except TypeError as e:
@@ -77,19 +78,19 @@ def save(key, object):
     return object
 
 def load(key, value):
+    try:
+        value = json.loads(value) if isinstance(value, str) and key != 'text' else value
+    except json.JSONDecodeError as e:
+        print('--SERVER LOAD UTILITY--')
+        print('ERROR:', e)
+        print('SOURCE: (%s,%s)' % (key, value))
+        value = value
     if value is not None:
-        try:
-            value = json.loads(value) if isinstance(value, str) and key != 'text' else value
-        except json.JSONDecodeError as e:
-            print('--SERVER LOAD UTILITY--')
-            print('ERROR:', e)
-            print('SOURCE: (%s,%s)'%(key,value))
-            value = value
         if key in {'working_memory', 'user_kb'}:
             cg = ConceptGraph(namespace=value["namespace"])
             ConceptGraph.load(cg, value)
             value = cg
-        elif key == 'aux_state':
+        elif 'aux_state' in key:
             coref_context = value.get('coref_context', None)
             if coref_context is not None:
                 global_tokens = coref_context.get('global_tokens', [])
