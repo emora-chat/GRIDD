@@ -638,6 +638,14 @@ _t(_rpresent)
 $ X sound{"t":"now","s":"#X"} like a great dish ! I try to cook Turkey in different ways for Thanksgiving each year . $
 ;
 
+emt/make(emora,turkey())
+for(emt,thanksgiving)
+time(emt,always)
+->
+_t(_rpresent)
+$ Gotcha . I try to cook Turkey in different ways for Thanksgiving each year . $
+;
+
 emt/make(emora,t/turkey())
 for(emt,thanksgiving)
 fried(t)
