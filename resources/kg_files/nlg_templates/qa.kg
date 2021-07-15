@@ -1,6 +1,7 @@
 req_unsat(request(user, object_0/object()))
 time(be(name(), object_0), now)
 possess(emora, dog())
+uturn(object_0, 0)
 ->
 _pr(_high)
 _t(_r)
@@ -11,6 +12,7 @@ $ My dog's name is Nyla ! She's a Chihuahua , and so nice ! $
 req_unsat(request(user, object_0/object()))
 time(be(name(), object_0), now)
 possess(emora, pet())
+uturn(object_0, 0)
 ->
 _pr(_high)
 _t(_r)
@@ -29,6 +31,7 @@ $ A paradox is a self contradiction. For example, If I say the sentence, this is
 req_unsat(request(user, breed_0/breed()))
 be_1/be(dog_0/dog(), breed_0)
 possess(emora, dog_0)
+uturn(breed_0, 0)
 ->
 _pr(_high)
 _t(_r)
@@ -40,6 +43,7 @@ req_unsat(request(user, o/object()))
 b/be(b2/breed(), o)
 of(b2, dog_0/dog())
 possess(emora, dog_0)
+uturn(b2, 0)
 ->
 _pr(_high)
 _t(_r)
@@ -51,6 +55,7 @@ req_unsat(request(user, o/object()))
 b/be(b2/breed(), o)
 possess(dog_0/dog(), b2)
 possess(emora, dog_0)
+uturn(b2, 0)
 ->
 _pr(_high)
 _t(_r)
@@ -61,6 +66,7 @@ $ She's a Chihuahua ! They're small and so cute, I love them .  $
 req_unsat(request(user, kind_0/kind()))
 of(be_1/be(dog_0/dog(), kind_0), dog())
 possess(emora, dog_0)
+uturn(be_1, 0)
 ->
 _pr(_high)
 _t(_r)
@@ -72,6 +78,7 @@ req_unsat(request(user, sweet_0/sweet()))
 be_1/be(dog_0/dog(), sweet_0)
 possess(emora, dog_0)
 of(be_1, dog)
+uturn(be_1, 0)
 ->
 _pr(_high)
 _t(_r)

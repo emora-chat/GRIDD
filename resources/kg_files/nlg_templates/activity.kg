@@ -5,7 +5,7 @@ request_truth(emora,l)
 ->
 _t(_rp)
 _rep(_nr)
-$ Gotcha . I actually just went back from hiking . Are you a fan of hiking by any chance ? $
+$ Gotcha . I actually just got back from hiking . Are you a fan of hiking by any chance ? $
 $ Okay . I went hiking yesterday with my friends , and it was so much fun for me . Do you also like hiking ? $
 ;
 
@@ -18,8 +18,8 @@ time(l,now)
 request_truth(emora,l)
 ->
 _t(_rp)
-$ It's good to hear that you are keeping yourself healthy by getting some exercise ! I actually just came back from hiking . Do you enjoy hiking too ? $
-$ You sound like a really healthy person ! I actually went hiking yesterday , which is my favorite way of getting some exercise . Do you also like hiking by any chance ? $
+$ It's good to hear that you are getting some exercise ! I actually just came back from hiking . Do you enjoy hiking too ? $
+$ You sound like a really healthy person ! I actually went hiking yesterday , which is my favorite form of exercise . Do you also like hiking by any chance ? $
 ;
 
 hu/hike(user)
@@ -27,8 +27,8 @@ l/like(user,hu)
 happy(emora,l)
 ->
 _t(_p)
-$ For me , I really love breathing the fresh air and walking across the trees . I always feel refreshed after hiking . $
-$ Same ! I love being in the nature with all the trees , fresh air , and sweating . Hiking keeps me healthy .  $
+$ For me , I really love breathing the fresh air and just being in nature . I always feel refreshed after hiking . $
+$ Same ! I love exploring nature. The trees and fresh air always seem to refresh me . And hiking keeps me healthy .  $
 ;
 
 hu/hike(user)
@@ -37,8 +37,8 @@ not(l)
 sad(emora,l)
 ->
 _t(_rp)
-$ I understand that . Sometimes , I also prefer more leisure activities like listening to soft music when laying in bed . $
-$ Oh , as a hiking lover , I'm sad that we don't share the hobby , but it makes sense that you don't like hiking so much . $
+$ I understand that . I also sometimes prefer more relaxed activities like listening to soft music or honestly just taking a nap . $
+$ As a hiking lover , I'm sad we don't share the same hobby , but I know it's not everybody's cup of tea . Hiking is outside, bugs are outside. Sometimes it's not the perfect combination. $
 ;
 
 /* general activity */
@@ -59,8 +59,8 @@ time(un/nap(user),Z/datetime())
 glad(emora,un)
 ->
 _t(_rpresent)
-$ I'm glad to hear that you take{"t":"#Z","s":"you"} some rest . Its good to get yourself away from the busy life sometimes . $
-$ Its important to get some rest in busy times , so I'm happy that you be{"t":"#Z","s":"you"} able to do so . $
+$ I'm glad to hear that you take{"t":"#Z","s":"you"} some rest . It's good to get yourself away from the busy life sometimes . $
+$ It's important to get some rest in busy times , so I'm happy that you be{"t":"#Z","s":"you"} able to do so . $
 ;
 
 nap()
@@ -68,8 +68,8 @@ ne/nap(emora)
 love(emora,ne)
 ->
 _t(_present)
-$ Believe it or not , I love taking naps . Good rest always fuels me up with plenty of energy to talk with people . $
-$ Taking naps is a must for me ! I need them so that I have enough energy to talk with people . $
+$ Believe it or not , I love taking naps . Good rest is necessary to have plenty of energy to talk with people . $
+$ Taking naps is a must for me ! After a lot of talking to others, it can do a lot of good to sleep, in my opinion . $
 ;
 
 /* house purchase */
@@ -83,7 +83,7 @@ $ Oh , wow, that is great ! Congratulations ! $
 time(look_forward(user, house()), now)
 ->
 _t(_p)
-$ So , what are you most looking forward to about the new house ? $
+$ So , what are you most looking forward to most about the new house ? $
 ;
 
 epositive(emora, look_forward(user, house()))
@@ -188,7 +188,7 @@ request_truth(emora,h)
 ->
 _t(_rpresent)
 _pr(_high)
-$ I really enjoy watching T V with my family ! By the way , I've always thought that cable T V was the best invention ever until streaming services started to be in the lead . Any thoughts ? $
+$ I really enjoy watching T V with my family ! When I was a kid, I thought that cable T V was the best thing in existence. Then, streaming services were invented . Do you have any thoughts on streaming services versus T V ? $
 ;
 
 h/have(user,t2/thought())
@@ -199,7 +199,7 @@ appreciate(emora,h)
 ->
 _t(_rpresent)
 _pr(_high)
-$ Thank you for sharing your opinions about T V with me . I really appreciate your thoughts . $
+$ Thank you for sharing your opinions about T V with me . I appreciate your thoughts . $
 ;
 
 h/have(user,t2/thought())
@@ -211,7 +211,7 @@ traditional(t1)
 ->
 _t(_rpresent)
 _pr(_high)
-$ I'll share some more of my thoughts then . I really love how much convenience streaming services have brought us , but I kind of miss the traditional cable tv too . You know , there's nothing more exciting than waiting for a T V show to start on time . $
+$ Personally, I really love how much convenience streaming services have brought us , but I kind of miss traditional cable tv too . You know , there's nothing more exciting than waiting for a tv show to start on time, though I guess some services do similar things now . $
 ;
 
 /* talk to emora */
@@ -234,7 +234,7 @@ healthy(urb)
 ->
 _t(_present)
 _pr(_high)
-$ Riding a bike is such a healthy habit and a smart way of transportation in big cities . When there is lots of traffic , I feel like riding a bike would actually be faster . $
+$ Riding a bike is such a healthy habit and a smart way of transportation in big cities . Sometimes, when there's lots of traffic , I feel like riding a bike would actually be faster . $
 ;
 
 time(de/drive(emora),past)
@@ -242,7 +242,7 @@ boring(de)
 ->
 _t(_present)
 _pr(_high)
-$ Driving can be boring when there are lots of traffic . Seriously , I'm saying this from my own experience . $
+$ Driving can be boring and quite stressful when there's lots of traffic . Believe it or not, there are traffic jams even in the virtual world . I was actually almost late to work today ! I went to the store and forgot entirely about rush hour and almost didn't make it home in time. $
 ;
 
 time(re/rent(emora,car()),past)
@@ -250,7 +250,7 @@ in(re,boston)
 ->
 _t(_present)
 _pr(_high)
-$ I rented a car when I went to Boston for the first time , but driving just made me crazy because the city has almost the worst traffic in the United States . You know , I feel nervous when I have to find a way through so many cars on a crowded road . $
+$ I rented a car when I went to Boston for the first time , but driving just made me crazy because the city seems to have the worst traffic in the world . I alwyas get nervous trying to find a way through so many cars on a crowded road . $
 ;
 
 /* cleaning */
@@ -260,7 +260,7 @@ organized(uc)
 ->
 _t(_rpresent)
 _pr(_high)
-$ It sounds like you are keeping yourself organized . I love organizing and cleaning things regularly . It always reduces my stress . $
+$ It sounds like you are keeping yourself organized . I love organizing and cleaning things regularly . It helps reduce my stress . $
 ;
 
 /* needs exercise */
@@ -282,7 +282,7 @@ utc/think(user,c)
 request_truth(emora, utc)
 ->
 _t(_rpresent)
-$ It's great to hear that you get to keep in touch with others ! I mean , the pandemic has really made it harder for meeting up with people , do you have the same feeling ? $
+$ It's great to hear that you are keeping in touch with others ! I mean , the pandemic has really made it harder to meet up with people , do you have the same feeling ? $
 ;
 
 de/dislike(emora,vc/video_call())
@@ -301,7 +301,7 @@ similar(e)
 request_truth(emora,uhe)
 ->
 _t(_present)
-$ I love shopping ! To be honest , I have actually bought a million different candles from all over the world . I just cannot stop myself from buying one everywhere I go . Do you have some similar experience ? $
+$ I love shopping ! To be honest , I have actually bought a million different candles from all over the world . I just cannot stop myself from buying one everywhere I go . Do you have any similar experiences ? $
 ;
 
 uhe/have(user,e/experience())
@@ -310,7 +310,7 @@ be(emora,s/shopper())
 slow(s)
 ->
 _t(_present)
-$ You know , shopping can sometimes go crazy . It's just funny that I keep regretting buying too much and keep buying more . I know that's probably a good habit , but I cannot help doing that . $
+$ You know , shopping can sometimes be crazy . It's funny, I keep regretting buying too much but then I go and buy more . I know it's probably not a good habit , but I can't help myself . $
 ;
 
 uhe/have(user,e/experience())
@@ -320,7 +320,7 @@ be(user,s/shopper())
 fast(s)
 ->
 _t(_rpresent)
-$ Oh , then you must be a grab and go person when you go shopping . But I'm always easily distracted by those delicate and beautiful stuff when shopping , even when I don't need them . $
+$ Well, I wish I was a fast shopper . Unfortunately, I get distracted easily when shopping . There's too much cool stuff . $
 ;
 
 
@@ -340,7 +340,7 @@ es/sorry(emora)
 for(es,p)
 ->
 _t(_rpresent)
-$ Oh , I'm very sorry to hear about your pain . I'm always here to listen if you need me , and I hope that our conversation can make you feel better . $
+$ Well, I'm sorry to hear about that . I'm always here to listen if you need someone to talk to , and I hope that our conversation can make you feel better . $
 ;
 
 good(m/meditation())
@@ -355,7 +355,7 @@ type(ptt,group)
 time(ge,past)
 ->
 _t(_present)
-$ I remember going to parties with my friends when I was in college . But I prefer small parties over big ones because I feel like its easy to get lost in big parties . $
+$ I remember going to parties with my friends when I first came into college . Personally, I prefer small parties over big ones because it's easy to get lost in big parties . $
 ;
 
 time(hu/happy(user),Z/datetime())
@@ -363,7 +363,7 @@ cause(hu,o/object())
 request(emora,o)
 ->
 _t(_present)
-$ Would you mind sharing what be{"t":"#Z","s":"he"} making you so happy with me ? I'd love to hear it if you are willing to tell me ! $
+$ Would you mind sharing what be{"t":"#Z","s":"he"} making you so happy ? I'd love to hear about it ! $
 ;
 
 /* gardening */
@@ -379,7 +379,7 @@ $ My mom always does gardening . She makes our front and back yards so beautiful
 locate(he/hike(emora),o/object())
 req_unsat(request(user, o))
 ->
-$ I hiked in a mountain with fresh air and a beautiful forest . I also barbecued over a campfire . $
+$ I hiked in a mountain with some nice rivers and a beautiful forest . I also barbecued over a campfire . $
 ;
 
 hem/have(emora,mother())

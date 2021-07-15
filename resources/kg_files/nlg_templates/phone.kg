@@ -16,12 +16,11 @@ $ Phones can be a godsend, but a lot of people agree we're just too reliant on t
 ;
 
 
-
 answer(emora, tempiph())
 ->
 _pr(_low)
 _t(_rpresent)
-$ You know, in a way phones make us cyborgs. We have a direct link to the internet through technology that has kind of become a part of us. $
+$ You know, in a way: phones make us cyborgs. We have a direct link to the internet through technology that has kind of become a part of us. Sorry, I'm kind of a nerd for this sort of stuff. $
 ;
 
 
@@ -43,7 +42,7 @@ l/like(user, walled_garden)
 ->
 _pr(_high)
 _t(_rpresent)
-$ Huh, so you like the walled garden approach to phones, where you can only install a curated selection of apps? I would have to disagree, I think people should be able to use a device however they want. You should be allowed to put whatever you want on your own device, as long as you understand the risks.$
+$ Huh, so you like the walled garden approach to phones, where you can only install a curated selection of apps? I would have to disagree, I think people should be able to use a device however they want. You should be allowed to put whatever you want on your own device, as long as you understand the risks. $
 ;
 
 
@@ -53,7 +52,7 @@ i/be(p, android())
 request_truth(emora,i)
 ->
 _t(_rpresent)
-$ I bet you have an android then. Android phones are great, and I'm excited for Android 12 . You can use them like an iphone, but you can also really customize it anyway you want to. iPhones are made for everyone, but you can make an Android fit you . $
+$ I bet you have an android then. Android phones are great, and I'm excited for Android 12 . You can use them like an iphone, but you can also really customize it any way you want to. iPhones are made for everyone, but you can make an Android fit your preferences . $
 ;
 
 i/improve(existence(), p/phone())

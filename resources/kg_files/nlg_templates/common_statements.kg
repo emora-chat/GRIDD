@@ -43,7 +43,7 @@ $ Not much. What about you? $
 like(user, talk_like_yoda())
 ->
 _pr(_high)
-$ Talk like Yoda, I can try. $
+$ Talk like Yoda, I can. Do or do not: there is no try. $
 ;
 
 like(user, talk_like_some_rando())
@@ -79,7 +79,7 @@ $ I’m designed to protect your privacy, so I only listen after your device det
 like(user, know_who_yoda_is())
 ->
 _pr(_high)
-$ Yoda is a character in the famous movie series Star Wars. He's famous for his green skin and unique style of speaking which features inverted syntax. $
+$ Yoda is a character in the famous movie series Star Wars. He's famous for his green skin and he has a unique style of speaking which has a lot of inverted syntax. $
 ;
 
 req_unsat(request(user, t/time()))
