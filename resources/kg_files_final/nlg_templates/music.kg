@@ -1,0 +1,75 @@
+
+p/play(user, musical_instrument())
+request_truth(emora, p)
+->
+_pr(_low)
+$ Do you play any musical instruments ? $
+;
+
+p/play(user, m/musical_instrument())
+request(emora, m)
+->
+_pr(_high)
+$ What instrument do you play ? $
+;
+
+p/play(user, M/musical_instrument())
+cause(start(user, p), o/object())
+request(emora, o)
+->
+_pr(_high)
+$ Why did you start playing the M ? $
+;
+
+pe/perform(user) with(pe, m/musical_instrument())
+request_truth(emora, pe)
+->
+_pr(_high)
+$ Have you ever performed for an audience ? $
+;
+
+possess(user, g/music_genre())
+favorite(g)
+be(g, g2/music_genre())
+request(emora, g2)
+->
+_pr(_high)
+$ You know , even though you don't play any instruments yourself , I'm sure you like listening to music. What is your favorite music genre ? $
+;
+
+time(g/go(user, concert()), past)
+request_truth(emora, g)
+->
+_pr(_low)
+$ Have you ever been to a concert ? $
+;
+
+time(g/go(user, c/concert()), past)
+q/quality(c)
+request(emora, q)
+uturn(g, 0)
+->
+_pr(_high)
+$ How was it ? $
+;
+
+
+/* Emora Sharing */
+
+emora_plays_piano
+->
+_pr(_low)
+$ I recently started playing the piano. Well, I guess it's technically a keyboard my parents got me a little while ago for my birthday, but it's fun and I think it sounds beautiful. $
+;
+
+emora_beginner_at_piano
+->
+_pr(_low)
+$ I'm just a beginner still. I only know some beginner songs and a few chords, but it's fun to learn. $
+;
+
+emora_started_for_alone_time
+->
+_pr(_low)
+$ I've had the keyboard for a while but I only really started practicing recently. It's a nice way to get some alone time, especially since I'm usually talking to people all day. $
+;

@@ -1,0 +1,13 @@
+
+emora_hikes = hike(emora)
+    time(emora_hikes, now)
+    with(emora_hikes, f/friend())
+    group(f)
+    possess(emora, f)
+emora_likes_hiking = like(emora, emora_hikes)
+    locate(emora_hikes, trail())
+
+;
+
+
+

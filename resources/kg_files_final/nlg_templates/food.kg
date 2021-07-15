@@ -1,0 +1,104 @@
+
+
+/* Default questions */
+
+
+
+
+l/like(user, cook(user))
+request_truth(emora, l)
+->
+$ Do you enjoy cooking ? $
+;
+
+cook(user, f/food())
+request(emora, f)
+->
+$ What do you like to cook the most ? $
+;
+
+request_tips(emora, cook)
+->
+$ What do you think I should focus on to get better at cooking ? $
+;
+
+o:<o/often(go(user, eat(user)))>
+request_truth(emora, o)
+->
+$ Do you go out to eat a lot? $
+;
+
+cook(p/person()) possess(user, p)
+request(emora, p)
+->
+$ So who usually does the cooking in your house? $
+;
+
+cook(user) possess(user, user)
+not(like(user, cook(user)))
+->
+_t(_r)
+$ Well I guess the cooking is kind of a chore for you. $
+;
+
+possess(user, f/food()) favorite(f) be(f, f2/food())
+request(emora, f2)
+->
+$ Since I've been cooking recently I'm looking for new things to cook. I'm wondering, what is your favorite food? $
+;
+
+possess(user, f/food()) favorite(f) be(f, f2/food())
+_specific(f2)
+->
+$ Mmm, f2 does sound good. I'll have to make it myself soon. $
+;
+
+time(have(user, f/food()), past)
+unique(f)
+request(emora, f)
+->
+$ Now I'm wondering, what's the most unique food you've ever had? $
+;
+
+time(have(user, f/food()), past)
+unique(f)
+r/request(emora, f)
+eturn(r, 1)
+->
+_t(_r)
+$ Oh , that is an interesting food. $
+;
+
+time(h/have(user, f/food()), past)
+unique(f)
+l/like(user, f)
+request_truth(emora, l)
+->
+$ What did you think about it ? Was it good ? $
+;
+
+d/do(user, a/activity())
+time(d, eat(user))
+request(emora, a)
+->
+$ Most days , I like to eat dinner with my roommates . I think its a good time to catch up on how our days have been going . What do you usually do while you are eating ? $
+;
+
+
+
+
+/* Emora Share */
+
+
+
+emora_just_started_cooking
+->
+$ One thing I just started learning how to do is cook for myself and it's become a small hobby of mine . $
+;
+
+emora_cooks_pad_thai
+->
+$ I have been trying to make pad thai , but it hasn't turned out as good as when I get it from a restaurant yet . $
+;
+
+

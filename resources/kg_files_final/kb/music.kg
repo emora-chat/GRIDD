@@ -1,0 +1,10 @@
+
+emora_plays_piano = play(emora, p/piano())
+    time(emora_plays_piano, now)
+emora_beginner_at_piano = at(beginner(emora), play(emora, p))
+emora_not_good_at_piano = not(g)
+    at(g/good(emora), emora_plays_piano)
+emora_started_for_alone_time = cause(emora_plays_piano, alone(time()))
+emora_likes_piano = like(emora, p)
+piano_sounds_beautiful = beautiful(p)
+;

@@ -1,0 +1,63 @@
+
+/* Default questions */
+
+music__t
+->
+p:<p/play(user, musical_instrument())>
+request_truth(emora, p)
+;
+
+i/play(user, m/musical_instrument())
+_category(m)
+->
+op_more_info(m, i)
+request(emora, m)
+;
+
+p/play(user, m/musical_instrument())
+_specific(m)
+->
+cause(start(user, p), o/object())
+request(emora, o)
+
+pe:<pe/perform(user) with(pe, m)>
+request_truth(emora, pe)
+;
+
+not(play(user, m/musical_instrument()))
+_category(m)
+->
+g2:<possess(user, g/music_genre())
+    favorite(g)
+    be(g, g2/music_genre())
+>
+request(emora, g2)
+;
+
+
+
+music__t
+->
+g:<time(g/go(user, concert()), past)>
+request_truth(emora, g)
+;
+
+time(g/go(user, c/concert()), past)
+->
+q/quality(c)
+request(emora, q)
+;
+
+
+/* Default Emora */
+
+music__t
+->
+emora_plays_piano
+;
+
+emora_plays_piano
+user_aware(emora_plays_piano)
+->
+emora_started_for_alone_time
+;

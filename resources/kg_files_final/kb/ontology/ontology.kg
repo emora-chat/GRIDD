@@ -1,17 +1,17 @@
 
 
-event=(object)
-expr("event", event)
-
 activity=(object)
 expr("activity", activity)
 
-type(ep, event)
+event=(object)
+expr("event", event)
+
+leisure=(activity)
+expr("leisure", leisure)
 
 obligation=(activity)
 expr("obligation", obligation)
 
-leisure=(activity)
-expr("leisure", leisure)
+type(ep, event)
 
 type(durative_leisure, leisure)

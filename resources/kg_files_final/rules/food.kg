@@ -1,0 +1,86 @@
+
+food__t
+->
+l:<l/like(user, cook(user))>
+request_truth(emora, l)
+;
+
+like(user, cook(user))
+->
+f:<cook(user, f/food())>
+request(emora, f)
+;
+
+c/cook(user, food())
+user_aware(c)
+->
+request_tips(emora, cook)
+;
+
+not(like(user, cook(user)))
+->
+o:<o/often(go(user, eat(user)))>
+request_truth(emora, o)
+;
+
+maybe(l/like(user, cook(user)))
+user_aware(l)
+->
+p:<cook(p/person()) possess(user, p)>
+request(emora, p)
+;
+
+not(like(user, cook(user)))
+->
+p:<cook(p/person()) possess(user, p)>
+request(emora, p)
+;
+
+
+
+
+food_t
+->
+f2:<possess(user, f/food()) favorite(f) be(f, f2/food())>
+request(emora, f2)
+;
+
+possess(user, f/food()) favorite(f) be(f, f2/food())
+->
+f:<time(have(user, u/food()), past) unique(u)>
+request(emora, u)
+;
+
+
+time(h/have(user, u/food()), past)
+unique(u)
+user_aware(h)
+->
+l:<l/like(user, u)>
+request_truth(emora, l)
+;
+
+
+
+
+food_t
+->
+d/do(user, a/activity())
+time(d, eat(user))
+request(emora, a)
+;
+
+
+
+
+
+/* Reasoning */
+
+often(go(user, eat(user)))
+maybe(like(user, cook(user)))
+->
+not(like(user, cook(user)))
+;
+
+
+

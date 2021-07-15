@@ -1,0 +1,67 @@
+
+/* Default Questions */
+
+hobby__t
+->
+h:<h/possess(user, activity())>
+request_truth(emora, h)
+;
+
+i/possess(user, h/activity())
+_category(h)
+->
+op_more_info(h, i)
+request(emora, h)
+;
+
+l/like(user, h/activity())
+->
+cause(l, o/object())
+request(emora, o)
+;
+
+l/like(user, h/hobby())
+->
+qualifier(start(user, h), q/object())
+request(emora, q)
+;
+
+n/not(possess(user, h/hobby()))
+_category(h)
+->
+a:<like(user, a/activity())>
+request(emora, a)
+;
+
+
+
+
+
+/* Default Emora */
+
+h/possess(user, activity())
+request_truth(emora, h)
+->
+emora_just_started_cooking
+;
+
+
+
+
+/* Reasoning */
+
+possess(p/person(), h/hobby())
+_specific(h)
+->
+like(p, h)
+;
+
+hobby(p/person())
+->
+like(p, h)
+;
+
+not(possess(p/person(), time()))
+->
+busy(p)
+;

@@ -1,0 +1,6 @@
+
+
+emora_just_started_cooking=start(emora, cook(emora))
+
+emora_cooks_pad_thai=cook(emora, pad_thai)
+    time(emora_cooks_pad_thai, now)

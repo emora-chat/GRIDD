@@ -3,17 +3,17 @@
 person=(agent)
 expr("person", person)
 
+person_demo=(person)
+
 person_related=(person)
 
-person_demo=(person)
+person_archetype=(person_demo)
 
 friend=(person_related)
 expr("friend", friend)
 
-person_archetype=(person_demo)
+slob=(person_archetype)
+expr("slob", slob)
 
 neat_freak=(person_archetype)
 expr("neat freak", neat_freak)
-
-slob=(person_archetype)
-expr("slob", slob)

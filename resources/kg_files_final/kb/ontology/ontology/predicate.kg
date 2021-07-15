@@ -1,19 +1,19 @@
 
 
+ep=(predicate)
+expr("ep", ep)
+
 state=(predicate)
 expr("state", state)
 
-ep=(predicate)
-expr("ep", ep)
+action=(ep)
+expr("action", action)
 
 durative=(ep)
 expr("durative", durative)
 
 snap=(ep)
 expr("snap", snap)
-
-action=(ep)
-expr("action", action)
 
 do=(ep)
 expr("do", do)

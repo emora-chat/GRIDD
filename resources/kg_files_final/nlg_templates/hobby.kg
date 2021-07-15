@@ -1,0 +1,56 @@
+
+h/possess(user, activity())
+request_truth(emora, h)
+-> hobby_fallback ->
+_pr(_low)
+$ So I'm curious, do you have any hobbies? $
+;
+
+i/possess(user, h/activity())
+_category(h)
+->
+$ What hobby do you like to do? $
+;
+
+like(user, h/hobby())
+->
+_t(_r)
+$ h{"g": true} be{"s": "#h", "t": "now"} an interesting hobby! $
+;
+
+cause(like(user, h/activity()), o/object())
+request(emora, o)
+->
+$ What do you like about h{"g": true}? $
+;
+
+l/like(user, h/hobby())
+qualifier(start(user, h), q/object())
+request(emora, q)
+->
+_t(_rp)
+$ Actually h{"g": true} sound{"s": "#h", "t": "now"} really interesting to me. How did you get started with h{"g": true}? $
+;
+
+n/not(possess(user, h/hobby()))
+_category(h)
+like(user, act/activity())
+request(emora, act)
+->
+_pr(_high)
+_t(_rp)
+$ You really don't have any hobbies? There has to be something you like to do in your free time. $
+;
+
+
+
+/* Emora Sharing */
+
+emora_hikes
+->
+$ Well, every once in a while I like to go hiking. There's some cool hiking trails near my apartment,
+ so it's become a small hobby of mine. $
+;
+
+
+

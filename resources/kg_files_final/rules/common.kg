@@ -1,0 +1,8 @@
+
+possess(a/agent(), c/object())
+favorite(c)
+be(c, o/object())
+->
+like(a, o)
+;
+

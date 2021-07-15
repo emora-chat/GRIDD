@@ -11,8 +11,8 @@ expr("emotion", emotion)
 personality=(agent_attribute)
 expr("personality", personality)
 
-neat=(personality)
-expr("neat", neat)
-
 messy=(personality)
 expr("messy", messy)
+
+neat=(personality)
+expr("neat", neat)

@@ -3,6 +3,8 @@
 experiencable=(entity)
 expr("experiencable", experiencable)
 
+type(creation, experiencable)
+
 entity_event=(experiencable)
 
 type(service, experiencable)
@@ -10,17 +12,15 @@ type(service, experiencable)
 tangible=(experiencable)
 expr("tangible", tangible)
 
-type(creation, experiencable)
-
 baby_shower=(entity_event)
 expr("baby shower", baby_shower)
 
-type(item, tangible)
+agent=(tangible)
+expr("agent", agent)
 
 type(location, tangible)
 
-agent=(tangible)
-expr("agent", agent)
+type(item, tangible)
 
 animal=(agent)
 expr("animal", animal)
