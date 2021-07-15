@@ -242,7 +242,7 @@ boring(de)
 ->
 _t(_present)
 _pr(_high)
-$ Driving can be boring and quite stressful when there's lots of traffic . Believe it or not, there are traffic jams even in the virtual world . I was almost late to work today ! $
+$ Driving can be boring and quite stressful when there's lots of traffic . Believe it or not, there are traffic jams even in the virtual world . I was actually almost late to work today ! I went to the store and forgot entirely about rush hour and almost didn't make it home in time. $
 ;
 
 time(re/rent(emora,car()),past)

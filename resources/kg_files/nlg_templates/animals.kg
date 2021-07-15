@@ -18,8 +18,8 @@ not(l)
 time(c/cause(pred/predicate(), l), now)
 request(emora, pred)
 ->
-$ Oh, well I guess that explains it. Why don't you like animals though? $
-$ Oh, well that makes sense then. Why don't you like animals though? $
+$ Oh, well I guess that explains it. Why don't you like animals ? $
+$ Oh, well that makes sense then. Why don't you like animals ? $
 ;
 
 possess(user, a/animal())
@@ -53,7 +53,7 @@ request_truth(emora, l)
 ->
 _pr(_low)
 $ Considering you like animals, I was wondering, do you like the zoo? There are plenty of different animals to see there. $
-$ I was wondering, since you like animals, you must also like the zoo right? There are countless different animals to see there. $
+$ I was wondering, since you like animals, you must also like the zoo, right? There are countless different animals to see there. $
 ;
 
 like(x/person(), z/zoo())
@@ -81,7 +81,7 @@ favorite(act)
 request(emora, act)
 ->
 $ Oh, that's great! What's your favorite thing to do in the zoo? I love to watch the flamingos. Their knees give them such a funky appearance, so watching them is a lot of fun. $
-$ Oh, awesome! I love watching the flamingoes when I go. The funky look they get from their knees make them a lot of fun to watch. What do you like to do at the zoo? $
+$ Oh, awesome! I love watching the flamingoes when I go. Their knees look so weird, which makes them a lot of fun to watch. What do you like to do at the zoo? $
 ;
 
 v/visit(user, z/zoo())
@@ -99,7 +99,7 @@ think(emora, diverse(animal))
 time(l/like(user, ani/animal()), now)
 not(l)
 ->
-$ Oh, well I guess that makes sense. I personally like how diverse different animals are. They could be cute and friendly, or cool and fierce. That diversity also means that there will be animals you don't like though. $
+$ Oh, well I guess that makes sense. I personally like how many different types of animals there are. Some are cute and friendly, and some are a bit more terrifying. I think that range of diversity also means that there will be animals you don't like. For example, spiders. $
 ;
 
 think(emora, awesome(animal))
@@ -130,8 +130,8 @@ uturn(l, 0)
 ->
 _pr(_high)
 _t(_r)
-$ Oh, that's neat. The ani is a cool one. $
-$ Neat, I've always found the ani pretty interesting. $
+$ Oh, that's neat. The ani is a very cool animal. $
+$ Neat, I've always found the ani to be an interesting animal. $
 ;
 
 time(possess(user, ani/animal()), now)
@@ -140,8 +140,8 @@ user_aware(ani)
 r/request(emora, ani)
 eturn(r, 1)
 ->
-$ Oh, that's neat. The ani is a cool one. $
-$ Neat, I've always found the ani pretty interesting. $
+$ Oh, that's neat. The ani is a very cool animal. $
+$ Neat, I've always found the ani to be an interesting animal. $
 ;
 
 time(possess(user, ani/animal()), now)

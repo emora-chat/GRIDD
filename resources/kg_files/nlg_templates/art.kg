@@ -4,8 +4,8 @@ understand(emora,l)
 ->
 _t(_r)
 _rep(_nr)
-$ Oh , you don't like art ? I love art , but I understand that it is not a thing for everyone . $
-$ Oh , its sad that we don't share similar interests , but that's understandable . $
+$ Oh , you don't like art ? I love it myself . $
+$ Well I'm sad to hear we don't share that interest , but that's understandable . $
 ;
 
 xba/be(user,artist())
@@ -23,7 +23,7 @@ understand(emora,xba)
 ->
 _t(_rpresent)
 $ Oh , I see . I mean , not everyone needs to be an artist in order to appreciate art . $
-$ Gotcha . I guess everyone can have different definitions of an artist , so I was just curious about your opinions . $
+$ Gotcha . Everyone has different definitions of what it means to be an artist , so I was interested in hearing your opinion . $
 ;
 
 xla/like(user,arr/art())
@@ -33,7 +33,7 @@ request(emora,o)
 _t(_present)
 _pr(_low)
 $ Why do you like art ? $
-$ What interests you to appreciate art ? $
+$ What do you like abut art ? $
 ;
 
 xla/like(user,arr/art())
@@ -50,7 +50,7 @@ request_truth(emora,uld)
 _t(_present)
 _pr(_low)
 $ Since you like art , do you like drawing ? Or do you often draw ? $
-$ Since you like art , I'm wondering if you like drawing ? $
+$ Since you like art , I'm wondering: do you like drawing ? $
 ;
 
 b/be(X/artist(),ast/artist())
@@ -122,7 +122,7 @@ interesting(xtd)
 ->
 _t(_present)
 $ Digital drawing is fun , right ? I'm always amazed by how technology can enhance our everyday activities and hobbies. $
-$ I think digital drawing is a great combination of technology and art , which makes this form of drawing so fun . $
+$ I think digital drawing is a great combination of technology and art . $
 ;
 
 ut/talk(user)
@@ -200,7 +200,7 @@ _rep(_ur)
 _t(_present)
 _pr(_high)
 $ X indeed brought significant impact to the art field . My favorite artist is Claude Monet . $
-$ X is a famous and great artist who contributes many significant pieces . My favorite artist is Claude Monet . $
+$ X is a famous and great artist who contributed many significant pieces . My favorite artist is Claude Monet . $
 ;
 
 draw(claude_monet,p/picture())
@@ -210,7 +210,7 @@ famous(bp)
 ->
 _t(_present)
 _pr(_high)
-$ Monet has so many incredible paintings . I like him primarily for the beautiful colors he used . It always calms me to spend time looking at one of his paintings .   $
+$ Monet has so many incredible paintings . I like him primarily for the beautiful colors he used . It always calms me to spend time looking at one of his paintings . $
 ;
 
 b/be(X/artist(),ast/artist())
@@ -257,5 +257,5 @@ eub/understand(emora,b)
 time(eub,now)
 ->
 _t(_present)
-$ Now I know better about your favorite artist . Thank you for introducing me a new artist to look up . $
+$ Now I know more about your favorite artist . Thank you for introducing me to a new artist to look up ! $
 ;
