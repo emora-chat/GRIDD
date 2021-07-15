@@ -3,7 +3,7 @@ p/play(user, videogame())
 request_truth(emora, p)
 ->
 $ Yeah, I love playing videogames. Do you play any? They're a fun way to spend time with friends for sure, and I love the creative aspect. $
-$ Oh, I love videogames. I always enjoy myself playing them, and I love playing them with friends as well. Do you play videogames? $
+$ Oh, I love videogames. I always enjoy myself playing them, and I love playing with friends as well. Do you play videogames? $
 ;
 
 like(user, v/videogame())
@@ -102,7 +102,7 @@ time(agree(emora, like(x/person(), fighter)), now)
 time(fun(fighter), now)
 ->
 $ Yeah, fighting games are fun. I especially like Super Smash Bros. It is a bit of an unconventional fighting game, but just being able to duke it out with friends is great fun that never gets old. $
-$ Oh, fighting games are great. Having a medium to compete with friends is really fun. I really like Super Smash Bros. , although it is a bit unconventional for a fighting game. $
+$ Oh, fighting games are great. Having a medium to compete with friends on is really fun. I really like Super Smash Bros. , although it is a bit unconventional for a fighting game. $
 ;
 
 time(agree(emora, like(x/person(), rpg)), now)
@@ -227,13 +227,13 @@ $ Oh yes, League of Legends is a really popular game. I have mixed feelings abou
 cause(pred/predicate(), play(x/person(), csgo))
 request(emora, pred)
 ->
-$ Oh, C S go is pretty cool right? I've never really played it, but I've heard that it's pretty fun. What do you like about C S go ? $
+$ Oh, CS go is pretty cool right? I've never really played it, but I've heard that it's pretty fun. What do you like about CS go ? $
 ;
 
 cause(pred/predicate(), like(x/person(), csgo))
 request(emora, pred)
 ->
-$ Oh, C S go is pretty cool right? I've never really played it, but I've heard that it's pretty fun. Why do you play C S go ? $
+$ Oh, CS go is pretty cool right? I've never really played it, but I've heard that it's pretty fun. Why do you play CS go ? $
 ;
 
 

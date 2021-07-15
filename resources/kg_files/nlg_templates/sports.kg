@@ -250,6 +250,7 @@ $ Nice, which two teams were playing in the game? $
 w/watch(user, g/team_sports_event())
 c/compete(x/sports_team(), y/sports_team())
 req_unsat(request(emora, x))
+uturn(g, 0)
 ->
 _t(_r)
 _rep(_nr)

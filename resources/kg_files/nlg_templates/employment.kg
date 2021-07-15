@@ -347,6 +347,7 @@ $ Do you like c ? $
 l/like(user,c/company())
 time(l,now)
 awesome(l)
+uturn(c, 0)
 ->
 _rep(_ur)
 _t(_r)
@@ -358,6 +359,7 @@ l/like(user,c/company())
 not(l)
 time(l,now)
 sorry(emora,l)
+uturn(c, 0)
 ->
 _rep(_ur)
 _t(_r)

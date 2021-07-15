@@ -196,6 +196,7 @@ w/watch(user, ani/animal())
 uturn(w, 0)
 ->
 _t(_r)
+_rep(_ur)
 $ Oh, yeah, ani are always fun to watch. $
 $ Oh, I really enjoy watching ani too. $
 ;
@@ -204,6 +205,7 @@ s/see(user, ani/animal())
 uturn(s, 0)
 ->
 _t(_r)
+_rep(_ur)
 $ Oh, yeah, ani are always fun to see. $
 $ Oh, I really enjoy watching ani too. $
 ;
@@ -215,6 +217,7 @@ uturn(h, 0)
 ->
 _pr(_high)
 _t(_r)
+_rep(_ur)
 $ Yeah, choosing a favorite can definitely be pretty hard. $
 ;
 
@@ -225,5 +228,6 @@ r/request(emora, ani/animal())
 eturn(r, 1)
 ->
 _t(_r)
+_rep(_nr)
 $ Oh, well choosing a favorite is pretty hard, so I get it. $
 ;
