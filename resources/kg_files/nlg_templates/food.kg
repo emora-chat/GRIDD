@@ -19,13 +19,16 @@ g/intend_to_consume(user, X/consumable())
 not(g)
 uturn(g, 0)
 ->
+_rep(_ur)
 _t(_react)
 $ Oh , I see . Not everybody likes X . $
+$ It makes sense that not everybody enjoys the taste of X . $
 ;
 
 g/intend_to_consume(user, X/consumable())
 uturn(g, 0)
 ->
+_rep(_ur)
 _t(_react)
 $ That's awesome ! $
 ;
@@ -83,6 +86,7 @@ uturn(X,0)
 ->
 _pr(_low)
 _t(_present)
+_rep(_nr)
 $ Is X your favorite food ? $
 ;
 
@@ -93,7 +97,9 @@ be(fd,ramen())
 uturn(X, 0)
 ->
 _t(_rpresent)
+_rep(_ur)
 $ I'm glad that you enjoy eating X ! My favorite food is ramen . It is a simple but delicious dish .  $
+$ Oh , that's awesome . X also sounds so good to me right now . My favorite food is ramen . $
 ;
 
 ff/favorite(user,X/food())
@@ -110,6 +116,7 @@ request_truth(emora,fd)
 uturn(X,0)
 ->
 _pr(_low)
+_rep(_nr)
 $ Is X your favorite drink ? $
 ;
 
@@ -272,8 +279,10 @@ smell(emora,X/thai_cuisine())
 swm/with(sr/sticky_rice(),mango())
 delicious(swm)
 ->
+_rep(_ur)
 _t(_present)
 $ I can already smell X . I tried thai cuisine once, and I thought sticky rice with mango was so delicious . $
+$ X sounds so good right now . I guess I'm going to have some thai food tomorrow . $
 ;
 
 of(speak(emora),X/italian_cuisine())
@@ -285,6 +294,7 @@ type(ham,pineapple_and_ham)
 tuh/time(try(user,hp),past)
 request_truth(emora,tuh)
 ->
+_rep(_nr)
 _t(_present)
 $ Speaking of X , pizza is probably my favorite italian food. I know a lot of people love pepperoni pizza , but have you ever tried hawaiian style pizza? It has pineapple and ham ? It's a interesting flavor , but I love it . $
 ;
@@ -306,6 +316,7 @@ type(b,group)
 ->
 _t(_rpresent)
 $ Amazing ! Not many people I know like pineapple on pizzas . It always reminds me of baked bananas . $
+$ Oh , really ? Nice ! I don't know lots of people who have tried pineapple on pizzas . $
 ;
 
 spm/with(sp/spaghetti(),meatball())
@@ -313,6 +324,7 @@ time(ecs/cook(emora,spm),often)
 ->
 _t(_present)
 $ I often cook spaghetti with meatballs at home . It's a quick but delicious dish when I don't know what to eat . $
+$ Spaghetti with meatballs is one of the dishes I am good at making . Its easy but still very delicious . $
 ;
 
 sd/sweet_flavor(ds/dessert())
@@ -377,9 +389,11 @@ intend_to_consume(user,mf/mexican_cuisine())
 request(emora,mf)
 uturn(X,0)
 ->
+_rep(_nr)
 _t(_present)
 _pr(_high)
 $ I went to X last week . What Mexican food do you like ? $
+$ I had my weekend lunch at X last week . What Mexican food do you like ? $
 ;
 
 ulm/intend_to_consume(user,mf/mexican_cuisine())
@@ -428,9 +442,11 @@ sbv/be(X/special_fruit(),vegetable())
 not(sbv)
 uturn(X,0)
 ->
+_rep(_ur)
 _t(_present)
 _pr(_high)
 $ Did you know that X is actually a type of fruit by scientific definition ? Most people think X is a vegetable . $
+$ I'd like to share a fun fact with you ! I just learned that X is actually a type of fruit by scientific definition , instead of a vegetable. $
 ;
 
 ht/have(emora,pecan_pie())
@@ -497,26 +513,32 @@ ese/start(emora,d/day())
 with(ese, X/coffee())
 uturn(X,0)
 ->
+_rep(_ur)
 _t(_present)
 _pr(_high)
 $ Who can start a day without X ? A cup of X from Starbucks keeps me up every day . $
+$ X keeps me up sometimes , but I'd rather take a nap to get myself energized . $
 ;
 
 intend_to_consume(emora, X/common_drink())
 time(get(emora,X),often)
 uturn(X,0)
 ->
+_rep(_ur)
 _t(_present)
 _pr(_low)
 $ I love drinking X too ! Honestly , I get two to three cups of X each week . $
+$ I just drank a cup of X this morning . $
 ;
 
 g/intend_to_consume(x/person(),X/common_food())
 time(get(emora,X),past)
 uturn(X,0)
 ->
+_rep(_ur)
 _t(_present)
 $ You know what ? I just got X for lunch yesterday . I have it all the time . $
+$ X has been a common food for me when I don't know what to eat . $
 ;
 
 intend_to_consume(emora,salad)
@@ -603,7 +625,8 @@ request(emora,f)
 ->
 _t(_rpresent)
 _pr(_high)
-$  I love cooking , too ! Seeing people enjoy what I make is the greatest compliment for me . What do{"s":"#X","t":"now"} X usually make for Thanksgiving dinner ? $
+$ I love cooking , too ! Seeing people enjoy what I make is the greatest compliment for me . What do{"s":"#X","t":"now"} X usually make for Thanksgiving dinners ? $
+$ I love cooking ! I think the most enjoyable experience about cooking is when I see people enjoy what I make . Thanksgiving is usually a big time for that . What do{"s":"#X","t":"now"} X usually make for Thanksgiving dinners ? $
 ;
 
 bt/best(t/turkey())
@@ -619,8 +642,17 @@ emt/make(emora,turkey())
 for(emt,thanksgiving)
 uturn(X,0)
 ->
+_rep(_nr)
 _t(_rpresent)
 $ X sound{"t":"now","s":"#X"} like a great dish ! I try to cook Turkey in different ways for Thanksgiving each year . $
+;
+
+emt/make(emora,turkey())
+for(emt,thanksgiving)
+time(emt,always)
+->
+_t(_rpresent)
+$ Gotcha . I try to cook Turkey in different ways for Thanksgiving each year . $
 ;
 
 emt/make(emora,t/turkey())
@@ -647,6 +679,7 @@ at(f,X/restaurant())
 request(emora,o)
 uturn(X,0)
 ->
+_rep(_nr)
 _t(_present)
 $ How be{"t":"#Z"} the food at X ? I hope that you have{"t":"#Z"} a great time there . $
 ;
@@ -655,6 +688,8 @@ blr/be(X/unknown_noun(),r/restaurant())
 request_truth(emora,blr)
 uturn(X,0)
 ->
+_rep(_ur)
+_t(_present)
 _pr(_low)
 $ Is X a restaurant ? $
 ;
@@ -673,6 +708,7 @@ have(user,X)
 time(have(emora,ramen()),past)
 uturn(X,0)
 ->
+_rep(_ur)
 _t(_rpresent)
 _pr(_high)
 $ I'm glad that you enjoyed your X ! I had ramen yesterday for my dinner . $
@@ -681,9 +717,11 @@ $ I'm glad that you enjoyed your X ! I had ramen yesterday for my dinner . $
 time(have(emora,X/consumable()),past)
 uturn(X,0)
 ->
+_rep(_ur)
 _t(_present)
 _pr(_low)
 $ I remember having X last month , but this has reminded me that I should have it again soon . Thank you for giving me this awesome food idea . $
+$ This reminds me that I had X last month . I should get it again this week . $
 ;
 
 ttf/time(try(emora,crispy(o/object())),future)
@@ -758,9 +796,11 @@ gif/from(egi,X)
 cause(gif,mkp)
 uturn(Y,0)
 ->
+_rep(_ur)
 _t(_present)
 _pr(_high)
 $ What do{"t":"#Z","s":"#X"} X have for Y ? I'm making plans for my Y tomorrow , so I would like to see if I could get some ideas from X . $
+$ What food do{"t":"#Z","s":"#X"} X get for Y ? $
 ;
 
 xc/cook(x/person())
@@ -773,6 +813,7 @@ like(emora,eg)
 _t(_rpresent)
 _pr(_high)
 $ Oh , I see . Yeah , I love cooking at home most of the time , but sometimes I prefer going to restaurants when I feel lazy . $
+$ Yeah ? I usually enjoy cooking at home , but I guess I have done enough of cooking during the pandemic . Now I'm more excited about going out for dinner . $
 ;
 
 req_unsat(request(user, o/object()))

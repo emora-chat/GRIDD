@@ -4,6 +4,7 @@ understand(emora,l)
 ->
 _t(_r)
 $ Oh , you don't like art ? I love art , but I understand that it is not a thing for everyone . $
+$ Oh , its sad that we don't share similar interests , but that's understandable . $
 ;
 
 xba/be(user,artist())
@@ -12,6 +13,7 @@ request_truth(emora,xba)
 _t(_present)
 _pr(_low)
 $ Would you say that you're an artist ? $
+$ Would you consider yourself an artist ? $
 ;
 
 xba/be(user,artist())
@@ -20,6 +22,7 @@ understand(emora,xba)
 ->
 _t(_rpresent)
 $ Oh , I see . I mean , not everyone needs to be an artist in order to appreciate art . $
+$ Gotcha . I guess everyone can have different definitions of an artist , so I was just curious about your opinions . $
 ;
 
 xla/like(user,arr/art())
@@ -29,6 +32,7 @@ request(emora,o)
 _t(_present)
 _pr(_low)
 $ Why do you like art ? $
+$ What interests you to appreciate art ? $
 ;
 
 xla/like(user,arr/art())
@@ -44,7 +48,8 @@ request_truth(emora,uld)
 ->
 _t(_present)
 _pr(_low)
-$ Do you like drawing ? $
+$ Since you like art , do you like drawing ? Or do you often draw ? $
+$ Since you like art , I'm wondering if you like drawing ? $
 ;
 
 b/be(X/artist(),ast/artist())
@@ -53,8 +58,9 @@ favorite(ast)
 time(b,now)
 request_truth(emora,b)
 ->
+_rep(_nr)
 _t(_present)
-$ Is X your favorite artist ? $
+$ X is a great artist . Is X your favorite artist ? $
 ;
 
 upo/paint(user,o/object())
@@ -95,6 +101,7 @@ request_truth(emora,xtd)
 ->
 _t(_present)
 $ You must be very creative . Have you ever tried digital drawing before ? $
+$ You must be a creative person . Since you like drawing , have you ever tried digital drawing by any chance ? $
 ;
 
 xd/paint(user)
@@ -104,6 +111,7 @@ request_truth(emora,xtd)
 ->
 _t(_present)
 $ You must be very creative . Have you ever tried digital drawing before ? $
+$ You must be a creative person . Since you like drawing , have you ever tried digital drawing by any chance ? $
 ;
 
 xd/draw(user)
@@ -113,6 +121,7 @@ interesting(xtd)
 ->
 _t(_present)
 $ Digital drawing is fun , right ? I'm always amazed by how technology can enhance our everyday activities and hobbies. $
+$ I think digital drawing is a great combination of technology and art , which makes this form of drawing so fun . $
 ;
 
 ut/talk(user)
@@ -132,6 +141,7 @@ time(uld,future)
 ->
 _t(_present)
 $ You should look into it at some point ! Since you like drawing , I think you would definitely have a lot of fun . $
+$ I bet you would like it since you like drawing . $
 ;
 
 xd/draw(user)
@@ -185,9 +195,11 @@ possess(emora,arr)
 favorite(arr)
 time(bb,now)
 ->
+_rep(_ur)
 _t(_present)
 _pr(_high)
 $ X indeed brought significant impact to the art field . My favorite artist is Claude Monet . $
+$ X is a famous and great artist who contributes many significant pieces . My favorite artist is Claude Monet . $
 ;
 
 draw(claude_monet,p/picture())
@@ -214,6 +226,7 @@ time(bb,now)
 _t(_rpresent)
 _pr(_high)
 $ Oh , I see . Well , even if X is not your favorite artist , it's certain that they brought significant impact to the art field . My favorite artist is Claude Monet . $
+$ Got it . But anyway , X is a famous and great artist who contributes many significant pieces . My favorite artist is Claude Monet . $
 ;
 
 ed/draw(emora)
@@ -227,6 +240,7 @@ ekx/know(emora,X/unknown_artist())
 not(ekx)
 request(emora,X)
 ->
+_rep(_ur)
 _t(_present)
 $ I don't think I've ever heard about X before . Why is X your favorite artist ? $
 ;

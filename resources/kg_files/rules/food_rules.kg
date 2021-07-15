@@ -514,6 +514,16 @@ f:<mxf/make(x,f/food()) for(mxf,thanksgiving)>
 request(emora,f)
 ;
 
+mxf/make(x/person(),f/food())
+for(mxf,thanksgiving)
+req/request(emora,f)
+user_aware(req)
+->
+emt/make(emora,turkey())
+for(emt,thanksgiving)
+time(emt,always)
+;
+
 mxf/make(x/person(),un/unknown_noun())
 for(mxf,thanksgiving)
 ->
