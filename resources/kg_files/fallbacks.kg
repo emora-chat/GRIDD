@@ -50,12 +50,12 @@ $ You know , I have always felt a connection to video games since, they're of a 
 l:<l/like(user, t) t/talk(user) about(t,ai())>
 request_truth(emora, l)
 -> ai_fallback ->
-$ Actually , I was wondering if you are interested in a. i. , or artificial intelligence ? $
+$ Actually , I was wondering if you are interested in A I , or artificial intelligence ? $
 ;
 
 l:<l/like(user, m/movie())>
 request_truth(emora, l)
--> movie_fallback ->
+-> long_movie_fallback ->
 $ So , you know, I really enjoy learning about new movies . Do you like movies too ? $
 ;
 

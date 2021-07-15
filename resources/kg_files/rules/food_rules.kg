@@ -23,6 +23,15 @@ uc:<uc/cook(user) at(uc,home) time(uc,always)>
 request_truth(emora, uc)
 ;
 
+l/like(user, f/food())
+_category(f)
+->
+f3:<possess(user, f2/food())
+favorite(f2)
+be(f2, f3/food())>
+request(emora, f3)
+;
+
 f/food()
 _exists(f)
 _specific(f)
@@ -503,6 +512,16 @@ cook(x/person())
 like(emora,cook(emora))
 f:<mxf/make(x,f/food()) for(mxf,thanksgiving)>
 request(emora,f)
+;
+
+mxf/make(x/person(),f/food())
+for(mxf,thanksgiving)
+req/request(emora,f)
+user_aware(req)
+->
+emt/make(emora,turkey())
+for(emt,thanksgiving)
+time(emt,always)
 ;
 
 mxf/make(x/person(),un/unknown_noun())

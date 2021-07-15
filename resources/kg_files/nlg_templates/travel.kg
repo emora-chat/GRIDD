@@ -6,14 +6,17 @@ at(es,home)
 lc/cook(x)
 request_truth(emora,lc)
 ->
+_rep(_nr)
 _t(_rpresent)
 $ Ah , I see . Sometimes I like staying at home too . Do you prefer cooking at home over going to restaurants then ? $
+$ That makes sense to me . Because of similar reasons , sometimes I would prefer cooking at home over going to restaurant .  Do you feel the same way ? $
 ;
 
 time(possess(user,tp/trip()),Z/datetime())
 p/property(tp)
 request(emora,p)
 ->
+_rep(_nr)
 _t(_present)
 _pr(_low)
 $ How is{"t":"#Z"} your trip ? I hope everything go{"t":"#Z","s":"everything"} well for you . $
@@ -22,6 +25,7 @@ $ How is{"t":"#Z"} your trip ? I hope everything go{"t":"#Z","s":"everything"} w
 l/like(user,tp/trip())
 request_truth(emora,l)
 ->
+_rep(_nr)
 _t(_present)
 _pr(_low)
 $ Do you like the trip ? I have actually traveled to many places . I like most of my trips , but sometimes unpleasant things still happen . The virtual world can be unpredictable . $
@@ -65,7 +69,9 @@ request_truth(emora,l)
 uturn(X,0)
 ->
 _t(_present)
+_rep(_ur)
 $ I've traveled to several countries too , like China , France , and the United States . Do you like X ? $
+$ Do you like X a lot ? $
 ;
 
 like(user,X/country())
@@ -105,6 +111,8 @@ reasonable(user)
 ->
 _t(_r)
 $ That's a reasonable answer . $
+$ That makes sense . $
+$ You're probably right about that . $
 ;
 
 gx/go(X/person())
@@ -120,6 +128,7 @@ git/from(gi,te)
 _t(_present)
 _pr(_high)
 $ Which country or city have{"s":"#X","t":"now"} X visited ? I love trips too. Traveling inspires me . $
+$ I love traveling too ! I've been to many countries and cities . Where have{"s":"#X","t":"now"} X been to ? $
 ;
 
 utr/try(user,rt/RV_trip())
@@ -130,6 +139,7 @@ request_truth(emora,utr)
 _t(_present)
 _pr(_low)
 $ Have you ever heard about R V trips ? Since you like traveling , I bet you would enjoy that . $
+$ Do you know about R V trips ? Its an amazing way of traveling in my opinion , and since you like traveling , I think you would like it too . $
 ;
 
 utr/try(user,rt/RV_trip())
@@ -142,6 +152,7 @@ not(etr)
 ->
 _t(_rpresent)
 $ Right ? I've been hearing R V trips for a long time but haven't gotten the chance to try . It's gotta be a lot of fun . $
+$ Yeah , I think R V trips are so cool . You get a mobile hotel , and you can go to many different places with driving . I'm starting to think about how I sit next to the window and see trees moving by . $
 ;
 
 utr/try(user,rt/RV_trip())
@@ -178,6 +189,7 @@ time(gxx,future)
 _t(_present)
 _pr(_low)
 $ What country would you like to visit in the future ? $
+$ Where do you plan to travel to in the future ?  $
 ;
 
 gxx/go(X/person())
@@ -696,8 +708,10 @@ gx/go(user)
 to(gx,lc/location())
 _specific(lc)
 busy(user)
+uturn(gx, 0)
 ->
 _t(_r)
+_rep(_nr)
 $ It's good to hear that you are moving around . $
 ;
 

@@ -11,7 +11,7 @@ X/property(u)
 request(emora, X)
 ->
 _pr(_high)
-$ Sorry I don't know a lot about u . It's is not available in my virtual world. Tell me about it, though. I'll do my best to learn. $
+$ Sorry I don't know a lot about u . It's not available in my virtual world. Tell me about it, though. I'll do my best to learn. $
 ;
 
 /* Likes specific sport */
@@ -20,6 +20,7 @@ pl/play(user, football)
 request_truth(emora, pl)
 ->
 _pr(_high)
+_t(_p)
 $ Have you ever played football? Figured I'd ask. $
 ;
 
@@ -28,6 +29,7 @@ pl/play(user, baseball)
 request_truth(emora, pl)
 ->
 _pr(_high)
+_t(_p)
 $ Have you played baseball before? Seems fun.$
 ;
 
@@ -36,6 +38,7 @@ pl/play(user, soccer)
 request_truth(emora, pl)
 ->
 _pr(_high)
+_t(_p)
 $ Sounds like you enjoy soccer at least a little bit. Have you played before? $
 ;
 
@@ -60,6 +63,7 @@ pl/play(user, tennis)
 request_truth(emora, pl)
 ->
 _pr(_high)
+_t(_p)
 $ Have you played tennis at all in the past? $
 ;
 
@@ -82,6 +86,7 @@ l/like(user, basketball)
 pl/play(user, basketball)
 request_truth(emora, pl)
 ->
+_t(_p)
 _pr(_high)
 $ Have you played basketball before? Sounds like you enjoy it. $
 ;
@@ -247,6 +252,7 @@ c/compete(x/sports_team(), y/sports_team())
 req_unsat(request(emora, x))
 ->
 _t(_r)
+_rep(_nr)
 _pr(_high)
 $ I hope it was an exciting game! $
 ;
@@ -452,6 +458,7 @@ uturn(roger_federer, 0)
 t/tennis_player()
 ->
 _t(_r)
+_rep(_ur)
 _pr(_high)
 $ I enjoy watching Federer play - he's got great style. $
 ;
@@ -460,6 +467,79 @@ uturn(kyrgios, 0)
 t/tennis_player()
 ->
 _t(_r)
+_rep(_ur)
 _pr(_high)
 $ Ah, watching Kyrgios is always exciting - very impressive he played so well after so long out of professional matches. $
+;
+
+uturn(djokovic, 0)
+t/tennis_player()
+->
+_t(_r)
+_rep(_ur)
+_pr(_high)
+$ Djokovic has such mental strength. I wonder if he trains for that specifically. $
+;
+
+uturn(medvedev, 0)
+t/tennis_player()
+->
+_t(_r)
+_rep(_ur)
+_pr(_high)
+$ Medvedev has a very interesting swing. It looks like he follows through twice as much as other players. $
+;
+
+uturn(berretini, 0)
+t/tennis_player()
+->
+_t(_r)
+_rep(_ur)
+_pr(_high)
+$ Berretini played great at Wimbledon. I hope to see more of him at grand slams in the future. $
+;
+
+uturn(shapovalov, 0)
+t/tennis_player()
+->
+_t(_r)
+_rep(_ur)
+_pr(_high)
+$ Shapovalov played so well at Wimbledon. Even though he lost in straight sets, he looked so athletic! $
+;
+
+uturn(hurkacz, 0)
+t/tennis_player()
+->
+_t(_r)
+_rep(_ur)
+_pr(_high)
+$ Hurkacz did well at Wimbledon. I can't believe he beat Federer! $
+;
+
+uturn(norrie, 0)
+t/tennis_player()
+->
+_t(_r)
+_rep(_ur)
+_pr(_high)
+$ Norrie did well at Wimbledon. It was good to see a Brit go so far. $
+;
+
+uturn(murray, 0)
+t/tennis_player()
+->
+_t(_r)
+_rep(_ur)
+_pr(_high)
+$ Andy Murray is a legend. I've always enjoyed seeing his highlights. $
+;
+
+uturn(ash_barty, 0)
+t/tennis_player()
+->
+_t(_r)
+_rep(_ur)
+_pr(_high)
+$ Ash Barty killed it at Wimbledon! What a player. $
 ;

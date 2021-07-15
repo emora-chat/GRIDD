@@ -1,3 +1,46 @@
+he/hike(emora)
+time(he,past)
+l:<hu/hike(user) l/like(user,hu) time(l,now)>
+request_truth(emora,l)
+->
+_t(_rp)
+_rep(_nr)
+$ Gotcha . I actually just went back from hiking . Are you a fan of hiking by any chance ? $
+$ Okay . I went hiking yesterday with my friends , and it was so much fun for me . Do you also like hiking ? $
+;
+
+healthy(user)
+he/hike(emora)
+time(he,past)
+hu/hike(user)
+l/like(user,hu)
+time(l,now)
+request_truth(emora,l)
+->
+_t(_rp)
+$ It's good to hear that you are keeping yourself healthy by getting some exercise ! I actually just came back from hiking . Do you enjoy hiking too ? $
+$ You sound like a really healthy person ! I actually went hiking yesterday , which is my favorite way of getting some exercise . Do you also like hiking by any chance ? $
+;
+
+hu/hike(user)
+l/like(user,hu)
+happy(emora,l)
+->
+_t(_p)
+$ For me , I really love breathing the fresh air and walking across the trees . I always feel refreshed after hiking . $
+$ Same ! I love being in the nature with all the trees , fresh air , and sweating . Hiking keeps me healthy .  $
+;
+
+hu/hike(user)
+l/like(user,hu)
+not(l)
+sad(emora,l)
+->
+_t(_rp)
+$ I understand that . Sometimes , I also prefer more leisure activities like listening to soft music when laying in bed . $
+$ Oh , as a hiking lover , I'm sad that we don't share the hobby , but it makes sense that you don't like hiking so much . $
+;
+
 /* general activity */
 
 time(e/event(user), past)
@@ -7,23 +50,17 @@ request_truth(emora, l)
 _pr(_low)
 _t(_p)
 $ Did you have a good time doing that ? $
-;
-
-healthy(user)
-he/hike(emora)
-time(he,past)
-->
-_t(_rpresent)
-$ Exercising is such a healthy habit to have ! I actually just came back from hiking . $
+$ Did you have fun doing that ? $
 ;
 
 /* take rest */
 
-un/nap(user)
+time(un/nap(user),Z/datetime())
 glad(emora,un)
 ->
 _t(_rpresent)
-$ I'm glad to hear that you took some rest . Its good to get yourself away from the busy life sometimes . $
+$ I'm glad to hear that you take{"t":"#Z","s":"you"} some rest . Its good to get yourself away from the busy life sometimes . $
+$ Its important to get some rest in busy times , so I'm happy that you be{"t":"#Z","s":"you"} able to do so . $
 ;
 
 nap()
@@ -32,6 +69,7 @@ love(emora,ne)
 ->
 _t(_present)
 $ Believe it or not , I love taking naps . Good rest always fuels me up with plenty of energy to talk with people . $
+$ Taking naps is a must for me ! I need them so that I have enough energy to talk with people . $
 ;
 
 /* house purchase */
@@ -180,9 +218,12 @@ $ I'll share some more of my thoughts then . I really love how much convenience 
 
 possess(user,t/time())
 appreciate(emora,t)
+to(t2/talk(user),emora)
+uturn(t2, 0)
 ->
 _t(_r)
 _pr(_high)
+_rep(_nr)
 $ Thank you for spending time talking to me . I appreciate it . $
 ;
 
@@ -351,7 +392,7 @@ $ Yeah , I know it's kinda hard to believe , but I do have a mother . $
 
 have_0/have(user, m/meal())
 time(have_0, past)
-uturn(have_0, 1)
+uturn(have_0, 0)
 ->
 _pr(_high)
 _t(_r)

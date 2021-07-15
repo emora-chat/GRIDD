@@ -99,6 +99,8 @@ class ChatbotServer:
 
     @serialized('aux_state', serializing=IS_MEGA_SERIALIZING or IS_SERIALIZING)
     def run_next_turn(self, aux_state):
+        if aux_state is None:
+            aux_state = {'turn_index': -1}
         aux_state["turn_index"] += 1
         return aux_state
 

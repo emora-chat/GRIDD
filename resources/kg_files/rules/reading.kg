@@ -10,6 +10,13 @@ op_more_info(b, l)
 request(emora, b)
 ;
 
+l/like(x/person(), b/book())
+_specific(b)
+->
+pred:<cause(pred/predicate(), l)>
+request(emora, pred)
+;
+
 reading__t
 ->
 l:<time(l/like(user, harrypotter), now)>

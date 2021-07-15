@@ -29,7 +29,7 @@ import os, json
 
 class IntelligenceCore:
 
-    def __init__(self, knowledge_base=None, inference_rules=None, nlg_templates=None, fallbacks=None, working_memory=None, inference_engine=None, device='cpu'):
+    def __init__(self, knowledge_base=None, inference_rules=None, nlg_templates=None, fallbacks=None, working_memory=None, inference_engine=None, device='cpu', run_checks=True):
         """
         knowledge_base is a dict of identifiers (usually filenames) to logicstrings
         """
@@ -58,18 +58,7 @@ class IntelligenceCore:
                 for k, v in new_knowledge:
                     self.know(v, self.knowledge_base, emora_knowledge=True)
 
-        print('Undefined KB concepts - need to be fixed:')
-        self._check(self.knowledge_base)
-
-        self.kb_predicate_types = self.knowledge_base.type_predicates()
-        self.kb_subj_essentials = {}
-        for c in self.knowledge_base.subtypes_of('subj_essential'):
-            if self.knowledge_base.has(predicate_id=c):
-                self.kb_subj_essentials.setdefault(self.knowledge_base.subject(c), set()).add(c)
-        self.kb_obj_essentials = {}
-        for c in self.knowledge_base.subtypes_of('obj_essential'):
-            if self.knowledge_base.has(predicate_id=c):
-                self.kb_obj_essentials.setdefault(self.knowledge_base.object(c), set()).add(c)
+        if run_checks: print('Undefined KB concepts - need to be fixed:'); self._check(self.knowledge_base)
 
         if INFERENCE:
             self.nlg_inference_engine = InferenceEngine(device=device)
@@ -179,6 +168,7 @@ class IntelligenceCore:
                     fallback_recording_rules[rule_id] = (rpre, rpost, rvars)
                 self.inference_engine.add(fallback_recording_rules, namespace='t_') #namespace should match inference_rules namespace above
 
+        st = time()
         if INFERENCE and preprocess_queries:
             self.inference_engine.matcher.process_queries()
 
@@ -188,6 +178,16 @@ class IntelligenceCore:
             self.working_memory = ConceptGraph(namespace='wm', supports={AND_LINK: False})
             self.consider(working_memory)
 
+        self.kb_predicate_types = self.knowledge_base.type_predicates()
+        self.kb_subj_essentials = {}
+        for c in self.knowledge_base.subtypes_of('subj_essential'):
+            if self.knowledge_base.has(predicate_id=c):
+                self.kb_subj_essentials.setdefault(self.knowledge_base.subject(c), set()).add(c)
+        self.kb_obj_essentials = {}
+        for c in self.knowledge_base.subtypes_of('obj_essential'):
+            if self.knowledge_base.has(predicate_id=c):
+                self.kb_obj_essentials.setdefault(self.knowledge_base.object(c), set()).add(c)
+
         self.subj_essential_types = {i for i in self.knowledge_base.subtypes_of(SUBJ_ESSENTIAL)
                                 if not self.knowledge_base.has(predicate_id=i)}
         self.obj_essential_types = {i for i in self.knowledge_base.subtypes_of(OBJ_ESSENTIAL)
@@ -196,6 +196,7 @@ class IntelligenceCore:
         self.knowledge_base.compile_connection_counts()
         self.knowledge_base.compiled_types = self.knowledge_base.types()
         self.knowledge_base.compiled_subtypes = self.knowledge_base.subtypes()
+        print('precompilation: %d'%(time()-st))
 
     def stratify_cached_files(self, type, sources):
         if not os.path.exists(type):

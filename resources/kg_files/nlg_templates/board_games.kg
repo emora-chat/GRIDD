@@ -245,6 +245,7 @@ eturn(c, 1)
 l2/like(user, temp_board_game())
 ->
 _t(_r)
+_rep(_ur)
 _pr(_high)
 $ Well, I'll make sure to check it out later. $
 ;
