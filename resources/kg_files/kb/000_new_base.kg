@@ -100,4 +100,7 @@ _category=(predicate)
 _specific=(predicate)
 _exists=(predicate)
 _tanchor=(predicate)
+
+_rep=(predicate)
+[_nr, _ur]=(object)
 ;

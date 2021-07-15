@@ -1,3 +1,11 @@
+k/know(emora, u/unknown_noun())
+not(k)
+time(research(emora, u), future)
+->
+$ Oh, I haven't actually heard of that one. It must be pretty good though, so I'm definitely going to look it up. $
+$ Oh, that's actually the first I've heard of that. If you like it, it must be pretty good, so I'll check it out. $
+;
+
 t/talk(user)
 to(t, emora)
 will(t)

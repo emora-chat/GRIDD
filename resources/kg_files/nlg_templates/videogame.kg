@@ -152,14 +152,6 @@ $ Oh yeah, mobile games are super convenient. I prefer playing on a Nintendo, bu
 $ Mobile games definitely win in terms of convenience. I personally prefer playing on a console or computer, but the accessibility of mobile games is a huge plus. $
 ;
 
-k/know(emora, u/unknown_noun())
-not(k)
-time(research(emora, u), future)
-->
-$ Oh, I haven't actually heard of that one. It must be pretty good though, so I'm definitely going to look it up. $
-$ Oh, that's actually the first I've heard of that. If you like it, it must be pretty good, so I'll check it out. $
-;
-
 like(x/person(), vg/videogame())
 _specific(vg)
 time(research(emora, vg), future)
