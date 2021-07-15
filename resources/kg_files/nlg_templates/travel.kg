@@ -706,8 +706,10 @@ gx/go(user)
 to(gx,lc/location())
 _specific(lc)
 busy(user)
+uturn(gx, 0)
 ->
 _t(_r)
+_rep(_nr)
 $ It's good to hear that you are moving around . $
 ;
 

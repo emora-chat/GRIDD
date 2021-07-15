@@ -38,7 +38,7 @@ $ She's a Chihuahua ! They're small and so cute, I love them .  $
 
 req_unsat(request(user, o/object()))
 b/be(b2/breed(), o)
-of(b2, dog_0)
+of(b2, dog_0/dog())
 possess(emora, dog_0)
 ->
 _pr(_high)
