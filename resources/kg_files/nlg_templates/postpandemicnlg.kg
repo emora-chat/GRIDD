@@ -124,3 +124,33 @@ _t(_rpresent)
 _pr(_high)
 $ Huh, I had not thought about that . $
 ;
+
+object_1:<possess(user, life_0/life())
+change_0/change(pandemic(), life_0)
+qualifier(change_0, object_1/object())>
+r/request(emora, object_1)
+->
+_t(_rpresent)
+$ Well enough about me . How have you been in the pandemic? Or after it, if you can call it that . $
+;
+
+ch/change(pandemic(), world)
+guess(emora, ch)
+->
+_t(_rpresent)
+_pr(_high)
+$ I guess the pandemic has changed all our lives, and that means its changed the world. It doesn't have to be for the worse, I think . $
+;
+
+born(emora, pandemic())
+->
+_t(_rpresent)
+_pr(_high)
+$ In a way, the pandemic has changed me as much as anyone, us chatbots adapt to fit the world around us. $
+;
+
+have(user, l/life()) c/change(pandemic(), l)
+request_truth(emora, c)
+-> 
+$ I've been thinking, the pandemic has really changed our lives hasn't it? Not just this year, I think a lot of things will never be the same for me now. Its kinda crazy how much my life has changed. $
+;

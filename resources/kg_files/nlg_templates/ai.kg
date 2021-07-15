@@ -26,10 +26,8 @@ $ A I is really exciting. It can replace a lot of menial work for people and eve
 t/talk(user)
 about(t,a/ai())
 i/like(user, t)
-
 da/dangerous2(a)
 d/agree(user, da)
-d
 user_aware(d)
 ->
 _t(_rpresent)
@@ -47,7 +45,6 @@ $ Honestly, I like to just think about how A I works. I am a virtual chatbot, bu
 t/talk(user)
 about(t,aa/ai())
 i/like(user, t)
-
 da/dangerous2(aa)
 d/agree(user, da)
 request_truth(emora, d)
@@ -92,4 +89,27 @@ user_aware(i)
 ->
 _t(_rpresent)
 $ For me, other than letting me talk to you, I think A I will help people do their jobs fully - I think every job has a repetitive component that is necessary to complete to enable the fulfilling parts. A I can help do those boring parts. $
+;
+
+l:<l/like(user, t) t/talk(user) about(t,a/ai())>
+request_truth(emora, l)
+temppred(a)
+->
+_pr(_high)
+$ Actually , I was wondering if you are interested in a. i. , or artificial intelligence ? $
+;
+
+m/mimic(ai(), person())
+aa/agree(user,m)
+request_truth(emora, aa)
+->
+_pr(_high)
+$ A lot of people think the problem with current a. i. is that its just mimicking real intelligence, and they say that is not the correct path to true general intelligence. Would you agree with that?$
+;
+
+m/mimic(ai(), person())
+aa/agree(emora,m)
+->
+_pr(_high)
+$ I loved the show westworld, and it had a great answer to whether mimicking intelligence is good enough. A character said: If you can't tell the difference, does it really matter? $
 ;
