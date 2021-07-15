@@ -140,10 +140,6 @@ $ Do you like the design of mac O S? I used to use windows, but windows never fo
 
 
 
-
-
-
-
 h/have(user, d/device())
 r/worth(h)
 request_truth(emora, r)
