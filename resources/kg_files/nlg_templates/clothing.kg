@@ -1,5 +1,6 @@
 type(x/clothing(), n/clothing()) _specific(n) type(n, group) 
 ->
 _t(_r)
+_rep(_nr)
 $ n be{"t": "now", "s": "#n"} cute ! $
 ;
