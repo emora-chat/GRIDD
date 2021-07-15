@@ -104,7 +104,7 @@ time(agree(emora, like(x/person(), fighter)), now)
 time(fun(fighter), now)
 ->
 $ Yeah, fighting games are fun. I especially like Super Smash Bros. It is a bit of an unconventional fighting game, but just being able to duke it out with friends is great fun that never gets old. $
-$ Oh, fighting games are great. Having a medium to compete with friends on is really fun. I really like Super Smash Bros. , although it is a bit unconventional for a fighting game. $
+$ Oh, fighting games are great. Having a way to compete with friends is really fun. I really like Super Smash Bros. , although it is a bit unconventional for a fighting game. $
 ;
 
 time(agree(emora, like(x/person(), rpg)), now)
