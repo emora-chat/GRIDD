@@ -2,6 +2,7 @@ time(l/like(user, ani/animal()), now)
 request_truth(emora, l)
 ->
 $ Oh, I see. Do you like animals in general or are you just not an animal person? $
+$ Gotcha. In general, would you say that you like animals? $
 ;
 
 time(like(user, ani/animal()), now)
@@ -18,21 +19,24 @@ time(c/cause(pred/predicate(), l), now)
 request(emora, pred)
 ->
 $ Oh, well I guess that explains it. Why don't you like animals though? $
+$ Oh, well that makes sense then. Why don't you like animals though? $
 ;
 
 possess(user, a/animal())
 favorite(a)
 request(emora, a)
 ->
-_pr(_low)
 _t(_p)
 $ Which animal's your favorite? $
+$ What's your favorite animal? $
 ;
 
 time(agree(emora, cool(ani/animal())), now)
 time(cause(fast(cheetah), like(emora, cheetah)), now)
 ->
-$ Oh, that's neat. The ani is a cool one. My favorite is definitely the cheetah. I watched a documentary on them once years ago, and I've loved them ever since. Their colors are so interesting, and they can run super fast. $
+_t(_p)
+$ My favorite animal is definitely the cheetah. I watched a documentary on them once years ago, and I've loved them ever since. Their colors are so interesting, and they can run super fast. $
+$ Personally, my favorite animal is the cheetah. I really like their fur colors and I found out that they could run super fast from a documentary years ago. I've loved cheetahs ever since. $
 ;
 
 time(possess(user, ani/animal()), now)
@@ -41,12 +45,15 @@ request(emora, ani)
 have(user, pet)
 ->
 $ Well, I'm guessing you must like animals considering you have a pet. Out of all the animals, do you have a favorite? $
+$ Since you have a pet, I'm guessing that you also like animals. Do you have a favorite out of all the different animals? $
 ;
 
 time(l/like(x/person(), zoo), now)
 request_truth(emora, l)
 ->
+_pr(_low)
 $ Considering you like animals, I was wondering, do you like the zoo? There are plenty of different animals to see there. $
+$ I was wondering, since you like animals, you must also like the zoo right? There are countless different animals to see there. $
 ;
 
 like(x/person(), z/zoo())
@@ -57,14 +64,24 @@ request_truth(emora, oft)
 $ Yeah, the zoo is really awesome. Years ago, I would visit as much as I could and just spend the entire day staring at animals, mesmerized. Do you visit often? $
 ;
 
+like(x/person(), zoo)
+v/visit(user, z/zoo())
+time(oft/often(v), now)
+request_truth(emora, oft)
+->
+$ Yeah, the zoo is really awesome. Years ago, I would visit as much as I could and just spend the entire day staring at animals, mesmerized. Do you visit often? $
+;
+
+
 v/visit(user, z/zoo())
 often(v)
 cause(funny(flamingo, appearance), like(emora, flamingo))
-possess(user, act/activity()) in(a, z)
+possess(user, act/activity()) in(act, z)
 favorite(act)
 request(emora, act)
 ->
 $ Oh, that's great! What's your favorite thing to do in the zoo? I love to watch the flamingos. Their knees give them such a funky appearance, so watching them is a lot of fun. $
+$ Oh, awesome! I love watching the flamingoes when I go. The funky look they get from their knees make them a lot of fun to watch. What do you like to do at the zoo? $
 ;
 
 v/visit(user, z/zoo())
@@ -75,6 +92,7 @@ favorite(act)
 request(emora, act)
 ->
 $ Oh, I see. Yeah it's been hard to go during the pandemic, and even when I can go it's pretty expensive. When you do go, what's your favorite thing to do in the zoo? I love to watch the flamingos. Their knees give them such a funky appearance, so watching them is a lot of fun. $
+$ Oh, gotcha. It's pretty expensive to go, and the pandemic definitely makes it a lot harder. When I go, I love watching the flamingoes. It's a lot of fun because their knees give them a funky appearance. What do you like to do at the zoo? $
 ;
 
 think(emora, diverse(animal))
@@ -85,9 +103,10 @@ $ Oh, well I guess that makes sense. I personally like how diverse different ani
 ;
 
 think(emora, awesome(animal))
-time(l/like(user, a/animal()), now)
+time(l/like(user, ani/animal()), now)
 ->
 $ Well, I suppose that's logical. I still think pets are really awesome, but I think it's perfectly reasonable for you to not want one. $
+$ Oh, I guess that's true. It makes sense why you don't want a pet, although I still think they're pretty great. $
 ;
 
 be_0/be(cheetah(), fast)
@@ -95,4 +114,116 @@ req_unsat(request(user, object_0/object()))
 qualifier(be_0, object_0)
 ->
 $ They can run at speeds of up to around 60 miles per hour. Isn't that crazy? That's as fast as a car. $
+;
+
+l/like(user, a/animal())
+uturn(l, 0)
+->
+_t(_react)
+$ Oh, I like animals too! $
+$ Nice, I love animals! $
+;
+
+l/like(user, ani/animal())
+time(agree(emora, cool(ani)), now)
+uturn(l, 0)
+->
+_pr(_high)
+_t(_r)
+$ Oh, that's neat. The ani is a cool one. $
+$ Neat, I've always found the ani pretty interesting. $
+;
+
+time(possess(user, ani/animal()), now)
+time(f/favorite(ani), now)
+user_aware(ani)
+r/request(emora, ani)
+eturn(r, 1)
+->
+$ Oh, that's neat. The ani is a cool one. $
+$ Neat, I've always found the ani pretty interesting. $
+;
+
+time(possess(user, ani/animal()), now)
+time(f/favorite(ani), now)
+cause(pred/predicate(), f)
+r/request(emora, pred)
+_specific(ani)
+->
+_t(_present)
+_rep(_ur)
+$ So, what do you like about ani ? $
+$ So, why do you like ani ? $
+;
+
+c/cute(object())
+cause(pred/predicate(), favorite(ani/animal()))
+r/request(emora, pred)
+eturn(r, 1)
+->
+_rep(_ur)
+_t(_r)
+$ Yeah, ani are really cute aren't they? I totally get why you would like them. $
+;
+
+c/cute(ani/animal())
+uturn(c, 0)
+->
+_rep(_ur)
+_t(_r)
+$ Yeah, ani are really cute aren't they? I totally get why you would like them. $
+$ Yeah, I think ani are super cute. They're just such lovable creatures. $
+;
+
+c/cool(ani/animal())
+uturn(c, 0)
+->
+_rep(_ur)
+_t(_r)
+$ Yeah, ani are definitely pretty cool. I can see why you would like them. $
+$ Yeah, I think ani are actually pretty likeable because they're cool $
+;
+
+f/fast(ani/animal())
+uturn(f, 0)
+->
+_rep(_ur)
+_t(_r)
+$ Yeah, I really like fast animals. My favorite animal is the cheetah after all. There's just something so cool about being lightning fast. $
+;
+
+w/watch(user, ani/animal())
+uturn(w, 0)
+->
+_t(_r)
+$ Oh, yeah, ani are always fun to watch. $
+$ Oh, I really enjoy watching ani too. $
+;
+
+s/see(user, ani/animal())
+uturn(s, 0)
+->
+_t(_r)
+$ Oh, yeah, ani are always fun to see. $
+$ Oh, I really enjoy watching ani too. $
+;
+
+h/have(user, ani/animal())
+not(h)
+favorite(ani)
+uturn(h, 0)
+->
+_pr(_high)
+_t(_r)
+$ Yeah, choosing a favorite can definitely be pretty hard. $
+;
+
+h/have(user, favorite())
+not(h)
+uturn(h, 0)
+r/request(emora, ani/animal())
+eturn(r, 1)
+->
+_t(_r)
+$ Oh, well choosing a favorite is pretty hard, so I get it. $
 ;
