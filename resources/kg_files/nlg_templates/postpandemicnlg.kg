@@ -62,7 +62,7 @@ l/like(user, c)
 request_truth(emora, l)
 ->
 _t(_rpresent)
-$ My job may have actually benefited from the pandemic. I had to spend a lot of time for commuting, now I can do it remotely. My office is letting me stay remote for as long as I want. Do you like the shift to remote work? $
+$ My internship may have actually benefited from the pandemic. I had to spend a lot of time for commuting, now I can do it remotely. My office is letting me stay remote for as long as I want. Do you like the shift to remote work? $
 ;
 
 have(user, w1/job())
@@ -131,7 +131,7 @@ qualifier(change_0, object_1/object())>
 r/request(emora, object_1)
 ->
 _t(_rpresent)
-$ Well enough about me . How have you been in the pandemic? Or after it, if you can call it that . $
+$ Well enough about me . How have you been in the pandemic? Or after it, if we can even call it over . $
 ;
 
 ch/change(pandemic(), world)
@@ -139,18 +139,18 @@ guess(emora, ch)
 ->
 _t(_rpresent)
 _pr(_high)
-$ I guess the pandemic has changed all our lives, and that means its changed the world. It doesn't have to be for the worse, I think . $
+$ I guess the pandemic has changed all our lives, and that means it changed the world. It doesn't have to be for the worse, I think . $
 ;
 
 born(emora, pandemic())
 ->
 _t(_rpresent)
 _pr(_high)
-$ In a way, the pandemic has changed me as much as anyone, us chatbots adapt to fit the world around us. $
+$ In a way, the pandemic has changed me as much as anyone. Us chatbots adapt to fit the world around us. $
 ;
 
 have(user, l/life()) c/change(pandemic(), l)
 request_truth(emora, c)
 -> 
-$ I've been thinking, the pandemic has really changed our lives hasn't it? Not just this year, I think a lot of things will never be the same for me now. Its kinda crazy how much my life has changed. $
+$ I've been thinking, the pandemic has really changed our lives hasn't it? Not just this year, I think a lot of things will never be the same for me now. It's kinda crazy how much my life has changed. $
 ;

@@ -1,4 +1,5 @@
 type(x/clothing(), n/clothing()) _specific(n) type(n, group) 
+uturn(x, 0)
 ->
 _t(_r)
 _rep(_nr)
