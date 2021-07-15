@@ -24,18 +24,18 @@ request(emora, s)
 l/like(user, s/olympic_sport())
 req_sat(r/request(emora, s))
 ->
-messy(olympics())
+messy_olympic(olympics())
 ;
 
 l/like(user, s/olympic_sport())
 req_unsat(r/request(emora, s))
 user_aware(r)
 ->
-messy(olympics())
+messy_olympic(olympics())
 ;
 
-user_aware(messy(o/olympics()))
+user_aware(messy_olympic(o/olympics()))
 ->
-p:<p/prefer(user,summer(o))>
+p:<p/prefer(user,summer_olympics())>
 request_truth(emora, p)
 ;

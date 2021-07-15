@@ -290,32 +290,32 @@ _pr(_high)
 $ There are some pretty impressive athletes in the olympics. Who is your favorite olympian? $
 ;
 
-messy(olympics())
+messy_olympic(olympics())
 ->
 $ I wasn't sure if the olympics were going to happen this year. It's a tough situation. I'm glad they got something figured out even if spectators aren't allowed. $
 ;
 
-p/prefer(user,summer(olympics()))
+p/prefer(user,summer_olympics())
 request_truth(emora, p)
 ->
-$ To be honest, as much as I love skiing and skating, I might just prefer the Summer olympics. It's probably because I'm partial to Track and Field . $
+$ To be honest, as much as I love skiing and skating, I might just prefer the Summer olympics. It's probably because I'm quite partial to Track and Field . $
 ;
 
-p/prefer(user,summer(olympics()))
+p/prefer(user,summer_olympics())
 not(p)
 ->
-$ I think Vancouver was the most convenient Winter Olympics to go to, at least in recent years. That's probably my favorite. $
+$ I think Vancouver was the best Winter Olympics, at least in recent years. That's probably my favorite. $
 ;
 
-p/prefer(user,summer(olympics()))
+p/prefer(user,summer_olympics())
 ->
 $ As far as Summer Olympics go, I would have to say Rio was my favorite . The atmosphere was just so exciting ! $
 ;
 
-p/prefer(user,summer(olympics()))
+p/prefer(user,summer_olympics())
 maybe(p)
 ->
-$ As far as Summer Olympics go, I would have to say Rio is my favorite . The atmosphere was just so exciting ! $
+$ As far as Summer Olympics go, I would have to say Rio was my favorite . The atmosphere was just so exciting ! $
 ;
 
 user_aware(f/famous_olympian())
