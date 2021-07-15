@@ -111,6 +111,8 @@ reasonable(user)
 ->
 _t(_r)
 $ That's a reasonable answer . $
+$ That makes sense . $
+$ You're probably right about that . $
 ;
 
 gx/go(X/person())
@@ -706,8 +708,10 @@ gx/go(user)
 to(gx,lc/location())
 _specific(lc)
 busy(user)
+uturn(gx, 0)
 ->
 _t(_r)
+_rep(_nr)
 $ It's good to hear that you are moving around . $
 ;
 

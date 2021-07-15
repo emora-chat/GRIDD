@@ -3,6 +3,7 @@ not(l)
 understand(emora,l)
 ->
 _t(_r)
+_rep(_nr)
 $ Oh , you don't like art ? I love art , but I understand that it is not a thing for everyone . $
 $ Oh , its sad that we don't share similar interests , but that's understandable . $
 ;

@@ -218,9 +218,12 @@ $ I'll share some more of my thoughts then . I really love how much convenience 
 
 possess(user,t/time())
 appreciate(emora,t)
+to(t2/talk(user),emora)
+uturn(t2, 0)
 ->
 _t(_r)
 _pr(_high)
+_rep(_nr)
 $ Thank you for spending time talking to me . I appreciate it . $
 ;
 
@@ -389,7 +392,7 @@ $ Yeah , I know it's kinda hard to believe , but I do have a mother . $
 
 have_0/have(user, m/meal())
 time(have_0, past)
-uturn(have_0, 1)
+uturn(have_0, 0)
 ->
 _pr(_high)
 _t(_r)
