@@ -1090,7 +1090,7 @@ class ChatbotServer:
         p.next('merge bridge')
         working_memory, aux_state = self.run_merge_bridge(merges, subspans, working_memory, aux_state)
         p.next('knowledge pull')
-        working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state)
+        working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state, user_kb)
 
         if PRINT_WM:
             print('\n<< Working Memory After NLU >>')
@@ -1109,7 +1109,7 @@ class ChatbotServer:
         p.next('apply inferences')
         working_memory, aux_state, user_kb = self.run_apply_dialogue_inferences(inference_results, working_memory, aux_state, user_kb)
         p.next('knowledge pull 2')
-        working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state)
+        working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state, user_kb)
 
         p.next('reference id 2')
         rules, working_memory = self.run_reference_identification(working_memory)

@@ -39,9 +39,9 @@ _pr(_high)
 $ Tell me, why is your day not going so well? $
 ;
 
-emora_loves_naps
+love(emora, N/nap(emora))
 ->
-$ I love naps. Some people say they feel guilty afterwards but I think its just nice to relax. $
+$ I love N{"g": true} . Some people say they feel guilty afterwards but I think its just nice to relax. $
 ;
 
 
