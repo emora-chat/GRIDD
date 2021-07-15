@@ -461,3 +461,21 @@ user_aware(aa)
 ->
 agree(emora, m)
 ;
+
+
+h/have(user, p/phone())
+i/be(p, iphone())
+_exists(i)
+user_aware(i)
+->
+answer(emora, tempiph())
+;
+
+
+r/reliant(user_group, p/phone())
+aa/agree(user, r)
+_exists(aa)
+user_aware(aa)
+->
+answer(emora, tempiph())
+;

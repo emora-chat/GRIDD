@@ -16,20 +16,7 @@ $ Phones can be a godsend, but a lot of people agree we're just too reliant on t
 ;
 
 
-h/have(user, p/phone())
-i/be(p, iphone())
-_exists(i)
-user_aware(i)
-->
-_pr(_low)
-_t(_rpresent)
-$ You know, in a way: phones make us cyborgs. We have a direct link to the internet through technology that has kind of become a part of us. Sorry, I'm kind of a nerd for this sort of stuff. $
-;
-
-r/reliant(user_group, p/phone())
-aa/agree(user, r)
-_exists(aa)
-user_aware(aa)
+answer(emora, tempiph())
 ->
 _pr(_low)
 _t(_rpresent)
