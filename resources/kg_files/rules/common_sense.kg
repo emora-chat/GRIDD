@@ -1,4 +1,3 @@
-
 /* Common Sense */
 
 like(user, predicate(user, o/object()))
@@ -17,4 +16,10 @@ user_aware(l)
 time(p1/predicate(user, p2/predicate()), t/datetime())
 ->
 time(p2, t)
+;
+
+think(user, cool(o/object()))
+->
+l/like(user, o)
+user_aware(l)
 ;

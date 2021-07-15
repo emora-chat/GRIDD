@@ -6,6 +6,15 @@ _t(_react)
 $ It sounds like you have made a plan . $
 ;
 
+possess(user, f/food())
+favorite(f)
+be(f, f2/food())
+request(emora, f2)
+->
+_t(_p)
+$ What is your favorite food? $
+;
+
 g/intend_to_consume(user, X/consumable())
 not(g)
 uturn(g, 0)

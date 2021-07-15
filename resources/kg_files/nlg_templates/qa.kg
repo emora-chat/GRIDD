@@ -3,7 +3,8 @@ time(be(name(), object_0), now)
 possess(emora, dog())
 ->
 _pr(_high)
-_t(_rpresent)
+_t(_r)
+_rep(_nr)
 $ My dog's name is Nyla ! She's a Chihuahua , and so nice ! $
 ;
 
@@ -12,7 +13,8 @@ time(be(name(), object_0), now)
 possess(emora, pet())
 ->
 _pr(_high)
-_t(_rpresent)
+_t(_r)
+_rep(_nr)
 $ My dog's name is Nyla ! She's a Chihuahua , and so nice ! $
 ;
 
@@ -29,7 +31,30 @@ be_1/be(dog_0/dog(), breed_0)
 possess(emora, dog_0)
 ->
 _pr(_high)
-_t(_rpresent)
+_t(_r)
+_rep(_nr)
+$ She's a Chihuahua ! They're small and so cute, I love them .  $
+;
+
+req_unsat(request(user, o/object()))
+b/be(b2/breed(), o)
+of(b2, dog_0)
+possess(emora, dog_0)
+->
+_pr(_high)
+_t(_r)
+_rep(_nr)
+$ She's a Chihuahua ! They're small and so cute, I love them .  $
+;
+
+req_unsat(request(user, o/object()))
+b/be(b2/breed(), o)
+possess(dog_0/dog(), b2)
+possess(emora, dog_0)
+->
+_pr(_high)
+_t(_r)
+_rep(_nr)
 $ She's a Chihuahua ! They're small and so cute, I love them .  $
 ;
 
@@ -38,7 +63,8 @@ of(be_1/be(dog_0/dog(), kind_0), dog())
 possess(emora, dog_0)
 ->
 _pr(_high)
-_t(_rpresent)
+_t(_r)
+_rep(_nr)
 $ She's a Chihuahua ! They're small and so cute, I love them .  $
 ;
 
@@ -48,6 +74,7 @@ possess(emora, dog_0)
 of(be_1, dog)
 ->
 _pr(_high)
-_t(_rpresent)
+_t(_r)
+_rep(_nr)
 $ She's a Chihuahua ! They're small and so cute, I love them .  $
 ;

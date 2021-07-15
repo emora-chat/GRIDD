@@ -1,0 +1,5598 @@
+user_aware(The_Shawshank_Redemption)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(The_Dark_Knight)
+->
+_pr(_high)
+$ I heard Christian Bale and Heath Ledger did well in that movie. My friends told me The Dark Knight was an absolutely great movie.  $
+;
+
+user_aware(Inception)
+->
+_pr(_high)
+$ I think Leonardo DiCaprio and Joseph Gordon-Levitt were in that, right? My friends told me Inception was an absolutely great movie.  $
+;
+
+user_aware(Fight_Club)
+->
+_pr(_high)
+$ Is that the one with Edward Norton and Brad Pitt? My friends told me Fight Club was an absolutely great movie.  $
+;
+
+user_aware(Pulp_Fiction)
+->
+_pr(_high)
+$ My friends told me Pulp Fiction was an absolutely great movie. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Forrest_Gump)
+->
+_pr(_high)
+$ My friends told me Forrest Gump was an absolutely great movie. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(The_Matrix)
+->
+_pr(_high)
+$ My friends said they liked Keanu Reeves and Laurence Fishburne's performance in that movie. My friends told me The Matrix was an absolutely great movie.  $
+;
+
+user_aware(The_Lord_of_the_Rings_The_Fellowship_of_the_Ring)
+->
+_pr(_high)
+$ My friends told me The Lord of the Rings: The Fellowship of the Ring was an absolutely great movie. Isn't that movie super long?  $
+;
+
+user_aware(The_Lord_of_the_Rings_The_Return_of_the_King)
+->
+_pr(_high)
+$ My friend said they regretted drinking so much water before watching it haha. It's so long. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(The_Godfather)
+->
+_pr(_high)
+$ Isn't that movie super long? It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(The_Dark_Knight_Rises)
+->
+_pr(_high)
+$ My friends said they liked Christian Bale and Gary Oldman's performance in that movie. My friends told me The Dark Knight Rises was an absolutely great movie.  $
+;
+
+user_aware(The_Lord_of_the_Rings_The_Two_Towers)
+->
+_pr(_high)
+$ Isn't that movie super long? It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Interstellar)
+->
+_pr(_high)
+$ My friend said they regretted drinking so much water before watching it haha. It's so long.  $
+;
+
+user_aware(Django_Unchained)
+->
+_pr(_high)
+$ I think Jamie Foxx and Christoph Waltz were in that, right? My friends told me Django Unchained was an absolutely great movie.  $
+;
+
+user_aware(Gladiator)
+->
+_pr(_high)
+$ My friends told me Gladiator was an absolutely great movie. Ridley Scott is a household name. How many movies have they directed now?!  $
+;
+
+user_aware(Batman_Begins)
+->
+_pr(_high)
+$ I think Christian Bale and Michael Caine were in that, right? My friends told me Batman Begins was an absolutely great movie.  $
+;
+
+user_aware(The_Silence_of_the_Lambs)
+->
+_pr(_high)
+$ My friends told me The Silence of the Lambs was an absolutely great movie. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Inglourious_Basterds)
+->
+_pr(_high)
+$ Is that the one with Brad Pitt and Mélanie Laurent? My friends told me Inglourious Basterds was an absolutely great movie.  $
+;
+
+user_aware(Star_Wars)
+->
+_pr(_high)
+$ What a classic movie series. My unpopular opinion is that Jar Jar Binks is a great character. Did you hear that some people think he is a sith lord? $
+;
+
+user_aware(Saving_Private_Ryan)
+->
+_pr(_high)
+$ Isn't that movie super long? There could be a pretty serious marathon of Steven Spielberg's movies  $
+;
+
+user_aware(Schindlers_List)
+->
+_pr(_high)
+$ Isn't that movie super long? It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(The_Departed)
+->
+_pr(_high)
+$ My friends told me The Departed was an absolutely great movie. There could be a pretty serious marathon of Martin Scorsese's movies  $
+;
+
+user_aware(The_Prestige)
+->
+_pr(_high)
+$ Is that the one with Hugh Jackman and Christian Bale? My friends told me The Prestige was an absolutely great movie.  $
+;
+
+user_aware(The_Wolf_of_Wall_Street)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Biography and Crime, I think more movies should do that. Isn't that movie super long?  $
+;
+
+user_aware(Star_Wars_Episode_V___The_Empire_Strikes_Back)
+->
+_pr(_high)
+$ My friends told me Star Wars: Episode V - The Empire Strikes Back was an absolutely great movie. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(The_Green_Mile)
+->
+_pr(_high)
+$ My friends told me The Green Mile was an absolutely great movie. Isn't that movie super long?  $
+;
+
+user_aware(Avatar)
+->
+_pr(_high)
+$ I'm pretty sure I heard Avatar was a really good movie. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Memento)
+->
+_pr(_high)
+$ My friends said they liked Guy Pearce and Carrie-Anne Moss's performance in that movie. My friends told me Memento was an absolutely great movie.  $
+;
+
+user_aware(The_Godfather_Part_II)
+->
+_pr(_high)
+$ My friend said they regretted drinking so much water before watching it haha. It's so long. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Shutter_Island)
+->
+_pr(_high)
+$ My friends told me Shutter Island was an absolutely great movie. There could be a pretty serious marathon of Martin Scorsese's movies  $
+;
+
+user_aware(American_Beauty)
+->
+_pr(_high)
+$ My friends told me American Beauty was an absolutely great movie. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Back_to_the_Future)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Sci-Fi and Comedy, I think more movies should do that. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Titanic)
+->
+_pr(_high)
+$ Isn't that movie super long? It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(American_History_X)
+->
+_pr(_high)
+$ My friends said they liked Edward Norton and Edward Furlong's performance in that movie. My friends told me American History X was an absolutely great movie.  $
+;
+
+user_aware(V_for_Vendetta)
+->
+_pr(_high)
+$ My friends said they liked Natalie Portman and Hugo Weaving's performance in that movie. My friends told me V for Vendetta was an absolutely great movie.  $
+;
+
+user_aware(Pirates_of_the_Caribbean_The_Curse_of_the_Black_Pearl)
+->
+_pr(_high)
+$ I heard Johnny Depp and Geoffrey Rush did well in that movie. I'm pretty sure I heard Pirates of the Caribbean: The Curse of the Black Pearl was a really good movie.  $
+;
+
+user_aware(Goodfellas)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Biography and Crime, I think more movies should do that. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Kill_Bill_Vol_one)
+->
+_pr(_high)
+$ My friends said they liked Uma Thurman and Lucy Liu's performance in that movie. My friends told me Kill Bill: Vol. one was an absolutely great movie.  $
+;
+
+user_aware(Terminator_two_Judgment_Day)
+->
+_pr(_high)
+$ I heard Arnold Schwarzenegger and Linda Hamilton did well in that movie. My friends told me Terminator two: Judgment Day was an absolutely great movie.  $
+;
+
+user_aware(The_Usual_Suspects)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Braveheart)
+->
+_pr(_high)
+$ My friends told me Braveheart was an absolutely great movie. Isn't that movie super long?  $
+;
+
+user_aware(Star_Wars_Episode_VI___Return_of_the_Jedi)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(The_Truman_Show)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Sci-Fi and Comedy, I think more movies should do that.  $
+;
+
+user_aware(Reservoir_Dogs)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(The_Sixth_Sense)
+->
+_pr(_high)
+$ My friends told me The Sixth Sense was an absolutely great movie. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(One_Flew_Over_the_Cuckoos_Nest)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Eternal_Sunshine_of_the_Spotless_Mind)
+->
+_pr(_high)
+$ I heard Jim Carrey and Kate Winslet did well in that movie. My friends told me Eternal Sunshine of the Spotless Mind was an absolutely great movie.  $
+;
+
+user_aware(Deadpool)
+->
+_pr(_high)
+$ I'm pretty sure I heard Deadpool was a really good movie. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(The_Shining)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Raiders_of_the_Lost_Ark)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Mad_Max_Fury_Road)
+->
+_pr(_high)
+$ I heard Tom Hardy and Charlize Theron did well in that movie. My friends told me Mad Max: Fury Road was an absolutely great movie.  $
+;
+
+user_aware(Joker)
+->
+_pr(_high)
+$ My friends told me Joker was an absolutely great movie. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Jurassic_Park)
+->
+_pr(_high)
+$ It was crazy to see how much money they made compared to their budget. Steven Spielberg is a household name. How many movies have they directed now?!  $
+;
+
+user_aware(Star_Wars_Episode_VII___The_Force_Awakens)
+->
+_pr(_high)
+$ My friends said they liked Harrison Ford and Mark Hamill's performance in that movie. I'm pretty sure I heard Star Wars: Episode VII - The Force Awakens was a really good movie.  $
+;
+
+user_aware(Good_Will_Hunting)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Gone_Girl)
+->
+_pr(_high)
+$ I heard Ben Affleck and Rosamund Pike did well in that movie. My friends told me Gone Girl was an absolutely great movie.  $
+;
+
+user_aware(No_Country_for_Old_Men)
+->
+_pr(_high)
+$ Is that the one with Tommy Lee Jones and Javier Bardem? My friends told me No Country for Old Men was an absolutely great movie.  $
+;
+
+user_aware(A_Beautiful_Mind)
+->
+_pr(_high)
+$ My friends told me A Beautiful Mind was an absolutely great movie. There could be a pretty serious marathon of Ron Howard's movies  $
+;
+
+user_aware(Catch_Me_If_You_Can)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Biography and Crime, I think more movies should do that. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Monsters_Inc)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Slumdog_Millionaire)
+->
+_pr(_high)
+$ I'm pretty sure I heard Slumdog Millionaire was a really good movie. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(The_Terminator)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Alien)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas. I don't know a lot about movies in that time period.  $
+;
+
+user_aware(Die_Hard)
+->
+_pr(_high)
+$ My friends told me Die Hard was an absolutely great movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Snatch)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Gravity)
+->
+_pr(_high)
+$ I think Sandra Bullock and George Clooney were in that, right? I'm pretty sure I heard Gravity was a really good movie.  $
+;
+
+user_aware(Requiem_for_a_Dream)
+->
+_pr(_high)
+$ My friends said they liked Ellen Burstyn and Jared Leto's performance in that movie. My friends told me Requiem for a Dream was an absolutely great movie.  $
+;
+
+user_aware(The_Hobbit_An_Unexpected_Journey)
+->
+_pr(_high)
+$ My friend said they regretted drinking so much water before watching it haha. It's so long.  $
+;
+
+user_aware(Harry_Potter_and_the_Deathly_Hallows_Part_two)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(The_Martian)
+->
+_pr(_high)
+$ I'm pretty sure I heard The Martian was a really good movie. There could be a pretty serious marathon of Ridley Scott's movies  $
+;
+
+user_aware(A_Clockwork_Orange)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Sin_City)
+->
+_pr(_high)
+$ I heard Jessica Alba and Devon Aoki did well in that movie. I'm pretty sure I heard Sin City was a really good movie.  $
+;
+
+user_aware(Donnie_Darko)
+->
+_pr(_high)
+$ Is that the one with Jake Gyllenhaal and Holmes Osborne? I'm pretty sure I heard Donnie Darko was a really good movie.  $
+;
+
+user_aware(three_hundred)
+->
+_pr(_high)
+$ My friends said they liked Gerard Butler and Lena Headey's performance in that movie. I'm pretty sure I heard three hundred was a really good movie.  $
+;
+
+user_aware(Scarface)
+->
+_pr(_high)
+$ Isn't that movie super long? Brian De Palma is a household name. How many movies have they directed now?!  $
+;
+
+user_aware(The_Big_Lebowski)
+->
+_pr(_high)
+$ Is that the one with Jeff Bridges and John Goodman? My friends told me The Big Lebowski was an absolutely great movie.  $
+;
+
+user_aware(Star_Wars_Episode_I___The_Phantom_Menace)
+->
+_pr(_high)
+$ I think Liam Neeson and Ewan McGregor were in that, right? Star Wars: Episode I - The Phantom Menace is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(The_Pianist)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Gran_Torino)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Clint Eastwood is a household name. How many movies have they directed now?!  $
+;
+
+user_aware(The_Hangover)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Taxi_Driver)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Star_Wars_Episode_III___Revenge_of_the_Sith)
+->
+_pr(_high)
+$ Is that the one with Ewan McGregor and Natalie Portman? Everybody who has mentioned Star Wars: Episode III - Revenge of the Sith to me said they liked it.  $
+;
+
+user_aware(Whiplash)
+->
+_pr(_high)
+$ My friends told me Whiplash was an absolutely great movie. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(The_Grand_Budapest_Hotel)
+->
+_pr(_high)
+$ My friends told me The Grand Budapest Hotel was an absolutely great movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Black_Swan)
+->
+_pr(_high)
+$ I'm pretty sure I heard Black Swan was a really good movie. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(The_Revenant)
+->
+_pr(_high)
+$ I heard Leonardo DiCaprio and Tom Hardy did well in that movie. I'm pretty sure I heard The Revenant was a really good movie.  $
+;
+
+user_aware(Man_of_Steel)
+->
+_pr(_high)
+$ I heard Henry Cavill and Amy Adams did well in that movie. I've heard that Man of Steel is pretty good.  $
+;
+
+user_aware(Blade_Runner)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas. There could be a pretty serious marathon of Ridley Scott's movies  $
+;
+
+user_aware(Indiana_Jones_and_the_Last_Crusade)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. Steven Spielberg is a household name. How many movies have they directed now?!  $
+;
+
+user_aware(Spider_Man)
+->
+_pr(_high)
+$ I think Tobey Maguire and Willem Dafoe were in that, right? Everybody who has mentioned Spider-Man to me said they liked it.  $
+;
+
+user_aware(I_Am_Legend)
+->
+_pr(_high)
+$ I think Will Smith and Alice Braga were in that, right? Everybody who has mentioned I Am Legend to me said they liked it.  $
+;
+
+user_aware(twelve_Angry_Men)
+->
+_pr(_high)
+$ Movie visuals are so much better now, but in a way, older movies are just as powerful. Sidney Lumet is a household name. How many movies have they directed now?!  $
+;
+
+user_aware(Kill_Bill_Vol_two)
+->
+_pr(_high)
+$ My friends said they liked Vivica A. Fox and Ambrosia Kelley's performance in that movie. I'm pretty sure I heard Kill Bill: Vol. two was a really good movie.  $
+;
+
+user_aware(The_Imitation_Game)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Full_Metal_Jacket)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(How_to_Train_Your_Dragon)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Silver_Linings_Playbook)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(X_Men_Days_of_Future_Past)
+->
+_pr(_high)
+$ I'm pretty sure I heard X-Men: Days of Future Past was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Pirates_of_the_Caribbean_Dead_Mans_Chest)
+->
+_pr(_high)
+$ I think Johnny Depp and Orlando Bloom were in that, right? Everybody who has mentioned "Pirates of the Caribbean: Dead Man's Chest" to me said they liked it.  $
+;
+
+user_aware(Aliens)
+->
+_pr(_high)
+$ My friends said they liked Sigourney Weaver and Carrie Henn's performance in that movie. My friends told me Aliens was an absolutely great movie.  $
+;
+
+user_aware(X_First_Class)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(District_nine)
+->
+_pr(_high)
+$ Is that the one with Sharlto Copley and Jason Cope? I'm pretty sure I heard District nine was a really good movie.  $
+;
+
+user_aware(The_Kings_Speech)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Logan)
+->
+_pr(_high)
+$ Is that the one with Hugh Jackman and Patrick Stewart? My friends told me Logan was an absolutely great movie.  $
+;
+
+user_aware(Star_Wars_Episode_II___Attack_of_the_Clones)
+->
+_pr(_high)
+$ I heard Ewan McGregor and Natalie Portman did well in that movie. Star Wars: Episode II - Attack of the Clones is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Harry_Potter_and_the_Sorcerers_Stone)
+->
+_pr(_high)
+$ I heard Richard Harris and Maggie Smith did well in that movie. I'm pretty sure I heard "Harry Potter and the Sorcerer's Stone" was a really good movie.  $
+;
+
+user_aware(twelve_Years_a_Slave)
+->
+_pr(_high)
+$ My friends told me twelve Years a Slave was an absolutely great movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Trainspotting)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Million_Dollar_Baby)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Drama and Sport, I think more movies should do that. There could be a pretty serious marathon of Clint Eastwood's movies  $
+;
+
+user_aware(Skyfall)
+->
+_pr(_high)
+$ I heard Daniel Craig and Judi Dench did well in that movie. I'm pretty sure I heard Skyfall was a really good movie.  $
+;
+
+user_aware(Batman_v_Superman_Dawn_of_Justice)
+->
+_pr(_high)
+$ I heard Ben Affleck and Henry Cavill did well in that movie. Batman v Superman: Dawn of Justice is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(The_Social_Network)
+->
+_pr(_high)
+$ I'm pretty sure I heard The Social Network was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(The_Hunger_Games_Catching_Fire)
+->
+_pr(_high)
+$ Is that the one with Jennifer Lawrence and Liam Hemsworth? Everybody who has mentioned The Hunger Games: Catching Fire to me said they liked it.  $
+;
+
+user_aware(Fargo)
+->
+_pr(_high)
+$ My friends told me Fargo was an absolutely great movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Shrek)
+->
+_pr(_high)
+$ My friends said they liked Mike Myers and Eddie Murphy's performance in that movie. I'm pretty sure I heard Shrek was a really good movie.  $
+;
+
+user_aware(The_Bourne_Ultimatum)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Apocalypse_Now)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas. I haven't seen that one, but I'm pretty sure my parents saw it!  $
+;
+
+user_aware(The_Hobbit_The_Desolation_of_Smaug)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(World_War_Z)
+->
+_pr(_high)
+$ I think Brad Pitt and Mireille Enos were in that, right? I've heard that World War Z is pretty good.  $
+;
+
+user_aware(Transformers)
+->
+_pr(_high)
+$ Is that the one with Shia LaBeouf and Megan Fox? I've heard that Transformers is pretty good.  $
+;
+
+user_aware(two_thousand_and_one_A_Space_Odyssey)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas. I haven't seen that one, but I'm pretty sure my parents saw it!  $
+;
+
+user_aware(Psycho)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Suicide_Squad)
+->
+_pr(_high)
+$ Is that the one with Will Smith and Jaime FitzSimons? Suicide Squad is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Edge_of_Tomorrow)
+->
+_pr(_high)
+$ I'm pretty sure I heard Edge of Tomorrow was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Pirates_of_the_Caribbean_At_Worlds_End)
+->
+_pr(_high)
+$ Everybody who has mentioned "Pirates of the Caribbean: At World's End" to me said they liked it. Isn't that movie super long?  $
+;
+
+user_aware(Now_You_See_Me)
+->
+_pr(_high)
+$ My friends said they liked Jesse Eisenberg and Mark Ruffalo's performance in that movie. Everybody who has mentioned Now You See Me to me said they liked it.  $
+;
+
+user_aware(Prisoners)
+->
+_pr(_high)
+$ My friends told me Prisoners was an absolutely great movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Kingsman_The_Secret_Service)
+->
+_pr(_high)
+$ I'm pretty sure I heard Kingsman: The Secret Service was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(The_Curious_Case_of_Benjamin_Button)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. My friend said they regretted drinking so much water before watching it haha. It's so long.  $
+;
+
+user_aware(Arrival)
+->
+_pr(_high)
+$ I think Amy Adams and Jeremy Renner were in that, right? I'm pretty sure I heard Arrival was a really good movie.  $
+;
+
+user_aware(Sherlock_Holmes)
+->
+_pr(_high)
+$ I'm pretty sure I heard Sherlock Holmes was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Star_Trek)
+->
+_pr(_high)
+$ Is that the one with Chris Pine and Zachary Quinto? I'm pretty sure I heard Star Trek was a really good movie.  $
+;
+
+user_aware(Casino_Royale)
+->
+_pr(_high)
+$ Is that the one with Daniel Craig and Eva Green? I'm pretty sure I heard Casino Royale was a really good movie.  $
+;
+
+user_aware(Jurassic_World)
+->
+_pr(_high)
+$ I've heard that Jurassic World is pretty good. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Groundhog_Day)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Fantasy and Comedy, I think more movies should do that. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Twelve_Monkeys)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Birdman_or_The_Unexpected_Virtue_of_Ignorance)
+->
+_pr(_high)
+$ My friends said they liked Michael Keaton and Emma Stone's performance in that movie. I'm pretty sure I heard Birdman or (The Unexpected Virtue of Ignorance) was a really good movie.  $
+;
+
+user_aware(Argo)
+->
+_pr(_high)
+$ I'm pretty sure I heard Argo was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Heat)
+->
+_pr(_high)
+$ My friends told me Heat was an absolutely great movie. Isn't that movie super long?  $
+;
+
+user_aware(Ted)
+->
+_pr(_high)
+$ I've heard that Ted is pretty good. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(X_Men)
+->
+_pr(_high)
+$ I think Hugh Jackman and Patrick Stewart were in that, right? Everybody who has mentioned X-Men to me said they liked it.  $
+;
+
+user_aware(Into_the_Wild)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Adventure and Biography, I think more movies should do that. You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Prometheus)
+->
+_pr(_high)
+$ I've heard that Prometheus is pretty good. Ridley Scott is a household name. How many movies have they directed now?!  $
+;
+
+user_aware(Taken)
+->
+_pr(_high)
+$ My friends said they liked Liam Neeson and Maggie Grace's performance in that movie. I'm pretty sure I heard Taken was a really good movie.  $
+;
+
+user_aware(The_Amazing_Spider_Man)
+->
+_pr(_high)
+$ I heard Andrew Garfield and Emma Stone did well in that movie. I've heard that The Amazing Spider-Man is pretty good.  $
+;
+
+user_aware(Star_Wars_Episode_VIII___The_Last_Jedi)
+->
+_pr(_high)
+$ I heard Mark Hamill and Carrie Fisher did well in that movie. I've heard that Star Wars: Episode VIII - The Last Jedi is pretty good.  $
+;
+
+user_aware(Rogue_One)
+->
+_pr(_high)
+$ My friends said they liked Felicity Jones and Diego Luna's performance in that movie. I'm pretty sure I heard Rogue One was a really good movie.  $
+;
+
+user_aware(Harry_Potter_and_the_Chamber_of_Secrets)
+->
+_pr(_high)
+$ I heard Daniel Radcliffe and Rupert Grint did well in that movie. Everybody who has mentioned Harry Potter and the Chamber of Secrets to me said they liked it.  $
+;
+
+user_aware(Wonder_Woman)
+->
+_pr(_high)
+$ My friends said they liked Gal Gadot and Chris Pine's performance in that movie. Everybody who has mentioned Wonder Woman to me said they liked it.  $
+;
+
+user_aware(Jaws)
+->
+_pr(_high)
+$ It was crazy to see how much money they made compared to their budget. I haven't seen that one, but I'm pretty sure my parents saw it!  $
+;
+
+user_aware(Harry_Potter_and_the_Prisoner_of_Azkaban)
+->
+_pr(_high)
+$ Is that the one with Daniel Radcliffe and Richard Griffiths? I'm pretty sure I heard Harry Potter and the Prisoner of Azkaban was a really good movie.  $
+;
+
+user_aware(Spider_Man_two)
+->
+_pr(_high)
+$ My friends said they liked Tobey Maguire and Kirsten Dunst's performance in that movie. Everybody who has mentioned Spider-Man two to me said they liked it.  $
+;
+
+user_aware(Dunkirk)
+->
+_pr(_high)
+$ My friends said they liked Fionn Whitehead and Damien Bonnard's performance in that movie. I'm pretty sure I heard Dunkirk was a really good movie.  $
+;
+
+user_aware(Harry_Potter_and_the_Goblet_of_Fire)
+->
+_pr(_high)
+$ I heard Eric Sykes and Timothy Spall did well in that movie. I'm pretty sure I heard Harry Potter and the Goblet of Fire was a really good movie.  $
+;
+
+user_aware(Looper)
+->
+_pr(_high)
+$ I heard Joseph Gordon-Levitt and Bruce Willis did well in that movie. Everybody who has mentioned Looper to me said they liked it.  $
+;
+
+user_aware(Lock_Stock_and_Two_Smoking_Barrels)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(LA_Confidential)
+->
+_pr(_high)
+$ My friends told me L.A. Confidential was an absolutely great movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(John_Wick)
+->
+_pr(_high)
+$ My friends said they liked Keanu Reeves and Michael Nyqvist's performance in that movie. Everybody who has mentioned John Wick to me said they liked it.  $
+;
+
+user_aware(Independence_Day)
+->
+_pr(_high)
+$ I've heard that Independence Day is pretty good. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Limitless)
+->
+_pr(_high)
+$ I heard Bradley Cooper and Robert De Niro did well in that movie. Everybody who has mentioned Limitless to me said they liked it.  $
+;
+
+user_aware(Kick_Ass)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Superbad)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Zombieland)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Fantasy and Comedy, I think more movies should do that. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Cast_Away)
+->
+_pr(_high)
+$ I think Paul Sanchez and Lari White were in that, right? I'm pretty sure I heard Cast Away was a really good movie.  $
+;
+
+user_aware(Casablanca)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas. Movie visuals are so much better now, but in a way, older movies are just as powerful.  $
+;
+
+user_aware(The_Notebook)
+->
+_pr(_high)
+$ I think Tim Ivey and Gena Rowlands were in that, right? I'm pretty sure I heard The Notebook was a really good movie.  $
+;
+
+user_aware(Once_Upon_a_Time_in_Hollywood)
+->
+_pr(_high)
+$ I heard Leonardo DiCaprio and Brad Pitt did well in that movie. I'm pretty sure I heard Once Upon a Time... in Hollywood was a really good movie.  $
+;
+
+user_aware(Men_in_Black)
+->
+_pr(_high)
+$ I think Tommy Lee Jones and Will Smith were in that, right? Everybody who has mentioned Men in Black to me said they liked it.  $
+;
+
+user_aware(Rocky)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Drama and Sport, I think more movies should do that. You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(The_Matrix_Reloaded)
+->
+_pr(_high)
+$ I heard Ray Anthony and Christine Anu did well in that movie. Everybody who has mentioned The Matrix Reloaded to me said they liked it.  $
+;
+
+user_aware(Oceans_Eleven)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. There could be a pretty serious marathon of Steven Soderbergh's movies  $
+;
+
+user_aware(Xtwo)
+->
+_pr(_high)
+$ My friends said they liked Patrick Stewart and Hugh Jackman's performance in that movie. Everybody who has mentioned Xtwo to me said they liked it.  $
+;
+
+user_aware(There_Will_Be_Blood)
+->
+_pr(_high)
+$ I heard Daniel Day-Lewis and Martin Stringer did well in that movie. My friends told me There Will Be Blood was an absolutely great movie.  $
+;
+
+user_aware(Shaun_of_the_Dead)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Horror and Comedy, I think more movies should do that. You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(twenty_one_Jump_Street)
+->
+_pr(_high)
+$ Is that the one with Jonah Hill and Channing Tatum? Everybody who has mentioned twenty one Jump Street to me said they liked it.  $
+;
+
+user_aware(The_Bourne_Identity)
+->
+_pr(_high)
+$ I'm pretty sure I heard The Bourne Identity was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(The_Hateful_Eight)
+->
+_pr(_high)
+$ I'm pretty sure I heard The Hateful Eight was a really good movie. Isn't that movie super long?  $
+;
+
+user_aware(Minority_Report)
+->
+_pr(_high)
+$ I'm pretty sure I heard Minority Report was a really good movie. Steven Spielberg is a household name. How many movies have they directed now?!  $
+;
+
+user_aware(Harry_Potter_and_the_Order_of_the_Phoenix)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Family and Action, I think more movies should do that.  $
+;
+
+user_aware(Monty_Python_and_the_Holy_Grail)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Fantasy and Comedy, I think more movies should do that. You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Despicable_Me)
+->
+_pr(_high)
+$ I'm pretty sure I heard Despicable Me was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Watchmen)
+->
+_pr(_high)
+$ Is that the one with Malin Akerman and Billy Crudup? I'm pretty sure I heard Watchmen was a really good movie.  $
+;
+
+user_aware(I_Robot)
+->
+_pr(_high)
+$ I think Will Smith and Bridget Moynahan were in that, right? Everybody who has mentioned I, Robot to me said they liked it.  $
+;
+
+user_aware(Rise_of_the_Planet_of_the_Apes)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Blood_Diamond)
+->
+_pr(_high)
+$ I'm pretty sure I heard Blood Diamond was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Spider_Man_three)
+->
+_pr(_high)
+$ I think Tobey Maguire and Kirsten Dunst were in that, right? Spider-Man three is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(La_La_Land)
+->
+_pr(_high)
+$ I'm pretty sure I heard La La Land was a really good movie. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Juno)
+->
+_pr(_high)
+$ Everybody who has mentioned Juno to me said they liked it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Troy)
+->
+_pr(_high)
+$ My friends said they liked Julian Glover and Brian Cox's performance in that movie. Everybody who has mentioned Troy to me said they liked it.  $
+;
+
+user_aware(Oblivion)
+->
+_pr(_high)
+$ My friends said they liked Tom Cruise and Morgan Freeman's performance in that movie. I've heard that Oblivion is pretty good.  $
+;
+
+user_aware(Source_Code)
+->
+_pr(_high)
+$ I heard Jake Gyllenhaal and Michelle Monaghan did well in that movie. Everybody who has mentioned Source Code to me said they liked it.  $
+;
+
+user_aware(X_Men_The_Last_Stand)
+->
+_pr(_high)
+$ My friends said they liked Hugh Jackman and Halle Berry's performance in that movie. I've heard that X-Men: The Last Stand is pretty good.  $
+;
+
+user_aware(American_Psycho)
+->
+_pr(_high)
+$ Is that the one with Christian Bale and Justin Theroux? I'm pretty sure I heard American Psycho was a really good movie.  $
+;
+
+user_aware(Pirates_of_the_Caribbean_On_Stranger_Tides)
+->
+_pr(_high)
+$ I heard Johnny Depp and Penélope Cruz did well in that movie. I've heard that Pirates of the Caribbean: On Stranger Tides is pretty good.  $
+;
+
+user_aware(Get_Out)
+->
+_pr(_high)
+$ I'm pretty sure I heard Get Out was a really good movie. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Back_to_the_Future_Part_II)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Sci-Fi and Comedy, I think more movies should do that. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Rain_Man)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(five_hundred_Days_of_Summer)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(The_Hobbit_The_Battle_of_the_Five_Armies)
+->
+_pr(_high)
+$ My friends said they liked Ian McKellen and Martin Freeman's performance in that movie. Everybody who has mentioned The Hobbit: The Battle of the Five Armies to me said they liked it.  $
+;
+
+user_aware(Harry_Potter_and_the_Deathly_Hallows_Part_one)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Crazy_Stupid_Love)
+->
+_pr(_high)
+$ My friends said they liked Steve Carell and Ryan Gosling's performance in that movie. Everybody who has mentioned Crazy, Stupid, Love. to me said they liked it.  $
+;
+
+user_aware(Ex_Machina)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Deadpool_two)
+->
+_pr(_high)
+$ I heard Ryan Reynolds and Josh Brolin did well in that movie. I'm pretty sure I heard Deadpool two was a really good movie.  $
+;
+
+user_aware(Pacific_Rim)
+->
+_pr(_high)
+$ I heard Charlie Hunnam and Diego Klattenhoff did well in that movie. I've heard that Pacific Rim is pretty good.  $
+;
+
+user_aware(X_Men_Origins_Wolverine)
+->
+_pr(_high)
+$ I think Hugh Jackman and Liev Schreiber were in that, right? I've heard that X-Men Origins: Wolverine is pretty good.  $
+;
+
+user_aware(Star_Trek_Into_Darkness)
+->
+_pr(_high)
+$ I heard Chris Pine and Zachary Quinto did well in that movie. I'm pretty sure I heard Star Trek Into Darkness was a really good movie.  $
+;
+
+user_aware(Harry_Potter_and_the_Half_Blood_Prince)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Family and Action, I think more movies should do that.  $
+;
+
+user_aware(Children_of_Men)
+->
+_pr(_high)
+$ Is that the one with Juan Gabriel Yacuzzi and Mishal Husain? I'm pretty sure I heard Children of Men was a really good movie.  $
+;
+
+user_aware(The_Hangover_Part_II)
+->
+_pr(_high)
+$ I heard Bradley Cooper and Ed Helms did well in that movie. The Hangover Part II is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Hot_Fuzz)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Casino)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. My friend said they regretted drinking so much water before watching it haha. It's so long.  $
+;
+
+user_aware(The_Perks_of_Being_a_Wallflower)
+->
+_pr(_high)
+$ I'm pretty sure I heard The Perks of Being a Wallflower was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Home_Alone)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Mission_Impossible___Ghost_Protocol)
+->
+_pr(_high)
+$ My friends said they liked Tom Cruise and Paula Patton's performance in that movie. Everybody who has mentioned Mission: Impossible - Ghost Protocol to me said they liked it.  $
+;
+
+user_aware(Nightcrawler)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(The_Butterfly_Effect)
+->
+_pr(_high)
+$ I thought critics were a little harsh on that movie, my friends thought it was great. $
+;
+
+user_aware(Zodiac)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(It)
+->
+_pr(_high)
+$ Everybody who has mentioned It to me said they liked it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Mr__Mrs_Smith)
+->
+_pr(_high)
+$ I think Brad Pitt and Angelina Jolie were in that, right? Mr. & Mrs. Smith is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Dr_Strangelove_or_How_I_Learned_to_Stop_Worrying_and_Love_the_Bomb)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Blade_Runner_two_thousand_and_forty_nine)
+->
+_pr(_high)
+$ I heard Ryan Gosling and Dave Bautista did well in that movie. I'm pretty sure I heard Blade Runner two thousand and forty nine was a really good movie.  $
+;
+
+user_aware(American_Hustle)
+->
+_pr(_high)
+$ Is that the one with Christian Bale and Bradley Cooper? Everybody who has mentioned American Hustle to me said they liked it.  $
+;
+
+user_aware(The_Matrix_Revolutions)
+->
+_pr(_high)
+$ I think Mary Alice and Tanveer K. Atwal were in that, right? I've heard that The Matrix Revolutions is pretty good.  $
+;
+
+user_aware(Indiana_Jones_and_the_Temple_of_Doom)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(The_Pursuit_of_Happyness)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Hancock)
+->
+_pr(_high)
+$ My friends said they liked Will Smith and Charlize Theron's performance in that movie. Hancock is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Edward_Scissorhands)
+->
+_pr(_high)
+$ I'm pretty sure I heard Edward Scissorhands was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Lucy)
+->
+_pr(_high)
+$ Lucy is definitely not the most popular, but I try to keep an open mind about movies. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Bohemian_Rhapsody)
+->
+_pr(_high)
+$ I thought critics were a little harsh on that movie, my friends thought it was great.It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Rear_Window)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Little_Miss_Sunshine)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Ice_Age)
+->
+_pr(_high)
+$ I heard Ray Romano and John Leguizamo did well in that movie. Everybody who has mentioned Ice Age to me said they liked it.  $
+;
+
+user_aware(The_Conjuring)
+->
+_pr(_high)
+$ Everybody who has mentioned The Conjuring to me said they liked it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Dallas_Buyers_Club)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(American_Sniper)
+->
+_pr(_high)
+$ Everybody who has mentioned American Sniper to me said they liked it. There could be a pretty serious marathon of Clint Eastwood's movies  $
+;
+
+user_aware(Warrior)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Sport and Action, I think more movies should do that. You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(The_Bourne_Supremacy)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(The_Fifth_Element)
+->
+_pr(_high)
+$ I'm pretty sure I heard The Fifth Element was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Rush)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Ron Howard is a household name. How many movies have they directed now?!  $
+;
+
+user_aware(Baby_Driver)
+->
+_pr(_high)
+$ I think Ansel Elgort and Jon Bernthal were in that, right? I'm pretty sure I heard Baby Driver was a really good movie.  $
+;
+
+user_aware(The_Wolverine)
+->
+_pr(_high)
+$ Is that the one with Hugh Jackman and Tao Okamoto? I've heard that The Wolverine is pretty good.  $
+;
+
+user_aware(The_Help)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Divergent)
+->
+_pr(_high)
+$ Is that the one with Shailene Woodley and Theo James? I've heard that Divergent is pretty good.  $
+;
+
+user_aware(Hacksaw_Ridge)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Indiana_Jones_and_the_Kingdom_of_the_Crystal_Skull)
+->
+_pr(_high)
+$ Indiana Jones and the Kingdom of the Crystal Skull is definitely not the most popular, but I try to keep an open mind about movies. There could be a pretty serious marathon of Steven Spielberg's movies  $
+;
+
+user_aware(Charlie_and_the_Chocolate_Factory)
+->
+_pr(_high)
+$ Is that the one with Johnny Depp and Freddie Highmore? I've heard that Charlie and the Chocolate Factory is pretty good.  $
+;
+
+user_aware(Horrible_Bosses)
+->
+_pr(_high)
+$ I think Jason Bateman and Steve Wiebe were in that, right? I've heard that Horrible Bosses is pretty good.  $
+;
+
+user_aware(Love_Actually)
+->
+_pr(_high)
+$ My friends said they liked Bill Nighy and Gregor Fisher's performance in that movie. I'm pretty sure I heard Love Actually was a really good movie.  $
+;
+
+user_aware(Fury)
+->
+_pr(_high)
+$ I'm pretty sure I heard Fury was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Crash)
+->
+_pr(_high)
+$ I'm pretty sure I heard Crash was a really good movie. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(The_Hurt_Locker)
+->
+_pr(_high)
+$ I'm pretty sure I heard The Hurt Locker was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Elysium)
+->
+_pr(_high)
+$ Is that the one with Matt Damon and Jodie Foster? I've heard that Elysium is pretty good.  $
+;
+
+user_aware(Sherlock_Holmes_A_Game_of_Shadows)
+->
+_pr(_high)
+$ Is that the one with Robert Downey Jr. and Jude Law? Everybody who has mentioned Sherlock Holmes: A Game of Shadows to me said they liked it.  $
+;
+
+user_aware(Captain_Phillips)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Adventure and Biography, I think more movies should do that. You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(The_Girl_with_the_Dragon_Tattoo)
+->
+_pr(_high)
+$ I'm pretty sure I heard The Girl with the Dragon Tattoo was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Three_Billboards_Outside_Ebbing_Missouri)
+->
+_pr(_high)
+$ My friends told me Three Billboards Outside Ebbing, Missouri was an absolutely great movie. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Mystic_River)
+->
+_pr(_high)
+$ I'm pretty sure I heard Mystic River was a really good movie. Clint Eastwood is a household name. How many movies have they directed now?!  $
+;
+
+user_aware(Dead_Poets_Society)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Shrek_two)
+->
+_pr(_high)
+$ Is that the one with Mike Myers and Eddie Murphy? Everybody who has mentioned Shrek two to me said they liked it.  $
+;
+
+user_aware(Kung_Fu_Panda)
+->
+_pr(_high)
+$ Is that the one with Jack Black and Dustin Hoffman? Everybody who has mentioned Kung Fu Panda to me said they liked it.  $
+;
+
+user_aware(The_Amazing_Spider_Man_two)
+->
+_pr(_high)
+$ I heard Andrew Garfield and Emma Stone did well in that movie. I've heard that The Amazing Spider-Man two is pretty good.  $
+;
+
+user_aware(The_Maze_Runner)
+->
+_pr(_high)
+$ I've heard that The Maze Runner is pretty good. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(The_Day_After_Tomorrow)
+->
+_pr(_high)
+$ Is that the one with Dennis Quaid and Jake Gyllenhaal? The Day After Tomorrow is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Big_Fish)
+->
+_pr(_high)
+$ I'm pretty sure I heard Big Fish was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Split)
+->
+_pr(_high)
+$ Everybody who has mentioned Split to me said they liked it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Spotlight)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Biography and Crime, I think more movies should do that. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Dawn_of_the_Planet_of_the_Apes)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(The_Hunger_Games_Mockingjay___Part_one)
+->
+_pr(_high)
+$ My friends said they liked Jennifer Lawrence and Josh Hutcherson's performance in that movie. I've heard that The Hunger Games: Mockingjay - Part one is pretty good.  $
+;
+
+user_aware(Lost_in_Translation)
+->
+_pr(_high)
+$ I'm pretty sure I heard Lost in Translation was a really good movie. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Big_Hero_six)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Fantastic_Beasts_and_Where_to_Find_Them)
+->
+_pr(_high)
+$ I think Eddie Redmayne and Sam Redford were in that, right? Everybody who has mentioned Fantastic Beasts and Where to Find Them to me said they liked it.  $
+;
+
+user_aware(Quantum_of_Solace)
+->
+_pr(_high)
+$ I heard Daniel Craig and Olga Kurylenko did well in that movie. I've heard that Quantum of Solace is pretty good.  $
+;
+
+user_aware(Gangs_of_New_York)
+->
+_pr(_high)
+$ Isn't that movie super long? There could be a pretty serious marathon of Martin Scorsese's movies  $
+;
+
+user_aware(The_Terminal)
+->
+_pr(_high)
+$ Everybody who has mentioned The Terminal to me said they liked it. There could be a pretty serious marathon of Steven Spielberg's movies  $
+;
+
+user_aware(Were_the_Millers)
+->
+_pr(_high)
+$ I think Jennifer Aniston and Jason Sudeikis were in that, right? I've heard that "We're the Millers" is pretty good.  $
+;
+
+user_aware(Back_to_the_Future_Part_III)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Sci-Fi and Comedy, I think more movies should do that.  $
+;
+
+user_aware(The_Da_Vinci_Code)
+->
+_pr(_high)
+$ I've heard that The Da Vinci Code is pretty good. There could be a pretty serious marathon of Ron Howard's movies  $
+;
+
+user_aware(The_Last_Samurai)
+->
+_pr(_high)
+$ My friends said they liked Ken Watanabe and Tom Cruise's performance in that movie. I'm pretty sure I heard The Last Samurai was a really good movie.  $
+;
+
+user_aware(A_Quiet_Place)
+->
+_pr(_high)
+$ Everybody who has mentioned A Quiet Place to me said they liked it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(The_Theory_of_Everything)
+->
+_pr(_high)
+$ I'm pretty sure I heard The Theory of Everything was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Armageddon)
+->
+_pr(_high)
+$ My friends said they liked Bruce Willis and Billy Bob Thornton's performance in that movie. I've heard that Armageddon is pretty good.  $
+;
+
+user_aware(Citizen_Kane)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas. You must like the oldies.  $
+;
+
+user_aware(Its_a_Wonderful_Life)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. You must like the oldies.  $
+;
+
+user_aware(The_forty_Year_Old_Virgin)
+->
+_pr(_high)
+$ Is that the one with Steve Carell and Catherine Keener? Everybody who has mentioned The forty Year Old Virgin to me said they liked it.  $
+;
+
+user_aware(The_Princess_Bride)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(X_Men_Apocalypse)
+->
+_pr(_high)
+$ I heard James McAvoy and Michael Fassbender did well in that movie. I've heard that X-Men: Apocalypse is pretty good.  $
+;
+
+user_aware(King_Kong)
+->
+_pr(_high)
+$ Everybody who has mentioned King Kong to me said they liked it. Isn't that movie super long?  $
+;
+
+user_aware(The_Mummy)
+->
+_pr(_high)
+$ My friends said they liked Brendan Fraser and Rachel Weisz's performance in that movie. I've heard that The Mummy is pretty good.  $
+;
+
+user_aware(Live_Free_or_Die_Hard)
+->
+_pr(_high)
+$ I heard Bruce Willis and Timothy Olyphant did well in that movie. Everybody who has mentioned Live Free or Die Hard to me said they liked it.  $
+;
+
+user_aware(American_Gangster)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Biography and Crime, I think more movies should do that. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(In_Bruges)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Training_Day)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Mission_Impossible)
+->
+_pr(_high)
+$ Everybody who has mentioned Mission: Impossible to me said they liked it. Brian De Palma is a household name. How many movies have they directed now?!  $
+;
+
+user_aware(Midnight_in_Paris)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Fantasy and Comedy, I think more movies should do that. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Unbreakable)
+->
+_pr(_high)
+$ I think Bruce Willis and Samuel L. Jackson were in that, right? Everybody who has mentioned Unbreakable to me said they liked it.  $
+;
+
+user_aware(Transformers_Dark_of_the_Moon)
+->
+_pr(_high)
+$ I think Shia LaBeouf and Rosie Huntington-Whiteley were in that, right? Transformers: Dark of the Moon is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Transformers_Revenge_of_the_Fallen)
+->
+_pr(_high)
+$ I heard Shia LaBeouf and Megan Fox did well in that movie. Transformers: Revenge of the Fallen is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(This_Is_the_End)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Knives_Out)
+->
+_pr(_high)
+$ My friends said they liked Daniel Craig and Chris Evans's performance in that movie. I'm pretty sure I heard Knives Out was a really good movie.  $
+;
+
+user_aware(Spectre)
+->
+_pr(_high)
+$ I think Daniel Craig and Christoph Waltz were in that, right? I've heard that Spectre is pretty good.  $
+;
+
+user_aware(Platoon)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Saw)
+->
+_pr(_high)
+$ I'm pretty sure I heard Saw was a really good movie. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Tropic_Thunder)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of War and Comedy, I think more movies should do that.  $
+;
+
+user_aware(Terminator_three_Rise_of_the_Machines)
+->
+_pr(_high)
+$ Is that the one with Arnold Schwarzenegger and Nick Stahl? Terminator three: Rise of the Machines is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Wreck_It_Ralph)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Justice_League)
+->
+_pr(_high)
+$ I think Ben Affleck and Henry Cavill were in that, right? Justice League is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(The_Lost_World_Jurassic_Park)
+->
+_pr(_high)
+$ I've heard that The Lost World: Jurassic Park is pretty good. There could be a pretty serious marathon of Steven Spielberg's movies  $
+;
+
+user_aware(American_Pie)
+->
+_pr(_high)
+$ I've heard that American Pie is pretty good. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(twenty_eight_Days_Later)
+->
+_pr(_high)
+$ I'm pretty sure I heard twenty eight Days Later... was a really good movie. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Scott_Pilgrim_vs_the_World)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Fantasy and Comedy, I think more movies should do that.  $
+;
+
+user_aware(Cloverfield)
+->
+_pr(_high)
+$ I think Lizzy Caplan and Jessica Lucas were in that, right? I've heard that Cloverfield is pretty good.  $
+;
+
+user_aware(Unforgiven)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(The_Cabin_in_the_Woods)
+->
+_pr(_high)
+$ Is that the one with Kristen Connolly and Chris Hemsworth? I've heard that The Cabin in the Woods is pretty good.  $
+;
+
+user_aware(Bruce_Almighty)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Fantasy and Comedy, I think more movies should do that.  $
+;
+
+user_aware(Predator)
+->
+_pr(_high)
+$ I thought critics were a little harsh on that movie, my friends thought it was great.I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Brave)
+->
+_pr(_high)
+$ I think Kelly Macdonald and Billy Connolly were in that, right? Everybody who has mentioned Brave to me said they liked it.  $
+;
+
+user_aware(In_Time)
+->
+_pr(_high)
+$ My friends said they liked Justin Timberlake and Olivia Wilde's performance in that movie. I've heard that In Time is pretty good.  $
+;
+
+user_aware(Despicable_Me_two)
+->
+_pr(_high)
+$ Everybody who has mentioned Despicable Me two to me said they liked it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Furious_six)
+->
+_pr(_high)
+$ I think Vin Diesel and Paul Walker were in that, right? Everybody who has mentioned Furious six to me said they liked it.  $
+;
+
+user_aware(one_thousand_nine_hundred_and_seventeen)
+->
+_pr(_high)
+$ I heard Dean-Charles Chapman and George MacKay did well in that movie. My friends told me one thousand, nine hundred and seventeen was an absolutely great movie.  $
+;
+
+user_aware(ET_the_Extra_Terrestrial)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Horror and Sci-Fi, I think more movies should do that. You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(The_Devil_Wears_Prada)
+->
+_pr(_high)
+$ My friends said they liked Meryl Streep and Anne Hathaway's performance in that movie. I've heard that The Devil Wears Prada is pretty good.  $
+;
+
+user_aware(Amadeus)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Sicario)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(The_Thing)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Life_of_Brian)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(The_Chronicles_of_Narnia_The_Lion_the_Witch_and_the_Wardrobe)
+->
+_pr(_high)
+$ Is that the one with Georgie Henley and Skandar Keynes? I've heard that The Chronicles of Narnia: The Lion, the Witch and the Wardrobe is pretty good.  $
+;
+
+user_aware(Black_Hawk_Down)
+->
+_pr(_high)
+$ I'm pretty sure I heard Black Hawk Down was a really good movie. Ridley Scott is a household name. How many movies have they directed now?!  $
+;
+
+user_aware(Cars)
+->
+_pr(_high)
+$ Is that the one with Owen Wilson and Paul Newman? Everybody who has mentioned Cars to me said they liked it.  $
+;
+
+user_aware(The_Shape_of_Water)
+->
+_pr(_high)
+$ Everybody who has mentioned The Shape of Water to me said they liked it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Die_Hard_With_a_Vengeance)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Room)
+->
+_pr(_high)
+$ My friends told me Room was an absolutely great movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Stand_by_Me)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Wanted)
+->
+_pr(_high)
+$ My friends said they liked James McAvoy and Morgan Freeman's performance in that movie. I've heard that Wanted is pretty good.  $
+;
+
+user_aware(Moneyball)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Drama and Sport, I think more movies should do that. You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(The_Exorcist)
+->
+_pr(_high)
+$ It was crazy to see how much money they made compared to their budget. I haven't seen that one, but I'm pretty sure my parents saw it!  $
+;
+
+user_aware(Ready_Player_One)
+->
+_pr(_high)
+$ Everybody who has mentioned Ready Player One to me said they liked it. Steven Spielberg is a household name. How many movies have they directed now?!  $
+;
+
+user_aware(Fast__Furious_seven)
+->
+_pr(_high)
+$ Is that the one with Vin Diesel and Paul Walker? Everybody who has mentioned Fast & Furious seven to me said they liked it.  $
+;
+
+user_aware(Collateral)
+->
+_pr(_high)
+$ My friends said they liked Tom Cruise and Jamie Foxx's performance in that movie. Everybody who has mentioned Collateral to me said they liked it.  $
+;
+
+user_aware(Vertigo)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(John_Wick_Chapter_two)
+->
+_pr(_high)
+$ I heard Keanu Reeves and Riccardo Scamarcio did well in that movie. Everybody who has mentioned John Wick: Chapter two to me said they liked it.  $
+;
+
+user_aware(Oceans_Twelve)
+->
+_pr(_high)
+$ "Ocean's Twelve" is definitely not the most popular, but I try to keep an open mind about movies. There could be a pretty serious marathon of Steven Soderbergh's movies  $
+;
+
+user_aware(The_Machinist)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(The_Illusionist)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(The_Godfather_Part_III)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Easy_A)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(The_Big_Short)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Comedy and Biography, I think more movies should do that. You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Aquaman)
+->
+_pr(_high)
+$ I think Jason Momoa and Amber Heard were in that, right? I've heard that Aquaman is pretty good.  $
+;
+
+user_aware(The_Breakfast_Club)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Dumb_and_Dumber)
+->
+_pr(_high)
+$ I don't think critics appreciated that movie enough. All my friends loved it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(two_thousand_and_twelve)
+->
+_pr(_high)
+$ I heard John Cusack and Amanda Peet did well in that movie. two thousand and twelve is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Star_Wars_Episode_IX___The_Rise_of_Skywalker)
+->
+_pr(_high)
+$ Is that the one with Carrie Fisher and Mark Hamill? I've heard that Star Wars: Episode IX - The Rise of Skywalker is pretty good.  $
+;
+
+user_aware(Ghostbusters)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Fantasy and Comedy, I think more movies should do that.  $
+;
+
+user_aware(Fast_Five)
+->
+_pr(_high)
+$ Is that the one with Vin Diesel and Paul Walker? Everybody who has mentioned Fast Five to me said they liked it.  $
+;
+
+user_aware(Borat_Cultural_Learnings_of_America_for_Make_Benefit_Glorious_Nation_of_Kazakhstan)
+->
+_pr(_high)
+$ Everybody who has mentioned Borat: Cultural Learnings of America for Make Benefit Glorious Nation of Kazakhstan to me said they liked it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Knocked_Up)
+->
+_pr(_high)
+$ Is that the one with Seth Rogen and Katherine Heigl? I've heard that Knocked Up is pretty good.  $
+;
+
+user_aware(The_Town)
+->
+_pr(_high)
+$ I think Ben Affleck and Rebecca Hall were in that, right? Everybody who has mentioned The Town to me said they liked it.  $
+;
+
+user_aware(Venom)
+->
+_pr(_high)
+$ I thought critics were a little harsh on that movie, my friends thought it was great. $
+;
+
+user_aware(FaceOff)
+->
+_pr(_high)
+$ Everybody who has mentioned Face/Off to me said they liked it. John Woo is a household name. How many movies have they directed now?!  $
+;
+
+user_aware(one_hundred_and_twenty_seven_Hours)
+->
+_pr(_high)
+$ I heard James Franco and Kate Mara did well in that movie. Everybody who has mentioned one hundred and twenty seven Hours to me said they liked it.  $
+;
+
+user_aware(Green_Book)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Comedy and Biography, I think more movies should do that. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(The_Fast_and_the_Furious)
+->
+_pr(_high)
+$ Is that the one with Paul Walker and Vin Diesel? I've heard that The Fast and the Furious is pretty good.  $
+;
+
+user_aware(Passengers)
+->
+_pr(_high)
+$ I heard Jennifer Lawrence and Chris Pratt did well in that movie. I've heard that Passengers is pretty good.  $
+;
+
+user_aware(Cloud_Atlas)
+->
+_pr(_high)
+$ Everybody who has mentioned Cloud Atlas to me said they liked it. Isn't that movie super long?  $
+;
+
+user_aware(twenty_two_Jump_Street)
+->
+_pr(_high)
+$ I think Jonah Hill and Channing Tatum were in that, right? I've heard that twenty two Jump Street is pretty good.  $
+;
+
+user_aware(Terminator_Salvation)
+->
+_pr(_high)
+$ I heard Christian Bale and Sam Worthington did well in that movie. Terminator Salvation is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(The_Mask)
+->
+_pr(_high)
+$ I've heard that The Mask is pretty good. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Sweeney_Todd_The_Demon_Barber_of_Fleet_Street)
+->
+_pr(_high)
+$ My friends said they liked Johnny Depp and Helena Bonham Carter's performance in that movie. Everybody who has mentioned Sweeney Todd: The Demon Barber of Fleet Street to me said they liked it.  $
+;
+
+user_aware(The_Italian_Job)
+->
+_pr(_high)
+$ My friends said they liked Mark Wahlberg and Charlize Theron's performance in that movie. I've heard that The Italian Job is pretty good.  $
+;
+
+user_aware(The_Fault_in_Our_Stars)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Men_in_Black_II)
+->
+_pr(_high)
+$ My friends said they liked Tommy Lee Jones and Will Smith's performance in that movie. Men in Black II is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Maleficent)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Family and Action, I think more movies should do that.  $
+;
+
+user_aware(Spider_Man_Into_the_Spider_Verse)
+->
+_pr(_high)
+$ My friends said they liked Shameik Moore and Jake Johnson's performance in that movie. My friends told me Spider-Man: Into the Spider-Verse was an absolutely great movie.  $
+;
+
+user_aware(Mission_Impossible___Rogue_Nation)
+->
+_pr(_high)
+$ I heard Tom Cruise and Jeremy Renner did well in that movie. Everybody who has mentioned Mission: Impossible - Rogue Nation to me said they liked it.  $
+;
+
+user_aware(Super_eight)
+->
+_pr(_high)
+$ I think Joel Courtney and Jessica Tuck were in that, right? I've heard that Super eight is pretty good.  $
+;
+
+user_aware(Friends_with_Benefits)
+->
+_pr(_high)
+$ I think Justin Timberlake and Mila Kunis were in that, right? Friends with Benefits is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(The_Fighter)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Drama and Sport, I think more movies should do that. You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Batman)
+->
+_pr(_high)
+$ Everybody who has mentioned Batman to me said they liked it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Signs)
+->
+_pr(_high)
+$ I think Mel Gibson and Joaquin Phoenix were in that, right? I've heard that Signs is pretty good.  $
+;
+
+user_aware(Inside_Man)
+->
+_pr(_high)
+$ I'm pretty sure I heard Inside Man was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Boyhood)
+->
+_pr(_high)
+$ I liked it, but I'm not sure I'll ever see it again. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(The_Others)
+->
+_pr(_high)
+$ I'm pretty sure I heard The Others was a really good movie. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Moon)
+->
+_pr(_high)
+$ I'm pretty sure I heard Moon was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Yes_Man)
+->
+_pr(_high)
+$ I think Jim Carrey and Zooey Deschanel were in that, right? I've heard that Yes Man is pretty good.  $
+;
+
+user_aware(Die_Hard_two)
+->
+_pr(_high)
+$ I think Bruce Willis and Bonnie Bedelia were in that, right? Everybody who has mentioned Die Hard two to me said they liked it.  $
+;
+
+user_aware(Men_in_Black_three)
+->
+_pr(_high)
+$ My friends said they liked Will Smith and Tommy Lee Jones's performance in that movie. I've heard that Men in Black three is pretty good.  $
+;
+
+user_aware(Hotel_Rwanda)
+->
+_pr(_high)
+$ My friends told me Hotel Rwanda was an absolutely great movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Wedding_Crashers)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(The_Aviator)
+->
+_pr(_high)
+$ Isn't that movie super long? Martin Scorsese is a household name. How many movies have they directed now?!  $
+;
+
+user_aware(The_Equalizer)
+->
+_pr(_high)
+$ I think Denzel Washington and Marton Csokas were in that, right? Everybody who has mentioned The Equalizer to me said they liked it.  $
+;
+
+user_aware(Mean_Girls)
+->
+_pr(_high)
+$ Is that the one with Lindsay Lohan and Rachel McAdams? I've heard that Mean Girls is pretty good.  $
+;
+
+user_aware(Anchorman_The_Legend_of_Ron_Burgundy)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Mission_Impossible_III)
+->
+_pr(_high)
+$ My friends said they liked Tom Cruise and Philip Seymour Hoffman's performance in that movie. I've heard that Mission: Impossible III is pretty good.  $
+;
+
+user_aware(Man_on_Fire)
+->
+_pr(_high)
+$ I'm pretty sure I heard Man on Fire was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(The_Devils_Advocate)
+->
+_pr(_high)
+$ I heard Keanu Reeves and Al Pacino did well in that movie. Everybody who has mentioned "The Devil's Advocate" to me said they liked it.  $
+;
+
+user_aware(Sleepy_Hollow)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Horror and Fantasy, I think more movies should do that.  $
+;
+
+user_aware(Speed)
+->
+_pr(_high)
+$ Everybody who has mentioned Speed to me said they liked it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(The_Expendables)
+->
+_pr(_high)
+$ I think Sylvester Stallone and Jason Statham were in that, right? The Expendables is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(fifty_First_Dates)
+->
+_pr(_high)
+$ I think Adam Sandler and Drew Barrymore were in that, right? I've heard that fifty First Dates is pretty good.  $
+;
+
+user_aware(Flight)
+->
+_pr(_high)
+$ I think Nadine Velazquez and Denzel Washington were in that, right? Everybody who has mentioned Flight to me said they liked it.  $
+;
+
+user_aware(The_Lego_Movie)
+->
+_pr(_high)
+$ I'm pretty sure I heard The Lego Movie was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Due_Date)
+->
+_pr(_high)
+$ Is that the one with Robert Downey Jr. and Zach Galifianakis? Due Date is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(A_Star_Is_Born)
+->
+_pr(_high)
+$ I'm pretty sure I heard A Star Is Born was a really good movie. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Brokeback_Mountain)
+->
+_pr(_high)
+$ I'm pretty sure I heard Brokeback Mountain was a really good movie. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Oceans_Thirteen)
+->
+_pr(_high)
+$ I've heard that "Ocean's Thirteen" is pretty good. There could be a pretty serious marathon of Steven Soderbergh's movies  $
+;
+
+user_aware(Up_in_the_Air)
+->
+_pr(_high)
+$ I think George Clooney and Vera Farmiga were in that, right? Everybody who has mentioned Up in the Air to me said they liked it.  $
+;
+
+user_aware(Monsters_University)
+->
+_pr(_high)
+$ I think Billy Crystal and John Goodman were in that, right? Everybody who has mentioned Monsters University to me said they liked it.  $
+;
+
+user_aware(Ferris_Buellers_Day_Off)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Raging_Bull)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Drama and Sport, I think more movies should do that. You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Mulholland_Dr)
+->
+_pr(_high)
+$ My friends said they liked Naomi Watts and Jeanne Bates's performance in that movie. I'm pretty sure I heard Mulholland Dr. was a really good movie.  $
+;
+
+user_aware(fiftyfifty)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Moonrise_Kingdom)
+->
+_pr(_high)
+$ I'm pretty sure I heard Moonrise Kingdom was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Pineapple_Express)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Jackie_Brown)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Tron)
+->
+_pr(_high)
+$ I heard Jeff Bridges and Garrett Hedlund did well in that movie. I've heard that Tron is pretty good.  $
+;
+
+user_aware(Jumanji_Welcome_to_the_Jungle)
+->
+_pr(_high)
+$ I've heard that Jumanji: Welcome to the Jungle is pretty good. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Mission_Impossible_II)
+->
+_pr(_high)
+$ Mission: Impossible II is definitely not the most popular, but I try to keep an open mind about movies. John Woo is a household name. How many movies have they directed now?!  $
+;
+
+user_aware(Equilibrium)
+->
+_pr(_high)
+$ I thought critics were a little harsh on that movie, my friends thought it was great. $
+;
+
+user_aware(Fantastic_Four)
+->
+_pr(_high)
+$ Is that the one with Ioan Gruffudd and Jessica Alba? Fantastic Four is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Snowpiercer)
+->
+_pr(_high)
+$ I think Chris Evans and Kang-ho Song were in that, right? Everybody who has mentioned Snowpiercer to me said they liked it.  $
+;
+
+user_aware(The_Rock)
+->
+_pr(_high)
+$ Is that the one with Sean Connery and Nicolas Cage? Everybody who has mentioned The Rock to me said they liked it.  $
+;
+
+user_aware(Night_at_the_Museum)
+->
+_pr(_high)
+$ I heard Ben Stiller and Carla Gugino did well in that movie. Night at the Museum is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Pearl_Harbor)
+->
+_pr(_high)
+$ Pearl Harbor is definitely not the most popular, but I try to keep an open mind about movies. Isn't that movie super long?  $
+;
+
+user_aware(Meet_the_Parents)
+->
+_pr(_high)
+$ I think Robert De Niro and Ben Stiller were in that, right? I've heard that Meet the Parents is pretty good.  $
+;
+
+user_aware(Being_John_Malkovich)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Fantasy and Comedy, I think more movies should do that. You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(The_Simpsons_Movie)
+->
+_pr(_high)
+$ My friends said they liked Dan Castellaneta and Julie Kavner's performance in that movie. Everybody who has mentioned The Simpsons Movie to me said they liked it.  $
+;
+
+user_aware(The_Irishman)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Biography and Crime, I think more movies should do that. Isn't that movie super long?  $
+;
+
+user_aware(The_Deer_Hunter)
+->
+_pr(_high)
+$ My friend said they regretted drinking so much water before watching it haha. It's so long. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Burn_After_Reading)
+->
+_pr(_high)
+$ I heard George Clooney and Frances McDormand did well in that movie. I've heard that Burn After Reading is pretty good.  $
+;
+
+user_aware(Hellboy)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Horror and Fantasy, I think more movies should do that.  $
+;
+
+user_aware(Once_Upon_a_Time_in_America)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. Isn't that movie super long?  $
+;
+
+user_aware(Jack_Reacher)
+->
+_pr(_high)
+$ Is that the one with Tom Cruise and Rosamund Pike? I've heard that Jack Reacher is pretty good.  $
+;
+
+user_aware(The_Interview)
+->
+_pr(_high)
+$ Is that the one with James Franco and Seth Rogen? The Interview is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Click)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Fantasy and Comedy, I think more movies should do that.  $
+;
+
+user_aware(Hugo)
+->
+_pr(_high)
+$ Everybody who has mentioned Hugo to me said they liked it. There could be a pretty serious marathon of Martin Scorsese's movies  $
+;
+
+user_aware(Constantine)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Horror and Fantasy, I think more movies should do that.  $
+;
+
+user_aware(National_Treasure)
+->
+_pr(_high)
+$ I've heard that National Treasure is pretty good. I don't think critics appreciated that movie enough. All my friends loved it.  $
+;
+
+user_aware(Jumanji)
+->
+_pr(_high)
+$ I've heard that Jumanji is pretty good. I don't think critics appreciated that movie enough. All my friends loved it.  $
+;
+
+user_aware(How_to_Train_Your_Dragon_two)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(The_Island)
+->
+_pr(_high)
+$ My friends said they liked Ewan McGregor and Scarlett Johansson's performance in that movie. I've heard that The Island is pretty good.  $
+;
+
+user_aware(Lucky_Number_Slevin)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(The_Mummy_Returns)
+->
+_pr(_high)
+$ Is that the one with Brendan Fraser and Rachel Weisz? The Mummy Returns is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Total_Recall)
+->
+_pr(_high)
+$ Is that the one with Colin Farrell and Kate Beckinsale? Total Recall is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Transformers_Age_of_Extinction)
+->
+_pr(_high)
+$ Is that the one with Mark Wahlberg and Stanley Tucci? Transformers: Age of Extinction is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Eyes_Wide_Shut)
+->
+_pr(_high)
+$ My friends said they liked Tom Cruise and Nicole Kidman's performance in that movie. Everybody who has mentioned Eyes Wide Shut to me said they liked it.  $
+;
+
+user_aware(Fifty_Shades_of_Grey)
+->
+_pr(_high)
+$ Fifty Shades of Grey is definitely not the most popular, but I try to keep an open mind about movies. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Real_Steel)
+->
+_pr(_high)
+$ I heard Hugh Jackman and Dakota Goyo did well in that movie. Everybody who has mentioned Real Steel to me said they liked it.  $
+;
+
+user_aware(Hitch)
+->
+_pr(_high)
+$ My friends said they liked Will Smith and Eva Mendes's performance in that movie. I've heard that Hitch is pretty good.  $
+;
+
+user_aware(North_by_Northwest)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. You must like the oldies.  $
+;
+
+user_aware(Home_Alone_two_Lost_in_New_York)
+->
+_pr(_high)
+$ I heard Macaulay Culkin and Joe Pesci did well in that movie. I've heard that Home Alone two: Lost in New York is pretty good.  $
+;
+
+user_aware(Salt)
+->
+_pr(_high)
+$ I think Angelina Jolie and Liev Schreiber were in that, right? Salt is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Jurassic_Park_III)
+->
+_pr(_high)
+$ I heard Sam Neill and William H. Macy did well in that movie. Jurassic Park III is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(ten_Things_I_Hate_About_You)
+->
+_pr(_high)
+$ I think Heath Ledger and Julia Stiles were in that, right? Everybody who has mentioned ten Things I Hate About You to me said they liked it.  $
+;
+
+user_aware(Lord_of_War)
+->
+_pr(_high)
+$ I'm pretty sure I heard Lord of War was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(About_Time)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Fantasy and Comedy, I think more movies should do that. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Interview_with_the_Vampire_The_Vampire_Chronicles)
+->
+_pr(_high)
+$ My friends said they liked Brad Pitt and Christian Slater's performance in that movie. Everybody who has mentioned Interview with the Vampire: The Vampire Chronicles to me said they liked it.  $
+;
+
+user_aware(The_Proposal)
+->
+_pr(_high)
+$ My friends said they liked Sandra Bullock and Ryan Reynolds's performance in that movie. I've heard that The Proposal is pretty good.  $
+;
+
+user_aware(Deja_Vu)
+->
+_pr(_high)
+$ I think Denzel Washington and Paula Patton were in that, right? I've heard that Deja Vu is pretty good.  $
+;
+
+user_aware(The_Secret_Life_of_Walter_Mitty)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Fantasy and Comedy, I think more movies should do that.  $
+;
+
+user_aware(The_Expendables_two)
+->
+_pr(_high)
+$ I heard Sylvester Stallone and Jason Statham did well in that movie. I've heard that The Expendables two is pretty good.  $
+;
+
+user_aware(The_Book_of_Eli)
+->
+_pr(_high)
+$ Is that the one with Denzel Washington and Gary Oldman? I've heard that The Book of Eli is pretty good.  $
+;
+
+user_aware(The_Hangover_Part_III)
+->
+_pr(_high)
+$ Is that the one with Bradley Cooper and Ed Helms? The Hangover Part III is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Top_Gun)
+->
+_pr(_high)
+$ I've heard that Top Gun is pretty good. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Chinatown)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(AI_Artificial_Intelligence)
+->
+_pr(_high)
+$ Everybody who has mentioned A.I. Artificial Intelligence to me said they liked it. Steven Spielberg is a household name. How many movies have they directed now?!  $
+;
+
+user_aware(Theres_Something_About_Mary)
+->
+_pr(_high)
+$ Everybody who has mentioned "There's Something About Mary" to me said they liked it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(The_Wrestler)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Drama and Sport, I think more movies should do that. You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(The_Blind_Side)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Drama and Sport, I think more movies should do that. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Taken_two)
+->
+_pr(_high)
+$ Is that the one with Liam Neeson and Maggie Grace? Taken two is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Babel)
+->
+_pr(_high)
+$ I heard Brad Pitt and Cate Blanchett did well in that movie. Everybody who has mentioned Babel to me said they liked it.  $
+;
+
+user_aware(Magnolia)
+->
+_pr(_high)
+$ My friend said they regretted drinking so much water before watching it haha. It's so long.  $
+;
+
+user_aware(RED)
+->
+_pr(_high)
+$ My friends said they liked Bruce Willis and Mary-Louise Parker's performance in that movie. I've heard that RED is pretty good.  $
+;
+
+user_aware(ten_Cloverfield_Lane)
+->
+_pr(_high)
+$ I think John Goodman and Mary Elizabeth Winstead were in that, right? Everybody who has mentioned ten Cloverfield Lane to me said they liked it.  $
+;
+
+user_aware(Jumper)
+->
+_pr(_high)
+$ I think Hayden Christensen and Jamie Bell were in that, right? Jumper is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Seven_Pounds)
+->
+_pr(_high)
+$ I thought critics were a little harsh on that movie, my friends thought it was great.You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Pretty_Woman)
+->
+_pr(_high)
+$ I've heard that Pretty Woman is pretty good. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Bridge_of_Spies)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Steven Spielberg is a household name. How many movies have they directed now?!  $
+;
+
+user_aware(From_Dusk_Till_Dawn)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(The_Transporter)
+->
+_pr(_high)
+$ I think Jason Statham and Qi Shu were in that, right? I've heard that The Transporter is pretty good.  $
+;
+
+user_aware(Mission_Impossible___Fallout)
+->
+_pr(_high)
+$ Is that the one with Tom Cruise and Henry Cavill? I'm pretty sure I heard Mission: Impossible - Fallout was a really good movie.  $
+;
+
+user_aware(Neighbors)
+->
+_pr(_high)
+$ Neighbors is definitely not the most popular, but I try to keep an open mind about movies. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(The_Bourne_Legacy)
+->
+_pr(_high)
+$ Is that the one with Jeremy Renner and Scott Glenn? I've heard that The Bourne Legacy is pretty good.  $
+;
+
+user_aware(Serenity)
+->
+_pr(_high)
+$ I heard Nathan Fillion and Gina Torres did well in that movie. I'm pretty sure I heard Serenity was a really good movie.  $
+;
+
+user_aware(O_Brother_Where_Art_Thou)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Scream)
+->
+_pr(_high)
+$ Everybody who has mentioned Scream to me said they liked it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Solo_A_Star_Wars_Story)
+->
+_pr(_high)
+$ I've heard that Solo: A Star Wars Story is pretty good. Ron Howard is a household name. How many movies have they directed now?!  $
+;
+
+user_aware(Public_Enemies)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Biography and Crime, I think more movies should do that.  $
+;
+
+user_aware(The_Hunger_Games_Mockingjay___Part_two)
+->
+_pr(_high)
+$ Is that the one with Jennifer Lawrence and Josh Hutcherson? The Hunger Games: Mockingjay - Part two is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(three_hundred_Rise_of_an_Empire)
+->
+_pr(_high)
+$ I think Sullivan Stapleton and Eva Green were in that, right? three hundred: Rise of an Empire is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Liar_Liar)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Fantasy and Comedy, I think more movies should do that.  $
+;
+
+user_aware(The_Mist)
+->
+_pr(_high)
+$ My friends said they liked Thomas Jane and Marcia Gay Harden's performance in that movie. Everybody who has mentioned The Mist to me said they liked it.  $
+;
+
+user_aware(Gattaca)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Shrek_the_Third)
+->
+_pr(_high)
+$ I think Mike Myers and Eddie Murphy were in that, right? Shrek the Third is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Contagion)
+->
+_pr(_high)
+$ The movie industry isn't big in United Arab Emirates, USA, I think that helps drive innovation. There could be a pretty serious marathon of Steven Soderbergh's movies  $
+;
+
+user_aware(The_Untouchables)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Ace_Ventura_Pet_Detective)
+->
+_pr(_high)
+$ I've heard that Ace Ventura: Pet Detective is pretty good. I don't think critics appreciated that movie enough. All my friends loved it.  $
+;
+
+user_aware(Donnie_Brasco)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Biography and Crime, I think more movies should do that. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Insidious)
+->
+_pr(_high)
+$ I've heard that Insidious is pretty good. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Pitch_Perfect)
+->
+_pr(_high)
+$ I heard Anna Kendrick and Skylar Astin did well in that movie. Everybody who has mentioned Pitch Perfect to me said they liked it.  $
+;
+
+user_aware(Con_Air)
+->
+_pr(_high)
+$ Is that the one with Colm Meaney and Mykelti Williamson? I've heard that Con Air is pretty good.  $
+;
+
+user_aware(Annihilation)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(The_Nice_Guys)
+->
+_pr(_high)
+$ I think Russell Crowe and Ryan Gosling were in that, right? Everybody who has mentioned The Nice Guys to me said they liked it.  $
+;
+
+user_aware(As_Good_as_It_Gets)
+->
+_pr(_high)
+$ I'm pretty sure I heard As Good as It Gets was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Insomnia)
+->
+_pr(_high)
+$ I think Al Pacino and Martin Donovan were in that, right? Everybody who has mentioned Insomnia to me said they liked it.  $
+;
+
+user_aware(Batman_Returns)
+->
+_pr(_high)
+$ My friends said they liked Michael Keaton and Danny DeVito's performance in that movie. I've heard that Batman Returns is pretty good.  $
+;
+
+user_aware(Superman_Returns)
+->
+_pr(_high)
+$ Is that the one with Brandon Routh and Kate Bosworth? Superman Returns is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(The_Dictator)
+->
+_pr(_high)
+$ I think Sacha Baron Cohen and Sayed Badreya were in that, right? The Dictator is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Prince_of_Persia_The_Sands_of_Time)
+->
+_pr(_high)
+$ Is that the one with Jake Gyllenhaal and Gemma Arterton? I've heard that Prince of Persia: The Sands of Time is pretty good.  $
+;
+
+user_aware(Angels__Demons)
+->
+_pr(_high)
+$ I've heard that Angels & Demons is pretty good. Ron Howard is a household name. How many movies have they directed now?!  $
+;
+
+user_aware(Clash_of_the_Titans)
+->
+_pr(_high)
+$ Is that the one with Sam Worthington and Liam Neeson? Clash of the Titans is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Bird_Box)
+->
+_pr(_high)
+$ I think Sandra Bullock and Trevante Rhodes were in that, right? I've heard that Bird Box is pretty good.  $
+;
+
+user_aware(Law_Abiding_Citizen)
+->
+_pr(_high)
+$ Everybody who has mentioned Law Abiding Citizen to me said they liked it. I don't think critics appreciated that movie enough. All my friends loved it.  $
+;
+
+user_aware(Zero_Dark_Thirty)
+->
+_pr(_high)
+$ I liked it, but I'm not sure I'll ever see it again. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Notting_Hill)
+->
+_pr(_high)
+$ I heard Julia Roberts and Hugh Grant did well in that movie. Everybody who has mentioned Notting Hill to me said they liked it.  $
+;
+
+user_aware(Starship_Troopers)
+->
+_pr(_high)
+$ I think Casper Van Dien and Dina Meyer were in that, right? Everybody who has mentioned Starship Troopers to me said they liked it.  $
+;
+
+user_aware(Death_Proof)
+->
+_pr(_high)
+$ I heard Kurt Russell and Zoë Bell did well in that movie. I've heard that Death Proof is pretty good.  $
+;
+
+user_aware(Moonlight)
+->
+_pr(_high)
+$ I liked it, but I'm not sure I'll ever see it again. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Green_Lantern)
+->
+_pr(_high)
+$ I think Ryan Reynolds and Blake Lively were in that, right? Green Lantern is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Step_Brothers)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Bridesmaids)
+->
+_pr(_high)
+$ My friends said they liked Kristen Wiig and Terry Crews's performance in that movie. I've heard that Bridesmaids is pretty good.  $
+;
+
+user_aware(Before_Sunrise)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Moulin_Rouge)
+->
+_pr(_high)
+$ I heard Nicole Kidman and Ewan McGregor did well in that movie. I'm pretty sure I heard Moulin Rouge! was a really good movie.  $
+;
+
+user_aware(Kingdom_of_Heaven)
+->
+_pr(_high)
+$ Everybody who has mentioned Kingdom of Heaven to me said they liked it. Ridley Scott is a household name. How many movies have they directed now?!  $
+;
+
+user_aware(The_Man_from_UNCLE)
+->
+_pr(_high)
+$ Is that the one with Henry Cavill and Armie Hammer? Everybody who has mentioned The Man from U.N.C.L.E. to me said they liked it.  $
+;
+
+user_aware(The_School_of_Rock)
+->
+_pr(_high)
+$ My friends said they liked Jack Black and Adam Pascal's performance in that movie. Everybody who has mentioned The School of Rock to me said they liked it.  $
+;
+
+user_aware(Kingsman_The_Golden_Circle)
+->
+_pr(_high)
+$ My friends said they liked Taron Egerton and Edward Holcroft's performance in that movie. I've heard that Kingsman: The Golden Circle is pretty good.  $
+;
+
+user_aware(Apollo_thirteen)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. There could be a pretty serious marathon of Ron Howard's movies  $
+;
+
+user_aware(The_Fugitive)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Kong_Skull_Island)
+->
+_pr(_high)
+$ I think Tom Hiddleston and Samuel L. Jackson were in that, right? I've heard that Kong: Skull Island is pretty good.  $
+;
+
+user_aware(Lone_Survivor)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Lawrence_of_Arabia)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Adventure and Biography, I think more movies should do that. You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(A_Bugs_Life)
+->
+_pr(_high)
+$ I think Dave Foley and Kevin Spacey were in that, right? Everybody who has mentioned "A Bug's Life" to me said they liked it.  $
+;
+
+user_aware(The_Royal_Tenenbaums)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(The_Twilight_Saga_New_Moon)
+->
+_pr(_high)
+$ The Twilight Saga: New Moon is definitely not the most popular, but I try to keep an open mind about movies. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Forgetting_Sarah_Marshall)
+->
+_pr(_high)
+$ I heard Jason Segel and Kristen Bell did well in that movie. Everybody who has mentioned Forgetting Sarah Marshall to me said they liked it.  $
+;
+
+user_aware(John_Wick_Chapter_three___Parabellum)
+->
+_pr(_high)
+$ My friends said they liked Keanu Reeves and Halle Berry's performance in that movie. Everybody who has mentioned John Wick: Chapter three - Parabellum to me said they liked it.  $
+;
+
+user_aware(Fast__Furious)
+->
+_pr(_high)
+$ I think Vin Diesel and Paul Walker were in that, right? I've heard that Fast & Furious is pretty good.  $
+;
+
+user_aware(Gone_in_Sixty_Seconds)
+->
+_pr(_high)
+$ I heard Nicolas Cage and Giovanni Ribisi did well in that movie. Gone in Sixty Seconds is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Jurassic_World_Fallen_Kingdom)
+->
+_pr(_high)
+$ Is that the one with Chris Pratt and Bryce Dallas Howard? Jurassic World: Fallen Kingdom is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(twenty_eight_Weeks_Later)
+->
+_pr(_high)
+$ Is that the one with Robert Carlyle and Rose Byrne? I've heard that twenty eight Weeks Later is pretty good.  $
+;
+
+user_aware(Terminator_Genisys)
+->
+_pr(_high)
+$ Is that the one with Arnold Schwarzenegger and Jason Clarke? Terminator Genisys is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Fear_and_Loathing_in_Las_Vegas)
+->
+_pr(_high)
+$ I thought critics were a little harsh on that movie, my friends thought it was great.I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Pirates_of_the_Caribbean_Dead_Men_Tell_No_Tales)
+->
+_pr(_high)
+$ I heard Johnny Depp and Javier Bardem did well in that movie. I've heard that Pirates of the Caribbean: Dead Men Tell No Tales is pretty good.  $
+;
+
+user_aware(The_Worlds_End)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Sci-Fi and Comedy, I think more movies should do that.  $
+;
+
+user_aware(Scent_of_a_Woman)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Jojo_Rabbit)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of War and Comedy, I think more movies should do that.  $
+;
+
+user_aware(The_Accountant)
+->
+_pr(_high)
+$ I think Ben Affleck and Anna Kendrick were in that, right? Everybody who has mentioned The Accountant to me said they liked it.  $
+;
+
+user_aware(Panic_Room)
+->
+_pr(_high)
+$ My friends said they liked Jodie Foster and Kristen Stewart's performance in that movie. I've heard that Panic Room is pretty good.  $
+;
+
+user_aware(Olympus_Has_Fallen)
+->
+_pr(_high)
+$ Is that the one with Gerard Butler and Aaron Eckhart? Olympus Has Fallen is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Hellboy_II_The_Golden_Army)
+->
+_pr(_high)
+$ I heard Ron Perlman and Selma Blair did well in that movie. I've heard that Hellboy II: The Golden Army is pretty good.  $
+;
+
+user_aware(one_thousand_four_hundred_and_eight)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Horror and Fantasy, I think more movies should do that.  $
+;
+
+user_aware(Beetlejuice)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Fantasy and Comedy, I think more movies should do that. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(John_Carter)
+->
+_pr(_high)
+$ My friends said they liked Taylor Kitsch and Lynn Collins's performance in that movie. I've heard that John Carter is pretty good.  $
+;
+
+user_aware(Ford_v_Ferrari)
+->
+_pr(_high)
+$ I heard Matt Damon and Christian Bale did well in that movie. My friends told me Ford v Ferrari was an absolutely great movie.  $
+;
+
+user_aware(Ice_Age_The_Meltdown)
+->
+_pr(_high)
+$ Is that the one with Ray Romano and John Leguizamo? I've heard that Ice Age: The Meltdown is pretty good.  $
+;
+
+user_aware(Kick_Ass_two)
+->
+_pr(_high)
+$ I think Aaron Taylor-Johnson and Chloë Grace Moretz were in that, right? Kick-Ass two is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(The_Patriot)
+->
+_pr(_high)
+$ Is that the one with Mel Gibson and Heath Ledger? Everybody who has mentioned The Patriot to me said they liked it.  $
+;
+
+user_aware(Stardust)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Hannibal)
+->
+_pr(_high)
+$ I've heard that Hannibal is pretty good. There could be a pretty serious marathon of Ridley Scott's movies  $
+;
+
+user_aware(The_Graduate)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Underworld)
+->
+_pr(_high)
+$ My friends said they liked Kate Beckinsale and Scott Speedman's performance in that movie. I've heard that Underworld is pretty good.  $
+;
+
+user_aware(Meet_the_Fockers)
+->
+_pr(_high)
+$ Is that the one with Robert De Niro and Ben Stiller? Meet the Fockers is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Contact)
+->
+_pr(_high)
+$ I think Jena Malone and David Morse were in that, right? Everybody who has mentioned Contact to me said they liked it.  $
+;
+
+user_aware(Hulk)
+->
+_pr(_high)
+$ My friends said they liked Eric Bana and Jennifer Connelly's performance in that movie. Hulk is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Annie_Hall)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Alien_Covenant)
+->
+_pr(_high)
+$ Alien: Covenant is definitely not the most popular, but I try to keep an open mind about movies. There could be a pretty serious marathon of Ridley Scott's movies  $
+;
+
+user_aware(Phone_Booth)
+->
+_pr(_high)
+$ Is that the one with Colin Farrell and Kiefer Sutherland? I've heard that Phone Booth is pretty good.  $
+;
+
+user_aware(four_Rise_of_the_Silver_Surfer)
+->
+_pr(_high)
+$ My friends said they liked Ioan Gruffudd and Jessica Alba's performance in that movie. four: Rise of the Silver Surfer is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Almost_Famous)
+->
+_pr(_high)
+$ I'm pretty sure I heard Almost Famous was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Kung_Fu_Panda_two)
+->
+_pr(_high)
+$ I heard Jack Black and Angelina Jolie did well in that movie. Everybody who has mentioned Kung Fu Panda two to me said they liked it.  $
+;
+
+user_aware(two_Fast_two_Furious)
+->
+_pr(_high)
+$ I heard Paul Walker and Tyrese Gibson did well in that movie. two Fast two Furious is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Red_Dragon)
+->
+_pr(_high)
+$ My friends said they liked Anthony Hopkins and Edward Norton's performance in that movie. Everybody who has mentioned Red Dragon to me said they liked it.  $
+;
+
+user_aware(Non_Stop)
+->
+_pr(_high)
+$ I think Liam Neeson and Julianne Moore were in that, right? I've heard that Non-Stop is pretty good.  $
+;
+
+user_aware(Dredd)
+->
+_pr(_high)
+$ I heard Karl Urban and Rachel Wood did well in that movie. Everybody who has mentioned Dredd to me said they liked it.  $
+;
+
+user_aware(Predestination)
+->
+_pr(_high)
+$ I think it was more popular overseas, all my european chatbot friends say they've seen it.  $
+;
+
+user_aware(Hachi_A_Dogs_Tale)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Gone_Baby_Gone)
+->
+_pr(_high)
+$ I'm pretty sure I heard Gone Baby Gone was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(eight_Mile)
+->
+_pr(_high)
+$ I think Eminem and Kim Basinger were in that, right? Everybody who has mentioned eight Mile to me said they liked it.  $
+;
+
+user_aware(Vanilla_Sky)
+->
+_pr(_high)
+$ I think Tom Cruise and Penélope Cruz were in that, right? I've heard that Vanilla Sky is pretty good.  $
+;
+
+user_aware(Atonement)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Resident_Evil)
+->
+_pr(_high)
+$ I thought critics were a little harsh on that movie, my friends thought it was great. $
+;
+
+user_aware(The_A_Team)
+->
+_pr(_high)
+$ I heard Liam Neeson and Bradley Cooper did well in that movie. I've heard that The A-Team is pretty good.  $
+;
+
+user_aware(Dark_Shadows)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Fantasy and Comedy, I think more movies should do that.  $
+;
+
+user_aware(Zoolander)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Road_to_Perdition)
+->
+_pr(_high)
+$ Is that the one with Tyler Hoechlin and Rob Maxey? I'm pretty sure I heard Road to Perdition was a really good movie.  $
+;
+
+user_aware(Creed)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Drama and Sport, I think more movies should do that. You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(The_Place_Beyond_the_Pines)
+->
+_pr(_high)
+$ My friends said they liked Ryan Gosling and Craig Van Hook's performance in that movie. Everybody who has mentioned The Place Beyond the Pines to me said they liked it.  $
+;
+
+user_aware(Shazam)
+->
+_pr(_high)
+$ I heard Zachary Levi and Mark Strong did well in that movie. Everybody who has mentioned Shazam! to me said they liked it.  $
+;
+
+user_aware(Now_You_See_Me_two)
+->
+_pr(_high)
+$ My friends said they liked Jesse Eisenberg and Mark Ruffalo's performance in that movie. Now You See Me two is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Van_Helsing)
+->
+_pr(_high)
+$ I think Hugh Jackman and Kate Beckinsale were in that, right? Van Helsing is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Lincoln)
+->
+_pr(_high)
+$ Everybody who has mentioned Lincoln to me said they liked it. There could be a pretty serious marathon of Steven Spielberg's movies  $
+;
+
+user_aware(The_Adjustment_Bureau)
+->
+_pr(_high)
+$ Is that the one with Matt Damon and Emily Blunt? I've heard that The Adjustment Bureau is pretty good.  $
+;
+
+user_aware(Blade)
+->
+_pr(_high)
+$ I heard Wesley Snipes and Stephen Dorff did well in that movie. Everybody who has mentioned Blade to me said they liked it.  $
+;
+
+user_aware(Noah)
+->
+_pr(_high)
+$ I think Russell Crowe and Jennifer Connelly were in that, right? Noah is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Incredibles_two)
+->
+_pr(_high)
+$ I think Craig T. Nelson and Holly Hunter were in that, right? I'm pretty sure I heard Incredibles two was a really good movie.  $
+;
+
+user_aware(Mrs_Doubtfire)
+->
+_pr(_high)
+$ I've heard that Mrs. Doubtfire is pretty good. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Vicky_Cristina_Barcelona)
+->
+_pr(_high)
+$ Everybody who has mentioned Vicky Cristina Barcelona to me said they liked it. There could be a pretty serious marathon of Woody Allen's movies  $
+;
+
+user_aware(The_Village)
+->
+_pr(_high)
+$ Is that the one with Bryce Dallas Howard and Joaquin Phoenix? The Village is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Manchester_by_the_Sea)
+->
+_pr(_high)
+$ I'm pretty sure I heard Manchester by the Sea was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Jerry_Maguire)
+->
+_pr(_high)
+$ My friends said they liked Tom Cruise and Cuba Gooding Jr.'s performance in that movie. Everybody who has mentioned Jerry Maguire to me said they liked it.  $
+;
+
+user_aware(Enemy_at_the_Gates)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Warcraft)
+->
+_pr(_high)
+$ I've heard that Warcraft is pretty good. I don't think critics appreciated that movie enough. All my friends loved it.  $
+;
+
+user_aware(The_Other_Guys)
+->
+_pr(_high)
+$ My friends said they liked Will Ferrell and Derek Jeter's performance in that movie. I've heard that The Other Guys is pretty good.  $
+;
+
+user_aware(Some_Like_It_Hot)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Office_Space)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(The_Grey)
+->
+_pr(_high)
+$ My friends said they liked Liam Neeson and Frank Grillo's performance in that movie. I've heard that The Grey is pretty good.  $
+;
+
+user_aware(Corpse_Bride)
+->
+_pr(_high)
+$ I think Johnny Depp and Helena Bonham Carter were in that, right? Everybody who has mentioned Corpse Bride to me said they liked it.  $
+;
+
+user_aware(The_Holiday)
+->
+_pr(_high)
+$ My friends said they liked Cameron Diaz and Kate Winslet's performance in that movie. I've heard that The Holiday is pretty good.  $
+;
+
+user_aware(Chronicle)
+->
+_pr(_high)
+$ I've heard that Chronicle is pretty good. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(The_Goonies)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Seven_Psychopaths)
+->
+_pr(_high)
+$ My friends said they liked Michael Pitt and Michael Stuhlbarg's performance in that movie. Everybody who has mentioned Seven Psychopaths to me said they liked it.  $
+;
+
+user_aware(Blow)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Biography and Crime, I think more movies should do that. You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(The_Fast_and_the_Furious_Tokyo_Drift)
+->
+_pr(_high)
+$ I heard Lucas Black and Damien Marzette did well in that movie. The Fast and the Furious: Tokyo Drift is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(American_Pie_two)
+->
+_pr(_high)
+$ My friends said they liked Jason Biggs and Shannon Elizabeth's performance in that movie. American Pie two is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(The_Sting)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Bad_Boys)
+->
+_pr(_high)
+$ Is that the one with Lisa Boyle and Michael Taliferro? I've heard that Bad Boys is pretty good.  $
+;
+
+user_aware(Dances_with_Wolves)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. Isn't that movie super long?  $
+;
+
+user_aware(Rush_Hour)
+->
+_pr(_high)
+$ My friends said they liked Ken Leung and Jackie Chan's performance in that movie. I've heard that Rush Hour is pretty good.  $
+;
+
+user_aware(GoldenEye)
+->
+_pr(_high)
+$ I think Pierce Brosnan and Sean Bean were in that, right? Everybody who has mentioned GoldenEye to me said they liked it.  $
+;
+
+user_aware(Boogie_Nights)
+->
+_pr(_high)
+$ I'm pretty sure I heard Boogie Nights was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Finding_Dory)
+->
+_pr(_high)
+$ I think Ellen DeGeneres and Albert Brooks were in that, right? Everybody who has mentioned Finding Dory to me said they liked it.  $
+;
+
+user_aware(Grease)
+->
+_pr(_high)
+$ It was crazy to see how much money they made compared to their budget. I haven't seen that one, but I'm pretty sure my parents saw it!  $
+;
+
+user_aware(True_Lies)
+->
+_pr(_high)
+$ My friends said they liked Arnold Schwarzenegger and Jamie Lee Curtis's performance in that movie. Everybody who has mentioned True Lies to me said they liked it.  $
+;
+
+user_aware(Lethal_Weapon)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(RocknRolla)
+->
+_pr(_high)
+$ My friends said they liked Gerard Butler and Tom Wilkinson's performance in that movie. Everybody who has mentioned RocknRolla to me said they liked it.  $
+;
+
+user_aware(Batman_Forever)
+->
+_pr(_high)
+$ I heard Val Kilmer and Tommy Lee Jones did well in that movie. Batman Forever is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Paul)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Sci-Fi and Comedy, I think more movies should do that.  $
+;
+
+user_aware(Crank)
+->
+_pr(_high)
+$ I think Jason Statham and Amy Smart were in that, right? I've heard that Crank is pretty good.  $
+;
+
+user_aware(Perfume_The_Story_of_a_Murderer)
+->
+_pr(_high)
+$ I think it was more popular overseas, all my european chatbot friends say they've seen it.  $
+;
+
+user_aware(Rango)
+->
+_pr(_high)
+$ Is that the one with Johnny Depp and Isla Fisher? Everybody who has mentioned Rango to me said they liked it.  $
+;
+
+user_aware(Dog_Day_Afternoon)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Biography and Crime, I think more movies should do that. You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Dawn_of_the_Dead)
+->
+_pr(_high)
+$ I think Sarah Polley and Ving Rhames were in that, right? Everybody who has mentioned Dawn of the Dead to me said they liked it.  $
+;
+
+user_aware(Batman__Robin)
+->
+_pr(_high)
+$ Is that the one with Arnold Schwarzenegger and George Clooney? Batman & Robin is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(The_Descendants)
+->
+_pr(_high)
+$ Is that the one with George Clooney and Shailene Woodley? Everybody who has mentioned The Descendants to me said they liked it.  $
+;
+
+user_aware(Sully)
+->
+_pr(_high)
+$ Everybody who has mentioned Sully to me said they liked it. Clint Eastwood is a household name. How many movies have they directed now?!  $
+;
+
+user_aware(Walk_the_Line)
+->
+_pr(_high)
+$ I'm pretty sure I heard Walk the Line was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(A_Few_Good_Men)
+->
+_pr(_high)
+$ I'm pretty sure I heard A Few Good Men was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Nocturnal_Animals)
+->
+_pr(_high)
+$ I think Amy Adams and Jake Gyllenhaal were in that, right? Everybody who has mentioned Nocturnal Animals to me said they liked it.  $
+;
+
+user_aware(Hook)
+->
+_pr(_high)
+$ I've heard that Hook is pretty good. There could be a pretty serious marathon of Steven Spielberg's movies  $
+;
+
+user_aware(Saw_II)
+->
+_pr(_high)
+$ I've heard that Saw II is pretty good. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Before_Sunset)
+->
+_pr(_high)
+$ I'm pretty sure I heard Before Sunset was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Lady_Bird)
+->
+_pr(_high)
+$ My friends said they liked Saoirse Ronan and Laurie Metcalf's performance in that movie. Everybody who has mentioned Lady Bird to me said they liked it.  $
+;
+
+user_aware(RoboCop)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Bad_Boys_II)
+->
+_pr(_high)
+$ Is that the one with Martin Lawrence and Will Smith? I've heard that Bad Boys II is pretty good.  $
+;
+
+user_aware(The_Blair_Witch_Project)
+->
+_pr(_high)
+$ The Blair Witch Project is definitely not the most popular, but I try to keep an open mind about movies. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Marriage_Story)
+->
+_pr(_high)
+$ I heard Adam Driver and Scarlett Johansson did well in that movie. I'm pretty sure I heard Marriage Story was a really good movie.  $
+;
+
+user_aware(The_Artist)
+->
+_pr(_high)
+$ I'm pretty sure I heard The Artist was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(The_Reader)
+->
+_pr(_high)
+$ I'm pretty sure I heard The Reader was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Sucker_Punch)
+->
+_pr(_high)
+$ I heard Emily Browning and Abbie Cornish did well in that movie. Sucker Punch is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(The_Bucket_List)
+->
+_pr(_high)
+$ I thought critics were a little harsh on that movie, my friends thought it was great. $
+;
+
+user_aware(The_Twilight_Saga_Breaking_Dawn___Part_two)
+->
+_pr(_high)
+$ My friends said they liked Kristen Stewart and Robert Pattinson's performance in that movie. The Twilight Saga: Breaking Dawn - Part two is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(The_Greatest_Showman)
+->
+_pr(_high)
+$ Is that the one with Hugh Jackman and Michelle Williams? I'm pretty sure I heard The Greatest Showman was a really good movie.  $
+;
+
+user_aware(Chappie)
+->
+_pr(_high)
+$ I heard Sharlto Copley and Dev Patel did well in that movie. I've heard that Chappie is pretty good.  $
+;
+
+user_aware(Spy)
+->
+_pr(_high)
+$ My friends said they liked Jude Law and Raad Rawi's performance in that movie. I've heard that Spy is pretty good.  $
+;
+
+user_aware(Don_Jon)
+->
+_pr(_high)
+$ Don Jon is definitely not the most popular, but I try to keep an open mind about movies. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(twenty_one)
+->
+_pr(_high)
+$ I think Jim Sturgess and Kevin Spacey were in that, right? I've heard that twenty one is pretty good.  $
+;
+
+user_aware(Dodgeball_A_True_Underdog_Story)
+->
+_pr(_high)
+$ Is that the one with Vince Vaughn and Christine Taylor? I've heard that Dodgeball: A True Underdog Story is pretty good.  $
+;
+
+user_aware(The_Fountain)
+->
+_pr(_high)
+$ I think Hugh Jackman and Rachel Weisz were in that, right? Everybody who has mentioned The Fountain to me said they liked it.  $
+;
+
+user_aware(I_Am_Number_Four)
+->
+_pr(_high)
+$ Is that the one with Alex Pettyfer and Timothy Olyphant? I Am Number Four is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Final_Destination)
+->
+_pr(_high)
+$ I thought critics were a little harsh on that movie, my friends thought it was great. $
+;
+
+user_aware(Valkyrie)
+->
+_pr(_high)
+$ I heard Tom Cruise and Kenneth Branagh did well in that movie. Everybody who has mentioned Valkyrie to me said they liked it.  $
+;
+
+user_aware(The_Boondock_Saints)
+->
+_pr(_high)
+$ I don't think critics appreciated that movie enough. All my friends loved it. You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(End_of_Watch)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Alien_Resurrection)
+->
+_pr(_high)
+$ I think Sigourney Weaver and Winona Ryder were in that, right? Alien: Resurrection is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Lawless)
+->
+_pr(_high)
+$ My friends said they liked Shia LaBeouf and Tom Hardy's performance in that movie. Everybody who has mentioned Lawless to me said they liked it.  $
+;
+
+user_aware(Grown_Ups)
+->
+_pr(_high)
+$ I heard Adam Sandler and Kevin James did well in that movie. Grown Ups is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Eastern_Promises)
+->
+_pr(_high)
+$ I'm pretty sure I heard Eastern Promises was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Enemy_of_the_State)
+->
+_pr(_high)
+$ I think Will Smith and Gene Hackman were in that, right? Everybody who has mentioned Enemy of the State to me said they liked it.  $
+;
+
+user_aware(Escape_Plan)
+->
+_pr(_high)
+$ I heard Sylvester Stallone and Arnold Schwarzenegger did well in that movie. I've heard that Escape Plan is pretty good.  $
+;
+
+user_aware(Star_Trek_Beyond)
+->
+_pr(_high)
+$ My friends said they liked Chris Pine and Zachary Quinto's performance in that movie. Everybody who has mentioned Star Trek Beyond to me said they liked it.  $
+;
+
+user_aware(The_Twilight_Saga_Eclipse)
+->
+_pr(_high)
+$ The Twilight Saga: Eclipse is definitely not the most popular, but I try to keep an open mind about movies. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Megamind)
+->
+_pr(_high)
+$ I think Will Ferrell and Brad Pitt were in that, right? Everybody who has mentioned Megamind to me said they liked it.  $
+;
+
+user_aware(Pitch_Black)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Identity)
+->
+_pr(_high)
+$ Is that the one with John Cusack and Ray Liotta? Everybody who has mentioned Identity to me said they liked it.  $
+;
+
+user_aware(Halloween)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(War_for_the_Planet_of_the_Apes)
+->
+_pr(_high)
+$ My friends said they liked Andy Serkis and Woody Harrelson's performance in that movie. Everybody who has mentioned War for the Planet of the Apes to me said they liked it.  $
+;
+
+user_aware(First_Blood)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Hereditary)
+->
+_pr(_high)
+$ I heard Alex Wolff and Gabriel Byrne did well in that movie. Everybody who has mentioned Hereditary to me said they liked it.  $
+;
+
+user_aware(twenty_one_Grams)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(A_History_of_Violence)
+->
+_pr(_high)
+$ Is that the one with Viggo Mortensen and Maria Bello? Everybody who has mentioned A History of Violence to me said they liked it.  $
+;
+
+user_aware(Enders_Game)
+->
+_pr(_high)
+$ I think Asa Butterfield and Harrison Ford were in that, right? I've heard that "Ender's Game" is pretty good.  $
+;
+
+user_aware(The_Tourist)
+->
+_pr(_high)
+$ I think Johnny Depp and Angelina Jolie were in that, right? The Tourist is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Ghost_Rider)
+->
+_pr(_high)
+$ I heard Matt Long and Raquel Alessi did well in that movie. Ghost Rider is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Bridget_Joness_Diary)
+->
+_pr(_high)
+$ I've heard that "Bridget Jones's Diary" is pretty good. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(The_Road)
+->
+_pr(_high)
+$ I heard Viggo Mortensen and Kodi Smit-McPhee did well in that movie. Everybody who has mentioned The Road to me said they liked it.  $
+;
+
+user_aware(Philadelphia)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(The_Great_Escape)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. Isn't that movie super long?  $
+;
+
+user_aware(The_Twilight_Saga_Breaking_Dawn___Part_one)
+->
+_pr(_high)
+$ Is that the one with Taylor Lautner and Gil Birmingham? The Twilight Saga: Breaking Dawn - Part one is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(The_Beach)
+->
+_pr(_high)
+$ Is that the one with Leonardo DiCaprio and Daniel York? I've heard that The Beach is pretty good.  $
+;
+
+user_aware(Me_Myself__Irene)
+->
+_pr(_high)
+$ My friends said they liked Jim Carrey and Renée Zellweger's performance in that movie. I've heard that Me, Myself & Irene is pretty good.  $
+;
+
+user_aware(Ice_Age_Dawn_of_the_Dinosaurs)
+->
+_pr(_high)
+$ I heard Eunice Cho and Karen Disher did well in that movie. I've heard that Ice Age: Dawn of the Dinosaurs is pretty good.  $
+;
+
+user_aware(Hotel_Transylvania)
+->
+_pr(_high)
+$ I think Adam Sandler and Andy Samberg were in that, right? Everybody who has mentioned Hotel Transylvania to me said they liked it.  $
+;
+
+user_aware(The_Lone_Ranger)
+->
+_pr(_high)
+$ I heard Johnny Depp and Armie Hammer did well in that movie. The Lone Ranger is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(The_Conjuring_two)
+->
+_pr(_high)
+$ I heard Patrick Wilson and Vera Farmiga did well in that movie. Everybody who has mentioned The Conjuring two to me said they liked it.  $
+;
+
+user_aware(Austin_Powers_International_Man_of_Mystery)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Knowing)
+->
+_pr(_high)
+$ I heard Nicolas Cage and Chandler Canterbury did well in that movie. Knowing is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Role_Models)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Paranormal_Activity)
+->
+_pr(_high)
+$ Paranormal Activity is definitely not the most popular, but I try to keep an open mind about movies. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Alita_Battle_Angel)
+->
+_pr(_high)
+$ Is that the one with Rosa Salazar and Christoph Waltz? Everybody who has mentioned Alita: Battle Angel to me said they liked it.  $
+;
+
+user_aware(Disturbia)
+->
+_pr(_high)
+$ Is that the one with Shia LaBeouf and Sarah Roemer? I've heard that Disturbia is pretty good.  $
+;
+
+user_aware(Just_Go_with_It)
+->
+_pr(_high)
+$ Just Go with It is definitely not the most popular, but I try to keep an open mind about movies. I don't think critics appreciated that movie enough. All my friends loved it.  $
+;
+
+user_aware(Warm_Bodies)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Horror and Comedy, I think more movies should do that.  $
+;
+
+user_aware(Maze_Runner_The_Scorch_Trials)
+->
+_pr(_high)
+$ My friends said they liked Dylan O'Brien and Ki Hong Lee's performance in that movie. Maze Runner: The Scorch Trials is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Stranger_Than_Fiction)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Fantasy and Comedy, I think more movies should do that. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(National_Treasure_Book_of_Secrets)
+->
+_pr(_high)
+$ I think Nicolas Cage and Justin Bartha were in that, right? National Treasure: Book of Secrets is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Gandhi)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. Isn't that movie super long?  $
+;
+
+user_aware(Rambo)
+->
+_pr(_high)
+$ Is that the one with Sylvester Stallone and Julie Benz? I've heard that Rambo is pretty good.  $
+;
+
+user_aware(Ben_Hur)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. Isn't that movie super long?  $
+;
+
+user_aware(The_Elephant_Man)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Sinister)
+->
+_pr(_high)
+$ I've heard that Sinister is pretty good. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Transcendence)
+->
+_pr(_high)
+$ I heard Johnny Depp and Rebecca Hall did well in that movie. Transcendence is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Austin_Powers_The_Spy_Who_Shagged_Me)
+->
+_pr(_high)
+$ Is that the one with Mike Myers and Heather Graham? I've heard that Austin Powers: The Spy Who Shagged Me is pretty good.  $
+;
+
+user_aware(Southpaw)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Sport and Action, I think more movies should do that.  $
+;
+
+user_aware(The_Adventures_of_Tintin)
+->
+_pr(_high)
+$ Everybody who has mentioned The Adventures of Tintin to me said they liked it. Steven Spielberg is a household name. How many movies have they directed now?!  $
+;
+
+user_aware(Singin_in_the_Rain)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(The_Intern)
+->
+_pr(_high)
+$ I think Robert De Niro and Anne Hathaway were in that, right? Everybody who has mentioned The Intern to me said they liked it.  $
+;
+
+user_aware(Insurgent)
+->
+_pr(_high)
+$ Is that the one with Kate Winslet and Jai Courtney? Insurgent is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Dont_Breathe)
+->
+_pr(_high)
+$ Everybody who has mentioned "Don't Breathe" to me said they liked it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Natural_Born_Killers)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(The_Ides_of_March)
+->
+_pr(_high)
+$ I heard Ryan Gosling and George Clooney did well in that movie. Everybody who has mentioned The Ides of March to me said they liked it.  $
+;
+
+user_aware(Focus)
+->
+_pr(_high)
+$ I heard Will Smith and Margot Robbie did well in that movie. I've heard that Focus is pretty good.  $
+;
+
+user_aware(Chicago)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Musical and Crime, I think more movies should do that.  $
+;
+
+user_aware(The_Chronicles_of_Riddick)
+->
+_pr(_high)
+$ I heard Vin Diesel and Colm Feore did well in that movie. I've heard that The Chronicles of Riddick is pretty good.  $
+;
+
+user_aware(Mr_Nobody)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. I think it was more popular overseas, all my european chatbot friends say they've seen it.  $
+;
+
+user_aware(Old_School)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Elf)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Fantasy and Comedy, I think more movies should do that. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Kiss_Kiss_Bang_Bang)
+->
+_pr(_high)
+$ I heard Robert Downey Jr. and Val Kilmer did well in that movie. Everybody who has mentioned Kiss Kiss Bang Bang to me said they liked it.  $
+;
+
+user_aware(Thank_You_for_Smoking)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Shakespeare_in_Love)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of History and Comedy, I think more movies should do that. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Silent_Hill)
+->
+_pr(_high)
+$ Silent Hill is definitely not the most popular, but I try to keep an open mind about movies. I don't think critics appreciated that movie enough. All my friends loved it.  $
+;
+
+user_aware(Meet_Joe_Black)
+->
+_pr(_high)
+$ Everybody who has mentioned Meet Joe Black to me said they liked it. Isn't that movie super long?  $
+;
+
+user_aware(Mamma_Mia)
+->
+_pr(_high)
+$ Mamma Mia! is definitely not the most popular, but I try to keep an open mind about movies. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Whats_Eating_Gilbert_Grape)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Body_of_Lies)
+->
+_pr(_high)
+$ Everybody who has mentioned Body of Lies to me said they liked it. There could be a pretty serious marathon of Ridley Scott's movies  $
+;
+
+user_aware(The_Lobster)
+->
+_pr(_high)
+$ I heard Jacqueline Abrahams and Roger Ashton-Griffiths did well in that movie. Everybody who has mentioned The Lobster to me said they liked it.  $
+;
+
+user_aware(The_Lincoln_Lawyer)
+->
+_pr(_high)
+$ Is that the one with Matthew McConaughey and Marisa Tomei? Everybody who has mentioned The Lincoln Lawyer to me said they liked it.  $
+;
+
+user_aware(Fantastic_Beasts_The_Crimes_of_Grindelwald)
+->
+_pr(_high)
+$ I heard Johnny Depp and Kevin Guthrie did well in that movie. I've heard that Fantastic Beasts: The Crimes of Grindelwald is pretty good.  $
+;
+
+user_aware(No_Strings_Attached)
+->
+_pr(_high)
+$ My friends said they liked Natalie Portman and Ashton Kutcher's performance in that movie. No Strings Attached is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Clerks)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Predators)
+->
+_pr(_high)
+$ I think Adrien Brody and Topher Grace were in that, right? Predators is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Airplane)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Munich)
+->
+_pr(_high)
+$ Everybody who has mentioned Munich to me said they liked it. Steven Spielberg is a household name. How many movies have they directed now?!  $
+;
+
+user_aware(Planet_of_the_Apes)
+->
+_pr(_high)
+$ I think Mark Wahlberg and Tim Roth were in that, right? Planet of the Apes is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Minions)
+->
+_pr(_high)
+$ Minions is definitely not the most popular, but I try to keep an open mind about movies. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(San_Andreas)
+->
+_pr(_high)
+$ My friends said they liked Dwayne Johnson and Carla Gugino's performance in that movie. San Andreas is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(BlacKkKlansman)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Biography and Crime, I think more movies should do that.  $
+;
+
+user_aware(Cube)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Lion)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Mars_Attacks)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Sci-Fi and Comedy, I think more movies should do that.  $
+;
+
+user_aware(Romeo__Juliet)
+->
+_pr(_high)
+$ I've heard that Romeo + Juliet is pretty good. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Dogma)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(How_to_Lose_a_Guy_in_ten_Days)
+->
+_pr(_high)
+$ My friends said they liked Kate Hudson and Matthew McConaughey's performance in that movie. How to Lose a Guy in ten Days is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Garden_State)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Cowboys__Aliens)
+->
+_pr(_high)
+$ I think Daniel Craig and Abigail Spencer were in that, right? Cowboys & Aliens is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Daredevil)
+->
+_pr(_high)
+$ Is that the one with Ben Affleck and Jennifer Garner? Daredevil is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Jason_Bourne)
+->
+_pr(_high)
+$ I think Matt Damon and Tommy Lee Jones were in that, right? I've heard that Jason Bourne is pretty good.  $
+;
+
+user_aware(Gangster_Squad)
+->
+_pr(_high)
+$ I think Sean Penn and Holt McCallany were in that, right? I've heard that Gangster Squad is pretty good.  $
+;
+
+user_aware(It_Follows)
+->
+_pr(_high)
+$ I've heard that It Follows is pretty good. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(White_House_Down)
+->
+_pr(_high)
+$ I think Channing Tatum and Jamie Foxx were in that, right? White House Down is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Match_Point)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. There could be a pretty serious marathon of Woody Allen's movies  $
+;
+
+user_aware(True_Romance)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Rio)
+->
+_pr(_high)
+$ I think Karen Disher and Jason Fricchione were in that, right? I've heard that Rio is pretty good.  $
+;
+
+user_aware(Life)
+->
+_pr(_high)
+$ Is that the one with Hiroyuki Sanada and Ryan Reynolds? I've heard that Life is pretty good.  $
+;
+
+user_aware(Safe_House)
+->
+_pr(_high)
+$ Is that the one with Denzel Washington and Ryan Reynolds? I've heard that Safe House is pretty good.  $
+;
+
+user_aware(Die_Another_Day)
+->
+_pr(_high)
+$ My friends said they liked Pierce Brosnan and Halle Berry's performance in that movie. Die Another Day is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Get_Smart)
+->
+_pr(_high)
+$ Is that the one with Steve Carell and Anne Hathaway? Get Smart is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(The_Ugly_Truth)
+->
+_pr(_high)
+$ The Ugly Truth is definitely not the most popular, but I try to keep an open mind about movies. I don't think critics appreciated that movie enough. All my friends loved it.  $
+;
+
+user_aware(Rocky_Balboa)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Sport and Action, I think more movies should do that.  $
+;
+
+user_aware(Anger_Management)
+->
+_pr(_high)
+$ My friends said they liked Adam Sandler and Jack Nicholson's performance in that movie. Anger Management is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(A_Nightmare_on_Elm_Street)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Hercules)
+->
+_pr(_high)
+$ My friends said they liked Tate Donovan and Josh Keaton's performance in that movie. Everybody who has mentioned Hercules to me said they liked it.  $
+;
+
+user_aware(Cloudy_with_a_Chance_of_Meatballs)
+->
+_pr(_high)
+$ I think Bill Hader and Anna Faris were in that, right? I've heard that Cloudy with a Chance of Meatballs is pretty good.  $
+;
+
+user_aware(Me_Before_You)
+->
+_pr(_high)
+$ Everybody who has mentioned Me Before You to me said they liked it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(American_Reunion)
+->
+_pr(_high)
+$ I think Jason Biggs and Alyson Hannigan were in that, right? I've heard that American Reunion is pretty good.  $
+;
+
+user_aware(Madagascar_Escape_two_Africa)
+->
+_pr(_high)
+$ I heard Ben Stiller and Chris Rock did well in that movie. I've heard that Madagascar: Escape two Africa is pretty good.  $
+;
+
+user_aware(Closer)
+->
+_pr(_high)
+$ I heard Natalie Portman and Jude Law did well in that movie. Everybody who has mentioned Closer to me said they liked it.  $
+;
+
+user_aware(The_Fate_of_the_Furious)
+->
+_pr(_high)
+$ I think Vin Diesel and Jason Statham were in that, right? I've heard that The Fate of the Furious is pretty good.  $
+;
+
+user_aware(Call_Me_by_Your_Name)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Butch_Cassidy_and_the_Sundance_Kid)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Biography and Crime, I think more movies should do that. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Uncut_Gems)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Ace_Ventura_When_Nature_Calls)
+->
+_pr(_high)
+$ I heard Jim Carrey and Ian McNeice did well in that movie. Ace Ventura: When Nature Calls is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(The_Bridge_on_the_River_Kwai)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Teenage_Mutant_Ninja_Turtles)
+->
+_pr(_high)
+$ I think Megan Fox and Will Arnett were in that, right? Teenage Mutant Ninja Turtles is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(The_Sound_of_Music)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. My friend said they regretted drinking so much water before watching it haha. It's so long.  $
+;
+
+user_aware(The_Girl_Next_Door)
+->
+_pr(_high)
+$ I heard Emile Hirsch and Elisha Cuthbert did well in that movie. I've heard that The Girl Next Door is pretty good.  $
+;
+
+user_aware(Master_and_Commander_The_Far_Side_of_the_World)
+->
+_pr(_high)
+$ Is that the one with Russell Crowe and Paul Bettany? Everybody who has mentioned Master and Commander: The Far Side of the World to me said they liked it.  $
+;
+
+user_aware(How_the_Grinch_Stole_Christmas)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Fantasy and Comedy, I think more movies should do that. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Tarzan)
+->
+_pr(_high)
+$ Is that the one with Brian Blessed and Glenn Close? Everybody who has mentioned Tarzan to me said they liked it.  $
+;
+
+user_aware(Game_Night)
+->
+_pr(_high)
+$ I think Jason Bateman and Rachel McAdams were in that, right? I've heard that Game Night is pretty good.  $
+;
+
+user_aware(Hell_or_High_Water)
+->
+_pr(_high)
+$ I'm pretty sure I heard Hell or High Water was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(The_Purge)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(PS_I_Love_You)
+->
+_pr(_high)
+$ I've heard that P.S. I Love You is pretty good. I don't think critics appreciated that movie enough. All my friends loved it.  $
+;
+
+user_aware(Pain__Gain)
+->
+_pr(_high)
+$ I heard Mark Wahlberg and Dwayne Johnson did well in that movie. Pain & Gain is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Glass)
+->
+_pr(_high)
+$ I've heard that Glass is pretty good. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Planet_Terror)
+->
+_pr(_high)
+$ My friends said they liked Rose McGowan and Freddy Rodríguez's performance in that movie. Everybody who has mentioned Planet Terror to me said they liked it.  $
+;
+
+user_aware(The_Great_Dictator)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of War and Comedy, I think more movies should do that. You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Dirty_Dancing)
+->
+_pr(_high)
+$ I've heard that Dirty Dancing is pretty good. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Oz_the_Great_and_Powerful)
+->
+_pr(_high)
+$ I heard James Franco and Mila Kunis did well in that movie. Oz the Great and Powerful is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(The_Descent)
+->
+_pr(_high)
+$ Everybody who has mentioned The Descent to me said they liked it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(GI_Joe_The_Rise_of_Cobra)
+->
+_pr(_high)
+$ Is that the one with Adewale Akinnuoye-Agbaje and Christopher Eccleston? G.I. Joe: The Rise of Cobra is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(A_Walk_to_Remember)
+->
+_pr(_high)
+$ I don't think critics appreciated that movie enough. All my friends loved it. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Rush_Hour_two)
+->
+_pr(_high)
+$ Is that the one with Jackie Chan and Chris Tucker? I've heard that Rush Hour two is pretty good.  $
+;
+
+user_aware(Carlitos_Way)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Brian De Palma is a household name. How many movies have they directed now?!  $
+;
+
+user_aware(Blade_II)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Horror and Fantasy, I think more movies should do that.  $
+;
+
+user_aware(Finding_Neverland)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Sunset_Blvd)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Big_Daddy)
+->
+_pr(_high)
+$ I think Adam Sandler and Joey Lauren Adams were in that, right? Big Daddy is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(A_Good_Day_to_Die_Hard)
+->
+_pr(_high)
+$ My friends said they liked Bruce Willis and Jai Courtney's performance in that movie. A Good Day to Die Hard is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Wind_River)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Death_Race)
+->
+_pr(_high)
+$ Is that the one with Jason Statham and Joan Allen? Death Race is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Lara_Croft_Tomb_Raider)
+->
+_pr(_high)
+$ Is that the one with Angelina Jolie and Jon Voight? Lara Croft: Tomb Raider is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Napoleon_Dynamite)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Remember_the_Titans)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Drama and Sport, I think more movies should do that. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Big)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Fantasy and Comedy, I think more movies should do that. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Hidden_Figures)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Traffic)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Steven Soderbergh is a household name. How many movies have they directed now?!  $
+;
+
+user_aware(The_Happening)
+->
+_pr(_high)
+$ I think Mark Wahlberg and Zooey Deschanel were in that, right? The Happening is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(A_Series_of_Unfortunate_Events)
+->
+_pr(_high)
+$ I heard Jim Carrey and Liam Aiken did well in that movie. I've heard that A Series of Unfortunate Events is pretty good.  $
+;
+
+user_aware(Fantastic_Mr_Fox)
+->
+_pr(_high)
+$ I'm pretty sure I heard Fantastic Mr. Fox was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Everest)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Adventure and Biography, I think more movies should do that.  $
+;
+
+user_aware(Austin_Powers_in_Goldmember)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(two_Guns)
+->
+_pr(_high)
+$ I think Denzel Washington and Mark Wahlberg were in that, right? I've heard that two Guns is pretty good.  $
+;
+
+user_aware(Happy_Gilmore)
+->
+_pr(_high)
+$ I don't think critics appreciated that movie enough. All my friends loved it. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Ghost)
+->
+_pr(_high)
+$ I've heard that Ghost is pretty good. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Lo_imposible)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(It_Chapter_Two)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Horror and Fantasy, I think more movies should do that. My friend said they regretted drinking so much water before watching it haha. It's so long.  $
+;
+
+user_aware(Hansel__Gretel_Witch_Hunters)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Horror and Fantasy, I think more movies should do that. I thought critics were a little harsh on that movie, my friends thought it was great. $
+;
+
+user_aware(Revolutionary_Road)
+->
+_pr(_high)
+$ Is that the one with Kate Winslet and Leonardo DiCaprio? Everybody who has mentioned Revolutionary Road to me said they liked it.  $
+;
+
+user_aware(Gremlins)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Fantasy and Comedy, I think more movies should do that. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(I_Love_You_Man)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(American_Wedding)
+->
+_pr(_high)
+$ Is that the one with Jason Biggs and Seann William Scott? American Wedding is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(EuroTrip)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(The_Number_twenty_three)
+->
+_pr(_high)
+$ I think Jim Carrey and Virginia Madsen were in that, right? The Number twenty three is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Coraline)
+->
+_pr(_high)
+$ I'm pretty sure I heard Coraline was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(When_Harry_Met_Sally)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(The_Babadook)
+->
+_pr(_high)
+$ My friends said they liked Essie Davis and Noah Wiseman's performance in that movie. I've heard that The Babadook is pretty good.  $
+;
+
+user_aware(The_Chronicles_of_Narnia_Prince_Caspian)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Family and Action, I think more movies should do that.  $
+;
+
+user_aware(Chef)
+->
+_pr(_high)
+$ My friends said they liked Jon Favreau and John Leguizamo's performance in that movie. Everybody who has mentioned Chef to me said they liked it.  $
+;
+
+user_aware(Youve_Got_Mail)
+->
+_pr(_high)
+$ I heard Tom Hanks and Meg Ryan did well in that movie. I've heard that "You've Got Mail" is pretty good.  $
+;
+
+user_aware(South_Park_Bigger_Longer__Uncut)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Fantasy and Comedy, I think more movies should do that. You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Bad_Teacher)
+->
+_pr(_high)
+$ Bad Teacher is definitely not the most popular, but I try to keep an open mind about movies. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(After_Earth)
+->
+_pr(_high)
+$ Is that the one with Jaden Smith and Will Smith? After Earth is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Toy_Story_four)
+->
+_pr(_high)
+$ I heard Tom Hanks and Tim Allen did well in that movie. I'm pretty sure I heard Toy Story four was a really good movie.  $
+;
+
+user_aware(The_VVitch_A_New_England_Folktale)
+->
+_pr(_high)
+$ I've heard that The VVitch: A New-England Folktale is pretty good. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Blue_Jasmine)
+->
+_pr(_high)
+$ Everybody who has mentioned Blue Jasmine to me said they liked it. There could be a pretty serious marathon of Woody Allen's movies  $
+;
+
+user_aware(What_Women_Want)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Fantasy and Comedy, I think more movies should do that.  $
+;
+
+user_aware(Transporter_two)
+->
+_pr(_high)
+$ I think Jason Statham and Alessandro Gassmann were in that, right? Transporter two is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Machete)
+->
+_pr(_high)
+$ Is that the one with Danny Trejo and Robert De Niro? I've heard that Machete is pretty good.  $
+;
+
+user_aware(Hanna)
+->
+_pr(_high)
+$ I heard Saoirse Ronan and Eric Bana did well in that movie. I've heard that Hanna is pretty good.  $
+;
+
+user_aware(Mad_Max)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(You_Dont_Mess_with_the_Zohan)
+->
+_pr(_high)
+$ I think Adam Sandler and John Turturro were in that, right? "You Don't Mess with the Zohan" is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Rosemarys_Baby)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. I don't know a lot about movies in that time period.  $
+;
+
+user_aware(Ice_Age_Continental_Drift)
+->
+_pr(_high)
+$ My friends said they liked Aziz Ansari and Joy Behar's performance in that movie. I've heard that Ice Age: Continental Drift is pretty good.  $
+;
+
+user_aware(Underworld_Evolution)
+->
+_pr(_high)
+$ I thought critics were a little harsh on that movie, my friends thought it was great. $
+;
+
+user_aware(Orphan)
+->
+_pr(_high)
+$ I think Vera Farmiga and Peter Sarsgaard were in that, right? I've heard that Orphan is pretty good.  $
+;
+
+user_aware(Dracula)
+->
+_pr(_high)
+$ Is that the one with Gary Oldman and Winona Ryder? Everybody who has mentioned Dracula to me said they liked it.  $
+;
+
+user_aware(Rocky_II)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Drama and Sport, I think more movies should do that. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(King_Arthur_Legend_of_the_Sword)
+->
+_pr(_high)
+$ Is that the one with Charlie Hunnam and Astrid Bergès-Frisbey? I've heard that King Arthur: Legend of the Sword is pretty good.  $
+;
+
+user_aware(The_Internship)
+->
+_pr(_high)
+$ I heard Vince Vaughn and Owen Wilson did well in that movie. The Internship is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(The_Croods)
+->
+_pr(_high)
+$ Is that the one with Nicolas Cage and Emma Stone? Everybody who has mentioned The Croods to me said they liked it.  $
+;
+
+user_aware(Project_X)
+->
+_pr(_high)
+$ Is that the one with Thomas Mann and Oliver Cooper? I've heard that Project X is pretty good.  $
+;
+
+user_aware(Bolt)
+->
+_pr(_high)
+$ I think John Travolta and Miley Cyrus were in that, right? I've heard that Bolt is pretty good.  $
+;
+
+user_aware(The_Boy_in_the_Striped_Pyjamas)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Ad_Astra)
+->
+_pr(_high)
+$ I think Brad Pitt and Tommy Lee Jones were in that, right? I've heard that Ad Astra is pretty good.  $
+;
+
+user_aware(Dark_City)
+->
+_pr(_high)
+$ I'm pretty sure I heard Dark City was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Drag_Me_to_Hell)
+->
+_pr(_high)
+$ I heard Alison Lohman and Justin Long did well in that movie. Drag Me to Hell is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(The_World_Is_Not_Enough)
+->
+_pr(_high)
+$ Is that the one with Pierce Brosnan and Sophie Marceau? The World Is Not Enough is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Brazil)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(The_Hitchhikers_Guide_to_the_Galaxy)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Sci-Fi and Comedy, I think more movies should do that.  $
+;
+
+user_aware(Sleepers)
+->
+_pr(_high)
+$ I'm pretty sure I heard Sleepers was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Tinker_Tailor_Soldier_Spy)
+->
+_pr(_high)
+$ Is that the one with Mark Strong and John Hurt? I've heard that Tinker Tailor Soldier Spy is pretty good.  $
+;
+
+user_aware(Resident_Evil_Apocalypse)
+->
+_pr(_high)
+$ My friends said they liked Milla Jovovich and Sienna Guillory's performance in that movie. Resident Evil: Apocalypse is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(The_Taking_of_Pelham_one_hundred_and_twenty_three)
+->
+_pr(_high)
+$ I heard Denzel Washington and John Travolta did well in that movie. The Taking of Pelham one hundred and twenty three is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Fracture)
+->
+_pr(_high)
+$ I heard Anthony Hopkins and Ryan Gosling did well in that movie. Everybody who has mentioned Fracture to me said they liked it.  $
+;
+
+user_aware(Miss_Congeniality)
+->
+_pr(_high)
+$ Is that the one with Sandra Bullock and Michael Caine? Miss Congeniality is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Rocky_IV)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Drama and Sport, I think more movies should do that. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(The_Evil_Dead)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Captain_Fantastic)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Primal_Fear)
+->
+_pr(_high)
+$ I'm pretty sure I heard Primal Fear was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(AVP_Alien_vs_Predator)
+->
+_pr(_high)
+$ I heard Sanaa Lathan and Raoul Bova did well in that movie. AVP: Alien vs. Predator is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Unstoppable)
+->
+_pr(_high)
+$ My friends said they liked Denzel Washington and Chris Pine's performance in that movie. I've heard that Unstoppable is pretty good.  $
+;
+
+user_aware(Assassins_Creed)
+->
+_pr(_high)
+$ I heard Michael Fassbender and Marion Cotillard did well in that movie. "Assassin's Creed" is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(The_Vow)
+->
+_pr(_high)
+$ My friends said they liked Rachel McAdams and Channing Tatum's performance in that movie. I've heard that The Vow is pretty good.  $
+;
+
+user_aware(The_Magnificent_Seven)
+->
+_pr(_high)
+$ Is that the one with Denzel Washington and Chris Pratt? I've heard that The Magnificent Seven is pretty good.  $
+;
+
+user_aware(The_Hitmans_Bodyguard)
+->
+_pr(_high)
+$ I heard Elodie Yung and Ryan Reynolds did well in that movie. I've heard that "The Hitman's Bodyguard" is pretty good.  $
+;
+
+user_aware(Resident_Evil_Extinction)
+->
+_pr(_high)
+$ I heard Milla Jovovich and Oded Fehr did well in that movie. Resident Evil: Extinction is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Blue_Valentine)
+->
+_pr(_high)
+$ Everybody who has mentioned Blue Valentine to me said they liked it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Close_Encounters_of_the_Third_Kind)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Ted_two)
+->
+_pr(_high)
+$ I heard Mark Wahlberg and Seth MacFarlane did well in that movie. Ted two is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Shrek_Forever_After)
+->
+_pr(_high)
+$ I heard Mike Myers and Eddie Murphy did well in that movie. Shrek Forever After is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Legally_Blonde)
+->
+_pr(_high)
+$ Is that the one with Reese Witherspoon and Luke Wilson? Legally Blonde is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Shame)
+->
+_pr(_high)
+$ Is that the one with Michael Fassbender and Lucy Walters? Everybody who has mentioned Shame to me said they liked it.  $
+;
+
+user_aware(Harold__Kumar_Go_to_White_Castle)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Wrath_of_the_Titans)
+->
+_pr(_high)
+$ Is that the one with Sam Worthington and Liam Neeson? Wrath of the Titans is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Misery)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Ghostbusters_II)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Fantasy and Comedy, I think more movies should do that.  $
+;
+
+user_aware(The_Secret_Life_of_Pets)
+->
+_pr(_high)
+$ The Secret Life of Pets is definitely not the most popular, but I try to keep an open mind about movies. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(The_Gentlemen)
+->
+_pr(_high)
+$ I think Matthew McConaughey and Charlie Hunnam were in that, right? I'm pretty sure I heard The Gentlemen was a really good movie.  $
+;
+
+user_aware(The_Blues_Brothers)
+->
+_pr(_high)
+$ I'm pretty sure I heard The Blues Brothers was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(The_Next_Three_Days)
+->
+_pr(_high)
+$ I think Russell Crowe and Elizabeth Banks were in that, right? Everybody who has mentioned The Next Three Days to me said they liked it.  $
+;
+
+user_aware(Secret_Window)
+->
+_pr(_high)
+$ Is that the one with Johnny Depp and John Turturro? I've heard that Secret Window is pretty good.  $
+;
+
+user_aware(Who_Framed_Roger_Rabbit)
+->
+_pr(_high)
+$ I'm pretty sure I heard Who Framed Roger Rabbit was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Clueless)
+->
+_pr(_high)
+$ Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(The_Talented_Mr_Ripley)
+->
+_pr(_high)
+$ Is that the one with Matt Damon and Gwyneth Paltrow? Everybody who has mentioned The Talented Mr. Ripley to me said they liked it.  $
+;
+
+user_aware(Tomorrow_Never_Dies)
+->
+_pr(_high)
+$ Is that the one with Pierce Brosnan and Jonathan Pryce? Tomorrow Never Dies is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Side_Effects)
+->
+_pr(_high)
+$ Everybody who has mentioned Side Effects to me said they liked it. There could be a pretty serious marathon of Steven Soderbergh's movies  $
+;
+
+user_aware(Knight_and_Day)
+->
+_pr(_high)
+$ My friends said they liked Tom Cruise and Cameron Diaz's performance in that movie. Knight and Day is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Oceans_Eight)
+->
+_pr(_high)
+$ I think Sandra Bullock and Griffin Dunne were in that, right? "Ocean's Eight" is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Waterworld)
+->
+_pr(_high)
+$ I heard Kevin Costner and Chaim Jeraffi did well in that movie. Waterworld is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Sideways)
+->
+_pr(_high)
+$ I heard Paul Giamatti and Thomas Haden Church did well in that movie. Everybody who has mentioned Sideways to me said they liked it.  $
+;
+
+user_aware(Love__Other_Drugs)
+->
+_pr(_high)
+$ My friends said they liked Jake Gyllenhaal and Anne Hathaway's performance in that movie. I've heard that Love & Other Drugs is pretty good.  $
+;
+
+user_aware(Air_Force_One)
+->
+_pr(_high)
+$ I think Harrison Ford and Gary Oldman were in that, right? Air Force One is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(The_Darjeeling_Limited)
+->
+_pr(_high)
+$ I think Owen Wilson and Adrien Brody were in that, right? Everybody who has mentioned The Darjeeling Limited to me said they liked it.  $
+;
+
+user_aware(The_Golden_Compass)
+->
+_pr(_high)
+$ I heard Nicole Kidman and Daniel Craig did well in that movie. The Golden Compass is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Blue_Velvet)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Midsommar)
+->
+_pr(_high)
+$ Is that the one with Florence Pugh and Jack Reynor? Everybody who has mentioned Midsommar to me said they liked it.  $
+;
+
+user_aware(Cruel_Intentions)
+->
+_pr(_high)
+$ My friends said they liked Sarah Michelle Gellar and Ryan Phillippe's performance in that movie. I've heard that Cruel Intentions is pretty good.  $
+;
+
+user_aware(Grindhouse)
+->
+_pr(_high)
+$ My friend said they regretted drinking so much water before watching it haha. It's so long. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(seventeen_Again)
+->
+_pr(_high)
+$ To be honest, I loved the fusion of Fantasy and Comedy, I think more movies should do that.  $
+;
+
+user_aware(Straight_Outta_Compton)
+->
+_pr(_high)
+$ I feel like it has a cult following of sorts. Its funny, everyone I know in the US loved it, but I don't think any of my foreign friends even saw it. Must not have been popular overseas.  $
+;
+
+user_aware(Jupiter_Ascending)
+->
+_pr(_high)
+$ I heard Mila Kunis and Channing Tatum did well in that movie. Jupiter Ascending is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(The_Life_Aquatic_with_Steve_Zissou)
+->
+_pr(_high)
+$ My friends said they liked Bill Murray and Owen Wilson's performance in that movie. Everybody who has mentioned The Life Aquatic with Steve Zissou to me said they liked it.  $
+;
+
+user_aware(Taken_three)
+->
+_pr(_high)
+$ I thought critics were a little harsh on that movie, my friends thought it was great. $
+;
+
+user_aware(The_English_Patient)
+->
+_pr(_high)
+$ My friends said they liked Ralph Fiennes and Juliette Binoche's performance in that movie. Everybody who has mentioned The English Patient to me said they liked it.  $
+;
+
+user_aware(Saw_III)
+->
+_pr(_high)
+$ Saw III is definitely not the most popular, but I try to keep an open mind about movies. It was crazy to see how much money they made compared to their budget.  $
+;
+
+user_aware(Chocolat)
+->
+_pr(_high)
+$ I think Alfred Molina and Carrie-Anne Moss were in that, right? Everybody who has mentioned Chocolat to me said they liked it.  $
+;
+
+user_aware(The_Emperors_New_Groove)
+->
+_pr(_high)
+$ I think David Spade and John Goodman were in that, right? Everybody who has mentioned "The Emperor's New Groove" to me said they liked it.  $
+;
+
+user_aware(The_Hunt_for_Red_October)
+->
+_pr(_high)
+$ I'm pretty sure I heard The Hunt for Red October was a really good movie. I feel like it has a cult following of sorts.  $
+;
+
+user_aware(Robin_Hood_Prince_of_Thieves)
+->
+_pr(_high)
+$ I heard Kevin Costner and Morgan Freeman did well in that movie. I've heard that Robin Hood: Prince of Thieves is pretty good.  $
+;
+
+user_aware(Swordfish)
+->
+_pr(_high)
+$ Swordfish is definitely not the most popular, but I try to keep an open mind about movies. I don't think critics appreciated that movie enough. All my friends loved it.  $
+;
+
+user_aware(Percy_Jackson__the_Olympians_The_Lightning_Thief)
+->
+_pr(_high)
+$ I heard Logan Lerman and Brandon T. Jackson did well in that movie. Percy Jackson & the Olympians: The Lightning Thief is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
+user_aware(Adaptation)
+->
+_pr(_high)
+$ You know whats cool? it didnt get blockbuster numbers, but everyone who saw it absolutely loved it.  $
+;
+
+user_aware(Dracula_Untold)
+->
+_pr(_high)
+$ My friends said they liked Luke Evans and Sarah Gadon's performance in that movie. Dracula Untold is definitely not the most popular, but I try to keep an open mind about movies.  $
+;
+
