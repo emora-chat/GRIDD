@@ -398,3 +398,21 @@ _pr(_high)
 _rep(_ur)
 $ She won a gold medal at age 14. I'm not sure I could run a mile at age 14, much less train for and win an olympic event. $
 ;
+
+req_unsat(request(user, g2/object()))
+possess(emora, g/olympic_sport())
+favorite(g)
+be(g, g2)
+->
+_pr(_high)
+$ My favorite olympic sport is probably track and field, I especially like the two hundred meter sprint. $
+;
+
+req_unsat(request(user, g2/object()))
+possess(emora, g/olympic_athlete())
+favorite(g)
+be(g, g2)
+->
+_pr(_high)
+$ My favorite olympic athlete to watch is probably Usain Bolt. $
+;
