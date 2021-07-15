@@ -44,6 +44,13 @@ love(emora, N/nap(emora))
 $ I love N{"g": true} . Some people say they feel guilty afterwards but I think its just nice to relax. $
 ;
 
+like(user, V/videogame())
+->
+_t(_r)
+_rep(_nr)
+$ V{"g": true} be{"s": "#V", "t": "now"} fun . $
+;
+
 
 
 

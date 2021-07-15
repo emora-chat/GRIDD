@@ -281,19 +281,33 @@ class ResponseTemplateFiller:
 
         # Replacement of independent variables
         for i, e in with_params_independent:
+            source = e[0]
             surface_form, spec = e
             e_id = str(e)
             if e_id not in realizations:
+                is_entity_var = False
+                is_pred_var = False
                 if '.var' in surface_form:
-                    surface_form = surface_form[:-4]
-                    surface_form = match_dict[surface_form]
-                if 'entity' in self.cg_types.get(surface_form, []): # noun
+                    source = surface_form[:-4]
+                    surface_form = match_dict[source]
+                    if 'entity' in self.cg_types.get(surface_form, []):  # noun
+                        if surface_form in expr_dict:  # the matched concept for the variable is a named concept
+                            surface_form = self.nlgFactory.createNLGElement(expr_dict[surface_form], LexicalCategory.NOUN)
+                        else:  # not a named concept
+                            surface_form = self._unnamed_entity(cg, surface_form, expr_dict)
+                        is_entity_var = True
+                    else:
+                        if surface_form in expr_dict:  # the matched concept for the variable is a named concept
+                            surface_form = expr_dict[surface_form]
+                        else:  # not a named concept
+                            if cg.has(predicate_id=surface_form):
+                                surface_form = expr_dict.get(cg.type(surface_form), cg.type(surface_form))
+                            else:
+                                surface_form = self._unnamed_entity(cg, surface_form, expr_dict)
+                        is_pred_var = True
+                if "p" in spec or "d" in spec or is_entity_var: # noun
                     np = self.nlgFactory.createNounPhrase()
-                    if surface_form in expr_dict:  # the matched concept for the variable is a named concept
-                        noun = self.nlgFactory.createNLGElement(expr_dict[surface_form], LexicalCategory.NOUN)
-                    else:  # not a named concept
-                        noun = self._unnamed_entity(cg, surface_form, expr_dict)
-                    np.setNoun(noun)
+                    np.setNoun(surface_form)
                     if spec.get("d", False): # set determiner
                         if cg.metagraph.out_edges(surface_form, REF) or list(cg.predicates(surface_form, USER_AWARE)): # reference
                             np.setDeterminer('the')
@@ -306,8 +320,11 @@ class ResponseTemplateFiller:
                         np.setFeature(Feature.NUMBER, NumberAgreement.PLURAL)
                     realizations[e_id] = self.realiser.realiseSentence(np)[:-1]
                     specifications[e_id] = np
-                elif 'predicate' in self.cg_types.get(surface_form, []): # verb
-                    self._handle_predicate(surface_form, expr_dict, realizations, spec, match_dict, specifications, e_id, cg)
+                    if source in specifications:
+                        realizations[source] = self.realiser.realiseSentence(np)[:-1]
+                        specifications[source] = np
+                else: # verb
+                    self._handle_predicate(surface_form, expr_dict, realizations, spec, match_dict, specifications, e_id)
 
         # Replacement of dependent variables (only verbs can be dependent and `p` and `d` markers are not relevant for verbs)
         for i, e in with_params_dependent:
@@ -317,21 +334,23 @@ class ResponseTemplateFiller:
                 if '.var' in surface_form:
                     surface_form = surface_form[:-4]
                     surface_form = match_dict[surface_form]
-                self._handle_predicate(surface_form, expr_dict, realizations, spec, match_dict, specifications, e_id, cg)
+                    if surface_form in expr_dict:  # the matched concept for the variable is a named concept
+                        verb = expr_dict[surface_form]
+                    else:  # not a named concept
+                        if cg.has(predicate_id=surface_form):
+                            verb = expr_dict.get(cg.type(surface_form), cg.type(surface_form))
+                        else:
+                            verb = self._unnamed_entity(cg, surface_form, expr_dict)
+                else:
+                    verb = surface_form
+                self._handle_predicate(verb, expr_dict, realizations, spec, match_dict, specifications, e_id)
 
         final_str = [realizations[str(e)] for e in string_spec_ls]
         return ' '.join(final_str)
 
-    def _handle_predicate(self, surface_form, expr_dict, realizations, spec, match_dict, specifications, e_id, cg):
-        if surface_form in expr_dict:  # the matched concept for the variable is a named concept
-            verb = expr_dict[surface_form]
-        else:  # not a named concept
-            if cg.has(predicate_id=surface_form):
-                verb = expr_dict.get(cg.type(surface_form), cg.type(surface_form))
-            else:
-                verb = self._unnamed_entity(cg, surface_form, expr_dict)
+    def _handle_predicate(self, verb, expr_dict, realizations, spec, match_dict, specifications, e_id):
         if spec.get("g", False):  # generic verb phrase -> Hiking is fun
-            vp = self.nlgFactory.createVerbPhrase('rap')
+            vp = self.nlgFactory.createVerbPhrase(verb)
             vp.setFeature(Feature.FORM, Form.GERUND)
             sentence = self.realiser.realiseSentence(vp).lower()
             double_ending = sentence[:-4] + sentence[-5] + 'ing.' # sentence ends in punctuation

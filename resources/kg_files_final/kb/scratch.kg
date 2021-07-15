@@ -34,3 +34,5 @@ emora_loves_naps = love(emora, nap(emora))
 athletic=(attribute)
 hike=(predicate)
 ;
+
+videogame=(entity)
