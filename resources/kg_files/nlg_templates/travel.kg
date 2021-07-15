@@ -111,6 +111,8 @@ reasonable(user)
 ->
 _t(_r)
 $ That's a reasonable answer . $
+$ That makes sense . $
+$ You're probably right about that . $
 ;
 
 gx/go(X/person())

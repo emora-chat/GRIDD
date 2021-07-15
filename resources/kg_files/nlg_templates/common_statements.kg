@@ -117,6 +117,7 @@ h/have(emora, b/body_part())
 uturn(h, 0)
 ->
 _t(_r)
+_rep(_nr)
 _pr(_high)
 $ Yes, I do. $
 ;
@@ -136,5 +137,6 @@ uturn(b, 0)
 ->
 _t(_r)
 _pr(_high)
+_rep(_nr)
 $ A chihuahua. $
 ;

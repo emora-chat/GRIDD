@@ -15,7 +15,7 @@ $ What color did you get your nails ? Or did you get a pattern ? $
 ;
 
 g/get(user, m/nails_done())
-uturn(g, 1)
+uturn(g, 0)
 ->
 _t(_r)
 _rep(_ur)
@@ -24,7 +24,7 @@ $ Getting your nails done is always so soothing. $
 ;
 
 g/get(user, h/haircut())
-uturn(g, 1)
+uturn(g, 0)
 ->
 _t(_r)
 _rep(_ur)
@@ -33,7 +33,7 @@ $ I love getting my haircut. Especially when the hairdresser washes your hair fo
 ;
 
 g/get(user, p/ear_piercing())
-uturn(g, 1)
+uturn(g, 0)
 ->
 _t(_r)
 _rep(_ur)

@@ -21,6 +21,7 @@ h/have(user, pet())
 uturn(h, 0)
 ->
 _t(_r)
+_rep(_nr)
 $ Oh , I love pets ! $
 ;
 
@@ -46,6 +47,7 @@ _exists(X)
 eturn(X, 1)
 ->
 _t(_r)
+_rep(_nr)
 $ Every pet has its quirks , but I think yours sounds sweet . $
 ;
 
