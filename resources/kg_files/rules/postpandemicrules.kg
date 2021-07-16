@@ -21,19 +21,190 @@ temppred(l)
 have(user, w1/job())
 c/change(pandemic(), w1)
 qualifier(c, remote_work())
-_exists(l/like(user, c))
-user_aware(request_truth(emora, l))
+l/like(user, c)
+eturn(l, 2)
+->
+m:<time(m/more(like(user, outdoor_activity())),now)>
+request_truth(emora, m)
+;
+
+have(user, w1/job())
+c/change(pandemic(), w1)
+qualifier(c, remote_work())
+not(l/like(user, c))
+eturn(l, 3)
+->
+m:<time(m/more(like(user, outdoor_activity())),now)>
+request_truth(emora, m)
+;
+
+have(user, w1/job())
+c/change(pandemic(), w1)
+qualifier(c, remote_work())
+l/like(user, c)
+req_sat(request_truth(emora, l))
 ->
 m:<time(m/more(like(user, outdoor_activity())),now)>
 request_truth(emora, m)
 ;
 
 
+have(user, w1/job())
+c/change(pandemic(), w1)
+qualifier(c, remote_work())
+maybe(l/like(user, c))
+eturn(l, 3)
+->
+m:<time(m/more(like(user, outdoor_activity())),now)>
+request_truth(emora, m)
+;
+
+have(user, w1/job())
+c/change(pandemic(), w1)
+qualifier(c, remote_work())
+maybe(l/like(user, c))
+eturn(l, 2)
+->
+m:<time(m/more(like(user, outdoor_activity())),now)>
+request_truth(emora, m)
+;
+
+have(user, w1/job())
+c/change(pandemic(), w1)
+qualifier(c, remote_work())
+maybe(l/like(user, c))
+eturn(l, 1)
+->
+m:<time(m/more(like(user, outdoor_activity())),now)>
+request_truth(emora, m)
+;
 
 m/more(like(user, outdoor_activity()))
 not(m)
 ->
 r:<r/reason(m)>
 request(emora, r)
+object_1:<possess(user, life_0/life())
+change_0/change(pandemic(), life_0)
+qualifier(change_0, object_1/object())>
+r2/request(emora, object_1)
+;
+
+
+m/more(like(user, outdoor_activity()))
+_exists(m)
+user_aware(m)
+->
+object_1:<possess(user, life_0/life())
+change_0/change(pandemic(), life_0)
+qualifier(change_0, object_1/object())>
+r/request(emora, object_1)
+;
+
+m/more(like(user, outdoor_activity()))
+user_aware(m)
+->
+object_1:<possess(user, life_0/life())
+change_0/change(pandemic(), life_0)
+qualifier(change_0, object_1/object())>
+r/request(emora, object_1)
+;
+
+possess(user, life_0/life())
+change_0/change(pa/pandemic(), life_0)
+qualifier(change_0, object_1/object())
+r/request(emora, object_1)
+req_sat(r)
+user_aware(r)
+->
+ch/change(pa, world)
+guess(emora, ch)
+;
+
+possess(user, life_0/life())
+change_0/change(pa/pandemic(), life_0)
+qualifier(change_0, object_1/object())
+r/request(emora, object_1)
+req_unsat(r)
+user_aware(r)
+->
+ch/change(pa, world)
+guess(emora, ch)
+;
+
+ch/change(pa/pandemic(), world)
+user_aware(g/guess(emora, ch))
+->
+born(emora, pa)
+;
+
+
+/* For Mack's transition rule */
+like(user, pandemic())
+->
+_pr(_high)
+c:<have(user, l/life()) c/change(pandemic(), l)>
+request_truth(emora, c)
+;
+
+like(user, life())
+->
+_pr(_high)
+c:<have(user, l/life()) c/change(pandemic(), l)>
+request_truth(emora, c)
+;
+
+
+m/more(like(user, outdoor_activity()))
+_exists(m)
+user_aware(m)
+eturn(m, 3)
+->
+object_1:<possess(user, life_0/life())
+change_0/change(pandemic(), life_0)
+qualifier(change_0, object_1/object())>
+r/request(emora, object_1)
+;
+
+
+possess(emora, life_0/life())
+change_0/change(p/pandemic(), life_0)
+qualifier(change_0, object_1/object())
+req_unsat(r/request(user, object_1))
+->
+answer(emora, change(p, life_0))
+;
+
+req_unsat(r/request(user, object_1/object()))
+time(change_1/change(object(), life_1/life()), past)
+qualifier(change_1, object_1)
+have_4/have(user, life_2/life())
+->
+answer(emora, change(pandemic(), life()))
+;
+
+request_2/request(user, object_1/object())
+change_2/change(object())
+req_unsat(request_2)
+qualifier(change_2, object_1)
+uturn(request_2, 0)
+->
+answer(emora, change(pandemic(), life()))
+;
+
+req_unsat(request_truth(user, change_0/change(object())))
+qualifier(much())
+p/pandemic()
+eturn(p, 1)
+->
+answer(emora, change(p, life()))
+;
+
+req_unsat(request_truth(user, change_0/change(prp())))
+qualifier(much())
+p/pandemic()
+eturn(p, 1)
+->
+answer(emora, change(p, life()))
 ;
 

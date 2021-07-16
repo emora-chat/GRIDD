@@ -18,16 +18,23 @@ request(emora, a)
 
 time(possess(user, a/animal()), now)
 r/request(emora, a)
-time(favorite(a), now)
-user_aware(r)
+time(f/favorite(a), now)
+req_sat(r)
 ->
 time(agree(emora, cool(a)), now)
-time(cause(fast(cheetah), like(emora, cheetah)), now)
+pred:<time(cause(pred/predicate(), f), now)>
+request(emora, pred)
 ;
 
 time(like(user, z/zoo()), now)
 ->
 oft:<v/visit(user, z) time(oft/often(v), now)>
+request_truth(emora, oft)
+;
+
+time(like(user, zoo), now)
+->
+oft:<v/visit(user, z/zoo()) time(oft/often(v), now)>
 request_truth(emora, oft)
 ;
 
@@ -51,7 +58,7 @@ favorite(a)
 request(emora, a)
 ;
 
-animal__t
+animals__t
 ->
 l:<time(l/like(x/person(), zoo), now)>
 request_truth(emora, l)
@@ -97,5 +104,33 @@ _specific(a)
 uturn(l, 0)
 ->
 time(agree(emora, cool(a)), now)
+time(possess(user, a), now)
+time(f/favorite(a), now)
+pred:<time(cause(pred/predicate(), f), now)>
+request(emora, pred)
+
+;
+
+cause(pred/predicate(), favorite(a/animal()))
+r/request(emora, pred)
+user_aware(r)
+->
+time(cause(fast(cheetah), like(emora, cheetah)), now)
+;
+
+h/have(user, a/animal())
+not(h)
+favorite(a)
+->
+time(cause(fast(cheetah), like(emora, cheetah)), now)
+;
+
+h/have(user, favorite())
+not(h)
+uturn(h, 0)
+r/request(emora, ani/animal())
+eturn(r, 1)
+->
+time(agree(emora, cool(ani)), now)
 time(cause(fast(cheetah), like(emora, cheetah)), now)
 ;

@@ -109,6 +109,17 @@ fpc:<possess(user,p/part()) favorite(p) about(p,c) be(p,fpc/fav_part_college())>
 request(emora,fpc)
 ;
 
+possess(user,p/part())
+favorite(p)
+about(p,c/college())
+be(p,pr/fav_peer())
+->
+h/have(user,f/friend())
+type(f,group)
+in(user,college)
+awesome(h)
+;
+
 l/like(user,c/college())
 glad(emora,l)
 possess(user,p/part())
@@ -357,10 +368,13 @@ from(ul,c)
 time(ul,z)
 ;
 
-l/like(x/person(),pr/peer())
+l/like(user,pr/peer())
 type(pr,group)
 ->
-awesome(l)
+h/have(user,f/friend())
+type(f,group)
+in(user,college)
+awesome(h)
 ;
 
 be(x/person(),fm/freshman())

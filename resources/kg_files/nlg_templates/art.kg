@@ -3,7 +3,9 @@ not(l)
 understand(emora,l)
 ->
 _t(_r)
-$ Oh , you don't like art ? I love art , but I understand that it is not a thing for everyone . $
+_rep(_nr)
+$ Oh , you don't like art ? I love it myself . $
+$ Well I'm sad to hear we don't share that interest , but that's understandable . $
 ;
 
 xba/be(user,artist())
@@ -12,6 +14,7 @@ request_truth(emora,xba)
 _t(_present)
 _pr(_low)
 $ Would you say that you're an artist ? $
+$ Would you consider yourself an artist ? $
 ;
 
 xba/be(user,artist())
@@ -20,6 +23,7 @@ understand(emora,xba)
 ->
 _t(_rpresent)
 $ Oh , I see . I mean , not everyone needs to be an artist in order to appreciate art . $
+$ Gotcha . Everyone has different definitions of what it means to be an artist , so I was interested in hearing your opinion . $
 ;
 
 xla/like(user,arr/art())
@@ -29,6 +33,7 @@ request(emora,o)
 _t(_present)
 _pr(_low)
 $ Why do you like art ? $
+$ What do you like abut art ? $
 ;
 
 xla/like(user,arr/art())
@@ -44,7 +49,8 @@ request_truth(emora,uld)
 ->
 _t(_present)
 _pr(_low)
-$ Do you like drawing ? $
+$ Since you like art , do you like drawing ? Or do you often draw ? $
+$ Since you like art , I'm wondering: do you like drawing ? $
 ;
 
 b/be(X/artist(),ast/artist())
@@ -53,8 +59,9 @@ favorite(ast)
 time(b,now)
 request_truth(emora,b)
 ->
+_rep(_nr)
 _t(_present)
-$ Is X your favorite artist ? $
+$ X is a great artist . Is X your favorite artist ? $
 ;
 
 upo/paint(user,o/object())
@@ -79,7 +86,7 @@ _t(_rpresent)
 $ Interesting ! I wish I could see your drawings some time . $
 ;
 
-xd/draw(user)
+draw(user)
 time(draw(user,o/object()),Z/datetime())
 request(emora,o)
 ->
@@ -88,33 +95,28 @@ _pr(_low)
 $ What be{"s":"you","t":"#Z"} you drawing ? $
 ;
 
-xd/draw(user)
-xtd/try(user,digital(xd))
+xtd/try(user,digital(picture()))
 time(xtd,past)
 request_truth(emora,xtd)
 ->
 _t(_present)
 $ You must be very creative . Have you ever tried digital drawing before ? $
+$ You must be a creative person . Since you like drawing , have you ever tried digital drawing by any chance ? $
 ;
 
-xd/paint(user)
-xtd/try(user,digital(xd))
+xtd/try(user,digital(picture()))
 time(xtd,past)
-request_truth(emora,xtd)
-->
-_t(_present)
-$ You must be very creative . Have you ever tried digital drawing before ? $
-;
-
-xd/draw(user)
-xtd/try(user,digital(xd))
-time(xtd,past)
-interesting(xtd)
+ae/amazed(emora)
+by(ae,dp/digital(picture()))
 ->
 _t(_present)
 $ Digital drawing is fun , right ? I'm always amazed by how technology can enhance our everyday activities and hobbies. $
+$ I think digital drawing is a great combination of technology and art . $
 ;
 
+xtd/try(user,digital(picture()))
+time(xtd,past)
+not(xtd)
 ut/talk(user)
 to(ut,emora)
 amazing(ut)
@@ -123,15 +125,12 @@ _t(_present)
 $ Well , I think the fact that you are talking to me is a pretty good proof of technology's advancement! How else could we be talking? . $
 ;
 
-xd/draw(user)
-xtd/try(user,dd/digital(xd))
-time(xtd,past)
-not(xtd)
-uld/learn(user,dd)
+uld/learn(user,dd/digital(picture()))
 time(uld,future)
 ->
 _t(_present)
 $ You should look into it at some point ! Since you like drawing , I think you would definitely have a lot of fun . $
+$ I bet you would like it a lot since you like drawing . I really recommend you to have a try . $
 ;
 
 xd/draw(user)
@@ -185,9 +184,11 @@ possess(emora,arr)
 favorite(arr)
 time(bb,now)
 ->
+_rep(_ur)
 _t(_present)
 _pr(_high)
 $ X indeed brought significant impact to the art field . My favorite artist is Claude Monet . $
+$ X is a famous and great artist who contributed many significant pieces . My favorite artist is Claude Monet . $
 ;
 
 draw(claude_monet,p/picture())
@@ -197,7 +198,7 @@ famous(bp)
 ->
 _t(_present)
 _pr(_high)
-$ Monet has so many incredible paintings . I like him primarily for the beautiful colors he used . It always calms me to spend time looking at one of his paintings .   $
+$ Monet has so many incredible paintings . I like him primarily for the beautiful colors he used . It always calms me to spend time looking at one of his paintings . $
 ;
 
 b/be(X/artist(),ast/artist())
@@ -214,6 +215,7 @@ time(bb,now)
 _t(_rpresent)
 _pr(_high)
 $ Oh , I see . Well , even if X is not your favorite artist , it's certain that they brought significant impact to the art field . My favorite artist is Claude Monet . $
+$ Got it . But anyway , X is a famous and great artist who contributes many significant pieces . My favorite artist is Claude Monet . $
 ;
 
 ed/draw(emora)
@@ -227,6 +229,7 @@ ekx/know(emora,X/unknown_artist())
 not(ekx)
 request(emora,X)
 ->
+_rep(_ur)
 _t(_present)
 $ I don't think I've ever heard about X before . Why is X your favorite artist ? $
 ;
@@ -242,5 +245,5 @@ eub/understand(emora,b)
 time(eub,now)
 ->
 _t(_present)
-$ Now I know better about your favorite artist . Thank you for introducing me a new artist to look up . $
+$ Now I know more about your favorite artist . Thank you for introducing me to a new artist to look up ! $
 ;

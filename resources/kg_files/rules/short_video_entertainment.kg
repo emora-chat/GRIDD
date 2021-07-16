@@ -8,11 +8,8 @@ request(emora, p2)
 l/like(user, youtube())
 user_aware(l)
 ->
-y2:<possess(user, y/youtuber())
-favorite(y)
-be(y, y2/youtuber())
->
-request(emora, y2)
+y:<like(user, y/youtube_genre())>
+request(emora, y)
 ;
 
 l/like(user, tiktok())
@@ -23,4 +20,94 @@ favorite(y)
 be(y, y2/tiktoker())
 >
 request(emora, y2)
+;
+
+l/like(user, cooking_videos)
+->
+l2/like(user, f/food())
+user_aware(l2)
+p:<l cause(p/predicate(), l)>
+request(emora, p)
+;
+
+l/like(user, comedy_videos)
+->
+p:<l cause(p/predicate(), l)>
+request(emora, p)
+;
+
+l/like(user, beauty_videos)
+->
+p:<l cause(p/predicate(), l)>
+request(emora, p)
+;
+
+l/like(user, fashion_videos)
+->
+p:<l cause(p/predicate(), l)>
+request(emora, p)
+;
+
+l/like(user, travel_videos)
+->
+l2/like(user, t/travel())
+user_aware(l2)
+p:<l cause(p/predicate(), l)>
+request(emora, p)
+;
+
+l/like(user, book_videos)
+->
+l2/like(user, r/read())
+user_aware(l2)
+p:<l cause(p/predicate(), l)>
+request(emora, p)
+;
+
+l/like(user, video_essays)
+->
+p:<l cause(p/predicate(), l)>
+request(emora, p)
+;
+
+l/like(user, diy_videos)
+->
+p:<l cause(p/predicate(), l)>
+request(emora, p)
+;
+
+l/like(user, fitness_videos)
+->
+l2/like(user, s/sport())
+user_aware(l2)
+p:<l cause(p/predicate(), l)>
+request(emora, p)
+;
+
+l/like(user, vlogs)
+->
+p:<l cause(p/predicate(), l)>
+request(emora, p)
+;
+
+l/like(user, gaming_videos)
+->
+l2/like(user, v/videogame())
+user_aware(l2)
+p:<l cause(p/predicate(), l)>
+request(emora, p)
+;
+
+l/like(user, sports_videos)
+->
+l2/like(user, s/sport())
+user_aware(l2)
+p:<l cause(p/predicate(), l)>
+request(emora, p)
+;
+
+l/like(user, stem_videos)
+->
+p:<l cause(p/predicate(), l)>
+request(emora, p)
 ;

@@ -276,6 +276,9 @@ l2/like(user, temp_music_genre())
 ->
 _pr(_high)
 _t(_r)
+_rep(_ur)
+$ It may not be my favorite genre, but I'll still give it a chance. $
+$ Sounds cool, I'll be sure to listen to it. $
 $ I'll make sure to check it out. $
 ;
 
@@ -295,7 +298,10 @@ l2/like(user, temp_song())
 ->
 _pr(_high)
 _t(_r)
+_rep(_ur)
 $ I'll go listen right after we finish talking. $
+$ I'm gonna play that as soon as I get off my chatbot job.$
+$ Adding to playlist now... and done. $
 ;
 
 l/like(user, m/album())
@@ -314,5 +320,8 @@ l2/like(user, temp_album())
 ->
 _pr(_high)
 _t(_r)
+_rep(_ur)
 $ Well, I'll go check it out. $
+$ I'll have to listen to that. $
+$ Its on my list now, I'll be sure to listen to it later.$
 ;

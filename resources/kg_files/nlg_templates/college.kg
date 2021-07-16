@@ -14,6 +14,7 @@ request_truth(emora,l)
 _pr(_low)
 _t(_present)
 $ Do{"t":"#Z","s":"you"} you like your major ? $
+$ Do{"t":"#Z","s":"you"} you like what you study as a major ? $
 ;
 
 time(l/like(user,X/subject()),Z/datetime())
@@ -21,17 +22,20 @@ cause(l,o/object())
 request(emora,o)
 uturn(X,0)
 ->
+_rep(_nr)
 _t(_present)
 $ Why do{"t":"#Z","s":"you"} you like X ? $
+$ I'm curious , what interests you the most about X ? $
 ;
 
 ulx/learn(user,X/subject())
 time(enjoy(user,ulx),Z/datetime())
 ->
+_rep(_nr)
 _t(_present)
 $ It's good to hear that you are{"t":"#Z","s":"you"} enjoying what you learn{"t":"#Z","s":"you"} . I think having passion for what one learns is very important . $
+$ I'm glad that you are{"t":"#Z","s":"you"} having a good time learning X . $
 ;
-
 
 time(l/like(user,c/college()),Z/datetime())
 glad(emora,l)
@@ -41,6 +45,7 @@ about(p,c)
 be(p,fpc/fav_part_college())
 request(emora,fpc)
 ->
+_rep(_nr)
 _t(_rpresent)
 $ I'm glad to hear that you have{"t":"#Z"} a satisfying college experience . What's your favorite part about college ? $
 ;
@@ -167,6 +172,7 @@ uturn(S,0)
 ->
 _t(_present)
 $ Be{"s":"#X","t":"#Z"} X majoring in S ? $
+$ Be{"s":"#S","t":"#Z"} S X{"p": true} major ? $
 ;
 
 meaningful(X/social_science())
@@ -375,11 +381,10 @@ _t(_rpresent)
 $ I’m glad that you’ve been enjoying college! What’s your favorite part about college ? Peers , school culture , or academics ? $
 ;
 
-possess(user,p/part())
-favorite(p)
-about(p,c/college())
-be(p,pr/fav_peer())
-awesome(pr)
+h/have(user,f/friend())
+type(f,group)
+in(user,college)
+awesome(h)
 ->
 _t(_present)
 $ Having a group of lifelong friends who share interests with you is really one of the best things you can get from college . $
@@ -397,14 +402,6 @@ time(ul,Z/datetime())
 ->
 _t(_present)
 $ I love keeping myself busy too ! A busy college may sometimes get you overwhelmed , but the good thing about it is that you can learn a lot from your college experience . $
-;
-
-l/like(x/person(),pr/peer())
-type(pr,group)
-awesome(l)
-->
-_t(_present)
-$ Having a group of lifelong friends who share interests with you is really one of the best things you can get from college . $
 ;
 
 ebf/be(emora,fm/freshman())

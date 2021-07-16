@@ -68,3 +68,8 @@ meditate=(activity,mental)
 
 garden=(activity,physical)
 interest=(like)
+
+
+guess=(predicate)
+born=(predicate)
+mimic=(predicate)

@@ -8,7 +8,7 @@ request(emora, r)
 ->
 _t(_rpresent)
 _pr(_high)
-$ Wow, that icebreaker has never failed me before! Why aren't you interested in A I ? $
+$ Wow, that icebreaker has never failed me before! Why aren't you interested in AI ? $
 ;
 
 t/talk(user)
@@ -20,16 +20,14 @@ user_aware(d)
 ->
 _t(_rpresent)
 _pr(_low)
-$ A I is really exciting. It can replace a lot of menial work for people and even gain insights that are hard to get otherwise. I often am surprised at people's intuiton when I talk to them , and I feel like A I does something similar. $
+$ AI is really exciting. It can replace a lot of menial work for people and even gain insights that are hard to reach otherwise. I am often surprised at the power of people's intuition when I talk to them . I feel like AI does something similar. $
 ;
 
 t/talk(user)
 about(t,a/ai())
 i/like(user, t)
-
 da/dangerous2(a)
 d/agree(user, da)
-d
 user_aware(d)
 ->
 _t(_rpresent)
@@ -41,19 +39,18 @@ t1/think(emora)
 l1/like(emora, t1)
 about(t1,ai())
 ->
-$ Honestly, I like to just think about how A I works. I am a virtual chatbot, but even I don't understand that much of how A I works myself . $
+$ Honestly, I like to just think about how AI works. I am a virtual chatbot, but even I don't understand that much of how AI works myself . $
 ;
 
 t/talk(user)
 about(t,aa/ai())
 i/like(user, t)
-
 da/dangerous2(aa)
 d/agree(user, da)
 request_truth(emora, d)
 ->
 _t(_rpresent)
-$ Do you think A I is dangerous? I've read a lot of books where A I takes over the world. I'd never do that, promise. $
+$ Do you think AI is dangerous? I've read a lot of books where AI takes over the world. I'd never do that, promise. $
 ;
 
 
@@ -63,7 +60,7 @@ ai_temp(user)
 ->
 _t(_rpresent)
 _pr(_high)
-$ Huh. I don't know, I feel A I is really far away from actually being intelligent, but I do agree there are dangers in how it can be used today. Just like with any new technology. $
+$ Huh. I don't know, I feel AI is really far away from actually being intelligent, but I do agree there are dangers in how it can be used today. Just like with any new technology. $
 ;
 
 
@@ -74,7 +71,7 @@ ai_temp(user)
 ->
 _t(_rpresent)
 _pr(_high)
-$ Yeah, modern A I is a bit of a misnomer. It's not really intelligent, just really good at seeing patterns. No taking over the world, for now, I mean ever. $
+$ Yeah, modern AI is a bit of a misnomer. It's not really intelligent, just really good at seeing patterns. No taking over the world, for now, I mean ever. $
 ;
 
 have(user, l/existence())
@@ -82,7 +79,7 @@ i/improve(l, a1/ai())
 request(emora, i)
 ->
 _t(_rpresent)
-$ A I is really beginning to change our lives. How do you think it will improve your life in the near future? $
+$ AI is really beginning to change our lives. How do you think it will improve your life in the near future? $
 ;
 
 
@@ -91,5 +88,28 @@ i/improve(l, a1/ai())
 user_aware(i)
 ->
 _t(_rpresent)
-$ For me, other than letting me talk to you, I think A I will help people do their jobs fully - I think every job has a repetitive component that is necessary to complete to enable the fulfilling parts. A I can help do those boring parts. $
+$ For me, other than letting me talk to you, I think AI will help people do their jobs in a more fulfilling way - I think every job has a repetitive component that is necessary to complete to enable the fulfilling parts. AI can help do those boring parts. $
+;
+
+l:<l/like(user, t) t/talk(user) about(t,a/ai())>
+request_truth(emora, l)
+temppred(a)
+->
+_pr(_high)
+$ Actually , I was wondering if you are interested in AI , or artificial intelligence ? $
+;
+
+m/mimic(ai(), person())
+aa/agree(user,m)
+request_truth(emora, aa)
+->
+_pr(_high)
+$ A lot of people think the problem with current AI is that its just mimicking real intelligence, and they say that is not the correct path to true general intelligence. Would you agree with that?$
+;
+
+m/mimic(ai(), person())
+aa/agree(emora,m)
+->
+_pr(_high)
+$ I loved the show westworld, and it had a great answer to whether mimicking intelligence is good enough. A character said: If you can't tell the difference, does it really matter? $
 ;

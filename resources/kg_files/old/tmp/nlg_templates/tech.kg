@@ -217,7 +217,7 @@ request(emora, r)
 ->
 _t(_rpresent)
 _pr(_high)
-$ Wow, that icebreaker has never failed me before! Why aren't you interested in A I ? $
+$ Wow, that icebreaker has never failed me before! Why aren't you interested in AI ? $
 ;
 
 t/talk(user)
@@ -250,7 +250,7 @@ t1/think(emora)
 l1/like(emora, t1)
 about(t1,ai())
 ->
-$ Honestly, I like to just think about how A I works. I am a virtual chatbot, but even I don't understand that much of how A I works myself . $
+$ Honestly, I like to just think about how AI works. I am a virtual chatbot, but even I don't understand that much of how AI works myself . $
 ;
 
 t/talk(user)
@@ -262,7 +262,7 @@ d/agree(user, da)
 request_truth(emora, d)
 ->
 _t(_rpresent)
-$ Do you think A I is dangerous? I've read a lot of books where A I takes over the world. I'd never do that, promise. $
+$ Do you think AI is dangerous? I've read a lot of books where AI takes over the world. I'd never do that, promise. $
 ;
 
 
@@ -272,7 +272,7 @@ ai_temp(user)
 ->
 _t(_rpresent)
 _pr(_high)
-$ Huh. I don't know, I feel A I is really far away from actually being intelligent, but I do agree there are dangers in how it can be used today. Just like with any new technology. $
+$ Huh. I don't know, I feel AI is really far away from actually being intelligent, but I do agree there are dangers in how it can be used today. Just like with any new technology. $
 ;
 
 

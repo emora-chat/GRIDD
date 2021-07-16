@@ -10,6 +10,13 @@ op_more_info(b, l)
 request(emora, b)
 ;
 
+l/like(x/person(), b/book())
+_specific(b)
+->
+pred:<cause(pred/predicate(), l)>
+request(emora, pred)
+;
+
 reading__t
 ->
 l:<time(l/like(user, harrypotter), now)>
@@ -67,4 +74,18 @@ think(emora, awesome(magic))
 disagree(emora, n)
 pred:<cause(pred/predicate(), n)>
 request(emora, pred)
+;
+
+req_unsat(request(user, b/book()))
+like_1/like(emora, b)
+->
+like(emora, read(emora, harrypotter))
+;
+
+possess(emora, b/book())
+favorite(b)
+req_unsat(request(user, o/object()))
+be(b, o)
+->
+like(emora, read(emora, harrypotter))
 ;

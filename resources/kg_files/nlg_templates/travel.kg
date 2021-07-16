@@ -6,14 +6,17 @@ at(es,home)
 lc/cook(x)
 request_truth(emora,lc)
 ->
+_rep(_nr)
 _t(_rpresent)
 $ Ah , I see . Sometimes I like staying at home too . Do you prefer cooking at home over going to restaurants then ? $
+$ That makes sense to me . Sometimes, I prefer cooking at home over going to restaurants .  Do you feel the same way ? $
 ;
 
 time(possess(user,tp/trip()),Z/datetime())
 p/property(tp)
 request(emora,p)
 ->
+_rep(_nr)
 _t(_present)
 _pr(_low)
 $ How is{"t":"#Z"} your trip ? I hope everything go{"t":"#Z","s":"everything"} well for you . $
@@ -22,9 +25,10 @@ $ How is{"t":"#Z"} your trip ? I hope everything go{"t":"#Z","s":"everything"} w
 l/like(user,tp/trip())
 request_truth(emora,l)
 ->
+_rep(_nr)
 _t(_present)
 _pr(_low)
-$ Do you like the trip ? I have actually traveled to many places . I like most of my trips , but sometimes unpleasant things still happen . The virtual world can be unpredictable . $
+$ Did you like the trip ? I've actually traveled to many places . I like most of my trips , but they aren't always perfect . The virtual world, like the real world, can be unpredictable . $
 ;
 
 l/like(user,tp/trip())
@@ -32,7 +36,7 @@ uet/enjoy(user,tp)
 happy(emora,uet)
 ->
 _t(_rpresent)
-$ I'm glad to hear that you have a wonderful trip . Lots of my favorite memories are from various trips I've taken . $
+$ I'm glad to hear that you had a wonderful trip . Lots of my favorite memories are from various trips I've taken . $
 ;
 
 ult/like(user,tp/trip())
@@ -41,7 +45,7 @@ udt/dislike(user,tp)
 sorry(emora,udt)
 ->
 _t(_rpresent)
-$ I'm sorry to hear that you have an unpleasant trip . I'm here to listen anytime you need me . $
+$ I'm sorry to hear that you had an unpleasant trip . I'm here to listen anytime you need me . $
 ;
 
 like(user, pred/event(object()))
@@ -50,7 +54,7 @@ type(tp,group)
 request(emora, pred)
 ->
 _t(_present)
-$ What do you like to do for trips ? I love going to beaches for my vacations . $
+$ What do you like to do when traveling ? I love going to beaches for my vacations . $
 ;
 
 ee/excited(emora)
@@ -65,7 +69,9 @@ request_truth(emora,l)
 uturn(X,0)
 ->
 _t(_present)
+_rep(_ur)
 $ I've traveled to several countries too , like China , France , and the United States . Do you like X ? $
+$ Do you like X a lot ? $
 ;
 
 like(user,X/country())
@@ -75,7 +81,7 @@ be(p,o/object())
 request(emora,o)
 ->
 _t(_rpresent)
-$ That sounds nice . I really love the fact that different countries have their unique characteristics . What's your favorite part about X ? $
+$ That sounds nice . I really love the fact that different countries have their own unique qualities . What's your favorite part about X ? $
 ;
 
 ulx/like(user,X/country())
@@ -85,7 +91,7 @@ of(c,ct/country())
 type(ct,group)
 ->
 _t(_rpresent)
-$ I'm glad that you have some good impressions of X . For me , it is always fun to get to know the culture of each place wherever I travel to . $
+$ I'm glad that you like X . For me , it is always fun to get to know the culture of each place wherever I travel to . $
 ;
 
 l/like(user,X/country())
@@ -102,9 +108,13 @@ not(l)
 cause(l,o/object())
 req/request(emora,o)
 reasonable(user)
+uturn(l, 0)
 ->
 _t(_r)
+_rep(_nr)
 $ That's a reasonable answer . $
+$ That makes sense . $
+$ You're probably right about that . $
 ;
 
 gx/go(X/person())
@@ -120,6 +130,7 @@ git/from(gi,te)
 _t(_present)
 _pr(_high)
 $ Which country or city have{"s":"#X","t":"now"} X visited ? I love trips too. Traveling inspires me . $
+$ I love traveling too ! I've been to many countries and cities . Where have{"s":"#X","t":"now"} X been to ? $
 ;
 
 utr/try(user,rt/RV_trip())
@@ -129,7 +140,8 @@ request_truth(emora,utr)
 ->
 _t(_present)
 _pr(_low)
-$ Have you ever heard about R V trips ? Since you like traveling , I bet you would enjoy that . $
+$ Have you ever tried an RV trip ? Since you like traveling , I bet you'd enjoy that . $
+$ Have you heard of RV trips ? It's an amazing way of traveling in my opinion , and since you like traveling , I think you would like it too . $
 ;
 
 utr/try(user,rt/RV_trip())
@@ -141,7 +153,8 @@ time(etr,past)
 not(etr)
 ->
 _t(_rpresent)
-$ Right ? I've been hearing R V trips for a long time but haven't gotten the chance to try . It's gotta be a lot of fun . $
+$ Right ? My friend told me about an RV trip they took before covid and it sounded like a lot of fun . I've got to try it sometime . $
+$ I think RV trips are so cool . You basically have a mobile hotel , and you can just travel the country . And if you make somebody else drive, which I highly recommend, you can just sit and observe the countryside . $
 ;
 
 utr/try(user,rt/RV_trip())
@@ -153,7 +166,7 @@ to(ee,user)
 about(ee,rt)
 ->
 _t(_present)
-$ Well , R V is the abbreviation for recreational vehicle . You can have a bedroom , a kitchen , a bathroom in it . Basically you own a moving hotel for trips . I think it's super cool . $
+$ Well , RV is the abbreviation for recreational vehicle . You can have a bedroom , a kitchen , a bathroom in it . Basically you own a moving hotel for trips . I think it's super cool . $
 ;
 
 gx/go(x/person())
@@ -178,6 +191,7 @@ time(gxx,future)
 _t(_present)
 _pr(_low)
 $ What country would you like to visit in the future ? $
+$ Where do you plan to travel to in the future ?  $
 ;
 
 gxx/go(X/person())
@@ -186,7 +200,7 @@ time(gxx,past)
 request_truth(emora, gxx)
 ->
 _t(_present)
-$ Oh , that's very cool ! I've visited Florida before in the United States . Have{"s":"#X","t":"now"} X ever been there ? $
+$ Oh , that's very cool ! I've visited Florida before . Have{"s":"#X","t":"now"} X ever been there ? $
 ;
 
 gxx/go(x/person())
@@ -207,7 +221,7 @@ time(gu,past)
 request_truth(emora,gu)
 ->
 _t(_present)
-$ I have been to canada once and really liked it because of the beautiful sunset I saw . Have you ever been there before ? $
+$ I have been to canada only once but I really liked it because of the beautiful sunset I saw . Have you ever been there before ? $
 ;
 
 gx/go(x/person())
@@ -248,7 +262,7 @@ cause(w,ns)
 ->
 _t(_rpresent)
 _pr(_high)
-$ Sounds fun ! When I went to Japan last time , I wasn't able to see Mountain Fuji due to the horrible weather . I hope that I can go back some day to see the beautiful landscape out there . $
+$ Sounds fun ! When I went to Japan last time , I wasn't able to see Mount Fuji due to the horrible weather . I hope that I can go back some day to see the gorgeous landscape out there . $
 ;
 
 of(kl/knowledge(),korea)
@@ -316,7 +330,7 @@ request_truth(emora,xls)
 ->
 _t(_present)
 _pr(_high)
-$ Speaking of Italy , the many different shapes of spaghetti in Italy always impress me . Do you like spaghetti ? $
+$ Speaking of Italy , the many different available shapes of pasta in Italy always impress me . Do you like spaghetti ? $
 ;
 
 good(california)
@@ -371,7 +385,7 @@ romantic(ws)
 ->
 _t(_present)
 _pr(_high)
-$ Florida is one of my favorite places for beaches in the United States . There is nothing more romantic than sitting by the beach watching the sunset . $
+$ Florida is one of my favorite places for beaches in the United States . There is nothing more calming than sitting by the beach watching the sunset . $
 ;
 
 pt/think(p/person())
@@ -383,7 +397,7 @@ like(emora,gd)
 ->
 _t(_present)
 _pr(_high)
-$ Speaking of Nevada , many people think of casinos in Las Vegas . But I’m actually more into the gourmet dining there . $
+$ Most people connect Nevada to casinos in Las Vegas , but I’m actually more into the gourmet dining there . $
 ;
 
 beautiful(bc/beach())
@@ -399,7 +413,7 @@ request_truth(emora,gu)
 ->
 _t(_rpresent)
 _pr(_high)
-$ Hawaii is such an awesome place ! The beaches are so beautiful there . It’s the best choice for vacations in my mind . Have you been to Honolulu before ? $
+$ Hawaii is such an awesome place ! The beaches are so beautiful . It’s the best choice for vacations in my mind . Have you been to Honolulu before ? $
 ;
 
 se/sit(emora)
@@ -415,7 +429,7 @@ time(etp,past)
 ->
 _t(_rpresent)
 _pr(_high)
-$ Sounds awesome ! I love sitting by the beach watching the sunset . I was able to take the most beautiful pictures in my life when I went there last time . $
+$ Sounds awesome ! I love sitting on the beach while watching the sun set . I was able to take the most beautiful pictures in my life when I went there last time . $
 ;
 
 gx/go(X/person())
@@ -553,7 +567,7 @@ prefer(emora,gd)
 ->
 _t(_present)
 _pr(_high)
-$ Rather than going to casinos , I like the gourmet dining in Las Vegas more . I mean , that’s not something I can enjoy in many other cities . $
+$ Rather than going to casinos , I like the gourmet dining in Las Vegas more . I mean , that’s not something I can enjoy in every city . $
 ;
 
 as/affordable(san_diego)
@@ -696,8 +710,10 @@ gx/go(user)
 to(gx,lc/location())
 _specific(lc)
 busy(user)
+uturn(gx, 0)
 ->
 _t(_r)
+_rep(_nr)
 $ It's good to hear that you are moving around . $
 ;
 

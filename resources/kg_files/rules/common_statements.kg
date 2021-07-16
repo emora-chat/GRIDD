@@ -86,7 +86,7 @@ h/have(emora, b/body_part())
 like(user, have_emora_body())
 ;
 
-about(talk(), e/entity())
+about(talk(), e/object())
 ->
 l/like(user, e)
 user_aware(l)

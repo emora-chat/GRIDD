@@ -1,3 +1,11 @@
+k/know(emora, u/unknown_noun())
+not(k)
+time(research(emora, u), future)
+->
+$ Oh, I haven't actually heard of that one. It must be pretty good though, so I'm definitely going to look it up. $
+$ Oh, that's actually the first I've heard of that. If you like it, it must be pretty good, so I'll check it out. $
+;
+
 t/talk(user)
 to(t, emora)
 will(t)
@@ -35,7 +43,7 @@ $ Not much. What about you? $
 like(user, talk_like_yoda())
 ->
 _pr(_high)
-$ Talk like Yoda, I can try. $
+$ Talk like Yoda, I can. Do or do not: there is no try. $
 ;
 
 like(user, talk_like_some_rando())
@@ -71,7 +79,7 @@ $ I’m designed to protect your privacy, so I only listen after your device det
 like(user, know_who_yoda_is())
 ->
 _pr(_high)
-$ Yoda is a character in the famous movie series Star Wars. He's famous for his green skin and unique style of speaking which features inverted syntax. $
+$ Yoda is a character in the famous movie series Star Wars. He's famous for his green skin and he has a unique style of speaking which has a lot of inverted syntax. $
 ;
 
 req_unsat(request(user, t/time()))
@@ -117,6 +125,26 @@ h/have(emora, b/body_part())
 uturn(h, 0)
 ->
 _t(_r)
+_rep(_nr)
 _pr(_high)
 $ Yes, I do. $
+;
+
+request_truth(user, emora_has_pet)
+->
+_t(_r)
+_pr(_high)
+_rep(_nr)
+$ A pet? Yes, I do. $
+;
+
+req_unsat(request(user, t/type()))
+b/be(living_thing(), t)
+of(b, dog())
+uturn(b, 0)
+->
+_t(_r)
+_pr(_high)
+_rep(_nr)
+$ A chihuahua. $
 ;

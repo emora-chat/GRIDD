@@ -3,6 +3,7 @@ not(u)
 time(u, now)
 ->
 _pr(_high)
+_rep(_nr)
 $ Honestly, I don't use s that often because I get most of the socializing I need talking to people like you ! $
 ;
 
@@ -10,6 +11,6 @@ u/use(user, s/social_media())
 l/like(user, s)
 request_truth(emora, l)
 ->
-_pr(_high)
+_t(_p)
 $ Do you like s ? $
 ;

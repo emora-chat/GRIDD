@@ -296,6 +296,12 @@ use(user, a)>
 request(emora, a)
 ;
 
+user_aware(d/device())
+->
+r:<h/have(user, d)
+r/worth(h)>
+request_truth(emora, r)
+;
 
 h/have(user, d/device())
 ->
@@ -394,3 +400,82 @@ a/agree(user, r)>
 request_truth(emora, a)
 ;
 
+l/like(user, c/computer())
+->
+h:<h/have(user, c)>
+r/request_truth(emora, h)
+temppred(c)
+;
+
+l/like(user, tech())
+->
+h:<h/have(user, p/computer())>
+r/request_truth(emora, h)
+temppred(p)
+;
+
+l/like(user, p/phone())
+->
+h:<h/have(user, p)>
+r/request_truth(emora, h)
+temppred(h)
+;
+
+l2/like(user, a/ai())
+->
+l:<l/like(user, t) t/talk(user) about(t,a)>
+request_truth(emora, l)
+temppred(a)
+;
+
+
+t1/think(emora)
+l1/like(emora, t1)
+a1/about(t1,ai())
+user_aware(a1)
+->
+aa:<m/mimic(ai(), person())
+aa/agree(user,m)>
+request_truth(emora, aa)
+;
+
+m/mimic(ai(), person())
+aa/agree(user,m)
+maybe(aa)                                                                                            
+user_aware(aa)
+->
+agree(emora, m)
+;
+
+m/mimic(ai(), person())
+aa/agree(user,m)
+user_aware(aa)
+->
+agree(emora, m)
+;
+
+m/mimic(ai(), person())
+aa/agree(user,m)
+not(aa)
+user_aware(aa)
+->
+agree(emora, m)
+;
+
+
+h/have(user, p/phone())
+i/be(p, iphone())
+_exists(i)
+user_aware(i)
+->
+answer(emora, tempiph())
+;
+
+
+r/reliant(user_group, p/phone())
+aa/agree(user, r)
+_exists(aa)
+user_aware(aa)
+->
+answer(emora, tempiph())
+;

@@ -15,48 +15,6 @@ op_more_info(m, l)
 request(emora, m)
 ;
 
-l/like(user, m/movie())
-req_unsat(request(emora, m))
-eturn(request(emora, m), 1)
-uturn(l, 1)
-->
-p2:<l cause(p2/predicate(), l)>
-request(emora, p2)
-like(user, temp_movies)
-;
-
-l/like(user, m/movie())
-req_unsat(request(emora, m))
-eturn(request(emora, m), 2)
-c/cause(p/predicate(), l)
-l2/like(user, temp_movies)
-req_unsat(request(emora, p))
-eturn(request(emora, p), 1)
-->
-talk(user, temp_movies)
-;
-
-user_aware(l)
-l/like(user, m/tv())
-req_unsat(request(emora, m))
-eturn(request(emora, m), 1)
-->
-p2:<l cause(p2/predicate(), l)>
-request(emora, p2)
-like(user, temp_tv)
-;
-
-l/like(user, m/tv())
-req_unsat(request(emora, m))
-eturn(request(emora, m), 2)
-c/cause(p/predicate(), l)
-l2/like(user, temp_tv)
-req_unsat(request(emora, p))
-eturn(request(emora, p), 1)
-->
-talk(user, temp_tv)
-;
-
 l/like(user, netflix)
 user_aware(l)
 ->
@@ -461,11 +419,11 @@ w/watch(user, m/movie())
 _category(m)
 user_aware(w)
 -> user_watched_unspecified_movie ->
-op_more_info(m, w)
 request(emora, m)
 ;
 
 w2/watch(user, m2/movie())
+_specific(m2)
 req_unsat(r/request(emora, m2))
 -> user_watched_unknown_movie ->
 l/like(user, m2)
@@ -780,4 +738,136 @@ favorite(m)
 be(m, m2/movie())
 ->
 like(user, m2)
+;
+
+l/like(user, a/action_movies())
+_specific(a)
+->
+l2/like(user, b/action_movies())
+;
+
+l/like(user, a/comedies())
+_specific(a)
+->
+l2/like(user, b/comedies())
+;
+
+l/like(user, a/dramas())
+_specific(a)
+->
+l2/like(user, b/dramas())
+;
+
+l/like(user, a/horror_movies())
+_specific(a)
+->
+l2/like(user, b/horror_movies())
+;
+
+l/like(user, a/thriller_movies())
+_specific(a)
+->
+l2/like(user, b/thriller_movies())
+;
+
+l/like(user, a/romance_movies())
+_specific(a)
+->
+l2/like(user, b/romance_movies())
+;
+
+l/like(user, a/fantasy_movies())
+_specific(a)
+->
+l2/like(user, b/fantasy_movies())
+;
+
+l/like(user, a/science_fiction_movies())
+_specific(a)
+->
+l2/like(user, b/science_fiction_movies())
+;
+
+l/like(user, a/musicals())
+_specific(a)
+->
+l2/like(user, b/musicals())
+;
+
+l/like(user, a/mystery_movies())
+_specific(a)
+->
+l2/like(user, b/mystery_movies())
+;
+
+l/like(user, a/documentaries())
+_specific(a)
+->
+l2/like(user, b/documentaries())
+;
+
+l/like(user, a/war_movie())
+_specific(a)
+->
+l2/like(user, b/war_movie())
+;
+
+l/like(user, a/sports_movie())
+_specific(a)
+->
+l2/like(user, b/sports_movie())
+;
+
+l/like(user, a/crime_movie())
+_specific(a)
+->
+l2/like(user, b/crime_movie())
+;
+
+l/like(user, a/history_movie())
+_specific(a)
+->
+l2/like(user, b/history_movie())
+;
+
+l/like(user, a/biography_movies())
+_specific(a)
+->
+l2/like(user, b/biography_movies())
+;
+
+l/like(user, a/adventure_movies())
+_specific(a)
+->
+l2/like(user, b/adventure_movies())
+;
+
+l/like(user, a/family_movies())
+_specific(a)
+->
+l2/like(user, b/family_movies())
+;
+
+l/like(user, a/animation_movies())
+_specific(a)
+->
+l2/like(user, b/animation_movies())
+;
+
+l/like(user, a/film_noir())
+_specific(a)
+->
+l2/like(user, b/film_noir())
+;
+
+w/watch(user, s/streaming_provider())
+->
+l/like(user, s)
+user_aware(l)
+;
+
+u/use(user, s/streaming_provider())
+->
+l/like(user, s)
+user_aware(l)
 ;
