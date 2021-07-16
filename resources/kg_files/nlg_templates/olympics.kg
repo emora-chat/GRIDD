@@ -307,17 +307,6 @@ not(p)
 $ I think Vancouver was the best Winter Olympics, at least in recent years. That's probably my favorite. $
 ;
 
-p/prefer(user,summer_olympics())
-->
-$ As far as Summer Olympics go, I would have to say Rio was my favorite . The atmosphere was just so exciting ! $
-;
-
-p/prefer(user,summer_olympics())
-maybe(p)
-->
-$ As far as Summer Olympics go, I would have to say Rio was my favorite . The atmosphere was just so exciting ! $
-;
-
 user_aware(f/famous_olympian())
 ->
 _t(_r)
