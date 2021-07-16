@@ -1,5 +1,5 @@
 time(like(emora, multiplayer), now)
-time(like(emora, vg/videogame()), now)
+like(emora, vg/videogame())
 play(emora, vg)
 type(vg, group)
 like(emora, nintendo)
