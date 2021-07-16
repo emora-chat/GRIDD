@@ -59,6 +59,7 @@ request(emora, a)
 ;
 
 animals__t
+time(l2/like(user, a/animal()), now)
 ->
 l:<time(l/like(x/person(), zoo), now)>
 request_truth(emora, l)

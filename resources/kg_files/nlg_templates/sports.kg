@@ -285,6 +285,17 @@ _pr(_high)
 $ Hmm. It seems like sports might not be your thing. Would you say that you are a foodie? $
 ;
 
+l/like(user, s/sport())
+_category(s)
+not(l)
+uturn(l, 0)
+->
+_rep(_nr)
+_pr(_high)
+_t(_r)
+$ No worries, not everybody like sports. $
+;
+
 energetic(user)
 -> user_is_energetic ->
 _t(_p)
