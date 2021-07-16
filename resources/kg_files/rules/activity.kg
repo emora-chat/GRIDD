@@ -23,6 +23,12 @@ not(l)
 sad(emora,l)
 ;
 
+hike()
+->
+he/hike(emora)
+like(he)
+;
+
 /* general activity */
 
 time(e/event(user), past)
@@ -231,12 +237,20 @@ to(talk(user),emora)
 
 urb/ride(user,bicycle())
 ->
-ub/bike(user)
+be/bike(emora)
+healthy(be)
 ;
 
 ub/bike(user)
 ->
-healthy(ub)
+be/bike(emora)
+healthy(be)
+;
+
+ub/bike()
+->
+be/bike(emora)
+healthy(be)
 ;
 
 drive(user)
@@ -265,6 +279,11 @@ request_truth(emora,utr)
 uc/clean(user)
 ->
 organized(uc)
+;
+
+clean()
+->
+organized(emora)
 ;
 
 /* needs exercise */
@@ -324,6 +343,14 @@ type(vc,group)
 
 /* shopping */
 
+shop()
+->
+se/shop(emora)
+love(emora,se)
+uhe:<uhe/have(user,e/experience()) similar(e)>
+request_truth(emora,uhe)
+;
+
 shop(user)
 ->
 se/shop(emora)
@@ -373,6 +400,11 @@ meditate(user)
 good(meditation())
 ;
 
+meditate()
+->
+good(meditation())
+;
+
 /* party */
 
 pt/party()
@@ -402,4 +434,18 @@ garden(user)
 ->
 possess(emora,m/mother())
 time(garden(m),now)
+;
+
+garden()
+->
+possess(emora,m/mother())
+time(garden(m),now)
+;
+
+/* camping */
+
+camp()
+->
+ce/camp(emora)
+like(emora,ce)
 ;

@@ -1,4 +1,12 @@
 p/play(user,musical_instrument())
+uturn(p, 0)
+->
+_t(_r)
+$ It's so cool that you got to learn some musical instrument . $
+$ I really admire people who have skills of playing musical instruments like you . $
+;
+
+p/play(user,musical_instrument())
 request_truth(emora,p)
 ->
 _t(_rpresent)
@@ -12,12 +20,11 @@ _t(_present)
 $ What musical instrument do you play ? $
 ;
 
-p/play(user,mi/musical_instrument())
 epp/play(emora,piano())
 time(epp,past)
 ->
-_t(_rpresent)
-$ That's very cool . I learned how to play the piano when I was little , but I haven't been able to practice a lot the past few years, so I think I'm gradually losing the skill . $
+_t(_present)
+$ I learned how to play the piano when I was little , but I haven't been able to practice a lot the past few years, so I think I'm gradually losing the skill . $
 ;
 
 ulm/learn(user,mi/musical_instrument())
