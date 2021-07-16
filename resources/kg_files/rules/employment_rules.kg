@@ -97,6 +97,7 @@ cause(fbc,fdb)
 /* More Specific Content */
 xe/excited(x/person())
 for(xe,j/job())
+_category(j)
 ->
 xhf/have(x,f/fun())
 he/happy(emora)
@@ -106,9 +107,11 @@ for(he,xhf)
 xe/excited(x/person())
 for(xe,j/job())
 not(xe)
+_category(j)
 ->
-he/sorry(emora)
-for(he,x)
+not(l/like(x,j))
+se/sorry(emora)
+about(se,l)
 ;
 
 upc/have(user,cl/colleague())
@@ -160,8 +163,8 @@ motivated(emora)
 l/like(x/person(),j/job())
 not(l)
 ->
-he/sorry(emora)
-for(he,x)
+se/sorry(emora)
+about(se,l)
 ;
 
 time(work(x/person()),now)
