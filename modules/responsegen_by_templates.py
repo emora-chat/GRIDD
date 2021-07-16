@@ -163,7 +163,7 @@ class ResponseTemplateFiller:
                 aux_state.setdefault('all_resp', set()).add(string)
                 if r_string is not None:
                     aux_state.setdefault('responses', {})[r_id[0]] = (r_id[1], r_string)
-                    string = r_string + string
+                    string = r_string + ' ' + string
                 type = "fallback"
                 anchor = template_obj.topic_anchor
             else:
