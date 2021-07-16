@@ -610,7 +610,11 @@ class ChatbotServer:
     def run_template_fillers(self, inference_results, expr_dict, working_memory, aux_state):
         if inference_results is None:
             inference_results = {}
+        if 'all_resp' in aux_state:
+            aux_state['all_resp'] = set(aux_state['all_resp'])
         template_response_sel = self.template_filler(inference_results, expr_dict, working_memory, aux_state, self.dialogue_intcore.fallbacks)
+        if 'all_resp' in aux_state:
+            aux_state['all_resp'] = list(aux_state['all_resp'])
         return template_response_sel, aux_state
 
     def init_response_selection(self):

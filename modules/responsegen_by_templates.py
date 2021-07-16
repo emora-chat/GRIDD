@@ -91,7 +91,7 @@ class ResponseTemplateFiller:
                 rule_info = (rule, selection)
                 selection = post[selection]
                 response_str = self._fill_template(rule_info, selection, match_dict, expr_dict, cg)
-                if response_str is None:
+                if response_str is None or (repetition_type == '_nr' and response_str in aux_state.get('all_resp', set())):
                     continue # skip to next template
 
                 if selection.template_type == '_react':
@@ -122,6 +122,7 @@ class ResponseTemplateFiller:
             predicates = rp_predicates
             anchor = rp_anchor
             aux_state.setdefault('responses', {})[rp_id[0]] = (rp_id[1], rp_string)
+            aux_state.setdefault('all_resp', set()).add(rp_string)
         else:
             if p_string is None:
                 string, predicates, anchor = (p_string, p_predicates, p_anchor)
@@ -129,6 +130,7 @@ class ResponseTemplateFiller:
                 string = p_string
                 anchor = p_anchor
                 aux_state.setdefault('responses', {})[p_id[0]] = (p_id[1], p_string)
+                aux_state.setdefault('all_resp', set()).add(p_string)
                 predicates = p_predicates
                 if curr_turn > 0:
                     s = random.choice(['Yeah .', 'Gotcha .', 'I see .', 'Okay .'])
@@ -136,6 +138,7 @@ class ResponseTemplateFiller:
                     s = ''
                 if r_string is not None:
                     aux_state.setdefault('responses', {})[r_id[0]] = (r_id[1], r_string)
+                    aux_state.setdefault('all_resp', set()).add(r_string)
                     s = r_string
                 # Do not add reaction predicates to predicates list in order to avoid them being treated as spoken and getting the eturn predicate
                 string = s + ' ' + string
@@ -144,9 +147,6 @@ class ResponseTemplateFiller:
         if string is None: # PICK UNUSED FALLBACK
             # can still use reaction even with fallback
             string = ''
-            if r_string is not None:
-                aux_state.setdefault('responses', {})[r_id[0]] = (r_id[1], r_string)
-                string = r_string + ' '
             candidates = list(set(fallback_options.keys()) - set(aux_state.get('fallbacks', [])))
             # candidates = ['ai', 'pet', 'sport', 'movie', 'postpandemicnlg',
             #               'art', 'reading', 'tech', 'food', 'videogame', 'travel', 'phone']
@@ -159,7 +159,11 @@ class ResponseTemplateFiller:
                     aux_state['fallbacks'].append(selected)
                 predicates, template_d, _ = fallback_options[selected]
                 template_obj = list(template_d.values())[0]
-                string += ' '.join(template_obj.string_spec_ls)
+                string = template_obj.string_spec_ls
+                aux_state.setdefault('all_resp', set()).add(string)
+                if r_string is not None:
+                    aux_state.setdefault('responses', {})[r_id[0]] = (r_id[1], r_string)
+                    string = r_string + string
                 type = "fallback"
                 anchor = template_obj.topic_anchor
             else:
