@@ -88,36 +88,6 @@ _pr(_high)
 $ Criterion has such an amazing collection of films! I love discovering classic films and Criterion is perfect for doing that. One of my favorites is Breathless. It’s fun to watch and pretend I’m living in 1960s Paris. $
 ;
 
-l/like(user, m/movie())
-req_unsat(request(emora, m))
-cause(p/predicate(), l)
-request(emora, p)
-->
-_pr(_high)
-$ I haven't heard of that before. Why is it your favorite? $
-;
-
-talk(user, temp_movies)
-->
-_pr(_high)
-$ That's interesting to hear. I guess I'll check it out. Maybe it will be my new favorite! $
-;
-
-l/like(user, m/tv())
-req_unsat(request(emora, m))
-cause(p/predicate(), l)
-request(emora, p)
-->
-_pr(_high)
-$ I haven't heard of that before. Why is it your favorite? $
-;
-
-talk(user, temp_tv)
-->
-_pr(_high)
-$ That's interesting to hear. I guess I'll check it out. Maybe it will be my new favorite! $
-;
-
 /* TV Genre Stuff */
 
 favorite(g/tv())

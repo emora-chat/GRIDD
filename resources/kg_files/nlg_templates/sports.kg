@@ -409,39 +409,13 @@ _pr(_high)
 $ Wimbledon is a yearly tennis competition that takes place on grass courts in England. All the top players go and compete ! $
 ;
 
-possess(emora, w/wimbledon_match())
-favorite(w)
-req_unsat(request(user, o/object()))
-b/be(w, o)
+watch_emora_wimbledon(user)
 ->
 _pr(_high)
 $ Honestly, my favorite match was in round one. Seeing Kyrgios beat Humbert after so long out of the game was really impressive, especially given Humbert's recent success. $
 ;
 
-eturn(wimbledon(), 2)
-possess(emora, m/sports_event())
-favorite(m)
-req_unsat(request(user, o/object()))
-b/be(m, o)
-->
-_pr(_high)
-$ Honestly, my favorite match was in round one. Seeing Kyrgios beat Humbert after so long out of the game was really impressive, especially given Humbert's recent success. $
-;
-
-possess(emora, w/euro_cup_game())
-favorite(w)
-req_unsat(request(user, o/object()))
-b/be(w, o)
-->
-_pr(_high)
-$ I really enjoyed the game between France and Switzerland. And it was so similar to the game between Spain and Croatia! $
-;
-
-eturn(euro_cup_game(), 2)
-possess(emora, w/sports_event())
-favorite(w)
-req_unsat(request(user, o/object()))
-b/be(w, o)
+watch_emora_euro(user)
 ->
 _pr(_high)
 $ I really enjoyed the game between France and Switzerland. And it was so similar to the game between Spain and Croatia! $

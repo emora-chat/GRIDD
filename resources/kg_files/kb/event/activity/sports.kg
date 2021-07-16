@@ -355,6 +355,9 @@ wimbledon=entity()
 wimbledon_match=(tennis_game)
 expr("wimbledon match, wimbledon game, wimbledon tennis match", wimbledon_match)
 
+watch_emora_wimbledon=(predicate)
+watch_emora_euro=(predicate)
+
 sports_event = (entity)
 expr("sports event, match, the big game", sports_event)
 
