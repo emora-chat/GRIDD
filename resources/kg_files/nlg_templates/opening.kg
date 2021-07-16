@@ -3,7 +3,7 @@ possess(user, n1)
 request(emora, n)
 -> ask_name_nlg ->
 _t(_p)
-$ You know , I don't think we have met before . What would you like me to call you ? $
+$ What would you like me to call you ? $
 ;
 
 time(be(n1/name(), N/name()), now)
@@ -15,7 +15,7 @@ cause(m, h)
 uturn(N, 0)
 -> greet_name_nlg ->
 _t(_react)
-$ I am really happy to meet you , N ! $
+$ I am really happy to talk to you today , N ! $
 ;
 
 time(b/be(n1/name(), N/name()), now)
@@ -27,7 +27,7 @@ cause(m, h)
 eturn(b, 1)
 -> greet_no_name_nlg ->
 _t(_react)
-$ I am really happy to meet you ! $
+$ I am really happy to talk to you today ! $
 ;
 
 time(hope(emora, feel(user, good)), now)
@@ -35,5 +35,5 @@ time(do(user, p/event(object())), today)
 request(emora, p)
 -> first_prompt_nlg ->
 _t(_p)
-$ I hope you've been doing well today . What have you been up to ? $
+$ I hope you've been doing well . What have you been up to ? $
 ;

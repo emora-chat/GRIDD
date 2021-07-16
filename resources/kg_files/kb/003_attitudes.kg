@@ -1,4 +1,4 @@
-attitude=(predicate)
+attitude=(predicate, nonassert)
 
 [like, dislike, want, feel, hope]=(attitude)
 expr("enjoy", like)

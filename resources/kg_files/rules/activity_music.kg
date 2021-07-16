@@ -45,9 +45,20 @@ not(ulm)
 understand(emora,ulm)
 ;
 
+
+
+
 /* Common Sense */
 
 like(user,m/music())
 ->
 to(listen(user),m)
+;
+
+
+/* Related */
+
+activity_music__t
+->
+_tanchor(music__t)
 ;

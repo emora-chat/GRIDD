@@ -1,12 +1,16 @@
+time(do(user, p/event(object())), today)
+r/request(emora, p)
+eturn(r, 1)
 he/hike(emora)
 time(he,past)
-l:<hu/hike(user) l/like(user,hu) time(l,now)>
+hu/hike(user) l/like(user,hu) time(l,now)
 request_truth(emora,l)
 ->
-_t(_rp)
+_t(_p)
 _rep(_nr)
-$ Gotcha . I actually just got back from hiking . Are you a fan of hiking by any chance ? $
-$ Okay . I went hiking yesterday with my friends , and it was so much fun for me . Do you also like hiking ? $
+_pr(_low)
+$ I actually just got back from hiking . Are you a fan of hiking by any chance ? $
+$ I went hiking yesterday with my friends , and it was so much fun for me . Do you also like hiking ? $
 ;
 
 healthy(user)
