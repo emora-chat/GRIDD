@@ -143,18 +143,19 @@ $ Do you like the design of mac OS? I used to use windows, but windows never foc
 h/have(user, d/device())
 r/worth(h)
 request_truth(emora, r)
-be(d, d2/device())
+_specific(d)
 ->
 _rep(_ur)
 _pr(_low)
 _t(_rpresent)
-$ To be honest, I've never had a d2 . I'm thinking I might get one, do you think it is worth it ? $
-$ d2 sounds nifty, do you think a chatbot should have one though ? $
+$ To be honest, I've never had a d . I'm thinking I might get one, do you think it is worth it ? $
+$ d sounds nifty, do you think a chatbot should have one though ? $
 ;
 
 
 
 acquire(emora, d1/device())
+_specific(d1)
 ->
 _rep(_ur)
 _pr(_low)
@@ -167,6 +168,7 @@ h/want(user, d/device())
 r/reason(h)
 request(emora, r)
 uturn(h,0)
+_specific(d)
 ->
 _rep(_r)
 _pr(_low)
@@ -184,12 +186,12 @@ $ Thats a good reason ! I think I agree . $
 ;
 
 kinship(emora, d/device())
+_specific(d)
 ->
 _t(_rpresent)
 $ You know, I am a virtual chatbot, so in a way d and I are related . I'm like its cool older sister .$
 $ Us devices stick together so you'd better treat d well. Just kidding, haha. $
 ;
-
 h/have(user, p/computer())
 r/request_truth(emora, h)
 temppred(p)
