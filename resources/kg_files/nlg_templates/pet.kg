@@ -64,7 +64,7 @@ time(have(emora, nyla), now)
 ->
 _t(_p)
 _pr(_low)
-$ Actually , I got a puppy four months ago . Her name is Nyla and she's adorable . $
+$ Actually , I got a puppy four months ago . Her name is Nyla and she's adorable . I have her with me now in fact! <audio src='soundbank://soundlibrary/animals/amzn_sfx_dog_med_woof_1x_01'/> <amazon:emotion name='excited' intensity='medium'> That was her! She gets excited when I talk to others. </amazon:emotion> $
 ;
 
 teach(emora, nyla)
