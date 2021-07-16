@@ -46,6 +46,7 @@ class ConceptGraph:
             ConceptGraph.construct(self, predicates, metalinks, metadata)
         self.compiled_types = {}
         self.compiled_subtypes = {}
+        self.kb_predicate_types = {}
 
     @classmethod
     def construct(cls, cg, predicates, metalinks=None, metadata=None, compiler=None):

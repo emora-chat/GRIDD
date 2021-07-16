@@ -171,31 +171,36 @@ class IntelligenceCore:
         st = time()
         if INFERENCE and preprocess_queries:
             self.inference_engine.matcher.process_queries()
-
+        print('precompilation: %d' % (time() - st))
         if isinstance(working_memory, ConceptGraph):
             self.working_memory = working_memory
         else:
             self.working_memory = ConceptGraph(namespace='wm', supports={AND_LINK: False})
             self.consider(working_memory)
 
-        self.kb_predicate_types = self.knowledge_base.type_predicates()
+        if len(self.knowledge_base.kb_predicate_types) == 0:
+            self.knowledge_base.kb_predicate_types = self.knowledge_base.type_predicates()
+        if len(self.knowledge_base.compiled_subtypes) == 0:
+            self.knowledge_base.compiled_types = self.knowledge_base.types()
+        if len(self.knowledge_base.compiled_subtypes) == 0:
+            self.knowledge_base.compiled_subtypes = self.knowledge_base.subtypes()
+        print('precompilation: %d' % (time() - st))
         self.kb_subj_essentials = {}
-        for c in self.knowledge_base.subtypes_of('subj_essential'):
+        for c in self.knowledge_base.compiled_subtypes.get(SUBJ_ESSENTIAL, []):
             if self.knowledge_base.has(predicate_id=c):
                 self.kb_subj_essentials.setdefault(self.knowledge_base.subject(c), set()).add(c)
         self.kb_obj_essentials = {}
-        for c in self.knowledge_base.subtypes_of('obj_essential'):
+        for c in self.knowledge_base.compiled_subtypes.get('obj_essential', []):
             if self.knowledge_base.has(predicate_id=c):
                 self.kb_obj_essentials.setdefault(self.knowledge_base.object(c), set()).add(c)
 
-        self.subj_essential_types = {i for i in self.knowledge_base.subtypes_of(SUBJ_ESSENTIAL)
+        self.subj_essential_types = {i for i in self.knowledge_base.compiled_subtypes.get(SUBJ_ESSENTIAL, [])
                                 if not self.knowledge_base.has(predicate_id=i)}
-        self.obj_essential_types = {i for i in self.knowledge_base.subtypes_of(OBJ_ESSENTIAL)
+        self.obj_essential_types = {i for i in self.knowledge_base.compiled_subtypes.get(OBJ_ESSENTIAL, [])
                                 if not self.knowledge_base.has(predicate_id=i)}
         self.obj_essential_types.update({SPAN_REF, SPAN_DEF})
         self.knowledge_base.compile_connection_counts()
-        self.knowledge_base.compiled_types = self.knowledge_base.types()
-        self.knowledge_base.compiled_subtypes = self.knowledge_base.subtypes()
+
         print('precompilation: %d'%(time()-st))
 
     def stratify_cached_files(self, type, sources):
@@ -535,7 +540,7 @@ class IntelligenceCore:
         return
 
     def pull_types(self):
-        return {c: self.kb_predicate_types[c] for c in self.working_memory.concepts() if c in self.kb_predicate_types}
+        return {c: self.knowledge_base.kb_predicate_types[c] for c in self.working_memory.concepts() if c in self.knowledge_base.kb_predicate_types}
 
 
     def pull_knowledge(self, limit, num_pullers, association_limit=None, subtype_limit=None, degree=1):
@@ -592,12 +597,12 @@ class IntelligenceCore:
                     to_add = set(kb.structure(r,
                                               subj_essentials=self.kb_subj_essentials,
                                               obj_essentials=self.kb_obj_essentials,
-                                              type_predicates=self.kb_predicate_types))
+                                              type_predicates=self.knowledge_base.kb_predicate_types))
                     for inst in backptrs.get(r, {r}):
                         to_add.update(kb.structure(inst,
                                                    subj_essentials=self.kb_subj_essentials,
                                                    obj_essentials=self.kb_obj_essentials,
-                                                   type_predicates=self.kb_predicate_types))
+                                                   type_predicates=self.knowledge_base.kb_predicate_types))
                     to_add.difference_update(wmp)
                     if len(to_add) <= limit:
                         limit -= len(to_add)
@@ -616,7 +621,7 @@ class IntelligenceCore:
                 to_add = set(self.knowledge_base.structure(ins,
                                       subj_essentials=self.kb_subj_essentials,
                                       obj_essentials=self.kb_obj_essentials,
-                                      type_predicates=self.kb_predicate_types))
+                                      type_predicates=self.knowledge_base.kb_predicate_types))
                 for pred in to_add - wmp:
                     pulled[pred] = focus
         return pulled

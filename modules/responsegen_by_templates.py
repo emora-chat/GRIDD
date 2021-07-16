@@ -159,7 +159,7 @@ class ResponseTemplateFiller:
                     aux_state['fallbacks'].append(selected)
                 predicates, template_d, _ = fallback_options[selected]
                 template_obj = list(template_d.values())[0]
-                string = template_obj.string_spec_ls
+                string = ' '.join(template_obj.string_spec_ls)
                 aux_state.setdefault('all_resp', set()).add(string)
                 if r_string is not None:
                     aux_state.setdefault('responses', {})[r_id[0]] = (r_id[1], r_string)
