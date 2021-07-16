@@ -44,3 +44,19 @@ understand(emora,ulm)
 _t(_rpresent)
 $ Oh , I understand . The challenge is that if you want to play a musical instrument very well , it requires tons of time practicing . $
 ;
+
+time(g/go(user, concert()), past)
+request_truth(emora, g)
+->
+_pr(_low)
+$ Have you ever been to a concert ? $
+;
+
+time(g/go(user, c/concert()), past)
+q/quality(c)
+request(emora, q)
+uturn(g, 0)
+->
+_pr(_high)
+$ How was it ? $
+;

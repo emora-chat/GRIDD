@@ -45,9 +45,32 @@ not(ulm)
 understand(emora,ulm)
 ;
 
+activity_music__t
+->
+g:<time(g/go(user, concert()), past)>
+request_truth(emora, g)
+;
+
+time(g/go(user, c/concert()), past)
+->
+q/quality(c)
+request(emora, q)
+;
+
+
+
+
 /* Common Sense */
 
 like(user,m/music())
 ->
 to(listen(user),m)
+;
+
+
+/* Related */
+
+activity_music__t
+->
+music__t
 ;
