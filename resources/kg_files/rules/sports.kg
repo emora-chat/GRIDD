@@ -246,6 +246,58 @@ op_more_info(g, w)
 request(emora, g)
 ;
 
+eturn(wimbledon, 2)
+possess(emora, m/sports_event())
+favorite(m)
+req_unsat(request(user, o/object()))
+b/be(m, o)
+->
+watch_emora_wimbledon(user)
+;
+
+eturn(wimbledon, 1)
+possess(emora, m/sports_event())
+favorite(m)
+req_unsat(request(user, o/object()))
+b/be(m, o)
+->
+watch_emora_wimbledon(user)
+;
+
+possess(emora, w/wimbledon_match())
+favorite(w)
+req_unsat(request(user, o/object()))
+b/be(w, o)
+->
+watch_emora_wimbledon(user)
+;
+
+eturn(euro_cup, 2)
+possess(emora, w/sports_event())
+favorite(w)
+req_unsat(request(user, o/object()))
+b/be(w, o)
+->
+watch_emora_euro(user)
+;
+
+eturn(euro_cup, 1)
+possess(emora, w/sports_event())
+favorite(w)
+req_unsat(request(user, o/object()))
+b/be(w, o)
+->
+watch_emora_euro(user)
+;
+
+possess(emora, w/euro_cup_game())
+favorite(w)
+req_unsat(request(user, o/object()))
+b/be(w, o)
+->
+watch_emora_euro(user)
+;
+
 time(pl/play(user), past)
 in(pl, s/team_sports_event())
 -> person_plays_in_sports_event ->
