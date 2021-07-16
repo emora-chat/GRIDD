@@ -13,8 +13,6 @@ from simplenlg.features.Person              import *
 
 from itertools import chain
 
-from nltk.corpus import wordnet as wn
-
 
 """
 This class works in conjunction with the service-implementation of the InferenceEngine
@@ -38,14 +36,8 @@ class ResponseTemplateFiller:
         self.lexicon = Lexicon.getDefaultLexicon()
         self.nlgFactory = NLGFactory(self.lexicon)
         self.realiser = Realiser(self.lexicon)
-        self.cg_types = {}
-        self.wn_lemmas = set(wn.all_lemma_names())
-        self.wn_lemmas.update({'rapping'})
 
     def __call__(self, matches, expr_dict, cg, aux_state, fallback_options):
-
-        self.cg_types = cg.types()
-
         react_cands = []
         present_cands = []
         rpresent_cands = []
@@ -99,7 +91,7 @@ class ResponseTemplateFiller:
                 rule_info = (rule, selection)
                 selection = post[selection]
                 response_str = self._fill_template(rule_info, selection, match_dict, expr_dict, cg)
-                if response_str is None:
+                if response_str is None or (repetition_type == '_nr' and response_str in aux_state.get('all_resp', set())):
                     continue # skip to next template
 
                 if selection.template_type == '_react':
@@ -130,6 +122,7 @@ class ResponseTemplateFiller:
             predicates = rp_predicates
             anchor = rp_anchor
             aux_state.setdefault('responses', {})[rp_id[0]] = (rp_id[1], rp_string)
+            aux_state.setdefault('all_resp', set()).add(rp_string)
         else:
             if p_string is None:
                 string, predicates, anchor = (p_string, p_predicates, p_anchor)
@@ -137,6 +130,7 @@ class ResponseTemplateFiller:
                 string = p_string
                 anchor = p_anchor
                 aux_state.setdefault('responses', {})[p_id[0]] = (p_id[1], p_string)
+                aux_state.setdefault('all_resp', set()).add(p_string)
                 predicates = p_predicates
                 if curr_turn > 0:
                     s = random.choice(['Yeah .', 'Gotcha .', 'I see .', 'Okay .'])
@@ -144,6 +138,7 @@ class ResponseTemplateFiller:
                     s = ''
                 if r_string is not None:
                     aux_state.setdefault('responses', {})[r_id[0]] = (r_id[1], r_string)
+                    aux_state.setdefault('all_resp', set()).add(r_string)
                     s = r_string
                 # Do not add reaction predicates to predicates list in order to avoid them being treated as spoken and getting the eturn predicate
                 string = s + ' ' + string
@@ -152,9 +147,6 @@ class ResponseTemplateFiller:
         if string is None: # PICK UNUSED FALLBACK
             # can still use reaction even with fallback
             string = ''
-            if r_string is not None:
-                aux_state.setdefault('responses', {})[r_id[0]] = (r_id[1], r_string)
-                string = r_string + ' '
             candidates = list(set(fallback_options.keys()) - set(aux_state.get('fallbacks', [])))
             # candidates = ['ai', 'pet', 'sport', 'movie', 'postpandemicnlg',
             #               'art', 'reading', 'tech', 'food', 'videogame', 'travel', 'phone']
@@ -167,7 +159,11 @@ class ResponseTemplateFiller:
                     aux_state['fallbacks'].append(selected)
                 predicates, template_d, _ = fallback_options[selected]
                 template_obj = list(template_d.values())[0]
-                string += ' '.join(template_obj.string_spec_ls)
+                string = ' '.join(template_obj.string_spec_ls)
+                aux_state.setdefault('all_resp', set()).add(string)
+                if r_string is not None:
+                    aux_state.setdefault('responses', {})[r_id[0]] = (r_id[1], r_string)
+                    string = r_string + ' ' + string
                 type = "fallback"
                 anchor = template_obj.topic_anchor
             else:
@@ -281,50 +277,56 @@ class ResponseTemplateFiller:
 
         # Replacement of independent variables
         for i, e in with_params_independent:
-            source = e[0]
             surface_form, spec = e
             e_id = str(e)
             if e_id not in realizations:
-                is_entity_var = False
-                is_pred_var = False
                 if '.var' in surface_form:
-                    source = surface_form[:-4]
-                    surface_form = match_dict[source]
-                    if 'entity' in self.cg_types.get(surface_form, []):  # noun
-                        if surface_form in expr_dict:  # the matched concept for the variable is a named concept
-                            surface_form = self.nlgFactory.createNLGElement(expr_dict[surface_form], LexicalCategory.NOUN)
-                        else:  # not a named concept
-                            surface_form = self._unnamed_entity(cg, surface_form, expr_dict)
-                        is_entity_var = True
-                    else:
-                        if surface_form in expr_dict:  # the matched concept for the variable is a named concept
-                            surface_form = expr_dict[surface_form]
-                        else:  # not a named concept
-                            if cg.has(predicate_id=surface_form):
-                                surface_form = expr_dict.get(cg.type(surface_form), cg.type(surface_form))
-                            else:
-                                surface_form = self._unnamed_entity(cg, surface_form, expr_dict)
-                        is_pred_var = True
-                if "p" in spec or "d" in spec or is_entity_var: # noun
+                    surface_form = surface_form[:-4]
+                    surface_form = match_dict[surface_form]
+                if "p" in spec or "d" in spec: # noun
                     np = self.nlgFactory.createNounPhrase()
-                    np.setNoun(surface_form)
-                    if spec.get("d", False): # set determiner
+                    if surface_form in expr_dict:  # the matched concept for the variable is a named concept
+                        noun = self.nlgFactory.createNLGElement(expr_dict[surface_form], LexicalCategory.NOUN)
+                    else:  # not a named concept
+                        noun = self._unnamed_noun(cg, surface_form)
+                    np.setNoun(noun)
+                    if spec.get("d", False) == True: # set determiner
                         if cg.metagraph.out_edges(surface_form, REF) or list(cg.predicates(surface_form, USER_AWARE)): # reference
                             np.setDeterminer('the')
                         else: # instance
                             np.setDeterminer('a')
-                    if spec.get("p", False): # set as possessive
+                    if spec.get("p", False) == True: # set as possessive
                         np.setFeature(Feature.POSSESSIVE, True)
                         np.setFeature(Feature.PRONOMINAL, True) # todo - is this supposed to be here?
-                    if spec.get("g", False): # generic noun form -> Video games are fun.
-                        np.setFeature(Feature.NUMBER, NumberAgreement.PLURAL)
                     realizations[e_id] = self.realiser.realiseSentence(np)[:-1]
                     specifications[e_id] = np
-                    if source in specifications:
-                        realizations[source] = self.realiser.realiseSentence(np)[:-1]
-                        specifications[source] = np
                 else: # verb
-                    self._handle_predicate(surface_form, expr_dict, realizations, spec, match_dict, specifications, e_id)
+                    clause = self.nlgFactory.createClause()
+                    to_remove = set()
+                    if 't' in spec:
+                        clause.setVerb(surface_form)
+                        tense = match_dict.get(spec['t'], spec['t'])
+                        tense = expr_dict.get(tense, tense)
+                        if tense == 'past':
+                            clause.setFeature(Feature.TENSE, Tense.PAST)
+                        elif tense in {'present', 'now'}:
+                            clause.setFeature(Feature.TENSE, Tense.PRESENT)
+                        elif tense == 'future':
+                            clause.setFeature(Feature.TENSE, Tense.FUTURE)
+                        else:
+                            print(
+                                'WARNING! You specified an nlg `tense` parameter that is not handled (%s).' % spec['t'])
+                    if 's' in spec:
+                        subject = realizations.get(spec['s'], spec['s'])
+                        clause.setSubject(subject)
+                        if spec['s'] in specifications:
+                            clause.setFeature(Feature.NUMBER, specifications[spec['s']].features['number'])
+                        to_remove.add(subject)
+                    sentence = self.realiser.realiseSentence(clause).lower()
+                    for r in to_remove:
+                        pattern = r'\b' + r.lower() + r'\b'
+                        sentence = re.sub(pattern, '', sentence)
+                    realizations[e_id] = sentence[:-1].strip()
 
         # Replacement of dependent variables (only verbs can be dependent and `p` and `d` markers are not relevant for verbs)
         for i, e in with_params_dependent:
@@ -334,54 +336,34 @@ class ResponseTemplateFiller:
                 if '.var' in surface_form:
                     surface_form = surface_form[:-4]
                     surface_form = match_dict[surface_form]
-                    if surface_form in expr_dict:  # the matched concept for the variable is a named concept
-                        verb = expr_dict[surface_form]
-                    else:  # not a named concept
-                        if cg.has(predicate_id=surface_form):
-                            verb = expr_dict.get(cg.type(surface_form), cg.type(surface_form))
-                        else:
-                            verb = self._unnamed_entity(cg, surface_form, expr_dict)
-                else:
-                    verb = surface_form
-                self._handle_predicate(verb, expr_dict, realizations, spec, match_dict, specifications, e_id)
+                clause = self.nlgFactory.createClause()
+                to_remove = set()
+                if 't' in spec:
+                    clause.setVerb(surface_form)
+                    tense = match_dict.get(spec['t'], spec['t'])
+                    tense = expr_dict.get(tense, tense)
+                    if tense == 'past':
+                        clause.setFeature(Feature.TENSE, Tense.PAST)
+                    elif tense in {'present', 'now'}:
+                        clause.setFeature(Feature.TENSE, Tense.PRESENT)
+                    elif tense == 'future':
+                        clause.setFeature(Feature.TENSE, Tense.FUTURE)
+                    else:
+                        print('WARNING! You specified an nlg `tense` parameter that is not handled (%s).'%spec['t'])
+                if 's' in spec:
+                    subject = realizations.get(spec['s'], spec['s'])
+                    clause.setSubject(subject)
+                    if spec['s'] in specifications:
+                        clause.setFeature(Feature.NUMBER, specifications[spec['s']].features['number'])
+                    to_remove.add(subject)
+                sentence = self.realiser.realiseSentence(clause).lower()
+                for r in to_remove:
+                    pattern = r'\b' + r.lower() + r'\b'
+                    sentence = re.sub(pattern, '', sentence)
+                realizations[e_id] = sentence[:-1].strip()
 
         final_str = [realizations[str(e)] for e in string_spec_ls]
         return ' '.join(final_str)
-
-    def _handle_predicate(self, verb, expr_dict, realizations, spec, match_dict, specifications, e_id):
-        if spec.get("g", False):  # generic verb phrase -> Hiking is fun
-            vp = self.nlgFactory.createVerbPhrase(verb)
-            vp.setFeature(Feature.FORM, Form.GERUND)
-            sentence = self.realiser.realiseSentence(vp).lower()
-            double_ending = sentence[:-4] + sentence[-5] + 'ing.' # sentence ends in punctuation
-            if double_ending[:-1] in self.wn_lemmas:
-                sentence = double_ending
-        else:  # need full clause realization to get proper form
-            clause = self.nlgFactory.createClause()
-            to_remove = set()
-            if spec.get("t", False):
-                clause.setVerb(verb)
-                tense = match_dict.get(spec['t'], spec['t'])
-                tense = expr_dict.get(tense, tense)
-                if tense == 'past':
-                    clause.setFeature(Feature.TENSE, Tense.PAST)
-                elif tense in {'present', 'now'}:
-                    clause.setFeature(Feature.TENSE, Tense.PRESENT)
-                elif tense == 'future':
-                    clause.setFeature(Feature.TENSE, Tense.FUTURE)
-                else:
-                    print('WARNING! You specified an nlg `tense` parameter that is not handled (%s).' % spec['t'])
-            if spec.get("s", False):
-                subject = realizations.get(spec['s'], spec['s'])
-                clause.setSubject(subject)
-                if spec['s'] in specifications:
-                    clause.setFeature(Feature.NUMBER, specifications[spec['s']].features['number'])
-                to_remove.add(subject)
-            sentence = self.realiser.realiseSentence(clause).lower()
-            for r in to_remove:
-                pattern = r'\b' + r.lower() + r'\b'
-                sentence = re.sub(pattern, '', sentence)
-        realizations[e_id] = sentence[:-1].strip()
 
     def _concrete_type(self, cg, concept):
         """
@@ -404,31 +386,14 @@ class ResponseTemplateFiller:
             return None, expr_dict[match]
         else:  # not a named concept
             np = self.nlgFactory.createNounPhrase()
-            noun = self._unnamed_entity(cg, match, expr_dict)
+            noun = self._unnamed_noun(cg, match, expr_dict)
             np.setNoun(noun)
             return np, self.realiser.realiseSentence(np)[:-1]
 
-    def f(self, match, cg, expr_dict):
-        if match in expr_dict:  # the matched concept for the variable is a named concept
-            return None, expr_dict[match]
-        else:  # not a named concept
-            if 'entity' in self.cg_types.get(match, []):
-                np = self.nlgFactory.createNounPhrase()
-                noun = self._unnamed_entity(cg, match, expr_dict)
-                np.setNoun(noun)
-                return np, self.realiser.realiseSentence(np)[:-1]
-            elif 'predicate' in self.cg_types.get(match, []):
-                vp = self.nlgFactory.createVerbPhrase()
-                if cg.has(predicate_id=match):
-                    verb = match.get(cg.type(match), cg.type(match))
-                else:
-                    verb = self._unnamed_entity(cg, match, expr_dict)
-                vp.setVerb(verb)
-                return vp, self.realiser.realiseSentence(vp)[:-1]
 
-    def _unnamed_entity(self, cg, match, expr_dict):
+    def _unnamed_noun(self, cg, match, expr_dict):
         # need to get main type
-        match_types = self.cg_types.get(match, [])
+        match_types = cg.types(match)
         main_type = self._concrete_type(cg, match)
         main_type = expr_dict.get(main_type, main_type)
         noun = self.nlgFactory.createNLGElement(main_type, LexicalCategory.NOUN)
