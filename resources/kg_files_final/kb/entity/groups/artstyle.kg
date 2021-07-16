@@ -1,0 +1,7 @@
+artstyle=(entity)
+cubism=artstyle()
+surrealism=artstyle()
+abstract_art=artstyle()
+expr("abstract art",abstract_art)
+pop_art=artstyle()
+expr("pop art",pop_art)

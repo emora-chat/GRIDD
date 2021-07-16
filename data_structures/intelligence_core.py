@@ -232,7 +232,7 @@ class IntelligenceCore:
 
     def load_templates(self, cached, new_content, source, dir):
         for file in source:
-            print(file)
+            # print(file)
             cache_version = (file + '.json').replace(os.sep, CACHESEP)
             if cache_version in cached:
                 with open(os.path.join(dir, cache_version), 'r') as f:
@@ -267,7 +267,7 @@ class IntelligenceCore:
 
     def load_rules(self, cached, new_content, source, dir):
         for file in source:
-            print(file)
+            # print(file)
             cache_version = (file + '.json').replace(os.sep, CACHESEP)
             if cache_version in cached:
                 with open(os.path.join(dir, cache_version), 'r') as f:

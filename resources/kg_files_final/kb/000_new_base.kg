@@ -96,11 +96,13 @@ _rp=object()
 imp_trigger = (predicate)
 init = (object)
 op_more_info=(predicate)
-_category=(predicate)
-_specific=(predicate)
-_exists=(predicate)
-_tanchor=(predicate)
-;
+_category=(predicate, subj_essential)
+_specific=(predicate, subj_essential)
+_exists=(predicate, subj_essential)
+_tanchor=(predicate, subj_essential)
 
-name = (entity)
+_rep=(predicate)
+[_nr,_ur]=(object)
+
+[ukbpre, ukbpost, ukb]=(object)
 ;

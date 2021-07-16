@@ -1,0 +1,14 @@
+
+time(emora_has_pet=have(emora, nyla=dog()), now)
+large(nyla)
+white(nyla)
+friendly(nyla)
+mischevious(nyla)
+like(nyla, t/treat())
+type(t, group)
+
+time(w2/want(emora, c/cat()), past)
+time(w2, always)
+
+be(cheetah(), fast)
+;

@@ -1228,8 +1228,8 @@ class ChatbotServer:
         wm = None
         user_kb = None
         aux_state = None
-        # prev_aux_state = None
-        prev_aux_state = {'responses': {'test1': ('test2', 'test3')}}
+        prev_aux_state = None
+        # prev_aux_state = {'responses': {'test1': ('test2', 'test3')}}
         utter = input('User: ')
         while utter != 'q':
             if utter.strip() != '':

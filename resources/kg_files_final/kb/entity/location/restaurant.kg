@@ -1,0 +1,53 @@
+restaurant=(location)
+
+pizza_restaurant=(restaurant)
+dominos=pizza_restaurant()
+expr("domino's",dominos)
+pizzahut=pizza_restaurant()
+expr("pizza hut",pizzahut)
+
+burger_restaurant=(restaurant)
+burgerking=(burger_restaurant)
+expr("burger king",burgerking)
+innout=burger_restaurant()
+expr("in n out",innout)
+mcdonalds=burger_restaurant()
+expr("mcdonald's",mcdonalds)
+jackinthebox=burger_restaurant()
+expr("jack in the box",jackinthebox)
+wendys=burger_restaurant()
+expr("wendy's",wendys)
+
+chicken_restaurant=(restaurant)
+chick_fil_a=chicken_restaurant()
+expr("chick fil a",chick_fil_a)
+popeyes=chicken_restaurant()
+
+sandwich_restaurant=(restaurant)
+panera_bread=sandwich_restaurant()
+expr("panera bread",panera_bread)
+arbys=sandwich_restaurant()
+expr("arby's",arbys)
+capriottis=sandwich_restaurant()
+expr("capriotti's",capriottis)
+
+snack_restaurant=(restaurant)
+dunkin=snack_restaurant()
+diaryqueen=snack_restaurant()
+expr("dq, diary queen",diaryqueen)
+
+mexican_restaurant=(restaurant)
+tacobell=mexican_restaurant()
+expr("taco bell",tacobell)
+chipotle=mexican_restaurant()
+deltaco=mexican_restaurant()
+expr("del taco",deltaco)
+
+chinese_restaurant=(restaurant)
+pandaexpress=chinese_restaurant()
+expr("panda express",pandaexpress)
+
+coffee_shop=(restaurant)
+starbucks=coffee_shop()
+
+;

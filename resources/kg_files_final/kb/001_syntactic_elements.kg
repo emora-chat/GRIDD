@@ -48,19 +48,3 @@ expr("he, his, him", he)
 she=(entity)
 expr("she, hers, her", she)
 
-;
-
-locate = (predicate)
-expr("where", locate)
-cause = (predicate)
-expr("why, because", cause)
-qualifier = (predicate)
-expr("how", qualifier)
-but=(predicate)
-
-what = (entity)
-who = (entity)
-
-be = (predicate)
-do = (predicate)
-have = (predicate)

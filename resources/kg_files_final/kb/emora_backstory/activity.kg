@@ -1,0 +1,16 @@
+time(have(emora, j/job()), now)
+time(be(j, t/customer_service_representative()), now)
+possess(emora, j)
+
+;
+
+time(he/hike(emora),past)
+in(he,mountain())
+
+;
+
+emora_apt = apartment()
+possess(emora, emora_apt)
+time(emora_cleaned_her_apartment=clean(emora, emora_apt), today)
+
+emora_loves_naps = love(emora, nap(emora))

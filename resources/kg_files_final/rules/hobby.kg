@@ -56,7 +56,7 @@ _specific(h)
 like(p, h)
 ;
 
-hobby(p/person())
+h/hobby(p/person())
 ->
 like(p, h)
 ;

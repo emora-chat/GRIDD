@@ -1,0 +1,91 @@
+subject = (entity)
+other_subject = (entity)
+
+;
+
+social_science=(subject)
+natural_science=(subject)
+engineering_math=(subject)
+business_major=(subject)
+literature_english=(subject)
+arts_major=(subject)
+
+;
+
+anthropology=(social_science)
+civics=(social_science)
+communications=(social_science)
+expr("communication studies",communications)
+criminology=(social_science)
+demography=(social_science)
+economics=(social_science)
+human_and_organizational_develop=(social_science)
+expr("human and organizational development",human_and_organizational_develop)
+gender_studies=(social_science)
+expr("gender studies",gender_studies)
+geography=(social_science)
+history=(social_science)
+international_relations=(social_science)
+expr("international relations",international_relations)
+law=(social_science)
+linguistics=(social_science)
+political_science=(social_science)
+expr("political science",political_science)
+psychology=(social_science)
+sociology=(social_science)
+
+;
+
+astronomy=(natural_science)
+biology=(natural_science)
+botany=(natural_science)
+chemistry=(natural_science)
+ecology=(natural_science)
+geology=(natural_science)
+microbiology=(natural_science)
+physics=(natural_science)
+zoology=(natural_science)
+
+;
+
+engineering=(engineering_math)
+math=(engineering_math)
+expr("mathematics",math)
+data_science=(engineering_math)
+expr("data science",data_science)
+computer_science=(engineering_math)
+expr("computer science",computer_science)
+statistics=(engineering_math)
+information_technology=(engineering_math)
+expr("information technology",information_technology)
+
+;
+
+accounting=(business_major)
+business_administration=(business_major)
+expr("business administration",business_administration)
+marketing=(business_major)
+finance=(business_major)
+
+;
+
+english_literature=(literature_english)
+expr("english literature",english_literature)
+english=(literature_english)
+literature=(literature_english)
+
+;
+
+art_history=(arts_major)
+expr("art history",art_history)
+media_studies=(arts_major)
+expr("media studies",media_studies)
+theatre_arts=(arts_major)
+expr("theatre arts",theatre_arts)
+visual_arts=(arts_major)
+expr("visual arts",visual_arts)
+photography=(arts_major)
+studio_art=(arts_major)
+drafting=(arts_major)
+
+unknown_subject=(unknown_noun)

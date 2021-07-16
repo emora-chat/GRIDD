@@ -1,0 +1,22 @@
+
+[happy,sad,scared,lonely,angry]=(emotion)
+
+expr("joyful, upbeat", happy)
+expr("upset, depressed", sad)
+expr("terrified, afraid", scared)
+expr("lonely", lonely)
+expr("mad", angry)
+
+amazed=(emotion)
+expr("surprised",amazed)
+impressed=(emotion)
+sorry=(emotion)
+glad=(emotion)
+
+inspired=(emotion)
+tired=(emotion)
+confident=(emotion)
+stressed=(emotion)
+expr("overwhelmed",stressed)
+excited=(emotion)
+motivated=(emotion)

@@ -1,0 +1,16 @@
+time = (predicate, subj_essential)
+expr("when", time)
+
+datetime = (entity)
+yesterday=datetime()
+tomorrow=datetime()
+today=datetime()
+now=datetime()
+past=datetime()
+future=datetime()
+never=datetime()
+sometimes=datetime()
+
+[always]=(property)
+after=(time)
+before=(time)

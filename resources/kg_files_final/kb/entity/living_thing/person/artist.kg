@@ -1,0 +1,22 @@
+
+pablo_picasso=artist()
+expr("pablo picasso, picasso",pablo_picasso)
+
+vincent_van_gogh=artist()
+expr("vincent van gogh, van gogh",vincent_van_gogh)
+
+leonardo_da_vinci=artist()
+expr("leonardo da vinci, da vinci",leonardo_da_vinci)
+
+claude_monet=artist()
+expr("claude monet, monet",claude_monet)
+
+michelangelo=artist()
+
+salvador_dali=artist()
+expr("salvador dali, dali",salvador_dali)
+
+andy_warhol=artist()
+expr("andy warhol",andy_warhol)
+
+unknown_artist=(unknown_noun)

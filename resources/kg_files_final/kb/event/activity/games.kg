@@ -1,0 +1,10 @@
+game=(entity)
+
+[fetch, tag]=(game, physical)
+
+videogame=(game)
+expr("video game, videogames", videogame)
+
+cardgame=(game)
+[uno,euchre]=(cardgame)
+

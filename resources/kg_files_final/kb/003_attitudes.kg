@@ -1,0 +1,28 @@
+attitude=(predicate)
+
+[like, dislike, want, feel, hope]=(attitude)
+expr("enjoy", like)
+expr("hate", dislike)
+expr("desire, hope", want)
+
+love=(like)
+
+look_forward=(attitude)
+
+sounds=(attitude)
+
+;
+
+
+[esympathy,econgrat,epositive,eproud,eadmire]=(attitude)
+
+
+similar_to=(attitude)
+
+;
+
+agree=(attitude)
+disagree=(attitude)
+intend=(attitude)
+
+

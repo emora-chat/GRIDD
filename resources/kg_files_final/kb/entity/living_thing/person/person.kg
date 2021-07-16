@@ -1,0 +1,37 @@
+
+user=person()
+expr(["i", "me", "my", "mine"], user)
+user_group=person()
+type(user_group, group)
+expr("we, us, our", user_group)
+
+veterinarian=(person)
+expr("vet", veterinarian)
+
+foodie=(person)
+expert=(person)
+fan=(person)
+
+friend=(person)
+
+girl=(person)
+boy=(person)
+
+peer=(person)
+colleague=(person)
+
+freshman=(person)
+sophomore=(person)
+junior=(person)
+senior=(person)
+
+sibling=(person)
+brother=(sibling)
+sister=(sibling)
+
+enthusiast=(person)
+pc_enthusiast=(enthusiast)
+
+shopper=(person)
+
+mother=(person)

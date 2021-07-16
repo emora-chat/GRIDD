@@ -1,0 +1,15 @@
+
+[obedient,sweet,smart,playful,energetic]=(personality_trait, positive)
+expr("kind, nice, loving, sweetheart", sweet)
+expr("intelligent", smart)
+expr("lively, spunky, rambunctious", energetic)
+
+[mean,jealous,lazy,annoying,stupid]=(personality_trait, negative)
+expr("bothersome, nuisance", annoying)
+expr("dumb, idiotic", stupid)
+
+[friendly,shy,mischevious,crazy]=(personality_trait)
+expr("outgoing", friendly)
+expr("introvert", shy)
+expr("tricky", mischevious)
+expr("spaz", crazy)

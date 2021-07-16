@@ -1,5 +1,5 @@
 
-possess(a/agent(), c/object())
+possess(a/living_thing(), c/object())
 favorite(c)
 be(c, o/object())
 ->

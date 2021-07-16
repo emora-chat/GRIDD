@@ -1,0 +1,73 @@
+
+[leisure, self_improvement, obligatory]=(object)
+[solo, social, solo_or_social]=(object)
+[physical, mental]=(object)
+[learnable]=(object)
+
+;
+
+[cuddle,sit]=(activity)
+expr("snuggle", cuddle)
+
+[stalk,nap,groom,hide]=(activity)
+expr("hunt", stalk)
+expr("sleep", nap)
+;
+
+[exercise, clean]=(activity, physical, self_improvement, solo_or_social)
+[hike, run, bike, walk, swim, climb, jog]=(exercise, outdoor)
+outdoor_activity=(activity, outdoor)
+doggypaddle=(swim)
+[wash, sweep, vacuum, dust]=(clean)
+
+[relax, chill]=(activity, solo_or_social, leisure)
+
+play=(activity, solo_or_social)
+expr("playing, played", play)
+
+watch=(see, activity, solo_or_social, leisure)
+
+
+work=(activity, obligatory)
+
+[teach, learn, practice]=(activity, mental, self_improvement)
+
+[motivate, think]=(activity, mental, do)
+expr("encourage", motivate)
+
+[buy, meet, start]=(activity, physical)
+
+travel=(activity, physical)
+
+dream=(activity, mental)
+
+annoy=(activity,mental)
+use=(predicate)
+
+talk=(predicate)
+speak=(talk)
+
+stop=(predicate)
+
+help=(activity, self_improvement)
+;
+
+draw=(activity,physical)
+expr("paint",draw)
+jump=(activity,physical)
+paint=(activity,physical)
+
+chat=(talk,activity,physical)
+
+
+drive=(activity,physical)
+ride=(activity,physical)
+surf=(activity,physical)
+shop=(activity,leisure)
+meditate=(activity,mental)
+
+garden=(activity,physical)
+interest=(like)
+;
+
+perform=(activity)

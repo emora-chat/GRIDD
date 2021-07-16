@@ -1,0 +1,3 @@
+animal = (living_thing)
+person = (living_thing)
+expr("people", person)

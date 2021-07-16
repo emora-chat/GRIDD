@@ -1,0 +1,26 @@
+full=(property)
+hungry=(property)
+expr("starved",hungry)
+thirsty=(property)
+
+;
+
+crispy=(property)
+soft=(property)
+
+flavory=(property)
+sweet_flavor=(flavory)
+expr("sweet",sweet_flavor)
+sour=(flavory)
+bitter=(flavory)
+salty=(flavory)
+spicy=(flavory)
+expr("hot",spicy)
+
+delicious=(property)
+expr("yummy, tasty",delicious)
+
+;
+
+temperature=(property)
+hot=(temperature)
