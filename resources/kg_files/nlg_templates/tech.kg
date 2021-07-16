@@ -143,18 +143,6 @@ $ Do you like the design of mac OS? I used to use windows, but windows never foc
 h/have(user, d/device())
 r/worth(h)
 request_truth(emora, r)
-->
-_rep(_ur)
-_pr(_low)
-_t(_rpresent)
-$ To be honest, I've never had a d . I'm thinking I might get one, do you think it is worth it ? $
-$ d sounds nifty, do you think a chatbot should have one though ? $
-;
-
-
-h/have(user, d/device())
-r/worth(h)
-request_truth(emora, r)
 be(d, d2/device())
 ->
 _rep(_ur)
