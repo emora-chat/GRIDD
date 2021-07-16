@@ -37,7 +37,6 @@ $ It's good to hear that you are{"t":"#Z","s":"you"} enjoying what you learn{"t"
 $ I'm glad that you are{"t":"#Z","s":"you"} having a good time learning X . $
 ;
 
-
 time(l/like(user,c/college()),Z/datetime())
 glad(emora,l)
 possess(user,p/part())
@@ -382,11 +381,10 @@ _t(_rpresent)
 $ I’m glad that you’ve been enjoying college! What’s your favorite part about college ? Peers , school culture , or academics ? $
 ;
 
-possess(user,p/part())
-favorite(p)
-about(p,c/college())
-be(p,pr/fav_peer())
-awesome(pr)
+h/have(user,f/friend())
+type(f,group)
+in(user,college)
+awesome(h)
 ->
 _t(_present)
 $ Having a group of lifelong friends who share interests with you is really one of the best things you can get from college . $
@@ -404,14 +402,6 @@ time(ul,Z/datetime())
 ->
 _t(_present)
 $ I love keeping myself busy too ! A busy college may sometimes get you overwhelmed , but the good thing about it is that you can learn a lot from your college experience . $
-;
-
-l/like(x/person(),pr/peer())
-type(pr,group)
-awesome(l)
-->
-_t(_present)
-$ Having a group of lifelong friends who share interests with you is really one of the best things you can get from college . $
 ;
 
 ebf/be(emora,fm/freshman())

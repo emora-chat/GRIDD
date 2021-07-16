@@ -53,14 +53,14 @@ request_truth(emora,b)
 ud/draw(user)
 user_aware(ud)
 ->
-xtd:<xtd/try(user,digital(ud)) time(xtd,past)>
+xtd:<xtd/try(user,digital(picture())) time(xtd,past)>
 request_truth(emora,xtd)
 ;
 
 ud/paint(user)
 user_aware(ud)
 ->
-xtd:<xtd/try(user,digital(ud)) time(xtd,past)>
+xtd:<xtd/try(user,digital(picture())) time(xtd,past)>
 request_truth(emora,xtd)
 ;
 
@@ -96,37 +96,34 @@ interesting(upo)
 xd/draw(user)
 like(user,xd)
 ->
-xtd:<xtd/try(user,digital(xd)) time(xtd,past)>
+xtd:<xtd/try(user,digital(picture())) time(xtd,past)>
 request_truth(emora,xtd)
 ;
 
 xd/paint(user)
 like(user,xd)
 ->
-xtd:<xtd/try(user,digital(xd)) time(xtd,past)>
+xtd:<xtd/try(user,digital(picture())) time(xtd,past)>
 request_truth(emora,xtd)
 ;
 
-xd/draw(user)
-xtd/try(user,digital(xd))
+xtd/try(user,dp/digital(picture()))
 time(xtd,past)
 ->
-interesting(xtd)
+ae/amazed(emora)
+by(ae,dp)
 ;
 
-xd/draw(user)
-xtd/try(user,digital(xd))
-time(xtd,past)
-xi/interesting(xtd)
-user_aware(xi)
+ae/amazed(emora)
+by(ae,dp/digital(picture()))
+user_aware(ae)
 ->
 ut/talk(user)
 to(ut,emora)
 amazing(ut)
 ;
 
-xd/draw(user)
-xtd/try(user,dd/digital(xd))
+xtd/try(user,dd/digital(picture()))
 time(xtd,past)
 not(xtd)
 ->
