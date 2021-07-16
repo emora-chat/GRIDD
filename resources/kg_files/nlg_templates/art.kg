@@ -104,6 +104,8 @@ $ You must be very creative . Have you ever tried digital drawing before ? $
 $ You must be a creative person . Since you like drawing , have you ever tried digital drawing by any chance ? $
 ;
 
+xtd/try(user,digital(picture()))
+time(xtd,past)
 ae/amazed(emora)
 by(ae,dp/digital(picture()))
 ->
@@ -112,6 +114,9 @@ $ Digital drawing is fun , right ? I'm always amazed by how technology can enhan
 $ I think digital drawing is a great combination of technology and art . $
 ;
 
+xtd/try(user,digital(picture()))
+time(xtd,past)
+not(xtd)
 ut/talk(user)
 to(ut,emora)
 amazing(ut)
