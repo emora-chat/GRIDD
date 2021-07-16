@@ -7,9 +7,10 @@ rootconcept = object()
 rootpredicate = object()
 
 
-def match(query, variables, kb, priorities=True, limit=10, reduction=3):
+def match(query, variables, kb, priorities=True, limit=10, reduction=3, constraints=None):
     solutions = [{}]
-    constraints = create_constraint_list(query, variables, kb if priorities else None)
+    if constraints is None:
+        constraints = create_constraint_list(query, variables, kb if priorities else None)
     for center, constraint in constraints:
         new_solutions = []
         for assignments in solutions:
@@ -20,7 +21,7 @@ def match(query, variables, kb, priorities=True, limit=10, reduction=3):
             break
         if len(solutions) > limit:
             solutions = solutions[:reduction]
-    return solutions
+    return solutions, constraints
 
 def satisfactions(constriant, assignments, variables, kb, branch_limit=10, reduction=1):
     supertypes = kb.compiled_types

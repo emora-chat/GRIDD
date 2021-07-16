@@ -2,6 +2,7 @@
 init_convo
 ->
 greet(emora, user)
+emora_hiked
 ;
 
 time(h/have(user, pet()), now)
@@ -42,3 +43,4 @@ _specific(p)
 ->
 great(p)
 ;
+

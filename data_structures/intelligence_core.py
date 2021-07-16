@@ -178,6 +178,8 @@ class IntelligenceCore:
             self.working_memory = ConceptGraph(namespace='wm', supports={AND_LINK: False})
             self.consider(working_memory)
 
+        self.user_kb = ConceptGraph(namespace='ukb')
+
         if len(self.knowledge_base.kb_predicate_types) == 0:
             self.knowledge_base.kb_predicate_types = self.knowledge_base.type_predicates()
         if len(self.knowledge_base.compiled_subtypes) == 0:
@@ -314,7 +316,7 @@ class IntelligenceCore:
                     if not use_kb:
                         print('\t%s'%(c))
                     else:
-                        if len(self.knowledge_base.objects(c, TYPE)) == 0:
+                        if not self.knowledge_base.has(predicate_id=c) and len(self.knowledge_base.objects(c, TYPE)) == 0:
                             print('\t%s (%s)'%(c, file))
 
     def know(self, knowledge, source_cg, **options):
@@ -361,6 +363,26 @@ class IntelligenceCore:
             solutions = self.inference_engine.infer(self.working_memory, aux_state, dynamic_rules=rules)
         return solutions
 
+    def save_to_ukb(self, nodes, se, oe, tp):
+        ukb_concat = ConceptGraph(namespace='wm')
+        visited = set()
+        for n in nodes:
+            if n not in visited:
+                structure = self.working_memory.structure(n,
+                                                          subj_essentials=se,
+                                                          obj_essentials=oe,
+                                                          type_predicates=tp)
+                for struct in structure:
+                    if '<span>' not in struct[0] and UNODE not in self.working_memory.features.get(struct[3], {}):
+                        ukb_concat.add(*struct)
+                        visited.update(struct)
+        mapped_ids = self.user_kb.concatenate(ukb_concat)
+        for orig, unode in mapped_ids.items():
+            if orig != unode:
+                if orig in self.working_memory.features and UNODE in self.working_memory.features[orig]:
+                    print('[WARNING] WM node %s already has ukb node %s but trying to add ukb node %s'%(orig, self.working_memory.features[orig][UNODE], unode))
+                self.working_memory.features.setdefault(orig, {})[UNODE] = unode
+
     def apply(self, inferences):
         implications = {}
         for rid, (pre, post, sols) in inferences.items():
@@ -396,12 +418,10 @@ class IntelligenceCore:
         """
         # todo - think about type-based evidence
         #  (type predicates not found in solutions explicitly right now)
-        # todo - evidence is currently the variable solution dictionary
-        #  -> thus salience right now is only based on vars in precondition and
-        #  if the precondition contains no vars, there is no evidence!
         if inferences is None:
             inferences = self.infer()
         result_dict = self.apply(inferences)
+        user_kb_saves = []
         for rule, results in result_dict.items():
             pre, post = inferences[rule][0], inferences[rule][1]
             for evidence, implication in results:
@@ -427,6 +447,14 @@ class IntelligenceCore:
                     for imp_node in implication.concepts():
                         if not implication.metagraph.in_edges(imp_node, REF): # add or_link only if imp_node is not part of a reference
                             self.working_memory.metagraph.add(and_node, implied_nodes[imp_node], OR_LINK)
+                    if post.has('ukbpre'):
+                        user_kb_saves.append(('ukbpre', evidence.values()))
+                    elif post.has('ukbpost'):
+                        user_kb_saves.append(('ukbpost', set(implied_nodes.values()) - {'ukbpost'}))
+                    elif post.has('ukb'):
+                        user_kb_saves.append(('ukb', evidence.values()))
+                        user_kb_saves.append(('ukb', set(implied_nodes.values()) - {'ukb'}))
+        return user_kb_saves
 
     def _get_excluded_question_links(self, cg):
         constraints = set()
@@ -612,10 +640,25 @@ class IntelligenceCore:
                         return new_concepts_by_source
         return new_concepts_by_source
 
-    def pull_by_query(self, query, variables, focus, prioritize=True):
+    def pull_structure(self):
+        wm = self.working_memory
+        concepts = {i for i in wm.concepts() if self.knowledge_base.has(predicate_id=i)}
+        to_add = {}
+        for concept in concepts:
+            structure = set(self.knowledge_base.structure(concept,
+                             subj_essentials=self.kb_subj_essentials,
+                             obj_essentials=self.kb_obj_essentials,
+                             type_predicates=self.kb_predicate_types))
+            structure = {x for x in structure if x[1] != TYPE}
+            for struct in structure:
+                to_add.setdefault(struct, set()).add(concept)
+        result = {c: v for c, v in to_add.items() if c not in concepts}
+        return result
+
+    def pull_by_query(self, query, variables, focus, user_kb_info, prioritize=True):
         wmp = set(self.working_memory.predicates())
-        solutions = kb_match.match(query, variables, self.knowledge_base, prioritize)
         pulled = {}
+        solutions, constraints = kb_match.match(query, variables, self.knowledge_base, prioritize)
         for solution in solutions:
             for ins in [x for x in solution.values() if self.knowledge_base.has(predicate_id=x)]:
                 to_add = set(self.knowledge_base.structure(ins,
@@ -623,7 +666,18 @@ class IntelligenceCore:
                                       obj_essentials=self.kb_obj_essentials,
                                       type_predicates=self.knowledge_base.kb_predicate_types))
                 for pred in to_add - wmp:
-                    pulled[pred] = focus
+                    pulled[pred] = {focus}
+        solutions, constraints = kb_match.match(query, variables, self.user_kb, prioritize, constraints=constraints)
+        wm_nodes_to_ukb_nodes = user_kb_info[3]
+        for solution in solutions:
+            for ins in [x for x in solution.values() if self.user_kb.has(predicate_id=x)]:
+                to_add = set(self.user_kb.structure(ins,
+                                                    subj_essentials=user_kb_info[0],
+                                                    obj_essentials=user_kb_info[1],
+                                                    type_predicates=user_kb_info[2]))
+                for pred in to_add - wmp:
+                    if pred[3] not in wm_nodes_to_ukb_nodes:
+                        pulled[pred] = {focus}
         return pulled
 
     def pull_expressions(self):
@@ -678,6 +732,22 @@ class IntelligenceCore:
                 sal = wm.features.setdefault(c, {}).setdefault(SALIENCE, 0)
                 wm.features[c][SALIENCE] = max(0, sal - TIME_DECAY)
 
+    def setup_essentials(self, cg=None):
+        if cg is None:
+            cg = self.working_memory
+        type_predicates = cg.type_predicates()
+        subj_essentials = {}
+        for pe in self.subj_essential_types:
+            for c in cg.subtypes_of(pe):
+                if cg.has(predicate_id=c):
+                    subj_essentials.setdefault(cg.subject(c), set()).add(c)
+        obj_essentials = {}
+        for pe in self.obj_essential_types:
+            for c in cg.subtypes_of(pe):
+                if cg.has(predicate_id=c):
+                    obj_essentials.setdefault(cg.object(c), set()).add(c)
+        return subj_essentials, obj_essentials, type_predicates
+
     def prune_attended(self, aux_state, num_keep):
         # NOTE: essential predicates AND reference constraints must be maintained for selected concepts that are being kept
 
@@ -685,7 +755,7 @@ class IntelligenceCore:
         wm = self.working_memory
 
         p.next('select keep')
-        options = {i for s,t,o,i in wm.predicates() if t not in chain(self.subj_essential_types, self.obj_essential_types, PRIM, {TYPE, '_tanchor'})}
+        options = {i for s,t,o,i in wm.predicates() if t not in chain(self.subj_essential_types, self.obj_essential_types, PRIM, {TYPE, '_tanchor', 'is_return'})}
         soptions = sorted(options,
                           key=lambda x: wm.features.get(x, {}).get(SALIENCE, 0),
                           reverse=True)
@@ -693,6 +763,7 @@ class IntelligenceCore:
 
         # keep all topic anchors with sal > 0
         keep.extend([i for s,t,o,i in wm.predicates(predicate_type='_tanchor') if wm.features[s][SALIENCE] > 0])
+        keep.extend([pred[3] for pred in wm.predicates('user', 'is_return')])
 
         # delete all user and emora spans that occured SPANTURN turns ago
         p.next('delete old spans')
@@ -709,18 +780,7 @@ class IntelligenceCore:
 
         p.next('setup essentials')
         keepers = set()
-        type_predicates = self.working_memory.type_predicates()
-        subj_essentials = {}
-        for pe in self.subj_essential_types:
-            for c in wm.subtypes_of(pe):
-                if wm.has(predicate_id=c):
-                    subj_essentials.setdefault(wm.subject(c), set()).add(c)
-
-        obj_essentials = {}
-        for pe in self.obj_essential_types:
-            for c in wm.subtypes_of(pe):
-                if wm.has(predicate_id=c):
-                    obj_essentials.setdefault(wm.object(c), set()).add(c)
+        subj_essentials, obj_essentials, type_predicates = self.setup_essentials()
         p.next('identify essentials')
         for k in keep:
             ess = wm.structure(k, subj_essentials, obj_essentials, type_predicates=type_predicates)

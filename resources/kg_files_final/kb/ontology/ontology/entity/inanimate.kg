@@ -1,0 +1,37 @@
+
+
+inanimate=(entity)
+expr("inanimate", inanimate)
+
+timespan=(inanimate)
+expr("timespan", timespan)
+
+service=(inanimate)
+expr("service", service)
+
+idea=(inanimate)
+expr("idea", idea)
+
+domain=(inanimate)
+expr("domain", domain)
+
+creation=(inanimate)
+expr("creation", creation)
+
+item=(inanimate)
+expr("item", item)
+
+location=(inanimate)
+expr("location", location)
+
+timepoint=(timespan)
+expr("timepoint", timepoint)
+
+today=(timespan)
+expr("today", today)
+
+presentation=(creation)
+expr("presentation", presentation)
+
+report=(creation)
+expr("report", report)

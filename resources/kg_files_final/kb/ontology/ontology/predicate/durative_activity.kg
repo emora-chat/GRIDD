@@ -1,0 +1,5 @@
+
+
+type(durative_activity, durative)
+
+type(durative_activity, action)

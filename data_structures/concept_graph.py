@@ -474,7 +474,7 @@ class ConceptGraph:
         """
         File is passed for templates who take the alphabetic filename as the topic anchor
         """
-        priority_map = {'_low': 0.1, '_high': 1.0}
+        priority_map = {'_low': 0.1, '_high': 1.0, '_mid': 0.8, '_sup': 2.0, '_int': 100.0}
         template_types = {'_react': '_react',
                           '_r': '_react',
                           '_present': '_present',
@@ -778,7 +778,7 @@ class ConceptGraph:
         """
         if id_map is None:
             id_map = self.id_map(concept_graph)
-        if concept_graph.id_map().namespace == KB: # maintain KB predicate identifiers in any CG they get added to
+        if concept_graph.id_map().namespace in {KB, UKB}: # maintain KB predicate identifiers in any CG they get added to
             id_map = concept_graph.id_map(concept_graph)
         all_added_concepts = None
         if concepts is not None:
@@ -803,7 +803,7 @@ class ConceptGraph:
                             self.add(id_map.get(concept))
                             if concepts is not None:
                                 all_added_concepts.add(concept)
-        if concept_graph.id_map().namespace != KB: # for non-KB concatenations, need to make sure id_map is updated to index after concatenation
+        if concept_graph.id_map().namespace not in {KB, UKB}: # for non-KB concatenations, need to make sure id_map is updated to index after concatenation
             self.id_map().index = id_map.index
         self.metagraph.update(concept_graph.metagraph, concept_graph.metagraph.features,
                               id_map=id_map, concepts=all_added_concepts)

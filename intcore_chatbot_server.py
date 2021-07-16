@@ -21,6 +21,7 @@ from GRIDD.utilities.server import save, load
 from inspect import signature
 
 from GRIDD.utilities.profiler import profiler as p
+from GRIDD.utilities.utilities import dict_of_sets_merge
 
 from itertools import chain
 
@@ -78,7 +79,7 @@ def mega_serialized(*returns):
 
 class ChatbotServer:
 
-    def __init__(self, knowledge_base, inference_rules, nlg_templates, fallbacks, starting_wm=None, device=None):
+    def __init__(self, knowledge_base, inference_rules, nlg_templates, fallbacks, starting_wm=None, user_kb=None, device=None):
         s = time.time()
         knowledge = collect(*knowledge_base)
         inference_rules = collect(*inference_rules)
@@ -87,6 +88,8 @@ class ChatbotServer:
         fallbacks = collect(*fallbacks)
         self.dialogue_intcore = IntelligenceCore(knowledge_base=knowledge, inference_rules=inference_rules,
                                                  nlg_templates=nlg_templates, fallbacks=fallbacks, device=device)
+        if user_kb is not None:
+            ConceptGraph.construct(self.dialogue_intcore.user_kb, user_kb)
         if INFERENCE:
             self.reference_engine = InferenceEngine(device=device)
         if self.starting_wm is not None:
@@ -98,9 +101,12 @@ class ChatbotServer:
     ###################################################
 
     @serialized('aux_state', serializing=IS_MEGA_SERIALIZING or IS_SERIALIZING)
-    def run_next_turn(self, aux_state):
+    def run_next_turn(self, aux_state, prev_aux_state):
         if aux_state is None:
             aux_state = {'turn_index': -1}
+            if prev_aux_state is not None: # returning user
+                aux_state['is_returning'] = True
+                aux_state['responses'] = prev_aux_state.get('responses', {})
         aux_state["turn_index"] += 1
         return aux_state
 
@@ -157,6 +163,8 @@ class ChatbotServer:
                 if pos is not None:
                     span.pos_tag = pos.lower()
                     elit_results['pos'][i] = pos
+        # for x,y in elit_results.items():
+        #     print(x, y)
         return elit_results
 
     def init_parse2logic(self, device=None):
@@ -216,7 +224,7 @@ class ChatbotServer:
 
     @serialized('subspans', 'working_memory')
     def run_mention_bridge(self, mentions, multiword_mentions, ner_mentions, working_memory, aux_state):
-        self.load_working_memory(working_memory)
+        self.load_working_memory(working_memory, aux_state)
         if mentions is None: mentions = {}
         if multiword_mentions is None: multiword_mentions = {}
         namespace = list(mentions.items())[0][1].id_map() if len(mentions) > 0 else "ment_"
@@ -346,19 +354,25 @@ class ChatbotServer:
         return self.dialogue_intcore.working_memory, aux_state
 
     @serialized('working_memory', 'aux_state')
-    def run_knowledge_pull(self, working_memory, aux_state):
+    def run_knowledge_pull(self, working_memory, aux_state, user_kb):
         p.start('load')
         self.load_working_memory(working_memory)
+        self.load_user_kb(user_kb)
         working_memory = self.dialogue_intcore.working_memory
         knowledge_by_refs = {}
         references = working_memory.references()
         p.next(f'pull by query (queries: {len(references)})')
+        user_kb_info = self.dialogue_intcore.setup_essentials(self.dialogue_intcore.user_kb)
+        wm_nodes_to_ukb_nodes = {d[UNODE] for n, d in self.dialogue_intcore.working_memory.features.items() if UNODE in d}
+        user_kb_info = (*user_kb_info, wm_nodes_to_ukb_nodes)
         for focus, (query, variables) in references.items():
-            pbq_result = self.dialogue_intcore.pull_by_query(query, variables, focus)
+            pbq_result = self.dialogue_intcore.pull_by_query(query, variables, focus, user_kb_info)
             knowledge_by_refs.update(pbq_result)
         p.next('knowledge pull')
         knowledge_by_source = self.dialogue_intcore.pull_knowledge(limit=100, num_pullers=50, association_limit=10, subtype_limit=10)
-        for pred, sources in {**knowledge_by_refs, **knowledge_by_source}.items():
+        knowledge_structures = self.dialogue_intcore.pull_structure()
+        all_pulled = dict_of_sets_merge(knowledge_by_refs, knowledge_by_source, knowledge_structures)
+        for pred, sources in all_pulled.items():
             if not working_memory.has(*pred) and not working_memory.has(predicate_id=pred[3]):
                 self.dialogue_intcore.consider([pred], namespace=self.dialogue_intcore.knowledge_base._ids, associations=sources)
                 working_memory.metagraph.update(self.dialogue_intcore.knowledge_base.metagraph,
@@ -379,20 +393,25 @@ class ChatbotServer:
         inference_results = self.dialogue_intcore.infer(aux_state)
         return inference_results
 
-    @serialized('working_memory', 'aux_state')
-    def run_apply_dialogue_inferences(self, inference_results, working_memory, aux_state):
+    @serialized('working_memory', 'aux_state', 'user_kb')
+    def run_apply_dialogue_inferences(self, inference_results, working_memory, aux_state, user_kb):
         self.load_working_memory(working_memory)
+        self.load_user_kb(user_kb)
         p.start('apply')
-        self.dialogue_intcore.apply_inferences(inference_results)
-        p.next('update types')
+        user_kb_saves = self.dialogue_intcore.apply_inferences(inference_results)
         self._update_types(self.dialogue_intcore.working_memory)
+        p.next('update user_kb')
+        subj_essentials, obj_essentials, type_predicates = self.dialogue_intcore.setup_essentials()
+        for save_type, nodes_to_save in user_kb_saves: # handle saving to user_kb
+            self.dialogue_intcore.save_to_ukb(nodes_to_save, subj_essentials, obj_essentials, type_predicates)
+            if self.dialogue_intcore.working_memory.has(save_type):
+                self.dialogue_intcore.working_memory.remove(save_type)
         p.next('operate')
         self.dialogue_intcore.operate(self.dialogue_intcore.universal_operators, aux_state=aux_state)
         self.dialogue_intcore.operate(self.dialogue_intcore.wm_operators, aux_state=aux_state)
-        p.next('sal')
         self.dialogue_intcore.update_salience(iterations=SAL_ITER)
         p.stop()
-        return working_memory, aux_state
+        return working_memory, aux_state, user_kb
 
     @serialized('rules', 'working_memory')
     def run_reference_identification(self, working_memory):
@@ -701,12 +720,20 @@ class ChatbotServer:
     ## Helpers
     ###################################################
 
-    def load_working_memory(self, working_memory):
+    def load_working_memory(self, working_memory, aux_state=None):
         if working_memory is not None:
             self.dialogue_intcore.working_memory = working_memory
         else:
             self.dialogue_intcore.working_memory = ConceptGraph(namespace='wm', supports={AND_LINK: False})
             self.dialogue_intcore.consider(list(self.starting_wm.values()))
+            if aux_state is not None and aux_state.get('is_returning', False):
+                self.dialogue_intcore.working_memory.add('user', 'is_returning')
+
+    def load_user_kb(self, user_kb):
+        if user_kb is not None:
+            self.dialogue_intcore.user_kb = user_kb
+        else:
+            self.dialogue_intcore.user_kb = ConceptGraph(namespace='ukb')
 
     def assign_cover(self, graph, concepts=None):
         if concepts is None:
@@ -884,8 +911,8 @@ class ChatbotServer:
         traceback.print_exc(file=sys.stdout)
         sys.stdout.flush()
 
-    @mega_serialized('rule_responses', 'working_memory', 'aux_state')
-    def nlu_to_response(self, elit_results, working_memory, aux_state):
+    @mega_serialized('rule_responses', 'working_memory', 'aux_state', 'user_kb')
+    def nlu_to_response(self, elit_results, working_memory, aux_state, user_kb):
         p.start('parse2logic')
         try:
             mentions, merges = self.run_parse2logic(elit_results)
@@ -919,11 +946,11 @@ class ChatbotServer:
             self.error_print('merge_bridge', e)
         p.next('knowledge pull 0')
         try:
-            working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state)
+            working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state, user_kb)
         except Exception as e:
             self.error_print('knowledge_pull 0', e)
         if PRINT_WM:
-            print('\n<< Working Memory After Inferences Applied >>')
+            print('\n<< Working Memory After NLU >>')
             print(working_memory.pretty_print(exclusions={SPAN_DEF, SPAN_REF, USER_AWARE, ASSERT}))
         n = 2
         for i in range(n):
@@ -957,13 +984,13 @@ class ChatbotServer:
                 inference_results = {}
             p.next('apply inferences %d'%i)
             try:
-                working_memory, aux_state = self.run_apply_dialogue_inferences(inference_results, working_memory, aux_state)
+                working_memory, aux_state, user_kb = self.run_apply_dialogue_inferences(inference_results, working_memory, aux_state, user_kb)
             except Exception as e:
                 self.error_print('apply_dialogue_inference %d'%i, e)
             if i < n - 1:
                 p.next('knowledge pull %d'%(i+1))
                 try:
-                    working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state)
+                    working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state, user_kb)
                 except Exception as e:
                     self.error_print('knowledge pull %d'%(i+1), e)
 
@@ -1010,12 +1037,14 @@ class ChatbotServer:
             self.error_print('rule_responses', e)
             rule_responses = []
         p.stop()
-        return rule_responses, working_memory, aux_state
+        return rule_responses, working_memory, aux_state, user_kb
 
-    def nlu_to_response_serialize(self, user_utterance, working_memory, aux_state):
+    def nlu_to_response_serialize(self, user_utterance, working_memory, aux_state, prev_aux_state, user_kb):
         state = {'user_utterance': save('user_utterance', user_utterance),
                  'working_memory': save('working_memory', working_memory),
-                 'aux_state': save('aux_state', aux_state)
+                 'aux_state': save('aux_state', aux_state),
+                 'prev_aux_state': save('prev_aux_state', prev_aux_state),
+                 'user_kb': save('user_kb', user_kb)
                 }
         p.start('gridd')
         state_update = self.run_next_turn(state)
@@ -1033,10 +1062,11 @@ class ChatbotServer:
             p.clear()
         return load("response", state["response"]), \
                load("working_memory", state["working_memory"]), \
-               load("aux_state", state["aux_state"])
+               load("aux_state", state["aux_state"]), \
+               load("user_kb", state["user_kb"])
 
-    def run_mention_merge(self, user_utterance, working_memory, aux_state):
-        aux_state = self.run_next_turn(aux_state)
+    def run_mention_merge(self, user_utterance, working_memory, aux_state, prev_aux_state):
+        aux_state = self.run_next_turn(aux_state, prev_aux_state)
         user_utterance = self.run_sentence_caser(user_utterance)
         elit_results = self.run_elit_models(user_utterance, aux_state)
         mentions, merges = self.run_parse2logic(elit_results)
@@ -1046,9 +1076,9 @@ class ChatbotServer:
         working_memory = self.run_merge_bridge(merges, subspans, working_memory)
         return working_memory
 
-    def respond(self, user_utterance, working_memory, aux_state):
+    def respond(self, user_utterance, working_memory, aux_state, prev_aux_state, user_kb):
         p.start('next turn')
-        aux_state = self.run_next_turn(aux_state)
+        aux_state = self.run_next_turn(aux_state, prev_aux_state)
         p.next('sentence caser')
         user_utterance = self.run_sentence_caser(user_utterance)
         p.next('elit')
@@ -1064,10 +1094,10 @@ class ChatbotServer:
         p.next('merge bridge')
         working_memory, aux_state = self.run_merge_bridge(merges, subspans, working_memory, aux_state)
         p.next('knowledge pull')
-        working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state)
+        working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state, user_kb)
 
         if PRINT_WM:
-            print('\n<< Working Memory After Inferences Applied >>')
+            print('\n<< Working Memory After NLU >>')
             print(working_memory.pretty_print(exclusions={SPAN_DEF, SPAN_REF, USER_AWARE, ASSERT}))
 
         p.next('reference id')
@@ -1081,9 +1111,9 @@ class ChatbotServer:
         p.next('dialogue infer')
         inference_results = self.run_dialogue_inference(working_memory, aux_state)
         p.next('apply inferences')
-        working_memory, aux_state = self.run_apply_dialogue_inferences(inference_results, working_memory, aux_state)
+        working_memory, aux_state, user_kb = self.run_apply_dialogue_inferences(inference_results, working_memory, aux_state, user_kb)
         p.next('knowledge pull 2')
-        working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state)
+        working_memory, aux_state = self.run_knowledge_pull(working_memory, aux_state, user_kb)
 
         p.next('reference id 2')
         rules, working_memory = self.run_reference_identification(working_memory)
@@ -1096,7 +1126,7 @@ class ChatbotServer:
         p.next('dialogue infer 2')
         inference_results = self.run_dialogue_inference(working_memory, aux_state)
         p.next('apply inferences 2')
-        working_memory, aux_state = self.run_apply_dialogue_inferences(inference_results, working_memory, aux_state)
+        working_memory, aux_state, user_kb = self.run_apply_dialogue_inferences(inference_results, working_memory, aux_state, user_kb)
 
         if PRINT_WM:
             print('\n<< Working Memory After Inferences Applied >>')
@@ -1124,7 +1154,7 @@ class ChatbotServer:
         if DEBUG:
             p.report()
             p.clear()
-        return response, working_memory, aux_state
+        return response, working_memory, aux_state, user_kb
 
     def respond_serialize(self, user_utterance, working_memory, aux_state):
         state = {'user_utterance': save('user_utterance', user_utterance),
@@ -1199,8 +1229,11 @@ class ChatbotServer:
 
     def run(self):
         # gc.disable()
-        wm = self.dialogue_intcore.working_memory.copy()
-        aux_state = {'turn_index': -1}
+        wm = None
+        user_kb = None
+        aux_state = None
+        # prev_aux_state = None
+        prev_aux_state = {'responses': {'test1': ('test2', 'test3')}}
         utter = input('User: ')
         while utter != 'q':
             if utter.strip() != '':
@@ -1208,9 +1241,9 @@ class ChatbotServer:
                 if IS_SERIALIZING:
                     response, wm, aux_state = self.respond_serialize(utter, wm, aux_state)
                 elif IS_MEGA_SERIALIZING:
-                    response, wm, aux_state = self.nlu_to_response_serialize(utter, wm, aux_state)
+                    response, wm, aux_state, user_kb = self.nlu_to_response_serialize(utter, wm, aux_state, prev_aux_state, user_kb)
                 else:
-                    response, wm, aux_state = self.respond(utter, wm, aux_state)
+                    response, wm, aux_state, user_kb = self.respond(utter, wm, aux_state, prev_aux_state, user_kb)
                 elapsed = time.time() - s
                 # gcti = time.time()
                 # gc.collect()
@@ -1254,7 +1287,8 @@ def get_filepaths():
     wm = [join('GRIDD', 'resources', KB_FOLDERNAME, 'wm')]
     nlg_templates = [join('GRIDD', 'resources', KB_FOLDERNAME, 'nlg_templates')]
     fallbacks = [join('GRIDD', 'resources', KB_FOLDERNAME, 'fallbacks.kg')]
-    return kb, rules, nlg_templates, fallbacks, wm
+    user_kb = [join('GRIDD', 'resources', KB_FOLDERNAME, 'user_kb_test.kg')] if TEST_UKB else None
+    return kb, rules, nlg_templates, fallbacks, wm, user_kb
 
 PRINT_WM = False
 
@@ -1270,7 +1304,7 @@ if __name__ == '__main__':
     except FileNotFoundError:
         pass
 
-    kb, rules, nlg_templates, fallbacks, wm = get_filepaths()
+    kb, rules, nlg_templates, fallbacks, wm, user_kb = get_filepaths()
 
     device = input('device (cpu/cuda:0/cuda:1/...) >>> ').strip()
     print_wm = input('debug (n/y) >>> ').strip()
@@ -1281,7 +1315,7 @@ if __name__ == '__main__':
             device = 'cuda:0'
         else:
             device = 'cpu'
-    chatbot = ChatbotServer(kb, rules, nlg_templates, fallbacks, wm, device=device)
+    chatbot = ChatbotServer(kb, rules, nlg_templates, fallbacks, wm, user_kb, device=device)
     chatbot.full_init(device=device)
     print()
     chatbot.run()

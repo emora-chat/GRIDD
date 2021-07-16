@@ -3,6 +3,7 @@ KB_FOLDERNAME = 'kg_files'      # Folder name for knowledge base .kg files
 
 KB = 'kb'                       # Namespace of Knowledge Base Concept Graph
 WM = 'wm'                       # Namespace of Working Memory Concept Graph
+UKB = 'ukb'
 
 UTTER_TRUNC = 20                # Truncate user utterance to this length for time and memory processing
 PRUNE_THRESHOLD = 50            # Number of main predicate nodes to keep in WM after pruning
@@ -45,6 +46,8 @@ OP_UTURN = 'uturn'              # operator predicate used in rule creation to sp
 OP_ETURN = 'eturn'              # operator predicate used in rule creation to specify emora turn information
 UTURN_POS = 'uturnpos'          # metadata feature used to indicate relative turn index used by OP_UTURN in rules
 ETURN_POS = 'eturnpos'          # metadata feature used to indicate relative turn index used by OP_ETURN in rules
+
+UNODE = 'unode'                 # metadata feature to map working memory node ids to their corresponding user_kb node ids
 
 SALIENCE_IN_LINK = 'salin'      # UpdateGraph label for salience propagation
 SALIENCE_OUT_LINK = 'salout'    # UpdateGraph label for salience propagation
