@@ -1,51 +1,7 @@
 
-possess(emora, life_0/life())
-change_0/change(pandemic(), life_0)
-qualifier(change_0, object_1/object())
-req_unsat(r/request(user, object_1))
--> answer_change_life_q2->
-_t(_rpresent)
-_pr(_high)
-$ Well, I think the isolation has helped me appreciate hanging out with friends more. I'll never take that for granted again . $
-;
 
 
-
-/* This one is if user asks "How has it changed your life?", "it" doesn't map to pandemic. This may interfere with otehr questions not related to the pandemic though, might be an issue */
-req_unsat(r/request(user, object_1/object()))
-time(change_1/change(object(), life_1/life()), past)
-qualifier(change_1, object_1)
-have_4/have(user, life_2/life())
-->
-_t(_rpresent)
-_pr(_high)
-$ Well, I think the isolation has helped me appreciate hanging out with friends more. I'll never take that for granted again . $
-;
-
-
-
-/*This one is if user asks "How has it changed?", should probably not be kept since it would fire a ton (too general), but user will often say this as a question */
-request_2/request(user, object_1/object())
-change_2/change(object())
-req_unsat(request_2)
-qualifier(change_2, object_1)
-uturn(request_2, 0)
-->
-_t(_rpresent)
-_pr(_high)
-$ Well, I think the isolation has helped me appreciate hanging out with friends more. I'll never take that for granted again . $
-;
-
-req_unsat(request_truth(user, change_0/change(object())))
-qualifier(much())
-->
-_t(_rpresent)
-_pr(_high)
-$ Well, I think the isolation has helped me appreciate hanging out with friends more. I'll never take that for granted again . $
-;
-
-req_unsat(request_truth(user, change_0/change(prp())))
-qualifier(much())
+answer(emora, change(pandemic(), life()))
 ->
 _t(_rpresent)
 _pr(_high)
@@ -62,7 +18,7 @@ l/like(user, c)
 request_truth(emora, l)
 ->
 _t(_rpresent)
-$ My job may have actually benefited from the pandemic. I had to spend a lot of time for commuting, now I can do it remotely. My office is letting me stay remote for as long as I want. Do you like the shift to remote work? $
+$ My internship may have actually benefited from the pandemic. I had to spend a lot of time for commuting, now I can do it remotely. My office is letting me stay remote for as long as I want. Do you like the shift to remote work? $
 ;
 
 have(user, w1/job())
@@ -122,7 +78,7 @@ user_aware(r)
 -> 
 _t(_rpresent)
 _pr(_high)
-$ Huh, I had not thought about that . $
+$ Huh, I had not thought about that .  $
 ;
 
 object_1:<possess(user, life_0/life())
@@ -131,7 +87,7 @@ qualifier(change_0, object_1/object())>
 r/request(emora, object_1)
 ->
 _t(_rpresent)
-$ Well enough about me . How have you been in the pandemic? Or after it, if you can call it that . $
+$ Well enough about me . How have you been in the pandemic? Or after it, if we can even call it over . $
 ;
 
 ch/change(pandemic(), world)
@@ -139,18 +95,18 @@ guess(emora, ch)
 ->
 _t(_rpresent)
 _pr(_high)
-$ I guess the pandemic has changed all our lives, and that means its changed the world. It doesn't have to be for the worse, I think . $
+$ I guess the pandemic has changed all our lives, and that means it changed the world. It doesn't have to be for the worse, I think . $
 ;
 
 born(emora, pandemic())
 ->
 _t(_rpresent)
 _pr(_high)
-$ In a way, the pandemic has changed me as much as anyone, us chatbots adapt to fit the world around us. $
+$ In a way, the pandemic has changed me as much as anyone. Us chatbots adapt to fit the world around us. $
 ;
 
 have(user, l/life()) c/change(pandemic(), l)
 request_truth(emora, c)
 -> 
-$ I've been thinking, the pandemic has really changed our lives hasn't it? Not just this year, I think a lot of things will never be the same for me now. Its kinda crazy how much my life has changed. $
+$ I've been thinking, the pandemic has really changed our lives hasn't it? Not just this year, I think a lot of things will never be the same for me now. It's kinda crazy how much my life has changed. $
 ;

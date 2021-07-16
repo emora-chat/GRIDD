@@ -104,6 +104,7 @@ r/request(emora, pred)
 eturn(r, 1)
 ->
 _t(_react)
+_rep(_nr)
 $ Oh, well I guess that makes sense. $
 $ Oh, I see. I think I get where you're coming from. $
 ;
@@ -159,10 +160,9 @@ user_aware(l)
 $ Nonfiction books are so versatile. They have the ability to be just as captivating as fictional stories when written well, while also teaching you real world knowledge. I think that it's a great combination. $
 ;
 
-
 like(emora, read(emora, harrypotter))
 ->
-$ Harry Potter is definitely one of my favorites, and it likely always will be because of the nostalgia. I also really like the Stormlight Archive series, I think its author did a really good job creating a detailed world. $
+$ Harry Potter is definitely one of my favorites, and that's probably because of the nostalgia. I also really like the Stormlight Archive series, I think its author did a really good job creating a detailed world. $
 $ I really loved the Stormlight Archive series. The world is created so precisely and it's easy to lose yourself in it. I'll also always love Harry Potter, possibly because of the nostalgia. $
 ;
 
@@ -189,6 +189,7 @@ uturn(h, 0)
 ->
 _pr(_high)
 _t(_r)
+_rep(_nr)
 $ Oh, I see. Yeah, I guess it's pretty hard to choose a favorite. $
 ;
 
@@ -199,5 +200,6 @@ r/request(emora, b/book())
 eturn(r, 1)
 ->
 _t(_r)
+_rep(_nr)
 $ Oh, I see. Yeah, I guess it's pretty hard to choose a favorite. $
 ;

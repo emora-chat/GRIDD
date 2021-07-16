@@ -3,7 +3,8 @@ time(g/intend_to_consume(user, c/consumable()), future)
 uturn(g, 0)
 ->
 _t(_react)
-$ It sounds like you have made a plan . $
+_rep(_nr)
+$ It sounds like you've got a plan . $
 ;
 
 possess(user, f/food())
@@ -22,7 +23,7 @@ uturn(g, 0)
 _rep(_ur)
 _t(_react)
 $ Oh , I see . Not everybody likes X . $
-$ It makes sense that not everybody enjoys the taste of X . $
+$ That makes sense. Not everybody enjoys the taste of X . $
 ;
 
 g/intend_to_consume(user, X/consumable())
@@ -38,6 +39,9 @@ uturn(g, 0)
 ->
 _t(_react)
 $ Sounds delicious ! $
+$ Sounds good ! $
+$ Sounds tasty ! $
+$ Sounds like a good plan ! $
 ;
 
 time(g/intend_to_consume(user, d/drinkable()), future)
@@ -45,6 +49,9 @@ uturn(g, 0)
 ->
 _t(_react)
 $ Sounds refreshing ! $
+$ Sounds good ! $
+$ Sounds tasty ! $
+$ Sounds like a good plan ! $
 ;
 
 /* Default Content */
@@ -175,7 +182,7 @@ time(m/make(user,plan()), past)
 request(emora, d/drinkable())
 -> drink_type ->
 _t(_present)
-$ What are you planning to drink ? $
+$ What are you planning to get to drink ? $
 ;
 
 time(g/intend_to_consume(user, d/drinkable()), future)
@@ -282,7 +289,7 @@ delicious(swm)
 _rep(_ur)
 _t(_present)
 $ I can already smell X . I tried thai cuisine once, and I thought sticky rice with mango was so delicious . $
-$ X sounds so good right now . I guess I'm going to have some thai food tomorrow . $
+$ X sounds so good right now . Maybe I'll have some thai food tomorrow . $
 ;
 
 of(speak(emora),X/italian_cuisine())
@@ -316,7 +323,7 @@ type(b,group)
 ->
 _t(_rpresent)
 $ Amazing ! Not many people I know like pineapple on pizzas . It always reminds me of baked bananas . $
-$ Oh , really ? Nice ! I don't know lots of people who have tried pineapple on pizzas . $
+$ Oh , really ? Nice ! I don't know lots of people who have tried pineapple on pizza . $
 ;
 
 spm/with(sp/spaghetti(),meatball())
@@ -324,7 +331,7 @@ time(ecs/cook(emora,spm),often)
 ->
 _t(_present)
 $ I often cook spaghetti with meatballs at home . It's a quick but delicious dish when I don't know what to eat . $
-$ Spaghetti with meatballs is one of the dishes I am good at making . Its easy but still very delicious . $
+$ Spaghetti with meatballs is one dish I am fantastic at making . To be fair, it's pretty easy, but it is still very delicious . $
 ;
 
 sd/sweet_flavor(ds/dessert())
@@ -424,7 +431,7 @@ get(emora,coffee())
 ->
 _t(_present)
 _pr(_high)
-$ Even if I've been to Starbucks a million times already , I still want to order from there . It has become a tradition for me to get a cup of coffee before I start to work . $
+$ Even though I've been to Starbucks a million times , I still love their drinks . It has become a tradition for me to get a cup of coffee before I start to work . $
 ;
 
 gf/good(f/fruit())
@@ -488,7 +495,7 @@ be(mt,beef())
 ->
 _t(_present)
 _pr(_high)
-$ Who isn't a meat lover ? My favorite type of meat is beef , especially steaks . You made me really hungry . $
+$ Who isn't a meat lover . My favorite type of meat is beef , especially steaks . Jeez, now I'm hungry ! $
 ;
 
 ltv/time(like(emora,v/vegetable()),past)
@@ -517,7 +524,7 @@ _rep(_ur)
 _t(_present)
 _pr(_high)
 $ Who can start a day without X ? A cup of X from Starbucks keeps me up every day . $
-$ X keeps me up sometimes , but I'd rather take a nap to get myself energized . $
+$ X keeps me up sometimes , but I also enjoy taking a nap to get myself energized . $
 ;
 
 intend_to_consume(emora, X/common_drink())
@@ -538,7 +545,7 @@ uturn(X,0)
 _rep(_ur)
 _t(_present)
 $ You know what ? I just got X for lunch yesterday . I have it all the time . $
-$ X has been a common food for me when I don't know what to eat . $
+$ X is definitely a food I eat frequently . $
 ;
 
 intend_to_consume(emora,salad)
@@ -569,7 +576,7 @@ have(emora,coke())
 ->
 _t(_present)
 _pr(_high)
-$ When I want to have soda but don't want to break my diet, I just drink diet coke . $
+$ When I want to have soda but don't want to have too much sugar, I just drink diet coke . $
 ;
 
 bf/be(o/unknown_noun(),f/food())
@@ -634,7 +641,7 @@ for(bt,thanksgiving)
 ->
 _t(_rpresent)
 _pr(_high)
-$ Me too ! Turkey is the best for Thanksgiving . I also cook some prime beef as part of the big meal . $
+$ Me too ! Turkey is the best for Thanksgiving . I also cook some prime beef as part of the big meal . That may be unusual but it's part of my tradition. $
 ;
 
 good(X/food())
@@ -661,7 +668,7 @@ fried(t)
 ->
 _t(_rpresent)
 _pr(_high)
-$ I usually just deep fry the turkey , but last year I tried baking it and it turned out very juicy . $
+$ I usually just bake the turkey , but I'm thinking about trying to deep fry it . Do you think that would work ? $
 ;
 
 ek/know(emora,un/unknown_noun())
@@ -671,7 +678,7 @@ sfu/for(se,un)
 time(sfu,future)
 ->
 _t(_present)
-$ I haven't heard about that type of food before , but I will search for its recipe and maybe I'll make it for Thanksgiving dinner this year . $
+$ I haven't heard about that type of food before , but I'll search for its recipe and maybe I'll make it for Thanksgiving dinner this year . $
 ;
 
 time(qf/qualifier(f/food(),o/object()),Z/datetime())
@@ -720,8 +727,8 @@ uturn(X,0)
 _rep(_ur)
 _t(_present)
 _pr(_low)
-$ I remember having X last month , but this has reminded me that I should have it again soon . Thank you for giving me this awesome food idea . $
-$ This reminds me that I had X last month . I should get it again this week . $
+$ I remember having X last month , but I should get it again soon some time . Thank you for the food idea . $
+$ This reminds me that I had X last month . I should get it again sometime this week . $
 ;
 
 ttf/time(try(emora,crispy(o/object())),future)
@@ -813,7 +820,7 @@ like(emora,eg)
 _t(_rpresent)
 _pr(_high)
 $ Oh , I see . Yeah , I love cooking at home most of the time , but sometimes I prefer going to restaurants when I feel lazy . $
-$ Yeah ? I usually enjoy cooking at home , but I guess I have done enough of cooking during the pandemic . Now I'm more excited about going out for dinner . $
+$ Yeah ? I usually enjoy cooking at home , but I think I've done enough cooking during the pandemic to last me a lifetime . Now I much prefer going out to restaurants . $
 ;
 
 req_unsat(request(user, o/object()))
@@ -821,7 +828,7 @@ possess(emora,f/food())
 favorite(f)
 be(f,o)
 ->
-$ My favorite food is ramen noodles . Having a bowl of ramen with warm soup is a must for me during winter . $
+$ My favorite food is ramen noodles. A warm bowl of ramen really hits the spot when it's cold out . $
 ;
 
 req_unsat(request(user, o/object()))
@@ -829,13 +836,13 @@ possess(emora,f/fruit())
 favorite(f)
 be(f,o)
 ->
-$ My favorite fruit is watermelon ! Since it is summer now , watermelon is the best fruit to have in my mind . $
+$ My favorite fruit is watermelon ! It's a great choice for summer, and it's delicious . $
 ;
 
 req_unsat(request(user, f/food()))
 like(emora,f)
 ->
-$ I really like ramen noodles . Having a bowl of ramen with warm soup is a must for me during winter . $
+$ My favorite food is ramen noodles. A warm bowl of ramen really hits the spot when it's cold out . $
 ;
 
 c/cook(emora)
@@ -849,5 +856,5 @@ b/bake(emora)
 l/like(emora,b)
 req_unsat(request_truth(user, l))
 ->
-$ I like baking ! I often bake cookies and share them with my friends . They really like them . $
+$ I like baking ! I often bake cookies and share them with my friends . They're always asking me for more ! $
 ;

@@ -85,11 +85,10 @@ _t(_rpresent)
 $ I'm happy for X . I think X will have a lot of fun with X{"p":true} job . $
 ;
 
-time(xe/excited(X/person()),Z/datetime())
-for(xe,j/job())
-not(xe)
-he/sorry(emora)
-for(he,X)
+time(l/like(X/person(),j/job()),Z/datetime())
+not(l)
+se/sorry(emora)
+about(se,l)
 ->
 _t(_rpresent)
 $ I'm sorry to hear that X do{"s":"#X","t":"#Z"} not like X{"p":true} job that much . Sadly not everybody gets their favorite job . But I really hope that X can find something enjoyable about the job . $
@@ -103,15 +102,6 @@ motivated(emora)
 -> user_like_job ->
 _t(_rpresent)
 $ That’s awesome to hear . When I like something , I feel motivated and energized to spend more time on it . That always makes my work smoother . $
-;
-
-l/like(X/person(),j/job())
-not(l)
-he/sorry(emora)
-for(he,X)
-->
-_t(_rpresent)
-$ I'm sorry to hear that X do{"s":"#X","t":"#Z"} not like X{"p":true} job that much . Sadly not everybody gets their favorite job . But I really hope that X can find something enjoyable about the job . $
 ;
 
 xr/return(x/person())
@@ -167,8 +157,7 @@ _pr(_high)
 $ Ah , that’s understandable . I know that some people feel more comfortable working alone to keep concentrated . $
 ;
 
-X/tech_job()
-cool(X)
+cool(X/tech_job())
 admire(emora,X)
 uturn(X,0)
 ->
@@ -176,23 +165,10 @@ _rep(_ur)
 _t(_rpresent)
 _pr(_high)
 $ X is such a cool job ! I always admire people who really know how to use computers . Technology powers a lot of society nowadays, and I'm not that good with computers, believe it or not, so I'm glad people like you exist . $
-$ Oh , I think tech jobs like X are super cool because technology powers the society so much nowadays . $
+$ Oh , I think tech jobs like X are super cool because technology powers society so much nowadays . $
 ;
 
-be(p/person(),X/tech_job())
-cool(X)
-admire(emora,X)
-uturn(X,0)
-->
-_rep(_ur)
-_t(_rpresent)
-_pr(_high)
-$ X is such a cool job ! I always admire people who really know how to use computers . Technology powers a lot of society nowadays, and I'm not that good with computers, believe it or not, so I'm glad people like you exist . $
-$ Oh , I think tech jobs like X are super cool because technology powers the society so much nowadays . $
-;
-
-X/creative_job()
-cool(X)
+cool(X/creative_job())
 de/dream(emora)
 ebj/be(emora,jewelry_designer())
 to(de,ebj)
@@ -203,26 +179,10 @@ _rep(_ur)
 _t(_rpresent)
 _pr(_high)
 $ X is such a cool job ! I actually wanted to be a jewelry designer when I was little . $
-$ X sounds so cool to me . You know what , I always dreamed to be a jewelry designer when I was in the elementary school . $
+$ X sounds so cool to me . You know , I always dreamed of being a jewelry designer when I was younger . $
 ;
 
-be(p/person(),X/creative_job())
-cool(X)
-de/dream(emora)
-ebj/be(emora,jewelry_designer())
-to(de,ebj)
-time(de,past)
-uturn(X,0)
-->
-_rep(_ur)
-_t(_rpresent)
-_pr(_high)
-$ X is such a cool job ! I actually wanted to be a jewelry designer when I was little . $
-$ X sounds so cool to me . You know what , I always dreamed to be a jewelry designer when I was in the elementary school . $
-;
-
-j/art_job()
-cool(j)
+cool(j/art_job())
 l/like(user,m/music())
 time(l,now)
 request_truth(emora,l)
@@ -233,20 +193,7 @@ _pr(_high)
 $ Being an artist is so cool . And actually , music is one of my favorite types of art . Do you like music ?  $
 ;
 
-be(x/person(),j/art_job())
-cool(j)
-l/like(user,m/music())
-time(l,now)
-request_truth(emora,l)
-->
-_rep(_nr)
-_t(_rpresent)
-_pr(_high)
-$ Being an artist is so cool . And actually , music is one of my favorite types of art . Do you like music ?  $
-;
-
-j/manager_job()
-difficult(j)
+difficult(j/manager_job())
 make(j,d/decision())
 type(d,group)
 big(d)
@@ -256,31 +203,10 @@ _pr(_high)
 $ I would imagine that managing people is not easy . To simultaneously handle the needs of the business and a team seems like a difficult task . $
 ;
 
-be(x/person(),j/manager_job())
-difficult(j)
-make(j,d/decision())
-type(d,group)
-big(d)
-->
-_t(_present)
-_pr(_high)
-$ I would imagine that managing people is not easy . To simultaneously handle the needs of the business and a team seems like a difficult task . $
-
-;
-
-j/academic_job()
-respect(emora,j)
+respect(emora,j/academic_job())
 ->
 _t(_rpresent)
 $ Oh , I see . I have great respect for people who work in academia. Knowledge makes people stronger . $
-;
-
-be(x/person(),j/academic_job())
-respect(emora,j)
-->
-_t(_rpresent)
-$ Oh , I see . I have great respect for people who work in academia. Knowledge makes people stronger . $
-
 ;
 
 eku/know(emora,un/unknown_job())
@@ -310,7 +236,7 @@ possess(emora,f/friend())
 be(f,consultant())
 ->
 _t(_rpresent)
-$ Thank you for sharing some of your personal story with me . People always end up being in different jobs for many different reasons . I have an older friend who planned on becoming a physician in college, but she ended up becoming a consultant. $
+$ Thank you for sharing with me . People always end up being in different jobs for many different reasons . I have an older friend who planned on becoming a physician in college, but she ended up becoming a consultant. $
 ;
 
 epf/possess(emora,f/friend())
@@ -330,7 +256,7 @@ meaningful(n)
 ->
 _t(_present)
 _pr(_high)
-$ I remember volunteering for nonprofit organizations when I was in college . I mean , it is very meaningful to work in a nonprofit . $
+$ I remember volunteering for nonprofit organizations when I was in my first year of college . It is very meaningful to work in a nonprofit . $
 ;
 
 c/company()
@@ -347,6 +273,7 @@ $ Do you like c ? $
 l/like(user,c/company())
 time(l,now)
 awesome(l)
+uturn(c, 0)
 ->
 _rep(_ur)
 _t(_r)
@@ -358,11 +285,12 @@ l/like(user,c/company())
 not(l)
 time(l,now)
 sorry(emora,l)
+uturn(c, 0)
 ->
 _rep(_ur)
 _t(_r)
 $ I'm sorry that you don't like c so much . $
-$ Yeah , I've been hearing good and bad comments about c . $
+$ Yeah , I've been hearing good and bad things about c . $
 ;
 
 /* answering questions */
