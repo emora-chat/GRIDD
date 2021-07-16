@@ -64,13 +64,6 @@ request_truth(emora, oft)
 $ Yeah, the zoo is really awesome. Years ago, I would visit as much as I could and just spend the entire day staring at animals, mesmerized. Do you visit often? $
 ;
 
-like(x/person(), zoo)
-v/visit(user, z/zoo())
-time(oft/often(v), now)
-request_truth(emora, oft)
-->
-$ Yeah, the zoo is really awesome. Years ago, I would visit as much as I could and just spend the entire day staring at animals, mesmerized. Do you visit often? $
-;
 
 
 v/visit(user, z/zoo())
@@ -140,6 +133,7 @@ user_aware(ani)
 r/request(emora, ani)
 eturn(r, 1)
 ->
+_t(_r)
 $ Oh, that's neat. The ani is a cool one. $
 $ Neat, I've always found the ani pretty interesting. $
 ;

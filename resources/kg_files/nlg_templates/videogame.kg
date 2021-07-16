@@ -22,21 +22,12 @@ $ Oh, awesome, that makes us two peas in a pod! $
 $ Oh nice, both of us like videogames! $
 ;
 
-play(user, v/videogame())
-request(emora, v)
-->
-_t(_present)
-$ What games do you like? $
-$ What's one of your favorite games? $
-;
-
 p/play(user, v/videogame())
 uturn(p, 0)
 ->
 _t(_react)
 $ Oh, awesome, that makes us two peas in a pod! $
 $ Oh nice, both of us like videogames! $
-
 ;
 
 play(user, d/device())
@@ -180,19 +171,7 @@ request(emora, pred)
 $ Yeah, f is a good one. Although I do think that all of the games in the series are quite good. Why is f your favorite? $
 ;
 
-l/like(user, minecraft())
-user_aware(l)
-->
-$ Minecraft is a really great game. I love it! Years ago, I would spend tons of time just exploring, mining, and building. The game has become really popular again recently, which is awesome. $
-$ I love Minecraft, I think it's a great game. It's popularity has surged recently, which I think is great. It reminds me of my time exploring and building years ago. $
-;
 
-p/play(user, minecraft())
-user_aware(p)
-->
-$ Minecraft is a really great game. I love it! Years ago, I would spend tons of time just exploring, mining, and building. The game has become really popular again recently, which is awesome. $
-$ I love Minecraft, I think it's a great game. It's popularity has surged recently, which I think is great. It reminds me of my time exploring and building years ago. $
-;
 
 time(play(emora, minecraft), past)
 ->
@@ -208,19 +187,6 @@ request(emora, pred)
 $ Oh yes, League of Legends is a really popular game. I have mixed feelings about it though. It can be a very frustrating game to play sometimes. What do you like about League of Legends? $
 ;
 
-time(popular(leagueoflegends), now)
-frustrating(leagueoflegends)
-cause(pred/predicate(), play(x/person(), leagueoflegends))
-request(emora, pred)
-->
-$ Oh yes, League of Legends is a really popular game. I have mixed feelings about it though. It can be a very frustrating game to play sometimes. Why do you play League of Legends? $
-;
-
-cause(pred/predicate(), play(x/person(), csgo))
-request(emora, pred)
-->
-$ Oh, C S go is pretty cool right? I've never really played it, but I've heard that it's pretty fun. What do you like about C S go ? $
-;
 
 cause(pred/predicate(), like(x/person(), csgo))
 request(emora, pred)
@@ -236,26 +202,11 @@ request(emora, pred)
 $ Oh yeah, I've heard of Fortnite. It used to be really popular, but I think the player base has stabilized now. What do you like about Fortnite? $
 ;
 
-time(popular(fortnite), past)
-cause(pred/predicate(), play(x/person(), fortnite))
-request(emora, pred)
-->
-$ Oh yeah, I've heard of Fortnite. It used to be really popular, but I think the player base has stabilized now. Why do you play Fortnite? $
-;
 
 l/like(x/person(), smashbros)
 time(play(x, c/character()), now)
 request(emora, c)
 in(c, l)
-like(emora, smashbros)
-->
-$ Oh, I love Super Smash Bros too! I used to play it all the time with friends. It's really amazing how beginners can enjoy the game just as much as long time veterans do. It never really gets stale either, thanks to how much variety there is in the game . Every round feels unique. Out of all the characters, do you have a favorite? $
-;
-
-pl/play(x/person(), smashbros)
-time(play(x, c/character()), now)
-request(emora, c)
-in(c, pl)
 like(emora, smashbros)
 ->
 $ Oh, I love Super Smash Bros too! I used to play it all the time with friends. It's really amazing how beginners can enjoy the game just as much as long time veterans do. It never really gets stale either, thanks to how much variety there is in the game . Every round feels unique. Out of all the characters, do you have a favorite? $
@@ -281,14 +232,6 @@ request(emora, pred)
 $ Oh, I love Pokemon. I'll never forget spending hours levelling up my starter to the point that it could easily sweep all the gym leaders. It'll always have a special place in my heart. What do you like about Pokemon? $
 ;
 
-p/play(x/person(), pokemon())
-agree(emora, p)
-cause(pred/predicate(), p)
-request(emora, pred)
-->
-$ Oh, I love Pokemon. I'll never forget spending hours levelling up my starter to the point that it could easily sweep all the gym leaders. It'll always have a special place in my heart. What do you like about Pokemon? $
-;
-
 l/like(x/person(), callofduty)
 agree(emora, l)
 cause(pred/predicate(), l)
@@ -297,13 +240,6 @@ request(emora, pred)
 $ Oh yeah, Call of Duty is fun. I've only played it a few times, but I've always enjoyed just playing deathmatches with friends. What do you like about Call of Duty? $
 ;
 
-p/play(x/person(), callofduty)
-agree(emora, p)
-cause(pred/predicate(), p)
-request(emora, pred)
-->
-$ Oh yeah, Call of Duty is fun. I've only played it a few times, but I've always enjoyed just playing deathmatches with friends. What do you like about Call of Duty? $
-;
 
 time(play(emora, videogame()), now)
 ->

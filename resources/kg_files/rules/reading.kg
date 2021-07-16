@@ -75,3 +75,17 @@ disagree(emora, n)
 pred:<cause(pred/predicate(), n)>
 request(emora, pred)
 ;
+
+req_unsat(request(user, b/book()))
+like_1/like(emora, b)
+->
+like(emora, read(emora, harrypotter))
+;
+
+possess(emora, b/book())
+favorite(b)
+req_unsat(request(user, o/object()))
+be(b, o)
+->
+like(emora, read(emora, harrypotter))
+;
