@@ -1,0 +1,35 @@
+
+_prev(X/food())
+->
+_t(_p)
+_pr(_int)
+$ Oh! I wanted to mention that I've decided to place a X order tonight since it sounded so delicious when we talked about it last time . $
+;
+
+_prev(X/pet())
+->
+_t(_p)
+_pr(_int)
+$ Hey I was just curious, how is your X doing ? $
+;
+
+_prev(X/music_genre())
+->
+_t(_p)
+_pr(_int)
+$ Oh by the way , after our last talk , I listened to some X songs and I really enjoyed them . $
+;
+
+_prev(X/musical_instrument())
+->
+_t(_p)
+_pr(_int)
+$ So , I just wanted to thank you , because you reminded me how rewarding playing a musical instrument can be during our last talk . I actually practiced piano a bit since then . $
+;
+
+_prev(X/sport())
+->
+_t(_p)
+_pr(_int)
+$ By the way , I've made some plans to play X with my friends since you made it sound so fun last time . $
+;

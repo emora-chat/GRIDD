@@ -19,18 +19,24 @@ op_more_info(v, l)
 request(emora, v)
 ;
 
-videogame__t
+like(user, videogame())
 ->
 g:<time(like(user, g/genre()), now)>
 request(emora, g)
 of(g, videogame)
 ;
 
-videogame__t
+like(user, videogame())
 ->
 d:<time(play(user, d/device()), now)>
 for(d, videogame)
 request(emora, d)
+;
+
+not(like(user, videogame()))
+->
+l:<l/like(user, b/board_game())>
+request_truth(emora, l)
 ;
 
 p/play(x/person(), v/videogame())

@@ -45,14 +45,6 @@ $ I understand that . I also sometimes prefer more relaxed activities like liste
 $ As a hiking lover , I'm sad we don't share the same hobby , but I know it's not everybody's cup of tea . Hiking is outside, bugs are outside. Sometimes it's not the perfect combination. $
 ;
 
-he/hike(emora)
-like(he)
-->
-_t(_p)
-_rep(_nr)
-$ Hiking is one of my favorite things to do when I have a vacation . $
-;
-
 /* general activity */
 
 time(e/event(user), past)

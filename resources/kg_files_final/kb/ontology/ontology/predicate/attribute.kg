@@ -1,0 +1,18 @@
+
+
+attribute=(state)
+expr("attribute", attribute)
+
+agent_attribute=(attribute)
+
+emotion=(agent_attribute)
+expr("emotion", emotion)
+
+personality=(agent_attribute)
+expr("personality", personality)
+
+neat=(personality)
+expr("neat", neat)
+
+messy=(personality)
+expr("messy", messy)
