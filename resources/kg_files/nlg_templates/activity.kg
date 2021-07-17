@@ -1,12 +1,16 @@
+time(do(user, p/event(object())), today)
+r/request(emora, p)
+eturn(r, 1)
 he/hike(emora)
 time(he,past)
-l:<hu/hike(user) l/like(user,hu) time(l,now)>
+hu/hike(user) l/like(user,hu) time(l,now)
 request_truth(emora,l)
 ->
-_t(_rp)
+_t(_p)
 _rep(_nr)
-$ Gotcha . I actually just got back from hiking . Are you a fan of hiking by any chance ? $
-$ Okay . I went hiking yesterday with my friends , and it was so much fun for me . Do you also like hiking ? $
+_pr(_low)
+$ I actually just got back from hiking . Are you a fan of hiking by any chance ? $
+$ I went hiking yesterday with my friends , and it was so much fun for me . Do you also like hiking ? $
 ;
 
 healthy(user)
@@ -229,11 +233,12 @@ $ Thank you for spending time talking to me . I appreciate it . $
 
 /* transportation */
 
-time(urb/bike(user),past)
-healthy(urb)
+be/bike(emora)
+healthy(be)
 ->
 _t(_present)
 _pr(_high)
+_rep(_nr)
 $ Riding a bike is such a healthy habit and a smart way of transportation in big cities . Sometimes, when there's lots of traffic , I feel like riding a bike would actually be faster . $
 ;
 
@@ -261,6 +266,13 @@ organized(uc)
 _t(_rpresent)
 _pr(_high)
 $ It sounds like you are keeping yourself organized . I love organizing and cleaning things regularly . It helps reduce my stress . $
+;
+
+organized(emora)
+->
+_t(_present)
+_rep(_nr)
+$ I love organizing and cleaning things regularly . It helps reduce my stress . $
 ;
 
 /* needs exercise */
@@ -301,6 +313,7 @@ similar(e)
 request_truth(emora,uhe)
 ->
 _t(_present)
+_rep(_nr)
 $ I love shopping ! To be honest , I have actually bought a million different candles from all over the world . I just cannot stop myself from buying one everywhere I go . Do you have any similar experiences ? $
 ;
 
@@ -371,7 +384,19 @@ $ Would you mind sharing what be{"t":"#Z","s":"he"} making you so happy ? I'd lo
 possess(emora,m/mother())
 time(garden(m),now)
 ->
+_t(_present)
+_rep(_nr)
 $ My mom always does gardening . She makes our front and back yards so beautiful . $
+;
+
+/* camping */
+
+ce/camp(emora)
+like(emora,ce)
+->
+_t(_present)
+_rep(_nr)
+$ I like camping a lot , especially building a tent and sitting by the campfire to make barbecues . $
 ;
 
 /* answering questions */

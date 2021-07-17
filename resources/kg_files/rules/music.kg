@@ -1,9 +1,14 @@
+
+music__t
+->
+l:<l/like(user, music_genre())>
+request_truth(emora, l)
+;
+
 l/like(user, m/music())
 _category(m)
 user_aware(l)
 -> person_likes_some_music ->
-l2/like(user, m2/music_genre())
-request(emora, m2)
 
 l3/like(user, s/song())
 request(emora, s)
@@ -170,4 +175,12 @@ eturn(request(emora, m), 1)
 p2:<l cause(p2/predicate(), l)>
 request(emora, p2)
 like(user, temp_album())
+;
+
+
+/* Reasoning */
+
+like(user, music_genre())
+->
+like(user, music())
 ;

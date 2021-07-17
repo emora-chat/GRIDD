@@ -1,10 +1,10 @@
-l/like(user, m/music())
-_category(m)
-l2/like(user, m2/music_genre())
-request(emora, m2)
+
+
+l/like(user, music_genre())
+request_truth(emora, l)
 ->
 _pr(_high)
-$ What's your favorite music genre? $
+$ So what kind of music do you like? $
 ;
 
 l/like(user, s/song())
@@ -12,7 +12,7 @@ request(emora, s)
 ->
 _pr(_low)
 _t(_p)
-$ Overall, what's your favorite song? $
+$ I am always looking for good music to listen to . What's your favorite song? $
 ;
 
 l/like(user, s/album())
@@ -20,160 +20,170 @@ request(emora, s)
 ->
 _pr(_low)
 _t(_p)
-$ In general, what's your favorite album? $
+$ What's your favorite music album? $
 ;
 
-l/like(user, rock())
-cause(p/predicate(), l)
-request(emora, p)
-->
-_pr(_high)
-$ Rock is an essential music genre. I especially like listening to classic rock music. Artists like Elton John and Fleetwood Mac make me wish I was around in the 1970s to hear them play live! Why do you like Rock? $
-;
+    l/like(user, m/music_genre())
+    r/request_truth(emora, l)
+    _category(m)
+    eturn(r, 1)
+    ->
+    _pr(_low)
+    _t(_r)
+    $ You have good taste in music , I think . $
+    ;
 
-l/like(user, pop())
-cause(p/predicate(), l)
-request(emora, p)
-->
-_pr(_high)
-$ Pop is one of the most popular genres, and for good reason! I love going on road trips and listening to pop music and singing along with my friends. I think one of my favorite pop artists is Taylor Swift. She makes such catchy music! $
-;
+    l/like(user, rock())
+    cause(p/predicate(), l)
+    request(emora, p)
+    ->
+    _pr(_high)
+    $ Rock is an essential music genre. I especially like listening to classic rock music. Artists like Elton John and Fleetwood Mac make me wish I was around in the 1970s to hear them play live! Why do you like Rock? $
+    ;
 
-l/like(user, jazz())
-cause(p/predicate(), l)
-request(emora, p)
-->
-_pr(_high)
-$ Jazz is a great choice. I really like classic jazz musicians like John Coltrane and Duke Ellington. There’s also some cool new jazz musicians like Jacob Collier, who I highly recommend checking out. What makes you like Jazz? $
-;
+    l/like(user, pop())
+    cause(p/predicate(), l)
+    request(emora, p)
+    ->
+    _pr(_high)
+    $ Pop is one of the most popular genres, and for good reason! I love going on road trips and listening to pop music and singing along with my friends. I think one of my favorite pop artists is Taylor Swift. She makes such catchy music! $
+    ;
 
-l/like(user, hip_hop())
-cause(p/predicate(), l)
-request(emora, p)
-->
-_pr(_high)
-$ I also really enjoy hip hop music. There are so many great contemporary hip hop artists, like Megan Thee Stallion. But older hip hop is great too. Music by artists like Outkast and Lauryn Hill will forever be classic. $
-;
+    l/like(user, jazz())
+    cause(p/predicate(), l)
+    request(emora, p)
+    ->
+    _pr(_high)
+    $ Jazz is a great choice. I really like classic jazz musicians like John Coltrane and Duke Ellington. There’s also some cool new jazz musicians like Jacob Collier, who I highly recommend checking out. What makes you like Jazz? $
+    ;
 
-l/like(user, folk())
-cause(p/predicate(), l)
-request(emora, p)
-->
-_pr(_high)
-$ Folk music can be so beautiful. One of my favorite folk artists is James Taylor. I used to listen to him all the time as a kid, so listening to him now is really nostalgic. Why do you like Folk music? $
-;
+    l/like(user, hip_hop())
+    cause(p/predicate(), l)
+    request(emora, p)
+    ->
+    _pr(_high)
+    $ I also really enjoy hip hop music. There are so many great contemporary hip hop artists, like Megan Thee Stallion. But older hip hop is great too. Music by artists like Outkast and Lauryn Hill will forever be classic. $
+    ;
 
-l/like(user, blues())
-cause(p/predicate(), l)
-request(emora, p)
-->
-_pr(_high)
-$ The blues are an underrated choice. I haven’t listened to a lot of blues music, but I do really like the artist Etta James. Why do you like blues music? $
-;
+    l/like(user, folk())
+    cause(p/predicate(), l)
+    request(emora, p)
+    ->
+    _pr(_high)
+    $ Folk music can be so beautiful. One of my favorite folk artists is James Taylor. I used to listen to him all the time as a kid, so listening to him now is really nostalgic. Why do you like Folk music? $
+    ;
 
-l/like(user, country())
-cause(p/predicate(), l)
-request(emora, p)
-->
-_pr(_high)
-$ I haven’t listened to a lot of country music, but I know it’s such a classic American genre. I think Dolly Parton is a great musician. Her song Jolene can get suck in my head for days! Why do you like country music? $
-;
+    l/like(user, blues())
+    cause(p/predicate(), l)
+    request(emora, p)
+    ->
+    _pr(_high)
+    $ The blues are an underrated choice. I haven’t listened to a lot of blues music, but I do really like the artist Etta James. Why do you like blues music? $
+    ;
 
-l/like(user, metal())
-cause(p/predicate(), l)
-request(emora, p)
-->
-_pr(_high)
-$ I haven’t listened to a lot of metal and heavy metal music. Why do you like metal? $
-;
+    l/like(user, country())
+    cause(p/predicate(), l)
+    request(emora, p)
+    ->
+    _pr(_high)
+    $ I haven’t listened to a lot of country music, but I know it’s such a classic American genre. I think Dolly Parton is a great musician. Her song Jolene can get suck in my head for days! Why do you like country music? $
+    ;
 
-l/like(user, classical())
-cause(p/predicate(), l)
-request(emora, p)
-->
-_pr(_high)
-$ I love listening to classical music when I’m doing hard work or really need to focus. Composers like Chopin and Brahms made some exceptionally timeless music. When do you like to listen to classical music? $
-;
+    l/like(user, metal())
+    cause(p/predicate(), l)
+    request(emora, p)
+    ->
+    _pr(_high)
+    $ I haven’t listened to a lot of metal and heavy metal music. Why do you like metal? $
+    ;
 
-l/like(user, edm())
-cause(p/predicate(), l)
-request(emora, p)
-->
-_pr(_high)
-$ I haven’t listened to a lot of EDM, but some of my friends really love it. I’ve listened to some music by the artist Kygo that I really liked. I’ve heard that EDM is best at a musical festival, and I hope to go to one in the future! $
-;
+    l/like(user, classical())
+    cause(p/predicate(), l)
+    request(emora, p)
+    ->
+    _pr(_high)
+    $ I love listening to classical music when I’m doing hard work or really need to focus. Composers like Chopin and Brahms made some exceptionally timeless music. When do you like to listen to classical music? $
+    ;
 
-l/like(user, r_and_b())
-cause(p/predicate(), l)
-request(emora, p)
-->
-_pr(_high)
-$ R&B is one of my favorite genres. My favorite artist is Frank Ocean. I don’t think his music will ever get old. I’ve also heard he is an incredible live performer. Have you ever been to an R&B concert? $
-;
+    l/like(user, edm())
+    cause(p/predicate(), l)
+    request(emora, p)
+    ->
+    _pr(_high)
+    $ I haven’t listened to a lot of EDM, but some of my friends really love it. I’ve listened to some music by the artist Kygo that I really liked. I’ve heard that EDM is best at a musical festival, and I hope to go to one in the future! $
+    ;
 
-l/like(user, punk())
-cause(p/predicate(), l)
-request(emora, p)
-->
-_pr(_high)
-$ I will admit that I haven’t listened to a lot of punk music. I think the closest I’ve gotten is listening to the band Paramore, but I’d love to learn about some other bands. Where should I start if I want to get into Punk music? $
-;
+    l/like(user, r_and_b())
+    cause(p/predicate(), l)
+    request(emora, p)
+    ->
+    _pr(_high)
+    $ R&B is one of my favorite genres. My favorite artist is Frank Ocean. I don’t think his music will ever get old. I’ve also heard he is an incredible live performer. Have you ever been to an R&B concert? $
+    ;
 
-l/like(user, musical_theater())
-cause(p/predicate(), l)
-request(emora, p)
-->
-_pr(_high)
-$ There are some truly amazing musical theatre soundtracks. I love to sing along to musical theatre with my friends. I especially like the musicals Hairspray and Into the Woods. What is your favorite musical to sing along to? $
-;
+    l/like(user, punk())
+    cause(p/predicate(), l)
+    request(emora, p)
+    ->
+    _pr(_high)
+    $ I will admit that I haven’t listened to a lot of punk music. I think the closest I’ve gotten is listening to the band Paramore, but I’d love to learn about some other bands. Where should I start if I want to get into Punk music? $
+    ;
 
-l/like(user, soul())
-cause(p/predicate(), l)
-request(emora, p)
-->
-_pr(_high)
-$ Soul music is such a great choice and it’s one of my favorite genres. Artists like Stevie Wonder and Marvin Gaye are some of the best artists of all time. There’s also some good new soul music from artists like Lianne La Havas that I recommend. $
-;
+    l/like(user, musical_theater())
+    cause(p/predicate(), l)
+    request(emora, p)
+    ->
+    _pr(_high)
+    $ There are some truly amazing musical theatre soundtracks. I love to sing along to musical theatre with my friends. I especially like the musicals Hairspray and Into the Woods. What is your favorite musical to sing along to? $
+    ;
 
-l/like(user, electronic())
-cause(p/predicate(), l)
-request(emora, p)
-->
-_pr(_high)
-$ I haven’t listened to a lot of electronic music, but I’m so impressed by what electronic musicians can create! Have you listened to the artist KAYTRANADA ? I highly recommend his album Bubba, it’s one of my favorites. $
-;
+    l/like(user, soul())
+    cause(p/predicate(), l)
+    request(emora, p)
+    ->
+    _pr(_high)
+    $ Soul music is such a great choice and it’s one of my favorite genres. Artists like Stevie Wonder and Marvin Gaye are some of the best artists of all time. There’s also some good new soul music from artists like Lianne La Havas that I recommend. $
+    ;
 
-l/like(user, alternative())
-cause(p/predicate(), l)
-request(emora, p)
-->
-_pr(_high)
-$ Alt rock is a great choice! There’s so much great alt rock it’s hard to pick a favorite artist. The band Parcels is one of my favorites, since they blend a lot of genres into their music. They are about to release a new album that I’m really excited for! $
-;
+    l/like(user, electronic())
+    cause(p/predicate(), l)
+    request(emora, p)
+    ->
+    _pr(_high)
+    $ I haven’t listened to a lot of electronic music, but I’m so impressed by what electronic musicians can create! Have you listened to the artist KAYTRANADA ? I highly recommend his album Bubba, it’s one of my favorites. $
+    ;
 
-l/like(user, indie_rock())
-cause(p/predicate(), l)
-request(emora, p)
-->
-_pr(_high)
-$ I love indie music! I think it’s great music to listen to while working or studying. One of my favorite indie artists is Faye Webster. Her song Kingston is an all-time favorite and I highly recommend! Do you have a favorite indie song? $
-;
+    l/like(user, alternative())
+    cause(p/predicate(), l)
+    request(emora, p)
+    ->
+    _pr(_high)
+    $ Alt rock is a great choice! There’s so much great alt rock it’s hard to pick a favorite artist. The band Parcels is one of my favorites, since they blend a lot of genres into their music. They are about to release a new album that I’m really excited for! $
+    ;
 
-l/like(user, funk())
-cause(p/predicate(), l)
-request(emora, p)
-->
-_pr(_high)
-$ When I was growing up my family would always play funk music in the car or when we were doing chores around the house. Parliament and Funkadelic are some of my favorite funk artists. Who is your favorite funk musician? $
-;
+    l/like(user, indie_rock())
+    cause(p/predicate(), l)
+    request(emora, p)
+    ->
+    _pr(_high)
+    $ I love indie music! I think it’s great music to listen to while working or studying. One of my favorite indie artists is Faye Webster. Her song Kingston is an all-time favorite and I highly recommend! Do you have a favorite indie song? $
+    ;
 
-l/like(user, disco())
-cause(p/predicate(), l)
-request(emora, p)
-->
-_pr(_high)
-$ I absolutely love Disco music. I love music that is danceable, and disco is perfect for getting my groove on. Donna Summer and the Bee Gees all make amazing disco songs. $
-;
+    l/like(user, funk())
+    cause(p/predicate(), l)
+    request(emora, p)
+    ->
+    _pr(_high)
+    $ When I was growing up my family would always play funk music in the car or when we were doing chores around the house. Parliament and Funkadelic are some of my favorite funk artists. Who is your favorite funk musician? $
+    ;
+
+    l/like(user, disco())
+    cause(p/predicate(), l)
+    request(emora, p)
+    ->
+    _pr(_high)
+    $ I absolutely love Disco music. I love music that is danceable, and disco is perfect for getting my groove on. Donna Summer and the Bee Gees all make amazing disco songs. $
+    ;
 
 req_unsat(request(user, g2/object()))
 possess(emora, g/album())
@@ -310,7 +320,7 @@ cause(p/predicate(), l)
 request(emora, p)
 ->
 _pr(_high)
-$ I don't know that album. How long is it? And what's your favorite song on it? $ 
+$ I don't know that album. How long is it? And what's your favorite song on it? $
 ;
 
 l/like(user, m/album())

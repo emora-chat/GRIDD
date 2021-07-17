@@ -88,7 +88,7 @@ request(emora, c)
 
 time(xpp/play(x/person(), playstation), now)
 ->
-f:<time(f/play(x, finalfantasy), now)>
+f:<time(f/play(x, final_fantasy), now)>
 request_truth(emora, f)
 ;
 
@@ -203,21 +203,21 @@ time(agree(emora, l), now)
 time(fun(rpg), now)
 ;
 
-play(x/person(), finalfantasy)
+play(x/person(), final_fantasy)
 ->
-f:<time(possess(x, f/finalfantasy()), now)>
+f:<time(possess(x, f/final_fantasy()), now)>
 time(favorite(f), now)
 request(emora, f)
 ;
 
-like(x/person(), finalfantasy)
+like(x/person(), final_fantasy)
 ->
-f:<time(possess(x, f/finalfantasy()), now)>
+f:<time(possess(x, f/final_fantasy()), now)>
 time(favorite(f), now)
 request(emora, f)
 ;
 
-time(p/possess(x/person(), f/finalfantasy()), now)
+time(p/possess(x/person(), f/final_fantasy()), now)
 time(favorite(f), now)
 ->
 time(good(f), now)

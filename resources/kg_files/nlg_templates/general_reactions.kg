@@ -4,5 +4,8 @@ uturn(r, 0)
 -> unknown_answer_to_user_q ->
 _t(_r)
 _pr(_low)
-$ You know, I can't think of the answer to that right now . $
+$ Hmm I'm not sure . $
+$ Well I don't know . $
+$ I don't know that . $
+$ I'm not sure about that . $
 ;

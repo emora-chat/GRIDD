@@ -3,7 +3,7 @@ request(emora, s)
 ->
 _t(_p)
 _pr(_high)
-$ Out of all sports, what's your favorite? I like football, baseball, tennis, and soccer, but basketball is my favorite. $
+$ Out of all sports, what's your favorite? Mine is basketball. $
 ;
 
 l/like(user, u/unknown_sport())
@@ -263,7 +263,7 @@ _category(s)
 request(emora, s)
 ->
 _pr(_high)
-$ What game was that? Who was playing? Sorry I don't know off-hand what game you're referring to. $ 
+$ What game was that? Who was playing? Sorry I don't know off-hand what game you're referring to. $
 ;
 
 pl/play(user)
@@ -283,6 +283,17 @@ request_truth(emora, b)
 ->
 _pr(_high)
 $ Hmm. It seems like sports might not be your thing. Would you say that you are a foodie? $
+;
+
+l/like(user, s/sport())
+_category(s)
+not(l)
+uturn(l, 0)
+->
+_rep(_nr)
+_pr(_high)
+_t(_r)
+$ No worries, not everybody like sports. $
 ;
 
 energetic(user)

@@ -147,8 +147,8 @@ _specific(ani)
 ->
 _t(_present)
 _rep(_ur)
-$ So, what do you like about ani ? $
-$ So, why do you like ani ? $
+$ So, what do you like about the ani ? $
+$ So, why do you like the ani ? $
 ;
 
 c/cute(object())
@@ -158,7 +158,8 @@ eturn(r, 1)
 ->
 _rep(_ur)
 _t(_r)
-$ Yeah, ani are really cute aren't they? I totally get why you would like them. $
+$ Yeah, the ani is really cute isn't it? I totally get why you would like them. $
+$ Yeah, I think the ani is super cute. They're just such lovable creatures. $
 ;
 
 c/cute(ani/animal())
@@ -166,8 +167,8 @@ uturn(c, 0)
 ->
 _rep(_ur)
 _t(_r)
-$ Yeah, ani are really cute aren't they? I totally get why you would like them. $
-$ Yeah, I think ani are super cute. They're just such lovable creatures. $
+$ Yeah, the ani is really cute isn't it? I totally get why you would like them. $
+$ Yeah, I think the ani is super cute. They're just such lovable creatures. $
 ;
 
 c/cool(ani/animal())
@@ -175,8 +176,8 @@ uturn(c, 0)
 ->
 _rep(_ur)
 _t(_r)
-$ Yeah, ani are definitely pretty cool. I can see why you would like them. $
-$ Yeah, I think ani are actually pretty likeable because they're cool $
+$ Yeah, the ani is definitely pretty cool. I can see why you would like them. $
+$ Yeah, I actually like the ani a lot because it's cool. $
 ;
 
 f/fast(ani/animal())
@@ -187,13 +188,22 @@ _t(_r)
 $ Yeah, I really like fast animals. My favorite animal is the cheetah after all. There's just something so cool about being lightning fast. $
 ;
 
+s/strong(X/animal())
+uturn(s, 0)
+->
+_rep(_ur)
+_t(_r)
+$ I agree, the ani is really awesome isn't it? Sometimes I wish I could be as strong as the ani . $
+;
+
+
 w/watch(user, ani/animal())
 uturn(w, 0)
 ->
 _t(_r)
 _rep(_ur)
-$ Oh, yeah, ani are always fun to watch. $
-$ Oh, I really enjoy watching ani too. $
+$ Oh, yeah, the ani is always fun to watch. $
+$ Oh, I really enjoy watching the ani too. $
 ;
 
 s/see(user, ani/animal())
@@ -201,8 +211,8 @@ uturn(s, 0)
 ->
 _t(_r)
 _rep(_ur)
-$ Oh, yeah, ani are always fun to see. $
-$ Oh, I really enjoy watching ani too. $
+$ Oh, yeah, the ani is always fun to see. $
+$ Oh, I really enjoy watching the ani too. $
 ;
 
 h/have(user, ani/animal())

@@ -106,7 +106,7 @@ $ Oh, that's cool. I haven't actually played the xbox before, though my friends 
 ;
 
 like(emora, playstation)
-request_truth(emora, play(x/person(), finalfantasy))
+request_truth(emora, play(x/person(), final_fantasy))
 ->
 $ Yeah, Play stations are pretty nice. There's some really good games to play on it. Have you ever played Final Fantasy? $
 ;
@@ -142,16 +142,16 @@ _pr(_low)
 $ Oh, vg ! I don't know too much about it, but I'll definitely look into it. What do you like about vg ? $
 ;
 
-classic(finalfantasy)
-like(emora, finalfantasy)
-time(possess(user, f/finalfantasy()), now)
+classic(final_fantasy)
+like(emora, final_fantasy)
+time(possess(user, f/final_fantasy()), now)
 time(favorite(f), now)
 request(emora, f)
 ->
 $ I really like Final Fantasy, it's a classic series. Do you have a favorite out of the series? I thought the new combat system in the newer games has been pretty interesting. $
 ;
 
-time(p/possess(user, f/finalfantasy()), now)
+time(p/possess(user, f/final_fantasy()), now)
 time(favorite(f), now)
 time(good(f), now)
 cause(pred/predicate(), p)

@@ -26,7 +26,7 @@ $ Oh, I was meaning to ask, do you have a phone ? $
 c:<have(user, l/life()) c/change(pandemic(), l)>
 request_truth(emora, c)
 -> postpandemicnlg_fallback ->
-$ I've been thinking, the pandemic has really changed our lives hasn't it? Not just this year, I think a lot of things will never be the same for me now. Its kinda crazy how much my life has changed. $
+$ I've been thinking, the pandemic has really changed our lives hasn't it? Not just this year, I think a lot of things will never be the same for me now. It's kinda crazy how much my life has changed. $
 ;
 
 h:<h/have(user, p/computer())>
@@ -44,7 +44,7 @@ $ Anyway , you seem like someone who might like sports. Do you? $
 l:<l/like(user, videogame())>
 request_truth(emora, l)
 -> videogame_fallback ->
-$ You know , I have always felt a connection to video games since, they're of a virtual world like me . Do you like them too ? $
+$ You know , I have always felt a connection to video games, since they're of a virtual world like me . Do you like them too ? $
 ;
 
 l:<l/like(user, t) t/talk(user) about(t,ai())>
@@ -69,4 +69,10 @@ l:<l/like(user, book())>
 request_truth(emora, l)
 -> reading_fallback ->
 $ You know, I really enjoy reading books. What about you? Do you like to read? $
+;
+
+p:<p/play(user,mi/musical_instrument()) _category(mi)>
+request_truth(emora,p)
+-> music_activity_fallback ->
+$ By the way, I wanted to share with you that I've been learning to play the piano recently. Do you play any musical instruments? $
 ;

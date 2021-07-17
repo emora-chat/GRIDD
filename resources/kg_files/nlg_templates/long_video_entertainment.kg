@@ -7,6 +7,28 @@ _pr(_high)
 $ What is your favorite movie? My favorite movie is the first Iron Man. $
 ;
 
+l/like(user, m/movie())
+_category(m)
+not(l)
+uturn(l, 0)
+->
+_pr(_high)
+_rep(_nr)
+_t(_r)
+$ I wasn't expecting that, most people I know like movies. $
+;
+
+l/like(user, m/tv())
+_category(m)
+not(l)
+uturn(l, 0)
+->
+_pr(_high)
+_rep(_nr)
+_t(_r)
+$ Interesting, though to be fair sometimes even I can get bored with tv. $
+;
+
 l/like(user, m/tv())
 _category(m)
 l2/like(user, m2/tv())

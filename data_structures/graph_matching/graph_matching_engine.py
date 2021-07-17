@@ -1,3 +1,4 @@
+import time
 
 import torch
 from itertools import chain
@@ -99,7 +100,11 @@ class GraphMatchingEngine:
                                    dtype=torch.long, device=self.device)
             p.stop()
             p.start('loop')
+            _time_initial__ = time.time()
             for num_checked, reqs in enumerate(checklist.transpose(0, 1)):      # Tensor<query x 3: (s, l, t)>: required next edges
+                _time_final__ = time.time()
+                if _time_final__ - _time_initial__ >= 1.0:
+                    break
                 solreqs = reqs[solqs]
                 if DISPLAY: print('{:#^50s}'.format(f' ITER {num_checked} '))
                 if DISPLAY: display(solreqs, self.n, self.l, self.n, label='Requirements')
@@ -149,16 +154,17 @@ class GraphMatchingEngine:
                 full_solqs = solqs[solvedindx]
                 sols = sols[unsolvedindx]
                 solqs = solqs[unsolvedindx]
-                for i, sol in enumerate(full_solutions):
-                    q = self.q.identify(full_solqs[i].item())
-                    assignments = {}
-                    for i, vi in enumerate(sol[2::2]):
-                        v = vi.item()
-                        if v < 0:
-                            nid = sol[i * 2 + 3].item()
-                            nident = self.n.identify(nid)
-                            assignments[self.v.identify(v)] = nident
-                    complete.setdefault(q, []).append(assignments)
+                if len(full_solutions) < 100:
+                    for i, sol in enumerate(full_solutions):
+                        q = self.q.identify(full_solqs[i].item())
+                        assignments = {}
+                        for i, vi in enumerate(sol[2::2]):
+                            v = vi.item()
+                            if v < 0:
+                                nid = sol[i * 2 + 3].item()
+                                nident = self.n.identify(nid)
+                                assignments[self.v.identify(v)] = nident
+                        complete.setdefault(q, []).append(assignments)
                 if len(sols) == 0:
                     break
             p.stop()

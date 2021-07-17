@@ -84,9 +84,9 @@ not(m)
 ->
 r:<r/reason(m)>
 request(emora, r)
-object_1:<possess(user, life_0/life())
+possess(user, life_0/life())
 change_0/change(pandemic(), life_0)
-qualifier(change_0, object_1/object())>
+qualifier(change_0, object_1/object())
 r2/request(emora, object_1)
 ;
 
@@ -95,18 +95,18 @@ m/more(like(user, outdoor_activity()))
 _exists(m)
 user_aware(m)
 ->
-object_1:<possess(user, life_0/life())
+possess(user, life_0/life())
 change_0/change(pandemic(), life_0)
-qualifier(change_0, object_1/object())>
+qualifier(change_0, object_1/object())
 r/request(emora, object_1)
 ;
 
 m/more(like(user, outdoor_activity()))
 user_aware(m)
 ->
-object_1:<possess(user, life_0/life())
+possess(user, life_0/life())
 change_0/change(pandemic(), life_0)
-qualifier(change_0, object_1/object())>
+qualifier(change_0, object_1/object())
 r/request(emora, object_1)
 ;
 
@@ -160,9 +160,9 @@ _exists(m)
 user_aware(m)
 eturn(m, 3)
 ->
-object_1:<possess(user, life_0/life())
+possess(user, life_0/life())
 change_0/change(pandemic(), life_0)
-qualifier(change_0, object_1/object())>
+qualifier(change_0, object_1/object())
 r/request(emora, object_1)
 ;
 
