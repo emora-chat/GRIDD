@@ -364,24 +364,26 @@ class IntelligenceCore:
         return solutions
 
     def save_to_ukb(self, nodes, se, oe, tp):
-        ukb_concat = ConceptGraph(namespace='wm')
-        visited = set()
-        for n in nodes:
-            if '__virt' not in n and n not in visited:
-                structure = self.working_memory.structure(n,
-                                                          subj_essentials=se,
-                                                          obj_essentials=oe,
-                                                          type_predicates=tp)
-                for struct in structure:
-                    if '<span>' not in struct[0] and UNODE not in self.working_memory.features.get(struct[3], {}):
-                        ukb_concat.add(*struct)
-                        visited.update(struct)
-        mapped_ids = self.user_kb.concatenate(ukb_concat)
-        for orig, unode in mapped_ids.items():
-            if orig != unode:
-                if orig in self.working_memory.features and UNODE in self.working_memory.features[orig]:
-                    print('[WARNING] WM node %s already has ukb node %s but trying to add ukb node %s'%(orig, self.working_memory.features[orig][UNODE], unode))
-                self.working_memory.features.setdefault(orig, {})[UNODE] = unode
+        non_type_preds = [x for x in self.user_kb.predicates() if x[1] != TYPE]
+        if len(non_type_preds) < 20:
+            ukb_concat = ConceptGraph(namespace='wm')
+            visited = set()
+            for n in nodes:
+                if '__virt' not in n and n not in visited:
+                    structure = self.working_memory.structure(n,
+                                                              subj_essentials=se,
+                                                              obj_essentials=oe,
+                                                              type_predicates=tp)
+                    for struct in structure:
+                        if '<span>' not in struct[0] and UNODE not in self.working_memory.features.get(struct[3], {}):
+                            ukb_concat.add(*struct)
+                            visited.update(struct)
+            mapped_ids = self.user_kb.concatenate(ukb_concat)
+            for orig, unode in mapped_ids.items():
+                if orig != unode:
+                    if orig in self.working_memory.features and UNODE in self.working_memory.features[orig]:
+                        print('[WARNING] WM node %s already has ukb node %s but trying to add ukb node %s'%(orig, self.working_memory.features[orig][UNODE], unode))
+                    self.working_memory.features.setdefault(orig, {})[UNODE] = unode
 
     def apply(self, inferences):
         implications = {}
