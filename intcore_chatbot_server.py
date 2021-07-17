@@ -107,7 +107,6 @@ class ChatbotServer:
             aux_state = {'turn_index': -1}
             if prev_aux_state is not None: # returning user
                 aux_state['is_returning'] = True
-                aux_state['responses'] = prev_aux_state.get('responses', {})
         aux_state["turn_index"] += 1
         return aux_state
 
