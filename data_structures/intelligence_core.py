@@ -367,7 +367,7 @@ class IntelligenceCore:
         ukb_concat = ConceptGraph(namespace='wm')
         visited = set()
         for n in nodes:
-            if n not in visited:
+            if '__virt' not in n and n not in visited:
                 structure = self.working_memory.structure(n,
                                                           subj_essentials=se,
                                                           obj_essentials=oe,
@@ -426,7 +426,9 @@ class IntelligenceCore:
             pre, post = inferences[rule][0], inferences[rule][1]
             for evidence, implication in results:
                 # add constants to evidence
-                const_evidence = {n: n for n in pre.concepts() if n not in evidence}
+                const_evidence = {n: n for n in pre.concepts()
+                                  if n not in evidence and n not in {'_specific', '_category', '_exists'}
+                                  and (not pre.has(predicate_id=n) or pre.type(n) not in {'_specific', '_category', '_exists'})}
                 evidence.update(const_evidence)
                 # check whether rule has already been applied with the given evidence
                 old_solution = False
@@ -648,7 +650,7 @@ class IntelligenceCore:
             structure = set(self.knowledge_base.structure(concept,
                              subj_essentials=self.kb_subj_essentials,
                              obj_essentials=self.kb_obj_essentials,
-                             type_predicates=self.kb_predicate_types))
+                             type_predicates=self.knowledge_base.kb_predicate_types))
             structure = {x for x in structure if x[1] != TYPE}
             for struct in structure:
                 to_add.setdefault(struct, set()).add(concept)

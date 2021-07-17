@@ -1,0 +1,30 @@
+
+like(user, f/food())
+_specific(f)
+-> save_user_food ->
+ukbpre
+;
+
+like(user, X/music_genre())
+_specific(X)
+-> save_user_music_genre ->
+ukbpre
+;
+
+like(user, X/sport())
+_specific(X)
+-> save_user_sport ->
+ukbpre
+;
+
+have(user, X/pet())
+_specific(X)
+-> save_user_pet ->
+ukbpre
+;
+
+play(user, X/musical_instrument())
+_specific(X)
+-> save_user_musical_instrument ->
+ukbpre
+;

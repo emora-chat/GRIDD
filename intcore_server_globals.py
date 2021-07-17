@@ -8,7 +8,7 @@ USECACHE = True
 COBOTCACHE = False
 DEBUG = False
 
-TEST_UKB = False
+TEST_UKB = True
 
 KBCACHE = 'kbcache'
 NLGCACHE = 'nlgcache'

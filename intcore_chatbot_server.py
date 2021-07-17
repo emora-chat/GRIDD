@@ -94,6 +94,7 @@ class ChatbotServer:
             self.reference_engine = InferenceEngine(device=device)
         if self.starting_wm is not None:
             self.dialogue_intcore.consider(list(self.starting_wm.values()))
+
         print('IntelligenceCore load: %.2f' % (time.time() - s))
 
     ###################################################
@@ -727,7 +728,19 @@ class ChatbotServer:
             self.dialogue_intcore.working_memory = ConceptGraph(namespace='wm', supports={AND_LINK: False})
             self.dialogue_intcore.consider(list(self.starting_wm.values()))
             if aux_state is not None and aux_state.get('is_returning', False):
-                self.dialogue_intcore.working_memory.add('user', 'is_returning')
+                if not self.dialogue_intcore.working_memory.has('user', 'is_returning'):
+                    self.dialogue_intcore.working_memory.add('user', 'is_returning')
+                    # hack to load in returning user content
+                    user_kb = self.dialogue_intcore.user_kb
+                    user_kb_types = user_kb.types()
+                    prev_mentions = user_kb.objects('user')
+                    for like_obj in prev_mentions:
+                        if not self.dialogue_intcore.working_memory.has(like_obj, '_prev'):
+                            self.dialogue_intcore.working_memory.add(like_obj, '_prev')
+                            if user_kb.features.get(like_obj, {}).get('isinstance', False):
+                                self.dialogue_intcore.working_memory.features.setdefault(like_obj, {})['isinstance'] = True
+                            for t in user_kb_types.get(like_obj, []) - {like_obj}:
+                                self.dialogue_intcore.working_memory.add(like_obj, TYPE, t)
 
     def load_user_kb(self, user_kb):
         if user_kb is not None:

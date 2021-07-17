@@ -288,7 +288,7 @@ class ResponseTemplateFiller:
                     if surface_form in expr_dict:  # the matched concept for the variable is a named concept
                         noun = self.nlgFactory.createNLGElement(expr_dict[surface_form], LexicalCategory.NOUN)
                     else:  # not a named concept
-                        noun = self._unnamed_noun(cg, surface_form)
+                        noun = self._unnamed_noun(cg, surface_form, expr_dict)
                     np.setNoun(noun)
                     if spec.get("d", False) == True: # set determiner
                         if cg.metagraph.out_edges(surface_form, REF) or list(cg.predicates(surface_form, USER_AWARE)): # reference
