@@ -18,6 +18,15 @@ request(emora,mi)
 ;
 
 p/play(user,mi/musical_instrument())
+_category(mi)
+req/request(emora,mi)
+user_aware(req)
+->
+epp/play(emora,piano())
+time(epp,past)
+;
+
+p/play(user,mi/musical_instrument())
 _specific(mi)
 ->
 epp/play(emora,piano())

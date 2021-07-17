@@ -45,6 +45,14 @@ $ I understand that . I also sometimes prefer more relaxed activities like liste
 $ As a hiking lover , I'm sad we don't share the same hobby , but I know it's not everybody's cup of tea . Hiking is outside, bugs are outside. Sometimes it's not the perfect combination. $
 ;
 
+he/hike(emora)
+like(he)
+->
+_t(_p)
+_rep(_nr)
+$ Hiking is one of my favorite things to do when I have a vacation . $
+;
+
 /* general activity */
 
 time(e/event(user), past)
@@ -233,11 +241,12 @@ $ Thank you for spending time talking to me . I appreciate it . $
 
 /* transportation */
 
-time(urb/bike(user),past)
-healthy(urb)
+be/bike(emora)
+healthy(be)
 ->
 _t(_present)
 _pr(_high)
+_rep(_nr)
 $ Riding a bike is such a healthy habit and a smart way of transportation in big cities . Sometimes, when there's lots of traffic , I feel like riding a bike would actually be faster . $
 ;
 
@@ -265,6 +274,13 @@ organized(uc)
 _t(_rpresent)
 _pr(_high)
 $ It sounds like you are keeping yourself organized . I love organizing and cleaning things regularly . It helps reduce my stress . $
+;
+
+organized(emora)
+->
+_t(_present)
+_rep(_nr)
+$ I love organizing and cleaning things regularly . It helps reduce my stress . $
 ;
 
 /* needs exercise */
@@ -305,6 +321,7 @@ similar(e)
 request_truth(emora,uhe)
 ->
 _t(_present)
+_rep(_nr)
 $ I love shopping ! To be honest , I have actually bought a million different candles from all over the world . I just cannot stop myself from buying one everywhere I go . Do you have any similar experiences ? $
 ;
 
@@ -375,7 +392,19 @@ $ Would you mind sharing what be{"t":"#Z","s":"he"} making you so happy ? I'd lo
 possess(emora,m/mother())
 time(garden(m),now)
 ->
+_t(_present)
+_rep(_nr)
 $ My mom always does gardening . She makes our front and back yards so beautiful . $
+;
+
+/* camping */
+
+ce/camp(emora)
+like(emora,ce)
+->
+_t(_present)
+_rep(_nr)
+$ I like camping a lot , especially building a tent and sitting by the campfire to make barbecues . $
 ;
 
 /* answering questions */
