@@ -83,7 +83,7 @@ source venv/bin/activate
 
 1. Install GitHub Clone (for cloning `structpy` below):
    ```
-   pip install git+git://github.com/HR/github-clone#egg=ghclone
+   pip install github-clone
    ```
 1. Clone the `GRIDD` repository under the project directory:
    ```
